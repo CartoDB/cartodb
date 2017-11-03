@@ -45,6 +45,8 @@ FactoryGirl.define do
       end
     end
 
+    factory :carto_user_table_with_canonical, traits: [:with_canonical_visualization]
+
     trait :full do
       with_canonical_visualization
       with_db_table

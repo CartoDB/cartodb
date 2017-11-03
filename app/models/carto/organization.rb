@@ -2,11 +2,14 @@ require 'active_record'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/carto_json_serializer'
+require_dependency 'common/organization_common'
+require_dependency 'carto/db/insertable_array'
 
 module Carto
   class Organization < ActiveRecord::Base
     include DataServicesMetricsHelper
     include AuthTokenGenerator
+    include Carto::OrganizationSoftLimits
 
     serialize :auth_saml_configuration, CartoJsonSymbolizerSerializer
     before_validation :ensure_auth_saml_configuration
@@ -19,6 +22,10 @@ module Carto
     has_many :notifications, dependent: :destroy, order: 'created_at DESC'
 
     before_destroy :destroy_groups_with_extension
+
+    # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array 0.0.9`
+    #  We can remove this when the upgrade to Rails 4 allows us to remove that gem
+    before_create :fix_domain_whitelist_for_insert
 
     def self.find_by_database_name(database_name)
       Carto::Organization.
@@ -147,6 +154,14 @@ module Carto
       users.select(&:viewer)
     end
 
+    def admin?(user)
+      user.belongs_to_organization?(self) && user.organization_admin?
+    end
+
+    def non_owner_users
+      users.reject { |u| owner && u.id == owner.id }
+    end
+
     private
 
     def ensure_auth_saml_configuration
@@ -159,6 +174,10 @@ module Carto
       groups.map { |g| g.destroy_group_with_extension }
 
       reload
+    end
+
+    def fix_domain_whitelist_for_insert
+      self.whitelisted_email_domains = Carto::InsertableArray.new(whitelisted_email_domains)
     end
   end
 end

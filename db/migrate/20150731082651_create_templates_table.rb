@@ -1,7 +1,7 @@
 Sequel.migration do
 
   up do
-    Rails::Sequel::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :templates do
       Uuid        :id,                      primary_key: true, null: false, unique: false, default: 'uuid_generate_v4()'.lit
@@ -16,7 +16,7 @@ Sequel.migration do
       DateTime    :created_at,              null: false, default: Sequel::CURRENT_TIMESTAMP
     end
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "templates"
         ADD CONSTRAINT  source_visualization_id_fkey_cascade_del
         FOREIGN KEY (source_visualization_id)
@@ -24,7 +24,7 @@ Sequel.migration do
         ON DELETE CASCADE
       })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       ALTER TABLE "templates"
         ADD CONSTRAINT  organization_id_fkey_cascade_del
         FOREIGN KEY (organization_id)
@@ -32,11 +32,11 @@ Sequel.migration do
         ON DELETE CASCADE
       })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       CREATE INDEX organization_id_idx ON templates(organization_id)
     })
 
-    Rails::Sequel.connection.run(%Q{
+    SequelRails.connection.run(%Q{
       CREATE INDEX source_visualization_id_idx ON templates(source_visualization_id)
     })
   end

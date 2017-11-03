@@ -14,7 +14,7 @@ describe Visualization::Tags do
 
   before(:each) do
     Varnish.any_instance.stubs(:send_command).returns(true)
-    @db = Rails::Sequel.connection
+    @db = SequelRails.connection
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     bypass_named_maps

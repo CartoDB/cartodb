@@ -60,7 +60,7 @@ describe Asset do
   end
 
   def local_path(asset)
-    local_url = asset.public_url.gsub(/http:\/\/#{CartoDB.account_host}\/uploads/,'')
+    local_url = asset.public_url.gsub(/\/uploads/, '')
     Carto::Conf.new.public_uploaded_assets_path + local_url
   end
 
@@ -82,7 +82,6 @@ describe Asset do
         asset = Asset.create(
           user_id: @user.id,
           asset_file: Rack::Test::UploadedFile.new(file_path, 'image/png'))
-        local_url = asset.public_url.gsub(/http:\/\/#{CartoDB.account_host}\/uploads/, '')
         File.exists?(local_path(asset)).should be_true
         asset.public_url.should =~ /.*test\/#{@user.username}\/assets\/\d+cartofante_blue.png.*/
       end

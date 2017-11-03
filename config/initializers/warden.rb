@@ -1,6 +1,5 @@
 require_dependency 'carto/user_authenticator'
-require_dependency 'carto_gears_api/events/user_events'
-require_dependency 'carto_gears_api/events/event_manager'
+require_dependency 'carto/email_cleaner'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
@@ -32,6 +31,7 @@ end
 
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
+  include Carto::EmailCleaner
   include LoginEventTrigger
 
   def valid_password_strategy_for_user(user)
@@ -40,7 +40,7 @@ Warden::Strategies.add(:password) do
 
   def authenticate!
     if params[:email] && params[:password]
-      if (user = authenticate(params[:email], params[:password]))
+      if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
           trigger_login_event(user)
 
@@ -82,59 +82,21 @@ Warden::Strategies.add(:enable_account_token) do
   end
 end
 
-Warden::Strategies.add(:google_access_token) do
+Warden::Strategies.add(:oauth) do
   include LoginEventTrigger
 
-  def valid_google_access_token_strategy_for_user(user)
-    user.organization.nil? || user.organization.auth_google_enabled
-  end
-
-  def authenticate!
-    if params[:google_access_token]
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user && valid_google_access_token_strategy_for_user(user)
-        if user.enable_account_token.nil?
-          trigger_login_event(user)
-
-          success!(user)
-        else
-          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
-        end
-      else
-        fail!
-      end
-    else
-      fail!
-    end
-  end
-end
-
-Warden::Strategies.add(:github_oauth) do
-  include LoginEventTrigger
-
-  def valid_github_oauth_strategy_for_user(user)
+  def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
   end
 
   def authenticate!
-    if params[:github_api]
-      github_api = params[:github_api]
-      github_id = github_api.id
-      user = User.where(github_user_id: github_id).first
-      unless user
-        user = User.where(email: github_api.email, github_user_id: nil).first
-        if user && valid_github_oauth_strategy_for_user(user)
-          user.github_user_id = github_id
-          user.save
-        end
-      end
-      if user && valid_github_oauth_strategy_for_user(user)
-        trigger_login_event(user)
+    fail! unless params[:oauth_api]
+    oauth_api = params[:oauth_api]
+    user = oauth_api.user
+    if user && oauth_api.config.valid_method_for?(user)
+      trigger_login_event(user)
 
-        success!(user)
-      else
-        fail!
-      end
+      success!(user)
     else
       fail!
     end
@@ -245,6 +207,7 @@ end
 
 Warden::Strategies.add(:saml) do
   include LoginEventTrigger
+  include Carto::EmailCleaner
 
   def organization_from_request
     subdomain = CartoDB.extract_subdomain(request)
@@ -263,8 +226,8 @@ Warden::Strategies.add(:saml) do
     organization = organization_from_request
     saml_service = Carto::SamlService.new(organization)
 
-    email = saml_service.get_user_email(params[:SAMLResponse])
-    user = organization.users.where(email: email.strip.downcase).first
+    email = clean_email(saml_service.get_user_email(params[:SAMLResponse]))
+    user = organization.users.where(email: email).first
 
     if user
       if user.try(:enabled?)
@@ -296,13 +259,14 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   warden_proxy = auth.env['warden']
   # On testing there is no warden global so we cannot run this logic
   if warden_proxy
-    auth.env['rack.session'].select { |key, value|
+    warden_sessions = auth.env['rack.session'].to_hash.select do |key, _|
       key.start_with?("warden.user") && !key.end_with?(".session")
-    }.each { |key, value|
+    end
+    warden_sessions.each do |_, value|
       unless value == user.username
         warden_proxy.logout(value) if warden_proxy.authenticated?(value)
       end
-    }
+    end
   end
 end
 

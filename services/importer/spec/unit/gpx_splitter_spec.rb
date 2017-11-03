@@ -11,7 +11,7 @@ describe CartoDB::Importer2::GpxSplitter do
     @one_layer_filepath       = path_to('one_layer.gpx')
     @multiple_layer_filepath  = path_to('multiple_layer.gpx')
     @temporary_directory      = '/var/tmp'
-    @ogr2ogr_config = { 'binary' => 'which ogr2ogr2' }
+    @ogr2ogr_config = {}
   end
 
   describe '#run' do

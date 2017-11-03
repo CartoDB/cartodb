@@ -7,6 +7,7 @@ describe CartoDB::ImageMetadata do
   let(:png_path) { File.expand_path('../../support/data/images/pattern.png', __FILE__) }
   let(:jpg_path) { File.expand_path('../../support/data/images/pattern.jpg', __FILE__) }
   let(:svg_path) { File.expand_path('../../support/data/images/pattern.svg', __FILE__) }
+  let(:svg_no_xml_header_path) { File.expand_path('../../support/data/images/svg_without_xml_header', __FILE__) }
 
   describe '#extract_metadata' do
     let(:metadata) { CartoDB::ImageMetadata.new(png_path) }
@@ -68,6 +69,13 @@ describe CartoDB::ImageMetadata do
       expect { metadata.parse_identify }.to_not raise_error
       metadata.width.should eq 645
       metadata.height.should eq 585
+    end
+
+    it 'should extract svg dimensions in files without XML header if forced as svg' do
+      metadata = CartoDB::ImageMetadata.new(svg_no_xml_header_path, extension: '.svg')
+      expect { metadata.parse_identify }.to_not raise_error
+      metadata.width.should eq 11
+      metadata.height.should eq 11
     end
   end
 end

@@ -1,7 +1,5 @@
 # encoding: UTF-8
 require_dependency 'carto/user_authenticator'
-require_dependency 'carto_gears_api/events/event_manager'
-require_dependency 'carto_gears_api/events/user_events'
 
 class Carto::UserCreation < ActiveRecord::Base
   include Carto::UserAuthenticator
@@ -53,6 +51,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.log = Carto::Log.new_user_creation
     user_creation.created_via = created_via
     user_creation.viewer = user.viewer || false
+    user_creation.org_admin = user.org_admin || false
 
     user_creation
   end
@@ -163,14 +162,14 @@ class Carto::UserCreation < ActiveRecord::Base
     !valid_invitation.nil?
   end
 
+  def pertinent_invitation
+    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
+  end
+
   private
 
   def enabled?
     cartodb_user.enable_account_token.nil? && cartodb_user.enabled
-  end
-
-  def pertinent_invitation
-    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
   end
 
   def valid_invitation
@@ -234,6 +233,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
     @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
     @cartodb_user.viewer = viewer if viewer
+    @cartodb_user.org_admin = org_admin if org_admin
 
     if pertinent_invitation
       @cartodb_user.viewer = pertinent_invitation.viewer

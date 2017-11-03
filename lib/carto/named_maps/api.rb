@@ -98,6 +98,10 @@ module Carto
         end
       end
 
+      def upsert
+        show ? update : create
+      end
+
       private
 
       def stats_aggregator

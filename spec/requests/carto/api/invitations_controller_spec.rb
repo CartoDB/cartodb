@@ -25,10 +25,9 @@ describe Carto::Api::InvitationsController do
       end
     end
 
-    # Disabled since this still returns 404
-    xit 'returns 401 unless you are the owner of the organization' do
+    it 'returns 404 unless you are the owner of the organization' do
       post_api_v1_organization_invitations(@org_user_1, nil) do |response|
-        response.status.should == 401
+        response.status.should == 404
       end
     end
 
@@ -49,6 +48,15 @@ describe Carto::Api::InvitationsController do
         response.body[:viewer].should == false
 
         invitation = Carto::Invitation.find(response.body[:id]).seed.should_not be_nil
+      end
+    end
+
+    it 'registers invitations as an org admin' do
+      @org_user_2.org_admin = true
+      @org_user_2.save
+      post_api_v1_organization_invitations(@org_user_2, invitation) do |response|
+        response.status.should == 200
+        Carto::Invitation.find(response.body[:id]).seed.should_not be_nil
       end
     end
 

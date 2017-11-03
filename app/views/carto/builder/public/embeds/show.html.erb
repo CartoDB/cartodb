@@ -12,10 +12,10 @@
   <%= stylesheet_link_tag 'public_editor3', 'deep_insights', media: 'all' %>
   <style type="text/css">
     html, body {
-      position:relative;
       height: 100%;
-      padding: 0;
       margin: 0;
+      padding: 0;
+      position: relative;
     }
   </style>
 <% end %>
@@ -27,7 +27,7 @@
 <%= content_for(:js) do %>
   <%= insert_trackjs('builder-embeds') %>
 
-  <% if params[:vector] %>
+  <% if vector_render?(@visualization, params) %>
     <%= javascript_include_tag 'tangram.min.js' %>
   <% end %>
 
@@ -40,10 +40,27 @@
     var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
+    var mapzenApiKey = '<%= mapzen_api_key %>';
   </script>
-  <%= javascript_include_tag 'vendor_editor3.js' %>
-  <%= javascript_include_tag 'common_editor3.js' %>
-  <%= javascript_include_tag 'public_editor3.js' %>
+  <%= javascript_include_tag 'common.js' %>
+  <%= javascript_include_tag 'builder_embed_vendor.js' %>
+  <%= javascript_include_tag 'builder_embed.js' %>
+
+  <% if Cartodb.get_config(:graphite_public, 'host') %>
+    <%= javascript_include_tag "statsc.js" %>
+  <% end %>
+  <script>
+    (function () {
+      <% if Cartodb.get_config(:graphite_public, 'host') %>
+        if (location.protocol.indexOf('https') === -1) {
+          statsc.connect('http://<%= Cartodb.get_config(:graphite_public, 'host') %>:<%= Cartodb.get_config(:graphite_public, 'port') %>/');
+          cartodb.core.Profiler.backend(function () {
+            statsc.send.apply(statsc, arguments);
+          });
+        }
+      <% end %>
+    }());
+  </script>
 
   <%= insert_google_analytics('embeds', true) %>
 <% end %>

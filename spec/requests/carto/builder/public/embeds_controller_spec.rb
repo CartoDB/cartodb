@@ -1,8 +1,10 @@
 require_relative '../../../../spec_helper'
 require_relative '../../../../factories/organizations_contexts.rb'
+require 'helpers/feature_flag_helper'
 
 describe Carto::Builder::Public::EmbedsController do
   include Warden::Test::Helpers, Carto::Factories::Visualizations, HelperMethods
+  include FeatureFlagHelper
 
   before(:all) do
     bypass_named_maps
@@ -12,6 +14,7 @@ describe Carto::Builder::Public::EmbedsController do
     @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3)
     # Only mapcapped visualizations are presented by default
     Carto::Mapcap.create!(visualization_id: @visualization.id)
+    @feature_flag = FactoryGirl.create(:feature_flag, name: 'vector_vs_raster', restricted: true)
   end
 
   before(:each) do
@@ -24,6 +27,7 @@ describe Carto::Builder::Public::EmbedsController do
     @map.destroy
     @visualization.destroy
     User[@user.id].destroy
+    @feature_flag.destroy
   end
 
   def stub_passwords(password)
@@ -89,6 +93,23 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.include?(@visualization.name).should be true
     end
 
+    describe 'connectivity issues' do
+      it 'does not need connection to the user db' do
+        @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user)
+        Carto::Mapcap.create!(visualization_id: @visualization.id)
+
+        @actual_database_name = @visualization.user.database_name
+        @visualization.user.update_attribute(:database_name, 'wadus')
+
+        CartoDB::Logger.expects(:warning).never
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+        response.status.should == 200
+
+        @visualization.user.update_attribute(:database_name, @actual_database_name)
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+    end
+
     it 'redirects to builder for v2 visualizations' do
       Carto::Visualization.any_instance.stubs(:version).returns(2)
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
@@ -96,11 +117,11 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 302
     end
 
-    it 'defaults to generate vizjson with vector=false' do
+    it 'defaults to generate vizjson with vector=true' do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include('\"vector\":false')
+      response.body.should_not include('\"vector\":true')
     end
 
     it 'generates vizjson with vector=true with flag' do
@@ -108,6 +129,27 @@ describe Carto::Builder::Public::EmbedsController do
 
       response.status.should == 200
       response.body.should include('\"vector\":true')
+    end
+
+    it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
+      set_feature_flag @visualization.user, 'vector_vs_raster', false
+
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should_not include('\"vector\"')
+    end
+
+    it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is present' do
+      set_feature_flag @visualization.user, 'vector_vs_raster', true
+
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      response.status.should == 200
+      response.body.should include('\"vector\":true')
+
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: false)
+      response.status.should == 200
+      response.body.should include('\"vector\":false')
     end
 
     it 'does not include auth tokens for public/link visualizations' do

@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    Rails::Sequel.connection.run(%{
+    SequelRails.connection.run(%{
       ALTER TABLE "visualizations" ADD COLUMN country_codes text[]
     })
   end

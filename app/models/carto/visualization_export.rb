@@ -43,7 +43,7 @@ module Carto
 
       file = CartoDB::FileUploadFile.new(filepath)
 
-      s3_config = Cartodb.config[:exporter]['s3'] || {}
+      s3_config = Cartodb.config[:exporter]['s3'].deep_dup || {}
 
       plain_name = header_encode(file.original_filename.force_encoding('iso-8859-1'))
       utf_name = header_encode(file.original_filename)
@@ -110,9 +110,7 @@ module Carto
     end
 
     def valid_visualization_type?
-      check_valid_visualization(visualization)
-    rescue => e
-      errors.add(:visualization, e.message)
+      errors.add(:visualization, 'Only derived visualizations can be exported') unless visualization.derived?
     end
   end
 end

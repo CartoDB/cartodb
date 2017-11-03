@@ -385,15 +385,13 @@ describe 'csv regression tests' do
     }].first
   end
 
-  # Using the version 2.x of ogr2ogr to check features like auto-guessing for example
   def ogr2ogr2_options
     {
-      ogr2ogr_binary:         'which ogr2ogr2',
       ogr2ogr_csv_guessing:   'yes'
     }
   end
 
-  def runner_with_fixture(file, job=nil, add_ogr2ogr2_options=false)
+  def runner_with_fixture(file, job = nil, add_ogr2ogr2_options = false)
     filepath = path_to(file)
     downloader = Downloader.new(@user.id, filepath)
     runner = Runner.new({

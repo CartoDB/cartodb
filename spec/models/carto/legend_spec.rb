@@ -19,11 +19,9 @@ module Carto
     end
 
     it 'notifies layer change on commit' do
-      Legend.any_instance
-            .expects(:force_notify_layer_change)
-            .at_least(3)
+      @layer.visualization.send(:invalidation_service).expects(:invalidate).times(3)
 
-      legend = Legend.create!(layer_id: @layer.id,
+      legend = Legend.create!(layer: @layer,
                               type: 'bubble',
                               definition: { color: '#abc' })
       legend.update_attributes!(title: 'Cool legend')
@@ -50,7 +48,7 @@ module Carto
       end
 
       it 'only accepts known types' do
-        Legend::VALID_LEGEND_TYPES.split.each do |type|
+        Legend::VALID_LEGEND_TYPES.each do |type|
           @legend.type = type
           @legend.valid?
           @legend.errors[:type].should be_empty

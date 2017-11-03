@@ -1,0 +1,327 @@
+// Styles for Layer List
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Editor-ListLayer-item {
+  @include transition(opacity 2s ease-in);
+  box-sizing: border-box;
+  position: relative;
+  width: auto;
+  margin-bottom: $baseSize;
+  padding: $baseSize * 2;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $halfBaseSize;
+  background: #FFF;
+  cursor: pointer;
+
+  &:hover {
+    @include transition(border 200ms ease-in);
+    border: 1px solid $cHoverLine;
+
+    .Editor-ListLayer-dragIcon {
+      opacity: 1;
+    }
+
+    .Editor-ListLayer-titleText {
+      text-decoration: underline;
+
+      &.is-hover {
+        text-decoration: none;
+      }
+    }
+  }
+}
+.Editor-ListLayer-item.is-hidden {
+  opacity: 0.64;
+}
+.Editor-ListLayer-item.is-animated {
+  position: relative;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background: $cWhite;
+  cursor: default;
+}
+.Editor-ListLayer-item.is-animated:hover {
+  border: 1px solid $cSecondaryLine;
+  cursor: default;
+}
+.Editor-ListLayer-item.is-animated::before {
+  position: absolute;
+  top: -20px;
+  right: -25px;
+  bottom: -20px;
+  left: -25px;
+  border-top: 1px solid $cMainLine;
+  border-bottom: 1px solid $cMainLine;
+  background: $cThirdBackground;
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
+  content: '';
+  z-index: -1;
+}
+// First layer?, no margin top
+.Editor-ListLayer-item.is-animated:first-child {
+  margin-top: 1px;
+}
+
+.Editor-ListLayer-itemError {
+  display: block;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid $cWhite;
+  border-radius: 50px;
+  background-color: $cError;
+}
+
+.Editor-ListLayer-item--placeholder {
+  border-color: $cSecondaryBackground;
+  background: $cSecondaryBackground;
+}
+.Editor-ListLayer-item.last-child {
+  margin-bottom: 0;
+}
+.Editor-ListLayer-item.is-active {
+  border: 1px solid rgb(106, 181, 227);
+}
+.Editor-ListLayer-item.is-unavailable {
+  @include opacity(0.6);
+}
+.Editor-ListLayer-item.is-errored {
+  border-color: rgba($cError, 0.7);
+
+  .Editor-HeaderInfo-actionsItem path {
+    fill: $cError;
+  }
+}
+.Editor-ListLayer-item.ui-sortable-helper {
+  // scss-lint:disable ImportantRule
+  left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...
+  min-width: 290px;
+}
+.Editor-ListLayer .ui-sortable-helper,
+.Editor-newLayerContainer .Editor-ListLayer-item {
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+}
+.Editor-ListLayer-item.ui-draggable-dragging:hover {
+  border: 1px solid rgba($cBlue, 0.48);
+  box-shadow: 0 8px 16px rgba(#000, 0.16);
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+  opacity: 0.8;
+  z-index: 1000;
+}
+.Editor-ListLayer-dragIcon {
+  @include transition(opacity 200ms ease-in);
+  position: absolute;
+  top: 28px;
+  left: -20px;
+  opacity: 0;
+}
+.Editor-ListLayer-media {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: 40px;
+  height: 40px;
+  border-radius: $baseSize / 2;
+}
+.Editor-ListLayer-media.is-hidden {
+  opacity: 0.24;
+}
+
+.Editor-ListLayer-media--basemap {
+  border: 1px solid $cMainLine;
+}
+.Editor-ListLayer-info.is-hidden {
+  opacity: 0.24;
+}
+
+.Editor-ListLayer-title {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.Editor-ListLayer-titleText {
+  @include flex(1 0 auto);
+  width: 0;
+  padding-right: $baseSize * 2;
+}
+
+.Editor-ListAnalysis {
+  position: relative;
+  margin-top: 16px;
+}
+.Editor-ListAnalysis:empty,
+.Editor-ListAnalysis.is-collapsed {
+  display: none;
+}
+.Editor-ListAnalysis.is-hidden {
+  opacity: 0.24;
+}
+
+.Editor-ListAnalysis::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  width: 1px;
+  background: $cMainLine;
+  content: '';
+}
+
+.Editor-ListAnalysis-item {
+  @include display-flex();
+  @include align-items(center);
+  position: relative;
+  margin-bottom: 8px;
+  background: #FFF;
+}
+
+.Editor-ListAnalysis-itemError {
+  display: block;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid $cWhite;
+  border-radius: 50px;
+  background-color: $cError;
+  content: ' ';
+}
+
+.Editor-ListAnalysis-item:last-child {
+  margin-bottom: 0;
+}
+.Editor-ListAnalysis-item.is-analysis {
+  display: block;
+  margin-right: 0;
+}
+.Editor-ListAnalysis-item.ui-draggable-dragging {
+   // scss-lint:disable VendorPrefix
+  width: 100%;
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+  z-index: 1000;
+}
+.Editor-ListAnalysis-inner {
+  @include display-flex();
+  width: calc(100% + 12px);
+  margin: 0 -4px;
+}
+.Editor-ListAnalysis-inner .Editor-ListAnalysis-item {
+  @include flex(1);
+  max-width: calc(100% - 14px);
+}
+
+.Editor-ListAnalysis-innerItem {
+  @include display-flex();
+  @include flex(1);
+  @include align-items(center);
+  margin: 0 $halfBaseSize;
+  background: $cWhite;
+}
+.Editor-ListAnalysis-item .Editor-ListAnalysis-innerItem {
+  max-width: calc(50% - 8px);
+}
+
+.Editor-ListAnalysis-layer {
+  padding-right: $baseSize;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $halfBaseSize;
+  background: $cThirdBackground;
+
+  &:hover {
+    @include transition(border 200ms ease-in);
+    border: 1px solid $cHoverLine;
+
+    .Editor-ListAnalysis-title,
+    .Editor-ListAnalysis-itemInfoDataset {
+      text-decoration: underline;
+    }
+  }
+}
+
+.Editor-ListAnalysis-itemInfo {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 40px;
+  min-width: 40px;
+  height: 32px;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  margin-left: -1px;
+  border-top-left-radius: $halfBaseSize;
+  border-bottom-left-radius: $halfBaseSize;
+}
+
+.Editor-ListAnalysis-itemInfoDataset {
+  @include flex(10);
+}
+
+.Editor-ListAnalysis-itemInfoIcon {
+  line-height: 18px;
+
+  + .Editor-ListAnalysis-itemInfoIcon {
+    margin-left: 5px;
+  }
+}
+
+.Editor-ListAnalysis-title {
+  width: 100%;
+  padding-right: 12px;
+}
+
+.Editor-ListAnalysis-error {
+  width: 6px;
+  min-width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $cError;
+}
+
+.Editor-ListLayer-itemHeader {
+  @include display-flex();
+  @include flex(1);
+  @include align-items(center);
+}
+
+.Editor-ListLayer-inner {
+  @include flex(1);
+}
+
+.Editor-dropArea {
+  width: 100%;
+  height: 100px;
+  margin: 10px 0 0;
+  transition: opacity 200ms ease;
+  border-radius: $halfBaseSize;
+  opacity: 0;
+}
+
+.Editor-dropArea.is-active {
+  background: $cSecondaryBackground;
+  opacity: 1;
+}
+
+.Editor-layerInfo {
+  position: relative;
+  margin-top: -10px;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  background: rgba($cMainBg, 0.88);
+  text-align: center;
+  z-index: -1;
+}

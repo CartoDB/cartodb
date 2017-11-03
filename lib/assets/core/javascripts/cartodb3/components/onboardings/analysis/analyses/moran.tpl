@@ -16,8 +16,8 @@
     <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.moran.moran') %></p>
   </li>
   <li class="Onboarding-listItem">
-    <div class="Onboarding-listItemValue">rowid</div>
-    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.moran.rowid') %></p>
+    <div class="Onboarding-listItemValue">vals</div>
+    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.moran.vals') %></p>
   </li>
 </ul>
 

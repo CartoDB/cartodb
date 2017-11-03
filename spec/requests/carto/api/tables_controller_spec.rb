@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require_relative '../../../spec_helper'
-require_relative '../../../../app/controllers/carto/api/tables_controller'
 require 'helpers/unique_names_helper'
 
 describe Carto::Api::TablesController do
@@ -63,9 +62,9 @@ describe Carto::Api::TablesController do
 
     it "check imported table metadata" do
       data_import = DataImport.create(
-                                      user_id: @user.id,
-                                      data_source: Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip').to_s
-                                      ).run_import!
+        user_id: @user.id,
+        data_source: Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip').to_s
+      ).run_import!
 
       get_json api_v1_tables_show_url(params.merge(id: data_import.table_id)) do |response|
         response.status.should be_success
@@ -134,15 +133,10 @@ describe Carto::Api::TablesController do
 
     it "updates with bad values the metadata of an existing table" do
       table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
-      put_json api_v1_tables_update_url(params.merge(id: table1.id, privacy: "bad privacy value")) do |response|
+      put_json api_v1_tables_update_url(params.merge(id: table1.id, privacy: 666)) do |response|
         response.status.should == 400
         table1.reload.privacy.should == ::UserTable::PRIVACY_PRIVATE
       end
-
-      put_json api_v1_tables_update_url(params.merge(id: table1.id, name: "")) do |response|
-        response.status.should == 400
-      end
-
     end
 
     it "updates a table and sets the lat and long columns" do

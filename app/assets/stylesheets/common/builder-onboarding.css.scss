@@ -1,9 +1,10 @@
 @import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
-@import '../editor-3/vars';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+
+$sViewport-xl: 1200px;
 
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;

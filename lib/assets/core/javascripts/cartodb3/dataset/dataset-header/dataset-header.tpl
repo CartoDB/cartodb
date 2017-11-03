@@ -32,7 +32,9 @@
   <div class="u-bSpace--xl u-flex u-alignCenter">
     <div class="js-privacyDropdown u-rSpace--m">
       <<%- privacyDOMElement %> class="u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
-        <i class="Tag Tag--big Tag-fill Tag-fill--<%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
+        <i class="Tag Tag--big Tag-fill Tag-fill--<%- cssClass %> <% if (!isOwner) { %>is-disabled is-pointed<% } %> CDB-Text CDB-Size-small u-upperCase">
+          <%- privacy %>
+        </i>
       </<%- privacyDOMElement %>>
     </div>
     <% if (isOwner && isInsideOrg) { %>

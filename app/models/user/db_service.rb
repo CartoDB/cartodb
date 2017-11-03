@@ -22,7 +22,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.16.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.21.0'.freeze
       ODBC_FDW_VERSION = '0.2.0'.freeze
 
       def initialize(user)
@@ -77,6 +77,10 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
+        end
+
+        if @user.organization_admin?
+          grant_admin_permissions
         end
 
         # Rebuild the geocoder api user config to reflect that is an organization user
@@ -276,9 +280,15 @@ module CartoDB
         end
       end
 
-      def setup_owner_permissions
+      def grant_admin_permissions
         @user.in_database(as: :superuser) do |database|
           database.run(%{ SELECT cartodb.CDB_Organization_AddAdmin('#{@user.username}') })
+        end
+      end
+
+      def revoke_admin_permissions
+        @user.in_database(as: :superuser) do |database|
+          database.run(%{ SELECT cartodb.CDB_Organization_RemoveAdmin('#{@user.username}') })
         end
       end
 
@@ -351,6 +361,7 @@ module CartoDB
           if !retried && e.message =~ /cannot be dropped because some objects depend on it/
             retried = true
             e.message =~ /object[s]? in database (.*)$/
+            e.message =~ /privileges for database (.*)$/ unless $1
             if database_with_conflicts == $1
               raise e
             else
@@ -377,7 +388,7 @@ module CartoDB
       end
 
       # Org users share the same db, so must only delete the schema unless he's the owner
-      def drop_organization_user(org_id, is_owner = false)
+      def drop_organization_user(org_id, is_owner: false, force_destroy: false)
         raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
         Thread.new do
           @user.in_database(as: :superuser) do |database|
@@ -399,7 +410,9 @@ module CartoDB
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
               drop_analysis_cache
               drop_all_functions_from_schema(@user.database_schema)
-              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
+
+              cascade_drop = force_destroy ? 'CASCADE' : ''
+              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" #{cascade_drop}})
             end
           end
 
@@ -489,7 +502,6 @@ module CartoDB
 
       def setup_organization_owner
         setup_organization_role_permissions
-        setup_owner_permissions
         configure_extension_org_metadata_api_endpoint
       end
 
@@ -525,7 +537,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.19.0'
+          cdb_extension_target_version = '0.19.2'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -965,33 +977,33 @@ module CartoDB
       def db_configuration_for(user_role = nil)
         logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
         if user_role == :superuser
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         elsif user_role == :cluster_admin
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => 'postgres',
             :logger => logger,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         elsif user_role == :public_user
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'username' => CartoDB::PUBLIC_DB_USER, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         elsif user_role == :public_db_user
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'username' => @user.database_public_username, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
             'host' => @user.database_host
           ) { |_, o, n| n.nil? ? o : n }
         else
-          ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          ::SequelRails.configuration.environment_for(Rails.env).merge(
             'database' => @user.database_name,
             :logger => logger,
             'username' => @user.database_username,
@@ -1132,7 +1144,7 @@ module CartoDB
         begin
           conn.run("CREATE DATABASE \"#{@user.database_name}\"
           WITH TEMPLATE = template_postgis
-          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+          OWNER = #{::SequelRails.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
         rescue => e
@@ -1173,7 +1185,7 @@ module CartoDB
       end
 
       def self.terminate_database_connections(database_name, database_host)
-        connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        connection_params = ::SequelRails.configuration.environment_for(Rails.env).merge(
           'host' => database_host,
           'database' => 'postgres'
         ) { |_, o, n| n.nil? ? o : n }

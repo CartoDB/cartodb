@@ -3,8 +3,9 @@
 require File.expand_path('../boot', __FILE__)
 
 require "action_controller/railtie"
-require "sequel-rails/railtie"
+#require "sequel-rails/railtie"
 require "action_mailer/railtie"
+require "active_record"
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
@@ -67,37 +68,38 @@ module CartoDB
       config.js
       app.js
       cdb.js
+      cdb_static.js
       embed.js
+      dashboard_templates.js
       dashboard_deps.js
       dashboard.js
-      dashboard_templates.js
-      public_dashboard_deps.js
-      public_dashboard.js
+      dashboard_templates_static.js
+      dashboard_deps_static.js
+      dashboard_static.js
       data_library_deps.js
       data_library.js
-      public_map.js
       public_map_deps.js
+      public_map.js
       editor.js
-      vendor_editor3.js
-      common_editor3.js
-      editor3.js
-      dataset.js
-      public_editor3.js
+
       account_templates.js
       account_deps.js
       account.js
+      profile.js
+      profile_templates.js
       keys_templates.js
       keys_deps.js
       keys.js
       models.js
+      models_static.js
       organization_templates.js
       organization_deps.js
       organization.js
       table.js
+      public_dashboard_deps.js
       public_dashboard.js
       public_like.js
       tangram.min.js
-      common.js
       old_common.js
       old_common_without_core.js
       templates.js
@@ -109,9 +111,8 @@ module CartoDB
       confirmation.js
       new_public_table.js
 
-      mobile_apps.js
       mobile_apps_templates.js
-      mobile_apps_deps.js
+      mobile_apps.js
 
       explore_deps.js
       explore.js
@@ -123,6 +124,14 @@ module CartoDB
       modernizr.js
       statsc.js
 
+      builder.js
+      builder_vendor.js
+      builder_embed.js
+      builder_embed_vendor.js
+      dataset.js
+      dataset_vendor.js
+      common.js
+
       deep_insights.css
       cdb.css
       cdb/themes/css/cartodb.css
@@ -133,8 +142,11 @@ module CartoDB
       cartodb.css
       front.css
       editor.css
+
+      common_editor3.css
       editor3.css
       public_editor3.css
+
       table.css
       leaflet.css
       map.css
@@ -169,8 +181,7 @@ module CartoDB
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    frontend_assets_version = JSON::parse(File.read(Rails.root.join('package.json')))['version']
-    config.action_controller.relative_url_root = "/assets/#{frontend_assets_version}"
+    config.action_controller.relative_url_root = "/assets/#{frontend_version}"
 
     custom_app_views_paths.reverse.each do |custom_views_path|
       config.paths['app/views'].unshift(custom_views_path)
@@ -194,7 +205,6 @@ require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new
 
-Carto::CartoGearsSupport.new.gears.reject(&:installable).each do |gear|
-  $LOAD_PATH << File::join(gear.full_path, 'lib')
-  require gear.name
+Carto::CartoGearsSupport.new.gears.each do |gear|
+  require gear.full_path.join('lib', gear.name)
 end

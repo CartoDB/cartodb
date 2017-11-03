@@ -190,8 +190,10 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def external_source(remote_visualization_id)
-    external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first
-    raise CartoDB::Datasources::AuthError.new('Illegal external load') unless remote_visualization_id.present? && external_source.importable_by(current_user)
+    external_source = Carto::ExternalSource.where(visualization_id: remote_visualization_id).first
+    unless remote_visualization_id.present? && external_source.importable_by?(current_user)
+      raise CartoDB::Datasources::AuthError.new('Illegal external load')
+    end
     external_source
   end
 
@@ -216,12 +218,18 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def privacy
     if params[:privacy].present?
-      privacy = (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)[params[:privacy].downcase]
-      raise "Unknown value '#{params[:privacy]}' for 'privacy'. Allowed values are: #{[UserTable::PRIVACY_VALUES_TO_TEXTS.values[0..-2].join(', '), UserTable::PRIVACY_VALUES_TO_TEXTS.values[-1]].join(' and ')}" if privacy.nil?
-      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://carto.com/pricing for more info." if !current_user.valid_privacy?(privacy)
+      privacy = Carto::UserTable::PRIVACY_VALUES_TO_TEXTS.invert[params[:privacy].downcase]
+      if privacy.nil?
+        valid_privacies = [
+          Carto::UserTable::PRIVACY_VALUES_TO_TEXTS.values[0..-2].join(', '),
+          Carto::UserTable::PRIVACY_VALUES_TO_TEXTS.values[-1]
+        ].join(' and ')
+        raise "Unknown value '#{params[:privacy]}' for 'privacy'. Allowed values are: #{valid_privacies}"
+      elsif !current_user.valid_privacy?(privacy)
+        raise "Your account type (#{current_user.account_type.tr('[]', '')}) does not allow to create private "\
+               "datasets. Check https://carto.com/pricing for more info."
+      end
       privacy
-    else
-      nil
     end
   end
 end

@@ -1,11 +1,14 @@
 language: node_js
 node_js:
   - "6.9.2"
-
+dist: trusty
 before_install:
   - git submodule update --init --recursive
   - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.18.1
 
+  - git fetch origin master:refs/remotes/origin/master --depth=1
+addons:
+  chrome: stable
 install:
   - yarn
 

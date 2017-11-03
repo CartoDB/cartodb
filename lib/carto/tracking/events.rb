@@ -163,15 +163,6 @@ module Carto
       class CreatedDataset < DatasetEvent; end
       class DeletedDataset < DatasetEvent; end
 
-      class LikedMap < Event
-        include Carto::Tracking::Services::Segment
-
-        include Carto::Tracking::Validators::Visualization::Readable
-        include Carto::Tracking::Validators::User
-
-        required_properties :user_id, :visualization_id, :action
-      end
-
       class AnalysisEvent < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment

@@ -11,12 +11,12 @@ class ExploreAPI
   def get_visualization_tables(visualization)
     # We are using layers instead of related tables because with related tables we are connecting
     # to the users databases and we are reaching the connections limit
-    table_names = visualization.layers(:data).map { |layer| extract_table_name(layer) }.uniq
+    table_names = visualization.data_layers.map { |layer| extract_table_name(layer) }.uniq
     %[{#{table_names.compact.join(',')}}]
   end
 
   def get_map_layers(visualization)
-    visualization.layers(:data)
+    visualization.data_layers
   end
 
   def get_geometry_data(visualization)
@@ -98,7 +98,7 @@ class ExploreAPI
   def get_tables_by_user(visualizations)
     tables_by_user = {}
     visualizations.each do |vis|
-      if vis.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+      if vis.type == Carto::Visualization::TYPE_CANONICAL
         tables_by_user[vis.user_id] = [] unless tables_by_user.has_key?(vis.user_id)
         tables_by_user[vis.user_id] << vis.name
         tables_by_user[vis.user_id].uniq
@@ -110,7 +110,7 @@ class ExploreAPI
   def tables_geometry_types(user_id, tables)
     geometry_types = {}
     tables.each do |table|
-      user_table = UserTable.where(user_id: user_id, name: table).first
+      user_table = Carto::UserTable.where(user_id: user_id, name: table).first
       geometry_types[table] = user_table.service.geometry_types
     end
     geometry_types

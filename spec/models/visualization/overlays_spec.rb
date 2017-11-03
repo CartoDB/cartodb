@@ -13,7 +13,7 @@ include CartoDB
 describe Visualization::Overlays do
 
   before(:each) do
-    @db = Rails::Sequel.connection
+    @db = SequelRails.connection
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     member = Visualization::Member.new

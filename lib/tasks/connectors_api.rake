@@ -51,7 +51,7 @@ namespace :cartodb do
       puts "Organization not found: #{args.org}" if org.blank?
       if provider.present? && org.present?
         org_config = Carto::ConnectorConfiguration.where(
-          connector_provider_id: provider.id, organization_id: user.organization.id
+          connector_provider_id: provider.id, organization_id: org.id
         ).first
         provider_config = Carto::ConnectorConfiguration.default(provider)
         yield provider, org, org_config, provider_config

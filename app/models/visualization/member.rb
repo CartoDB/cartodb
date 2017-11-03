@@ -48,6 +48,8 @@ module CartoDB
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
+      VERSION_BUILDER = 3
+
       DEFAULT_OPTIONS_VALUE = '{}'
 
       # Upon adding new attributes modify also:
@@ -116,39 +118,6 @@ module CartoDB
           type: TYPE_REMOTE})
       end
 
-      def update_remote_data(privacy, description, tags, license, source, attributions, display_name)
-        changed = false
-        if self.privacy != privacy
-          changed = true
-          self.privacy = privacy
-        end
-        if self.display_name != display_name
-          changed = true
-          self.display_name = display_name
-        end
-        if self.description != description
-          changed = true
-          self.description = description
-        end
-        if self.tags != tags
-          changed = true
-          self.tags = tags
-        end
-        if self.license != license
-          changed = true
-          self.license = license
-        end
-        if self.source != source
-          changed = true
-          self.source = source
-        end
-        if self.attributions != attributions
-          changed = true
-          self.attributions = attributions
-        end
-        changed
-      end
-
       def transition_options
         ::JSON.parse(self.slide_transition_options).symbolize_keys
       end
@@ -159,11 +128,6 @@ module CartoDB
 
       def ==(other_vis)
         self.id == other_vis.id
-      end
-
-      def ensure_valid_privacy
-        self.privacy = default_privacy if privacy.nil?
-        self.privacy = PRIVACY_PUBLIC unless can_be_private?
       end
 
       def default_privacy
@@ -402,7 +366,7 @@ module CartoDB
       end
 
       def is_owner?(user)
-        user.id == user_id
+        user && user.id == user_id
       end
 
       # @param user ::User
@@ -489,8 +453,7 @@ module CartoDB
       end
 
       def password_valid?(password)
-        raise CartoDB::InvalidMember unless ( privacy == PRIVACY_PROTECTED && has_password? )
-        ( password_digest(password, @password_salt) == @encrypted_password )
+        has_password? && (password_digest(password, @password_salt) == @encrypted_password)
       end
 
       def remove_password
@@ -521,6 +484,14 @@ module CartoDB
 
       def supports_private_maps?
         !user.nil? && user.private_maps_enabled?
+      end
+
+      def published?
+        !is_privacy_private? && (!builder? || !derived? || mapcapped?)
+      end
+
+      def builder?
+        version == VERSION_BUILDER
       end
 
       # @param other_vis CartoDB::Visualization::Member|nil
@@ -641,7 +612,7 @@ module CartoDB
         return true if named_map_updates_disabled?
 
         unless @updating_named_maps
-          Rails::Sequel.connection.after_commit do
+          SequelRails.connection.after_commit do
             @updating_named_maps = false
             (get_named_map ? update_named_map : create_named_map) if carto_visualization
           end

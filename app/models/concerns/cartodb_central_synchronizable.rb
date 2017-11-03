@@ -1,6 +1,5 @@
 module Concerns
   module CartodbCentralSynchronizable
-
     # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
     def validate_credentials_not_taken_in_central
       return true unless self.is_a?(::User)
@@ -53,6 +52,10 @@ module Concerns
             raise "Can't destroy the organization owner"
           end
         end
+      elsif is_a?(Organization)
+        # See Organization#destroy_cascade
+        raise "Delete organizations is not allowed" if Carto::Configuration.saas?
+        cartodb_central_client.delete_organization(name)
       end
       return true
     end
@@ -91,7 +94,7 @@ module Concerns
          :geocoding_block_price, :geocoding_quota, :map_view_block_price,
          :map_view_quota, :max_layers,
          :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
-         :name, :notification, :organization_id,
+         :name, :last_name, :notification, :organization_id,
          :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
          :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
          :user_timeout, :username, :website, :soft_geocoding_limit,
@@ -108,7 +111,8 @@ module Concerns
          :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users,
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo]
+         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo,
+         :user_render_timeout, :database_render_timeout]
       end
     end
 
@@ -122,12 +126,13 @@ module Concerns
           :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
       elsif self.is_a?(::User)
-        attrs = self.values.slice(:account_type, :admin, :crypted_password,
+        attrs = values.slice(
+          :account_type, :admin, :crypted_password,
           :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
           :map_view_quota, :max_layers,
           :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
-          :name, :notification, :organization_id,
+          :name, :last_name, :notification, :organization_id,
           :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
           :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
           :user_timeout, :username, :website, :soft_geocoding_limit,
@@ -136,7 +141,7 @@ module Concerns
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
-          :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled,
+          :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled, :engine_enabled,
           :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit
         )
         case action

@@ -328,6 +328,11 @@ class UserTable < Sequel::Model
     affected_visualizations.select { |v| v.partially_dependent_on?(self) }
   end
 
+  def is_owner?(user)
+    return false unless user
+    user_id == user.id
+  end
+
   private
 
   def default_privacy_value
@@ -381,6 +386,6 @@ class UserTable < Sequel::Model
   end
 
   def relator
-    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(SequelRails.connection, self)
   end
 end

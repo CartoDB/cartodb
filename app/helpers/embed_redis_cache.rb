@@ -3,7 +3,6 @@
 require 'zlib'
 
 class EmbedRedisCache
-
   # This needs to be changed whenever there're changes in the code that require invalidation of old keys
   VERSION = '4'
 
@@ -55,7 +54,7 @@ class EmbedRedisCache
       "embed",
       protocol,
       VERSION,
-      frontend_version,
+      CartoDB::Application.frontend_version,
       embed_template_hash
     ].join(":")
   end
@@ -68,18 +67,9 @@ class EmbedRedisCache
 
   private
 
-  def frontend_version
-    # INFO: New deploys restart the server, invalidating this value + we want to hit disk as less as possible
-    @@key_fragment_fe_version ||= read_frontend_version
-  end
-
   def embed_template_hash
     # INFO: New deploys restart the server, invalidating this value + we want to hit disk as less as possible
     @@key_fragment_embed_template_hash ||= calculate_embed_template_hash
-  end
-
-  def read_frontend_version
-    JSON::parse(File.read(Rails.root.join("package.json")))["version"]
   end
 
   def calculate_embed_template_hash

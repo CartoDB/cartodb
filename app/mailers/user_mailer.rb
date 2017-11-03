@@ -63,7 +63,7 @@ class UserMailer < ActionMailer::Base
   def map_liked(visualization, viewer_user, visualization_preview_image)
     @user = visualization.user
     @map_name = visualization.name
-    @viewer_name = (!viewer_user.name.nil? && !viewer_user.name.empty?) ? viewer_user.name : viewer_user.username
+    @viewer_name = viewer_user.name_or_username
     @preview_image = visualization_preview_image
     @subject = "Your map got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
@@ -77,7 +77,7 @@ class UserMailer < ActionMailer::Base
   def table_liked(canonical_visualization, viewer_user, visualization_preview_image)
     @user = canonical_visualization.user
     @dataset_name = canonical_visualization.name
-    @viewer_name = (!viewer_user.name.nil? && !viewer_user.name.empty?) ? viewer_user.name : viewer_user.username
+    @viewer_name = viewer_user.name_or_username
     @preview_image = visualization_preview_image
     @subject = "Your dataset got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]

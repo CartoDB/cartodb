@@ -7,7 +7,7 @@
 
   <div class="Editor-HeaderInfo-inner u-ellipsis">
     <div class="Editor-HeaderInfo-title u-bSpace js-header">
-      <span class="SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-tSpace--m u-rSpace--m u-upperCase" style="background-color: <%- bgColor %>;">
+      <span class="CDB-SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-tSpace--m u-rSpace--m u-upperCase" style="background-color: <%- bgColor %>;">
         <%- letter %>
       </span>
     </div>

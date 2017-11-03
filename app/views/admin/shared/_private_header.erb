@@ -35,12 +35,12 @@
           <li class="Header-settingsItem">
             <a target="_blank" href="https://carto.com/docs" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Documentation</a>
           </li>
-          <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">
-            <a href="#/notifications" class="UserNotifications">
-              <i class="UserNotifications-Icon CDB-IconFont CDB-IconFont-Alert"></i>
-            </a>
-          </li>
         <% end %>
+        <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">
+          <button class="UserNotifications">
+            <i class="UserNotifications-Icon CDB-IconFont CDB-IconFont-Alert"></i>
+          </button>
+        </li>
         <li class="Header-settingsItem Header-settingsItem--avatar">
           <button class="UserAvatar js-settings-dropdown">
             <img src="<%= current_user.avatar %>" class='UserAvatar-img UserAvatar-img--medium' />

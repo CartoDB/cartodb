@@ -106,7 +106,6 @@ class Table
   def update(args)
     # Sequel and ActiveRecord #update don't behave equally, we need this workaround for compatibility reasons
     if @user_table.is_a?(Carto::UserTable)
-      CartoDB::Logger.debug(message: "::Table#update on ActiveRecord model")
       @user_table.update_attributes(args)
     else
       @user_table.update(args)
@@ -138,7 +137,7 @@ class Table
   end
 
   def geometry_types_key
-    @geometry_types_key ||= "#{redis_key}:geometry_types"
+    "#{redis_key}:geometry_types"
   end
 
   def geometry_types
@@ -190,7 +189,7 @@ class Table
       vis = CartoDB::Visualization::Collection.new.fetch(
           user_id: viewer_user.id,
           map_id: table_temp.map_id,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL
+          type: Carto::Visualization::TYPE_CANONICAL
       ).first
       table = vis.table unless vis.nil?
     end
@@ -260,7 +259,7 @@ class Table
       uniname = get_valid_name(name ? name : migrate_existing_table) unless uniname
 
       # with table #{uniname} table created now run migrator to CartoDBify
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      hash_in = ::SequelRails.configuration.environment_for(Rails.env).merge(
         'host' => owner.database_host,
         'database' => owner.database_name,
         :logger => ::Rails.logger,
@@ -269,16 +268,16 @@ class Table
         :schema => owner.database_schema,
         :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
-        :debug => (Rails.env.development?),
+        :debug => Rails.env.development?,
         :remaining_quota => owner.remaining_quota,
         :remaining_tables => owner.remaining_table_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
-      importer = CartoDB::Migrator.new hash_in
-      importer = importer.migrate!
+      importer = CartoDB::Migrator.new(hash_in)
+      imported_name = importer.migrate!
       @data_import.reload
       @data_import.save
-      importer.name
+      imported_name
     end
   end
 
@@ -407,7 +406,7 @@ class Table
     self.new_table = true
 
     # finally, close off the data import
-    if @user_table.data_import_id
+    if @user_table.data_import_id && !register_table_only.present?
       @data_import = DataImport.find(id: @user_table.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
@@ -530,7 +529,7 @@ class Table
   end
 
   def redis_key
-    key ||= "rails:table:#{id}"
+    "rails:table:#{id}"
   end
 
   # TODO: change name and refactor for ActiveRecord
@@ -1050,7 +1049,7 @@ class Table
   end
 
   def relator
-    @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
+    @relator ||= CartoDB::TableRelator.new(SequelRails.connection, self)
   end
 
   def set_table_id
@@ -1239,7 +1238,7 @@ class Table
 
     polygon_sql = Carto::BoundingBoxUtils.to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
     update_sql = %{UPDATE visualizations SET bbox = #{polygon_sql} WHERE id = '#{table_visualization.id}';}
-    Rails::Sequel.connection.run(update_sql)
+    SequelRails.connection.run(update_sql)
   end
 
   private
@@ -1412,24 +1411,18 @@ class Table
     end
     return if type.nil?
 
-    #if the geometry is MULTIPOINT we convert it to POINT
+    # if the geometry is MULTIPOINT we convert it to POINT
     if type.to_s.downcase == 'multipoint'
-      owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}) do |user_database|
-        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
-        user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_GeometryN(the_geom,1);})
-        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
-        user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
+      owner.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+        user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_GeometryN(the_geom,1);")
       end
       type = 'point'
     end
 
-    #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
+    # if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
     if %w(linestring polygon).include?(type.to_s.downcase)
-      owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}) do |user_database|
-        user_database.run("SELECT public.AddGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom_simple',4326, 'GEOMETRY', 2);")
-        user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
-        user_database.run("SELECT DropGeometryColumn('#{owner.database_schema}', '#{self.name}','the_geom');")
-        user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
+      owner.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+        user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_Multi(the_geom);")
         type = user_database["select GeometryType(#{THE_GEOM}) FROM #{qualified_table_name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
     end

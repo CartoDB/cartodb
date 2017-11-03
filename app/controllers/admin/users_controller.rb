@@ -10,19 +10,6 @@ class Admin::UsersController < Admin::AdminController
   include AvatarHelper
   include OrganizationNotificationsHelper
 
-  SERVICE_TITLES = {
-    'gdrive' => 'Google Drive',
-    'dropbox' => 'Dropbox',
-    'box' => 'Box',
-    'mailchimp' => 'MailChimp',
-    'instagram' => 'Instagram'
-  }
-
-  SERVICE_REVOKE_URLS = {
-    'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
-    'instagram' => 'http://instagram.com/accounts/manage_access/'
-  }
-
   ssl_required  :account, :profile, :account_update, :profile_update, :delete
 
   before_filter :invalidate_browser_cache
@@ -39,6 +26,8 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'
 
   def profile
+    return render(file: "public/static/profile/index.html", layout: false) if current_user.has_feature_flag?('static_profile')
+
     @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
 
     respond_to do |format|
@@ -95,6 +84,7 @@ class Admin::UsersController < Admin::AdminController
 
     # This fields are optional
     @user.name = attributes.fetch(:name, nil)
+    @user.last_name = attributes.fetch(:last_name, nil)
     @user.website = attributes.fetch(:website, nil)
     @user.description = attributes.fetch(:description, nil)
     @user.location = attributes.fetch(:location, nil)
@@ -138,68 +128,18 @@ class Admin::UsersController < Admin::AdminController
 
   private
 
-  def can_be_deleted?(user)
-    if user.organization_owner?
-      return false, "You can't delete your account because you are admin of an organization"
-    elsif Carto::UserCreation.http_authentication.where(user_id: user.id).first.present?
-      return false, "You can't delete your account because you are using HTTP Header Authentication"
-    else
-      return true, nil
-    end
-  end
-
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
     @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
   end
 
   def load_services
-    @services = get_oauth_services
+    @services = @user.get_oauth_services
   end
 
   def load_account_deletion_info
-    @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
-  end
-
-  def get_oauth_services
-    datasources = CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources()
-    array = []
-
-    datasources.each do |serv|
-      obj ||= Hash.new
-
-      title = SERVICE_TITLES.fetch(serv, serv)
-      revoke_url = SERVICE_REVOKE_URLS.fetch(serv, nil)
-      enabled = case serv
-        when 'gdrive'
-          Cartodb.config[:oauth][serv]['client_id'].present?
-        when 'box'
-          Cartodb.config[:oauth][serv]['client_id'].present?
-        when 'gdrive', 'box'
-          Cartodb.config[:oauth][serv]['client_id'].present?
-        when 'dropbox'
-          Cartodb.config[:oauth]['dropbox']['app_key'].present?
-        when 'mailchimp'
-          Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
-        when 'instagram'
-          Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
-        else
-          true
-      end
-
-      if enabled
-        oauth = @user.oauths.select(serv)
-
-        obj['name'] = serv
-        obj['title'] = title
-        obj['revoke_url'] = revoke_url
-        obj['connected'] = !oauth.nil? ? true : false
-
-        array.push(obj)
-      end
-    end
-
-    array
+    @cant_be_deleted_reason = @user.cant_be_deleted_reason
+    @can_be_deleted = @cant_be_deleted_reason.nil?
   end
 
   def setup_user

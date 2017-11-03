@@ -1,4 +1,4 @@
-<svg width="56px" height="25px" viewBox="0 0 56 25">
+<svg width="56px" height="25px" viewBox="0 0 56 25" style="will-change: opacity;">
     <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Aggregation-/-Heatmap" transform="translate(-15.000000, -16.000000)">
             <g id="Group-7">

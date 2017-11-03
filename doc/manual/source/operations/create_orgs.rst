@@ -23,3 +23,12 @@ and an example execution for creating an organization owned by 'manolo', named '
 .. code-block:: bash
 
   $ bundle exec rake cartodb:db:create_new_organization_with_owner ORGANIZATION_NAME="cartodb" ORGANIZATION_DISPLAY_NAME="CartoDB Inc." ORGANIZATION_SEATS="5" ORGANIZATION_QUOTA="1073741824" USERNAME="manolo"
+
+Seats
+-----
+
+You can change the viewer seats:
+
+.. code-block:: bash
+
+  $ bundle exec rake cartodb:db:set_organization_viewer_seats["<org_name>","<viewer_seats>"]

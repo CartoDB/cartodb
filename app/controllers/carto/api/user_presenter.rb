@@ -4,45 +4,58 @@ module Carto
   module Api
     class UserPresenter
       include AccountTypeHelper
+
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
-      # options:
-      # - fetch_groups
-      # - current_viewer
-      def initialize(user, options = {})
+      def initialize(user, fetch_groups: false, current_viewer: nil, fetch_db_size: true)
         @user = user
-        @options = options
+        @fetch_groups = fetch_groups
+        @current_viewer = current_viewer
+        @fetch_db_size = fetch_db_size
       end
 
       def to_poro
         return {} if @user.nil?
-        return to_public_poro unless !@options[:current_viewer].nil? && @user.viewable_by?(@options[:current_viewer])
+        return to_public_poro unless current_viewer && @user.viewable_by?(current_viewer)
 
         poro = {
-          id:               @user.id,
-          username:         @user.username,
-          email:            @user.email,
-          avatar_url:       @user.avatar_url,
-          base_url:         @user.public_url,
-          quota_in_bytes:   @user.quota_in_bytes,
-          db_size_in_bytes: @user.db_size_in_bytes,
-          table_count:      @user.table_count,
-          viewer:           @user.viewer?,
+          id:                         @user.id,
+          name:                       @user.name,
+          last_name:                  @user.last_name,
+          username:                   @user.username,
+          email:                      @user.email,
+          avatar_url:                 @user.avatar_url,
+          website:                    @user.website,
+          description:                @user.description,
+          location:                   @user.location,
+          twitter_username:           @user.twitter_username,
+          disqus_shortname:           @user.disqus_shortname,
+          available_for_hire:         @user.available_for_hire,
+          base_url:                   @user.public_url,
+          quota_in_bytes:             @user.quota_in_bytes,
+          table_count:                @user.table_count,
+          viewer:                     @user.viewer?,
+          org_admin:                  @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
-          all_visualization_count: @user.all_visualization_count
+          all_visualization_count:    @user.all_visualization_count,
+          org_user:                   @user.organization_id.present?,
+          remove_logo:                @user.remove_logo?
         }
 
-        if @options[:fetch_groups] == true
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
+        if fetch_groups
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
+
+        poro[:db_size_in_bytes] = @user.db_size_in_bytes if fetch_db_size
 
         poro
       end
 
-      def to_poro_without_id
+      def to_eumapi_poro
         presentation = to_poro
 
         presentation.delete(:id)
+        presentation[:soft_geocoding_limit] = @user.soft_geocoding_limit
 
         presentation
       end
@@ -53,19 +66,19 @@ module Carto
         poro = {
           id:               @user.id,
           username:         @user.username,
+          name:             @user.name,
+          last_name:        @user.last_name,
           avatar_url:       @user.avatar_url,
           base_url:         @user.public_url,
-          viewer:           @user.viewer?
+          disqus_shortname: @user.disqus_shortname,
+          viewer:           @user.viewer?,
+          org_admin:        @user.organization_admin?,
+          org_user:         @user.organization_id.present?,
+          remove_logo:      @user.remove_logo?
         }
 
-        if @options[:fetch_groups] == true
-          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
-        end
-
-        if @options[:current_user] && @options[:current_user].organization_owner? && @user.belongs_to_organization?(@options[:current_user].organization)
-          poro[:email] = @user.email
-          poro[:table_count] = @user.table_count
-          poro[:all_visualization_count] = @user.all_visualization_count
+        if fetch_groups
+          poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
         poro
@@ -83,12 +96,14 @@ module Carto
           id: @user.id,
           email: @user.email,
           name: @user.name,
+          last_name: @user.last_name,
           username: @user.username,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
+          org_admin: @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
@@ -180,12 +195,17 @@ module Carto
             import_table_rows: @user.max_import_table_row_count,
             max_layers: @user.max_layers
           },
-          google_maps_key: @user.google_maps_key,
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url,
-          needs_password_confirmation: @user.needs_password_confirmation?
+          needs_password_confirmation: @user.needs_password_confirmation?,
+          description: @user.description,
+          website: @user.website,
+          twitter_username: @user.twitter_username,
+          disqus_shortname: @user.disqus_shortname,
+          available_for_hire: @user.available_for_hire,
+          location: @user.location
         }
 
         if @user.organization.present?
@@ -220,6 +240,8 @@ module Carto
       end
 
       private
+
+      attr_reader :current_viewer, :current_user, :fetch_groups, :fetch_db_size
 
       def failed_import_count
         Carto::DataImport.where(user_id: @user.id, state: 'failure').count

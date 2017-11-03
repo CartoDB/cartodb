@@ -23,6 +23,7 @@ module CartoDB
     PARAM_SOFT_MAPZEN_ROUTING_LIMIT = :soft_mapzen_routing_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
     PARAM_VIEWER = :viewer
+    PARAM_ORG_ADMIN = :org_admin
 
     def initialize(created_via)
       @built = false
@@ -78,6 +79,10 @@ module CartoDB
       with_param(PARAM_VIEWER, value)
     end
 
+    def with_org_admin(value)
+      with_param(PARAM_ORG_ADMIN, value)
+    end
+
     def with_organization(organization)
       @built = false
       @organization = organization
@@ -119,10 +124,14 @@ module CartoDB
       self
     end
 
-    def with_github_oauth_api(github_api)
+    def with_oauth_api(oauth_api)
       @built = false
-      @github_api = github_api
+      @oauth_api = oauth_api
       self
+    end
+
+    def valid_creation?(creator_user)
+      valid? && @user.valid_creation?(creator_user)
     end
 
     def valid?
@@ -147,6 +156,9 @@ module CartoDB
         end
       end
 
+      @custom_errors[:oauth] = 'Invalid oauth' if @oauth_api && !@oauth_api.valid?(@user)
+
+      @user.created_via = @created_via
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
 
@@ -155,7 +167,7 @@ module CartoDB
     end
 
     def generate_dummy_password?
-      @github_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
+      @oauth_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
     end
 
     VIAS_WITHOUT_PASSWORD = [
@@ -184,7 +196,10 @@ module CartoDB
     def build_user_creation
       build
 
-      Carto::UserCreation.new_user_signup(@user, @created_via).with_invitation_token(@invitation_token)
+      user_creation = Carto::UserCreation.new_user_signup(@user, @created_via).with_invitation_token(@invitation_token)
+      user_creation.viewer = true if user_creation.pertinent_invitation.try(:viewer?)
+
+      user_creation
     end
 
     def build
@@ -196,12 +211,9 @@ module CartoDB
         @user.password_confirmation = dummy_password
       end
 
-      if @google_user_data
-        @google_user_data.set_values(@user)
-      elsif @github_api
-        @user.github_user_id = @github_api.id
-        @user.username = @github_api.username
-        @user.email = @user_params[PARAM_EMAIL] || @github_api.email
+      if @oauth_api
+        @user.set(@oauth_api.user_params)
+        @user.email = @user_params[PARAM_EMAIL] if @user_params[PARAM_EMAIL].present?
       else
         @user.email = @user_params[PARAM_EMAIL]
         @user.password = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]
@@ -219,6 +231,7 @@ module CartoDB
       @user.soft_mapzen_routing_limit = @user_params[PARAM_SOFT_MAPZEN_ROUTING_LIMIT] == 'true'
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
       @user.viewer = @user_params[PARAM_VIEWER] if @user_params[PARAM_VIEWER]
+      @user.org_admin = @user_params[PARAM_ORG_ADMIN] if @user_params[PARAM_ORG_ADMIN]
 
       @built = true
       @user

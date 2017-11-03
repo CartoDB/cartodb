@@ -434,7 +434,7 @@ $sLabel-width: 140px;
 .Form-file input[type="file"] {
   position: absolute;
   top: 0;
-  right: -164px;
+  right: 0;
   margin: 0;
   border: solid transparent;
   border-width: 1px 0 24px 0;
@@ -443,6 +443,7 @@ $sLabel-width: 140px;
   -moz-transform: translate(26px, 0) scale(1);
   direction: ltr;
   cursor: pointer;
+  z-index: 3;
 }
 .Form-fileLabel {
   width: 130px;

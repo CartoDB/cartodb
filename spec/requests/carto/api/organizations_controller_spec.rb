@@ -129,6 +129,14 @@ describe Carto::Api::OrganizationsController do
       end
     end
 
+    it 'does not return db size (slow)' do
+      get_json api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key), @headers do |response|
+        response.status.should == 200
+        response.body[:users].each do |u|
+          u.keys.should_not include 'db_size_in_bytes'
+        end
+      end
+    end
   end
 
 end

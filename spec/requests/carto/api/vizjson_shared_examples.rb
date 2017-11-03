@@ -258,7 +258,7 @@ shared_examples_for 'vizjson generator' do
         viz_id = derived_visualization.id
 
         put api_v1_visualizations_show_url(user_domain: @user_1.username, id: viz_id, api_key: @api_key),
-            { privacy: 'PUBLIC', id: viz_id }.to_json, @headers
+            { privacy: Carto::Visualization::PRIVACY_PUBLIC, id: viz_id }.to_json, @headers
 
         get api_vx_visualizations_vizjson_url(user_domain: @user_1.username, id: viz_id, api_key: @api_key),
             { id: viz_id }, @headers

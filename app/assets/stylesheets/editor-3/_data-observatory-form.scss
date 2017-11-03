@@ -1,0 +1,38 @@
+@import 'cdb-variables/colors';
+
+.DataObservatory-addMeasure {
+  width: 100%;
+}
+
+.DataObservatory-description {
+  word-break: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.DataObservatory-addMeasure .is-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.DataObservatory-license {
+  white-space: normal;
+}
+
+.DataObservatory-count {
+  padding: 8px 16px;
+  border-bottom: 1px solid $cMainLine;
+}
+
+.Measurement {
+  margin: 0 -24px;
+  padding: 0 24px;
+}
+
+.Measurement + .Measurement {
+  margin-top: 32px;
+}
+
+.Measurements {
+  margin-bottom: 32px;
+}

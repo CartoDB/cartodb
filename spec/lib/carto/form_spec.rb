@@ -11,7 +11,7 @@ module Carto
             "fixed" => 7
           },
           "color" => {
-            "fixed" => "#FFB927",
+            "fixed" => "#EE4D5A",
             "opacity" => 0.9
           }
         },
@@ -20,7 +20,7 @@ module Carto
             "fixed" => 1
           },
           "color" => {
-            "fixed" => "#FFF",
+            "fixed" => "#FFFFFF",
             "opacity" => 1
           }
         },
@@ -59,7 +59,7 @@ module Carto
       {
         "fill" => {
           "color" => {
-            "fixed" => "#374C70",
+            "fixed" => "#826DBA",
             "opacity" => 0.9
           }
         },
@@ -68,7 +68,7 @@ module Carto
             "fixed" => 1
           },
           "color" => {
-            "fixed" => "#FFF",
+            "fixed" => "#FFFFFF",
             "opacity" => 0.5
           }
         },
@@ -111,7 +111,7 @@ module Carto
             "fixed" => 1.5
           },
           "color" => {
-            "fixed" => "#3EBCAE",
+            "fixed" => "#4CC8A3",
             "opacity" => 1
           }
         },

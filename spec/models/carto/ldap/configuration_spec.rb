@@ -82,6 +82,11 @@ describe Carto::Ldap::Configuration do
     result.should_not eq false
     result.user_id.should eq other_user_username
 
+    # Test connection error
+    Net::LDAP.any_instance.stubs(:bind_as).raises(Net::LDAP::Error.new)
+    result = ldap_configuration.authenticate(auth_username, auth_password)
+    result.should be_false
+
     ldap_configuration.delete
   end
 

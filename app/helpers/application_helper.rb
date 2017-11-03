@@ -1,8 +1,9 @@
 # coding: utf-8
 require_dependency 'cartodb_config_utils'
-require_dependency 'carto_gears_api/helpers/pages_helper'
+require_dependency 'carto/configuration'
 
 module ApplicationHelper
+  include Carto::Configuration
   include CartoDB::ConfigUtils
   include SafeJsObject
   include TrackjsHelper
@@ -14,6 +15,7 @@ module ApplicationHelper
   include SqlApiHelper
   include Carto::HtmlSafe
   include CartoGearsApi::Helpers::PagesHelper
+  include VectorHelper
 
   def current_user
     super(CartoDB.extract_subdomain(request))

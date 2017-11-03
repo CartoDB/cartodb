@@ -5,7 +5,7 @@ defaults: &defaults
   #  https:            "https.cdn.host"
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr2.1'
+    binary:           'which ogr2ogr'
     csv_guessing:     true
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -16,6 +16,11 @@ defaults: &defaults
   https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost.lan:3000'
+  # Here you can define other hosts different to account_host that also will be CORS enabled
+  # cors_enabled_hosts:
+  #   - example.com
+  #   - foo.bar
+  #   - carto.dev
   account_path:       '/account'
   vizjson_cache_domains: ['.localhost.lan']
   data_library:
@@ -186,6 +191,8 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
+    mapzen:
+      search_bar_api_key: ''
   user_migrator:
     user_exports_folder: '/tmp/user_exports'
     user_imports_folder: '/tmp/user_imports'
@@ -196,6 +203,8 @@ defaults: &defaults
       url_ttl: 7200
       async_long_uploads: false
     uploads_path: 'public/uploads'
+    pg_dump_bin_path: 'pg_dump'
+    pg_restore_bin_path: 'pg_restore'
   exporter:
     exporter_temporal_folder: '/tmp/exporter'
     s3:
@@ -241,7 +250,7 @@ defaults: &defaults
                   "user_name", "style_version", "tile_style", "query_wrapper"]
     default_tile_styles:
       point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
-      geometry: "{\n // points\n [mapnik-geometry-type=point] {\n    marker-fill: #FF6600;\n    marker-opacity: 1;\n    marker-width: 12;\n    marker-line-color: white;\n    marker-line-width: 3;\n    marker-line-opacity: 0.9;\n    marker-placement: point;\n    marker-type: ellipse;marker-allow-overlap: true;\n  }\n\n //lines\n [mapnik-geometry-type=linestring] {\n    line-color: #FF6600; \n    line-width: 2; \n    line-opacity: 0.7;\n  }\n\n //polygons\n [mapnik-geometry-type=polygon] {\n    polygon-fill:#FF6600;\n    polygon-opacity: 0.7;\n    line-opacity:1;\n    line-color: #FFFFFF;\n   }\n }"
+      geometry: "{\n // points\n [mapnik-geometry-type=point] {\n    marker-fill: #FF6600;\n    marker-opacity: 1;\n    marker-width: 12;\n    marker-line-color: white;\n    marker-line-width: 3;\n    marker-line-opacity: 0.9;\n    marker-placement: point;\n    marker-type: ellipse;marker-allow-overlap: true;\n  }\n\n //lines\n [mapnik-geometry-type=linestring] {\n    line-color: #FF6600; \n    line-width: 2; \n    line-opacity: 0.7;\n  }\n\n //polygons\n [mapnik-geometry-type=polygon] {\n    polygon-fill:#FF6600;\n    polygon-opacity: 0.7;\n    line-opacity:1;\n    line-color: #FFFFFF;\n   }\n }"
       polygon: "{\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  line-opacity:1;\n  line-color: #FFFFFF;\n}"
       multipolygon: "{\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  line-opacity:1;\n  line-color: #FFFFFF;\n}"
       multilinestring: "{\n  line-color:#FF6600;\n  line-width:1;\n  line-opacity: 0.7;\n}"
@@ -317,6 +326,7 @@ defaults: &defaults
       callback_url:         'https://carto.com'
     # google_plus:
       # client_id: ''
+      # client_secret: ''
       # cookie_policy: 'single_host_origin'
       # cookie_policy: 'https://cartodb-staging.com'
     github:
@@ -369,10 +379,36 @@ defaults: &defaults
   datasources:
     arcgis_enabled: false
     salesforce_enabled: false
-  basemaps:
+  basemaps: # Adding `default: true` at a basemap marks its group as the default one. Its first basemap becomes the default one.
     CARTO:
-      positron_rainbow_labels:
+      voyager_labels:
         default: true
+        url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager'
+        className: 'voyager_labels'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        labels:
+          url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png'
+      voyager:
+        url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_labels_under/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager (labels below)'
+        className: 'voyager'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      voyager_lite:
+        url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager (lite)'
+        className: 'voyager_lite'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      positron_rainbow_labels:
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'

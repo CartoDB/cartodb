@@ -11,14 +11,14 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users
 
-      before_filter :load_fetching_options, :only => [:show, :index]
+      before_filter :load_fetching_options, only: [:show, :index]
       before_filter :load_organization
       before_filter :load_user
       before_filter :validate_organization_or_user_loaded
-      before_filter :load_group, :only => [:show, :update, :destroy, :add_users, :remove_users]
-      before_filter :org_owner_only, :only => [:create, :update, :destroy, :add_users, :remove_users]
-      before_filter :org_users_only, :only => [:show, :index]
-      before_filter :load_organization_users, :only => [:add_users, :remove_users]
+      before_filter :load_group, only: [:show, :update, :destroy, :add_users, :remove_users]
+      before_filter :org_admin_only, only: [:create, :update, :destroy, :add_users, :remove_users]
+      before_filter :org_users_only, only: [:show, :index]
+      before_filter :load_organization_users, only: [:add_users, :remove_users]
 
       def index
         page, per_page, order = page_per_page_order_params
@@ -123,7 +123,7 @@ module Carto
           render json: { errors: ["You can't get other organization users"] }, status: 501
         end
 
-        unless @user.id == current_user.id || current_user.organization_owner?
+        unless @user.id == current_user.id || current_user.organization_admin?
           render json: { errors: ["You can't get other users groups"] }, status: 501
         end
       end
@@ -134,12 +134,14 @@ module Carto
 
       def org_users_only
         unless @organization.id == current_user.organization_id
-          render json: { errors: ["Not organization owner"] }, status: 400
+          render json: { errors: ["Not organization user"] }, status: 400
         end
       end
 
-      def org_owner_only
-        render json: { errors: ["Not org. owner"] }, status: 400 unless @organization.owner_id == current_user.id
+      def org_admin_only
+        unless @organization.admin?(current_user)
+          render json: { errors: ["Not org. admin"] }, status: 400
+        end
       end
 
       def load_group

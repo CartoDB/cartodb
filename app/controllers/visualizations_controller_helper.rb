@@ -97,21 +97,34 @@ module VisualizationsControllerHelper
     viz_locator.matches_visualization?(visualization) ? visualization : nil
   end
 
-  def generate_vizjson3(visualization, params)
+  def generate_vizjson3(visualization, vector: false)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+                                 .to_vizjson(https_request: is_https?, vector: vector)
   end
 
-  def generate_named_map_vizjson3(visualization, params)
+  def generate_named_map_vizjson3(visualization, vector: false)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_named_map_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+                                 .to_named_map_vizjson(https_request: is_https?, vector: vector)
   end
 
-  def generate_anonymous_map_vizjson3(visualization, params)
+  def generate_anonymous_map_vizjson3(visualization, vector: false)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_anonymous_map_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+                                 .to_anonymous_map_vizjson(https_request: is_https?, vector: vector)
   end
 
+  def vizjson3_options(visualization, params)
+    options = {}
+
+    if params[:vector].present?
+      # This forces vector. Useful for testing purposes
+      options[:vector] = params[:vector] == 'true'
+    elsif !visualization.user.has_feature_flag?('vector_vs_raster')
+      # This enables autodetection at cartodb.js
+      options[:vector] = nil
+    end
+
+    options
+  end
   private
 
   def get_priority_visualization_forcing_name(visualization_id, force_name: false, user_id: nil, organization_id: nil)

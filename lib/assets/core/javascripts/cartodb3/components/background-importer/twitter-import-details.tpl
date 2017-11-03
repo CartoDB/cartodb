@@ -29,7 +29,7 @@
           <% } %>
         </p>
         <p class="CDB-Text CDB-Size-medium u-altTextColor">
-          <% if (tweetsCost > 0 || availableTweets <= 0) { %>
+          <% if (tweetsCost > 0 || availableTweets <= 0) { %>
             <%- _t('components.background-importer.twitter-import-details.no-more-credits', { blockPriceFormatted: blockPriceFormatted, blockSizeFormatted: blockSizeFormatted }) %>
           <% } else { %>
             <% if (availableTweets != 1) { %>

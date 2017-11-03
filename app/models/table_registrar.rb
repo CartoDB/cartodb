@@ -7,9 +7,9 @@ module CartoDB
       @table_klass  = table_klass
     end
 
-    def register(table_name, data_import_id)
-      self.table                    = table_klass.new
-      table.user_id                 = user.id
+    def register(table_name, data_import_id, user_table = nil)
+      self.table = table_klass.new(user_table: user_table)
+      table.user_id = user.id unless user_table.present?
       # INFO: we're not creating but registering an existent table, so we want fixed, known name
       table.instance_eval { self[:name] = table_name }
       table.migrate_existing_table  = table_name
@@ -34,7 +34,7 @@ module CartoDB
     def set_metadata_from_data_import_id(table, data_import_id)
       external_data_import = ExternalDataImport.where(data_import_id: data_import_id).first
       if external_data_import
-        external_source = CartoDB::Visualization::ExternalSource.where(id: external_data_import.external_source_id).first
+        external_source = Carto::ExternalSource.where(id: external_data_import.external_source_id).first
         if external_source
           visualization = external_source.visualization
           if visualization

@@ -18,7 +18,9 @@ module Carto
 
     def get_user_email(saml_response_param)
       response = get_saml_response(saml_response_param)
-      response.is_valid? ? email_from_saml_response(response) : debug_response("Invalid SAML response", response)
+      response.is_valid? && email_from_saml_response(response)
+    rescue OneLogin::RubySaml::ValidationError
+      debug_response("Invalid SAML response", response)
     end
 
     def logout_url_configured?
@@ -27,10 +29,11 @@ module Carto
 
     # SLO (Single Log Out) request initiated from CARTO
     # Returns the SAML logout request that to be redirected to
-    def sp_logout_request
+    def sp_logout_request(user)
       settings = saml_settings
 
       if logout_url_configured?
+        settings.name_identifier_value = user.email
         OneLogin::RubySaml::Logoutrequest.new.create(settings)
       else
         raise "SLO IdP Endpoint not found in settings for #{@organization}"
@@ -60,9 +63,7 @@ module Carto
 
       logout_response = OneLogin::RubySaml::Logoutresponse.new(saml_response_param, settings)
 
-      if logout_response.validate && logout_response.success?
-        yield
-      else
+      unless logout_response.validate && logout_response.success?
         raise "SAML Logout response error. Validate: #{logout_response.validate}; Success: #{logout_response.success?};"
       end
     end
@@ -82,9 +83,11 @@ module Carto
     def debug_response(message, response)
       CartoDB::Logger.debug(
         message: message,
-        response_settings: response.settings,
+        response_settings: response.settings.to_json,
         response_options: response.options,
-        response_errors: response.errors
+        response_errors: response.errors,
+        response_body: response.response,
+        response_attributes: response.attributes.try(:to_h)
       )
       nil
     end
@@ -105,12 +108,19 @@ module Carto
     # Adapted from https://github.com/hryk/warden-saml-example/blob/master/application.rb
     def saml_settings(settings_hash = carto_saml_configuration)
       settings = OneLogin::RubySaml::Settings.new
+
       # Make validations throw an error
       settings.soft = false
+
       settings_hash.each do |k, v|
-        method = "#{k}="
-        settings.__send__(method, v) if settings.respond_to?(method)
+        if k.to_s == 'security'
+          settings.security.merge!(v.symbolize_keys)
+        else
+          method = "#{k}="
+          settings.__send__(method, v) if settings.respond_to?(method)
+        end
       end
+
       settings
     end
 

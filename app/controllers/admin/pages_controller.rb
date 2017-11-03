@@ -51,7 +51,7 @@ class Admin::PagesController < Admin::AdminController
     if @viewed_user.nil?
       username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
-      return if org.nil?
+      render_404 and return if org.nil?
       visualizations = (org.public_visualizations.to_a || [])
       visualizations += (org.public_datasets.to_a || [])
     else
@@ -60,30 +60,27 @@ class Admin::PagesController < Admin::AdminController
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
-      visualizations = Visualization::Collection.new.fetch({
-        user_id:  @viewed_user.id,
-        privacy:  Visualization::Member::PRIVACY_PUBLIC,
-        order:    'updated_at',
-        o:        {updated_at: :desc},
-        exclude_shared: true,
-        exclude_raster: true
-      })
+      visualizations = Carto::VisualizationQueryBuilder.new
+                                                       .with_user_id(@viewed_user.id)
+                                                       .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                                       .with_order('visualizations.updated_at', :desc)
+                                                       .without_raster
+                                                       .with_prefetch_user(true)
+                                                       .build
     end
 
-    @urls = visualizations.collect{ |vis|
+    @urls = visualizations.map { |vis|
       case vis.type
-        when Visualization::Member::TYPE_DERIVED
-          {
-            loc: CartoDB.url(self, 'public_visualizations_public_map', {id: vis[:id] }, vis.user),
-            lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
-          }
-        when Visualization::Member::TYPE_CANONICAL
-          {
-            loc: CartoDB.url(self, 'public_table', {id: vis.name }, vis.user),
-            lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
-          }
-        else
-          nil
+      when Carto::Visualization::TYPE_DERIVED
+        {
+          loc: CartoDB.url(self, 'public_visualizations_public_map', { id: vis.id }, vis.user),
+          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        }
+      when Carto::Visualization::TYPE_CANONICAL
+        {
+          loc: CartoDB.url(self, 'public_table', { id: vis.name }, vis.user),
+          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+        }
       end
     }.compact
     render :formats => [:xml]
@@ -126,7 +123,7 @@ class Admin::PagesController < Admin::AdminController
       dataset_builder = user_datasets_public_builder(@viewed_user)
       maps_builder = user_maps_public_builder(@viewed_user)
 
-      @name               = @viewed_user.name.blank? ? @viewed_user.username : @viewed_user.name
+      @name               = @viewed_user.name_or_username
       @avatar_url         = @viewed_user.avatar
       @tables_num         = dataset_builder.build.count
       @maps_count         = maps_builder.build.count
@@ -335,16 +332,14 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_organization(org, content_type)
-    set_layout_vars({
-        most_viewed_vis_map: org.public_vis_by_type(Visualization::Member::TYPE_DERIVED, 1, 1, nil, 'mapviews').first,
-        content_type:        content_type,
-        default_fallback_basemap: org.owner ? org.owner.default_basemap : nil,
-        base_url: ''
-      })
-    set_shared_layout_vars(org, {
-        name:       org.display_name.blank? ? org.name : org.display_name,
-        avatar_url: org.avatar_url,
-      })
+    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED, 1, 1, nil, 'mapviews').first
+    set_layout_vars(most_viewed_vis_map: most_viewed_vis_map,
+                    content_type: content_type,
+                    default_fallback_basemap: org.owner ? org.owner.default_basemap : nil,
+                    base_url: '')
+    set_shared_layout_vars(org,
+                           name: org.display_name.blank? ? org.name : org.display_name,
+                           avatar_url: org.avatar_url)
   end
 
   def set_layout_vars(required)
@@ -385,11 +380,11 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def user_datasets_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_CANONICAL)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_CANONICAL)
   end
 
   def user_maps_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_DERIVED)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED)
   end
 
   def org_datasets_public_builder(org)

@@ -17,7 +17,7 @@ module Carto
   # key comparison, fail, and it only applies to the first level.
   class CartoJsonSymbolizerSerializer < CartoJsonSerializer
     def self.load(value)
-      value.nil? ? nil : JSON.parse(value).deep_symbolize_keys
+      value.nil? ? nil : JSON.parse(value, symbolize_names: true)
     end
   end
 end

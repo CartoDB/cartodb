@@ -14,7 +14,7 @@ module CartoDB
       NEW_LAYER_TYPE_OPTION = ['-nlt', 'PROMOTE_TO_MULTI'].freeze
       APPEND_MODE_OPTION    = '-append'.freeze
 
-      DEFAULT_BINARY = 'which ogr2ogr2.1'
+      DEFAULT_BINARY = 'which ogr2ogr'.freeze
 
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat point_latitude }
@@ -38,7 +38,7 @@ module CartoDB
       def set_default_properties
         self.append_mode = false
         self.overwrite = false
-        self.ogr2ogr2_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
+        self.ogr2ogr_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
         self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
         self.encoding = options.fetch(:encoding, ENCODING)
@@ -71,7 +71,7 @@ module CartoDB
       end
 
       def executable_path
-        `#{ogr2ogr2_binary}`.strip
+        `#{ogr2ogr_binary}`.strip
       end
 
       def command
@@ -142,7 +142,7 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :quoted_fields_guessing
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr_binary, :quoted_fields_guessing
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?

@@ -61,6 +61,15 @@ module CartoDB
         end
       end
 
+      def rollback!
+        close_all_database_connections
+        if @pack_config['organization']
+          rollback_org
+        else
+          rollback_user
+        end
+      end
+
       def organization_import?
         @pack_config['organization'] != nil
       end
@@ -266,7 +275,7 @@ module CartoDB
       end
 
       def drop_role(role)
-        superuser_pg_conn.query("DROP ROLE \"#{role}\"")
+        superuser_pg_conn.query("DROP ROLE IF EXISTS \"#{role}\"")
       end
 
       def get_org_info(orgname)
@@ -289,9 +298,22 @@ module CartoDB
         superuser_pg_conn.query("ALTER DATABASE #{superuser_pg_conn.quote_ident(db)} SET statement_timeout = #{timeout}")
       end
 
+      def close_all_database_connections(database_name = @target_dbname)
+        superuser_pg_conn.query("SELECT pg_terminate_backend(pg_stat_activity.pid)
+                                  FROM pg_stat_activity
+                                WHERE pg_stat_activity.datname = '#{database_name}'
+                                AND pid <> pg_backend_pid();")
+        terminate_connections
+      end
+
       def terminate_connections
+        @user_conn && @user_conn.close
         @user_conn = nil
+
+        @superuser_user_conn && @superuser_user_conn.close
         @superuser_user_conn = nil
+
+        @superuser_conn && @superuser_conn.close
         @superuser_conn = nil
       end
 
@@ -320,7 +342,8 @@ module CartoDB
       end
 
       def drop_database(db_name)
-        superuser_pg_conn.query("DROP DATABASE \"#{db_name}\"")
+        close_all_database_connections(db_name)
+        superuser_pg_conn.query("DROP DATABASE IF EXISTS \"#{db_name}\"")
       end
 
       def clean_oids(user_id, user_schema)
@@ -360,7 +383,7 @@ module CartoDB
       end
 
       def run_file_restore_postgres(file, sections = nil)
-        command = "pg_restore -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
+        command = "#{pg_restore_bin_path} -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],
@@ -625,6 +648,10 @@ module CartoDB
         @import_log[:elapsed_time] = (@import_log[:end] - @import_log[:start]).ceil
         @import_log[:status] = 'success'
         importjob_logger.info(@import_log.to_json)
+      end
+
+      def pg_restore_bin_path
+        Cartodb.get_config(:user_migrator, 'pg_restore_bin_path') || 'pg_restore'
       end
     end
   end

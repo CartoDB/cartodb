@@ -14,10 +14,14 @@
       </h2>
     </div>
     <div class="ModalBlockList-item-body">
-      <p class="CDB-Text CDB-Size-small u-altTextColor">
+      <p class="CDB-Text CDB-Size-small u-secondaryTextColor">
         <%- desc %>
       </p>
-      <button class="CDB-Text CDB-Size-small u-tSpace-xl u-actionTextColor js-more"><%- _t('components.modals.add-analysis.info-analysis') %></button>
+      <% if (link) { %>
+      <a class="Analysis-link CDB-Text CDB-Size-small u-tSpace-xl u-actionTextColor u-upperCase js-more track-<%- type %>-modal-learn" href="<%- link %>" target="_blank">
+        <%- _t('components.modals.add-analysis.more-info') %>
+      </a>
+      <% } %>
     </div>
   </div>
 </div>

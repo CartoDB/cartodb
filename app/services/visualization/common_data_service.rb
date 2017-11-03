@@ -1,7 +1,6 @@
 require 'rollbar'
-require_relative '../../models/visualization/member'
-require_relative '../../models/visualization/collection'
-require_relative '../../models/visualization/external_source'
+require_relative '../../models/carto/visualization'
+require_relative '../../models/carto/external_source'
 require_relative '../../models/common_data/singleton'
 
 module CartoDB
@@ -54,53 +53,70 @@ module CartoDB
         deleted = 0
         failed = 0
 
-        remotes_by_name = {}
-        user_remotes = CartoDB::Visualization::Collection.new.fetch(type: CartoDB::Visualization::Member::TYPE_REMOTE, user_id: user.id)
-        user_remotes.each { |r|
-          remotes_by_name[r.name] = r
-        }
-        get_datasets(visualizations_api_url).each do |dataset|
-          begin
-            visualization = remotes_by_name.delete(dataset['name'])
-            if visualization
-              if visualization.update_remote_data(
-                  Member::PRIVACY_PUBLIC,
-                  dataset['description'], dataset['tags'], dataset['license'],
-                  dataset['source'], dataset['attributions'], dataset['display_name'])
-                visualization.store
-                updated += 1
+        carto_user = Carto::User.find(user.id)
+        remotes_by_name = Carto::Visualization.remotes.where(user_id: user.id).map { |v| [v.name, v] }.to_h
+        ActiveRecord::Base.transaction do
+          get_datasets(visualizations_api_url).each do |dataset|
+            begin
+              visualization = remotes_by_name.delete(dataset['name'])
+              if visualization
+                visualization.attributes = dataset_visualization_attributes(dataset)
+                if visualization.changed?
+                  visualization.save!
+                  updated += 1
+                else
+                  not_modified += 1
+                end
               else
-                not_modified += 1
+                visualization = Carto::Visualization.new(
+                  dataset_visualization_attributes(dataset).merge(
+                    name: dataset['name'],
+                    user: carto_user,
+                    type: Carto::Visualization::TYPE_REMOTE
+                  )
+                )
+                visualization.save!
+                added += 1
               end
-            else
-              visualization = Member.remote_member(
-                dataset['name'], user.id, Member::PRIVACY_PUBLIC,
-                dataset['description'], dataset['tags'], dataset['license'],
-                dataset['source'], dataset['attributions'], dataset['display_name']).store
-              added += 1
-            end
 
-            external_source = ExternalSource.where(visualization_id: visualization.id).first
-            if external_source
-              external_source.save if !(external_source.update_data(dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').changed_columns.empty?)
-            else
-              ExternalSource.new(visualization.id, dataset['url'], dataset['geometry_types'], dataset['rows'], dataset['size'], 'common-data').save
+              external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
+              if external_source
+                if external_source.update_data(
+                  dataset['url'],
+                  dataset['geometry_types'],
+                  dataset['rows'],
+                  dataset['size'],
+                  'common-data'
+                ).changed?
+                  external_source.save!
+                end
+              else
+                external_source = Carto::ExternalSource.create(
+                  visualization_id: visualization.id,
+                  import_url: dataset['url'],
+                  rows_counted: dataset['rows'],
+                  size: dataset['size'],
+                  username: 'common-data'
+                )
+                # ActiveRecord array issue
+                external_source.update_attribute(:geometry_types, dataset['geometry_types'])
+              end
+            rescue => e
+              CartoDB.notify_exception(e, {
+                name: dataset.fetch('name', 'ERR: name'),
+                source: dataset.fetch('source', 'ERR: source'),
+                rows: dataset.fetch('rows', 'ERR: rows'),
+                updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
+                url: dataset.fetch('url', 'ERR: url')
+              })
+              failed += 1
             end
-          rescue => e
-            CartoDB.notify_exception(e, {
-              name: dataset.fetch('name', 'ERR: name'),
-              source: dataset.fetch('source', 'ERR: source'),
-              rows: dataset.fetch('rows', 'ERR: rows'),
-              updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
-              url: dataset.fetch('url', 'ERR: url')
-            })
-            failed += 1
           end
         end
 
-        remotes_by_name.each { |name, remote|
+        remotes_by_name.each do |_, remote|
           deleted += 1 if delete_remote_visualization(remote)
-        }
+        end
 
         return added, updated, not_modified, deleted, failed
       end
@@ -120,21 +136,13 @@ module CartoDB
       end
 
       def delete_common_data_for_user(user)
-        #TODO This is ugly, I know, one query per vis but I've tried to use Collection pagination
-        #to do it without result. When the Carto::Visualization model could be used to delete this
-        #should be move to AR and paginate removing the extra query
         deleted = 0
         vqb = Carto::VisualizationQueryBuilder.new
-                                              .with_type(Carto::Visualization::TYPE_REMOTE)
-                                              .with_user_id(user.id)
-                                              .build
-
-        vis_ids = vqb.pluck(:id)
-        vis_ids.each do |vis_id|
-          vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
-          delete_remote_visualization(vis)
+        vqb.with_type(Carto::Visualization::TYPE_REMOTE).with_user_id(user.id).build.each do |v|
+          delete_remote_visualization(v)
           deleted += 1
         end
+
         deleted
       end
 
@@ -146,10 +154,9 @@ module CartoDB
 
       def delete_remote_visualization(visualization)
         begin
-          ExternalSource.where(visualization_id: visualization.id).delete
-          visualization.delete
+          visualization.destroy
           true
-        rescue Sequel::DatabaseError => e
+        rescue => e
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
           if match.present? && match >= 0
             # TODO: "mark as deleted" or similar to disable old, imported visualizations
@@ -164,6 +171,18 @@ module CartoDB
             raise e
           end
         end
+      end
+
+      def dataset_visualization_attributes(dataset)
+        {
+          privacy: Carto::Visualization::PRIVACY_PUBLIC,
+          description: dataset['description'],
+          tags: dataset['tags'],
+          license: dataset['license'],
+          source: dataset['source'],
+          attributions: dataset['attributions'],
+          display_name: dataset['display_name']
+        }
       end
 
     end

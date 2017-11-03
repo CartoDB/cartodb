@@ -8,6 +8,10 @@ module Carto
       @@app_config ||= YAML.load_file(app_config_file).freeze
     end
 
+    def frontend_version
+      @@frontend_version ||= JSON::parse(File.read(Rails.root.join("package.json")))["version"]
+    end
+
     def env_app_config
       app_config[ENV['RAILS_ENV'] || 'development']
     end
@@ -52,6 +56,19 @@ module Carto
 
       (config && config['custom_paths'] && config['custom_paths']['views']) || Array.new
     end
+
+    def saas?
+      Cartodb.config[:cartodb_com_hosted] == false
+    end
+
+    def mapzen_api_key
+      Cartodb.get_config(:geocoder, 'mapzen', 'search_bar_api_key')
+    end
+
+    # Make some methods available. Remember that this sets methods as private.
+    # More information: https://idiosyncratic-ruby.com/8-self-improvement.html
+    # This is the chosen approach to avoid including `Configuration` all over the place. Check #12757
+    module_function :saas?
 
     private
 

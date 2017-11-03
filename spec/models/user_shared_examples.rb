@@ -599,7 +599,7 @@ shared_examples_for "user models" do
     it 'is false for users within a SAML organization' do
       organization = FactoryGirl.create(:saml_organization)
       organization.auth_saml_enabled?.should == true
-      @user.organization = organization
+      @user.organization = @user.is_a?(Carto::User) ? Carto::Organization.find(organization.id) : organization
       @user.needs_password_confirmation?.should == false
 
       @user.organization = nil
@@ -641,7 +641,7 @@ shared_examples_for "user models" do
     end
 
     it "should set a default database_host" do
-      @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      @user.database_host.should eq ::SequelRails.configuration.environment_for(Rails.env)['host']
     end
 
     it "should set a default api_key" do
@@ -785,9 +785,9 @@ shared_examples_for "user models" do
   end
 
   describe '#default_basemap' do
-    it 'defaults to Google for Google Maps users, Positron for others' do
+    it 'defaults to Google for Google Maps users, first declared basemap for others' do
       user = create_user
-      user.default_basemap['name'].should eq 'Positron'
+      user.default_basemap['name'].should eq Cartodb.default_basemap['name']
       user.google_maps_key = 'client=whatever'
       user.google_maps_private_key = 'wadus'
       user.save
@@ -795,31 +795,74 @@ shared_examples_for "user models" do
     end
   end
 
+  shared_examples_for 'google maps key inheritance' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    def set_user_field(value)
+      @user.send(write_field + '=', value)
+    end
+
+    def set_organization_field(value)
+      @user.stubs(:organization).returns(mock)
+      @user.organization.stubs(write_field).returns(value)
+    end
+
+    def get_field
+      @user.send(read_field)
+    end
+
+    it 'returns user key for users without organization' do
+      set_user_field('wadus')
+      get_field.should eq 'wadus'
+    end
+
+    it 'returns nil for users without organization nor key' do
+      set_user_field(nil)
+      get_field.should eq nil
+    end
+
+    it 'takes key from user if organization is not set' do
+      set_user_field('wadus')
+      set_organization_field(nil)
+      get_field.should eq 'wadus'
+    end
+
+    it 'takes key from user if organization is blank' do
+      set_user_field('wadus')
+      set_organization_field('')
+      get_field.should eq 'wadus'
+    end
+
+    it 'takes key from organization if both set' do
+      set_user_field('wadus')
+      set_organization_field('org_key')
+      get_field.should eq 'org_key'
+    end
+
+    it 'returns nil if key is not set at user nor organization' do
+      set_user_field(nil)
+      set_organization_field(nil)
+      get_field.should be_nil
+    end
+  end
+
   describe '#google_maps_api_key' do
-    it 'overrides organization if organization is nil or blank' do
-      user = create_user
-      user.google_maps_api_key.should eq nil
+    it_behaves_like 'google maps key inheritance' do
+      let(:write_field) { 'google_maps_key' }
+      let(:read_field) { 'google_maps_api_key' }
+    end
+  end
 
-      user.google_maps_key = 'wadus'
-      user.google_maps_api_key.should eq 'wadus'
-
-      user.google_maps_key = nil
-      user.stubs(:organization).returns(mock)
-
-      user.organization.stubs(:google_maps_key).returns(nil)
-      user.google_maps_api_key.should eq nil
-
-      user.organization.stubs(:google_maps_key).returns('org')
-      user.google_maps_api_key.should eq 'org'
-
-      user.google_maps_key = 'wadus'
-      user.google_maps_api_key.should eq 'org'
-
-      user.organization.stubs(:google_maps_key).returns('')
-      user.google_maps_api_key.should eq 'wadus'
-
-      user.organization.stubs(:google_maps_key).returns(nil)
-      user.google_maps_api_key.should eq 'wadus'
+  describe '#google_maps_private_key' do
+    it_behaves_like 'google maps key inheritance' do
+      let(:write_field) { 'google_maps_private_key' }
+      let(:read_field) { 'google_maps_private_key' }
     end
   end
 
@@ -835,6 +878,62 @@ shared_examples_for "user models" do
 
       user.view_dashboard
       user.dashboard_viewed_at.should_not eq last
+    end
+  end
+
+  describe '#name_or_username' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'returns username if no name available' do
+      @user.name = ''
+      @user.last_name = nil
+      expect(@user.name_or_username).to eq @user.username
+    end
+
+    it 'returns first name if available' do
+      @user.name = 'Petete'
+      @user.last_name = nil
+      expect(@user.name_or_username).to eq 'Petete'
+    end
+
+    it 'returns last name if available' do
+      @user.name = ''
+      @user.last_name = 'Trapito'
+      expect(@user.name_or_username).to eq 'Trapito'
+    end
+
+    it 'returns first+last name if available' do
+      @user.name = 'Petete'
+      @user.last_name = 'Trapito'
+      expect(@user.name_or_username).to eq 'Petete Trapito'
+    end
+  end
+
+  describe '#relevant_frontend_version' do
+    before(:all) do
+      @user = create_user
+    end
+
+    describe "when user doesn't have user_frontend_version set" do
+      it 'should return application frontend version' do
+        CartoDB::Application.stubs(:frontend_version).returns('app_frontend_version')
+
+        @user.relevant_frontend_version.should eq 'app_frontend_version'
+      end
+    end
+
+    describe 'when user has user_frontend_version set' do
+      it 'should return user frontend version' do
+        @user.frontend_version = 'user_frontend_version'
+
+        @user.relevant_frontend_version.should eq 'user_frontend_version'
+      end
     end
   end
 end

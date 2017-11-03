@@ -8,6 +8,7 @@ module Carto
     DEFAULT_SEPARATOR = '_'.freeze
     DEFAULT_TABLE_NAME = 'untitled_table'.freeze
     MAX_RENAME_RETRIES = 10000
+    NON_COLLISIONABLE_STRING_LENGTH = 61
 
     def propose_valid_table_name(contendent = DEFAULT_TABLE_NAME.dup, taken_names:)
       contendent = DEFAULT_TABLE_NAME.dup unless contendent.present?
@@ -26,7 +27,10 @@ module Carto
       proposal = prefix
 
       (1..MAX_RENAME_RETRIES).each do |appendix|
-        return proposal unless names.include?(proposal)
+        # We exclude the proposal either if the taken names array already have the proposal, or if the taken names
+        # array contains a string with the first 62 chars equal to the proposal. With this we avoid typnames collision
+        # when moving schemas
+        return proposal unless names.any? { |name| name_can_have_typname_collision(name, proposal) }
 
         proposal = Carto::DB::Sanitize.append_with_truncate_and_sanitize(prefix, "#{separator}#{appendix}")
       end
@@ -34,6 +38,10 @@ module Carto
       CartoDB::Logger.error(message: 'Physical tables: Out of rename retries', table_name: prefix)
 
       raise "Out of retries (#{MAX_RENAME_RETRIES}) renaming #{proposal}"
+    end
+
+    def name_can_have_typname_collision(name, proposal)
+      name == proposal || name[0..NON_COLLISIONABLE_STRING_LENGTH] == proposal[0..NON_COLLISIONABLE_STRING_LENGTH]
     end
   end
 end

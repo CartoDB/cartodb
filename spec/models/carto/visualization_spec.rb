@@ -1,5 +1,6 @@
 # coding: UTF-8
 require_relative '../../spec_helper'
+require_relative '../visualization_shared_examples'
 require_relative '../../../app/models/visualization/member'
 require 'helpers/unique_names_helper'
 require 'helpers/visualization_destruction_helper'
@@ -7,6 +8,7 @@ require 'helpers/visualization_destruction_helper'
 describe Carto::Visualization do
   include UniqueNamesHelper
   include VisualizationDestructionHelper
+  include Carto::Factories::Visualizations
 
   before(:all) do
     @user = create_user
@@ -24,6 +26,14 @@ describe Carto::Visualization do
     bypass_named_maps
     @user.destroy
     @user2.destroy
+  end
+
+  it_behaves_like 'visualization models' do
+    def build_visualization(attrs = {})
+      v = Carto::Visualization.new
+      v.assign_attributes(attrs, without_protection: true)
+      v
+    end
   end
 
   describe '#estimated_row_count and #actual_row_count' do
@@ -45,6 +55,14 @@ describe Carto::Visualization do
       vis.tags = ["tag1", " ", ""]
 
       vis.tags.should eq ["tag1"]
+    end
+  end
+
+  describe '#privacy=' do
+    it 'downcases privacy' do
+      visualization = Carto::Visualization.new
+      visualization.privacy = Carto::Visualization::PRIVACY_LINK.upcase
+      visualization.privacy.should eq Carto::Visualization::PRIVACY_LINK.downcase
     end
   end
 
@@ -134,7 +152,7 @@ describe Carto::Visualization do
 
   describe '#published?' do
     before(:each) do
-      @visualization = FactoryGirl.build(:carto_visualization)
+      @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user)
     end
 
     it 'returns true for visualizations without version' do
@@ -191,8 +209,102 @@ describe Carto::Visualization do
     it 'should save named map with layers on map creation' do
       @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user, map: FactoryGirl.build(:carto_map))
       @visualization.layers << FactoryGirl.build(:carto_layer)
-      @visualization.expects(:named_maps_api).returns(Carto::NamedMaps::Api.new(@visualization)).at_least_once
+      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
       @visualization.save
+    end
+
+    describe 'without mapcap' do
+      before(:all) do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+      end
+
+      after(:all) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      it 'publishes layer style changes' do
+        fake_style = 'this_is_a_very_fake_cartocss'
+        layer = @visualization.data_layers.first
+        layer.options[:tile_style] = fake_style
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.expects(:upsert)
+
+        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .returns(named_maps_api_mock).at_least_once
+        layer.save
+      end
+
+      it 'publishes privacy changes' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.expects(:upsert)
+
+        Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
+        @visualization.save
+      end
+    end
+
+    describe 'with mapcap' do
+      before(:all) do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+        @visualization.create_mapcap!
+        @visualization.reload
+      end
+
+      after(:all) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      it 'does not publish layer style changes' do
+        fake_style = 'this_is_a_very_fake_cartocss'
+        layer = @visualization.data_layers.first
+        layer.options[:tile_style] = fake_style
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.stubs(upsert: true)
+
+        Carto::NamedMaps::Api.stubs(:new).with { |v| v.data_layers.first.options[:tile_style] != fake_style }
+                             .returns(named_maps_api_mock)
+        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .never
+        layer.save
+      end
+
+      it 'publishes layer style changes after mapcapping' do
+        fake_style = 'changed_style_again'
+        layer = @visualization.data_layers.first
+        layer.options[:tile_style] = fake_style
+        layer.save
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.expects(:upsert).at_least_once
+
+        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .returns(named_maps_api_mock).at_least_once
+        @visualization.create_mapcap!
+      end
+
+      it 'publishes privacy changes' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+
+        named_maps_api_mock = mock
+        named_maps_api_mock.expects(:upsert)
+
+        Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
+        @visualization.save
+      end
+    end
+  end
+
+  describe 'creation' do
+    it 'is not valid if user is viewer' do
+      viewer = FactoryGirl.build(:carto_user, viewer: true)
+      visualization = FactoryGirl.build(:carto_visualization, user: viewer)
+      visualization.valid?.should be_false
+      visualization.errors[:user].should_not be_empty
+      visualization.errors[:user].first.should eq "cannot be viewer"
     end
   end
 
@@ -207,9 +319,115 @@ describe Carto::Visualization do
       visualization.create_mapcap!
       visualization.state.save
 
-      visualization.expects(:destroy_named_map).at_least_once
-      visualization.expects(:invalidate_cache).at_least_once
+      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
       expect_visualization_to_be_destroyed(visualization) { visualization.destroy }
+    end
+  end
+
+  describe '#invalidation_service' do
+    before(:all) do
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')
+    end
+
+    it 'triggers invalidation after saving' do
+      @visualization.send(:invalidation_service).expects(:invalidate)
+      @visualization.update_attributes(name: @visualization.name + '-renamed')
+    end
+
+    it 'triggers invalidation of affected maps after updating description field' do
+      # Not a great test, it tests invalidation service internal implementation
+      @visualization.send(:invalidation_service).expects(:invalidate_affected_visualizations)
+      @visualization.update_attributes(description: 'something')
+    end
+
+    it 'triggers invalidation of affected maps after updating attributions field' do
+      @visualization.send(:invalidation_service).expects(:invalidate_affected_visualizations)
+      @visualization.update_attributes(attributions: 'something')
+    end
+
+    it 'triggers invalidation after destroying' do
+      @visualization.send(:invalidation_service).expects(:invalidate)
+      @visualization.destroy
+    end
+  end
+
+  context 'like actions' do
+    before(:each) do
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')
+    end
+
+    describe '#add_like_from' do
+      it 'registers the like action from a user' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+        expect(@visualization.likes.count).to eq(0)
+
+        @visualization.add_like_from(user_id)
+
+        expect(@visualization.likes.count).to eq(1)
+        expect(@visualization.liked_by?(user_id)).to be_true
+      end
+
+      it 'raises an error if same user tries to like again the same content' do
+        user_id  = UUIDTools::UUID.timestamp_create.to_s
+        user2_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+
+        expect(@visualization.likes.count).to eq(1)
+        expect(@visualization.liked_by?(user_id)).to be_true
+
+        expect {
+          @visualization.add_like_from(user_id)
+        }.to raise_error Carto::Visualization::AlreadyLikedError
+        expect(@visualization.likes.count).to eq(1)
+
+        @visualization.add_like_from(user2_id)
+        expect(@visualization.likes.count).to eq(2)
+      end
+    end
+
+    describe '#remove_like_from' do
+      it 'removes an existent like from a user' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.likes.count).to eq(1)
+
+        @visualization.remove_like_from(user_id)
+        expect(@visualization.likes.count).to eq(0)
+        expect(@visualization.liked_by?(user_id)).to be_false
+      end
+
+      it 'does not return an error if I try to remove a non-existent like' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+        user2_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.likes.count).to eq(1)
+
+        @visualization.remove_like_from(user2_id)
+        expect(@visualization.likes.count).to eq(1)
+      end
+    end
+
+    describe '#liked_by?' do
+      it 'returns true when the user liked the visualization' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.liked_by?(user_id)).to be_true
+      end
+
+      it 'returns false when checking a user without likes on the visualization' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+        user2_id = UUIDTools::UUID.timestamp_create.to_s
+
+        @visualization.add_like_from(user_id)
+        expect(@visualization.liked_by?(user2_id)).to be_false
+
+        @visualization.remove_like_from(user_id)
+        expect(@visualization.liked_by?(user_id)).to be_false
+      end
     end
   end
 end

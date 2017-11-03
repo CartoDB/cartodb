@@ -89,19 +89,18 @@ describe Unp do
 
   describe '#crawl' do
     it 'returns a list of full paths for files in the directory' do
-      fixture1  = '/var/tmp/bogus1.csv'
-      fixture2  = '/var/tmp/bogus2.csv'
-      FileUtils.touch(fixture1)
-      FileUtils.touch(fixture2)
+      Dir.mktmpdir do |path|
+        fixture1  = "#{path}/bogus1.csv"
+        fixture2  = "#{path}/bogus2.csv"
+        FileUtils.touch(fixture1)
+        FileUtils.touch(fixture2)
 
-      unp       = Unp.new
-      files     = unp.crawl('/var/tmp')
+        unp       = Unp.new
+        files     = unp.crawl(path)
 
-      files.should include(fixture1)
-      files.should include(fixture2)
-
-      FileUtils.rm(fixture1)
-      FileUtils.rm(fixture2)
+        files.should include(fixture1)
+        files.should include(fixture2)
+      end
     end
   end
 

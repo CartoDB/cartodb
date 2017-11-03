@@ -79,7 +79,7 @@ describe Carto::Api::GrantablesController do
 
           get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { page: page, per_page: per_page, order: 'name' }, @headers do |response|
             response.status.should == 200
-            response.body[:grantables][0]['id'].should eq(expected_id), "#{response.body[:grantables][0]['id']} != #{expected_id}. Failing page: #{page}"
+            response.body[:grantables][0]['id'].should eq(expected_id), "#{response.body[:grantables][0]['id']} != #{expected_id}. Failing page: #{page}"
             response.body[:grantables].length.should == per_page
             response.body[:total_entries].should == count_grantables(@carto_organization)
           end

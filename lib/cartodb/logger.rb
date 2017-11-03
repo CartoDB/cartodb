@@ -17,7 +17,7 @@ module CartoDB
     rescue => rollbar_exception
       # Last chance to report error
       begin
-        Rollbar.error(rollbar_exception)
+        Rollbar.warning(rollbar_exception)
       rescue
       end
     end

@@ -33,6 +33,38 @@ describe Carto::UserTable do
     end
   end
 
+  describe 'canonical visualization' do
+    it 'contains 1 data layer and creates a named map template if default basemap supports labels on top' do
+      Carto::LayerFactory.build_default_base_layer(@user).supports_labels_layer?.should be_true
+
+      Carto::NamedMaps::Api.any_instance.unstub(:show, :create, :update, :destroy)
+      Carto::NamedMaps::Api.any_instance.expects(:create).once
+
+      ut = Carto::UserTable.new
+      ut.user = @user
+      ut.save!
+
+      ut.visualization.data_layers.count.should eq 1
+    end
+
+    it 'contains 1 data layer and creates a named map template if default basemap does not support labels on top' do
+      old_google_maps_key = @user.google_maps_key
+      @user.update_attribute(:google_maps_key, 'wadus')
+      Carto::LayerFactory.build_default_base_layer(@user).supports_labels_layer?.should be_false
+
+      Carto::NamedMaps::Api.any_instance.unstub(:show, :create, :update, :destroy)
+      Carto::NamedMaps::Api.any_instance.expects(:create).once
+
+      ut = Carto::UserTable.new
+      ut.user = @user
+      ut.save!
+
+      ut.visualization.data_layers.count.should eq 1
+
+      @user.update_attribute(:google_maps_key, old_google_maps_key)
+    end
+  end
+
   describe '#default_privacy' do
     it 'sets privacy to nil by default' do
       expect(Carto::UserTable.new.privacy).to be_nil

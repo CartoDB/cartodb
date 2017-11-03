@@ -140,11 +140,21 @@ class ApplicationController < ActionController::Base
   def check_cors_headers_for_whitelisted_referer
     referer = request.env["HTTP_REFERER"]
     origin = request.headers['origin']
+
+    cors_enabled_hosts = Cartodb.get_config(:cors_enabled_hosts) || []
+    allowed_hosts = ([Cartodb.config[:account_host]] + cors_enabled_hosts).compact
+
     whitelist_referer = []
-    whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
-    whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/data-library" }
-    whitelist_referer.flatten!
-    whitelist_origin = %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}" }
+    whitelist_origin = []
+
+    allowed_hosts.each do |allowed_host|
+      %w{http https}.each do |protocol|
+        whitelist_referer << "#{protocol}://#{allowed_host}/explore"
+        whitelist_referer << "#{protocol}://#{allowed_host}/data-library"
+        whitelist_origin << "#{protocol}://#{allowed_host}"
+      end
+    end
+
     # It seems that Firefox and IExplore don't send the Referer header in the preflight request
     right_referer = request.method == "OPTIONS" ? true : whitelist_referer.include?(referer)
     right_origin = whitelist_origin.include?(origin)
@@ -329,10 +339,9 @@ class ApplicationController < ActionController::Base
       if current_user && env["warden"].authenticated?(current_user.username)
         @current_viewer = current_user if validate_session(current_user)
       else
-        authenticated_usernames = request.session.select {|k, v|
+        authenticated_usernames = request.session.to_hash.select { |k, _|
           k.start_with?("warden.user") && !k.end_with?(".session")
-        }
-                                                    .values
+        }.values
         # See if there's a session of the viewed subdomain corresponding user
         current_user_present = authenticated_usernames.select { |username|
           CartoDB.extract_subdomain(request) == username

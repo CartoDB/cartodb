@@ -15,7 +15,7 @@ namespace :cartodb do
         views = data[:mapviews]
 
         puts "Notifying trending map #{visualization_id} with a total of #{views} mapviews"
-        visualization = CartoDB::Visualization::Member.new(id: visualization_id)
+        visualization = Carto::Visualization.find(visualization_id)
         preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map_without_request(data[:user],
                                                                                           'http',
                                                                                           visualization,
@@ -24,7 +24,7 @@ namespace :cartodb do
         unless simulation
           trending_maps_lib.notify_trending_map(visualization_id, views, preview_image)
 
-          user_id = visualization.fetch.user.id
+          user_id = visualization.user.id
           Carto::Tracking::Events::ScoredTrendingMap.new(user_id,
                                                          user_id: user_id,
                                                          visualization_id: visualization.id,

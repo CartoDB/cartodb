@@ -1,5 +1,3 @@
-require_dependency 'carto_gears_api/pages/subheader'
-
 module CartoGearsApi
   module Helpers
     module PagesHelper
@@ -9,4 +7,3 @@ module CartoGearsApi
     end
   end
 end
-

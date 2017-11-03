@@ -8,7 +8,7 @@
           </button>
           <span class="label js-label"><%- attribute %></span>
         </li>
-        <% if (columnType === 'number') { %>
+        <% if (columnType === 'number' && !hideQuantification) { %>
           <li class="u-flex">
             <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>
             <button class="CDB-Shape u-lSpace js-quantification">

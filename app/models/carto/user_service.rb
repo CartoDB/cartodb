@@ -15,6 +15,8 @@ module Carto
 
     # Only returns owned tables (not shared ones)
     def table_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_CANONICAL)
@@ -23,6 +25,8 @@ module Carto
     end
 
     def owned_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_DERIVED)
@@ -31,6 +35,8 @@ module Carto
     end
 
     def visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_owned_by_or_shared_with_user_id(@user.id)
                                       .build
@@ -38,12 +44,16 @@ module Carto
     end
 
     def public_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.user_public_visualizations(@user)
                                       .build
                                       .count
     end
 
     def all_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.user_all_visualizations(@user)
         .build
         .count
@@ -123,6 +133,10 @@ module Carto
       end
     end
 
+    def database_public_username
+      @user.database_schema != CartoDB::DEFAULT_DB_SCHEMA ? "cartodb_publicuser_#{@user.id}" : CartoDB::PUBLIC_DB_USER
+    end
+
     private
 
     # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
@@ -141,10 +155,6 @@ module Carto
 
     def database_password
       @user.crypted_password + database_username
-    end
-
-    def database_public_username
-      (@user.database_schema != CartoDB::DEFAULT_DB_SCHEMA) ? "cartodb_publicuser_#{@user.id}" : CartoDB::PUBLIC_DB_USER
     end
 
     def in_database(options = {}, &block)
@@ -201,7 +211,7 @@ module Carto
       logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
 
       # TODO: proper AR config when migration is complete
-      base_config = ::Rails::Sequel.configuration.environment_for(Rails.env)
+      base_config = ::SequelRails.configuration.environment_for(Rails.env)
       config = {
         orm:      'ar',
         adapter:  "postgresql",

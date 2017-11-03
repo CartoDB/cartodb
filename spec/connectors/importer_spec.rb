@@ -60,8 +60,15 @@ describe CartoDB::Connector::Importer do
 
     result_mock = CartoDB::Doubles::Importer2::Result.new({table_name: importer_table_name, name: desired_table_name})
 
-    importer = CartoDB::Connector::Importer.new(runner, table_registrar, quota_checker, database, id, destination_schema)
-    new_table_name = importer.rename(result_mock, importer_table_name, desired_table_name)
+    importer = CartoDB::Connector::Importer.new(
+      runner: runner,
+      table_registrar: table_registrar,
+      quota_checker: quota_checker,
+      database: database,
+      data_import_id: id,
+      destination_schema: destination_schema
+    )
+    new_table_name = importer.rename(result_mock, importer_table_name, desired_table_name, destination_schema)
     new_table_name.should_not == nil
   end
 
@@ -131,6 +138,33 @@ describe CartoDB::Connector::Importer do
 
     data_import2.success.should eq true
     UserTable[id: data_import2.table.id].name.should eq "#{name}_1"
+
+    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    data_import2.destroy
+  end
+
+  it 'handles import with almost identical long file names properly' do
+    long_name1 = 'carto_long_filename_that_almost_matches_another_one_63chars_aaa'
+    filepath1 = "#{Rails.root}/spec/support/data/#{long_name1}.csv"
+
+    @data_import = DataImport.create(user_id: @user.id, data_source: filepath1)
+    @data_import.values[:data_source] = filepath1
+    @data_import.run_import!
+
+    expect(@data_import.success).to be_true
+    expect(UserTable[id: @data_import.table.id].name).to eq(long_name1)
+
+    long_name2 = 'carto_long_filename_that_almost_matches_another_one_63chars_aab'
+    filepath2 = "#{Rails.root}/spec/support/data/#{long_name2}.csv"
+
+    data_import2 = DataImport.create(user_id: @user.id, data_source: filepath2)
+    data_import2.values[:data_source] = filepath2
+    data_import2.run_import!
+
+    expect(data_import2.success).to be_true
+
+    expected_name = 'carto_long_filename_that_almost_matches_another_one_63chars_a_1'
+    expect(UserTable[id: data_import2.table.id].name).to eq(expected_name)
 
     data_import2.table.destroy if data_import2 && data_import2.table.id.present?
     data_import2.destroy
@@ -339,6 +373,34 @@ describe CartoDB::Connector::Importer do
     data_layer = visualization.data_layers.first
     data_layer.user_tables.size.should eq 1
     data_layer.user_tables.first.name.should include 'elecciones2008'
+  end
+
+  it 'imports files for Builder users' do
+    old_builder_enabled = @user.builder_enabled
+    @user.builder_enabled = true
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+    visualization = Carto::Visualization.find_by_id(data_import.visualization_id)
+    data_layer = visualization.data_layers.first
+    data_layer.user_tables.size.should eq 1
+    data_layer.user_tables.first.name.should include 'elecciones2008'
+
+    @user.builder_enabled = old_builder_enabled
+    @user.save
   end
 
   it 'should not import as private if private_tables_enabled is disabled' do

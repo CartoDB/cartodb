@@ -6,10 +6,11 @@ module Carto
   module Api
     class ColumnsController < ::Api::ApplicationController
 
-      ssl_required :index, :show
+      ssl_required :index, :show, :create, :update, :destroy
 
-      before_filter :load_user_table, only: [:index, :show]
+      before_filter :load_user_table, only: [:index, :show, :create, :update, :destroy]
       before_filter :read_privileges?, only: [:index, :show]
+      before_filter :write_privileges?, only: [:create, :update, :destroy]
 
       def index
         render_jsonp(@user_table.service.schema(cartodb_types: true))
@@ -24,6 +25,31 @@ module Carto
         render_jsonp({ errors: "Column #{params[:id]} doesn't exist" }, 404)
       end
 
+      def create
+        render_jsonp(@user_table.service.add_column!(params.slice(:type, :name)))
+      rescue => e
+        errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+        render_jsonp({ errors: errors }, 400)
+      end
+
+      def update
+        render_jsonp(@user_table.service.modify_column!(name: params[:id],
+                                                        type: params[:type],
+                                                        new_name: params[:new_name]))
+      rescue => e
+        errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+        render_jsonp({ errors: errors }, 400)
+      end
+
+      def destroy
+        @user_table.service.drop_column!(name: params[:id])
+
+        head :no_content
+      rescue => e
+        errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+        render_jsonp({ errors: errors }, 400)
+      end
+
       protected
 
       def load_user_table
@@ -33,6 +59,10 @@ module Carto
 
       def read_privileges?
         head(401) unless current_user && @user_table.visualization.is_viewable_by_user?(current_user)
+      end
+
+      def write_privileges?
+        head(401) unless current_user && @user_table.visualization.writable_by?(current_user)
       end
     end
   end

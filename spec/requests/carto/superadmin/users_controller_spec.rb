@@ -228,4 +228,31 @@ describe Carto::Superadmin::UsersController do
       end
     end
   end
+
+  describe '#destroy' do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'should return specific error when user has related entities' do
+      User.any_instance.stubs(:destroy).raises(CartoDB::SharedEntitiesError, 'Cannot delete user, has shared entities')
+      delete_json(superadmin_user_url(@user), {}, superadmin_headers) do |response|
+        response.status.should eq 422
+        response.body[:errorCode].should eq 'userHasSharedEntities'
+      end
+      User.any_instance.unstub(:destroy)
+    end
+
+    it 'should remove user with shared entities if force is present' do
+      User.any_instance.stubs(:has_shared_entities?).returns(true)
+      delete_json(superadmin_user_url(@user), { force: true }, superadmin_headers) do |response|
+        response.status.should eq 204
+      end
+      User.any_instance.unstub(:has_shared_entities?)
+    end
+  end
 end

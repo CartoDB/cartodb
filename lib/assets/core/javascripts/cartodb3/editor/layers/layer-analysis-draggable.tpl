@@ -1,4 +1,4 @@
-<li class="Editor-newLayerContainer" data-analysis-node-id="<%- nodeId %>" style="width: 294px;">
+<li class="Editor-newLayerContainer" data-layer-letter="<%- layerLetter %>" data-analysis-node-id="<%- nodeId %>" style="width: 294px;">
   <div class="Editor-ListLayer-item">
     <div class="Editor-ListLayer-itemHeader">
       <div class="Editor-ListLayer-media u-rSpace--m" style="background: <%- nextBgColor %>; color: #fff">

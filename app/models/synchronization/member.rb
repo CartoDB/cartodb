@@ -8,9 +8,11 @@ require_relative '../../../services/datasources/lib/datasources'
 require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
+require_relative '../../../services/importer/lib/importer/overviews'
 require_relative '../../../lib/cartodb/errors'
 require_relative '../../../lib/cartodb/import_error_codes'
 require_relative '../../../services/platform-limits/platform_limits'
+
 require_dependency 'carto/configuration'
 
 include CartoDB::Datasources
@@ -136,6 +138,8 @@ module CartoDB
 
       def enqueue
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+        self.error_code = nil
+        self.error_message = nil
         self.state = CartoDB::Synchronization::Member::STATE_QUEUED
         self.store
       end
@@ -185,7 +189,8 @@ module CartoDB
         runner = service_name == 'connector' ? get_connector : get_runner
 
         database = user.in_database
-        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
+        overviews_creator = CartoDB::Importer2::Overviews.new(runner, user)
+        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user, overviews_creator)
 
         importer.run
         self.ran_at   = Time.now
@@ -202,7 +207,11 @@ module CartoDB
         notify
 
       rescue => exception
-        CartoDB::Logger.error(exception: exception, sync_id: id)
+        if exception.is_a? CartoDB::Datasources::NotFoundDownloadError
+          CartoDB::Logger.debug(exception: exception, sync_id: id)
+        else
+          CartoDB::Logger.error(exception: exception, sync_id: id)
+        end
         log.append_and_store exception.message, truncate = false
         log.append exception.backtrace.join("\n"), truncate = false
 
@@ -257,7 +266,7 @@ module CartoDB
           downloader: downloader,
           log: log,
           user: user,
-          unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+          unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer], Cartodb.config[:ogr2ogr]),
           post_import_handler: post_import_handler,
           importer_config: Cartodb.config[:importer]
         )

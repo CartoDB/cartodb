@@ -1,15 +1,18 @@
 # encoding: UTF-8
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
-require_dependency 'oauth/github/config'
+require_dependency 'carto/oauth/github/config'
+require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'
 require_dependency 'carto/username_proposer'
+require_dependency 'carto/email_cleaner'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
   include LoginHelper
+  include Carto::EmailCleaner
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
@@ -27,12 +30,11 @@ class SessionsController < ApplicationController
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
   before_filter :load_organization
-  before_filter :initialize_google_plus_config,
-                :initialize_github_config
+  before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
 
   def new
-    if current_viewer.try(:subdomain) == CartoDB.extract_subdomain(request)
+    if current_viewer
       redirect_to(CartoDB.url(self, 'dashboard', { trailing_slash: true }, current_viewer))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
@@ -45,9 +47,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategies, username = ldap_strategy_username || saml_strategy_username ||
+    strategies, username = saml_strategy_username || ldap_strategy_username ||
                            google_strategy_username || credentials_strategy_username
-    return render(action: 'new') unless strategies
+
+    unless strategies
+      return saml_authentication? ? render_403 : render(action: 'new')
+    end
 
     candidate_user = Carto::User.where(username: username).first
 
@@ -60,7 +65,7 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to session[:return_to] || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+    redirect_to session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
   end
 
   def destroy
@@ -161,27 +166,24 @@ class SessionsController < ApplicationController
 
   protected
 
-  def initialize_google_plus_config
-
-    if !@organization.nil?
-      # TODO: remove duplication (app/controllers/admin/organizations_controller.rb)
-      signup_action = "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
-    elsif central_enabled?
-      signup_action = Cartodb::Central.new.google_signup_url
-    else
-      signup_action = '/google/signup'
-    end
-
-    button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', button_color)
+  def initialize_oauth_config
+    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+    @oauth_configs = [google_plus_config, github_config].compact
   end
 
-  def initialize_github_config
+  def google_plus_config
+    unless @organization && !@organization.auth_google_enabled
+      Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
+                                            invitation_token: params[:invitation_token],
+                                            organization_name: @organization.try(:name))
+    end
+  end
+
+  def github_config
     unless @organization && !@organization.auth_github_enabled
-      @github_config = Carto::Github::Config.instance(form_authenticity_token,
-                                                      invitation_token: params[:invitation_token],
-                                                      organization_name: @organization.try(:name))
-      @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+      Carto::Oauth::Github::Config.instance(form_authenticity_token, github_url,
+                                            invitation_token: params[:invitation_token],
+                                            organization_name: @organization.try(:name))
     end
   end
 
@@ -203,7 +205,7 @@ class SessionsController < ApplicationController
   end
 
   def username_from_user_by_email(email)
-    ::User.where(email: email).first.try(:username)
+    ::User.where(email: clean_email(email)).first.try(:username)
   end
 
   def ldap_strategy_username
@@ -220,8 +222,8 @@ class SessionsController < ApplicationController
       if email
         [:saml, username_from_user_by_email(email)]
       else
-        verify_authenticity_token
-        nil
+        # This stops trying other strategies. Important because CSRF is not checked for SAML.
+        [nil, nil]
       end
     end
   end
@@ -290,11 +292,18 @@ class SessionsController < ApplicationController
       redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
     elsif params[:SAMLResponse]
       # We've been given a response back from the IdP, process it
-      saml_service.process_logout_response(params[:SAMLResponse]) { cdb_logout }
+      begin
+        saml_service.process_logout_response(params[:SAMLResponse])
+      rescue => e
+        CartoDB::Logger.warning(exception: e, message: 'Error proccessing SAML logout')
+      ensure
+        cdb_logout
+      end
+
       redirect_to default_logout_url
     else
       # Initiate SLO (send Logout Request)
-      redirect_to saml_service.sp_logout_request
+      redirect_to saml_service.sp_logout_request(current_user)
     end
   end
 

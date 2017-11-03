@@ -14,17 +14,17 @@ Sequel.migration do
     end
 
     # Note: add "NOT VALID" at the end of each FK if validation takes long.
-    Rails::Sequel.connection.run(%{
+    SequelRails.connection.run(%{
       ALTER TABLE visualization_exports
         ADD CONSTRAINT visualization_exports_visualization_id_fkey FOREIGN KEY (visualization_id)
           REFERENCES visualizations (id) ON DELETE CASCADE NOT VALID;
     })
-    Rails::Sequel.connection.run(%{
+    SequelRails.connection.run(%{
       ALTER TABLE visualization_exports
         ADD CONSTRAINT visualization_exports_user_id_fkey FOREIGN KEY (user_id)
           REFERENCES users (id) ON DELETE CASCADE;
     })
-    Rails::Sequel.connection.run(%{
+    SequelRails.connection.run(%{
       ALTER TABLE visualization_exports
         ADD CONSTRAINT visualization_exports_log_id_fkey FOREIGN KEY (log_id)
           REFERENCES logs (id) ON DELETE CASCADE;

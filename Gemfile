@@ -11,11 +11,11 @@ gem 'activerecord-postgresql-adapter'
 # NOTE: Forced on purpose due to this bug https://github.com/tlconnor/activerecord-postgres-array/issues/37
 gem 'activerecord-postgres-array', '0.0.9'
 
-gem 'vizzuality-sequel-rails', '0.3.7', git: 'https://github.com/Vizzuality/sequel-rails.git'
+gem 'sequel-rails', '0.9.15'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
-gem 'oauth',                   '0.4.5'
+gem 'oauth',                   '0.5.1'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'redis',                   '3.3.0'
@@ -33,7 +33,7 @@ gem 'addressable',             '2.3.2', require: 'addressable/uri'
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
 
-gem 'net-ldap',                '0.11'
+gem 'net-ldap',                '0.16.0'
 gem 'json-schema',             '2.0.0'
 
 group :production, :staging do
@@ -50,12 +50,12 @@ end
 gem 'roo',                     '1.13.2'
 gem 'state_machine',           '1.1.2'
 gem 'typhoeus',                '0.7.2'
-gem 'charlock_holmes',         '0.7.2'
+gem 'charlock_holmes',         '0.7.5'
 gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'
 gem 'retriable',               '1.4.1'  # google-api-client needs this
 gem 'google-api-client',       '0.7.0'
-gem 'dropbox-sdk',             '1.6.3'
+gem 'dropbox_api',             '0.1.6'
 gem 'instagram',               '1.1.6'
 gem 'gibbon',                  '1.1.4'
 
@@ -129,11 +129,7 @@ gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 require File.dirname(__FILE__) + '/lib/carto/carto_gears_support'
 
 Carto::CartoGearsSupport.new.gears.each do |gear|
-  if gear.installable
-    gemspec path: gear.path
-  else
-    gear.gemspec.runtime_dependencies.each do |dependency|
-      gem dependency.name, dependency.requirements_list
-    end
+  gear.gemspec.runtime_dependencies.each do |dependency|
+    gem dependency.name, dependency.requirements_list
   end
 end

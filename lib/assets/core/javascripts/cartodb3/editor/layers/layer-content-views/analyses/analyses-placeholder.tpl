@@ -6,6 +6,6 @@
   </ul>
 
   <button class="CDB-Button CDB-Button--primary js-add-analysis">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('editor.layers.layer.add-analysis') %></span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('editor.layers.layer.add-analysis') %></span>
   </button>
 </div>

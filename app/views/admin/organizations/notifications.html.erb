@@ -9,8 +9,8 @@
         </div>
         <div class="FormAccount-rowData">
           <%= f.text_area :body, :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth OrganizationNotifications-textarea js-textarea" %>
-          <div class="Md-container">
-            <a href="http://commonmark.org/help/" class="Md-button u-rSpace--m" target="_blank">
+          <div class="Md-container" data-title="*Italic*, **Bold** and [Link](http://url.com) supported">
+            <span class="Md-icon u-rSpace--m">
               <svg width="16px" height="8px" viewBox="0 0 16 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="Md-buttonInner">
                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                   <g fill-rule="nonzero" fill="#FFFFFF">
@@ -19,9 +19,9 @@
                   </g>
                 </g>
               </svg>
-            </a>
+            </span>
 
-            <p class="Md-text CDB-Text CDB-Size-small"><a href="http://commonmark.org/help/" class="u-altTextColor" target="_blank">Markdown supported</a></p>
+            <p class="Md-text CDB-Text CDB-Size-small u-altTextColor">Supported markup</p>
           </div>
         </div>
         <div class="FormAccount-rowInfo">

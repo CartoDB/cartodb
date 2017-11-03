@@ -1,5 +1,4 @@
-require_dependency 'carto_gears_api/helpers/url_helper'
-require_dependency 'carto_gears_api/users/users_service'
+require_dependency 'cartodb_config_utils'
 
 module CartoGearsApi
   module Helpers

@@ -9,9 +9,7 @@
     </div>
     <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--xl">
       <%- _t('editor.layers.layer.analysis') %> <%- selectedNodeId %>
-      <% if (canDelete) { %>
-        <button class="js-delete u-actionTextColor u-upperCase"><%- deleteLabel %></button>
-      <% } %>
     </p>
+    <div style="height: 62px;" class="ie11-hotfix"></div>
   </div>
 </div>

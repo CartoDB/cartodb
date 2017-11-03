@@ -22,6 +22,13 @@ module OrganizationUsersHelper
     end
   end
 
+  def admins_only
+    unless @organization.admin?(current_viewer)
+      render_jsonp({}, 401)
+      false
+    end
+  end
+
   def load_user
     @user = ::User.where(username: params[:u_username], organization: @organization).first
 

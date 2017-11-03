@@ -27,7 +27,7 @@ describe Carto::Api::SynchronizationsController do
     end
 
     before(:each) do
-      @db = Rails::Sequel.connection
+      @db = SequelRails.connection
       Sequel.extension(:pagination)
 
       CartoDB::Synchronization.repository = DataRepository::Backend::Sequel.new(@db, :synchronizations)

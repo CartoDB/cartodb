@@ -333,7 +333,6 @@ module CartoDB
             data[:size] = item_data.fetch('fileSize').to_i
           else
             # Downloads from files shared by other people can be disabled, ignore them
-            CartoDB.notify_debug('Non downloadable file @gdrive', item: item_data.inspect, user: @user)
             return nil
           end
           data

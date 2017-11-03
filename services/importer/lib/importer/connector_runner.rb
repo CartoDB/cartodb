@@ -2,6 +2,7 @@
 
 require 'carto/connector'
 require_relative 'exceptions'
+require_relative 'georeferencer'
 require_relative 'runner_helper'
 
 module CartoDB
@@ -28,6 +29,7 @@ module CartoDB
         @job        = options[:job] || new_job(@log, @pg_options)
         @user       = options[:user]
         @collision_strategy = options[:collision_strategy]
+        @georeferencer      = options[:georeferencer] || new_georeferencer(@job)
 
         @id = @job.id
         @unique_suffix = @id.delete('-')
@@ -49,6 +51,8 @@ module CartoDB
         if should_import?(@connector.remote_table_name)
           @job.log "Copy connected table"
           warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
+          @job.log 'Georeference geometry column'
+          georeference
           @warnings.merge! warnings if warnings.present?
         else
           @job.log "Table #{table_name} won't be imported"
@@ -62,6 +66,12 @@ module CartoDB
           @job.log "job schema: #{@job.schema}"
           @results.push result_for(@job.schema, table_name)
         end
+      end
+
+      def georeference
+        @georeferencer.run
+      rescue => error
+        @job.log "ConnectorRunner Error while georeference #{error}"
       end
 
       def remote_data_updated?
@@ -132,6 +142,10 @@ module CartoDB
 
       def new_job(log, pg_options)
         Job.new(logger: log, pg_options: pg_options)
+      end
+
+      def new_georeferencer(job)
+        Georeferencer.new(job.db, job.table_name, {}, Georeferencer::DEFAULT_SCHEMA, job)
       end
 
       UNKNOWN_ERROR_CODE = 99999

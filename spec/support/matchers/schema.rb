@@ -67,7 +67,7 @@ RSpec::Matchers.define :pass_sql_tests do
       # set it themselves, and the presence of a quota set by superuser
       # prevents them from doing that.
       user_database.run("DROP FUNCTION IF EXISTS cartodb._CDB_UserQuotaInBytes();");
-      config = ::Rails::Sequel.configuration.environment_for(Rails.env)
+      config = ::SequelRails.configuration.environment_for(Rails.env)
       env = ""
       env += " PGPORT=#{config['port']}" if config.has_key?('port')
       env += " PGHOST=#{config['host']}" if config.has_key?('host')

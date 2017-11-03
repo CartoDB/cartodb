@@ -9,7 +9,7 @@ include CartoDB
 
 describe Visualization::Relator do
   before do
-    @db = Rails::Sequel.connection
+    @db = SequelRails.connection
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)

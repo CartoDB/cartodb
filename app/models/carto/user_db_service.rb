@@ -25,7 +25,7 @@ module Carto
     end
 
     def public_user_roles
-      @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.database_public_username] : [CartoDB::PUBLIC_DB_USER]
+      @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.service.database_public_username] : [CartoDB::PUBLIC_DB_USER]
     end
 
     # Execute a query in the user database

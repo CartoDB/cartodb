@@ -50,7 +50,8 @@ class Asset < Sequel::Model
   end
 
   def validate_file
-    unless VALID_EXTENSIONS.include?(asset_file_extension)
+    extension = asset_file_extension
+    unless VALID_EXTENSIONS.include?(extension)
       errors.add(:file, "has invalid format")
       return
     end
@@ -67,7 +68,7 @@ class Asset < Sequel::Model
       return
     end
 
-    metadata = CartoDB::ImageMetadata.new(@file.path)
+    metadata = CartoDB::ImageMetadata.new(@file.path, extension: extension)
     errors.add(:file, "is too big, 1024x1024 max") if metadata.width > 1024 || metadata.height > 1024
     # If metadata reports no size, 99% sure not valid, so out
     errors.add(:file, "doesn't appear to be an image") if metadata.width == 0 || metadata.height == 0
@@ -128,13 +129,11 @@ class Asset < Sequel::Model
     mode = chmod_mode
     FileUtils.chmod(mode, local_filename(filename)) if mode
 
-    p = File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
-    "#{asset_protocol}//#{CartoDB.account_host}#{p}"
+    File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
   end
 
   def use_s3?
-    Cartodb.config[:assets]["s3_bucket_name"].present? &&
-    Cartodb.config[:aws]["s3"].present?
+    Cartodb.get_config(:assets, "s3_bucket_name") && Cartodb.get_config(:aws, "s3")
   end
 
   def remove

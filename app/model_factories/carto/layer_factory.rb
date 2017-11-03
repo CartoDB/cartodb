@@ -30,7 +30,7 @@ module Carto
       user = user_table.user
       geometry_type = user_table.geometry_type
 
-      data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'])
+      data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'].deep_dup)
       layer_options = data_layer.options
       layer_options['table_name'] = user_table.name
       layer_options['user_name'] = user.username

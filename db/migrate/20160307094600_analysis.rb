@@ -11,7 +11,7 @@ Sequel.migration do
 
     add_index :analyses, :visualization_id
 
-    Rails::Sequel.connection.run(%{
+    SequelRails.connection.run(%{
       create index analysis_params_id on analyses ((params->>'id'))
     })
   end

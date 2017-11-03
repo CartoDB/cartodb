@@ -17,7 +17,7 @@
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('builder-onboarding.take-tour')%></span>
         </button>
 
-        <button class="CDB-Button CDB-Button--primary CDB-Button--big js-close">
+        <button class="CDB-Button CDB-Button--primary CDB-Button--big js-close track-onboarding--editMap">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('builder-onboarding.edit-map')%></span>
         </button>
       </div>

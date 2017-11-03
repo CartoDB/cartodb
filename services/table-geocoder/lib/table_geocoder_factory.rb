@@ -19,7 +19,7 @@ module Carto
       if user == table_service.owner
         user_connection = user.in_database
       else
-        if !table_service.table_visualization.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+        if !table_service.table_visualization.has_permission?(user, Carto::Permission::ACCESS_READWRITE)
           raise 'Insufficient permissions on table'
         end
         user_connection = table_service.owner.in_database

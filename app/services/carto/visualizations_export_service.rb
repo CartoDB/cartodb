@@ -90,17 +90,17 @@ module Carto
 
       description = dump_data["description"]
 
-      default_privacy = CartoDB::Visualization::Member::PRIVACY_LINK
-      privacy = user.valid_privacy?(default_privacy) ? default_privacy : CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      default_privacy = Carto::Visualization::PRIVACY_LINK
+      privacy = user.valid_privacy?(default_privacy) ? default_privacy : Carto::Visualization::PRIVACY_PUBLIC
       visualization = create_visualization(
         id: dump_data["id"],
         name: dump_data["title"],
         description: (description.nil? || description.empty?) ? "" : CGI.unescapeHTML(description),
-        type: CartoDB::Visualization::Member::TYPE_DERIVED,
+        type: Carto::Visualization::TYPE_DERIVED,
         privacy: privacy,
         user_id: user.id,
         map_id: map.id,
-        kind: CartoDB::Visualization::Member::KIND_GEOM
+        kind: Carto::Visualization::KIND_GEOM
       )
 
       add_overlays(visualization, dump_data)
@@ -246,8 +246,9 @@ module Carto
     end
 
     def create_visualization(attributes)
-      visualization = CartoDB::Visualization::Member.new(attributes)
-      visualization.store
+      visualization = Carto::Visualization.new(attributes)
+      visualization.id = attributes[:id]
+      visualization.save!
       visualization
     end
 

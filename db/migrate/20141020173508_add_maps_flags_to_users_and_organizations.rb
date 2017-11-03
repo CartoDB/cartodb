@@ -8,9 +8,9 @@ Sequel.migration do
   end
 
   down do
-    Rails::Sequel::connection.run 'ALTER TABLE organizations DROP COLUMN IF EXISTS here_maps_enabled'
-    Rails::Sequel::connection.run 'ALTER TABLE organizations DROP COLUMN IF EXISTS stamen_maps_enabled'
-    Rails::Sequel::connection.run 'ALTER TABLE users DROP COLUMN IF EXISTS here_maps_enabled'
-    Rails::Sequel::connection.run 'ALTER TABLE users DROP COLUMN IF EXISTS stamen_maps_enabled'
+    SequelRails::connection.run 'ALTER TABLE organizations DROP COLUMN IF EXISTS here_maps_enabled'
+    SequelRails::connection.run 'ALTER TABLE organizations DROP COLUMN IF EXISTS stamen_maps_enabled'
+    SequelRails::connection.run 'ALTER TABLE users DROP COLUMN IF EXISTS here_maps_enabled'
+    SequelRails::connection.run 'ALTER TABLE users DROP COLUMN IF EXISTS stamen_maps_enabled'
   end
 end

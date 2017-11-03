@@ -46,21 +46,41 @@ describe Carto::Widget do
     end
   end
 
-  describe 'Format and validation' do
-    before(:each) do
-      @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' })
+  describe 'Validations' do
+    describe 'Format and validation' do
+      before(:each) do
+        @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' })
+      end
+
+      it 'validates correct options format' do
+        @widget.valid?.should be_true
+        @widget.errors[:options].empty?.should be_true
+      end
+
+      it 'validates incorrect options format' do
+        @widget.options = 'badformat'
+
+        @widget.valid?.should be_false
+        @widget.errors[:options].empty?.should be_false
+      end
     end
 
-    it 'validates correct options format' do
-      @widget.valid?.should be_true
-      @widget.errors[:options].empty?.should be_true
-    end
+    describe 'Source id validation' do
+      before(:each) do
+        @widget = FactoryGirl.build(:widget_with_layer, source_id: 'foo')
+      end
 
-    it 'validates incorrect options format' do
-      @widget.options = 'badformat'
+      it 'accepts source id if cames as string' do
+        expect(@widget.valid?).to be_true
+        expect(@widget.errors[:source_id]).to eq([])
+      end
 
-      @widget.valid?.should be_false
-      @widget.errors[:options].empty?.should be_false
+      it 'rejects source id if cames as a hash' do
+        @widget.source_id = { foo: 'bar' }
+
+        expect(@widget.valid?).to be_false
+        expect(@widget.errors[:source_id]).to include('Source id must be a string')
+      end
     end
   end
 

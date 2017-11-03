@@ -2,7 +2,7 @@
 
 class VisualizationsTagsMigration < Sequel::Migration
   def up
-    Rails::Sequel.connection.run(%q{
+    SequelRails.connection.run(%q{
       ALTER TABLE "visualizations"
       ADD COLUMN tags text[]
     })

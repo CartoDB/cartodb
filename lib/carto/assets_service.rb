@@ -28,7 +28,8 @@ module Carto
     end
 
     def fetch_file(resource)
-      temp_file = Tempfile.new(["asset_download_#{Time.now.utc.to_i}", resource_extension(resource)])
+      extension = resource_extension(resource)
+      temp_file = Tempfile.new(["asset_download_#{Time.now.utc.to_i}", extension])
 
       begin
         read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)
@@ -40,6 +41,8 @@ module Carto
       ensure
         temp_file.close
       end
+
+      validate_image_file(temp_file, extension)
 
       temp_file
     end
@@ -59,6 +62,15 @@ module Carto
 
       raise UnprocesableEntityError.new("extension not accepted") unless VALID_EXTENSIONS.include?(extension)
       extension
+    end
+
+    MAX_IMAGE_SIDE = 1024
+
+    def validate_image_file(file, extension)
+      metadata = CartoDB::ImageMetadata.new(file.path, extension: extension)
+      if metadata.width > MAX_IMAGE_SIDE || metadata.height > MAX_IMAGE_SIDE
+        raise UnprocesableEntityError.new("file is too big, #{MAX_IMAGE_SIDE}x#{MAX_IMAGE_SIDE} max")
+      end
     end
   end
 end

@@ -27,6 +27,7 @@ module Carto
             email:      @organization.owner ? @organization.owner.email : nil,
             groups:     @organization.owner && @organization.owner.groups ? @organization.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
           },
+          admins:                     @organization.users.where(org_admin: true).map { |u| { id: u.id } },
           quota_in_bytes:             @organization.quota_in_bytes,
           unassigned_quota:           @organization.unassigned_quota,
           geocoding_quota:            @organization.geocoding_quota,

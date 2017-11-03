@@ -704,7 +704,7 @@ shared_examples_for 'permission models' do
         permission.acl = [
           {
             type: Permission::TYPE_USER,
-            entity: { id:   @carto_org_user_2.id },
+            entity: { id: @carto_org_user_2.id },
             access: Permission::ACCESS_READONLY
           }
         ]
@@ -729,7 +729,7 @@ shared_examples_for 'permission models' do
         permission.acl = [
           {
             type: Permission::TYPE_GROUP,
-            entity: { id:   @group.id },
+            entity: { id: @group.id },
             access: Permission::ACCESS_READONLY
           }
         ]

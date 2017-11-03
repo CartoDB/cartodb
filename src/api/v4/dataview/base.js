@@ -15,34 +15,83 @@ function Base () {}
 
 _.extend(Base.prototype, Backbone.Events);
 
+/**
+ * Return the current dataview status
+ *
+ * @return {carto.dataview.STATUS} Current dataview status
+ * @api
+ */
 Base.prototype.getStatus = function () {
   return this._status;
 };
 
+/**
+ * Return true is the current status is loading
+ *
+ * @return {boolean}
+ * @api
+ */
 Base.prototype.isLoading = function () {
   return this._status === STATUS.LOADING;
 };
 
+/**
+ * Return true is the current status is loaded
+ *
+ * @return {boolean}
+ * @api
+ */
 Base.prototype.isLoaded = function () {
   return this._status === STATUS.LOADED;
 };
 
+/**
+ * Return true is the current status is error
+ *
+ * @return {boolean}
+ * @api
+ */
 Base.prototype.hasError = function () {
   return this._status === STATUS.ERROR;
 };
 
+/**
+ * Enable the dataview
+ *
+ * @return {carto.dataview.Base} this
+ * @api
+ */
 Base.prototype.enable = function () {
   return this._setEnabled(true);
 };
 
+/**
+ * Disable the dataview
+ *
+ * @return {carto.dataview.Base} this
+ * @api
+ */
 Base.prototype.disable = function () {
   return this._setEnabled(false);
 };
 
+/**
+ * Return true if the dataview is enabled
+ *
+ * @return {boolean}
+ * @api
+ */
 Base.prototype.isEnabled = function () {
   return this._enabled;
 };
 
+/**
+ * Set the dataview column
+ *
+ * @param  {string} column
+ * @return {carto.dataview.Base} this
+ * @api
+ */
 Base.prototype.setColumn = function (column) {
   this._checkColumn(column);
   this._column = column;
@@ -52,6 +101,12 @@ Base.prototype.setColumn = function (column) {
   return this;
 };
 
+/**
+ * Return the current dataview column
+ *
+ * @return {string} Current dataview column
+ * @api
+ */
 Base.prototype.getColumn = function () {
   return this._column;
 };

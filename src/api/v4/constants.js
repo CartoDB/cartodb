@@ -6,20 +6,27 @@ var _ = require('underscore');
 /**
  * Enum for operation values.
  *
- * @enum {string} carto.operation
+ * @enum {string} carto.OPERATION
  * @readonly
  * @memberof carto
  * @api
  */
-var operation = {
+var OPERATION = {
   COUNT: 'count',
   SUM: 'sum',
   AVG: 'avg',
   MAX: 'max',
   MIN: 'min'
 };
-var OPERATION = operation;
 
+/**
+ * Enum for dataview status values.
+ *
+ * @enum {string} carto.dataview.STATUS
+ * @readonly
+ * @memberof carto.dataview
+ * @api
+ */
 var STATUS = {
   NOT_LOADED: 'notLoaded',
   LOADING: 'loading',

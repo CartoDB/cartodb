@@ -7,7 +7,9 @@
  */
 
 var Formula = require('./formula');
+var STATUS = require('../constants').STATUS;
 
 module.exports = {
-  Formula: Formula
+  Formula: Formula,
+  STATUS: STATUS
 };

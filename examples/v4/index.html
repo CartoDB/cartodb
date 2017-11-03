@@ -91,30 +91,36 @@
 
             // Dataviews
             var formulaDataview = new carto.dataview.Formula(source1, 'pop_max', {
-              operation: carto.operation.AVG
+              operation: carto.OPERATION.AVG
             });
             window.formula1 = formulaDataview;
 
             formulaDataview.on('dataChanged', function (newData) {
               document.getElementById('widget').innerHTML = newData.operation.toUpperCase() + ' ' + newData.result;
-              console.log('DATA', newData);
+              console.log('Data changed', newData);
             });
-            
+
             formulaDataview.on('columnChanged', function (newColumn) {
-              console.log('COLUMN', newColumn);
+              console.log('Column changed', newColumn);
             });
-            
+
             formulaDataview.on('statusChanged', function (newStatus, error) {
-              console.log('STATUS', newStatus, error);
+              console.log('Status changed', newStatus, error);
+              if (newStatus === carto.dataview.STATUS.LOADING) {
+                console.log('loading');
+              }
+              if (newStatus === carto.dataview.STATUS.LOADED) {
+                console.log('loaded');
+              }
             });
-            
+
             formulaDataview.on('operationChanged', function (newOperation) {
-              console.log('OPERATION', newOperation);
+              console.log('Operation changed', newOperation);
             });
 
             client.addDataview(formulaDataview);
 
-            formulaDataview.setOperation(carto.operation.MAX);
+            formulaDataview.setOperation(carto.OPERATION.MAX);
         })();
 
     </script>

@@ -9,7 +9,7 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  * @param {carto.source.Base} source - The source where the datavew will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
- * @param {arto.operation} options.operation - The operation to apply to the data.
+ * @param {carto.OPERATION} options.operation - The operation to apply to the data.
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -25,7 +25,7 @@ Formula.prototype = Object.create(Base.prototype);
 /**
  * Set the dataview operation
  *
- * @param  {carto.operation} operation
+ * @param  {carto.OPERATION} operation
  * @return {carto.dataview.Formula} this
  * @api
  */
@@ -41,7 +41,7 @@ Formula.prototype.setOperation = function (operation) {
 /**
  * Return the current dataview operation
  *
- * @return {carto.operation} Current dataview operation
+ * @return {carto.OPERATION} Current dataview operation
  * @api
  */
 Formula.prototype.getOperation = function () {

@@ -31,5 +31,5 @@ module.exports = {
   style: style,
   layer: layer,
   dataview: dataview,
-  operation: OPERATION
+  OPERATION: OPERATION
 };

@@ -43,11 +43,11 @@
                 username: 'cartojs-test'
             });
 
-            client.on(carto.Events.SUCCESS, function () {
+            client.on(carto.EVENTS.SUCCESS, function () {
                 console.log('Client reloaded', i++)
             });
 
-            client.on(carto.Events.ERROR, function () {
+            client.on(carto.EVENTS.ERROR, function () {
                 console.error('Client Error!', i++)
             });
 

@@ -61,15 +61,15 @@ describe('formula dataview public v4 API', function () {
       var dataview = new carto.dataview.Formula(source, column);
 
       expect(dataview._options).toBeDefined();
-      expect(dataview._options.operation).toEqual(carto.operation.COUNT);
+      expect(dataview._options.operation).toEqual(carto.OPERATION.COUNT);
     });
 
     it('options set to the provided value', function () {
       var dataview = new carto.dataview.Formula(source, 'population', {
-        operation: carto.operation.AVG
+        operation: carto.OPERATION.AVG
       });
 
-      expect(dataview._options.operation).toEqual(carto.operation.AVG);
+      expect(dataview._options.operation).toEqual(carto.OPERATION.AVG);
     });
 
     it('throw error if no correct operation is provided', function () {
@@ -79,7 +79,7 @@ describe('formula dataview public v4 API', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.OPERATION');
     });
   });
 
@@ -95,13 +95,13 @@ describe('formula dataview public v4 API', function () {
         dataview.setOperation('swordfish');
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.OPERATION');
     });
 
     it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
-      var returnedObject = dataview.setOperation(carto.operation.AVG);
+      var returnedObject = dataview.setOperation(carto.OPERATION.AVG);
 
-      expect(dataview.getOperation()).toEqual(carto.operation.AVG);
+      expect(dataview.getOperation()).toEqual(carto.OPERATION.AVG);
       expect(returnedObject).toBe(dataview);
     });
 
@@ -109,11 +109,11 @@ describe('formula dataview public v4 API', function () {
       var internalModel = createFakeInternalModel();
       dataview._internalModel = internalModel;
 
-      dataview.setOperation(carto.operation.AVG);
+      dataview.setOperation(carto.OPERATION.AVG);
 
       var operationArgs = internalModel.set.calls.mostRecent().args;
       expect(operationArgs[0]).toEqual('operation');
-      expect(operationArgs[1]).toEqual(carto.operation.AVG);
+      expect(operationArgs[1]).toEqual(carto.OPERATION.AVG);
     });
   });
 
@@ -122,7 +122,7 @@ describe('formula dataview public v4 API', function () {
 
     beforeEach(function () {
       dataview = new carto.dataview.Formula(source, 'population', {
-        operation: carto.operation.SUM
+        operation: carto.OPERATION.SUM
       });
     });
 
@@ -140,7 +140,7 @@ describe('formula dataview public v4 API', function () {
 
       expect(data).toEqual({
         type: 'formula',
-        operation: carto.operation.SUM,
+        operation: carto.OPERATION.SUM,
         result: 1234,
         nulls: 42
       });
@@ -153,7 +153,7 @@ describe('formula dataview public v4 API', function () {
 
     beforeEach(function () {
       dataview = new carto.dataview.Formula(source, 'population', {
-        operation: carto.operation.MIN
+        operation: carto.OPERATION.MIN
       });
       engine = createFakeEngine();
     });
@@ -183,14 +183,14 @@ describe('formula dataview public v4 API', function () {
       });
       dataview.$setEngine(engine);
 
-      dataview.setOperation(carto.operation.MAX);
+      dataview.setOperation(carto.OPERATION.MAX);
 
       expect(operationChangedTriggered).toBe(true);
 
       // Now directly in the internal model
       operationChangedTriggered = false;
 
-      dataview.$getInternalModel().set('operation', carto.operation.COUNT);
+      dataview.$getInternalModel().set('operation', carto.OPERATION.COUNT);
 
       expect(operationChangedTriggered).toBe(true);
     });

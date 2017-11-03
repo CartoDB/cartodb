@@ -90,14 +90,14 @@ Formula.prototype._onOperationChanged = function () {
 
 Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Operation option for formula dataview is not valid. Use carto.operation');
+    throw new TypeError('Operation option for formula dataview is not valid. Use carto.OPERATION');
   }
   this._checkOperation(options.operation);
 };
 
 Formula.prototype._checkOperation = function (operation) {
   if (_.isUndefined(operation) || !constants.isValidOperation(operation)) {
-    throw new TypeError('Operation for formula dataview is not valid. Use carto.operation');
+    throw new TypeError('Operation for formula dataview is not valid. Use carto.OPERATION');
   }
 };
 

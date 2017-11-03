@@ -28,7 +28,7 @@ function Layer (source, style, options) {
   this._engine = undefined;
   this._internalModel = undefined;
 
-  this.id = options.id || Layer.generateId();
+  this.id = options.id || Layer.$generateId();
   this._source = source;
   this._style = style;
   this._visible = true;
@@ -129,9 +129,9 @@ Layer.prototype._reloadEngine = function () {
   return Promise.resolve();
 };
 
-Layer.nextId = 0;
-Layer.generateId = function () {
-  return 'L' + ++Layer.nextId;
+Layer.$nextId = 0;
+Layer.$generateId = function () {
+  return 'L' + ++Layer.$nextId;
 };
 
 function getInteractivityFields (columns) {

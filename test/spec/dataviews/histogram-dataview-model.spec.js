@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
-var RangeFilter = require('../../../src/windshaft/filters/range');
+var WindshaftFiltersRange = require('../../../src/windshaft/filters/range');
+var WindshaftFiltersBoundingBox = require('../../../src/windshaft/filters/bounding-box');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');
 var MockFactory = require('../../helpers/mockFactory');
@@ -18,7 +19,8 @@ describe('dataviews/histogram-dataview-model', function () {
     engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
 
-    this.filter = new RangeFilter();
+    this.filter = new WindshaftFiltersRange();
+    this.bboxFilter = new WindshaftFiltersBoundingBox(this.map);
 
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
@@ -30,9 +32,9 @@ describe('dataviews/histogram-dataview-model', function () {
     this.model = new HistogramDataviewModel({
       source: this.source
     }, {
-      map: this.map,
       engine: engineMock,
-      filter: this.filter
+      filter: this.filter,
+      bboxFilter: this.bboxFilter
     });
   });
 
@@ -69,9 +71,9 @@ describe('dataviews/histogram-dataview-model', function () {
       apiKey: 'API_KEY',
       source: this.source
     }, {
-      map: this.map,
       engine: engineMock,
-      filter: this.filter
+      filter: this.filter,
+      bboxFilter: this.bboxFilter
     });
 
     expect(this.model._totals.get('apiKey')).toEqual('API_KEY');
@@ -239,9 +241,9 @@ describe('dataviews/histogram-dataview-model', function () {
       var model = new HistogramDataviewModel({
         source: this.source
       }, {
-        map: this.map,
         engine: engineMock,
-        filter: this.filter
+        filter: this.filter,
+        bboxFilter: this.bboxFilter
       });
 
       model.set(model.parse(data));
@@ -265,9 +267,9 @@ describe('dataviews/histogram-dataview-model', function () {
       var model = new HistogramDataviewModel({
         source: this.source
       }, {
-        map: this.map,
         engine: engineMock,
-        filter: this.filter
+        filter: this.filter,
+        bboxFilter: this.bboxFilter
       });
 
       model.set(model.parse(data));
@@ -290,7 +292,7 @@ describe('dataviews/histogram-dataview-model', function () {
         nulls: 0,
         type: 'histogram'
       };
-      this.model.filter = new RangeFilter({ min: 1, max: 3 });
+      this.model.filter = new WindshaftFiltersRange({ min: 1, max: 3 });
 
       var parsedData = this.model.parse(data);
 

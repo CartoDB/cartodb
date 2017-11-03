@@ -1,7 +1,7 @@
 var Events = require('./events');
 var Engine = require('../../engine');
 var Layers = require('./layers');
-var LeafletLayerGroup = require('./leaflet/layer-group');
+var Leaflet = require('./leaflet');
 
 /**
  * This is the main object in a Carto.js application. 
@@ -131,7 +131,7 @@ Client.prototype.getLayers = function () {
  * ...
  */
 Client.prototype.getLeafletLayerView = function () {
-  this._leafletLayer = this._leafletLayer || new LeafletLayerGroup(this._layers, this._engine);
+  this._leafletLayer = this._leafletLayer || new Leaflet.LayerGroup(this._layers, this._engine);
   return this._leafletLayer;
 };
 

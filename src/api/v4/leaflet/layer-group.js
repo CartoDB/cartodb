@@ -1,4 +1,4 @@
-var FeatureEvent = require('../events/feature-event');
+var Events = require('../events/index');
 var LeafletCartoLayerGroupView = require('../../../geo/leaflet/leaflet-cartodb-layer-group-view');
 
 function LayerGroup (layers, engine) {
@@ -53,7 +53,7 @@ LayerGroup.prototype._onFeatureOut = function (internalEvent) {
 LayerGroup.prototype._triggerLayerFeatureEvent = function (eventName, internalEvent) {
   var layer = this._layers.findById(internalEvent.layer.id);
   if (layer) {
-    var event = FeatureEvent.createFromInternalFeatureEvent(internalEvent, layer);
+    var event = Events.FeatureEvent.createFromInternalFeatureEvent(internalEvent, layer);
     layer.trigger(eventName, event);
   }
 };

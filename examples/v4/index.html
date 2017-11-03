@@ -28,6 +28,9 @@
             var i = 0; // Number of reload cycles.
             var map = window.map = L.map('map').setView([42.431234, -8.643616], 5);
 
+            var popup = L.popup()
+                .setLatLng({ lat: 0, lng: 0});
+
             // L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
             // Create the Client
@@ -64,16 +67,23 @@
             client.addLayer(layer);
 
 
+
             layer.on('feature:click', function (featureEvent) {
               console.log('feature:click', featureEvent.getLatLng(), featureEvent.getData());
             });
 
             layer.on('feature:over', function (featureEvent) {
+              popup.setContent(featureEvent.getData().name)
+                .setLatLng(featureEvent.getLatLng())
+                .openOn(map);
+
               console.log('feature:over', featureEvent.getLatLng(), featureEvent.getData());
             });
 
             layer.on('feature:out', function (featureEvent) {
               console.log('feature:out', featureEvent.getLatLng(), featureEvent.getData());
+
+              popup.removeFrom(map);
             });
 
             await layer.setFeatureOverColumns(['adm0name', 'name']);
@@ -83,8 +93,8 @@
 
             // Add the layer to the map
             client.getLeafletLayerView().addTo(map);
-            client.getLeafletLayerView().removeFrom(map);
 
+            // client.getLeafletLayerView().removeFrom(map);
 
             layer.setFeatureOverColumns(['name']);
         })();

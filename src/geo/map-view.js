@@ -30,6 +30,7 @@ var MapView = View.extend({
     if (!opts.layerGroupModel) throw new Error('layerGroupModel is required');
 
     this._showEmptyInfowindowFields = opts.showEmptyInfowindowFields;
+    this._showErrors = opts.showErrors;
     this._mapModel = this.map = opts.mapModel;
     this._engine = opts.engine;
     this._cartoDBLayerGroup = opts.layerGroupModel;
@@ -248,7 +249,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map);
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map, this._showErrors);
   },
 
   _removeLayers: function () {

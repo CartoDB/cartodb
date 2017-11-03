@@ -119,6 +119,8 @@ var OverlaysView = View.extend({
   },
 
   _addLimitsOverlay: function () {
+    if (!this._visView.model.get('showErrors')) return;
+
     var limitsOverlay = this._getOverlayViewByType(C.OVERLAY_TYPES.LIMITS);
 
     limitsOverlay || this._overlaysCollection.add({

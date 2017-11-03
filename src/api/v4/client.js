@@ -1,6 +1,7 @@
 var Events = require('./events');
 var Engine = require('../../engine');
 var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
+var VERSION = require('../../../package.json').version;
 
 /**
  * This is the main object in a Carto.js application.
@@ -12,7 +13,6 @@ var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-laye
  * @param {string} settings.apiKey - Api key used to be autenticate in the windshaft server.
  * @param {string} settings.username - Name of the user registered in the windshaft server.
  * @param {string} settings.serverUrl - Url of the windshaft server.
- * @param {boolean} settings.statTag - Token used to get map view statistics.
  *
  * @constructor
  * @memberof carto
@@ -26,11 +26,9 @@ function Client (settings) {
   this._dataviews = [];
   this._engine = new Engine({
     apiKey: settings.apiKey,
-    authToken: settings.authToken, // Deprecated
+    username: settings.username,
     serverUrl: settings.serverUrl,
-    statTag: settings.statTag, // Deprecated ?
-    templateName: settings.templateName, // Deprecated
-    username: settings.username
+    statTag: 'carto.js-v' + VERSION
   });
 }
 

@@ -61,28 +61,28 @@
 
             // Create a style
             var style = new carto.style.CartoCSS(`
-                #layer {
-                    marker-width: 10;
-                    marker-fill: red;
-                }`);
+              #layer {
+                  marker-width: 10;
+                  marker-fill: red;
+              }`
+            );
 
             // Create a style
             var style1 = new carto.style.CartoCSS(`
-                #layer {
-                    marker-width: 10;
-                    marker-fill: yellow;
-                }`);
+              #layer {
+                  marker-width: 10;
+                  marker-fill: yellow;
+              }`
+            );
 
             // Create a layer
             var layer = new carto.layer.Layer('layer0', source0, style);
             var layer1 = new carto.layer.Layer('layer1', source1, style1);
 
-            client.addLayer(layer1);
-            client.addLayer(layer);
-
             // Add the layers
-            // await client.addLayers([layer1, layer]); // engine.reload() internal
-
+            client.addLayers([layer1, layer]);
+            //client.addLayer(layer1);
+            //client.addLayer(layer);
 
             // Add the layer to the map
             client.getLeafletLayerView().addTo(map);

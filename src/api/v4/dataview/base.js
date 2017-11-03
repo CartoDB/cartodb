@@ -81,7 +81,9 @@ DataviewBase.prototype._defaultOptions = function (options) {
 };
 
 DataviewBase.prototype._checkSource = function (source) {
-  return source instanceof SourceBase;
+  if (!(source instanceof SourceBase)) {
+    throw new TypeError('Source property is required.');
+  }
 };
 
 DataviewBase.prototype._checkColumn = function (column) {

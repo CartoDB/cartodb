@@ -21,27 +21,41 @@ function createFakeInternalModel () {
   return internalModel;
 }
 
+function createFakeSource () {
+  return new carto.source.Dataset();
+}
+
+function createFakeEngine () {
+  var engine = {
+    name: 'Fake engine',
+    reload: function () {}
+  };
+  spyOn(engine, 'reload');
+
+  return engine;
+}
+
 describe('formula dataview public v4 API', function () {
+  var source = createFakeSource();
+
   describe('initialization', function () {
     it('source must be provided', function () {
       var test = function () {
         new carto.dataview.Formula(); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Source property is mandatory when creating a dataview.');
+      expect(test).toThrowError(TypeError, 'Source property is required.');
     });
 
     it('column must be provided', function () {
       var test = function () {
-        var source = 'a0';
         new carto.dataview.Formula(source); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Column property is mandatory when creating a dataview.');
+      expect(test).toThrowError(TypeError, 'Column property is required.');
     });
 
     it('options set to default if not provided', function () {
-      var source = 'a0';
       var column = 'population';
 
       var dataview = new carto.dataview.Formula(source, column);
@@ -51,8 +65,6 @@ describe('formula dataview public v4 API', function () {
     });
 
     it('options set to the provided value', function () {
-      var source = 'a0';
-
       var dataview = new carto.dataview.Formula(source, 'population', {
         operation: carto.operation.AVG
       });
@@ -62,7 +74,6 @@ describe('formula dataview public v4 API', function () {
 
     it('throw error if no correct operation is provided', function () {
       var test = function () {
-        var source = 'a0';
         new carto.dataview.Formula(source, 'population', { // eslint-disable-line no-new
           operation: 'exponential'
         });
@@ -76,7 +87,6 @@ describe('formula dataview public v4 API', function () {
     var dataview;
 
     beforeEach(function () {
-      var source = 'a0';
       dataview = new carto.dataview.Formula(source, 'population');
     });
 
@@ -111,7 +121,6 @@ describe('formula dataview public v4 API', function () {
     var dataview;
 
     beforeEach(function () {
-      var source = 'a0';
       dataview = new carto.dataview.Formula(source, 'population', {
         operation: carto.operation.SUM
       });
@@ -138,10 +147,61 @@ describe('formula dataview public v4 API', function () {
     });
   });
 
-  // describe('.$setEngine', function () {
-  //   it('creates the internal model', function () {
+  describe('.$setEngine', function () {
+    var engine;
+    var dataview;
 
-  //   });
+    beforeEach(function () {
+      dataview = new carto.dataview.Formula(source, 'population', {
+        operation: carto.operation.MIN
+      });
+      engine = createFakeEngine();
+    });
 
-  // });
+    it('creates the internal model', function () {
+      dataview.disable(); // To test that it passes the ._enabled property to the internal model
+      dataview.$setEngine(engine);
+
+      var internalModel = dataview.$getInternalModel();
+      expect(internalModel.get('source')).toBe(dataview._source.$getInternalModel());
+      expect(internalModel.get('column')).toEqual(dataview._column);
+      expect(internalModel.get('operation')).toEqual(dataview._options.operation);
+      expect(internalModel.isEnabled()).toBe(false);
+      expect(internalModel._engine.name).toEqual('Fake engine');
+    });
+
+    it('pass the syncOnBBox to the internal model', function () {
+      // This check should go in the previous spec but I made this one
+      // to mark it as pending until we implement the Bbox filter logic.
+      pending();
+    });
+
+    it('internalModel events should be properly hooked up', function () {
+      var operationChangedTriggered = false;
+      dataview.on('operationChanged', function () {
+        operationChangedTriggered = true;
+      });
+      dataview.$setEngine(engine);
+
+      dataview.setOperation(carto.operation.MAX);
+
+      expect(operationChangedTriggered).toBe(true);
+
+      // Now directly in the internal model
+      operationChangedTriggered = false;
+
+      dataview.$getInternalModel().set('operation', carto.operation.COUNT);
+
+      expect(operationChangedTriggered).toBe(true);
+    });
+
+    it('calling twice to $setEngine does not create another internalModel', function () {
+      spyOn(dataview, '_createInternalModel').and.callThrough();
+
+      dataview.$setEngine(engine);
+      dataview.$setEngine(engine);
+
+      expect(dataview._createInternalModel.calls.count()).toBe(1);
+    });
+  });
 });

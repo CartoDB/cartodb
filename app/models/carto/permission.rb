@@ -190,7 +190,7 @@ class Carto::Permission < ActiveRecord::Base
       set_subject_permission(group.id, access, TYPE_GROUP)
     else
       # Remove group entry from acl in order to add new (or none if ACCESS_NONE)
-      new_acl = self.inputable_acl.reject { |entry| entry[:entity][:id] == group.id }
+      new_acl = inputable_acl.reject { |entry| entry[:entity][:id] == group.id }
 
       unless access == ACCESS_NONE
         acl_entry = {

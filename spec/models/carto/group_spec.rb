@@ -30,6 +30,7 @@ describe Carto::Group do
 
   describe 'organization behaviour' do
     include_context 'organization with users helper'
+    include Carto::Factories::Visualizations
 
     before(:all) do
       @group = FactoryGirl.create(:random_group, organization_id: @organization.id)

@@ -28,6 +28,8 @@ module Carto
 
     validates :name, :database_role, :organization, presence: true
 
+    before_destroy :destroy_shared_with
+
     # Constructor for groups already existing in the database
     def self.new_instance(database_name, name, database_role, display_name = name)
       organization = Organization.find_by_database_name(database_name)
@@ -146,6 +148,15 @@ module Carto
     end
 
     private
+
+    def destroy_shared_with
+      Carto::SharedEntity.where(recipient_id: id).each do |se|
+        viz = Carto::Visualization.find(se.entity_id)
+        permission = viz.permission
+        permission.remove_group_permission(self)
+        permission.save
+      end
+    end
 
     # TODO: PG Format("%I", strvar); ?
     def self.valid_group_name(display_name)

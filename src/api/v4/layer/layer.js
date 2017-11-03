@@ -22,24 +22,21 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
  * @api
  * @memberof carto.layer
  */
-function Layer (id, source, style, options) {
-  if (typeof options === 'undefined') {
-    source = id;
-    style = source;
-    options = style;
-    id = 'fakeId'; // TODO: Generate a unique ID
-  }
+function Layer (source, style, options) {
+  options = options || {};
 
   this._engine = undefined;
   this._internalModel = undefined;
 
-  this.id = id;
+  this.id = options.id || Layer.generateId();
   this._source = source;
   this._style = style;
   this._visible = true;
-  this._featureClickColumns = options.featureClickColumns;
-  this._featureOverColumns = options.featureOverColumns;
+  this._featureClickColumns = options.featureClickColumns || [];
+  this._featureOverColumns = options.featureOverColumns || [];
 }
+
+_.extend(Layer.prototype, Backbone.Events);
 
 Layer.prototype.setStyle = function (style, opts) {
   opts = opts || {};
@@ -48,12 +45,20 @@ Layer.prototype.setStyle = function (style, opts) {
   return this._reloadEngine();
 };
 
+Layer.prototype.getStyle = function () {
+  return this._style;
+};
+
 Layer.prototype.setSource = function (source) {
   this._source = source;
   if (this._internalModel) {
     this._internalModel.set('source', source, { silent: true });
   }
   return this._reloadEngine();
+};
+
+Layer.prototype.getSource = function () {
+  return this._source;
 };
 
 Layer.prototype.setFeatureClickColumns = function (columns) {
@@ -124,10 +129,13 @@ Layer.prototype._reloadEngine = function () {
   return Promise.resolve();
 };
 
-_.extend(Layer.prototype, Backbone.Events);
+Layer.nextId = 0;
+Layer.generateId = function () {
+  return 'L' + ++Layer.nextId;
+};
 
 function getInteractivityFields (columns) {
-  var fields = _.map(columns, function (column, index) {
+  var fields = columns.map(function (column, index) {
     return {
       name: column,
       title: true,

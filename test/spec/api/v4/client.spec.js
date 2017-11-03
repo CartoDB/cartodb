@@ -1,6 +1,6 @@
 var carto = require('../../../../src/api/v4');
 
-describe('client', function () {
+describe('api/v4/client', function () {
   describe('constructor', function () {
     it('should build a new client', function () {
       var client = new carto.Client({

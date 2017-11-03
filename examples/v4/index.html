@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <!--Include carto styles  -->
-    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+    <!-- <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" /> -->
     <!-- Include cartodb.js Library -->
     <script src="../../dist/cartodb.uncompressed.js"></script>
     <style>
@@ -49,44 +49,59 @@
             });
 
             // Create a source
-            var source1 = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
+            var spanishCitiesSource = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
 
             // Create a style
-            var style = new carto.style.CartoCSS(`
+            var spanishCitiesStyle = new carto.style.CartoCSS(`
                 #layer {
                     marker-width: 10;
                     marker-fill: red;
                 }`);
 
             // Create a layer
-            var layer = new carto.layer.Layer('layer0', source1, style, {
+            var spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle, {
+              id: 'spanish_cities',
               featureClickColumns: ['adm0name'],
               featureOverColumns: ['adm0name']
             });
 
-            client.addLayer(layer);
+
+            // Create a source
+            var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+
+            // Create a style
+            var populatedPlacesStyle = new carto.style.CartoCSS(`
+                #layer {
+                    marker-width: 10;
+                    marker-fill: #CDCDCD;
+                }`);
 
 
+            var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
 
-            layer.on('feature:click', function (featureEvent) {
+            client.addLayers([ spanishCities, populatedPlaces ]);
+
+            spanishCities.on('feature:click', function (featureEvent) {
               console.log('feature:click', featureEvent.getLatLng(), featureEvent.getData());
             });
 
-            layer.on('feature:over', function (featureEvent) {
-              popup.setContent(featureEvent.getData().name)
+            spanishCities.on('feature:over', function (featureEvent) {
+              var data = featureEvent.getData();
+              var content = data.name + ' ' + data.adm0name ? data.adm0name : '';
+              popup.setContent(content)
                 .setLatLng(featureEvent.getLatLng())
                 .openOn(map);
 
               console.log('feature:over', featureEvent.getLatLng(), featureEvent.getData());
             });
 
-            layer.on('feature:out', function (featureEvent) {
+            spanishCities.on('feature:out', function (featureEvent) {
               console.log('feature:out', featureEvent.getLatLng(), featureEvent.getData());
 
               popup.removeFrom(map);
             });
 
-            await layer.setFeatureOverColumns(['adm0name', 'name']);
+            await spanishCities.setFeatureOverColumns(['adm0name', 'name']);
 
             // Add the layers
             // await client.addLayers([layer1, layer]); // engine.reload() internal
@@ -95,8 +110,6 @@
             client.getLeafletLayerView().addTo(map);
 
             // client.getLeafletLayerView().removeFrom(map);
-
-            layer.setFeatureOverColumns(['name']);
         })();
 
     </script>

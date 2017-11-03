@@ -42,6 +42,7 @@
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
     var mapzenApiKey = '<%= mapzen_api_key %>';
   </script>
+  <%= javascript_include_tag 'tangram.debug.js' %>
   <%= javascript_include_tag 'common.js' %>
   <%= javascript_include_tag 'builder_embed_vendor.js' %>
   <%= javascript_include_tag 'builder_embed.js' %>

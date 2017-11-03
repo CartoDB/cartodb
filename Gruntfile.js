@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var timer = require('grunt-timer');
 var semver = require('semver');
-var webpackTask = null;
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var yarnDependencies = require('./lib/build/tasks/yarn-dependencies.js');
+var webpackTask = null;
 
 var REQUIRED_NODE_VERSION = '6.9.2';
 var REQUIRED_NPM_VERSION = '3.10.9';
@@ -80,38 +80,12 @@ module.exports = function (grunt) {
           if (!semver.satisfies(installed, versionRange)) {
             err = 'Installed ' + name + ' version does not match with required [' + versionRange + '] Installed: ' + installed;
           }
-          logFn && logFn(err ? new Error(err): null);
-        });
-      }
-      checkVersion('node -v', requiredNodeVersion, 'node', logFn);
-      checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
-    }
-
-    var mustCheckNodeVersion = grunt.option('no-node-checker');
-    if (!mustCheckNodeVersion) {
-      preFlight(REQUIRED_NODE_VERSION, REQUIRED_NPM_VERSION, logVersionsError);
-      grunt.log.writeln('');
-    }
-
-    var duplicatedModules = yarnDependencies.checkDuplicatedDependencies('./yarn.lock', YARN_MODULES_TO_VALIDATE);
-    if (duplicatedModules.length > 0) {
-      grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
-      grunt.log.fail("Duplicated dependencies found in yarn.lock file.");
-      grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
-      grunt.log.fail("#################################################");
-      process.exit(1);
-    }
-
-    var ROOT_ASSETS_DIR = './public/assets/';
-    var ASSETS_DIR = './public/assets/<%= pkg.version %>';
-
-    // use grunt --environment production
-    var env = './config/grunt_' + environment + '.json';
-    grunt.log.writeln('env: ' + env);
-    if (grunt.file.exists(env)) {
-      env = grunt.file.readJSON(env)
-    } else {
-      throw grunt.util.error(env +' file is missing! See '+ env +'.sample for how it should look like');
+        }
+        if (err) {
+          grunt.log.fail(err);
+        }
+        logFn && logFn(err ? new Error(err) : null);
+      });
     }
     checkVersion('node -v', requiredNodeVersion, 'node', logFn);
     checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
@@ -123,10 +97,10 @@ module.exports = function (grunt) {
     grunt.log.writeln('');
   }
 
-  var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
+  var duplicatedModules = yarnDependencies.checkDuplicatedDependencies('./yarn.lock', YARN_MODULES_TO_VALIDATE);
   if (duplicatedModules.length > 0) {
     grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
-    grunt.log.fail('Duplicated dependencies found in npm-shrinkwrap.json file.');
+    grunt.log.fail('Duplicated dependencies found in yarn.lock file.');
     grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
     grunt.log.fail('#################################################');
     process.exit(1);

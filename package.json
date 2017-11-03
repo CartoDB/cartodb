@@ -14,6 +14,7 @@
   "contributors": [],
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@yarnpkg/lockfile": "^1.0.0",
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.2",
@@ -105,8 +106,7 @@
     "watchify": "3.7.0",
     "webpack": "2.2.1",
     "webpack-bundle-analyzer": "^2.4.0",
-    "webpack-stats-plugin": "0.1.4",
-    "yarn-lockfile": "1.0.0"
+    "webpack-stats-plugin": "0.1.4"
   },
   "optionalDependencies": {
     "fsevents": "*"

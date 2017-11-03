@@ -1,8 +1,8 @@
 var _ = require('underscore');
 var timer = require('grunt-timer');
 var semver = require('semver');
-var jasmineCfg = require('./lib/build/tasks/jasmine.js');
-var yarnDependencies = require('./lib/build/tasks/yarn-dependencies.js');
+var jasmineCfg = require('./lib/build/tasks/jasmine');
+var yarnDependencies = require('./lib/build/tasks/yarn-dependencies');
 var webpackTask = null;
 
 var REQUIRED_NODE_VERSION = '6.9.2';

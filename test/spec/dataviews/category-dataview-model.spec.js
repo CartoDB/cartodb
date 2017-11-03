@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var WindshaftFiltersBoundingBox = require('../../../src/windshaft/filters/bounding-box');
 var AnalysisService = require('../../../src/analysis/analysis-service');
 var MockFactory = require('../../helpers/mockFactory');
 
@@ -25,15 +26,12 @@ describe('dataviews/category-dataview-model', function () {
     var analysisService = new AnalysisService({ engine: engineMock });
     this.source = analysisService.analyse(analysisDefinition);
 
-    this.layer = new Backbone.Model();
-
     this.model = new CategoryDataviewModel({
       source: this.source
     }, {
-      map: this.map,
       engine: engineMock,
-      layer: this.layer,
-      filter: new WindshaftFiltersCategory()
+      filter: new WindshaftFiltersCategory(),
+      bboxFilter: new WindshaftFiltersBoundingBox(this.map)
     });
   });
 
@@ -166,6 +164,8 @@ describe('dataviews/category-dataview-model', function () {
     beforeEach(function () {
       // Disable debounce
       spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+      this.model._bboxFilter._stopBinds();
+      this.model._bboxFilter._initBinds();
 
       this.model.fetch = function (opts) {
         opts && opts.success();

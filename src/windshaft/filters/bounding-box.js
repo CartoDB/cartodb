@@ -17,6 +17,10 @@ module.exports = Model.extend({
     this.listenTo(this._map, 'change:view_bounds_ne change:center change:zoom', _.debounce(this._boundsChanged, BOUNDING_BOX_FILTER_WAIT));
   },
 
+  _stopBinds: function () {
+    this.stopListening(this._map, 'change:view_bounds_ne change:center change:zoom');
+  },
+
   _boundsChanged: function () {
     this.setBounds(this._map.getViewBounds());
     this.trigger('boundsChanged');

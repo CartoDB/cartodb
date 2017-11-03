@@ -38,3 +38,21 @@
     color: #162945;
   }
 }
+
+.Sessions-googleButton {
+  @include border-radius(4px);
+  transition: all 0.15s;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #162945;
+  background-image: image-url('layout/sessions/google_plus_logo_white.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #FFF;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #FFF;
+    background-image: image-url('layout/sessions/google_plus_logo_black.svg');
+    color: #162945;
+  }
+}

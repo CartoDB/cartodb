@@ -96,10 +96,15 @@ var Interactive = function () {
 
         _classCallCheck(this, Interactive);
 
+        // Map element
         this._map = map && new Map(map);
+        // Object with the grid.json cached data
         this._cache = {};
+        // Url template for the grid tiles
         this._url = gridUrl;
-        // At the moment only a callback is required
+        // We asume 256x256px tiles
+        this._tileSize = 256;
+        // At the moment only one callback is supported so a custom event emitter is used.
         this._eventEmitter = {
             dispatchEvent: function dispatchEvent(event, data) {
                 switch (event) {
@@ -111,6 +116,9 @@ var Interactive = function () {
                         break;
                     case 'featureout':
                         _this._listeners.out && _this._listeners.out();
+                        break;
+                    case 'error':
+                        _this._listeners.error && _this._listeners.error(data);
                 }
             },
             addEventListener: function addEventListener(event, callback) {
@@ -123,6 +131,9 @@ var Interactive = function () {
                         break;
                     case 'featureout':
                         _this._listeners.out = callback;
+                        break;
+                    case 'error':
+                        _this._listeners.error = callback;
                 }
             },
             removeEventListener: function removeEventListener(event) {
@@ -135,21 +146,24 @@ var Interactive = function () {
                         break;
                     case 'featureout':
                         delete _this._listeners.out;
+                        break;
+                    case 'error':
+                        delete _this._listeners.error;
                 }
             }
-        };
-
-        this._listeners = {
+            // Callbacks for every event
+        };this._listeners = {
             click: undefined,
             move: undefined,
-            out: undefined
+            out: undefined,
+            error: undefined
         };
     }
 
     /**
      * Add the grid url from a tilejson file
      * @deprecated
-     * Method added for backwards compatibility.
+     * Method added for backwards compatibility with wax
      */
 
 
@@ -163,21 +177,16 @@ var Interactive = function () {
         /**
          * Add the native map 
          * @deprecated
-         * Method added for backwards compatibility.
+         * Method added for backwards compatibility with wax
          */
 
     }, {
         key: 'map',
         value: function map(_map) {
             this._map = new Map(_map);
-            this._bindMap();
-            return this;
-        }
-    }, {
-        key: '_bindMap',
-        value: function _bindMap() {
             this._map.on('click', this._onMapClick.bind(this));
             this._map.on('mousemove', this._onMapMouseMove.bind(this));
+            return this;
         }
 
         /**
@@ -197,7 +206,9 @@ var Interactive = function () {
                 case 'off':
                     this._eventEmitter.addEventListener('featureout', callback);
                     break;
-                default:
+                case 'error':
+                    this._eventEmitter.addEventListener('error', callback);
+                    break;
             }
             return this;
         }
@@ -242,18 +253,17 @@ var Interactive = function () {
     }, {
         key: '_getTileCoordsFromMouseEvent',
         value: function _getTileCoordsFromMouseEvent(event) {
-            var tileSize = 256;
             var pixelPoint = this._map.project(event);
-            var coords = this._unscale(pixelPoint, tileSize);
-            coords.z = this._map.getZoom(); // { x: 212, y: 387, z: 10 }
+            var coords = this._unscale(pixelPoint, this._tileSize);
+            coords.z = this._map.getZoom();
             return coords;
         }
     }, {
         key: '_unscale',
-        value: function _unscale(pixelPoint, scale) {
+        value: function _unscale(pixelPoint, tileSize) {
             return {
-                x: Math.floor(pixelPoint.x / scale),
-                y: Math.floor(pixelPoint.y / scale)
+                x: Math.floor(pixelPoint.x / tileSize),
+                y: Math.floor(pixelPoint.y / tileSize)
             };
         }
 
@@ -273,13 +283,30 @@ var Interactive = function () {
             if (this._cache[z + '_' + x + '_' + y]) {
                 return Promise.resolve();
             }
-            // Prevent duplicated requests. The value will be async obtained.
+            // Mark the tile as "fetching" to prevent duplicated requests. The value will be async obtained.
             this._cache[z + '_' + x + '_' + y] = 'fetching';
-            return fetch(this._buildTileUrl(z, x, y)).then(function (data) {
-                return data.json();
-            }).then(function (data) {
+            return fetch(this._buildTileUrl(z, x, y))
+            // On server limit errors reject throw a featureError
+            .then(this._handleLimitErrors).then(function (data) {
                 return _this4._cache[z + '_' + x + '_' + y] = data;
+            }).catch(function (data) {
+                return _this4._eventEmitter.dispatchEvent('error', data);
             });
+        }
+
+        /**
+         * When the server returns a 429 we want to throw an especific error.
+         */
+
+    }, {
+        key: '_handleLimitErrors',
+        value: function _handleLimitErrors(response) {
+            if (response.status === 429) {
+                return response.json().then(function (data) {
+                    return Promise.reject(data);
+                });
+            }
+            return response.json();
         }
 
         /**
@@ -300,42 +327,44 @@ var Interactive = function () {
         }
 
         /**
+         * Get the data from a map event.
+         * Using the event coords, get the data from the grid.json data stored in the cache.
          * 
+         * This method Trigger an event with a `data` property. 
          */
 
     }, {
         key: '_objectForEvent',
         value: function _objectForEvent(e, eventType) {
             var point = this._map.project(e);
-            var tileSize = 256;
-            var resolution = 4; // 4 pixels asigned to each grid in the utfGrid.
+            // 4 pixels asigned to each grid in the utfGrid.
+            var resolution = 4;
+            // get the tile coords to which the pixel belongs
 
-            var x = Math.floor(point.x / tileSize);
-            var y = Math.floor(point.y / tileSize);
-
-            var gridX = Math.floor((point.x - x * tileSize) / resolution);
-            var gridY = Math.floor((point.y - y * tileSize) / resolution);
+            var _unscale2 = this._unscale(point, this._tileSize),
+                x = _unscale2.x,
+                y = _unscale2.y;
 
             var max = Math.pow(2, this._map.getZoom());
-
             x = (x + max) % max;
             y = (y + max) % max;
 
             var tile = this._cache[this._map.getZoom() + '_' + x + '_' + y];
 
-            var data;
             if (tile && tile.grid) {
+                var gridX = Math.floor((point.x - x * this._tileSize) / resolution);
+                var gridY = Math.floor((point.y - y * this._tileSize) / resolution);
                 var idx = this._utfDecode(tile.grid[gridY].charCodeAt(gridX));
                 var key = tile.keys[idx];
                 if (tile.data.hasOwnProperty(key)) {
-                    data = tile.data[key];
+                    // Extend the event with the data from the grid json
+                    e.data = tile.data[key];
                 }
             }
-            // Extend the event with the data from the grid json
-            e.data = data;
-            e.e = e.originalEvent || {
-              type : eventType
-            };
+
+            // Add "e" property for backwards compatibility with wax.
+            e.e = e.originalEvent || { type: eventType };
+
             this._triggerEvent(eventType, e);
         }
 
@@ -375,19 +404,19 @@ var Interactive = function () {
         /**
          * Decode an utf gridjson cell
          * @see https://github.com/mapbox/utfgrid-spec/blob/master/1.3/utfgrid.md
-         * @param {*} c 
+         * @param {string} char 
          */
 
     }, {
         key: '_utfDecode',
-        value: function _utfDecode(c) {
-            if (c >= 93) {
-                c--;
+        value: function _utfDecode(char) {
+            if (char >= 93) {
+                char--;
             }
-            if (c >= 35) {
-                c--;
+            if (char >= 35) {
+                char--;
             }
-            return c - 32;
+            return char - 32;
         }
     }]);
 

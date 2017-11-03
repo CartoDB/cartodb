@@ -30,7 +30,6 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.33.4",
     "carto": "cartodb/carto#master",
-    "carto-gridjson": "../vendor/gridjson.js",
     "clip-path-polygon": "0.1.12",
     "d3-array": "1.2.1",
     "d3-format": "1.2.0",

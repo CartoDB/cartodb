@@ -31,7 +31,7 @@
             var popup = L.popup()
                 .setLatLng({ lat: 0, lng: 0});
 
-            // L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+            L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
             // Create the Client
             var client = window.client = new carto.Client({
@@ -59,7 +59,7 @@
                 }`);
 
             // Create a layer
-            var spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle, {
+            var spanishCities = window.spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle, {
               id: 'spanish_cities',
               featureClickColumns: ['adm0name'],
               featureOverColumns: ['adm0name']
@@ -87,7 +87,8 @@
 
             spanishCities.on('feature:over', function (featureEvent) {
               var data = featureEvent.getData();
-              var content = data.name + ' ' + data.adm0name ? data.adm0name : '';
+              var content = data.name;
+              content += data.adm0name ? (' (' + data.adm0name + ')') : '';
               popup.setContent(content)
                 .setLatLng(featureEvent.getLatLng())
                 .openOn(map);

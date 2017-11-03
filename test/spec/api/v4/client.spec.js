@@ -13,7 +13,7 @@ describe('client', function () {
     });
   });
 
-  describe('.addLayer', function () {
+  fdescribe('.addLayer', function () {
     var client;
     var source;
     var style;
@@ -63,11 +63,17 @@ describe('client', function () {
         done();
       });
     });
+
+    it('should return a significative error when layer parameter is not a valid layer', function () {
+      expect(function () {
+        client.addLayer([]);
+      }).toThrowError('The given object is not a layer');
+    });
   });
 
   describe('.addLayers', function () {
     it('should add a layers array', function () { });
-    it('should add a layer array triggering a reload cycle by default', function () { });
+    it('should add a layer array triggering ONE reload cycle by default', function () { });
     it('should add a layers array without triggering a reload cycle when opts.reload is false', function () { });
     it('should return a rejected promise when some error happened', function () { });
   });

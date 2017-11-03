@@ -7,30 +7,28 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * 
  * @example
  *
- * new carto.source.Dataset('cities', 'european_cities');
+ * // no options
+ * new carto.source.Dataset(european_cities');
  * 
  * @example
  *
- * new carto.source.Dataset('european_cities');
+ * // with options
+ * new carto.source.Dataset('european_cities', { id: 'european_cities' });
  * 
  * @constructor
  * @api
  * @memberof carto.source
  *
  */
-function Dataset (id, dataset) {
-  if (typeof query === 'undefined') {
-    dataset = id;
-    id = 'fakeId'; // TODO: Generate a unique ID
-  }
-
-  this._id = id;
+function Dataset (dataset, options) {
+  options = options || {};
+  this.id = options.id || Dataset.$generateId();
   this._dataset = dataset;
 }
 
 Dataset.prototype.$setEngine = function (engine) {
   this._internalModel = new AnalysisModel({
-    id: this._id,
+    id: this.id,
     type: 'source',
     query: 'SELECT * from ' + this._dataset
   }, {
@@ -41,6 +39,11 @@ Dataset.prototype.$setEngine = function (engine) {
 
 Dataset.prototype.$getInternalModel = function () {
   return this._internalModel;
+};
+
+Dataset.$nextId = 0;
+Dataset.$generateId = function () {
+  return 'D' + ++Dataset.$nextId;
 };
 
 module.exports = Dataset;

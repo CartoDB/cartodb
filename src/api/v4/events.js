@@ -13,10 +13,11 @@ module.exports = {
    * @event carto.Events.SUCCESS
    */
   SUCCESS: 'success',
+
   /**
    * Reload started event, fired every time the reload process has some error.
    * @api
    * @event carto.Events.ERROR
    */
-  ERROR: 'error,'
+  ERROR: 'error'
 };

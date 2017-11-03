@@ -1,4 +1,4 @@
-var Events = require('../events/index');
+var Layer = require('../layer/');
 var LeafletCartoLayerGroupView = require('../../../geo/leaflet/leaflet-cartodb-layer-group-view');
 
 function LayerGroup (layers, engine) {
@@ -37,23 +37,35 @@ LayerGroup.prototype._createInternalLayerGroupView = function (map) {
 };
 
 LayerGroup.prototype._onFeatureClick = function (internalEvent) {
-  this._triggerLayerFeatureEvent('feature:click', internalEvent);
+  this._triggerLayerFeatureEvent(Layer.EventTypes.FEATURE_CLICKED, internalEvent);
 };
 
 LayerGroup.prototype._onFeatureOver = function (internalEvent) {
   this._leafletMap.getContainer().style.cursor = 'pointer';
-  this._triggerLayerFeatureEvent('feature:over', internalEvent);
+  this._triggerLayerFeatureEvent(Layer.EventTypes.FEATURE_OVER, internalEvent);
 };
 
 LayerGroup.prototype._onFeatureOut = function (internalEvent) {
   this._leafletMap.getContainer().style.cursor = 'auto';
-  this._triggerLayerFeatureEvent('feature:out', internalEvent);
+  this._triggerLayerFeatureEvent(Layer.EventTypes.FEATURE_OUT, internalEvent);
 };
 
 LayerGroup.prototype._triggerLayerFeatureEvent = function (eventName, internalEvent) {
   var layer = this._layers.findById(internalEvent.layer.id);
   if (layer) {
-    var event = Events.FeatureEvent.createFromInternalFeatureEvent(internalEvent, layer);
+    var event = {
+      data: undefined,
+      latLng: undefined
+    };
+    if (internalEvent.feature) {
+      event.data = internalEvent.feature;
+    }
+    if (internalEvent.latlng) {
+      event.latLng = {
+        lat: internalEvent.latlng[0],
+        lng: internalEvent.latlng[1]
+      };
+    }
     layer.trigger(eventName, event);
   }
 };

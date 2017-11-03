@@ -13,7 +13,7 @@ describe('api/v4/client', function () {
     });
   });
 
-  fdescribe('.addLayer', function () {
+  describe('.addLayer', function () {
     var client;
     var source;
     var style;
@@ -79,13 +79,66 @@ describe('api/v4/client', function () {
   });
 
   describe('.getLayers', function () {
-    it('should return an empty array when there are no layers', function () { });
-    it('should return the layers stored in the client', function () { });
+    var client;
+    beforeEach(function () {
+      client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        serverUrl: 'https://{user}.carto.com:443',
+        username: 'cartojs-test'
+      });
+    });
+    it('should return an empty array when there are no layers', function () {
+      expect(client.getLayers()).toEqual([]);
+    });
+    it('should return the layers stored in the client', function (done) {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+      var layer = new carto.layer.Layer('id', source, style, {});
+      client.addLayer(layer).then(function () {
+        expect(client.getLayers()[0]).toEqual(layer);
+        done();
+      });
+    });
   });
 
   describe('.removeLayer', function () {
-    it('should throw a descriptive error when the parameter is invalid', function () { });
-    it('should throw a descriptive error when layer is not in the client', function () { });
-    it('should remove the layer when is in the client', function () { });
+    var client;
+    beforeEach(function () {
+      client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        serverUrl: 'https://{user}.carto.com:443',
+        username: 'cartojs-test'
+      });
+    });
+
+    it('should throw a descriptive error when the parameter is invalid', function () {
+      expect(function () {
+        client.removeLayer({});
+      }).toThrowError('The given object is not a layer');
+    });
+
+    // TODO: Does this make sense? should the client remain silent/log a warning?
+    it('¿should throw a descriptive error when layer is not in the client?', function () {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+      var layer = new carto.layer.Layer('id', source, style, {});
+
+      expect(function () {
+        client.removeLayer(layer);
+      }).toThrowError('The layer is not in the client');
+    });
+
+    it('should remove the layer when is in the client', function (done) {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+      var layer = new carto.layer.Layer('id', source, style, {});
+      client.addLayer(layer);
+
+      expect(client.getLayers().length).toEqual(1);
+      client.removeLayer(layer).then(function () {
+        expect(client.getLayers().length).toEqual(0);
+        done();
+      });
+    });
   });
 });

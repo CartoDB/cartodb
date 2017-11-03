@@ -5,7 +5,7 @@ var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
 var Profiler = require('../../core/profiler');
 
-var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap, showErrors) {
+var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap, showLimitErrors) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
   var metric = Profiler.metric('tangram.rendering');
@@ -14,7 +14,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap, s
 
   this.trigger('loading');
 
-  this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel), showErrors);
+  this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel), showLimitErrors);
 
   this.tangram.onLoaded(function () {
     if (metric) {

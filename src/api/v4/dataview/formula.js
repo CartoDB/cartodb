@@ -1,18 +1,35 @@
 var _ = require('underscore');
-var DataviewBase = require('./base');
+var Base = require('./base');
 var constants = require('../constants');
 var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
 
 /**
- * Formula dataview
+ * Formula dataview object
+ *
+ * @param {carto.source.Base} source - The source where the datavew will fetch the data.
+ * @param {string} column - The column name to get the data.
+ * @param {object} options
+ * @param {arto.operation} options.operation - The operation to apply to the data.
+ *
+ * @constructor
+ * @extends carto.dataview.Base
+ * @memberof carto.dataview
+ * @api
  */
-function DataviewFormula (source, column, options) {
+function Formula (source, column, options) {
   this._initialize(source, column, options);
 }
 
-DataviewFormula.prototype = Object.create(DataviewBase.prototype);
+Formula.prototype = Object.create(Base.prototype);
 
-DataviewFormula.prototype.setOperation = function (operation) {
+/**
+ * Set the dataview operation
+ *
+ * @param  {carto.operation} operation
+ * @return {carto.dataview.Formula} this
+ * @api
+ */
+Formula.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
   this._options.operation = operation;
   if (this._internalModel) {
@@ -21,12 +38,32 @@ DataviewFormula.prototype.setOperation = function (operation) {
   return this;
 };
 
-DataviewFormula.prototype.getOperation = function () {
+/**
+ * Return the current dataview operation
+ *
+ * @return {carto.operation} Current dataview operation
+ * @api
+ */
+Formula.prototype.getOperation = function () {
   return this._options.operation;
 };
 
-DataviewFormula.prototype.getData = function () {
+/**
+ * Return the resulting data
+ *
+ * @return {FormulaData}
+ * @api
+ */
+Formula.prototype.getData = function () {
   if (this._internalModel) {
+    /**
+     * @typedef {object} FormulaData
+     * @property {string} operation
+     * @property {number} result
+     * @property {number} nulls
+     * @property {string} type - Constant 'formula'
+     * @api
+     */
     return {
       operation: this._options.operation,
       result: this._internalModel.get('data'),
@@ -37,34 +74,34 @@ DataviewFormula.prototype.getData = function () {
   return null;
 };
 
-DataviewFormula.prototype._defaultOptions = function (options) {
+Formula.prototype._defaultOptions = function (options) {
   options = options || {};
   options.operation = options.operation || constants.OPERATION.COUNT;
   return options;
 };
 
-DataviewFormula.prototype._listenToInstanceModelEvents = function () {
+Formula.prototype._listenToInstanceModelEvents = function () {
   this.listenTo(this._internalModel, 'change:operation', this._onOperationChanged);
 };
 
-DataviewFormula.prototype._onOperationChanged = function () {
+Formula.prototype._onOperationChanged = function () {
   this.trigger('operationChanged', this._options.operation);
 };
 
-DataviewFormula.prototype._checkOptions = function (options) {
+Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
     throw new TypeError('Operation option for formula dataview is not valid. Use carto.operation');
   }
   this._checkOperation(options.operation);
 };
 
-DataviewFormula.prototype._checkOperation = function (operation) {
+Formula.prototype._checkOperation = function (operation) {
   if (_.isUndefined(operation) || !constants.isValidOperation(operation)) {
     throw new TypeError('Operation for formula dataview is not valid. Use carto.operation');
   }
 };
 
-DataviewFormula.prototype._createInternalModel = function (engine) {
+Formula.prototype._createInternalModel = function (engine) {
   this._internalModel = new FormulaDataviewModel({
     source: this._source.$getInternalModel(),
     column: this._column,
@@ -77,4 +114,4 @@ DataviewFormula.prototype._createInternalModel = function (engine) {
   });
 };
 
-module.exports = DataviewFormula;
+module.exports = Formula;

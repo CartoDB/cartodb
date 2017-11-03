@@ -12,7 +12,7 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
  *
  * @constructor
  * @api
- * @memberof carto.layers
+ * @memberof carto.layer
  */
 function Layer (source, style, opts) {
   if (typeof arguments[0] === 'string') {

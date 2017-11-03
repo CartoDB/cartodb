@@ -3,13 +3,22 @@ var _ = require('underscore');
  * Constants module for dataviews
  */
 
-var OPERATION = {
+/**
+ * Enum for operation values.
+ *
+ * @enum {string} carto.operation
+ * @readonly
+ * @memberof carto
+ * @api
+ */
+var operation = {
   COUNT: 'count',
   SUM: 'sum',
   AVG: 'avg',
   MAX: 'max',
   MIN: 'min'
 };
+var OPERATION = operation;
 
 var STATUS = {
   NOT_LOADED: 'notLoaded',

@@ -10,6 +10,10 @@
  * - **Client** : The api client.
  * - **Events** : The events exposed.
  * - **source** : Source description
+ * - **style** : Style description
+ * - **layer** : Layer description
+ * - **dataview** : Dataview description
+ * - **operation** : Operation description
  */
 
 var Client = require('./client');

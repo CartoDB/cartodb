@@ -4,43 +4,46 @@ var STATUS = require('../constants').STATUS;
 var SourceBase = require('../source/base');
 
 /**
+ * Base dataview object
  *
- * Represent a dataview base object.
- *
+ * @constructor
+ * @abstract
+ * @memberof carto.dataview
+ * @api
  */
-function DataviewBase () {}
+function Base () {}
 
-_.extend(DataviewBase.prototype, Backbone.Events);
+_.extend(Base.prototype, Backbone.Events);
 
-DataviewBase.prototype.getStatus = function () {
+Base.prototype.getStatus = function () {
   return this._status;
 };
 
-DataviewBase.prototype.isLoading = function () {
+Base.prototype.isLoading = function () {
   return this._status === STATUS.LOADING;
 };
 
-DataviewBase.prototype.isLoaded = function () {
+Base.prototype.isLoaded = function () {
   return this._status === STATUS.LOADED;
 };
 
-DataviewBase.prototype.hasError = function () {
+Base.prototype.hasError = function () {
   return this._status === STATUS.ERROR;
 };
 
-DataviewBase.prototype.enable = function () {
+Base.prototype.enable = function () {
   return this._setEnabled(true);
 };
 
-DataviewBase.prototype.disable = function () {
+Base.prototype.disable = function () {
   return this._setEnabled(false);
 };
 
-DataviewBase.prototype.isEnabled = function () {
+Base.prototype.isEnabled = function () {
   return this._enabled;
 };
 
-DataviewBase.prototype.setColumn = function (column) {
+Base.prototype.setColumn = function (column) {
   this._checkColumn(column);
   this._column = column;
   if (this._internalModel) {
@@ -49,11 +52,11 @@ DataviewBase.prototype.setColumn = function (column) {
   return this;
 };
 
-DataviewBase.prototype.getColumn = function () {
+Base.prototype.getColumn = function () {
   return this._column;
 };
 
-DataviewBase.prototype.getData = function () {
+Base.prototype.getData = function () {
   throw new Error('getData must be implemented by the particular dataview.');
 };
 
@@ -62,7 +65,7 @@ DataviewBase.prototype.getData = function () {
 
 // Protected methods
 
-DataviewBase.prototype._initialize = function (source, column, options) {
+Base.prototype._initialize = function (source, column, options) {
   options = this._defaultOptions(options);
 
   this._checkSource(source);
@@ -76,17 +79,17 @@ DataviewBase.prototype._initialize = function (source, column, options) {
   this._enabled = true;
 };
 
-DataviewBase.prototype._defaultOptions = function (options) {
+Base.prototype._defaultOptions = function (options) {
   throw new Error('_defaultOptions must be implemented by the particular dataview.');
 };
 
-DataviewBase.prototype._checkSource = function (source) {
+Base.prototype._checkSource = function (source) {
   if (!(source instanceof SourceBase)) {
     throw new TypeError('Source property is required.');
   }
 };
 
-DataviewBase.prototype._checkColumn = function (column) {
+Base.prototype._checkColumn = function (column) {
   if (_.isUndefined(column)) {
     throw new TypeError('Column property is required.');
   }
@@ -98,15 +101,15 @@ DataviewBase.prototype._checkColumn = function (column) {
   }
 };
 
-DataviewBase.prototype._checkOptions = function (options) {
+Base.prototype._checkOptions = function (options) {
   throw new Error('_checkOptions must be implemented by the particular dataview.');
 };
 
-DataviewBase.prototype._createInternalModel = function (engine) {
+Base.prototype._createInternalModel = function (engine) {
   throw new Error('_createInternalModel must be implemented by the particular dataview.');
 };
 
-DataviewBase.prototype._setEnabled = function (enabled) {
+Base.prototype._setEnabled = function (enabled) {
   this._enabled = enabled;
   if (this._internalModel) {
     this._internalModel.set('enabled', enabled);
@@ -114,7 +117,7 @@ DataviewBase.prototype._setEnabled = function (enabled) {
   return this;
 };
 
-DataviewBase.prototype._listenToInternalModelEvents = function () {
+Base.prototype._listenToInternalModelEvents = function () {
   if (this._internalModel) {
     this.listenTo(this._internalModel, 'change:data', this._onDataChanged);
     this.listenTo(this._internalModel, 'change:column', this._onColumnChanged);
@@ -125,36 +128,36 @@ DataviewBase.prototype._listenToInternalModelEvents = function () {
   }
 };
 
-DataviewBase.prototype._listenToInstanceModelEvents = function () {
+Base.prototype._listenToInstanceModelEvents = function () {
   throw new Error('_listenToInstanceModelEvents must be implemented by the particular dataview.');
 };
 
-DataviewBase.prototype._onDataChanged = function () {
+Base.prototype._onDataChanged = function () {
   this.trigger('dataChanged', this.getData());
 };
 
-DataviewBase.prototype._onColumnChanged = function () {
+Base.prototype._onColumnChanged = function () {
   this.trigger('columnChanged', this._column);
 };
 
-DataviewBase.prototype._onStatusLoading = function () {
+Base.prototype._onStatusLoading = function () {
   this._status = STATUS.LOADING;
   this.trigger('statusChanged', this._status);
 };
 
-DataviewBase.prototype._onStatusLoaded = function () {
+Base.prototype._onStatusLoaded = function () {
   this._status = STATUS.LOADED;
   this.trigger('statusChanged', this._status);
 };
 
-DataviewBase.prototype._onStatusError = function (model, error) {
+Base.prototype._onStatusError = function (model, error) {
   this._status = STATUS.ERROR;
   this.trigger('statusChanged', this._status, error && error.statusText ? error.statusText : error);
 };
 
 // Internal public methods
 
-DataviewBase.prototype.$setEngine = function (engine) {
+Base.prototype.$setEngine = function (engine) {
   this._source.$setEngine(engine);
   if (!this._internalModel) {
     this._createInternalModel(engine);
@@ -162,8 +165,8 @@ DataviewBase.prototype.$setEngine = function (engine) {
   }
 };
 
-DataviewBase.prototype.$getInternalModel = function () {
+Base.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
 
-module.exports = DataviewBase;
+module.exports = Base;

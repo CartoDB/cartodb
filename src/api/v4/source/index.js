@@ -1,3 +1,11 @@
+/**
+ *  @api
+ *  @namespace carto.source
+ *
+ *  @description
+ *  Sources namespace descriptions
+ */
+
 var Dataset = require('./dataset');
 var SQL = require('./sql');
 

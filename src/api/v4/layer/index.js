@@ -1,7 +1,7 @@
 /**
  *  @api
- *  @namespace carto.layers
- *  
+ *  @namespace carto.layer
+ *
  *  @description
  *  Layers namespace descriptions
  */

@@ -34,6 +34,7 @@ DataviewFormula.prototype.getData = function () {
       type: 'formula'
     };
   }
+  return null;
 };
 
 DataviewFormula.prototype._defaultOptions = function (options) {

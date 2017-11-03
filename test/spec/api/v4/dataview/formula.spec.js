@@ -1,0 +1,147 @@
+var Backbone = require('backbone');
+var _ = require('underscore');
+var carto = require('../../../../../src/api/v4/index');
+
+function createFakeInternalModel () {
+  var internalModel = {
+    set: function () {},
+    get: function () {}
+  };
+  spyOn(internalModel, 'set');
+  spyOn(internalModel, 'get').and.callFake(function (key) {
+    if (key === 'data') {
+      return 1234;
+    }
+    if (key === 'nulls') {
+      return 42;
+    }
+  });
+  _.extend(internalModel, Backbone.Events);
+
+  return internalModel;
+}
+
+describe('formula dataview public v4 API', function () {
+  describe('initialization', function () {
+    it('source must be provided', function () {
+      var test = function () {
+        new carto.dataview.Formula(); // eslint-disable-line no-new
+      };
+
+      expect(test).toThrowError(TypeError, 'Source property is mandatory when creating a dataview.');
+    });
+
+    it('column must be provided', function () {
+      var test = function () {
+        var source = 'a0';
+        new carto.dataview.Formula(source); // eslint-disable-line no-new
+      };
+
+      expect(test).toThrowError(TypeError, 'Column property is mandatory when creating a dataview.');
+    });
+
+    it('options set to default if not provided', function () {
+      var source = 'a0';
+      var column = 'population';
+
+      var dataview = new carto.dataview.Formula(source, column);
+
+      expect(dataview._options).toBeDefined();
+      expect(dataview._options.operation).toEqual(carto.operation.COUNT);
+    });
+
+    it('options set to the provided value', function () {
+      var source = 'a0';
+
+      var dataview = new carto.dataview.Formula(source, 'population', {
+        operation: carto.operation.AVG
+      });
+
+      expect(dataview._options.operation).toEqual(carto.operation.AVG);
+    });
+
+    it('throw error if no correct operation is provided', function () {
+      var test = function () {
+        var source = 'a0';
+        new carto.dataview.Formula(source, 'population', { // eslint-disable-line no-new
+          operation: 'exponential'
+        });
+      };
+
+      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+    });
+  });
+
+  describe('.setOperation', function () {
+    var dataview;
+
+    beforeEach(function () {
+      var source = 'a0';
+      dataview = new carto.dataview.Formula(source, 'population');
+    });
+
+    it('checks if operation is valid', function () {
+      var test = function () {
+        dataview.setOperation('swordfish');
+      };
+
+      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+    });
+
+    it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
+      var returnedObject = dataview.setOperation(carto.operation.AVG);
+
+      expect(dataview.getOperation()).toEqual(carto.operation.AVG);
+      expect(returnedObject).toBe(dataview);
+    });
+
+    it('sets operation in internal model if exists', function () {
+      var internalModel = createFakeInternalModel();
+      dataview._internalModel = internalModel;
+
+      dataview.setOperation(carto.operation.AVG);
+
+      var operationArgs = internalModel.set.calls.mostRecent().args;
+      expect(operationArgs[0]).toEqual('operation');
+      expect(operationArgs[1]).toEqual(carto.operation.AVG);
+    });
+  });
+
+  describe('.getData', function () {
+    var dataview;
+
+    beforeEach(function () {
+      var source = 'a0';
+      dataview = new carto.dataview.Formula(source, 'population', {
+        operation: carto.operation.SUM
+      });
+    });
+
+    it('returns null if there is no internalModel', function () {
+      var data = dataview.getData();
+
+      expect(data).toBeNull();
+    });
+
+    it('returns data from internalModel', function () {
+      var internalModel = createFakeInternalModel();
+      dataview._internalModel = internalModel;
+
+      var data = dataview.getData();
+
+      expect(data).toEqual({
+        type: 'formula',
+        operation: carto.operation.SUM,
+        result: 1234,
+        nulls: 42
+      });
+    });
+  });
+
+  // describe('.$setEngine', function () {
+  //   it('creates the internal model', function () {
+
+  //   });
+
+  // });
+});

@@ -106,7 +106,7 @@
     "webpack": "2.2.1",
     "webpack-stats-plugin": "0.1.4",
     "yarn-lockfile": "1.0.0",
-    "webpack-bundle-analyzer": "^2.4.0",
+    "webpack-bundle-analyzer": "^2.4.0"
   },
   "optionalDependencies": {
     "fsevents": "*"

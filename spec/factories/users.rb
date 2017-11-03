@@ -56,6 +56,16 @@ FactoryGirl.define do
       crypted_password 'kkkkkkkkk'
     end
 
+    factory :locked_user do
+      username { unique_name('user') }
+      email { unique_email }
+      password 'kkkkkkkkk'
+      password_confirmation 'kkkkkkkkk'
+      salt 'kkkkkkkkk'
+      crypted_password 'kkkkkkkkk'
+      state 'locked'
+    end
+
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     end
@@ -87,6 +97,10 @@ FactoryGirl.define do
     after(:create) do |carto_user|
       ::User.where(id: carto_user.id).first.after_create
       CartoDB::UserModule::DBService.any_instance.unstub
+    end
+
+    factory :carto_locked_user do
+      state 'locked'
     end
   end
 

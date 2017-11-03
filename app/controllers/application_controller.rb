@@ -167,7 +167,7 @@ class ApplicationController < ActionController::Base
     viewed_user = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_user
       user = Carto::User.where(username: viewed_user).first
-      render_404 if !user.nil? && user.locked?
+      locked_owner if !user.nil? && user.locked?
     elsif current_user.locked?
       locked_user
     end
@@ -231,7 +231,18 @@ class ApplicationController < ActionController::Base
         redirect_to CartoDB.path(self, 'upgrade_trial') and return
       end
       format.json do
-        head :unauthorized
+        head 404
+      end
+    end
+  end
+
+  def locked_owner
+    respond_to do |format|
+      format.html do
+        render_404
+      end
+      format.json do
+        head 404
       end
     end
   end

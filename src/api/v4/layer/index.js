@@ -1,13 +1,9 @@
-/**
- *  @api
- *  @namespace carto.layer
- *
- *  @description
- *  Layers namespace descriptions
- */
-
 var Layer = require('./layer');
 
+/**
+ *  @namespace carto.layer
+ *  @api
+ */
 module.exports = {
   Layer: Layer
 };

@@ -13,7 +13,6 @@
  * - **style** : Style description
  * - **layer** : Layer description
  * - **dataview** : Dataview description
- * - **operation** : Operation description
  */
 
 var Client = require('./client');

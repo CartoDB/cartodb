@@ -1,13 +1,9 @@
-/**
- *  @api
- *  @namespace carto.style
- *
- *  @description
- *  Styles namespace descriptions
- */
-
 var CartoCSS = require('./cartocss');
 
+/**
+ * @namespace carto.style
+ * @api
+ */
 module.exports = {
   CartoCSS: CartoCSS
 };

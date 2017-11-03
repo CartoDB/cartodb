@@ -9,3 +9,33 @@ The `$` before a method name is a naming convetion. Those methods sall not be ex
 but can be used from different files. (Public only for developers).
 
 
+## Api structure
+
+All the api methods and objects are exposed through the public `carto` object.
+
+- `carto.client` : The main object used in a carto.js app
+- `carto.Events` : Enum with the events availiable in the client.
+- `carto.layer` : Namespace for the layers
+    - `Layer`: Constructor to build a Layer object
+- `carto.source`: Namespace for the sources.
+    - `Dataset`: Get all the data from a table
+    - `SQL`: Get the data from a custom SQL query
+- `carto.style`: Namespace for the styles
+    - `CartoCSS`: Constructor to build layer styles.
+
+## Usage
+
+### Common.js
+
+```javascript
+const carto = require('cartojs');
+```
+
+
+### Loading carto.js from a CDN
+
+```javascript
+window.carto; // All the api is availiable here
+```
+
+

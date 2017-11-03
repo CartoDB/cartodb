@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var STATUS = require('../constants').STATUS;
+var SourceBase = require('../source/base');
 
 /**
  *
@@ -80,8 +81,7 @@ DataviewBase.prototype._defaultOptions = function (options) {
 };
 
 DataviewBase.prototype._checkSource = function (source) {
-  // TODO
-  return true;
+  return source instanceof SourceBase;
 };
 
 DataviewBase.prototype._checkColumn = function (column) {

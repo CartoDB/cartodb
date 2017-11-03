@@ -1,4 +1,5 @@
 require 'active_record'
+require_dependency 'cartodb/errors'
 
 class Carto::Permission < ActiveRecord::Base
   DEFAULT_ACL_VALUE = [].freeze

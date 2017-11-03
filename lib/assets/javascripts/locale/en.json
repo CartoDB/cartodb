@@ -1,4 +1,13 @@
 {
+  "protected_map": {
+    "title": "Protected map",
+    "content": {
+      "header": "This map is protected with password",
+      "placeholder": "Insert your password here",
+      "tip": "Contact with the owner in case you want access to it.",
+      "error": "Invalid password"
+    }
+  },
   "helpers": {
     "static_header_meta_tags": {
       "map_created_by": "Map created by %{author} - CARTO"

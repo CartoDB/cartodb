@@ -86,6 +86,7 @@
     "jsdoc": "~3.5.5",
     "jstify": "0.12.0",
     "load-grunt-tasks": "~0.6.0",
+    "npm-watch": "^0.3.0",
     "semver": "~4.1.0",
     "source-map-support": "CartoDB/node-source-map-support#0.4.6-cdb1",
     "time-grunt": "~0.3.1",
@@ -147,6 +148,10 @@
     "lint:fix": "eslint . --fix",
     "docs": "rm -rf docs/v4; jsdoc --configure config/jsdoc/api-conf.json",
     "docs:all": "rm -rf docs/v4-internal; jsdoc --configure config/jsdoc/all-conf.json",
-    "postversion": "git push origin v4 --follow-tags"
+    "postversion": "git push origin v4 --follow-tags",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "docs": "src/**/*.js"
   }
 }

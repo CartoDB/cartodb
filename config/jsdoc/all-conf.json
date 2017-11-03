@@ -9,6 +9,9 @@
       "outputSourceFiles": false
     }
   },
+  "plugins": [
+    "plugins/markdown"
+  ],
   "opts": {
     "recurse": true,
     "destination": "./docs/v4-internal"

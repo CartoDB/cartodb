@@ -35,7 +35,6 @@ var WindshaftError = require('./windshaft/error');
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
  * @param {boolean} params.statTag - Token used to get map view statistics.
  * @class
- * @api
  */
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');
@@ -140,17 +139,30 @@ Engine.prototype.off = function (event, callback, context) {
  * @api
  */
 Engine.prototype.reload = function (options) {
-  options = this._buildOptions(options);
-  try {
-    var params = this._buildParams(options.includeFilters);
-    var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
-    var request = new Request(payload, params, options);
+  return new Promise(function (resolve, reject) {
+    options = this._buildOptions(options);
+    var oldSuccess = options.success;
+    var oldError = options.error;
+    options.success = function (serverResponse) {
+      oldSuccess(serverResponse);
+      resolve();
+    };
+    options.error = function (serverResponse) {
+      oldError(serverResponse);
+      reject(serverResponse);
+    };
+    try {
+      var params = this._buildParams(options.includeFilters);
+      var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+      var request = new Request(payload, params, options);
 
-    this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
-    this._windshaftClient.instantiateMap(request);
-  } catch (error) {
-    this._manageClientError(error, options);
-  }
+      this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+      this._windshaftClient.instantiateMap(request);
+    } catch (error) {
+      this._manageClientError(error, options);
+      reject(error);
+    }
+  }.bind(this));
 };
 
 /**
@@ -331,7 +343,6 @@ module.exports = Engine;
  *
  * @event Engine#Engine:RELOAD_STARTED
  * @type {string}
- * @api
  */
 
 /**
@@ -339,7 +350,6 @@ module.exports = Engine;
   *
   * @event Engine#Engine:RELOAD_SUCCESS
   * @type {string}
-  * @api
   */
 
 /**
@@ -347,5 +357,4 @@ module.exports = Engine;
   *
   * @event Engine#Engine:RELOAD_ERROR
   * @type {string}
-  * @api
   */

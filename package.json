@@ -104,9 +104,9 @@
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
     "webpack": "2.2.1",
+    "webpack-bundle-analyzer": "^2.4.0",
     "webpack-stats-plugin": "0.1.4",
-    "yarn-lockfile": "1.0.0",
-    "webpack-bundle-analyzer": "^2.4.0"
+    "yarn-lockfile": "1.0.0"
   },
   "optionalDependencies": {
     "fsevents": "*"

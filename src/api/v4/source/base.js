@@ -1,4 +1,4 @@
 
-function SourceBase () {}
+function Base () {}
 
-module.exports = SourceBase;
+module.exports = Base;

@@ -1,15 +1,15 @@
-var SourceBase = require('./base');
+var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
-function SourceSQL (id, query) {
+function SQL (id, query) {
   this._id = id;
   this._query = query;
 }
 
-SourceSQL.prototype = Object.create(SourceBase.prototype);
+SQL.prototype = Object.create(Base.prototype);
 
-SourceSQL.prototype.setQuery = function (query) {
+SQL.prototype.setQuery = function (query) {
   this._query = query;
   if (this._internalModel) {
     this._internalModel.set('query', query);
@@ -17,11 +17,11 @@ SourceSQL.prototype.setQuery = function (query) {
   return this;
 };
 
-SourceSQL.prototype.getQuery = function () {
+SQL.prototype.getQuery = function () {
   return this._query;
 };
 
-SourceSQL.prototype.$setEngine = function (engine) {
+SQL.prototype.$setEngine = function (engine) {
   if (!this._internalModel) {
     this._internalModel = new AnalysisModel({
       id: this._id,
@@ -34,8 +34,8 @@ SourceSQL.prototype.$setEngine = function (engine) {
   }
 };
 
-SourceSQL.prototype.$getInternalModel = function () {
+SQL.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
 
-module.exports = SourceSQL;
+module.exports = SQL;

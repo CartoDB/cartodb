@@ -1,4 +1,4 @@
-var LayerBase = require('./base');
+var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 
 /**
@@ -27,7 +27,7 @@ function Layer (source, style, opts) {
   this._visible = true;
 }
 
-Layer.prototype = Object.create(LayerBase.prototype);
+Layer.prototype = Object.create(Base.prototype);
 
 Layer.prototype.setStyle = function (style, opts) {
   opts = opts || {};

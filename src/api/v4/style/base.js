@@ -1,4 +1,4 @@
 
-function StyleBase () {}
+function Base () {}
 
-module.exports = StyleBase;
+module.exports = Base;

@@ -1,15 +1,15 @@
-var SourceBase = require('./base');
+var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
-function SourceDataset (id, dataset) {
+function Dataset (id, dataset) {
   this._id = id;
   this._dataset = dataset;
 }
 
-SourceDataset.prototype = Object.create(SourceBase.prototype);
+Dataset.prototype = Object.create(Base.prototype);
 
-SourceDataset.prototype.$setEngine = function (engine) {
+Dataset.prototype.$setEngine = function (engine) {
   if (!this._internalModel) {
     this._internalModel = new AnalysisModel({
       id: this._id,
@@ -22,8 +22,8 @@ SourceDataset.prototype.$setEngine = function (engine) {
   }
 };
 
-SourceDataset.prototype.$getInternalModel = function () {
+Dataset.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
 
-module.exports = SourceDataset;
+module.exports = Dataset;

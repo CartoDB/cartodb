@@ -1,13 +1,13 @@
-var StyleBase = require('./base');
+var Base = require('./base');
 
-function StyleCartoCSS (cartocss) {
+function CartoCSS (cartocss) {
   this.cartocss = cartocss;
 }
 
-StyleCartoCSS.prototype = Object.create(StyleBase.prototype);
+CartoCSS.prototype = Object.create(Base.prototype);
 
-StyleCartoCSS.prototype.toCartoCSS = function () {
+CartoCSS.prototype.toCartoCSS = function () {
   return this.cartocss;
 };
 
-module.exports = StyleCartoCSS;
+module.exports = CartoCSS;

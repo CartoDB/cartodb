@@ -1,4 +1,4 @@
 
-function LayerBase () {}
+function Base () {}
 
-module.exports = LayerBase;
+module.exports = Base;

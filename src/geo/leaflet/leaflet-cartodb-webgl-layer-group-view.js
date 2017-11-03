@@ -5,7 +5,7 @@ var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
 var Profiler = require('../../core/profiler');
 
-var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
+var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap, showErrors) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
   var metric = Profiler.metric('tangram.rendering');
@@ -14,7 +14,7 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap) {
 
   this.trigger('loading');
 
-  this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel));
+  this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel), showErrors);
 
   this.tangram.onLoaded(function () {
     if (metric) {
@@ -78,6 +78,11 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
             case 429:
               this.layerGroupModel.addError({ type: 'limit' });
               break;
+            case 204:
+              // This error is thrown when the tile has no data
+              break;
+            default:
+              this.layerGroupModel.addError({ type: 'tile' });
           }
         }.bind(this)
       });

@@ -24,7 +24,7 @@ describe('api/v4/client', function () {
         serverUrl: 'https://{user}.carto.com:443',
         username: 'cartojs-test'
       });
-      source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      source = new carto.source.Dataset('ne_10m_populated_places_simple', { id: 'a0' });
       style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
       layer = new carto.layer.Layer('id', source, style, {});
     });

@@ -25,9 +25,9 @@ function createSourceMock () {
   return new carto.source.Dataset();
 }
 
-function createFakeEngine () {
+function createEngineMock () {
   var engine = {
-    name: 'Fake engine',
+    name: 'Engine mock',
     reload: function () {}
   };
   spyOn(engine, 'reload');
@@ -155,7 +155,7 @@ describe('formula dataview public v4 API', function () {
       dataview = new carto.dataview.Formula(source, 'population', {
         operation: carto.operation.MIN
       });
-      engine = createFakeEngine();
+      engine = createEngineMock();
     });
 
     it('creates the internal model', function () {
@@ -167,7 +167,7 @@ describe('formula dataview public v4 API', function () {
       expect(internalModel.get('column')).toEqual(dataview._column);
       expect(internalModel.get('operation')).toEqual(dataview._options.operation);
       expect(internalModel.isEnabled()).toBe(false);
-      expect(internalModel._engine.name).toEqual('Fake engine');
+      expect(internalModel._engine.name).toEqual('Engine mock');
     });
 
     it('pass the syncOnBBox to the internal model', function () {

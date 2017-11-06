@@ -2,13 +2,13 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var carto = require('../../../../../src/api/v4/index');
 
-function createFakeInternalModel () {
-  var internalModel = {
+function createInternalModelMock () {
+  var internalModelMock = {
     set: function () {},
     get: function () {}
   };
-  spyOn(internalModel, 'set');
-  spyOn(internalModel, 'get').and.callFake(function (key) {
+  spyOn(internalModelMock, 'set');
+  spyOn(internalModelMock, 'get').and.callFake(function (key) {
     if (key === 'data') {
       return 1234;
     }
@@ -16,12 +16,12 @@ function createFakeInternalModel () {
       return 42;
     }
   });
-  _.extend(internalModel, Backbone.Events);
+  _.extend(internalModelMock, Backbone.Events);
 
-  return internalModel;
+  return internalModelMock;
 }
 
-function createFakeSource () {
+function createSourceMock () {
   return new carto.source.Dataset();
 }
 
@@ -36,7 +36,7 @@ function createFakeEngine () {
 }
 
 describe('formula dataview public v4 API', function () {
-  var source = createFakeSource();
+  var source = createSourceMock();
 
   describe('initialization', function () {
     it('source must be provided', function () {
@@ -106,12 +106,12 @@ describe('formula dataview public v4 API', function () {
     });
 
     it('sets operation in internal model if exists', function () {
-      var internalModel = createFakeInternalModel();
-      dataview._internalModel = internalModel;
+      var internalModelMock = createInternalModelMock();
+      dataview._internalModel = internalModelMock;
 
       dataview.setOperation(carto.OPERATION.AVG);
 
-      var operationArgs = internalModel.set.calls.mostRecent().args;
+      var operationArgs = internalModelMock.set.calls.mostRecent().args;
       expect(operationArgs[0]).toEqual('operation');
       expect(operationArgs[1]).toEqual(carto.OPERATION.AVG);
     });
@@ -133,8 +133,8 @@ describe('formula dataview public v4 API', function () {
     });
 
     it('returns data from internalModel', function () {
-      var internalModel = createFakeInternalModel();
-      dataview._internalModel = internalModel;
+      var internalModelMock = createInternalModelMock();
+      dataview._internalModel = internalModelMock;
 
       var data = dataview.getData();
 

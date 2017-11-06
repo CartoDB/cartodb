@@ -1,22 +1,26 @@
 /**
- *  @api
- *  @namespace carto.Events
- *  
- *  @description
- *  Namespace to access the `carto.js` events.
+ * Enum for operation values.
+ *
+ * @enum {string} carto.events
+ * @readonly
+ * @memberof carto
+ * @api
  */
-
-module.exports = {
+var events = {
   /**
    * Reload started event, fired every time the reload process is completed succesfully.
+   *
+   * @event carto.events.SUCCESS
    * @api
-   * @event carto.Events.SUCCESS
    */
   SUCCESS: 'success',
   /**
    * Reload started event, fired every time the reload process has some error.
+   *
+   * @event carto.events.ERROR
    * @api
-   * @event carto.Events.ERROR
    */
-  ERROR: 'error,'
+  ERROR: 'error'
 };
+
+module.exports = events;

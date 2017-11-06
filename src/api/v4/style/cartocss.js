@@ -1,3 +1,5 @@
+var Base = require('./base');
+
 /**
  * @param {string} cartocss CartoCSS
  *
@@ -9,15 +11,18 @@
  *     marker-width: 10;
  *   }
  * `);
- * 
+ *
  * @constructor
- * @api
+ * @extends carto.style.Base
  * @memberof carto.style
+ * @api
  *
  */
 function CartoCSS (cartocss) {
   this.cartocss = cartocss;
 }
+
+CartoCSS.prototype = Object.create(Base.prototype);
 
 CartoCSS.prototype.toCartoCSS = function () {
   return this.cartocss;

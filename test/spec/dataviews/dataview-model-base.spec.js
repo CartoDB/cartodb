@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
 var MapModel = require('../../../src/geo/map');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
+var WindshaftFiltersBoundingBox = require('../../../src/windshaft/filters/bounding-box');
 var AnalysisService = require('../../../src/analysis/analysis-service');
 var MockFactory = require('../../helpers/mockFactory');
 
@@ -43,7 +44,7 @@ describe('dataviews/dataview-model-base', function () {
     this.map = new MapModel(null, {
       layersFactory: {}
     });
-    this.map.setBounds([102, 200], [300, 400]);
+    this.map.setBounds([[102, 200], [300, 400]]);
 
     this.vis = new VisModel();
     engineMock = this.vis._createEngine({
@@ -71,14 +72,16 @@ describe('dataviews/dataview-model-base', function () {
     this.model = new DataviewModelBase({
       source: this.source
     }, {
-      map: this.map,
-      engine: engineMock
+      engine: engineMock,
+      bboxFilter: new WindshaftFiltersBoundingBox(this.map)
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
     engineMock._dataviewsCollection.add(this.model);
 
     // Disable debounce
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+    this.model._bboxFilter._stopBinds();
+    this.model._bboxFilter._initBinds();
   });
 
   describe('url', function () {
@@ -136,7 +139,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when map view bounds are ready', function () {
       beforeEach(function () {
-        this.map.setBounds([[1, 2], [3, 4]]);
+        this.model._bboxFilter.setBounds([[1, 2], [3, 4]]);
 
         this.model.set('url', 'http://example.com');
       });
@@ -151,8 +154,8 @@ describe('dataviews/dataview-model-base', function () {
         });
 
         it('should change bounds', function () {
-          expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._map);
-          expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('change:center change:zoom');
+          expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._bboxFilter);
+          expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('boundsChanged');
           expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:sync_on_bbox_change');
           expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:url');
           expect(this.model.on.calls.argsFor(2)[0]).toEqual('change:enabled');
@@ -162,7 +165,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when map view bounds are NOT ready', function () {
       beforeEach(function () {
-        spyOn(this.map, 'getViewBounds').and.returnValue(null);
+        spyOn(this.model._bboxFilter, 'areBoundsAvailable').and.returnValue(false);
       });
 
       describe('when sync_on_bbox_change is true', function () {
@@ -320,7 +323,7 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should fetch if the bounding box have changed while the dataview was disabled', function () {
       // Map bounds have changed
-      this.map.setBounds([102, 200], [300, 400]);
+      this.map.setBounds([[102, 200], [300, 400]]);
       this.map.trigger('change:center');
 
       this.model.set('enabled', true);
@@ -343,7 +346,7 @@ describe('dataviews/dataview-model-base', function () {
       this.model.fetch.calls.reset();
 
       // Map bounds have changed
-      this.map.setBounds([102, 200], [300, 400]);
+      this.map.setBounds([[102, 200], [300, 400]]);
       this.map.trigger('change:center');
 
       this.model.set('enabled', true);
@@ -389,7 +392,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should fetch when the bounding box has changed', function () {
-      this.map.setBounds([102, 200], [300, 400]);
+      this.map.setBounds([[102, 200], [300, 400]]);
       this.map.trigger('change:center');
 
       expect(this.model.fetch).toHaveBeenCalled();
@@ -398,7 +401,7 @@ describe('dataviews/dataview-model-base', function () {
     it('should NOT fetch when the bounding box has changed and the dataview is not enabled', function () {
       this.model.set('enabled', false);
 
-      this.map.setBounds([102, 200], [300, 400]);
+      this.map.setBounds([[102, 200], [300, 400]]);
       this.map.trigger('change:center');
 
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -410,7 +413,7 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).toHaveBeenCalled();
       this.model.fetch.calls.reset();
 
-      this.map.setBounds([102, 200], [300, 400]);
+      this.map.setBounds([[102, 200], [300, 400]]);
       this.map.trigger('change:center');
 
       expect(this.model.fetch).not.toHaveBeenCalled();

@@ -1,10 +1,8 @@
 var _ = require('underscore');
 var Model = require('../core/model');
 var BackboneAbortSync = require('../util/backbone-abort-sync');
-var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
 var AnalysisModel = require('../analysis/analysis-model');
 var util = require('../core/util');
-var BOUNDING_BOX_FILTER_WAIT = 500;
 
 var UNFETCHED_STATUS = 'unfetched';
 var FETCHING_STATUS = 'fetching';
@@ -12,7 +10,6 @@ var FETCHED_STATUS = 'fetched';
 var FETCH_ERROR_STATUS = 'error';
 
 var REQUIRED_OPTS = [
-  'map',
   'engine'
 ];
 
@@ -52,18 +49,13 @@ module.exports = Model.extend({
 
   _getBoundingBoxFilterParam: function () {
     var result = '';
-    var boundingBoxFilter;
 
+    this._checkBBoxFilter();
     if (this.syncsOnBoundingBoxChanges()) {
-      boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._getMapViewBounds());
-      result = 'bbox=' + boundingBoxFilter.toString();
+      result = 'bbox=' + this._bboxFilter.toString();
     }
 
     return result;
-  },
-
-  _getMapViewBounds: function () {
-    return this._map.getViewBounds();
   },
 
   /**
@@ -80,7 +72,6 @@ module.exports = Model.extend({
     opts = opts || {};
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
 
-    this._map = opts.map;
     this._engine = opts.engine;
 
     if (!attrs.source) throw new Error('source is a required attr');
@@ -99,16 +90,19 @@ module.exports = Model.extend({
       this.filter.set('dataviewId', this.id);
     }
 
+    if (opts.bboxFilter) {
+      this.addBBoxFilter(opts.bboxFilter);
+    }
+
     this._initBinds();
   },
 
   _initBinds: function () {
     this.listenToOnce(this, 'change:url', function () {
-      if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
+      this._checkBBoxFilter();
+      if (this.syncsOnBoundingBoxChanges() && !this._bboxFilter.areBoundsAvailable()) {
         // wait until map gets bounds from view
-        this._map.on('change:view_bounds_ne', function () {
-          this._initialFetch();
-        }, this);
+        this.listenTo(this._bboxFilter, 'boundsChanged', this._initialFetch);
       } else {
         this._initialFetch();
       }
@@ -126,7 +120,7 @@ module.exports = Model.extend({
       this.refresh();
     }, this);
 
-    this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
+    this._listenToBBoxChanges();
 
     this.on('change:url', function (model, value, opts) {
       if (this.syncsOnDataChanges()) {
@@ -228,6 +222,15 @@ module.exports = Model.extend({
 
   refresh: function () {
     this.fetch();
+  },
+
+  addBBoxFilter: function (bboxFilter) {
+    if (!bboxFilter) {
+      return;
+    }
+    this._stopListeningBBoxChanges();
+    this._bboxFilter = bboxFilter;
+    this._listenToBBoxChanges();
   },
 
   update: function (attrs) {
@@ -335,6 +338,24 @@ module.exports = Model.extend({
   _checkSourceAttribute: function (source) {
     if (!(source instanceof AnalysisModel)) {
       throw new Error('Source must be an instance of AnalysisModel');
+    }
+  },
+
+  _checkBBoxFilter: function () {
+    if (this.syncsOnBoundingBoxChanges() && !this._bboxFilter) {
+      throw new Error('Cannot sync on bounding box changes. There is no bounding box filter.');
+    }
+  },
+
+  _listenToBBoxChanges: function () {
+    if (this._bboxFilter) {
+      this.listenTo(this._bboxFilter, 'boundsChanged', this._onMapBoundsChanged);
+    }
+  },
+
+  _stopListeningBBoxChanges: function () {
+    if (this._bboxFilter) {
+      this.stopListening(this._bboxFilter, 'boundsChanged');
     }
   }
 },

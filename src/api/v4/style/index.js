@@ -1,8 +1,8 @@
 var CartoCSS = require('./cartocss');
 
 /**
- * @api
  * @namespace carto.style
+ * @api
  */
 module.exports = {
   CartoCSS: CartoCSS

@@ -1,8 +1,8 @@
 var Layer = require('./layer');
 
 /**
- *  @api
  *  @namespace carto.layer
+ *  @api
  */
 module.exports = {
   Layer: Layer

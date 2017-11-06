@@ -2,8 +2,8 @@ var Dataset = require('./dataset');
 var SQL = require('./sql');
 
 /**
- *  @api
  *  @namespace carto.source
+ *  @api
  */
 module.exports = {
   Dataset: Dataset,

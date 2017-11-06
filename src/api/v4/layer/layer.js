@@ -1,12 +1,13 @@
+var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 
 /**
- * 
+ *
  * Represent a layer Object.
- * 
+ *
  * @param {string} [id] - A unique ID for this layer
- * @param {object} source - The source where the layer will fetch the data.
- * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling.
+ * @param {carto.source.Base} source - The source where the layer will fetch the data.
+ * @param {carto.style.Base} style - A CartoCSS object with the layer styling.
  *
  * @example
  *
@@ -15,10 +16,11 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
  * @example
  *
  * new carto.layer.Layer(citiesSource, citiesStyle);
- * 
+ *
  * @constructor
- * @api
+ * @extends carto.layer.Base
  * @memberof carto.layer
+ * @api
  */
 function Layer (id, source, style) {
   if (typeof style === 'undefined') {
@@ -32,6 +34,8 @@ function Layer (id, source, style) {
   this._style = style;
   this._visible = true;
 }
+
+Layer.prototype = Object.create(Base.prototype);
 
 Layer.prototype.setStyle = function (style, opts) {
   opts = opts || {};
@@ -69,12 +73,14 @@ Layer.prototype.setSource = function (source) {
 
 Layer.prototype.$setEngine = function (engine) {
   this._source.$setEngine(engine);
-  this._internalModel = new CartoDBLayer({
-    id: this._id,
-    source: this._source.$getInternalModel(),
-    cartocss: this._style.toCartoCSS(),
-    visible: this._visible
-  }, { engine: engine });
+  if (!this._internalModel) {
+    this._internalModel = new CartoDBLayer({
+      id: this._id,
+      source: this._source.$getInternalModel(),
+      cartocss: this._style.toCartoCSS(),
+      visible: this._visible
+    }, { engine: engine });
+  }
 };
 
 Layer.prototype.$getInternalModel = function () {

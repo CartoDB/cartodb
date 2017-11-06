@@ -585,6 +585,8 @@ describe('vis/vis', function () {
 
     it('should initialize existing analyses', function () {
       this.vizjson = {
+        bounds: [[40.2813, -3.90592], [40.5611, -3.47532]],
+        center: [40.421217, -3.6756585],
         layers: [
           {
             type: 'CartoDB',

@@ -14,15 +14,27 @@
     <script src="../../dist/cartodb.uncompressed.js"></script>
     <style>
         #map {
-            width: 100vw;
-            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #widget {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 20px;
+            font-size: 2em;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
         }
     </style>
 </head>
 
 <body>
+    <div id="widget"></div>
     <div id="map"></div>
-
     <script>
         (async () => {
             var i = 0; // Number of reload cycles.
@@ -36,50 +48,84 @@
                 username: 'cartojs-test'
             });
 
-            client.on(carto.Events.SUCCESS, function () {
+            client.on(carto.events.SUCCESS, function () {
                 console.log('Client reloaded', i++)
             });
 
-            client.on(carto.Events.ERROR, function () {
+            client.on(carto.events.ERROR, function () {
                 console.error('Client Error!', i++)
             });
 
             // Create a source
             var source0 = new carto.source.Dataset('a0', 'ne_10m_populated_places_simple');
+            window.source0 = source0;
 
             // Create a source
             var source1 = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
+            window.source1 = source1;
 
             // Create a style
             var style = new carto.style.CartoCSS(`
-                #layer {
-                    marker-width: 10;
-                    marker-fill: red;
-                }`);
+              #layer {
+                  marker-width: 10;
+                  marker-fill: red;
+              }`
+            );
 
             // Create a style
             var style1 = new carto.style.CartoCSS(`
-                #layer {
-                    marker-width: 10;
-                    marker-fill: yellow;
-                }`);
+              #layer {
+                  marker-width: 10;
+                  marker-fill: yellow;
+              }`
+            );
 
             // Create a layer
             var layer = new carto.layer.Layer('layer0', source0, style);
             var layer1 = new carto.layer.Layer('layer1', source1, style1);
 
-
-            client.addLayer(layer1);
-            client.addLayer(layer);
-
             // Add the layers
-            // await client.addLayers([layer1, layer]); // engine.reload() internal
-
+            client.addLayers([layer1, layer]);
+            //client.addLayer(layer1);
+            //client.addLayer(layer);
 
             // Add the layer to the map
             client.getLeafletLayerView().addTo(map);
 
             client.removeLayer(layer);
+
+            // Dataviews
+            var formulaDataview = new carto.dataview.Formula(source1, 'pop_max', {
+              operation: carto.operation.AVG
+            });
+            window.formula1 = formulaDataview;
+
+            formulaDataview.on('dataChanged', function (newData) {
+              document.getElementById('widget').innerHTML = newData.operation.toUpperCase() + ' ' + newData.result;
+              console.log('Data changed', newData);
+            });
+
+            formulaDataview.on('columnChanged', function (newColumn) {
+              console.log('Column changed', newColumn);
+            });
+
+            formulaDataview.on('statusChanged', function (newStatus, error) {
+              console.log('Status changed', newStatus, error);
+              if (newStatus === carto.dataview.status.LOADING) {
+                console.log('loading');
+              }
+              if (newStatus === carto.dataview.status.LOADED) {
+                console.log('loaded');
+              }
+            });
+
+            formulaDataview.on('operationChanged', function (newOperation) {
+              console.log('Operation changed', newOperation);
+            });
+
+            client.addDataview(formulaDataview);
+
+            formulaDataview.setOperation(carto.operation.MAX);
         })();
 
     </script>

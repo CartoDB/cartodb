@@ -9,8 +9,14 @@ var Backbone = require('backbone');
  * @memberof carto.layer
  * @api
  */
-function Base () {}
+function Base () { }
 
 _.extend(Base.prototype, Backbone.Events);
+
+/**
+ * 
+ */
+Base.prototype.validateSource = function () {
+};
 
 module.exports = Base;

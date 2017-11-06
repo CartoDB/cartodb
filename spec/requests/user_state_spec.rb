@@ -10,12 +10,12 @@ def login(user)
 end
 
 def follow_redirects(limit = 10)
-  while response.redirect? && (limit -= 1) > 0 do
-      follow_redirect!
+  while response.redirect? && (limit -= 1) > 0
+    follow_redirect!
   end
 end
 
-describe "UserState"  do
+describe "UserState" do
 
   before(:all) do
     @locked_user = FactoryGirl.create(:locked_user)
@@ -23,7 +23,7 @@ describe "UserState"  do
     @visualization.create_mapcap!
     @non_locked_user = FactoryGirl.create(:valid_user)
     @dashboard_endpoints = ['/dashboard', '/dashboard/tables', '/dashboard/datasets', '/dashboard/visualizations',
-                          '/dashboard/maps'].freeze
+                            '/dashboard/maps'].freeze
     @public_user_endpoints = ['/me'].freeze
     @user_endpoints = ['/account', '/profile'].freeze
     @tables_endpoints = ["/tables/#{@table.id}", "/tables/#{@table.id}/public",
@@ -39,6 +39,7 @@ describe "UserState"  do
                               "/api/v1/synchronizations", "/api/v1/geocodings",
                               "/api/v1/users/#{@locked_user.id}"]
     @headers = {}
+    @api_headers = { 'CONTENT_TYPE' => 'application/json', :format => "json" }
   end
 
   after(:all) do
@@ -46,9 +47,9 @@ describe "UserState"  do
     @non_locked_user.destroy
   end
 
-    describe '#locked user' do
-      it 'owner accessing their resources' do
-        login(@locked_user)
+  describe '#locked user' do
+    it 'owner accessing their resources' do
+      login(@locked_user)
       @dashboard_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         response.status.should == 302
@@ -84,9 +85,8 @@ describe "UserState"  do
         request.path.should == '/upgrade_trial'
         response.status.should == 200
       end
-      api_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
       @private_api_endpoints.each do |endpoint|
-        get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @headers
+        get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @api_headers
         request.path == endpoint
         response.status.should == 404
       end
@@ -115,7 +115,6 @@ describe "UserState"  do
         get endpoint, {}, @headers
         response.status.should == 404
       end
-      api_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
@@ -136,7 +135,6 @@ describe "UserState"  do
         get endpoint, {}, @headers
         response.status.should == 404
       end
-      api_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
@@ -186,9 +184,8 @@ describe "UserState"  do
         request.path.should_not == '/upgrade_trial'
         response.status.should == 200
       end
-      api_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
       @private_api_endpoints.each do |endpoint|
-        get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @headers
+        get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @api_headers
         request.path == endpoint
         response.status.should == 200
       end
@@ -224,7 +221,6 @@ describe "UserState"  do
         follow_redirects
         response.status.should == 200
       end
-      api_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
@@ -248,7 +244,6 @@ describe "UserState"  do
         follow_redirects
         response.status.should == 200
       end
-      api_headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint

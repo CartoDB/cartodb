@@ -58,9 +58,9 @@ Formula.prototype.getData = function () {
   if (this._internalModel) {
     /**
      * @typedef {object} FormulaData
+     * @property {number} nulls
      * @property {string} operation
      * @property {number} result
-     * @property {number} nulls
      * @property {string} type - Constant 'formula'
      * @api
      */

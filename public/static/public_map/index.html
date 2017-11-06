@@ -39,7 +39,8 @@
         height: 36px;
         border-radius: 50%;
       }
-      .spinner.is-hidden {
+      #initial_startup.is-hidden,
+      #initial_startup.is-hidden .spinner{
         display: none;
       }
 
@@ -64,7 +65,7 @@
     <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
 
     <script>
-      window.StaticConfig = {"stylesheets":["/stylesheets/cartodb.css","/stylesheets/common.css","/stylesheets/public/public_header.css","/stylesheets/public_map.css"],"scripts":["/javascripts/cdb.js","/javascripts/models.js","/javascripts/public_map_templates_static.js","/javascripts/public_map_deps_static.js","/javascripts/public_map_static.js"],"images":["/images/layout/carto_logo.svg"]}
+      window.StaticConfig = {"stylesheets":["/stylesheets/cartodb.css","/stylesheets/common.css","/stylesheets/public/public_header.css","/stylesheets/public_map.css","/stylesheets/password_protected.css"],"scripts":["/javascripts/cdb.js","/javascripts/models.js","/javascripts/public_map_templates_static.js","/javascripts/public_map_deps_static.js","/javascripts/public_map_static.js"],"images":["/images/layout/carto_logo.svg"]}
     </script>
 
     
@@ -248,7 +249,7 @@ var PublicClient = function () {
     key: 'errorCallback',
     value: function errorCallback(callback) {
       return function (jqXHR, textStatus, errorThrown) {
-        var err = errorThrown || new Error('Failed to fetch');
+        var err = jqXHR.responseJSON || errorThrown || new Error('Failed to fetch');
 
         callback(err, jqXHR, null);
       };
@@ -375,7 +376,7 @@ window.CartoConfig = window.CartoConfig || {};
       console.error(err);
     } else {
       var spinnerEl = document.querySelector('.spinner');
-      spinnerEl.classList.add('is-hidden');
+      spinnerEl.parentNode.classList.add('is-hidden');
 
       var assetsUrl = AssetsVersionHelper.getAssetsUrl(version);
 

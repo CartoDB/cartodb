@@ -91,8 +91,7 @@
       "item4": "Some analysis queries add calculated results to columns in your dataset."
     },
     "done": "Done",
-    "add-analysis": "Add analysis",
-    "never-show-message": "Don't show me this again."
+    "add-analysis": "Add analysis"
   },
   "style-onboarding": {
     "title": "Style this map!",
@@ -112,7 +111,6 @@
     },
     "take-tour": "Take the tour",
     "style-layer": "Style layer",
-    "never-show-message": "Don't show me this again.",
     "exit": "Exit tour",
     "next": "Next"
   },
@@ -128,7 +126,6 @@
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
     "learn-more": "Learn more",
-    "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
     "new-column-added": "A new column has been added to your dataset.",

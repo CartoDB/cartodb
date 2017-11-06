@@ -17,6 +17,7 @@ var InfowindowTemplate = Backbone.Model.extend({
   },
 
   update: function (attrs, options) {
+    options = options || {};
     attrs = _.clone(attrs);
 
     if (!this.fields.equals(attrs.fields)) {

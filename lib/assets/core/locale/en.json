@@ -1004,7 +1004,7 @@
           },
           "filter-by-node-column": {
             "title": "Filter by layer",
-            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
+            "desc": "Filter your layer depending on a second layer such that widgets will affect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",

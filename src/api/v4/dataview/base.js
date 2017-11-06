@@ -213,7 +213,7 @@ Base.prototype._onStatusLoaded = function () {
 
 Base.prototype._onStatusError = function (model, error) {
   this._status = status.ERROR;
-  this.trigger('statusChanged', this._status, error && error.statusText ? error.statusText : error);
+  this.trigger('statusChanged', this._status, error);
 };
 
 // Internal public methods

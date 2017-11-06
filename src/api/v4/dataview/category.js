@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Base = require('./base');
 var constants = require('../constants');
 var CategoryDataviewModel = require('../../../dataviews/category-dataview-model');
+var CategoryFilter = require('../../../windshaft/filters/category');
 
 /**
  * Category dataview object
@@ -34,7 +35,7 @@ Category.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
   this._options.operation = operation;
   if (this._internalModel) {
-    this._internalModel.set('operation', operation);
+    this._internalModel.set('aggregation', operation);
   }
   return this;
 };
@@ -171,12 +172,13 @@ Category.prototype._createInternalModel = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._column,
     aggregation: this._options.operation,
-    aggratation_column: this._options.aggregationColumn,
+    aggregation_column: this._options.aggregationColumn,
     sync_on_data_change: true,
     sync_on_bbox_change: false,
     enabled: this._enabled
   }, {
-    engine: engine
+    engine: engine,
+    filter: new CategoryFilter()
   });
 };
 

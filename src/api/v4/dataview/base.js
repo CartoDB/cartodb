@@ -120,6 +120,13 @@ Base.prototype.getData = function () {
 
 // Protected methods
 
+/**
+ * Initialize dataview
+ *
+ * @param {carto.source.Base} source - The source where the datavew will fetch the data.
+ * @param {string} column - The column name to get the data.
+ * @param  {object} options - It depends on the instance.
+ */
 Base.prototype._initialize = function (source, column, options) {
   options = this._defaultOptions(options);
 

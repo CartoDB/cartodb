@@ -14,11 +14,18 @@ var generateFakeAttributes = function (attrNames) {
   }, {});
 };
 
+var createMapMock = function () {
+  var map = jasmine.createSpyObj('map', ['getViewBounds']);
+  map.getViewBounds.and.returnValue([[40.6, -3.5], [40.3, -3.8]]);
+
+  return map;
+};
+
 describe('dataviews/dataviews-factory', function () {
   beforeEach(function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
-      map: {},
+      map: createMapMock(),
       engine: {},
       dataviewsCollection: this.dataviewsCollection
     });
@@ -51,7 +58,7 @@ describe('dataviews/dataviews-factory', function () {
       this.factory = new DataviewsFactory({
         apiKey: 'THE_API_KEY'
       }, {
-        map: {},
+        map: createMapMock(),
         engine: {},
         dataviewsCollection: this.dataviewsCollection
       });

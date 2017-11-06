@@ -1,8 +1,29 @@
+var _ = require('underscore');
 var Model = require('../../core/model');
+var BOUNDING_BOX_FILTER_WAIT = 300;
 
 module.exports = Model.extend({
-  initialize: function (bounds) {
-    this.setBounds(bounds);
+  initialize: function (map) {
+    if (!map) {
+      throw new TypeError('Bounding box filter needs a map to get instantiated.');
+    }
+
+    this._map = map;
+    this.setBounds(this._map.getViewBounds());
+    this._initBinds();
+  },
+
+  _initBinds: function () {
+    this.listenTo(this._map, 'change:view_bounds_ne change:center change:zoom', _.debounce(this._boundsChanged, BOUNDING_BOX_FILTER_WAIT));
+  },
+
+  _stopBinds: function () {
+    this.stopListening(this._map, 'change:view_bounds_ne change:center change:zoom');
+  },
+
+  _boundsChanged: function () {
+    this.setBounds(this._map.getViewBounds());
+    this.trigger('boundsChanged');
   },
 
   setBounds: function (bounds) {
@@ -14,12 +35,20 @@ module.exports = Model.extend({
     });
   },
 
-  toString: function () {
+  getBounds: function () {
     return [
       this.get('west'),
       this.get('south'),
       this.get('east'),
       this.get('north')
-    ].join(',');
+    ];
+  },
+
+  areBoundsAvailable: function () {
+    return _.isFinite(this.get('west'));
+  },
+
+  toString: function () {
+    return this.getBounds().join(',');
   }
 });

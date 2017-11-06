@@ -18,9 +18,11 @@ var LegendModelBase = Backbone.Model.extend({
   initialize: function (attrs, deps) {
     if (!deps.engine) throw new Error('engine is required');
 
-    deps.engine.on(Engine.Events.RELOAD_STARTED, function () {
-      this.set('state', this.constructor.STATE_LOADING);
-    }.bind(this));
+    deps.engine.on(Engine.Events.RELOAD_STARTED, this._onEngineReloadStarted, this);
+  },
+
+  _onEngineReloadStarted: function () {
+    this.set('state', this.constructor.STATE_LOADING);
   },
 
   isLoading: function () {

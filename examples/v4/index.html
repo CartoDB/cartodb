@@ -14,15 +14,27 @@
     <script src="../../dist/cartodb.uncompressed.js"></script>
     <style>
         #map {
-            width: 100vw;
-            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #widget {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 20px;
+            font-size: 2em;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
         }
     </style>
 </head>
 
 <body>
+    <div id="widget"></div>
     <div id="map"></div>
-
     <script>
         (async () => {
             var i = 0; // Number of reload cycles.
@@ -40,11 +52,11 @@
                 username: 'cartojs-test'
             });
 
-            client.on(carto.Events.SUCCESS, function () {
+            client.on(carto.events.SUCCESS, function () {
                 console.log('Client reloaded', i++)
             });
 
-            client.on(carto.Events.ERROR, function () {
+            client.on(carto.events.ERROR, function () {
                 console.error('Client Error!', i++)
             });
 
@@ -57,6 +69,14 @@
                     marker-width: 10;
                     marker-fill: red;
                 }`);
+
+            // Create a style
+            var style = new carto.style.CartoCSS(`
+              #layer {
+                  marker-width: 10;
+                  marker-fill: red;
+              }`
+            );
 
             // Create a layer
             var spanishCities = window.spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle, {
@@ -75,7 +95,6 @@
                     marker-width: 10;
                     marker-fill: #CDCDCD;
                 }`);
-
 
             var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
 
@@ -104,15 +123,44 @@
 
             await spanishCities.setFeatureOverColumns(['adm0name', 'name']);
 
-            // Add the layers
-            // await client.addLayers([layer1, layer]); // engine.reload() internal
-
             // Add the layer to the map
             client.getLeafletLayerView().addTo(map);
 
             // client.getLeafletLayerView().removeFrom(map);
-        })();
 
+            // Dataviews
+            var formulaDataview = new carto.dataview.Formula(spanishCitiesSource, 'pop_max', {
+              operation: carto.operation.AVG
+            });
+            window.formula1 = formulaDataview;
+
+            formulaDataview.on('dataChanged', function (newData) {
+              document.getElementById('widget').innerHTML = newData.operation.toUpperCase() + ' ' + newData.result;
+              console.log('Data changed', newData);
+            });
+
+            formulaDataview.on('columnChanged', function (newColumn) {
+              console.log('Column changed', newColumn);
+            });
+
+            formulaDataview.on('statusChanged', function (newStatus, error) {
+              console.log('Status changed', newStatus, error);
+              if (newStatus === carto.dataview.status.LOADING) {
+                console.log('loading');
+              }
+              if (newStatus === carto.dataview.status.LOADED) {
+                console.log('loaded');
+              }
+            });
+
+            formulaDataview.on('operationChanged', function (newOperation) {
+              console.log('Operation changed', newOperation);
+            });
+
+            client.addDataview(formulaDataview);
+
+            formulaDataview.setOperation(carto.operation.MAX);
+        })();
     </script>
 </body>
 

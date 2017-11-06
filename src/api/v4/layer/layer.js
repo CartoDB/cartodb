@@ -1,6 +1,7 @@
-var _ = require('underscore');
-var Backbone = require('backbone');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
+var Base = require('./base');
+var CartoDBLayer = require('../../../geo/map/cartodb-layer');
+
 
 /**
  * Represent a layer Object.
@@ -45,7 +46,7 @@ function Layer (source, style, options) {
   this._featureOverColumns = options.featureOverColumns || [];
 }
 
-_.extend(Layer.prototype, Backbone.Events);
+Layer.prototype = Object.create(Base.prototype);
 
 /**
  * Set a new style for this layer.
@@ -55,7 +56,8 @@ _.extend(Layer.prototype, Backbone.Events);
  * 
  * @api
  */
-Layer.prototype.setStyle = function (style) {
+Layer.prototype.setStyle = function (style, opts) {
+  opts = opts || {};
   this._style = style;
   this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
   return this._reloadEngine();
@@ -181,6 +183,14 @@ Layer.prototype._createInternalModel = function (engine) {
     infowindow: getInteractivityFields(this._featureClickColumns),
     tooltip: getInteractivityFields(this._featureOverColumns)
   }, { engine: engine });
+  if (!this._internalModel) {
+    this._internalModel = new CartoDBLayer({
+      id: this._id,
+      source: this._source.$getInternalModel(),
+      cartocss: this._style.toCartoCSS(),
+      visible: this._visible
+    }, { engine: engine });
+  }
 };
 
 Layer.prototype.$getInternalModel = function () {

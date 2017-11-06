@@ -2,35 +2,34 @@ var Events = require('./events');
 var Engine = require('../../engine');
 var Layers = require('./layers');
 var Leaflet = require('./leaflet');
+var VERSION = require('../../../package.json').version;
 
 /**
- * This is the main object in a Carto.js application. 
- * 
+ * This is the main object in a Carto.js application.
+ *
  * The carto client keeps both layer and dataview lists internaly. Every time some layer/dataview changes
  * the client will trigger a carto-reload cycle.
- * 
- * @param {object} settings 
+ *
+ * @param {object} settings
  * @param {string} settings.apiKey - Api key used to be autenticate in the windshaft server.
  * @param {string} settings.username - Name of the user registered in the windshaft server.
  * @param {string} settings.serverUrl - Url of the windshaft server.
- * @param {boolean} settings.statTag - Token used to get map view statistics.
- * 
+ *
  * @constructor
- * @api
  * @memberof carto
- * 
- * @fires carto.Events.SUCCESS
- * @fires carto.Events.ERROR
+ * @api
+ *
+ * @fires carto.events.SUCCESS
+ * @fires carto.events.ERROR
  */
 function Client (settings) {
   this._layers = new Layers();
+  this._dataviews = [];
   this._engine = new Engine({
     apiKey: settings.apiKey,
-    authToken: settings.authToken, // Deprecated
+    username: settings.username,
     serverUrl: settings.serverUrl,
-    statTag: settings.statTag, // Deprecated ?
-    templateName: settings.templateName, // Deprecated
-    username: settings.username
+    statTag: 'carto.js-v' + VERSION
   });
 }
 
@@ -48,7 +47,7 @@ function Client (settings) {
  * }
  *
  * // Attach the callback to the RELOAD_SUCCESS event.
- * client.on(client.Events.SUCCESS, onReload);
+ * client.on(carto.events.SUCCESS, onReload);
  * @api
  */
 Client.prototype.on = function (event, callback) {
@@ -66,11 +65,11 @@ Client.prototype.on = function (event, callback) {
 
 /**
  * Add a layer to the client.
- * 
- * @param {carto.layer.Layer} - The layer to be added
+ *
+ * @param {carto.layer.Base} - The layer to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed.
  * @api
  */
@@ -80,11 +79,11 @@ Client.prototype.addLayer = function (layer, opts) {
 
 /**
  * Add a layer array to the client.
- * 
- * @param {carto.layer.Layer[]} - The layer array to be added
+ *
+ * @param {carto.layer.Base[]} - The layer array to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
  * @api
  */
@@ -99,11 +98,11 @@ Client.prototype.addLayers = function (layers, opts) {
 
 /**
  * Remove a layer from the client
- * 
- * @param {carto.layers.Layer} - The layer array to be removed
+ *
+ * @param {carto.layer.Base} - The layer array to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
  * @api
  */
@@ -119,12 +118,74 @@ Client.prototype.removeLayer = function (layer, opts) {
 
 /**
  * Get all the layers from the client
- * 
- * @returns {carto.layer.Layer[]} An array with all the Layers from the client.
+ *
+ * @returns {carto.layer.Base[]} An array with all the Layers from the client.
  * @api
  */
 Client.prototype.getLayers = function () {
   return this._layers.toArray();
+};
+
+/**
+ * Add a dataview to the client.
+ *
+ * @param {carto.dataview.Base} - The dataview to be added
+ * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
+ *
+ * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed.
+ * @api
+ */
+Client.prototype.addDataview = function (dataview, opts) {
+  return this.addDataviews([dataview], opts);
+};
+
+/**
+ * Add a dataview array to the client.
+ *
+ * @param {carto.dataview.Base[]} - The dataview array to be added
+ * @param {object} opts
+ * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
+ *
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @api
+ */
+Client.prototype.addDataviews = function (dataviews, opts) {
+  opts = opts || {};
+  dataviews.forEach(this._addDataview, this);
+  if (opts.reload === false) {
+    return Promise.resolve();
+  }
+  return this._engine.reload();
+};
+
+/**
+ * Remove a dataview from the client
+ *
+ * @param {carto.dataview.Base} - The dataview array to be removed
+ * @param {object} opts
+ * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
+ *
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @api
+ */
+Client.prototype.removeDataview = function (dataview, opts) {
+  opts = opts || {};
+  this._dataviews.splice(this._dataviews.indexOf(dataview));
+  this._engine.removeDataview(dataview.$getInternalModel());
+  if (opts.reload === false) {
+    return Promise.resolve();
+  }
+  return this._engine.reload();
+};
+
+/**
+ * Get all the dataviews from the client
+ *
+ * @returns {carto.dataview.Base[]} An array with all the dataviews from the client.
+ * @api
+ */
+Client.prototype.getDataviews = function () {
+  return this._dataviews;
 };
 
 /**
@@ -143,6 +204,16 @@ Client.prototype._addLayer = function (layer, engine) {
   this._layers.add(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
+};
+
+/**
+ * Helper used to link a dataview and an engine
+ * @private
+ */
+Client.prototype._addDataview = function (dataview, engine) {
+  this._dataviews.push(dataview);
+  dataview.$setEngine(this._engine);
+  this._engine.addDataview(dataview.$getInternalModel());
 };
 
 module.exports = Client;

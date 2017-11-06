@@ -6,6 +6,12 @@
  * @memberof carto.layer
  * @api
  */
-function Base () {}
+function Base () { }
 
+/**
+ * 
+ */
+Base.prototype.validateSource = function () {
+
+};
 module.exports = Base;

@@ -117,8 +117,8 @@ describe('api/v4/client', function () {
       }).toThrowError('The given object is not a layer');
     });
 
-    // TODO: Does this make sense? should the client remain silent/log a warning?
     it('¿should throw a descriptive error when layer is not in the client?', function () {
+      pending('We should decide if this makes sense.');
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
       var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
       var layer = new carto.layer.Layer(source, style, {});

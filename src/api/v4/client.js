@@ -3,6 +3,7 @@ var Engine = require('../../engine');
 var Layers = require('./layers');
 var Leaflet = require('./leaflet');
 var VERSION = require('../../../package.json').version;
+var LayerBase = require('./layer/base');
 
 /**
  * This is the main object in a Carto.js application.
@@ -107,6 +108,7 @@ Client.prototype.addLayers = function (layers, opts) {
  * @api
  */
 Client.prototype.removeLayer = function (layer, opts) {
+  _checkLayer(layer);
   opts = opts || {};
   this._layers.remove(layer);
   this._engine.removeLayer(layer.$getInternalModel());
@@ -201,6 +203,7 @@ Client.prototype.getLeafletLayerView = function () {
  * @private
  */
 Client.prototype._addLayer = function (layer, engine) {
+  _checkLayer(layer);
   this._layers.add(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
@@ -215,5 +218,15 @@ Client.prototype._addDataview = function (dataview, engine) {
   dataview.$setEngine(this._engine);
   this._engine.addDataview(dataview.$getInternalModel());
 };
+
+/**
+ * Utility function to reduce duplicated code.
+ * Check if an object inherits from LayerBase.
+ */
+function _checkLayer (object) {
+  if (!(object instanceof LayerBase)) {
+    throw new TypeError('The given object is not a layer');
+  }
+}
 
 module.exports = Client;

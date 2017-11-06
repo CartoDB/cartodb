@@ -70,7 +70,7 @@ class PublicClient {
 
   errorCallback (callback) {
     return (jqXHR, textStatus, errorThrown) => {
-      const err = errorThrown || new Error('Failed to fetch');
+      const err = jqXHR.responseJSON || errorThrown || new Error('Failed to fetch');
 
       callback(err, jqXHR, null);
     };

@@ -1,7 +1,8 @@
 # encoding: UTF-8
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
-require_dependency 'oauth/github/config'
+require_dependency 'carto/oauth/github/config'
+require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'
 require_dependency 'carto/username_proposer'
 require_dependency 'carto/email_cleaner'
@@ -29,8 +30,7 @@ class SessionsController < ApplicationController
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
   before_filter :load_organization
-  before_filter :initialize_google_plus_config,
-                :initialize_github_config
+  before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
 
   def new
@@ -166,27 +166,24 @@ class SessionsController < ApplicationController
 
   protected
 
-  def initialize_google_plus_config
-
-    if !@organization.nil?
-      # TODO: remove duplication (app/controllers/admin/organizations_controller.rb)
-      signup_action = "#{CartoDB.protocol}://#{@organization.name}.#{CartoDB.account_host}#{CartoDB.path(self, 'signup_organization_user')}"
-    elsif central_enabled?
-      signup_action = Cartodb::Central.new.google_signup_url
-    else
-      signup_action = '/google/signup'
-    end
-
-    button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', button_color)
+  def initialize_oauth_config
+    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+    @oauth_configs = [google_plus_config, github_config].compact
   end
 
-  def initialize_github_config
+  def google_plus_config
+    unless @organization && !@organization.auth_google_enabled
+      Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
+                                            invitation_token: params[:invitation_token],
+                                            organization_name: @organization.try(:name))
+    end
+  end
+
+  def github_config
     unless @organization && !@organization.auth_github_enabled
-      @github_config = Carto::Github::Config.instance(form_authenticity_token,
-                                                      invitation_token: params[:invitation_token],
-                                                      organization_name: @organization.try(:name))
-      @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+      Carto::Oauth::Github::Config.instance(form_authenticity_token, github_url,
+                                            invitation_token: params[:invitation_token],
+                                            organization_name: @organization.try(:name))
     end
   end
 

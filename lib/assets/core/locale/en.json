@@ -1588,7 +1588,7 @@
           "title": "Ready to Download"
         },
         "error": {
-          "title": "An error occured while exporting your map",
+          "title": "An error occurred while exporting your map",
           "desc": "Please try again. If the problem persists, please contact support"
         }
       },
@@ -2157,7 +2157,7 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
           "accept": "CONTINUE"
         }
       }
@@ -2336,7 +2336,7 @@
         "aggregation-dataset": "Admin. level",
         "labels-enabled": {
           "label": "labels",
-          "not-with-animated": "It won't be available with animations"
+          "not-with-animated": "Not available with animations"
         },
         "labels-attribute": {
           "label": "column",
@@ -2368,7 +2368,7 @@
         "animated-enabled": {
           "label": "animated",
           "already-one-torque": "There is already a torque layer in your map",
-          "not-with-labels": "It won't be available with labels"
+          "not-with-labels": "Not available with labels"
         },
         "animated-attribute": {
           "label": "column",

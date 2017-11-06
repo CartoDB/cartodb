@@ -1,7 +1,18 @@
 Development
 -----------
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+This release changes the way Google ouath login works. If you are using it, you need to add the client_secret
+to the oauth.google_plus section of the configuration file.
+
 ### Features
+* Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
 * Style: Rename "none" aggregation to "points" (#13005)
 * Clean assets script
@@ -73,10 +84,14 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fix upload dataset drag and drop (CartoDB/support#1072)
+* Fix legends request order with slow internet connection (#12733)
+* Documentation, fixed spelling and grammar in en.json
 * Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
+* Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.
@@ -256,6 +271,7 @@ ion for time-series (#12670)
 * Fix histogram zoom (#12945)
 
 ### Internals
+* Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
@@ -421,6 +437,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Enable overwrite collision_strategy in import API (#11990)
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config

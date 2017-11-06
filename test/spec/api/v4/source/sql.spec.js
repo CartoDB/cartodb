@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-fdescribe('api/v4/source/dataset', function () {
+describe('api/v4/source/dataset', function () {
   describe('constructor', function () {
     it('should return a new Dataset object', function () {
       var sqlDataset = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');

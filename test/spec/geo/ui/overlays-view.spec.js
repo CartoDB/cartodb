@@ -97,7 +97,7 @@ describe('src/geo/ui/overlays-view.js', function () {
   it('should add the limit overlay when error:tile', function () {
     expect(this.overlaysView.$('.CDB - OverlayContainer > .CDB-Limits').length).toEqual(0);
 
-    mapModelMock.trigger('error:tile');
+    mapModelMock.trigger('error:limit');
 
     expect(this.overlaysView.$('.CDB-OverlayContainer > .CDB-Limits').length).toEqual(1);
   });

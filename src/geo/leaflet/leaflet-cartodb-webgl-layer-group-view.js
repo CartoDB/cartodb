@@ -42,6 +42,7 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
       layerGroupModel.onLayerAdded(this._onLayerAdded.bind(this));
 
       this._addInteractiveEvents();
+      this._addErrorsEvents();
     },
 
     _addInteractiveEvents: function () {
@@ -64,6 +65,24 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
         }
       });
     },
+
+    // This errors/warnings will come from Tangram. Bad thing is tangram doesn't
+    // include error stus code, only error text, so we need to make some parsing
+    // in order to segment limits errors (Too many requests)
+    _addErrorsEvents: function () {
+      this.tangram.scene.subscribe({
+        tileError: function (error) {
+          var code = parseInt(error.statusCode);
+
+          switch (code) {
+            case 429:
+              this.layerGroupModel.addError({ type: 'limit' });
+              break;
+          }
+        }.bind(this)
+      });
+    },
+
     _getFeatureObject: function (e) {
       var layer = this.layerGroupModel.getCartoLayerById(e.feature && e.feature.source_layer);
       if (layer) {

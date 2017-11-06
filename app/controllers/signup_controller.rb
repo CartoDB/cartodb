@@ -18,8 +18,7 @@ class SignupController < ApplicationController
   before_filter :check_organization_quotas, only: [:create_http_authentication]
   before_filter :load_mandatory_organization, only: [:signup, :create]
   before_filter :disable_if_ldap_configured
-  before_filter :initialize_google_plus_config,
-                :initialize_github_config
+  before_filter :initialize_oauth_config
 
   def signup
     email = params[:email].present? ? params[:email] : nil
@@ -33,25 +32,17 @@ class SignupController < ApplicationController
 
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
 
-    google_access_token = google_access_token_from_params
-
-    # Merge both sources (signup and login) in a single param
-    params[:google_access_token] = google_access_token
-    if !user_password_signup? && google_signup? && !@google_plus_config.nil?
-      raise "Organization doesn't allow Google authentication" if !@organization.auth_google_enabled
-      account_creator.with_google_token(google_access_token)
-    end
-
-    github_access_token = params[:github_access_token]
-    if github_access_token
-      raise "Organization doesn't allow GitHub authentication" unless @organization.auth_github_enabled
-      account_creator.with_github_oauth_api(Carto::Github::Api.new(@github_config, github_access_token))
-    end
-
     if params[:user]
       account_creator.with_username(params[:user][:username]) if params[:user][:username].present?
       account_creator.with_email(params[:user][:email]) if params[:user][:email].present?
       account_creator.with_password(params[:user][:password]) if params[:user][:password].present?
+    end
+
+    oauth_config = oauth_provider
+    if oauth_config
+      api = oauth_config.class.api_class.new(oauth_config, params[:oauth_access_token])
+      @oauth_fields = api.hidden_fields
+      account_creator.with_oauth_api(api)
     end
 
     if account_creator.valid?
@@ -118,6 +109,15 @@ class SignupController < ApplicationController
 
   private
 
+  def oauth_provider
+    case params[:oauth_provider]
+    when 'google'
+      @google_config
+    when 'github'
+      @github_config
+    end
+  end
+
   def existing_user(user)
     !Carto::User.find_by_username_and_email(user.username, user.email).nil?
   end
@@ -134,18 +134,24 @@ class SignupController < ApplicationController
     params && params['user'] && params['user']['username'].present? && params['user']['email'].present? && params['user']['password'].present?
   end
 
-  def initialize_google_plus_config
-    button_color = @organization.nil? || @organization.color.nil? ? nil : organization_color(@organization)
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, '/signup', 'google_access_token', button_color)
+  def initialize_oauth_config
+    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+    @oauth_configs = [google_plus_config, github_config].compact
   end
 
-  def initialize_github_config
+  def google_plus_config
+    unless @organization && !@organization.auth_google_enabled
+      @google_config = Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
+                                                             invitation_token: params[:invitation_token],
+                                                             organization_name: @organization.try(:name))
+    end
+  end
+
+  def github_config
     unless @organization && !@organization.auth_github_enabled
-      @github_access_token = params[:github_access_token]
-      @github_config = Carto::Github::Config.instance(form_authenticity_token,
-                                                      invitation_token: params[:invitation_token],
-                                                      organization_name: @organization.try(:name))
-      @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+      @github_config = Carto::Oauth::Github::Config.instance(form_authenticity_token, github_url,
+                                                             invitation_token: params[:invitation_token],
+                                                             organization_name: @organization.try(:name))
     end
   end
 

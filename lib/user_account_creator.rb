@@ -124,9 +124,9 @@ module CartoDB
       self
     end
 
-    def with_github_oauth_api(github_api)
+    def with_oauth_api(oauth_api)
       @built = false
-      @github_api = github_api
+      @oauth_api = oauth_api
       self
     end
 
@@ -156,6 +156,8 @@ module CartoDB
         end
       end
 
+      @custom_errors[:oauth] = 'Invalid oauth' if @oauth_api && !@oauth_api.valid?(@user)
+
       @user.created_via = @created_via
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
@@ -165,7 +167,7 @@ module CartoDB
     end
 
     def generate_dummy_password?
-      @github_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
+      @oauth_api || @google_user_data || VIAS_WITHOUT_PASSWORD.include?(@created_via)
     end
 
     VIAS_WITHOUT_PASSWORD = [
@@ -209,12 +211,9 @@ module CartoDB
         @user.password_confirmation = dummy_password
       end
 
-      if @google_user_data
-        @google_user_data.set_values(@user)
-      elsif @github_api
-        @user.github_user_id = @github_api.id
-        @user.username = @github_api.username
-        @user.email = @user_params[PARAM_EMAIL] || @github_api.email
+      if @oauth_api
+        @user.set(@oauth_api.user_params)
+        @user.email = @user_params[PARAM_EMAIL] if @user_params[PARAM_EMAIL].present?
       else
         @user.email = @user_params[PARAM_EMAIL]
         @user.password = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]

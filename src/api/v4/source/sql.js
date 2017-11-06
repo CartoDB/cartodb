@@ -8,7 +8,6 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * 
  * This data can be used as source in a Layer or a Dataset.
  * 
- * 
  * @param {string} [id] - A unique ID for this source
  * @param {string} query A SQL query containing a SELECT statement
  *

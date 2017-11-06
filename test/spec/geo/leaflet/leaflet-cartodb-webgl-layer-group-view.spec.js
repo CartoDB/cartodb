@@ -27,7 +27,20 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
     this.layersCollection.reset([ this.layer1, this.layer2 ]);
 
     this.view = new LeafletCartoDBWebGLLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
-    this.view.tangram = {addLayer: function () {}, addDataSource: function () {}, layer: {setSelectionEvents: function () {}}};
+    this.view.tangram = {
+      addLayer: function () {},
+      addDataSource: function () {},
+      layer: {
+        setSelectionEvents: function () {}
+      },
+      scene: {
+        subscribe: function (opts) {
+          this.tileError = opts.tileError;
+        }.bind(this)
+      }
+    };
+
+    spyOn(this.view.tangram.scene, 'subscribe').and.callThrough();
 
     this.view.initConfig(this.layerGroupModel);
   });
@@ -68,5 +81,23 @@ describe('src/geo/leaflet/leaflet-cartodb-webgl-layer-group-view.js', function (
     this.layerGroupModel.set('urls', { tiles: 'http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71sd87dd2:0/{layerIndexes}/{z}/{x}/{y}.{format}', subdomains: ['a', 'b', 'c'] });
 
     expect(this.view.tangram.addDataSource).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71sd87dd2:0/mapnik/{z}/{x}/{y}.mvt?auth_token=hahskdfasd', ['a', 'b', 'c']);
+  });
+
+  describe('._addErrorsEvents', function () {
+    it('should subscribe tileError to the scene', function () {
+      var subscribe = this.view.tangram.scene.subscribe;
+      expect(subscribe).toHaveBeenCalled();
+      expect(subscribe.calls.mostRecent().args[0].tileError).not.toBeUndefined();
+    });
+
+    it('should add a limit error to layerGroupModel if status is 429', function () {
+      spyOn(this.layerGroupModel, 'addError');
+      this.view._addErrorsEvents();
+      this.tileError({ statusCode: 429 });
+
+      expect(this.layerGroupModel.addError).toHaveBeenCalledWith({
+        type: 'limit'
+      });
+    });
   });
 });

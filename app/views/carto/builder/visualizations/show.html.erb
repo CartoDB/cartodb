@@ -23,6 +23,7 @@
 
 <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
 
+<%= javascript_include_tag 'tangram.debug.js' %>
 <%= javascript_include_tag 'common.js' %>
 <%= javascript_include_tag 'builder_vendor.js' %>
 <%= javascript_include_tag 'builder.js' %>

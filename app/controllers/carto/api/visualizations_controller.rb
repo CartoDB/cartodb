@@ -93,6 +93,7 @@ module Carto
           response.merge!({
             total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
             total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
+            total_locked: VisualizationQueryBuilder.new.with_types(total_types).with_locked(true).build.count,
             total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.count
           })
         end

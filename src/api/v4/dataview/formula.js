@@ -78,7 +78,7 @@ Formula.prototype.DEFAULTS = {
   operation: constants.operation.COUNT
 };
 
-Formula.prototype._listenToInstanceModelEvents = function () {
+Formula.prototype._listenToInternalModelSpecificEvents = function () {
   this.listenTo(this._internalModel, 'change:operation', this._onOperationChanged);
 };
 

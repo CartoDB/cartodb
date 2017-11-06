@@ -56,7 +56,9 @@ Base.prototype.hasError = function () {
 };
 
 /**
- * Enable the dataview
+ * Enable the dataview. When enabled, a dataview fetches new data
+ * when the map changes (changing map configuration or changing map
+ * bounding box).
  *
  * @return {carto.dataview.Base} this
  * @api
@@ -66,7 +68,9 @@ Base.prototype.enable = function () {
 };
 
 /**
- * Disable the dataview
+ * Disable the dataview. This stops the dataview from fetching new
+ * data when there is a map change (like changing map configuration or changing map
+ * bounding box).
  *
  * @return {carto.dataview.Base} this
  * @api
@@ -114,9 +118,6 @@ Base.prototype.getColumn = function () {
 Base.prototype.getData = function () {
   throw new Error('getData must be implemented by the particular dataview.');
 };
-
-// syncOnBoundingChanges
-// isSyncedOnBoundingChanges
 
 // Protected methods
 
@@ -177,19 +178,19 @@ Base.prototype._setEnabled = function (enabled) {
   return this;
 };
 
-Base.prototype._listenToInternalModelEvents = function () {
+Base.prototype._listenToInternalModelSharedEvents = function () {
   if (this._internalModel) {
     this.listenTo(this._internalModel, 'change:data', this._onDataChanged);
     this.listenTo(this._internalModel, 'change:column', this._onColumnChanged);
     this.listenTo(this._internalModel, 'loading', this._onStatusLoading);
     this.listenTo(this._internalModel, 'loaded', this._onStatusLoaded);
     this.listenTo(this._internalModel, 'error', this._onStatusError);
-    this._listenToInstanceModelEvents();
+    this._listenToInternalModelSpecificEvents();
   }
 };
 
-Base.prototype._listenToInstanceModelEvents = function () {
-  throw new Error('_listenToInstanceModelEvents must be implemented by the particular dataview.');
+Base.prototype._listenToInternalModelSpecificEvents = function () {
+  throw new Error('_listenToInternalModelSpecificEvents must be implemented by the particular dataview.');
 };
 
 Base.prototype._onDataChanged = function () {
@@ -221,7 +222,7 @@ Base.prototype.$setEngine = function (engine) {
   this._source.$setEngine(engine);
   if (!this._internalModel) {
     this._createInternalModel(engine);
-    this._listenToInternalModelEvents();
+    this._listenToInternalModelSharedEvents();
   }
 };
 

@@ -74,10 +74,8 @@ Formula.prototype.getData = function () {
   return null;
 };
 
-Formula.prototype._defaultOptions = function (options) {
-  options = options || {};
-  options.operation = options.operation || constants.operation.COUNT;
-  return options;
+Formula.prototype.DEFAULTS = {
+  operation: constants.operation.COUNT
 };
 
 Formula.prototype._listenToInstanceModelEvents = function () {

@@ -120,6 +120,8 @@ Base.prototype.getData = function () {
 
 // Protected methods
 
+Base.prototype.DEFAULTS = {};
+
 /**
  * Initialize dataview
  *
@@ -128,7 +130,7 @@ Base.prototype.getData = function () {
  * @param  {object} options - It depends on the instance.
  */
 Base.prototype._initialize = function (source, column, options) {
-  options = this._defaultOptions(options);
+  options = _.defaults(options || {}, this.DEFAULTS);
 
   this._checkSource(source);
   this._checkColumn(column);
@@ -139,10 +141,6 @@ Base.prototype._initialize = function (source, column, options) {
   this._options = options;
   this._status = status.NOT_LOADED;
   this._enabled = true;
-};
-
-Base.prototype._defaultOptions = function (options) {
-  throw new Error('_defaultOptions must be implemented by the particular dataview.');
 };
 
 Base.prototype._checkSource = function (source) {

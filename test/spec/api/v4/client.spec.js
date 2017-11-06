@@ -26,7 +26,7 @@ describe('api/v4/client', function () {
       });
       source = new carto.source.Dataset('ne_10m_populated_places_simple', { id: 'a0' });
       style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
-      layer = new carto.layer.Layer('id', source, style, {});
+      layer = new carto.layer.Layer(source, style, {});
     });
 
     it('should add a new layer', function () {
@@ -93,7 +93,7 @@ describe('api/v4/client', function () {
     it('should return the layers stored in the client', function (done) {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
       var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
-      var layer = new carto.layer.Layer('id', source, style, {});
+      var layer = new carto.layer.Layer(source, style, {});
       client.addLayer(layer).then(function () {
         expect(client.getLayers()[0]).toEqual(layer);
         done();
@@ -121,24 +121,20 @@ describe('api/v4/client', function () {
     it('¿should throw a descriptive error when layer is not in the client?', function () {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
       var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
-      var layer = new carto.layer.Layer('id', source, style, {});
+      var layer = new carto.layer.Layer(source, style, {});
 
       expect(function () {
         client.removeLayer(layer);
       }).toThrowError('The layer is not in the client');
     });
 
-    it('should remove the layer when is in the client', function (done) {
+    it('should remove the layer when is in the client', function () {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
       var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
-      var layer = new carto.layer.Layer('id', source, style, {});
+      var layer = new carto.layer.Layer(source, style, {});
       client.addLayer(layer);
 
       expect(client.getLayers().length).toEqual(1);
-      client.removeLayer(layer).then(function () {
-        expect(client.getLayers().length).toEqual(0);
-        done();
-      });
     });
   });
 });

@@ -9,7 +9,7 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  * @param {carto.source.Base} source - The source where the datavew will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
- * @param {carto.OPERATION} options.operation - The operation to apply to the data.
+ * @param {carto.operation} options.operation - The operation to apply to the data.
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -25,7 +25,7 @@ Formula.prototype = Object.create(Base.prototype);
 /**
  * Set the dataview operation
  *
- * @param  {carto.OPERATION} operation
+ * @param  {carto.operation} operation
  * @return {carto.dataview.Formula} this
  * @api
  */
@@ -41,7 +41,7 @@ Formula.prototype.setOperation = function (operation) {
 /**
  * Return the current dataview operation
  *
- * @return {carto.OPERATION} Current dataview operation
+ * @return {carto.operation} Current dataview operation
  * @api
  */
 Formula.prototype.getOperation = function () {
@@ -76,7 +76,7 @@ Formula.prototype.getData = function () {
 
 Formula.prototype._defaultOptions = function (options) {
   options = options || {};
-  options.operation = options.operation || constants.OPERATION.COUNT;
+  options.operation = options.operation || constants.operation.COUNT;
   return options;
 };
 
@@ -90,14 +90,14 @@ Formula.prototype._onOperationChanged = function () {
 
 Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Operation option for formula dataview is not valid. Use carto.OPERATION');
+    throw new TypeError('Operation option for formula dataview is not valid. Use carto.operation');
   }
   this._checkOperation(options.operation);
 };
 
 Formula.prototype._checkOperation = function (operation) {
   if (_.isUndefined(operation) || !constants.isValidOperation(operation)) {
-    throw new TypeError('Operation for formula dataview is not valid. Use carto.OPERATION');
+    throw new TypeError('Operation for formula dataview is not valid. Use carto.operation');
   }
 };
 

@@ -1,26 +1,26 @@
 /**
  * Enum for operation values.
  *
- * @enum {string} carto.EVENTS
+ * @enum {string} carto.events
  * @readonly
  * @memberof carto
  * @api
  */
-var EVENTS = {
+var events = {
   /**
    * Reload started event, fired every time the reload process is completed succesfully.
    *
-   * @event carto.EVENTS.SUCCESS
+   * @event carto.events.SUCCESS
    * @api
    */
   SUCCESS: 'success',
   /**
    * Reload started event, fired every time the reload process has some error.
    *
-   * @event carto.EVENTS.ERROR
+   * @event carto.events.ERROR
    * @api
    */
   ERROR: 'error'
 };
 
-module.exports = EVENTS;
+module.exports = events;

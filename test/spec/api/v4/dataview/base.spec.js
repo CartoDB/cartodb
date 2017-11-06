@@ -1,5 +1,5 @@
 var DataviewBase = require('../../../../../src/api/v4/dataview/base');
-var STATUS = require('../../../../../src/api/v4/constants').STATUS;
+var status = require('../../../../../src/api/v4/constants').status;
 
 describe('base dataview public v4 API', function () {
   var base = new DataviewBase();
@@ -9,23 +9,23 @@ describe('base dataview public v4 API', function () {
   });
 
   it('.isLoading should return true if loading and false otherwise', function () {
-    base._status = STATUS.NOT_LOADED;
+    base._status = status.NOT_LOADED;
     expect(base.isLoading()).toBe(false);
-    base._status = STATUS.LOADING;
+    base._status = status.LOADING;
     expect(base.isLoading()).toBe(true);
   });
 
   it('.isLoaded should return true if loading and false otherwise', function () {
-    base._status = STATUS.NOT_LOADED;
+    base._status = status.NOT_LOADED;
     expect(base.isLoaded()).toBe(false);
-    base._status = STATUS.LOADED;
+    base._status = status.LOADED;
     expect(base.isLoaded()).toBe(true);
   });
 
   it('.hasError should return true if loading and false otherwise', function () {
-    base._status = STATUS.NOT_LOADED;
+    base._status = status.NOT_LOADED;
     expect(base.hasError()).toBe(false);
-    base._status = STATUS.ERROR;
+    base._status = status.ERROR;
     expect(base.hasError()).toBe(true);
   });
 

@@ -6,12 +6,12 @@ var _ = require('underscore');
 /**
  * Enum for operation values.
  *
- * @enum {string} carto.OPERATION
+ * @enum {string} carto.operation
  * @readonly
  * @memberof carto
  * @api
  */
-var OPERATION = {
+var operation = {
   COUNT: 'count',
   SUM: 'sum',
   AVG: 'avg',
@@ -22,24 +22,24 @@ var OPERATION = {
 /**
  * Enum for dataview status values.
  *
- * @enum {string} carto.dataview.STATUS
+ * @enum {string} carto.dataview.status
  * @readonly
  * @memberof carto.dataview
  * @api
  */
-var STATUS = {
+var status = {
   NOT_LOADED: 'notLoaded',
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'error'
 };
 
-function isValidOperation (operation) {
-  return _.contains(OPERATION, operation);
+function isValidOperation (op) {
+  return _.contains(operation, op);
 }
 
 module.exports = {
-  OPERATION: OPERATION,
-  STATUS: STATUS,
+  operation: operation,
+  status: status,
   isValidOperation: isValidOperation
 };

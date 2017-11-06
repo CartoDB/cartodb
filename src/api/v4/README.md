@@ -24,9 +24,9 @@ All the api methods and objects are exposed through the public `carto` object.
     - `Formula`: Constructor to build a Formula dataview
 
 
-- `carto.EVENTS` : Enum with the events available in the client.
-- `carto.OPERATION` : Enum with the operations available.
-- `carto.dataview.STATUS` : Enum with the dataview statuses available.
+- `carto.events` : Enum with the events available in the client.
+- `carto.operation` : Enum with the operations available.
+- `carto.dataview.status` : Enum with the dataview statuses available.
 
 ## Usage
 

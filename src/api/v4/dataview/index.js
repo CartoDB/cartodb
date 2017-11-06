@@ -1,5 +1,5 @@
 var Formula = require('./formula');
-var STATUS = require('../constants').STATUS;
+var status = require('../constants').status;
 
 /**
  *  @namespace carto.dataview
@@ -7,5 +7,5 @@ var STATUS = require('../constants').STATUS;
  */
 module.exports = {
   Formula: Formula,
-  STATUS: STATUS
+  status: status
 };

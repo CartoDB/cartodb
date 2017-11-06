@@ -8,11 +8,13 @@
  *
  *
  * - **Client** : The api client.
- * - **Events** : The events exposed.
  * - **source** : Source description
  * - **style** : Style description
  * - **layer** : Layer description
  * - **dataview** : Dataview description
+ *
+ * - **events** : The events exposed.
+ * - **operation** : The operations exposed.
  */
 
 var Client = require('./client');
@@ -20,8 +22,8 @@ var source = require('./source');
 var style = require('./style');
 var layer = require('./layer');
 var dataview = require('./dataview');
-var EVENTS = require('./events');
-var OPERATION = require('./constants').OPERATION;
+var events = require('./events');
+var operation = require('./constants').operation;
 
 module.exports = {
   Client: Client,
@@ -29,6 +31,6 @@ module.exports = {
   style: style,
   layer: layer,
   dataview: dataview,
-  EVENTS: EVENTS,
-  OPERATION: OPERATION
+  events: events,
+  operation: operation
 };

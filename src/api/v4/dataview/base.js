@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var STATUS = require('../constants').STATUS;
+var status = require('../constants').status;
 var SourceBase = require('../source/base');
 
 /**
@@ -18,7 +18,7 @@ _.extend(Base.prototype, Backbone.Events);
 /**
  * Return the current dataview status
  *
- * @return {carto.dataview.STATUS} Current dataview status
+ * @return {carto.dataview.status} Current dataview status
  * @api
  */
 Base.prototype.getStatus = function () {
@@ -32,7 +32,7 @@ Base.prototype.getStatus = function () {
  * @api
  */
 Base.prototype.isLoading = function () {
-  return this._status === STATUS.LOADING;
+  return this._status === status.LOADING;
 };
 
 /**
@@ -42,7 +42,7 @@ Base.prototype.isLoading = function () {
  * @api
  */
 Base.prototype.isLoaded = function () {
-  return this._status === STATUS.LOADED;
+  return this._status === status.LOADED;
 };
 
 /**
@@ -52,7 +52,7 @@ Base.prototype.isLoaded = function () {
  * @api
  */
 Base.prototype.hasError = function () {
-  return this._status === STATUS.ERROR;
+  return this._status === status.ERROR;
 };
 
 /**
@@ -137,7 +137,7 @@ Base.prototype._initialize = function (source, column, options) {
   this._source = source;
   this._column = column;
   this._options = options;
-  this._status = STATUS.NOT_LOADED;
+  this._status = status.NOT_LOADED;
   this._enabled = true;
 };
 
@@ -203,17 +203,17 @@ Base.prototype._onColumnChanged = function () {
 };
 
 Base.prototype._onStatusLoading = function () {
-  this._status = STATUS.LOADING;
+  this._status = status.LOADING;
   this.trigger('statusChanged', this._status);
 };
 
 Base.prototype._onStatusLoaded = function () {
-  this._status = STATUS.LOADED;
+  this._status = status.LOADED;
   this.trigger('statusChanged', this._status);
 };
 
 Base.prototype._onStatusError = function (model, error) {
-  this._status = STATUS.ERROR;
+  this._status = status.ERROR;
   this.trigger('statusChanged', this._status, error && error.statusText ? error.statusText : error);
 };
 

@@ -18,8 +18,8 @@ var VERSION = require('../../../package.json').version;
  * @memberof carto
  * @api
  *
- * @fires carto.EVENTS.SUCCESS
- * @fires carto.EVENTS.ERROR
+ * @fires carto.events.SUCCESS
+ * @fires carto.events.ERROR
  */
 function Client (settings) {
   this._layers = [];
@@ -46,7 +46,7 @@ function Client (settings) {
  * }
  *
  * // Attach the callback to the RELOAD_SUCCESS event.
- * client.on(client.Events.SUCCESS, onReload);
+ * client.on(carto.events.SUCCESS, onReload);
  * @api
  */
 Client.prototype.on = function (event, callback) {

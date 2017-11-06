@@ -43,11 +43,11 @@
                 username: 'cartojs-test'
             });
 
-            client.on(carto.EVENTS.SUCCESS, function () {
+            client.on(carto.events.SUCCESS, function () {
                 console.log('Client reloaded', i++)
             });
 
-            client.on(carto.EVENTS.ERROR, function () {
+            client.on(carto.events.ERROR, function () {
                 console.error('Client Error!', i++)
             });
 
@@ -91,7 +91,7 @@
 
             // Dataviews
             var formulaDataview = new carto.dataview.Formula(source1, 'pop_max', {
-              operation: carto.OPERATION.AVG
+              operation: carto.operation.AVG
             });
             window.formula1 = formulaDataview;
 
@@ -106,10 +106,10 @@
 
             formulaDataview.on('statusChanged', function (newStatus, error) {
               console.log('Status changed', newStatus, error);
-              if (newStatus === carto.dataview.STATUS.LOADING) {
+              if (newStatus === carto.dataview.status.LOADING) {
                 console.log('loading');
               }
-              if (newStatus === carto.dataview.STATUS.LOADED) {
+              if (newStatus === carto.dataview.status.LOADED) {
                 console.log('loaded');
               }
             });
@@ -120,7 +120,7 @@
 
             client.addDataview(formulaDataview);
 
-            formulaDataview.setOperation(carto.OPERATION.MAX);
+            formulaDataview.setOperation(carto.operation.MAX);
         })();
 
     </script>

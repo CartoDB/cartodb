@@ -445,8 +445,6 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def public_map_protected
-    return render(file: "public/static/password_protected/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
-
     render 'public_map_password', :layout => 'application_password_layout'
   end
 

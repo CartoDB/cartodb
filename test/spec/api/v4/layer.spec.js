@@ -42,22 +42,38 @@ describe('api/v4/layer', function () {
     });
   });
 
-  describe('setSource', function () {
-    describe('when the layer has not been instantiated', function () {
+  describe('.setSource', function () {
+    var layer;
+    var newSource;
+
+    beforeEach(function () {
+      layer = new carto.layer.Layer(source, style);
+      newSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple LIMIT 10');
+    });
+
+    describe("when the layer hasn't been set an engine", function () {
       it('should normally add the source', function () {
-        var layer = new carto.layer.Layer(source, style);
-        var source1 = new carto.source.SQL('SELECT * ne_10m_populated_places_simple LIMIT 10');
+        layer.setSource(newSource);
 
-        layer.setSource(source1);
-
-        expect(layer.getSource()).toEqual(source1);
+        expect(layer.getSource()).toEqual(newSource);
       });
     });
 
-    describe('when the layer has been instnatiated', function () {
-      describe('when the source has no engine', function () {
-        it('should normally add the source', function () { });
+    describe('when the layer has been set an engine', function () {
+      beforeEach(function () {
+        layer.$setEngine({ on: function () {}, reload: function () {} });
       });
+
+      describe('when the source has no engine', function () {
+        it('should normally add the source', function () {
+          layer.setSource(newSource);
+
+          var actualSource = layer.$getInternalModel().get('source');
+          var expectedSource = newSource.$getInternalModel();
+          expect(actualSource).toEqual(expectedSource);
+        });
+      });
+
       describe('when the source has an engine', function () {
         it('should add the source if the engines are the same', function () { });
         it('should throw an error if the engines are different', function () { });

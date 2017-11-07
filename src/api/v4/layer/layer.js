@@ -35,12 +35,13 @@ function Layer (source, style, options) {
   this._engine = undefined;
   this._internalModel = undefined;
 
-  this._id = options.id || Layer.$generateId();
   this._source = source;
   this._style = style;
   this._visible = true;
   this._featureClickColumns = options.featureClickColumns || [];
   this._featureOverColumns = options.featureOverColumns || [];
+
+  Base.apply(this, arguments);
 }
 
 Layer.prototype = Object.create(Base.prototype);
@@ -89,19 +90,23 @@ Layer.prototype.getStyle = function () {
 /**
  * Set a new source for this layer.
  * 
+ * A source and a layer must belong to the same client so you can't 
+ * add a source belonging to a different client.
+ * 
  * @param {carto.source.Dataset|carto.source.SQL} source New source
  * @return {carto.layer.Layer} The layer
  *
  * @api
  */
 Layer.prototype.setSource = function (source) {
-  // if (source.$getEngine() !== this._internalModel.$getEngine()) {
-  //   throw new Error('A layer cannot have a source from a different engine');
-  // }
-  this._source = source;
   if (this._internalModel) {
+    // If the source already has an engine and is different from the layer's engine throw an error.
+    if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
+      throw new Error('A layer can\'t have a source which belongs to a different client');
+    }
     this._internalModel.set('source', source.$getInternalModel());
   }
+  this._source = source;
   return this;
 };
 
@@ -127,7 +132,7 @@ Layer.prototype.getSource = function () {
 Layer.prototype.setFeatureClickColumns = function (columns) {
   this._featureClickColumns = columns;
   if (this._internalModel) {
-    this._internalModel.infowindow.update(getInteractivityFields(columns));
+    this._internalModel.infowindow.update(_getInteractivityFields(columns));
   }
 
   return this._reloadEngine();
@@ -155,7 +160,7 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
 Layer.prototype.setFeatureOverColumns = function (columns) {
   this._featureOverColumns = columns;
   if (this._internalModel) {
-    this._internalModel.tooltip.update(getInteractivityFields(columns));
+    this._internalModel.tooltip.update(_getInteractivityFields(columns));
   }
 
   return this;
@@ -200,6 +205,29 @@ Layer.prototype.show = function () {
   return this;
 };
 
+// Private functions.
+
+Layer.prototype._createInternalModel = function (engine) {
+  return new CartoDBLayer({
+    id: this._id,
+    source: this._source.$getInternalModel(),
+    cartocss: this._style.toCartoCSS(),
+    visible: this._visible,
+    infowindow: _getInteractivityFields(this._featureClickColumns),
+    tooltip: _getInteractivityFields(this._featureOverColumns)
+  }, { engine: engine });
+};
+
+Layer.prototype._reloadEngine = function () {
+  if (this._engine) {
+    return this._engine.reload();
+  }
+
+  return Promise.resolve();
+};
+
+// Internal functions.
+
 Layer.prototype.$setEngine = function (engine) {
   if (this._engine) {
     return;
@@ -211,35 +239,13 @@ Layer.prototype.$setEngine = function (engine) {
   }
 };
 
-Layer.prototype._createInternalModel = function (engine) {
-  return new CartoDBLayer({
-    id: this._id,
-    source: this._source.$getInternalModel(),
-    cartocss: this._style.toCartoCSS(),
-    visible: this._visible,
-    infowindow: getInteractivityFields(this._featureClickColumns),
-    tooltip: getInteractivityFields(this._featureOverColumns)
-  }, { engine: engine });
-};
-
 Layer.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
 
-Layer.prototype._reloadEngine = function () {
-  if (this._engine) {
-    return this._engine.reload();
-  }
+// Scope functions
 
-  return Promise.resolve();
-};
-
-Layer.$nextId = 0;
-Layer.$generateId = function () {
-  return 'L' + ++Layer.$nextId;
-};
-
-function getInteractivityFields (columns) {
+function _getInteractivityFields (columns) {
   var fields = columns.map(function (column, index) {
     return {
       name: column,

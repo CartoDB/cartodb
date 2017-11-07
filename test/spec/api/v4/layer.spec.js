@@ -1,6 +1,6 @@
 var carto = require('../../../../src/api/v4');
 
-describe('api/v4/layer', function () {
+fdescribe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -107,7 +107,7 @@ describe('api/v4/layer', function () {
         layer.$setEngine(engineMock);
       });
 
-      describe('when the source has no engine', function () {
+      describe('and the source has no engine', function () {
         it('should normally add the source', function () {
           layer.setSource(newSource);
 
@@ -117,7 +117,7 @@ describe('api/v4/layer', function () {
         });
       });
 
-      describe('when the source has an engine', function () {
+      describe('and the source has an engine', function () {
         it('should add the source if the engines are the same', function () {
           newSource.$setEngine(engineMock);
 

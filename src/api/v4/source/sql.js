@@ -19,18 +19,16 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  */
 function SQL (query) {
   this._query = query;
-
   Base.apply(this, arguments);
 }
 
-/**
- * Creates a new internal model with the given engine
- * and the attributes initialized in the constructor.
- * 
- * @param {Engine} engine - The engine object to be assigned to the internalModel.
- */
 SQL.prototype = Object.create(Base.prototype);
 
+/**
+ * Store the query internally and if in the internal model when exists.
+ * 
+ * @param {string} query - The sql query that will be the source of the data. 
+ */
 SQL.prototype.setQuery = function (query) {
   this._query = query;
   if (this._internalModel) {
@@ -39,10 +37,19 @@ SQL.prototype.setQuery = function (query) {
   return this;
 };
 
+/**
+ * Get the query being used in this SQL source.
+ */
 SQL.prototype.getQuery = function () {
   return this._query;
 };
 
+/**
+ * Creates a new internal model with the given engine
+ * and the attributes initialized in the constructor.
+ * 
+ * @param {Engine} engine - The engine object to be assigned to the internalModel.
+ */
 SQL.prototype._createInternalModel = function (engine) {
   return new AnalysisModel({
     id: this.getId(),
@@ -52,15 +59,6 @@ SQL.prototype._createInternalModel = function (engine) {
     camshaftReference: CamshaftReference,
     engine: engine
   });
-};
-
-SQL.prototype.$getInternalModel = function () {
-  return this._internalModel;
-};
-
-SQL.$nextId = 0;
-SQL.$generateId = function () {
-  return 'S' + ++SQL.$nextId;
 };
 
 module.exports = SQL;

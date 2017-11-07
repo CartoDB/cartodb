@@ -19,7 +19,6 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  */
 function Dataset (dataset) {
   this._dataset = dataset;
-
   Base.apply(this, arguments);
 }
 
@@ -40,10 +39,6 @@ Dataset.prototype._createInternalModel = function (engine) {
     camshaftReference: CamshaftReference,
     engine: engine
   });
-};
-
-Dataset.prototype.$getInternalModel = function () {
-  return this._internalModel;
 };
 
 module.exports = Dataset;

@@ -1,6 +1,6 @@
 var carto = require('../../../../src/api/v4');
 
-fdescribe('api/v4/layer', function () {
+describe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -101,8 +101,10 @@ fdescribe('api/v4/layer', function () {
     });
 
     describe('when the layer has been set an engine', function () {
+      var engineMock;
       beforeEach(function () {
-        layer.$setEngine({ on: function () { }, reload: function () { } });
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload') };
+        layer.$setEngine(engineMock);
       });
 
       describe('when the source has no engine', function () {
@@ -116,8 +118,25 @@ fdescribe('api/v4/layer', function () {
       });
 
       describe('when the source has an engine', function () {
-        it('should add the source if the engines are the same', function () { });
-        it('should throw an error if the engines are different', function () { });
+        it('should add the source if the engines are the same', function () {
+          newSource.$setEngine(engineMock);
+
+          layer.setSource(newSource);
+
+          var actualSource = layer.$getInternalModel().get('source');
+          var expectedSource = newSource.$getInternalModel();
+          expect(actualSource).toEqual(expectedSource);
+        });
+
+        it('should throw an error if the engines are different', function () {
+          // This engine is different from the layer's one.
+          var engineMock1 = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload') };
+          newSource.$setEngine(engineMock1);
+
+          expect(function () {
+            layer.setSource(newSource);
+          }).toThrowError('A layer can\'t have a source which belongs to a different client');
+        });
       });
     });
   });

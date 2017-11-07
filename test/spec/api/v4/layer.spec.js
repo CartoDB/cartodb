@@ -21,11 +21,11 @@ describe('api/v4/layer', function () {
       var layer2 = new carto.layer.Layer(source, style);
 
       var id1 = layer1.getId();
-      var id2 = layer1.getId();
+      var id2 = layer2.getId();
 
       expect(typeof id1 === 'string').toBe(true);
       expect(typeof id2 === 'string').toBe(true);
-      expect(layer1.id).not.toEqual(layer2.id);
+      expect(id1).not.toEqual(id2);
     });
 
     it('should build a new Layer params: (source, style, options)', function () {

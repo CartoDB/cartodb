@@ -51,6 +51,7 @@ module Carto
       before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
+      rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
 
       def show
@@ -379,7 +380,12 @@ module Carto
         end
 
         if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
-          raise Carto::LoadError.new('Visualization not viewable', 403)
+          if @visualization.is_viewable_by_user?(current_viewer) && @visualization.password_protected?
+            # Careful: This error string is parsed at frontend
+            raise Carto::UnauthorizedError.new('Password invalid')
+          else
+            raise Carto::UnauthorizedError.new('Visualization not viewable')
+          end
         end
       end
 

@@ -225,14 +225,14 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
-    return(public_map_protected) if @visualization.password_protected?
+    return(public_map_protected) if @visualization.password_protected? && !@viewed_user.has_feature_flag?('static_public_map')
     if current_user && @visualization.is_privacy_private? &&
        @visualization.has_read_permission?(current_user)
       return(show_organization_public_map)
     end
 
     return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
-    
+
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
       # INFO: here we only want the presenter to rewrite the url of @visualization.user namespacing it like 'schema.id',
@@ -445,7 +445,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def public_map_protected
-    return render(file: "public/static/password_protected/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
+    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
 
     render 'public_map_password', :layout => 'application_password_layout'
   end

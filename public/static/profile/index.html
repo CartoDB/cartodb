@@ -39,7 +39,8 @@
         height: 36px;
         border-radius: 50%;
       }
-      .spinner.is-hidden {
+      #initial_startup.is-hidden,
+      #initial_startup.is-hidden .spinner{
         display: none;
       }
 
@@ -248,7 +249,7 @@ var PublicClient = function () {
     key: 'errorCallback',
     value: function errorCallback(callback) {
       return function (jqXHR, textStatus, errorThrown) {
-        var err = errorThrown || new Error('Failed to fetch');
+        var err = jqXHR.responseJSON || errorThrown || new Error('Failed to fetch');
 
         callback(err, jqXHR, null);
       };
@@ -375,7 +376,7 @@ window.CartoConfig = window.CartoConfig || {};
       console.error(err);
     } else {
       var spinnerEl = document.querySelector('.spinner');
-      spinnerEl.classList.add('is-hidden');
+      spinnerEl.parentNode.classList.add('is-hidden');
 
       var assetsUrl = AssetsVersionHelper.getAssetsUrl(version);
 
@@ -414,6 +415,8 @@ window.CartoConfig = window.CartoConfig || {};
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -450,13 +453,14 @@ var AuthenticatedClient = function (_PublicClient) {
     }
   }, {
     key: 'getDerivedVisualizations',
-    value: function getDerivedVisualizations(mapsNumber, callback) {
+    value: function getDerivedVisualizations(options, callback) {
       var VIZ_API_PATH = 'api/v1/viz';
-      var uriParams = this.paramsToURI({
-        per_page: mapsNumber,
+      var params = _extends({}, {
         type: 'derived',
         privacy: 'public'
-      });
+      }, options);
+
+      var uriParams = this.paramsToURI(params);
 
       return this.get([VIZ_API_PATH, uriParams], callback);
     }

@@ -14,13 +14,14 @@ class AuthenticatedClient extends PublicClient {
     return this.get([VIZ_API_PATH, vizUrl, uriParams], callback);
   }
 
-  getDerivedVisualizations (mapsNumber, callback) {
+  getDerivedVisualizations (options, callback) {
     const VIZ_API_PATH = `api/v1/viz`;
-    const uriParams = this.paramsToURI({
-      per_page: mapsNumber,
+    var params = Object.assign({}, {
       type: 'derived',
       privacy: 'public'
-    });
+    }, options);
+
+    const uriParams = this.paramsToURI(params);
 
     return this.get([VIZ_API_PATH, uriParams], callback);
   }

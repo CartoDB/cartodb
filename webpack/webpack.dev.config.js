@@ -28,7 +28,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [
-          path.resolve(__dirname, '../lib/assets/javascripts/cartodb3/carto-node')
+          path.resolve(__dirname, '../lib/assets/core/javascripts/carto-node')
         ],
         options: {
           presets: ['es2015'],

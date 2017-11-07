@@ -1,0 +1,13 @@
+{
+  "show": {
+    "title": "Editor",
+    "header": {
+      "data_view": "Data View",
+      "map_view": "Map View",
+      "back": "Back",
+      "edit_metadata": "Edit metadata...",
+      "edit": "Edit",
+      "visualize": "VISUALIZE"
+    }
+  }
+}

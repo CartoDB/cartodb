@@ -40,6 +40,18 @@ describe('api/v4/layer', function () {
       expect(layer.getFeatureClickColumns()).toEqual(['a', 'b']);
       expect(layer.getFeatureOverColumns()).toEqual(['c', 'd']);
     });
+
+    it('should throw an error if source is not valid', function () {
+      expect(function () {
+        new carto.layer.Layer({}, style);
+      }).toThrowError('The given object is not a valid source. See "carto.source.Base"');
+    });
+
+    it('should throw an error if style is not valid', function () {
+      expect(function () {
+        new carto.layer.Layer(source, {});
+      }).toThrowError('The given object is not a valid style. See "carto.style.Base"');
+    });
   });
 
   describe('.setStyle', function () {

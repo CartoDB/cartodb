@@ -18,6 +18,7 @@ describe('api/v4/client', function () {
     var source;
     var style;
     var layer;
+
     beforeEach(function () {
       client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
@@ -25,7 +26,7 @@ describe('api/v4/client', function () {
         username: 'cartojs-test'
       });
       source = new carto.source.Dataset('ne_10m_populated_places_simple', { id: 'a0' });
-      style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+      style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       layer = new carto.layer.Layer(source, style, {});
     });
 
@@ -92,7 +93,7 @@ describe('api/v4/client', function () {
     });
     it('should return the layers stored in the client', function (done) {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
-      var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+      var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       var layer = new carto.layer.Layer(source, style, {});
       client.addLayer(layer).then(function () {
         expect(client.getLayers()[0]).toEqual(layer);
@@ -120,7 +121,7 @@ describe('api/v4/client', function () {
     it('¿should throw a descriptive error when layer is not in the client?', function () {
       pending('We should decide if this makes sense.');
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
-      var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+      var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       var layer = new carto.layer.Layer(source, style, {});
 
       expect(function () {
@@ -130,7 +131,7 @@ describe('api/v4/client', function () {
 
     it('should remove the layer when is in the client', function () {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
-      var style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+      var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       var layer = new carto.layer.Layer(source, style, {});
       client.addLayer(layer);
 

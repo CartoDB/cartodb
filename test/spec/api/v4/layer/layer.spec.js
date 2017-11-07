@@ -1,4 +1,4 @@
-var carto = require('../../../../src/api/v4');
+var carto = require('../../../../../src/api/v4');
 
 describe('api/v4/layer', function () {
   var source;
@@ -6,7 +6,7 @@ describe('api/v4/layer', function () {
 
   beforeEach(function () {
     source = new carto.source.Dataset('ne_10m_populated_places_simple');
-    style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
+    style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
   });
 
   describe('constructor', function () {
@@ -59,7 +59,7 @@ describe('api/v4/layer', function () {
     var newStyle;
     beforeEach(function () {
       layer = new carto.layer.Layer(source, style);
-      newStyle = new carto.style.CartoCSS(`#layer {  marker-fill: green; }`);
+      newStyle = new carto.style.CartoCSS('#layer {  marker-fill: green; }');
     });
 
     it('should throw an error when the parameter is not valid', function () {

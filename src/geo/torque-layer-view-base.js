@@ -88,8 +88,7 @@ var TorqueLayerViewBase = {
       named_map: model.get('named_map'),
       auth_token: model.get('auth_token'),
       no_cdn: model.get('no_cdn'),
-      loop: !(model.get('loop') === false),
-      showErrors: model.get('showErrors')
+      loop: !(model.get('loop') === false)
     };
   },
 

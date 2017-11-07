@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
 * Style: Rename "none" aggregation to "points" (#13005)
 * Clean assets script
@@ -83,6 +84,8 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fix dashboard redirections (#12775)
+* Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
 * Documentation, fixed spelling and grammar in en.json
 * Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
@@ -599,6 +602,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed incorrect analysis node being selected after deleting (#11899)
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

@@ -247,6 +247,9 @@ Layer.prototype.$getInternalModel = function () {
 
 // Scope functions
 
+/**
+ * Transform the columns array into the format expected by the CartoDBLayer.
+ */
 function _getInteractivityFields (columns) {
   var fields = columns.map(function (column, index) {
     return {

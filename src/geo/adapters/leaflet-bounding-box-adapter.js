@@ -19,6 +19,9 @@ module.exports = Model.extend({
       east: ne.lng,
       north: ne.lat
     };
-  }
+  },
 
+  clean: function () {
+    this._map.off('move zoom');
+  }
 });

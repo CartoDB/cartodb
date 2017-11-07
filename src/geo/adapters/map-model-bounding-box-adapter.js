@@ -17,6 +17,9 @@ module.exports = Model.extend({
       east: mapBounds[1][1],
       north: mapBounds[1][0]
     };
-  }
+  },
 
+  clean: function () {
+    this._map.off('change:view_bounds_ne change:center change:zoom');
+  }
 });

@@ -3,21 +3,13 @@ var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
 /**
- * The dataset object is used to easily get data from a table in the database 
- * and use this data in a Layer or a Dataview.
+ * A Dataset that can be used as the data source for layers and dataviews.
  * 
- * @param {string} [id] - A unique ID for this source
  * @param {string} dataset The name of an existing dataset
  *
  * @example
  *
- * // no options
  * new carto.source.Dataset(european_cities');
- * 
- * @example
- *
- * // with options
- * new carto.source.Dataset('european_cities', { id: 'european_cities' });
  * 
  * @constructor
  * @extends carto.source.Base
@@ -25,10 +17,10 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * @api
  *
  */
-function Dataset (dataset, options) {
-  options = options || {};
-  this._id = options.id || Dataset.$generateId();
+function Dataset (dataset) {
   this._dataset = dataset;
+
+  Base.apply(this, arguments);
 }
 
 /**
@@ -39,26 +31,19 @@ function Dataset (dataset, options) {
  */
 Dataset.prototype = Object.create(Base.prototype);
 
-Dataset.prototype.$setEngine = function (engine) {
-  if (!this._internalModel) {
-    this._internalModel = new AnalysisModel({
-      id: this._id,
-      type: 'source',
-      query: 'SELECT * from ' + this._dataset
-    }, {
-      camshaftReference: CamshaftReference,
-      engine: engine
-    });
-  }
+Dataset.prototype._createInternalModel = function (engine) {
+  return new AnalysisModel({
+    id: this.getId(),
+    type: 'source',
+    query: 'SELECT * from ' + this._dataset
+  }, {
+    camshaftReference: CamshaftReference,
+    engine: engine
+  });
 };
 
 Dataset.prototype.$getInternalModel = function () {
   return this._internalModel;
-};
-
-Dataset.$nextId = 0;
-Dataset.$generateId = function () {
-  return 'D' + ++Dataset.$nextId;
 };
 
 module.exports = Dataset;

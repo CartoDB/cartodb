@@ -22,17 +22,21 @@ describe('api/v4/layer', function () {
       var layer1 = new carto.layer.Layer(source, style);
       var layer2 = new carto.layer.Layer(source, style);
 
-      expect(typeof layer1.id === 'string').toBe(true);
-      expect(typeof layer2.id === 'string').toBe(true);
-      expect(layer1.id).not.toEqual(layer2.id);
+      expect(typeof layer1.getId() === 'string').toBe(true);
+      expect(typeof layer2.getId() === 'string').toBe(true);
+      expect(layer1.getId()).not.toEqual(layer2.getId());
     });
 
     it('should build a new Layer params: (source, style, options)', function () {
-      var layer = new carto.layer.Layer(source, style, { id: 'myLayer' });
+      var layer = new carto.layer.Layer(source, style, {
+        featureClickColumns: [ 'a', 'b' ],
+        featureOverColumns: [ 'c', 'd' ]
+      });
 
-      expect(layer.id).toEqual('myLayer');
-      expect(layer._source).toEqual(source);
-      expect(layer._style).toEqual(style);
+      expect(layer.getSource()).toEqual(source);
+      expect(layer.getStyle()).toEqual(style);
+      expect(layer.getFeatureClickColumns()).toEqual([ 'a', 'b' ]);
+      expect(layer.getFeatureOverColumns()).toEqual([ 'c', 'd' ]);
     });
   });
 });

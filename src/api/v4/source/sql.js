@@ -3,23 +3,13 @@ var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
 /**
- * The SQL object allows to get data from a table in the database through
- * an sql query.
+ * A SQL Query that can be used as the data source for layers and dataviews.
  * 
- * This data can be used as source in a Layer or a Dataset.
- * 
- * @param {string} [id] - A unique ID for this source
  * @param {string} query A SQL query containing a SELECT statement
  *
  * @example
  *
- * // no options
  * new carto.source.SQL('SELECT * FROM european_cities');
- * 
- * @example
- *
- * // with options
- * new carto.source.SQL('SELECT * FROM european_cities', { id: 'european_cities' });
  * 
  * @constructor
  * @extends carto.source.Base
@@ -27,10 +17,10 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * @api
  *
  */
-function SQL (query, options) {
-  options = options || {};
-  this._id = options.id || SQL.$generateId;
+function SQL (query) {
   this._query = query;
+
+  Base.apply(this, arguments);
 }
 
 /**
@@ -53,17 +43,15 @@ SQL.prototype.getQuery = function () {
   return this._query;
 };
 
-SQL.prototype.$setEngine = function (engine) {
-  if (!this._internalModel) {
-    this._internalModel = new AnalysisModel({
-      id: this._id,
-      type: 'source',
-      query: this._query
-    }, {
-      camshaftReference: CamshaftReference,
-      engine: engine
-    });
-  }
+SQL.prototype._createInternalModel = function (engine) {
+  return new AnalysisModel({
+    id: this.getId(),
+    type: 'source',
+    query: this._query
+  }, {
+    camshaftReference: CamshaftReference,
+    engine: engine
+  });
 };
 
 SQL.prototype.$getInternalModel = function () {

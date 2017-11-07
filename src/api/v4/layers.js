@@ -19,7 +19,7 @@ Layers.prototype.contains = function (layer) {
 
 Layers.prototype.findById = function (layerId) {
   return _.find(this._layers, function (layer) {
-    return layer.id === layerId;
+    return layer.getId() === layerId;
   }, this);
 };
 

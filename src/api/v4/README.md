@@ -5,7 +5,7 @@ This folder contains the source files used in the `v4 public api`.
 This api build using wrappers over the internal objects, those wrappers have an easy-to-use public methods,
 the reference to the internal objects can be obtained  with the `$getInternalModel` method.
 
-The `$` before a method name is a naming convetion. Those methods sall not be exposed in the public API
+The `$` before a method name is a naming convention. Those methods shall not be exposed in the public API
 but can be used from different files. (Public only for developers).
 
 ## Api structure
@@ -23,6 +23,8 @@ All the api methods and objects are exposed through the public `carto` object.
 - `carto.dataview` : Namespace for the dataviews
     - `Formula`: Constructor to build a Formula dataview
     - `Category`: Constructor to build a Category dataview
+- `carto.filter` : Namespace for the filters
+    - `BoundingBox`: Constructor to build a BoundingBox filter
 
 
 - `carto.events` : Enum with the events available in the client.

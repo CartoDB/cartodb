@@ -65,9 +65,9 @@ Formula.prototype.getData = function () {
      * @api
      */
     return {
+      nulls: this._internalModel.get('nulls'),
       operation: this._options.operation,
       result: this._internalModel.get('data'),
-      nulls: this._internalModel.get('nulls'),
       type: 'formula'
     };
   }
@@ -105,10 +105,11 @@ Formula.prototype._createInternalModel = function (engine) {
     column: this._column,
     operation: this._options.operation,
     sync_on_data_change: true,
-    sync_on_bbox_change: false,
+    sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled
   }, {
-    engine: engine
+    engine: engine,
+    bboxFilter: this._boundingBoxFilter && this._boundingBoxFilter.$getInternalModel()
   });
 };
 

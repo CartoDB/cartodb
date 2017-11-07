@@ -174,11 +174,12 @@ Category.prototype._createInternalModel = function (engine) {
     aggregation: this._options.operation,
     aggregation_column: this._options.operationColumn,
     sync_on_data_change: true,
-    sync_on_bbox_change: false,
+    sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled
   }, {
     engine: engine,
-    filter: new CategoryFilter()
+    filter: new CategoryFilter(),
+    bboxFilter: this._boundingBoxFilter && this._boundingBoxFilter.$getInternalModel()
   });
 };
 

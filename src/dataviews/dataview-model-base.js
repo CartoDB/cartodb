@@ -52,7 +52,7 @@ module.exports = Model.extend({
 
     this._checkBBoxFilter();
     if (this.syncsOnBoundingBoxChanges()) {
-      result = 'bbox=' + this._bboxFilter.toString();
+      result = 'bbox=' + this._bboxFilter.serialize();
     }
 
     return result;

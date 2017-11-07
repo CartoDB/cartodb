@@ -3,52 +3,52 @@ var Model = require('../../core/model');
 var BOUNDING_BOX_FILTER_WAIT = 300;
 
 module.exports = Model.extend({
-  initialize: function (map) {
-    if (!map) {
+  initialize: function (mapAdapter) {
+    if (!mapAdapter) {
       throw new TypeError('Bounding box filter needs a map to get instantiated.');
     }
 
-    this._map = map;
-    this.setBounds(this._map.getViewBounds());
+    this._bounds = {};
+    this._mapAdapter = mapAdapter;
+    this.setBounds(this._mapAdapter.getBounds());
     this._initBinds();
   },
 
   _initBinds: function () {
-    this.listenTo(this._map, 'change:view_bounds_ne change:center change:zoom', _.debounce(this._boundsChanged, BOUNDING_BOX_FILTER_WAIT));
+    this.listenTo(this._mapAdapter, 'boundsChanged', _.debounce(this._boundsChanged, BOUNDING_BOX_FILTER_WAIT));
   },
 
   _stopBinds: function () {
-    this.stopListening(this._map, 'change:view_bounds_ne change:center change:zoom');
+    this.stopListening(this._mapAdapter, 'boundsChanged');
   },
 
-  _boundsChanged: function () {
-    this.setBounds(this._map.getViewBounds());
-    this.trigger('boundsChanged');
+  _boundsChanged: function (bounds) {
+    this.setBounds(bounds);
   },
 
   setBounds: function (bounds) {
-    this.set({
-      west: bounds[0][1],
-      south: bounds[0][0],
-      east: bounds[1][1],
-      north: bounds[1][0]
-    });
-  },
-
-  getBounds: function () {
-    return [
-      this.get('west'),
-      this.get('south'),
-      this.get('east'),
-      this.get('north')
-    ];
+    this._bounds = bounds;
+    this.trigger('boundsChanged', bounds);
   },
 
   areBoundsAvailable: function () {
-    return _.isFinite(this.get('west'));
+    return _.isFinite(this._bounds.west);
   },
 
-  toString: function () {
-    return this.getBounds().join(',');
+  serialize: function () {
+    return this._getBounds().join(',');
+  },
+
+  _getBounds: function () {
+    return [
+      this._bounds.west,
+      this._bounds.south,
+      this._bounds.east,
+      this._bounds.north
+    ];
+  },
+
+  clean: function () {
+    this._stopBinds();
   }
 });

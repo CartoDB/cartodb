@@ -26,13 +26,12 @@ module Carto
       )
     end
 
-    def self.build_data_layer(user_table)
-      user = user_table.user
+    def self.build_data_layer(user, table_name)
       geometry_type = user_table.geometry_type
 
       data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'].deep_dup)
       layer_options = data_layer.options
-      layer_options['table_name'] = user_table.name
+      layer_options['table_name'] = table_name
       layer_options['user_name'] = user.username
       layer_options['tile_style'] = tile_style(user, geometry_type)
       data_layer.infowindow ||= {}

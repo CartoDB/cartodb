@@ -8,7 +8,7 @@ module Carto
       # Map must be saved before layers, so register_table_dependencies is called after adding each layer
       # to the map. There are several reloads in this process, since the layers<->maps relation is not synchronized
       # with inverse_of (not supported in Rails, for has_many through relations).
-      layers = build_canonical_layers(user_table)
+      layers = build_canonical_layers(user, user_table.name)
       base_layers = layers.select(&:basemap?)
 
       visualization = Carto::Visualization.new(
@@ -45,11 +45,9 @@ module Carto
     end
     private_class_method :build_canonical_map
 
-    def self.build_canonical_layers(user_table)
-      user = user_table.user
-
+    def self.build_canonical_layers(user, table_name)
       base_layer = Carto::LayerFactory.build_default_base_layer(user)
-      data_layer = Carto::LayerFactory.build_data_layer(user_table)
+      data_layer = Carto::LayerFactory.build_data_layer(user, table_name)
       layers = [base_layer, data_layer]
       layers << Carto::LayerFactory.build_default_labels_layer(base_layer) if base_layer.supports_labels_layer?
 

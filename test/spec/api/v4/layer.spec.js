@@ -1,6 +1,6 @@
 var carto = require('../../../../src/api/v4');
 
-describe('api/v4/layer', function () {
+fdescribe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -31,14 +31,55 @@ describe('api/v4/layer', function () {
 
     it('should build a new Layer params: (source, style, options)', function () {
       var layer = new carto.layer.Layer(source, style, {
-        featureClickColumns: [ 'a', 'b' ],
-        featureOverColumns: [ 'c', 'd' ]
+        featureClickColumns: ['a', 'b'],
+        featureOverColumns: ['c', 'd']
       });
 
       expect(layer.getSource()).toEqual(source);
       expect(layer.getStyle()).toEqual(style);
-      expect(layer.getFeatureClickColumns()).toEqual([ 'a', 'b' ]);
-      expect(layer.getFeatureOverColumns()).toEqual([ 'c', 'd' ]);
+      expect(layer.getFeatureClickColumns()).toEqual(['a', 'b']);
+      expect(layer.getFeatureOverColumns()).toEqual(['c', 'd']);
+    });
+  });
+
+  describe('.setStyle', function () {
+    var layer;
+    var newStyle;
+    beforeEach(function () {
+      layer = new carto.layer.Layer(source, style);
+      newStyle = new carto.style.CartoCSS(`#layer {  marker-fill: green; }`);
+    });
+
+    it('should throw an error when the parameter is not valid', function () {
+      expect(function () {
+        layer.setStyle('bad-style');
+      }).toThrowError('The given object is not a valid style. See "carto.style.Base"');
+    });
+
+    it('should set the layer style', function () {
+      layer.setStyle(newStyle);
+
+      expect(layer.getStyle()).toEqual(newStyle);
+    });
+
+    it('should set the internal model style', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        serverUrl: 'https://{user}.carto.com:443',
+        username: 'cartojs-test'
+      });
+
+      client.on(carto.events.ERROR, alert);
+      client.addLayer(layer)
+        .then(function () {
+          client.on(carto.events.SUCCESS, function () {
+            var expected = '#layer {  marker-fill: green; }';
+            var actual = layer.$getInternalModel().get('cartocss');
+            expect(expected).toEqual(actual);
+            done();
+          });
+          layer.setStyle(newStyle);
+        });
     });
   });
 
@@ -61,7 +102,7 @@ describe('api/v4/layer', function () {
 
     describe('when the layer has been set an engine', function () {
       beforeEach(function () {
-        layer.$setEngine({ on: function () {}, reload: function () {} });
+        layer.$setEngine({ on: function () { }, reload: function () { } });
       });
 
       describe('when the source has no engine', function () {

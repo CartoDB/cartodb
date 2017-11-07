@@ -1,5 +1,6 @@
 var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
+var StyleBase = require('../style/base');
 
 /**
  * Represent a layer Object.
@@ -64,6 +65,7 @@ Layer.prototype.getId = function () {
  * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
+  _checkStyle(style);
   opts = opts || {};
   this._style = style;
   if (this._internalModel) {
@@ -246,6 +248,12 @@ function getInteractivityFields (columns) {
   return {
     fields: fields
   };
+}
+
+function _checkStyle (style) {
+  if (!(style instanceof StyleBase)) {
+    throw new TypeError('The given object is not a valid style. See "carto.style.Base"');
+  }
 }
 
 /**

@@ -69,40 +69,31 @@
       client.getLeafletLayerView().addTo(map);
 
       // Add a Category dataview
-      var categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+      var formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
         operation: carto.operation.AVG,
-        operationColumn: 'pop_max'
       });
-      window.categoryDataview = categoryDataview;
+      window.formulaDataview = formulaDataview;
 
-      categoryDataview.on('dataChanged', function (newData) {
+      formulaDataview.on('dataChanged', function (newData) {
         var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';
-        formattedData += '<ul>';
-        for (var category of newData.result) {
-          formattedData += '<li>' + category.name + ': ' + category.value + '</li>';
-        }
-        formattedData += '</ul>';
+        formattedData += ' ' + newData.result;
         document.getElementById('widget').innerHTML = formattedData;
         console.log('Data changed', newData);
       });
 
-      categoryDataview.on('columnChanged', function (newColumn) {
+      formulaDataview.on('columnChanged', function (newColumn) {
         console.log('Column changed', newColumn);
       });
 
-      categoryDataview.on('statusChanged', function (newStatus, error) {
+      formulaDataview.on('statusChanged', function (newStatus, error) {
         console.log('Status changed', newStatus, error);
       });
 
-      categoryDataview.on('operationChanged', function (newOperation) {
+      formulaDataview.on('operationChanged', function (newOperation) {
         console.log('Operation changed', newOperation);
       });
 
-      categoryDataview.on('operationColumnChanged', function (newOperationColumn) {
-        console.log('Operation column changed', newOperationColumn);
-      });
-
-      client.addDataview(categoryDataview);
+      client.addDataview(formulaDataview);
     })();
 
   </script>

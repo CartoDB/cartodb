@@ -10,10 +10,6 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
  *
  * @example
  *
- * new carto.layer.Layer('cities', citiesSource, citiesStyle);
- *
- * @example
- *
  * new carto.layer.Layer(citiesSource, citiesStyle);
  *
  * @constructor

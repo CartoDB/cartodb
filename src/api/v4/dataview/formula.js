@@ -6,7 +6,7 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
 /**
  * Formula dataview object
  *
- * @param {carto.source.Base} source - The source where the datavew will fetch the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
  * @param {carto.operation} options.operation - The operation to apply to the data.
@@ -83,6 +83,9 @@ Formula.prototype._listenToInternalModelSpecificEvents = function () {
 };
 
 Formula.prototype._onOperationChanged = function () {
+  if (this._internalModel) {
+    this._options.operation = this._internalModel.get('operation');
+  }
   this.trigger('operationChanged', this._options.operation);
 };
 

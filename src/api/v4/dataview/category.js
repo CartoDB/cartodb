@@ -7,7 +7,7 @@ var CategoryFilter = require('../../../windshaft/filters/category');
 /**
  * Category dataview object
  *
- * @param {carto.source.Base} source - The source where the datavew will fetch the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
  * @param {carto.operation} options.operation - The operation to apply to the data.
@@ -134,10 +134,16 @@ Category.prototype._listenToInternalModelSpecificEvents = function () {
 };
 
 Category.prototype._onOperationChanged = function () {
+  if (this._internalModel) {
+    this._options.operation = this._internalModel.get('aggregation');
+  }
   this.trigger('operationChanged', this._options.operation);
 };
 
 Category.prototype._onOperationColumnChanged = function () {
+  if (this._internalModel) {
+    this._options.operationColumn = this._internalModel.get('aggregation_column');
+  }
   this.trigger('operationColumnChanged', this._options.operationColumn);
 };
 

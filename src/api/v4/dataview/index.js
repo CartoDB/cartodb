@@ -1,4 +1,5 @@
 var Formula = require('./formula');
+var Histogram = require('./histogram');
 var status = require('../constants').status;
 
 /**
@@ -7,5 +8,6 @@ var status = require('../constants').status;
  */
 module.exports = {
   Formula: Formula,
+  Histogram: Histogram,
   status: status
 };

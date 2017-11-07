@@ -1,6 +1,6 @@
 var carto = require('../../../../src/api/v4');
 
-fdescribe('api/v4/layer', function () {
+describe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -90,6 +90,12 @@ fdescribe('api/v4/layer', function () {
     beforeEach(function () {
       layer = new carto.layer.Layer(source, style);
       newSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple LIMIT 10');
+    });
+
+    it('should throw an error when the source is not a valid parameter', function () {
+      expect(function () {
+        layer.setSource('bad-parameter');
+      }).toThrowError('The given object is not a valid source. See "carto.source.Base"');
     });
 
     describe("when the layer hasn't been set an engine", function () {

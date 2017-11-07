@@ -1,5 +1,6 @@
 var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
+var SourceBase = require('../source/base');
 var StyleBase = require('../style/base');
 
 /**
@@ -99,6 +100,7 @@ Layer.prototype.getStyle = function () {
  * @api
  */
 Layer.prototype.setSource = function (source) {
+  _checkSource(source);
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
     if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
@@ -265,6 +267,11 @@ function _checkStyle (style) {
   }
 }
 
+function _checkSource (source) {
+  if (!(source instanceof SourceBase)) {
+    throw new TypeError('The given object is not a valid source. See "carto.source.Base"');
+  }
+}
 /**
  * @typedef {Object} LatLng
  * @property {number} lat - Latitude

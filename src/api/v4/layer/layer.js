@@ -13,7 +13,7 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events. 
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events.
  *
- * @fires carto.layer.Layer.Events.FeatureEvent
+ * @fires carto.layer.Layer.FeatureEvent
  * @example
  *
  * // no options
@@ -228,14 +228,6 @@ function getInteractivityFields (columns) {
  * @typedef {Object} LatLng
  * @property {number} lat - Latitude
  * @property {number} lng - Longitude
- * 
- * @api
- */
-
-/**
- * @event carto.layer.Layer.Events.FeatureEvent
- * @property {LatLng} latLng - Object with coordinates where interaction took place
- * @property {object} data - Object with feature data
  * 
  * @api
  */

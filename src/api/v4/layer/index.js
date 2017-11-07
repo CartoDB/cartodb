@@ -7,5 +7,5 @@ var EventTypes = require('./event-types');
  */
 module.exports = {
   Layer: Layer,
-  EventTypes: EventTypes
+  events: EventTypes
 };

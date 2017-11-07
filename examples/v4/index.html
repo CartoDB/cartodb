@@ -100,11 +100,11 @@
 
             client.addLayers([ spanishCities, populatedPlaces ]);
 
-            spanishCities.on(carto.layer.EventTypes.FEATURE_CLICKED, function (featureEvent) {
+            spanishCities.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {
               console.log('feature:click', featureEvent.latLng, featureEvent.data);
             });
 
-            spanishCities.on(carto.layer.EventTypes.FEATURE_OVER, function (featureEvent) {
+            spanishCities.on(carto.layer.events.FEATURE_OVER, function (featureEvent) {
               var data = featureEvent.data;
               var content = data.name;
               content += data.adm0name ? (' (' + data.adm0name + ')') : '';
@@ -115,13 +115,13 @@
               console.log('feature:over', featureEvent.latLng, featureEvent.data);
             });
 
-            spanishCities.on(carto.layer.EventTypes.FEATURE_OUT, function (featureEvent) {
+            spanishCities.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {
               console.log('feature:out', featureEvent.latLng, featureEvent.data);
 
               popup.removeFrom(map);
             });
 
-            await spanishCities.setFeatureOverColumns(['adm0name', 'name']);
+            spanishCities.setFeatureOverColumns(['adm0name', 'name']);
 
             // Add the layer to the map
             client.getLeafletLayerView().addTo(map);

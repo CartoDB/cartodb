@@ -1,5 +1,5 @@
 /**
- * Enum for operation values.
+ * Enum for event names.
  *
  * @enum {string} carto.events
  * @readonly
@@ -10,7 +10,6 @@ var events = {
   /**
    * Reload started event, fired every time the reload process is completed succesfully.
    *
-   * @event carto.events.SUCCESS
    * @api
    */
   SUCCESS: 'success',
@@ -18,7 +17,6 @@ var events = {
   /**
    * Reload started event, fired every time the reload process has some error.
    *
-   * @event carto.events.ERROR
    * @api
    */
   ERROR: 'error'

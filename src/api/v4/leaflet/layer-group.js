@@ -37,17 +37,17 @@ LayerGroup.prototype._createInternalLayerGroupView = function (map) {
 };
 
 LayerGroup.prototype._onFeatureClick = function (internalEvent) {
-  this._triggerLayerFeatureEvent(Layer.EventTypes.FEATURE_CLICKED, internalEvent);
+  this._triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, internalEvent);
 };
 
 LayerGroup.prototype._onFeatureOver = function (internalEvent) {
   this._leafletMap.getContainer().style.cursor = 'pointer';
-  this._triggerLayerFeatureEvent(Layer.EventTypes.FEATURE_OVER, internalEvent);
+  this._triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, internalEvent);
 };
 
 LayerGroup.prototype._onFeatureOut = function (internalEvent) {
   this._leafletMap.getContainer().style.cursor = 'auto';
-  this._triggerLayerFeatureEvent(Layer.EventTypes.FEATURE_OUT, internalEvent);
+  this._triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent);
 };
 
 LayerGroup.prototype._triggerLayerFeatureEvent = function (eventName, internalEvent) {
@@ -66,6 +66,14 @@ LayerGroup.prototype._triggerLayerFeatureEvent = function (eventName, internalEv
         lng: internalEvent.latlng[1]
       };
     }
+
+    /**
+     * @event carto.layer.Layer.FeatureEvent
+     * @property {LatLng} latLng - Object with coordinates where interaction took place
+     * @property {object} data - Object with feature data (one attribute for each specified column)
+     * 
+     * @api
+     */
     layer.trigger(eventName, event);
   }
 };

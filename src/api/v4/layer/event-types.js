@@ -1,13 +1,15 @@
 /**
  * Enum for event types.
  *
- * @enum {string} carto.layer.events
+ * @enum {string}
  * @readonly
  * @memberof carto.layer
  * @api
  */
-module.exports = {
+var events = {
   FEATURE_CLICKED: 'featureClicked',
   FEATURE_OVER: 'featureOver',
   FEATURE_OUT: 'featureOut'
 };
+
+module.exports = events;

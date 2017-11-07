@@ -8,6 +8,7 @@ describe('api/v4/layer', function () {
     source = new carto.source.Dataset('ne_10m_populated_places_simple');
     style = new carto.style.CartoCSS(`#layer {  marker-fill: red; }`);
   });
+
   describe('constructor', function () {
     it('should build a new Layer params: (source, style)', function () {
       var layer = new carto.layer.Layer(source, style);
@@ -23,8 +24,8 @@ describe('api/v4/layer', function () {
       var id1 = layer1.getId();
       var id2 = layer2.getId();
 
-      expect(typeof id1 === 'string').toBe(true);
-      expect(typeof id2 === 'string').toBe(true);
+      expect(id1).toMatch(/L\d+/);
+      expect(id2).toMatch(/L\d+/);
       expect(id1).not.toEqual(id2);
     });
 
@@ -47,11 +48,12 @@ describe('api/v4/layer', function () {
         var layer = new carto.layer.Layer(source, style);
         var source1 = new carto.source.SQL('SELECT * ne_10m_populated_places_simple LIMIT 10');
 
-        layer.setSource(source1).then(function () {
-          expect(layer.getSource()).toEqual(source1);
-        });
+        layer.setSource(source1);
+
+        expect(layer.getSource()).toEqual(source1);
       });
     });
+
     describe('when the layer has been instnatiated', function () {
       describe('when the source has no engine', function () {
         it('should normally add the source', function () { });

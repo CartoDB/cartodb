@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Basic Carto.js example</title>
+  <title>Category dataview example</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
   <!--Include carto styles  -->
@@ -42,9 +42,9 @@
 
       // Create the Client
       var client = new carto.Client({
-          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-          serverUrl: 'https://{user}.carto.com:443',
-          username: 'cartojs-test'
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        serverUrl: 'https://{user}.carto.com:443',
+        username: 'cartojs-test'
       });
 
       // Create a source
@@ -54,8 +54,8 @@
       // Create a style
       var style = new carto.style.CartoCSS(`
         #layer {
-            marker-width: 10;
-            marker-fill: yellow;
+          marker-width: 10;
+          marker-fill: yellow;
         }`
       );
 

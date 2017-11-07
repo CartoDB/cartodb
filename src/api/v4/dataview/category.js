@@ -11,7 +11,7 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * @param {string} column - The column name to get the data.
  * @param {object} options
  * @param {carto.operation} options.operation - The operation to apply to the data.
- * @param {string} options.aggregationColumn - The column name to aggretate
+ * @param {string} options.operationColumn - The column name used in the operation.
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -48,6 +48,32 @@ Category.prototype.setOperation = function (operation) {
  */
 Category.prototype.getOperation = function () {
   return this._options.operation;
+};
+
+/**
+ * Set the dataview operationColumn
+ *
+ * @param  {string} operationColumn
+ * @return {carto.dataview.Category} this
+ * @api
+ */
+Category.prototype.setOperationColumn = function (operationColumn) {
+  this._checkOperationColumn(operationColumn);
+  this._options.operationColumn = operationColumn;
+  if (this._internalModel) {
+    this._internalModel.set('aggregation_column', operationColumn);
+  }
+  return this;
+};
+
+/**
+ * Return the current dataview operationColumn
+ *
+ * @return {string} Current dataview operationColumn
+ * @api
+ */
+Category.prototype.getOperationColumn = function () {
+  return this._options.operationColumn;
 };
 
 /**
@@ -97,48 +123,22 @@ Category.prototype.getData = function () {
   return null;
 };
 
-/**
- * Set the dataview aggregationColumn
- *
- * @param  {string} aggregationColumn
- * @return {carto.dataview.Category} this
- * @api
- */
-Category.prototype.setAggregationColumn = function (aggregationColumn) {
-  this._checkAggretationColumn(aggregationColumn);
-  this._options.aggregationColumn = aggregationColumn;
-  if (this._internalModel) {
-    this._internalModel.set('aggregation_column', aggregationColumn);
-  }
-  return this;
-};
-
-/**
- * Return the current dataview aggregationColumn
- *
- * @return {string} Current dataview aggregationColumn
- * @api
- */
-Category.prototype.getAggregationColumn = function () {
-  return this._options.aggregationColumn;
-};
-
 Category.prototype.DEFAULTS = {
   operation: constants.operation.COUNT,
-  aggregationColumn: ''
+  operationColumn: 'column'
 };
 
 Category.prototype._listenToInternalModelSpecificEvents = function () {
   this.listenTo(this._internalModel, 'change:aggregation', this._onOperationChanged);
-  this.listenTo(this._internalModel, 'change:aggregation_column', this._onAggretationColumnChanged);
+  this.listenTo(this._internalModel, 'change:aggregation_column', this._onOperationColumnChanged);
 };
 
 Category.prototype._onOperationChanged = function () {
   this.trigger('operationChanged', this._options.operation);
 };
 
-Category.prototype._onOperationChanged = function () {
-  this.trigger('aggretationColumnChanged', this._options.aggregationColumn);
+Category.prototype._onOperationColumnChanged = function () {
+  this.trigger('operationColumnChanged', this._options.operationColumn);
 };
 
 Category.prototype._checkOptions = function (options) {
@@ -146,7 +146,7 @@ Category.prototype._checkOptions = function (options) {
     throw new TypeError('Operation option for category dataview is not valid. Use carto.operation');
   }
   this._checkOperation(options.operation);
-  this._checkAggretationColumn(options.aggregationColumn);
+  this._checkOperationColumn(options.operationColumn);
 };
 
 Category.prototype._checkOperation = function (operation) {
@@ -155,15 +155,15 @@ Category.prototype._checkOperation = function (operation) {
   }
 };
 
-Category.prototype._checkAggretationColumn = function (aggregationColumn) {
-  if (_.isUndefined(aggregationColumn)) {
-    throw new TypeError('Aggregation column property is required.');
+Category.prototype._checkOperationColumn = function (operationColumn) {
+  if (_.isUndefined(operationColumn)) {
+    throw new TypeError('Operation column for category dataview is required.');
   }
-  if (!_.isString(aggregationColumn)) {
-    throw new TypeError('Aggregation column property must be a string.');
+  if (!_.isString(operationColumn)) {
+    throw new TypeError('Operation column for category dataview must be a string.');
   }
-  if (_.isEmpty(aggregationColumn)) {
-    throw new TypeError('Aggregation column property must be not empty.');
+  if (_.isEmpty(operationColumn)) {
+    throw new TypeError('Operation column for category dataview must be not empty.');
   }
 };
 
@@ -172,7 +172,7 @@ Category.prototype._createInternalModel = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._column,
     aggregation: this._options.operation,
-    aggregation_column: this._options.aggregationColumn,
+    aggregation_column: this._options.operationColumn,
     sync_on_data_change: true,
     sync_on_bbox_change: false,
     enabled: this._enabled

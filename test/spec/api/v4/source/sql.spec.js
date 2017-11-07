@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/source/dataset', function () {
+describe('api/v4/source/sql', function () {
   describe('constructor', function () {
     it('should return a new Dataset object', function () {
       var sqlDataset = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
@@ -9,12 +9,7 @@ describe('api/v4/source/dataset', function () {
 
     it('should autogenerate an id when no ID is given', function () {
       var sqlDataset = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
-      expect(sqlDataset._id).toBeDefined();
-    });
-
-    it('should assign the given id', function () {
-      var sqlDataset = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'', { id: 'sql0' });
-      expect(sqlDataset._id).toEqual('sql0');
+      expect(sqlDataset.getId()).toMatch(/S\d+/);
     });
   });
 
@@ -25,7 +20,7 @@ describe('api/v4/source/dataset', function () {
       sqlDataset.$setEngine('fakeEngine');
 
       var internalModel = sqlDataset.$getInternalModel();
-      expect(internalModel.get('id')).toEqual('sql0');
+      expect(internalModel.get('id')).toEqual(sqlDataset.getId());
       expect(internalModel.get('query')).toEqual('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
       expect(internalModel._engine).toEqual('fakeEngine');
     });

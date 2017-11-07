@@ -9,23 +9,18 @@ describe('api/v4/source/dataset', function () {
 
     it('should autogenerate an id when no ID is given', function () {
       var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
-      expect(populatedPlacesDataset._id).toBeDefined();
-    });
-
-    it('should assign the given id', function () {
-      var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple', { id: 'datasetID' });
-      expect(populatedPlacesDataset._id).toEqual('datasetID');
+      expect(populatedPlacesDataset.getId()).toMatch(/S\d+/);
     });
   });
 
   describe('$setEngine', function () {
     it('should create an internal model with the dataset and the engine', function () {
-      var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple', { id: 'a0' });
+      var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
 
       populatedPlacesDataset.$setEngine('fakeEngine');
 
       var internalModel = populatedPlacesDataset.$getInternalModel();
-      expect(internalModel.get('id')).toEqual('a0');
+      expect(internalModel.get('id')).toEqual(populatedPlacesDataset.getId());
       expect(internalModel.get('query')).toEqual('SELECT * from ne_10m_populated_places_simple');
       expect(internalModel._engine).toEqual('fakeEngine');
     });

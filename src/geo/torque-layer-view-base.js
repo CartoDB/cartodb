@@ -33,6 +33,12 @@ var TorqueLayerViewBase = {
       });
     }, this);
 
+    this.nativeTorqueLayer.on('tileError', function (error) {
+      if (this.showLimitErrors) {
+        this.mapModel.trigger('error:limit', error);
+      }
+    }, this);
+
     this.nativeTorqueLayer.on('change:steps', function (changes) {
       this._setModelAttrs({ steps: changes.steps });
     }, this);
@@ -82,7 +88,8 @@ var TorqueLayerViewBase = {
       named_map: model.get('named_map'),
       auth_token: model.get('auth_token'),
       no_cdn: model.get('no_cdn'),
-      loop: !(model.get('loop') === false)
+      loop: !(model.get('loop') === false),
+      showErrors: model.get('showErrors')
     };
   },
 

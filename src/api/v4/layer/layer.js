@@ -34,7 +34,7 @@ function Layer (source, style, options) {
   this._engine = undefined;
   this._internalModel = undefined;
 
-  this._id = Layer.$generateId();
+  this._id = options.id || Layer.$generateId();
   this._source = source;
   this._style = style;
   this._visible = true;
@@ -205,7 +205,7 @@ Layer.prototype.$setEngine = function (engine) {
 
 Layer.prototype._createInternalModel = function (engine) {
   return new CartoDBLayer({
-    id: this.getId(),
+    id: this._id,
     source: this._source.$getInternalModel(),
     cartocss: this._style.toCartoCSS(),
     visible: this._visible,

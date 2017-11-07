@@ -43,13 +43,13 @@ describe('api/v4/layer', function () {
 
     it('should throw an error if source is not valid', function () {
       expect(function () {
-        new carto.layer.Layer({}, style);
+        new carto.layer.Layer({}, style); // eslint-disable-line
       }).toThrowError('The given object is not a valid source. See "carto.source.Base"');
     });
 
     it('should throw an error if style is not valid', function () {
       expect(function () {
-        new carto.layer.Layer(source, {});
+        new carto.layer.Layer(source, {}); // eslint-disable-line
       }).toThrowError('The given object is not a valid style. See "carto.style.Base"');
     });
   });

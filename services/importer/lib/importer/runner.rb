@@ -12,7 +12,7 @@ require_relative '../../../platform-limits/platform_limits'
 require_relative '../../../../lib/cartodb/stats/importer'
 require_relative '../../../../lib/carto/visualization_exporter'
 require_relative '../helpers/quota_check_helpers'
-require_relative '../../../../lib/geopkg_carto_metadata_util'
+require_relative '../../../../lib/carto/geopkg_carto_metadata_util'
 
 module CartoDB
   module Importer2

@@ -7,6 +7,7 @@ var CategoryDataviewModel = require('./category-dataview-model');
 var FormulaDataviewModel = require('./formula-dataview-model');
 var HistogramDataviewModel = require('./histogram-dataview-model');
 var BBoxFilter = require('../windshaft/filters/bounding-box');
+var MapModelBoundingBoxAdapter = require('../geo/adapters/map-model-bounding-box-adapter');
 
 var REQUIRED_OPTS = [
   'map',
@@ -25,7 +26,9 @@ module.exports = Model.extend({
 
     this._engine = opts.engine;
     this._dataviewsCollection = opts.dataviewsCollection;
-    this._bboxFilter = new BBoxFilter(opts.map);
+
+    var mapAdapter = new MapModelBoundingBoxAdapter(opts.map);
+    this._bboxFilter = new BBoxFilter(mapAdapter);
   },
 
   createCategoryModel: function (attrs) {

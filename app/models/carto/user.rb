@@ -436,9 +436,7 @@ class Carto::User < ActiveRecord::Base
     id == user.id || user.belongs_to_organization?(organization) && (user.organization_owner? || !organization_admin?)
   end
 
-  def should_display_old_password?
-    needs_password_confirmation?
-  end
+  alias_method :should_display_old_password?, :needs_password_confirmation?
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
@@ -523,9 +521,7 @@ class Carto::User < ActiveRecord::Base
 
   # Special url that goes to Central if active (for old dashboard only)
   def account_url(request_protocol)
-    if CartoDB.account_host
-      request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
-    end
+    request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username if CartoDB.account_host
   end
 
   # Special url that goes to Central if active

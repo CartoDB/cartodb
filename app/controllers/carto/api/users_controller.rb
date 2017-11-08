@@ -27,8 +27,6 @@ module Carto
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
 
-      PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
-
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
       end
@@ -148,13 +146,11 @@ module Carto
         @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
       end
 
-      def can_be_deleted?(user)
+      def cant_be_deleted_reason(user)
         if user.organization_owner?
-          return "You can't delete your account because you are admin of an organization"
+          "You can't delete your account because you are admin of an organization"
         elsif Carto::UserCreation.http_authentication.where(user_id: user.id).first.present?
-          return "You can't delete your account because you are using HTTP Header Authentication"
-        else
-          return nil
+          "You can't delete your account because you are using HTTP Header Authentication"
         end
       end
 

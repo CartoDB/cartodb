@@ -70,6 +70,7 @@
 
       // Add a Category dataview
       var categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+        maxCategories: 10,
         operation: carto.operation.AVG,
         operationColumn: 'pop_max'
       });
@@ -92,6 +93,10 @@
 
       categoryDataview.on('statusChanged', function (newStatus, error) {
         console.log('Status changed', newStatus, error);
+      });
+
+      categoryDataview.on('maxCategoriesChanged', function (newMaxCategories) {
+        console.log('Max categories changed', newMaxCategories);
       });
 
       categoryDataview.on('operationChanged', function (newOperation) {

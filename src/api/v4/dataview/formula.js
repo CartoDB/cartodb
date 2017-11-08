@@ -91,7 +91,7 @@ Formula.prototype._onOperationChanged = function () {
 
 Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Operation option for formula dataview is not valid. Use carto.operation');
+    throw new TypeError('Formula dataview options are not defined.');
   }
   this._checkOperation(options.operation);
 };

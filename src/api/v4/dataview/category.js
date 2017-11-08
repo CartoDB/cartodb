@@ -25,6 +25,32 @@ function Category (source, column, options) {
 Category.prototype = Object.create(Base.prototype);
 
 /**
+ * Set the dataview maxCategories
+ *
+ * @param  {string} maxCategories
+ * @return {carto.dataview.Category} this
+ * @api
+ */
+Category.prototype.setMaxCategories = function (maxCategories) {
+  this._checkMaxCategories(maxCategories);
+  this._options.maxCategories = maxCategories;
+  if (this._internalModel) {
+    this._internalModel.set('max_categories', maxCategories);
+  }
+  return this;
+};
+
+/**
+ * Return the current dataview maxCategories
+ *
+ * @return {string} Current dataview maxCategories
+ * @api
+ */
+Category.prototype.getMaxCategories = function () {
+  return this._options.maxCategories;
+};
+
+/**
  * Set the dataview operation
  *
  * @param  {carto.operation} operation
@@ -124,13 +150,22 @@ Category.prototype.getData = function () {
 };
 
 Category.prototype.DEFAULTS = {
+  maxCategories: 5,
   operation: constants.operation.COUNT,
   operationColumn: 'column'
 };
 
 Category.prototype._listenToInternalModelSpecificEvents = function () {
+  this.listenTo(this._internalModel, 'change:max_categories', this._onMaxCategoriesChanged);
   this.listenTo(this._internalModel, 'change:aggregation', this._onOperationChanged);
   this.listenTo(this._internalModel, 'change:aggregation_column', this._onOperationColumnChanged);
+};
+
+Category.prototype._onMaxCategoriesChanged = function () {
+  if (this._internalModel) {
+    this._options.maxCategories = this._internalModel.get('max_categories');
+  }
+  this.trigger('maxCategoriesChanged', this._options.maxCategories);
 };
 
 Category.prototype._onOperationChanged = function () {
@@ -149,10 +184,23 @@ Category.prototype._onOperationColumnChanged = function () {
 
 Category.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Operation option for category dataview is not valid. Use carto.operation');
+    throw new TypeError('Category dataview options are not defined.');
   }
+  this._checkMaxCategories(options.maxCategories);
   this._checkOperation(options.operation);
   this._checkOperationColumn(options.operationColumn);
+};
+
+Category.prototype._checkMaxCategories = function (maxCategories) {
+  if (_.isUndefined(maxCategories)) {
+    throw new TypeError('Max categories for category dataview is required.');
+  }
+  if (!_.isNumber(maxCategories)) {
+    throw new TypeError('Max categories for category dataview must be a number.');
+  }
+  if (maxCategories > 0) {
+    throw new TypeError('Max categories for category dataview must be greater than 0.');
+  }
 };
 
 Category.prototype._checkOperation = function (operation) {
@@ -177,6 +225,7 @@ Category.prototype._createInternalModel = function (engine) {
   this._internalModel = new CategoryDataviewModel({
     source: this._source.$getInternalModel(),
     column: this._column,
+    max_categories: this._options.maxCategories,
     aggregation: this._options.operation,
     aggregation_column: this._options.operationColumn,
     sync_on_data_change: true,

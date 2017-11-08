@@ -62,14 +62,12 @@ Formula.prototype.getData = function () {
      * @property {number} nulls
      * @property {string} operation
      * @property {number} result
-     * @property {string} type - Constant 'formula'
      * @api
      */
     return {
-      operation: this._operation,
-      result: this._internalModel.get('data'),
       nulls: this._internalModel.get('nulls'),
-      type: 'formula'
+      operation: this._operation,
+      result: this._internalModel.get('data')
     };
   }
   return null;

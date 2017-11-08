@@ -237,8 +237,7 @@ describe('api/v4/dataview/category', function () {
             value: 9,
             group: true
           }
-        ],
-        type: 'category'
+        ]
       });
     });
   });

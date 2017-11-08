@@ -131,7 +131,6 @@ Category.prototype.getData = function () {
      * @property {number} nulls
      * @property {string} operation
      * @property {CategoryItem[]} result
-     * @property {string} type - Constant 'category'
      * @api
      */
     var data = this._internalModel.get('data');
@@ -148,8 +147,7 @@ Category.prototype.getData = function () {
       min: this._internalModel.get('min'),
       nulls: this._internalModel.get('nulls'),
       operation: this._operation,
-      result: result,
-      type: 'category'
+      result: result
     };
   }
   return null;

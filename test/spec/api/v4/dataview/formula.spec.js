@@ -138,10 +138,9 @@ describe('api/v4/dataview/formula', function () {
       var data = dataview.getData();
 
       expect(data).toEqual({
-        type: 'formula',
+        nulls: 42,
         operation: carto.operation.SUM,
-        result: 1234,
-        nulls: 42
+        result: 1234
       });
     });
   });

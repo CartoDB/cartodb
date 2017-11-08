@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Basic Carto.js example</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  <!--Include carto styles  -->
+  <!-- <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" /> -->
+  <!-- Include cartodb.js Library -->
+  <script src="../../dist/cartodb.uncompressed.js"></script>
+  <style>
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="widget"></div>
+  <div id="map"></div>
+  <script>
+    (async () => {
+      var L = window.L;
+      var carto = window.carto;
+      var map = window.map = L.map('map').setView([42.431234, -8.643616], 5);
+
+      L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+      // Create the Client
+      var client = window.client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        serverUrl: 'https://{user}.carto.com:443',
+        username: 'cartojs-test'
+      });
+
+      // Create a source
+      var spanishCitiesSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
+
+      // Create a style
+      var spanishCitiesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 10;
+          marker-fill: red;
+        }`);
+
+      // Create a layer
+      var spanishCities = window.spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle, {
+        featureClickColumns: ['adm0name'],
+        featureOverColumns: ['adm0name']
+      });
+
+      client.addLayer(spanishCities);
+
+      // Setup interactivity
+      var popup = L.popup()
+        .setLatLng({ lat: 0, lng: 0 });
+
+      spanishCities.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {
+        console.log('featureClicked', featureEvent.latLng, featureEvent.data);
+      });
+
+      spanishCities.on(carto.layer.events.FEATURE_OVER, function (featureEvent) {
+        console.log('featureOver', featureEvent.latLng, featureEvent.data);
+  
+        var data = featureEvent.data;
+        var content = data.name;
+        content += data.adm0name ? (' (' + data.adm0name + ')') : '';
+        popup.setContent(content)
+          .setLatLng(featureEvent.latLng)
+          .openOn(map);
+      });
+
+      spanishCities.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {
+        console.log('featureOut', featureEvent.latLng, featureEvent.data);
+
+        popup.removeFrom(map);
+      });
+
+      // Add the layer to the map
+      client.getLeafletLayer().addTo(map);
+
+      // Change columns dynamically
+      spanishCities.setFeatureOverColumns(['adm0name', 'name']);
+      spanishCities.setFeatureClickColumns(['adm0name', 'name']);
+    })();
+  </script>
+</body>
+
+</html>

@@ -3,12 +3,17 @@ var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
 /**
+<<<<<<< HEAD
+=======
+ * A Dataset that can be used as the data source for layers and dataviews.
+ * 
+>>>>>>> internal-classes-layers
  * @param {string} dataset The name of an existing dataset
  *
  * @example
  *
  * new carto.source.Dataset('european_cities');
- *
+ * 
  * @constructor
  * @extends carto.source.Base
  * @memberof carto.source
@@ -16,27 +21,31 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  *
  */
 function Dataset (dataset) {
+<<<<<<< HEAD
   this._id = 'fakeId';
+=======
+>>>>>>> internal-classes-layers
   this._dataset = dataset;
+  Base.apply(this, arguments);
 }
 
 Dataset.prototype = Object.create(Base.prototype);
 
-Dataset.prototype.$setEngine = function (engine) {
-  if (!this._internalModel) {
-    this._internalModel = new AnalysisModel({
-      id: this._id,
-      type: 'source',
-      query: 'SELECT * from ' + this._dataset
-    }, {
-      camshaftReference: CamshaftReference,
-      engine: engine
-    });
-  }
-};
-
-Dataset.prototype.$getInternalModel = function () {
-  return this._internalModel;
+/**
+ * Creates a new internal model with the given engine
+ * and the attributes initialized in the constructor.
+ * 
+ * @param {Engine} engine - The engine object to be assigned to the internalModel.
+ */
+Dataset.prototype._createInternalModel = function (engine) {
+  return new AnalysisModel({
+    id: this.getId(),
+    type: 'source',
+    query: 'SELECT * from ' + this._dataset
+  }, {
+    camshaftReference: CamshaftReference,
+    engine: engine
+  });
 };
 
 module.exports = Dataset;

@@ -19,6 +19,7 @@ var HistogramDataviewModel = require('../../..//dataviews/histogram-dataview-mod
  */
 function Histogram (source, column, options) {
   this._initialize(source, column, options);
+  this._bins = this._options.bins;
 }
 
 Histogram.prototype = Object.create(Base.prototype);
@@ -44,14 +45,12 @@ Histogram.prototype.getTotalsData = function () {
 
 Histogram.prototype.setBins = function (bins) {
   this._validateBins(bins);
-  this._options.bins = Math.floor(bins);
-  if (this._internalModel) {
-    this._internalModel.set('bins', this._options.bins);
-  }
+  var floorBins = Math.floor(bins);
+  this._changeProperty('bins', floorBins);
 };
 
 Histogram.prototype.getBins = function () {
-  return this._options.bins;
+  return this._bins;
 };
 
 Histogram.prototype.getDistributionType = function () {
@@ -101,7 +100,9 @@ Histogram.prototype._parseData = function (data, nulls, totalAmount) {
     }).freq;
     var result = data.map(function (bin) {
       return _.extend(bin, {
-        normalized: bin.freq / maxFreq
+        normalized: _.isFinite(bin.freq)
+          ? bin.freq / maxFreq
+          : 0
       });
     });
 
@@ -127,15 +128,15 @@ Histogram.prototype._listenToInternalModelSpecificEvents = function () {
 };
 
 Histogram.prototype._onBinsChanged = function () {
-  this._options.bins = this._internalModel.get('bins');
-  this.trigger('binsChanged', this._options.bins);
+  this._bins = this._internalModel.get('bins');
+  this._triggerChange('bins', this._bins);
 };
 
 Histogram.prototype._createInternalModel = function (engine) {
   this._internalModel = new HistogramDataviewModel({
     source: this._source.$getInternalModel(),
     column: this._column,
-    bins: this._options.bins,
+    bins: this._bins,
     sync_on_data_change: true,
     sync_on_bbox_change: false,
     enabled: this._enabled,

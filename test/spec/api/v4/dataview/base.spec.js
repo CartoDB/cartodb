@@ -80,4 +80,45 @@ describe('base dataview public v4 API', function () {
   it('.getData should not be defined in the base dataview', function () {
     expect(function () { base.getData(); }).toThrowError(Error, 'getData must be implemented by the particular dataview.');
   });
+
+  describe('._changeProperty', function () {
+    it('should set internal property', function () {
+      base._example = 'something';
+
+      base._changeProperty('example', 'whatever');
+
+      expect(base._example).toEqual('whatever');
+    });
+
+    it('should trigger change is there is no internal model', function () {
+      var eventValue = '';
+      base._example = 'something';
+      base.on('exampleChanged', function (newValue) {
+        eventValue = newValue;
+      });
+
+      base._changeProperty('example', 'whatever');
+
+      expect(eventValue).toEqual('whatever');
+    });
+
+    it('should value in internal model if exists', function () {
+      var usedKey = '';
+      var usedValue = '';
+      var internalModel = {
+        set: function (key, value) {
+          usedKey = key;
+          usedValue = value;
+        }
+      };
+      base._example = 'something';
+      base._internalModel = internalModel;
+      spyOn(base, '_triggerChange');
+
+      base._changeProperty('example', 'whatever');
+
+      expect([usedKey, usedValue]).toEqual(['example', 'whatever']);
+      expect(base._triggerChange).not.toHaveBeenCalled();
+    });
+  });
 });

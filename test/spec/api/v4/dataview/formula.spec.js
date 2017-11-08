@@ -35,7 +35,7 @@ function createEngineMock () {
   return engine;
 }
 
-describe('formula dataview public v4 API', function () {
+describe('api/v4/dataview/formula', function () {
   var source = createSourceMock();
 
   describe('initialization', function () {

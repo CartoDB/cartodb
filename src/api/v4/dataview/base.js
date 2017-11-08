@@ -216,6 +216,20 @@ Base.prototype._onStatusError = function (model, error) {
   this.trigger('statusChanged', this._status, error && error.statusText ? error.statusText : error);
 };
 
+Base.prototype._changeProperty = function (key, value, internalKey) {
+  var prevValue = this['_' + key];
+  this['_' + key] = value;
+  if (this._internalModel) {
+    this._internalModel.set(internalKey || key, value);
+  } else if (prevValue !== value) {
+    this._triggerChange(key, value);
+  }
+};
+
+Base.prototype._triggerChange = function (key, value) {
+  this.trigger(key + 'Changed', value);
+};
+
 // Internal public methods
 
 Base.prototype.$setEngine = function (engine) {

@@ -19,7 +19,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
       username: 'cartojs-test'
     });
     map = L.map('map').setView([42.431234, -8.643616], 5);
-    layerGroup = client.getLeafletLayerView();
+    layerGroup = client.getLeafletLayer();
   });
 
   afterEach(function () {

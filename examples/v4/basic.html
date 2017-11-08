@@ -85,7 +85,7 @@
       client.addLayers([ spanishCities, populatedPlaces ]);
 
       // Add the layer to the map
-      client.getLeafletLayerView().addTo(map);
+      client.getLeafletLayer().addTo(map);
 
       // Set a new style
       var newPopulatedPlacesStyle = new carto.style.CartoCSS(`
@@ -96,7 +96,7 @@
 
       populatedPlaces.setStyle(newPopulatedPlacesStyle);
 
-      // client.getLeafletLayerView().removeFrom(map);
+      // client.getLeafletLayer().removeFrom(map);
     })();
   </script>
 </body>

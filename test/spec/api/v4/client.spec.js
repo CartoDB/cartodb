@@ -1,30 +1,30 @@
 var carto = require('../../../../src/api/v4');
+var LeafletLayerGroup = require('../../../../src/api/v4/leaflet/layer-group');
 
 describe('api/v4/client', function () {
+  var client;
+
+  beforeEach(function () {
+    client = new carto.Client({
+      apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+      serverUrl: 'https://{user}.carto.com:443',
+      username: 'cartojs-test'
+    });
+  });
+
   describe('constructor', function () {
     it('should build a new client', function () {
-      var client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://{user}.carto.com:443',
-        username: 'cartojs-test'
-      });
       expect(client).toBeDefined();
       expect(client.getLayers()).toEqual([]);
     });
   });
 
   describe('.addLayer', function () {
-    var client;
     var source;
     var style;
     var layer;
 
     beforeEach(function () {
-      client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://{user}.carto.com:443',
-        username: 'cartojs-test'
-      });
       source = new carto.source.Dataset('ne_10m_populated_places_simple', { id: 'a0' });
       style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       layer = new carto.layer.Layer(source, style, {});
@@ -80,14 +80,6 @@ describe('api/v4/client', function () {
   });
 
   describe('.getLayers', function () {
-    var client;
-    beforeEach(function () {
-      client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://{user}.carto.com:443',
-        username: 'cartojs-test'
-      });
-    });
     it('should return an empty array when there are no layers', function () {
       expect(client.getLayers()).toEqual([]);
     });
@@ -103,15 +95,6 @@ describe('api/v4/client', function () {
   });
 
   describe('.removeLayer', function () {
-    var client;
-    beforeEach(function () {
-      client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://{user}.carto.com:443',
-        username: 'cartojs-test'
-      });
-    });
-
     it('should throw a descriptive error when the parameter is invalid', function () {
       expect(function () {
         client.removeLayer({});
@@ -136,6 +119,22 @@ describe('api/v4/client', function () {
       client.addLayer(layer);
 
       expect(client.getLayers().length).toEqual(1);
+    });
+  });
+
+  describe('.getLeafletLayer', function () {
+    var leafletLayer;
+
+    beforeEach(function () {
+      leafletLayer = client.getLeafletLayer();
+    });
+
+    it('should return an object', function () {
+      expect(leafletLayer instanceof LeafletLayerGroup).toBe(true);
+    });
+
+    it('should return the same object', function () {
+      expect(leafletLayer === client.getLeafletLayer()).toBe(true);
     });
   });
 });

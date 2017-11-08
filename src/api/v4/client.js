@@ -193,7 +193,7 @@ Client.prototype.getDataviews = function () {
 /**
  * ...
  */
-Client.prototype.getLeafletLayerView = function () {
+Client.prototype.getLeafletLayer = function () {
   this._leafletLayer = this._leafletLayer || new Leaflet.LayerGroup(this._layers, this._engine);
   return this._leafletLayer;
 };

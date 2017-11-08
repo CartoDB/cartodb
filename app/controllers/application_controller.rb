@@ -164,9 +164,9 @@ class ApplicationController < ActionController::Base
 
   def check_user_state
     return unless (request.path =~ %r{^\/(upgrade_trial|login|logout|unauthenticated)}).nil?
-    viewed_user = CartoDB.extract_subdomain(request)
-    if current_user.nil? || current_user.username != viewed_user
-      user = Carto::User.where(username: viewed_user).first
+    viewed_username = CartoDB.extract_subdomain(request)
+    if current_user.nil? || current_user.username != viewed_username
+      user = Carto::User.find_by_username(viewed_username)
       render_locked_owner if user.try(:locked?)
     elsif current_user.locked?
       render_locked_user

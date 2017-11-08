@@ -125,6 +125,7 @@ var OverlaysView = View.extend({
 
   _addLimitsOverlay: function () {
     if (!this._areLimitsErrorsEnabled()) return;
+    this._removeTilesOverlay();
 
     var limitsOverlay = this._getOverlayViewByType(C.OVERLAY_TYPES.LIMITS);
 
@@ -133,7 +134,13 @@ var OverlaysView = View.extend({
     });
   },
 
+  _hasLimitsOverlay: function () {
+    return !!this._getOverlayViewByType(C.OVERLAY_TYPES.LIMITS);
+  },
+
   _addTilesOverlay: function () {
+    if (this._hasLimitsOverlay()) return;
+
     var tilesOverlay = this._getOverlayViewByType(C.OVERLAY_TYPES.TILES);
 
     tilesOverlay || this._overlaysCollection.add({

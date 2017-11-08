@@ -3,11 +3,8 @@ var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
 /**
-<<<<<<< HEAD
-=======
  * A SQL Query that can be used as the data source for layers and dataviews.
  * 
->>>>>>> internal-classes-layers
  * @param {string} query A SQL query containing a SELECT statement
  *
  * @example
@@ -21,10 +18,6 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  *
  */
 function SQL (query) {
-<<<<<<< HEAD
-  this._id = 'fakeId';
-=======
->>>>>>> internal-classes-layers
   this._query = query;
   Base.apply(this, arguments);
 }

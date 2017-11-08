@@ -3,11 +3,8 @@ var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
 /**
-<<<<<<< HEAD
-=======
  * A Dataset that can be used as the data source for layers and dataviews.
  * 
->>>>>>> internal-classes-layers
  * @param {string} dataset The name of an existing dataset
  *
  * @example
@@ -21,10 +18,6 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  *
  */
 function Dataset (dataset) {
-<<<<<<< HEAD
-  this._id = 'fakeId';
-=======
->>>>>>> internal-classes-layers
   this._dataset = dataset;
   Base.apply(this, arguments);
 }

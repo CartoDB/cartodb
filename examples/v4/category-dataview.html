@@ -41,14 +41,24 @@
       L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
       // Create the Client
+      // var client = new carto.Client({
+      //   apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+      //   serverUrl: 'https://{user}.carto.com:443',
+      //   username: 'cartojs-test'
+      // });
+
       var client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://{user}.carto.com:443',
-        username: 'cartojs-test'
+        apiKey: '4bf183ec5867bd5f9eb59d4d33693fa4fb4283bf',
+        serverUrl: 'http://{user}.localhost.lan:8181',
+        username: 'cdb'
       });
 
+      client.on('error', function(error) {
+        console.log('ERROR', error);
+      })
+
       // Create a source
-      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var source = new carto.source.Dataset('twitter_chiquito_calzada_chiquigif');
       window.source = source;
 
       // Create a style
@@ -69,10 +79,10 @@
       client.getLeafletLayerView().addTo(map);
 
       // Add a Category dataview
-      var categoryDataview = new carto.dataview.Category(source, 'adm0name', {
-        maxCategories: 10,
-        operation: carto.operation.AVG,
-        operationColumn: 'pop_max'
+      var categoryDataview = new carto.dataview.Category(source, 'actor_preferredusername', {
+        maxCategories: 20,
+        operation: carto.operation.SUM,
+        operationColumn: 'retweetcount'
       });
       window.categoryDataview = categoryDataview;
 

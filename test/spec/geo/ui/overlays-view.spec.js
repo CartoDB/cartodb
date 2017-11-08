@@ -3,7 +3,7 @@ var OverlaysView = require('../../../../src/geo/ui/overlays-view.js');
 var Engine = require('../../../../src/engine');
 var MockFactory = require('../../../helpers/mockFactory');
 
-fdescribe('src/geo/ui/overlays-view.js', function () {
+describe('src/geo/ui/overlays-view.js', function () {
   var engineMock = MockFactory.createEngine();
   var mapModelMock = new Backbone.Model();
   beforeEach(function () {

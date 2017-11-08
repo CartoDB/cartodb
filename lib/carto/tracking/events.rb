@@ -213,6 +213,15 @@ module Carto
 
         required_properties :user_id, :visualization_id, :widget_id
       end
+
+      class DownloadLayer < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :format
+      end
     end
   end
 end

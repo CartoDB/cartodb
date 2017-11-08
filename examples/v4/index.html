@@ -57,11 +57,11 @@
             });
 
             // Create a source
-            var source0 = new carto.source.Dataset('a0', 'ne_10m_populated_places_simple');
+            var source0 = new carto.source.Dataset('ne_10m_populated_places_simple');
             window.source0 = source0;
 
             // Create a source
-            var source1 = new carto.source.SQL('a1', 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
+            var source1 = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
             window.source1 = source1;
 
             // Create a style
@@ -81,51 +81,18 @@
             );
 
             // Create a layer
-            var layer = new carto.layer.Layer('layer0', source0, style);
-            var layer1 = new carto.layer.Layer('layer1', source1, style1);
+            var layer = new carto.layer.Layer(source0, style);
+            var layer1 = new carto.layer.Layer(source1, style1);
 
             // Add the layers
-            client.addLayers([layer1, layer]);
-            //client.addLayer(layer1);
+            //client.addLayers([layer1, layer]);
+            client.addLayer(layer1);
             //client.addLayer(layer);
 
             // Add the layer to the map
             client.getLeafletLayerView().addTo(map);
 
-            client.removeLayer(layer);
-
-            // Dataviews
-            var formulaDataview = new carto.dataview.Formula(source1, 'pop_max', {
-              operation: carto.operation.AVG
-            });
-            window.formula1 = formulaDataview;
-
-            formulaDataview.on('dataChanged', function (newData) {
-              document.getElementById('widget').innerHTML = newData.operation.toUpperCase() + ' ' + newData.result;
-              console.log('Data changed', newData);
-            });
-
-            formulaDataview.on('columnChanged', function (newColumn) {
-              console.log('Column changed', newColumn);
-            });
-
-            formulaDataview.on('statusChanged', function (newStatus, error) {
-              console.log('Status changed', newStatus, error);
-              if (newStatus === carto.dataview.status.LOADING) {
-                console.log('loading');
-              }
-              if (newStatus === carto.dataview.status.LOADED) {
-                console.log('loaded');
-              }
-            });
-
-            formulaDataview.on('operationChanged', function (newOperation) {
-              console.log('Operation changed', newOperation);
-            });
-
-            client.addDataview(formulaDataview);
-
-            formulaDataview.setOperation(carto.operation.MAX);
+            //client.removeLayer(layer);
         })();
 
     </script>

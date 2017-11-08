@@ -3,35 +3,32 @@ var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 
 /**
- * @param {string} [id] - A unique ID for this source
+ * A SQL Query that can be used as the data source for layers and dataviews.
+ * 
  * @param {string} query A SQL query containing a SELECT statement
  *
  * @example
  *
- * new carto.source.SQL('european_cities', 'SELECT * FROM european_cities');
- *
- * @example
- *
  * new carto.source.SQL('SELECT * FROM european_cities');
- *
+ * 
  * @constructor
  * @extends carto.source.Base
  * @memberof carto.source
  * @api
  *
  */
-function SQL (id, query) {
-  if (typeof query === 'undefined') {
-    query = id;
-    id = 'fakeId'; // TODO: Generate a unique ID
-  }
-
-  this._id = id;
+function SQL (query) {
   this._query = query;
+  Base.apply(this, arguments);
 }
 
 SQL.prototype = Object.create(Base.prototype);
 
+/**
+ * Store the query internally and if in the internal model when exists.
+ * 
+ * @param {string} query - The sql query that will be the source of the data. 
+ */
 SQL.prototype.setQuery = function (query) {
   this._query = query;
   if (this._internalModel) {
@@ -40,25 +37,28 @@ SQL.prototype.setQuery = function (query) {
   return this;
 };
 
+/**
+ * Get the query being used in this SQL source.
+ */
 SQL.prototype.getQuery = function () {
   return this._query;
 };
 
-SQL.prototype.$setEngine = function (engine) {
-  if (!this._internalModel) {
-    this._internalModel = new AnalysisModel({
-      id: this._id,
-      type: 'source',
-      query: this._query
-    }, {
-      camshaftReference: CamshaftReference,
-      engine: engine
-    });
-  }
-};
-
-SQL.prototype.$getInternalModel = function () {
-  return this._internalModel;
+/**
+ * Creates a new internal model with the given engine
+ * and the attributes initialized in the constructor.
+ * 
+ * @param {Engine} engine - The engine object to be assigned to the internalModel.
+ */
+SQL.prototype._createInternalModel = function (engine) {
+  return new AnalysisModel({
+    id: this.getId(),
+    type: 'source',
+    query: this._query
+  }, {
+    camshaftReference: CamshaftReference,
+    engine: engine
+  });
 };
 
 module.exports = SQL;

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Category dataview example</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  <!--Include carto styles  -->
+  <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+  <!-- Include cartodb.js Library -->
+  <script src="../../dist/cartodb.uncompressed.js"></script>
+  <style>
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #widget {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 20px;
+      font-size: 2em;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 1000;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="widget"></div>
+  <div id="map"></div>
+  <script>
+    (async () => {
+      var map = L.map('map').setView([42.431234, -8.643616], 5);
+      L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+      // Create the Client
+      // var client = new carto.Client({
+      //   apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+      //   serverUrl: 'https://{user}.carto.com:443',
+      //   username: 'cartojs-test'
+      // });
+
+      var client = new carto.Client({
+        apiKey: '4bf183ec5867bd5f9eb59d4d33693fa4fb4283bf',
+        serverUrl: 'http://{user}.localhost.lan:8181',
+        username: 'cdb'
+      });
+
+      client.on('error', function(error) {
+        console.log('ERROR', error);
+      })
+
+      // Create a source
+      var source = new carto.source.Dataset('twitter_chiquito_calzada_chiquigif');
+      window.source = source;
+
+      // Create a style
+      var style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 10;
+          marker-fill: yellow;
+        }`
+      );
+
+      // Create a layer
+      var layer = new carto.layer.Layer(source, style);
+
+      // Add the layer
+      client.addLayer(layer);
+
+      // Add the layer to the map
+      client.getLeafletLayerView().addTo(map);
+
+      // Add a Category dataview
+      var categoryDataview = new carto.dataview.Category(source, 'actor_preferredusername', {
+        limit: 20,
+        operation: carto.operation.SUM,
+        operationColumn: 'retweetcount'
+      });
+      window.categoryDataview = categoryDataview;
+
+      categoryDataview.on('dataChanged', function (newData) {
+        var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';
+        formattedData += '<ul>';
+        for (var category of newData.result) {
+          formattedData += '<li>' + category.name + ': ' + category.value + '</li>';
+        }
+        formattedData += '</ul>';
+        document.getElementById('widget').innerHTML = formattedData;
+        console.log('Data changed', newData);
+      });
+
+      categoryDataview.on('columnChanged', function (newColumn) {
+        console.log('Column changed', newColumn);
+      });
+
+      categoryDataview.on('statusChanged', function (newStatus, error) {
+        console.log('Status changed', newStatus, error);
+      });
+
+      categoryDataview.on('limitChanged', function (newMaxCategories) {
+        console.log('Limit changed', newMaxCategories);
+      });
+
+      categoryDataview.on('operationChanged', function (newOperation) {
+        console.log('Operation changed', newOperation);
+      });
+
+      categoryDataview.on('operationColumnChanged', function (newOperationColumn) {
+        console.log('Operation column changed', newOperationColumn);
+      });
+
+      client.addDataview(categoryDataview);
+    })();
+
+  </script>
+</body>
+
+</html>

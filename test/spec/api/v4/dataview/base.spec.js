@@ -1,7 +1,7 @@
 var DataviewBase = require('../../../../../src/api/v4/dataview/base');
 var status = require('../../../../../src/api/v4/constants').status;
 
-describe('base dataview public v4 API', function () {
+describe('api/v4/dataview/base', function () {
   var base = new DataviewBase();
 
   it('.getStatus should return the internal status', function () {

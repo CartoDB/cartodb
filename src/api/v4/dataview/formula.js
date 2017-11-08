@@ -6,7 +6,7 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
 /**
  * Formula dataview object
  *
- * @param {carto.source.Base} source - The source where the datavew will fetch the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
  * @param {carto.operation} options.operation - The operation to apply to the data.
@@ -18,6 +18,7 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  */
 function Formula (source, column, options) {
   this._initialize(source, column, options);
+  this._operation = this._options.operation;
 }
 
 Formula.prototype = Object.create(Base.prototype);
@@ -31,7 +32,7 @@ Formula.prototype = Object.create(Base.prototype);
  */
 Formula.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
-  this._options.operation = operation;
+  this._operation = operation;
   if (this._internalModel) {
     this._internalModel.set('operation', operation);
   }
@@ -45,7 +46,7 @@ Formula.prototype.setOperation = function (operation) {
  * @api
  */
 Formula.prototype.getOperation = function () {
-  return this._options.operation;
+  return this._operation;
 };
 
 /**
@@ -58,17 +59,15 @@ Formula.prototype.getData = function () {
   if (this._internalModel) {
     /**
      * @typedef {object} FormulaData
+     * @property {number} nulls
      * @property {string} operation
      * @property {number} result
-     * @property {number} nulls
-     * @property {string} type - Constant 'formula'
      * @api
      */
     return {
-      operation: this._options.operation,
-      result: this._internalModel.get('data'),
       nulls: this._internalModel.get('nulls'),
-      type: 'formula'
+      operation: this._operation,
+      result: this._internalModel.get('data')
     };
   }
   return null;
@@ -83,12 +82,15 @@ Formula.prototype._listenToInternalModelSpecificEvents = function () {
 };
 
 Formula.prototype._onOperationChanged = function () {
-  this.trigger('operationChanged', this._options.operation);
+  if (this._internalModel) {
+    this._operation = this._internalModel.get('operation');
+  }
+  this.trigger('operationChanged', this._operation);
 };
 
 Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Operation option for formula dataview is not valid. Use carto.operation');
+    throw new TypeError('Formula dataview options are not defined.');
   }
   this._checkOperation(options.operation);
 };
@@ -103,7 +105,7 @@ Formula.prototype._createInternalModel = function (engine) {
   this._internalModel = new FormulaDataviewModel({
     source: this._source.$getInternalModel(),
     column: this._column,
-    operation: this._options.operation,
+    operation: this._operation,
     sync_on_data_change: true,
     sync_on_bbox_change: false,
     enabled: this._enabled

@@ -129,7 +129,7 @@ module.exports = Model.extend({
       parsedData.data[bin.bin] = bin;
     });
 
-    if (numberOfBins > DEFAULT_MAX_BUCKETS) {
+    if (numberOfBins > DEFAULT_MAX_BUCKETS && this.get('column_type') === 'date') {
       parsedData.error = 'Max bins limit reached';
       parsedData.bins = numberOfBins;
       return parsedData;

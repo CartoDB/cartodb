@@ -8,9 +8,7 @@ var HistogramDataviewModel = require('../../..//dataviews/histogram-dataview-mod
  * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
- * @param {number} options.bins - Number of bins to aggregate the data range into. Default: 10
- * @param {number} options.start - The point where the aggregation starts. Optional, but if present, `end` option must be provided too.
- * @param {number} options.end - The point where the aggregation ends. Optional, but if present, `start` option must be provided too.
+ * @param {number} [options.bins=10] - Number of bins to aggregate the data range into.
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -28,12 +26,25 @@ Histogram.prototype.DEFAULTS = {
   bins: 10
 };
 
+/**
+ * Return the resulting data
+ *
+ * @return {HistogramData}
+ * @api
+ */
 Histogram.prototype.getData = function () {
   if (this._internalModel) {
     return this._parseData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'));
   }
   return null;
 };
+
+/**
+ * Return the totals data (not affected by filters)
+ *
+ * @return {HistogramData}
+ * @api
+ */
 
 Histogram.prototype.getTotalsData = function () {
   if (this._internalModel && this._internalModel.getUnfilteredData()) {
@@ -43,16 +54,35 @@ Histogram.prototype.getTotalsData = function () {
   return null;
 };
 
+/**
+ * Set number of bins
+ * 
+ * @param {number} bins
+ * @return {carto.dataview.Histogram} this
+ * @api
+ */
 Histogram.prototype.setBins = function (bins) {
   this._validateBins(bins);
   var floorBins = Math.floor(bins);
   this._changeProperty('bins', floorBins);
 };
 
+/**
+ * Return the current number of bins
+ * 
+ * @return {number} Current number of bins
+ * @api 
+ */
 Histogram.prototype.getBins = function () {
   return this._bins;
 };
 
+/**
+ * Return the distribution type of the current data according to Galtung’s AJUS System http://druedin.com/2012/12/08/galtungs-ajus-system/
+ * 
+ * @return {string} Distribution type of current data
+ * @api 
+ */
 Histogram.prototype.getDistributionType = function () {
   if (this._internalModel) {
     var data = this._internalModel.getData();
@@ -61,6 +91,12 @@ Histogram.prototype.getDistributionType = function () {
   return null;
 };
 
+/**
+ * Return the distribution type of the totals data according to Galtung’s AJUS System http://druedin.com/2012/12/08/galtungs-ajus-system/
+ * 
+ * @return {string} Distribution type of current data
+ * @api 
+ */
 Histogram.prototype.getTotalsDistributionType = function () {
   if (this._internalModel) {
     var data = this._internalModel.getUnfilteredData();

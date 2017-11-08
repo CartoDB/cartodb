@@ -3,7 +3,7 @@ var LeafletBoundingBoxAdapter = require('../../../geo/adapters/leaflet-bounding-
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
- * Bounding box filter object
+ * Bounding box filter for Leaflet maps
  *
  * @param {L.Map} map - The map view
  *
@@ -14,7 +14,11 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  *
  */
 function BoundingBoxLeaflet (map) {
+  // Adapt the Leaflet map to offer unique:
+  // - getBounds() function
+  // - 'boundsChanged' event
   var mapAdapter = new LeafletBoundingBoxAdapter(map);
+  // Use the adapter for the internal BoundingBoxFilter model
   this._internalModel = new BoundingBoxFilterModel(mapAdapter);
 }
 

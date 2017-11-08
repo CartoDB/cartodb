@@ -127,11 +127,7 @@ Base.prototype.getColumn = function () {
 Base.prototype.addFilter = function (filter) {
   this._checkFilter(filter);
   if ((filter instanceof BoundingBoxLeafletFilter) && (filter !== this._boundingBoxFilter)) {
-    this._boundingBoxFilter = filter;
-    if (this._internalModel) {
-      this._internalModel.addBBoxFilter(this._boundingBoxFilter.$getInternalModel());
-      this._internalModel.set('sync_on_bbox_change', true);
-    }
+    this._addBoundingBoxFilter(filter);
   }
   return this;
 };
@@ -146,7 +142,7 @@ Base.prototype.addFilter = function (filter) {
 Base.prototype.removeFilter = function (filter) {
   this._checkFilter(filter);
   if ((filter instanceof BoundingBoxLeafletFilter) && (filter === this._boundingBoxFilter)) {
-    this._internalModel.set('sync_on_bbox_change', false);
+    this._removeBoundingBoxFilter();
   }
   return this;
 };
@@ -273,6 +269,20 @@ Base.prototype._onStatusLoaded = function () {
 Base.prototype._onStatusError = function (model, error) {
   this._status = status.ERROR;
   this.trigger('statusChanged', this._status, error);
+};
+
+Base.prototype._addBoundingBoxFilter = function (filter) {
+  this._boundingBoxFilter = filter;
+  if (this._internalModel) {
+    this._internalModel.addBBoxFilter(this._boundingBoxFilter.$getInternalModel());
+    this._internalModel.set('sync_on_bbox_change', true);
+  }
+};
+
+Base.prototype._removeBoundingBoxFilter = function () {
+  if (this._internalModel) {
+    this._internalModel.set('sync_on_bbox_change', false);
+  }
 };
 
 // Internal public methods

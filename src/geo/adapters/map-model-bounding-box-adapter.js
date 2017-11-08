@@ -1,5 +1,11 @@
 var Model = require('../../core/model');
 
+/**
+ * Adapt the mapModel to offer unique:
+ * - getBounds() function
+ * - 'boundsChanged' event
+ */
+
 module.exports = Model.extend({
 
   initialize: function (map) {

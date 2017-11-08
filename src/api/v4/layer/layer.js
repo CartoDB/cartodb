@@ -135,7 +135,7 @@ Layer.prototype.setFeatureClickColumns = function (columns) {
 /**
  * Return the columns available in `featureClicked` events.
  * 
- * @return  {[Array<string>]} Column names available in `featureClicked` events
+ * @return  {Array<string>} Column names available in `featureClicked` events
  *
  * @api
  */
@@ -163,7 +163,7 @@ Layer.prototype.setFeatureOverColumns = function (columns) {
 /**
  * Return the columns available in `featureOver` events.
  * 
- * @return  {[Array<string>]} Column names available in `featureOver` events
+ * @return  {Array<string>} Column names available in `featureOver` events
  *
  * @api
  */

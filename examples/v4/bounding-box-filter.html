@@ -77,17 +77,16 @@
       // Add the layer to the map
       client.getLeafletLayerView().addTo(map);
 
-      // Add a Category dataview
+
+      // Add a Formula dataview
       var formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
         operation: carto.operation.COUNT,
       });
       client.addDataview(formulaDataview);
-
       formulaDataview.on('dataChanged', function (newData) {
-        var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';
-        formattedData += ' ' + newData.result;
-        document.getElementById('widgetF').innerHTML = formattedData;
+        renderWidgetFormula(newData);
       });
+
 
       // Add a Category dataview
       var categoryDataview = new carto.dataview.Category(source, 'adm0name', {
@@ -95,8 +94,23 @@
         operationColumn: 'pop_max'
       });
       client.addDataview(categoryDataview);
-
       categoryDataview.on('dataChanged', function (newData) {
+        renderWidgetCategory(newData);
+      });
+
+
+      // Add Bounding box filter
+      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+      formulaDataview.addFilter(bboxFilter);
+      categoryDataview.addFilter(bboxFilter);
+
+      function renderWidgetFormula(newData) {
+        var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';
+        formattedData += ' ' + newData.result;
+        document.getElementById('widgetF').innerHTML = formattedData;
+      }
+
+      function renderWidgetCategory(newData) {
         var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';
         formattedData += '<ul>';
         for (var category of newData.result) {
@@ -104,17 +118,7 @@
         }
         formattedData += '</ul>';
         document.getElementById('widgetC').innerHTML = formattedData;
-      });
-
-      // Add Bounding box filter
-      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
-
-      formulaDataview.addFilter(bboxFilter);
-      categoryDataview.addFilter(bboxFilter);
-
-      // formulaDataview.removeFilter(bboxFilter);
-      // formulaDataview.hasFilter(bboxFilter);
-      // categoryDataview.hasFilter(bboxFilter);
+      }
     })();
 
   </script>

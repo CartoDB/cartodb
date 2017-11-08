@@ -10,7 +10,7 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
- * @param {number} options.maxCategories - The maximum number of categories in the response.
+ * @param {number} options.limit - The maximum number of categories in the response.
  * @param {carto.operation} options.operation - The operation to apply to the data.
  * @param {string} options.operationColumn - The column name used in the operation.
  *
@@ -23,7 +23,7 @@ function Category (source, column, options) {
   this.DEFAULTS.operationColumn = column;
 
   this._initialize(source, column, options);
-  this._maxCategories = this._options.maxCategories;
+  this._limit = this._options.limit;
   this._operation = this._options.operation;
   this._operationColumn = this._options.operationColumn;
 }
@@ -31,29 +31,29 @@ function Category (source, column, options) {
 Category.prototype = Object.create(Base.prototype);
 
 /**
- * Set the dataview maxCategories
+ * Set the dataview limit
  *
- * @param  {number} maxCategories
+ * @param  {number} limit
  * @return {carto.dataview.Category} this
  * @api
  */
-Category.prototype.setMaxCategories = function (maxCategories) {
-  this._checkMaxCategories(maxCategories);
-  this._maxCategories = maxCategories;
+Category.prototype.setLimit = function (limit) {
+  this._checkLimit(limit);
+  this._limit = limit;
   if (this._internalModel) {
-    this._internalModel.set('categories', maxCategories);
+    this._internalModel.set('categories', limit);
   }
   return this;
 };
 
 /**
- * Return the current dataview maxCategories
+ * Return the current dataview limit
  *
- * @return {number} Current dataview maxCategories
+ * @return {number} Current dataview limit
  * @api
  */
-Category.prototype.getMaxCategories = function () {
-  return this._maxCategories;
+Category.prototype.getLimit = function () {
+  return this._limit;
 };
 
 /**
@@ -156,21 +156,21 @@ Category.prototype.getData = function () {
 };
 
 Category.prototype.DEFAULTS = {
-  maxCategories: 6,
+  limit: 6,
   operation: constants.operation.COUNT
 };
 
 Category.prototype._listenToInternalModelSpecificEvents = function () {
-  this.listenTo(this._internalModel, 'change:categories', this._onMaxCategoriesChanged);
+  this.listenTo(this._internalModel, 'change:categories', this._onLimitChanged);
   this.listenTo(this._internalModel, 'change:aggregation', this._onOperationChanged);
   this.listenTo(this._internalModel, 'change:aggregation_column', this._onOperationColumnChanged);
 };
 
-Category.prototype._onMaxCategoriesChanged = function () {
+Category.prototype._onLimitChanged = function () {
   if (this._internalModel) {
-    this._maxCategories = this._internalModel.get('categories');
+    this._limit = this._internalModel.get('categories');
   }
-  this.trigger('maxCategoriesChanged', this._maxCategories);
+  this.trigger('limitChanged', this._limit);
 };
 
 Category.prototype._onOperationChanged = function () {
@@ -191,20 +191,20 @@ Category.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
     throw new TypeError('Category dataview options are not defined.');
   }
-  this._checkMaxCategories(options.maxCategories);
+  this._checkLimit(options.limit);
   this._checkOperation(options.operation);
   this._checkOperationColumn(options.operationColumn);
 };
 
-Category.prototype._checkMaxCategories = function (maxCategories) {
-  if (_.isUndefined(maxCategories)) {
-    throw new TypeError('Max categories for category dataview is required.');
+Category.prototype._checkLimit = function (limit) {
+  if (_.isUndefined(limit)) {
+    throw new TypeError('Limit for category dataview is required.');
   }
-  if (!_.isNumber(maxCategories)) {
-    throw new TypeError('Max categories for category dataview must be a number.');
+  if (!_.isNumber(limit)) {
+    throw new TypeError('Limit for category dataview must be a number.');
   }
-  if (maxCategories <= 0) {
-    throw new TypeError('Max categories for category dataview must be greater than 0.');
+  if (limit <= 0) {
+    throw new TypeError('Limit for category dataview must be greater than 0.');
   }
 };
 
@@ -232,7 +232,7 @@ Category.prototype._createInternalModel = function (engine) {
     column: this._column,
     aggregation: this._operation,
     aggregation_column: this._operationColumn,
-    categories: this._maxCategories,
+    categories: this._limit,
     sync_on_data_change: true,
     sync_on_bbox_change: false,
     enabled: this._enabled

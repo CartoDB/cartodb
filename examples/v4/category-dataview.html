@@ -80,7 +80,7 @@
 
       // Add a Category dataview
       var categoryDataview = new carto.dataview.Category(source, 'actor_preferredusername', {
-        maxCategories: 20,
+        limit: 20,
         operation: carto.operation.SUM,
         operationColumn: 'retweetcount'
       });
@@ -105,8 +105,8 @@
         console.log('Status changed', newStatus, error);
       });
 
-      categoryDataview.on('maxCategoriesChanged', function (newMaxCategories) {
-        console.log('Max categories changed', newMaxCategories);
+      categoryDataview.on('limitChanged', function (newMaxCategories) {
+        console.log('Limit changed', newMaxCategories);
       });
 
       categoryDataview.on('operationChanged', function (newOperation) {

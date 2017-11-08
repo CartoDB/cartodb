@@ -72,19 +72,19 @@ describe('api/v4/dataview/category', function () {
 
       var dataview = new carto.dataview.Category(source, column);
 
-      expect(dataview._maxCategories).toEqual(6);
+      expect(dataview._limit).toEqual(6);
       expect(dataview._operation).toEqual(carto.operation.COUNT);
       expect(dataview._operationColumn).toEqual('population');
     });
 
     it('options set to the provided value', function () {
       var dataview = new carto.dataview.Category(source, 'population', {
-        maxCategories: 10,
+        limit: 10,
         operation: carto.operation.AVG,
         operationColumn: 'column-test'
       });
 
-      expect(dataview._maxCategories).toEqual(10);
+      expect(dataview._limit).toEqual(10);
       expect(dataview._operation).toEqual(carto.operation.AVG);
       expect(dataview._operationColumn).toEqual('column-test');
     });
@@ -100,7 +100,7 @@ describe('api/v4/dataview/category', function () {
     });
   });
 
-  describe('.setMaxCategories', function () {
+  describe('.setLimit', function () {
     var dataview;
 
     beforeEach(function () {
@@ -108,23 +108,23 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('checks if operation is valid', function () {
-      expect(function () { dataview.setMaxCategories(); }).toThrowError(TypeError, 'Max categories for category dataview is required.');
-      expect(function () { dataview.setMaxCategories('12'); }).toThrowError(TypeError, 'Max categories for category dataview must be a number.');
-      expect(function () { dataview.setMaxCategories(0); }).toThrowError(TypeError, 'Max categories for category dataview must be greater than 0.');
+      expect(function () { dataview.setLimit(); }).toThrowError(TypeError, 'Limit for category dataview is required.');
+      expect(function () { dataview.setLimit('12'); }).toThrowError(TypeError, 'Limit for category dataview must be a number.');
+      expect(function () { dataview.setLimit(0); }).toThrowError(TypeError, 'Limit for category dataview must be greater than 0.');
     });
 
-    it('if maxCategories is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
-      var returnedObject = dataview.setMaxCategories(10);
+    it('if limit is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
+      var returnedObject = dataview.setLimit(10);
 
-      expect(dataview.getMaxCategories()).toEqual(10);
+      expect(dataview.getLimit()).toEqual(10);
       expect(returnedObject).toBe(dataview);
     });
 
-    it('sets maxCategories in internal model if exists', function () {
+    it('sets limit in internal model if exists', function () {
       var internalModelMock = createInternalModelMock();
       dataview._internalModel = internalModelMock;
 
-      dataview.setMaxCategories(1);
+      dataview.setLimit(1);
 
       var operationArgs = internalModelMock.set.calls.mostRecent().args;
       expect(operationArgs[0]).toEqual('categories');
@@ -262,7 +262,7 @@ describe('api/v4/dataview/category', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel.get('source')).toBe(dataview._source.$getInternalModel());
       expect(internalModel.get('column')).toEqual(dataview._column);
-      expect(internalModel.get('categories')).toEqual(dataview._maxCategories);
+      expect(internalModel.get('categories')).toEqual(dataview._limit);
       expect(internalModel.get('aggregation')).toEqual(dataview._operation);
       expect(internalModel.get('aggregation_column')).toEqual(dataview._operationColumn);
       expect(internalModel.isEnabled()).toBe(false);

@@ -12,6 +12,7 @@ var AnalysisModel = require('../../../src/analysis/analysis-model');
 var MapModel = require('../../../src/geo/map');
 var MockFactory = require('../../helpers/mockFactory');
 var BoundingBoxFilter = require('../../../src/windshaft/filters/bounding-box');
+var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 
 describe('src//model-updater', function () {
   var boundingBoxFilter;
@@ -55,7 +56,7 @@ describe('src//model-updater', function () {
       layersFactory: {},
       layersCollection: this.LayersCollection
     });
-    boundingBoxFilter = new BoundingBoxFilter(mapModel);
+    boundingBoxFilter = new BoundingBoxFilter(new MapModelBoundingBoxAdapter(mapModel));
 
     this.modelUpdater = new ModelUpdater({
       layerGroupModel: this.layerGroupModel,

@@ -12,6 +12,7 @@
  * - **style** : Style description
  * - **layer** : Layer description
  * - **dataview** : Dataview description
+ * - **filter** : Filter description
  *
  * - **events** : The events exposed.
  * - **operation** : The operations exposed.
@@ -22,6 +23,7 @@ var source = require('./source');
 var style = require('./style');
 var layer = require('./layer');
 var dataview = require('./dataview');
+var filter = require('./filter');
 var events = require('./events');
 var operation = require('./constants').operation;
 
@@ -31,6 +33,7 @@ module.exports = {
   style: style,
   layer: layer,
   dataview: dataview,
+  filter: filter,
   events: events,
   operation: operation
 };

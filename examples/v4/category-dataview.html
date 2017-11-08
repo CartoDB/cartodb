@@ -76,7 +76,7 @@
       client.addLayer(layer);
 
       // Add the layer to the map
-      client.getLeafletLayerView().addTo(map);
+      client.getLeafletLayer().addTo(map);
 
       // Add a Category dataview
       var categoryDataview = new carto.dataview.Category(source, 'actor_preferredusername', {

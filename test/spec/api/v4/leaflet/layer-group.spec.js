@@ -107,10 +107,41 @@ describe('src/api/v4/leaflet/layer-group', function () {
         data: { name: 'foo' },
         latLng: { lat: 10, lng: 20 }
       };
-
       layerGroup._internalLayerGroupView.trigger('featureOut', internalEventMock);
 
       expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
+    });
+
+    describe('mouse pointer', function () {
+      describe('when mousing over a feature', function () {
+        it("should NOT set the mouse cursor to 'pointer' if layer doesn't have featureClickColumns", function () {
+          expect(map.getContainer().style.cursor).toEqual('');
+
+          layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
+
+          expect(map.getContainer().style.cursor).toEqual('');
+        });
+
+        it("should set the mouse cursor to 'pointer' if layer has featureClickColumns", function () {
+          layer.setFeatureOverColumns([ 'foo' ]);
+
+          expect(map.getContainer().style.cursor).toEqual('');
+
+          layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
+
+          expect(map.getContainer().style.cursor).toEqual('pointer');
+        });
+      });
+
+      describe('when mousing over NO features', function () {
+        it("should set the mouse cursor to 'auto'", function () {
+          expect(map.getContainer().style.cursor).toEqual('');
+
+          layerGroup._internalLayerGroupView.trigger('featureOut', internalEventMock);
+
+          expect(map.getContainer().style.cursor).toEqual('auto');
+        });
+      });
     });
   });
 

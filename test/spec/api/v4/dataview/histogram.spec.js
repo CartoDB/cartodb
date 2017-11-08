@@ -364,10 +364,4 @@ describe('api/v4/dataview/histogram', function () {
       expect(distribution).toEqual('a');
     });
   });
-
-
-  // .getDistributionType
-
-  // .getTotalsDistributionType
-
 });

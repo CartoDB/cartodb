@@ -396,9 +396,10 @@ var Interactive = function () {
     }, {
         key: 'remove',
         value: function remove() {
-            this._eventEmitter.removeEventListener(this._listeners.click);
-            this._eventEmitter.removeEventListener(this._listeners.move);
-            this._eventEmitter.removeEventListener(this._listeners.out);
+            this._eventEmitter.removeEventListener('mousemove');
+            this._eventEmitter.removeEventListener('click');
+            this._eventEmitter.removeEventListener('error');
+            this._eventEmitter.removeEventListener('featureout');
         }
 
         /**

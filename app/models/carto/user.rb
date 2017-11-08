@@ -436,14 +436,14 @@ class Carto::User < ActiveRecord::Base
     id == user.id || user.belongs_to_organization?(organization) && (user.organization_owner? || !organization_admin?)
   end
 
-  alias_method :should_display_old_password?, :needs_password_confirmation?
-
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
     (!oauth_signin? || !last_password_change_date.nil?) &&
       !created_with_http_authentication? &&
       !organization.try(:auth_saml_enabled?)
   end
+
+  alias_method :should_display_old_password?, :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
@@ -586,10 +586,6 @@ class Carto::User < ActiveRecord::Base
     end
 
     array
-  end
-
-  def should_display_old_password?
-    needs_password_confirmation?
   end
 
   def account_url(request_protocol)

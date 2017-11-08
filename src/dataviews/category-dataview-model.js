@@ -17,6 +17,7 @@ module.exports = DataviewModelBase.extend({
     {
       type: 'category',
       filterEnabled: false,
+      categories: 6,
       allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults

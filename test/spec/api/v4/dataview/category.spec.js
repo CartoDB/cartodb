@@ -98,6 +98,38 @@ describe('category dataview public v4 API', function () {
     });
   });
 
+  describe('.setMaxCategories', function () {
+    var dataview;
+
+    beforeEach(function () {
+      dataview = new carto.dataview.Category(source, 'population');
+    });
+
+    it('checks if operation is valid', function () {
+      expect(function () { dataview.setMaxCategories(); }).toThrowError(TypeError, 'Max categories for category dataview is required.');
+      expect(function () { dataview.setMaxCategories('12'); }).toThrowError(TypeError, 'Max categories for category dataview must be a number.');
+      expect(function () { dataview.setMaxCategories(0); }).toThrowError(TypeError, 'Max categories for category dataview must be greater than 0.');
+    });
+
+    it('if maxCategories is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
+      var returnedObject = dataview.setMaxCategories(10);
+
+      expect(dataview.getMaxCategories()).toEqual(10);
+      expect(returnedObject).toBe(dataview);
+    });
+
+    it('sets maxCategories in internal model if exists', function () {
+      var internalModelMock = createInternalModelMock();
+      dataview._internalModel = internalModelMock;
+
+      dataview.setMaxCategories(1);
+
+      var operationArgs = internalModelMock.set.calls.mostRecent().args;
+      expect(operationArgs[0]).toEqual('categories');
+      expect(operationArgs[1]).toEqual(1);
+    });
+  });
+
   describe('.setOperation', function () {
     var dataview;
 

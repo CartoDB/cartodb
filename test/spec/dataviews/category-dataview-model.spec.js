@@ -71,17 +71,21 @@ describe('dataviews/category-dataview-model', function () {
   });
 
   describe('.url', function () {
-    it('should include the bbox and own_filter parameters', function () {
+    it('should include the bbox,own_filter and categories parameters', function () {
       expect(this.model.set('url', 'http://example.com'));
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0&categories=6');
 
       this.model.set('filterEnabled', true);
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1&categories=6');
 
       this.model.set('filterEnabled', false);
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0&categories=6');
+
+      this.model.set('categories', 1);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0&categories=1');
     });
   });
 

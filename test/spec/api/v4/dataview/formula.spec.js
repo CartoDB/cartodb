@@ -35,7 +35,7 @@ function createEngineMock () {
   return engine;
 }
 
-describe('formula dataview public v4 API', function () {
+describe('api/v4/dataview/formula', function () {
   var source = createSourceMock();
 
   describe('initialization', function () {
@@ -60,8 +60,7 @@ describe('formula dataview public v4 API', function () {
 
       var dataview = new carto.dataview.Formula(source, column);
 
-      expect(dataview._options).toBeDefined();
-      expect(dataview._options.operation).toEqual(carto.operation.COUNT);
+      expect(dataview._operation).toEqual(carto.operation.COUNT);
     });
 
     it('options set to the provided value', function () {
@@ -69,7 +68,7 @@ describe('formula dataview public v4 API', function () {
         operation: carto.operation.AVG
       });
 
-      expect(dataview._options.operation).toEqual(carto.operation.AVG);
+      expect(dataview._operation).toEqual(carto.operation.AVG);
     });
 
     it('throw error if no correct operation is provided', function () {
@@ -165,7 +164,7 @@ describe('formula dataview public v4 API', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel.get('source')).toBe(dataview._source.$getInternalModel());
       expect(internalModel.get('column')).toEqual(dataview._column);
-      expect(internalModel.get('operation')).toEqual(dataview._options.operation);
+      expect(internalModel.get('operation')).toEqual(dataview._operation);
       expect(internalModel.isEnabled()).toBe(false);
       expect(internalModel._engine.name).toEqual('Engine mock');
     });

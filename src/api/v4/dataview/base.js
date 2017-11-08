@@ -140,6 +140,7 @@ Base.prototype._initialize = function (source, column, options) {
   this._source = source;
   this._column = column;
   this._options = options;
+
   this._status = status.NOT_LOADED;
   this._enabled = true;
 };

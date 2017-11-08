@@ -18,6 +18,7 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  */
 function Formula (source, column, options) {
   this._initialize(source, column, options);
+  this._operation = this._options.operation;
 }
 
 Formula.prototype = Object.create(Base.prototype);
@@ -31,7 +32,7 @@ Formula.prototype = Object.create(Base.prototype);
  */
 Formula.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
-  this._options.operation = operation;
+  this._operation = operation;
   if (this._internalModel) {
     this._internalModel.set('operation', operation);
   }
@@ -45,7 +46,7 @@ Formula.prototype.setOperation = function (operation) {
  * @api
  */
 Formula.prototype.getOperation = function () {
-  return this._options.operation;
+  return this._operation;
 };
 
 /**
@@ -65,7 +66,7 @@ Formula.prototype.getData = function () {
      * @api
      */
     return {
-      operation: this._options.operation,
+      operation: this._operation,
       result: this._internalModel.get('data'),
       nulls: this._internalModel.get('nulls'),
       type: 'formula'
@@ -84,9 +85,9 @@ Formula.prototype._listenToInternalModelSpecificEvents = function () {
 
 Formula.prototype._onOperationChanged = function () {
   if (this._internalModel) {
-    this._options.operation = this._internalModel.get('operation');
+    this._operation = this._internalModel.get('operation');
   }
-  this.trigger('operationChanged', this._options.operation);
+  this.trigger('operationChanged', this._operation);
 };
 
 Formula.prototype._checkOptions = function (options) {
@@ -106,7 +107,7 @@ Formula.prototype._createInternalModel = function (engine) {
   this._internalModel = new FormulaDataviewModel({
     source: this._source.$getInternalModel(),
     column: this._column,
-    operation: this._options.operation,
+    operation: this._operation,
     sync_on_data_change: true,
     sync_on_bbox_change: false,
     enabled: this._enabled

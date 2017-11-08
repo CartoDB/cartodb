@@ -20,7 +20,12 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * @api
  */
 function Category (source, column, options) {
+  this.DEFAULTS.operationColumn = column;
+
   this._initialize(source, column, options);
+  this._maxCategories = this._options.maxCategories;
+  this._operation = this._options.operation;
+  this._operationColumn = this._options.operationColumn;
 }
 
 Category.prototype = Object.create(Base.prototype);
@@ -28,13 +33,13 @@ Category.prototype = Object.create(Base.prototype);
 /**
  * Set the dataview maxCategories
  *
- * @param  {string} maxCategories
+ * @param  {number} maxCategories
  * @return {carto.dataview.Category} this
  * @api
  */
 Category.prototype.setMaxCategories = function (maxCategories) {
   this._checkMaxCategories(maxCategories);
-  this._options.maxCategories = maxCategories;
+  this._maxCategories = maxCategories;
   if (this._internalModel) {
     this._internalModel.set('categories', maxCategories);
   }
@@ -44,11 +49,11 @@ Category.prototype.setMaxCategories = function (maxCategories) {
 /**
  * Return the current dataview maxCategories
  *
- * @return {string} Current dataview maxCategories
+ * @return {number} Current dataview maxCategories
  * @api
  */
 Category.prototype.getMaxCategories = function () {
-  return this._options.maxCategories;
+  return this._maxCategories;
 };
 
 /**
@@ -60,7 +65,7 @@ Category.prototype.getMaxCategories = function () {
  */
 Category.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
-  this._options.operation = operation;
+  this._operation = operation;
   if (this._internalModel) {
     this._internalModel.set('aggregation', operation);
   }
@@ -74,7 +79,7 @@ Category.prototype.setOperation = function (operation) {
  * @api
  */
 Category.prototype.getOperation = function () {
-  return this._options.operation;
+  return this._operation;
 };
 
 /**
@@ -86,7 +91,7 @@ Category.prototype.getOperation = function () {
  */
 Category.prototype.setOperationColumn = function (operationColumn) {
   this._checkOperationColumn(operationColumn);
-  this._options.operationColumn = operationColumn;
+  this._operationColumn = operationColumn;
   if (this._internalModel) {
     this._internalModel.set('aggregation_column', operationColumn);
   }
@@ -100,7 +105,7 @@ Category.prototype.setOperationColumn = function (operationColumn) {
  * @api
  */
 Category.prototype.getOperationColumn = function () {
-  return this._options.operationColumn;
+  return this._operationColumn;
 };
 
 /**
@@ -142,7 +147,7 @@ Category.prototype.getData = function () {
       max: this._internalModel.get('max'),
       min: this._internalModel.get('min'),
       nulls: this._internalModel.get('nulls'),
-      operation: this._options.operation,
+      operation: this._operation,
       result: result,
       type: 'category'
     };
@@ -152,8 +157,7 @@ Category.prototype.getData = function () {
 
 Category.prototype.DEFAULTS = {
   maxCategories: 6,
-  operation: constants.operation.COUNT,
-  operationColumn: 'column'
+  operation: constants.operation.COUNT
 };
 
 Category.prototype._listenToInternalModelSpecificEvents = function () {
@@ -164,23 +168,23 @@ Category.prototype._listenToInternalModelSpecificEvents = function () {
 
 Category.prototype._onMaxCategoriesChanged = function () {
   if (this._internalModel) {
-    this._options.maxCategories = this._internalModel.get('categories');
+    this._maxCategories = this._internalModel.get('categories');
   }
-  this.trigger('maxCategoriesChanged', this._options.maxCategories);
+  this.trigger('maxCategoriesChanged', this._maxCategories);
 };
 
 Category.prototype._onOperationChanged = function () {
   if (this._internalModel) {
-    this._options.operation = this._internalModel.get('aggregation');
+    this._operation = this._internalModel.get('aggregation');
   }
-  this.trigger('operationChanged', this._options.operation);
+  this.trigger('operationChanged', this._operation);
 };
 
 Category.prototype._onOperationColumnChanged = function () {
   if (this._internalModel) {
-    this._options.operationColumn = this._internalModel.get('aggregation_column');
+    this._operationColumn = this._internalModel.get('aggregation_column');
   }
-  this.trigger('operationColumnChanged', this._options.operationColumn);
+  this.trigger('operationColumnChanged', this._operationColumn);
 };
 
 Category.prototype._checkOptions = function (options) {
@@ -226,9 +230,9 @@ Category.prototype._createInternalModel = function (engine) {
   this._internalModel = new CategoryDataviewModel({
     source: this._source.$getInternalModel(),
     column: this._column,
-    aggregation: this._options.operation,
-    aggregation_column: this._options.operationColumn,
-    categories: this._options.maxCategories,
+    aggregation: this._operation,
+    aggregation_column: this._operationColumn,
+    categories: this._maxCategories,
     sync_on_data_change: true,
     sync_on_bbox_change: false,
     enabled: this._enabled

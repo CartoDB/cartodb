@@ -220,7 +220,8 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :format
+        required_properties :user_id, :visualization_id, :layer_id, :format,
+                            :source, :visible, :table_name
       end
     end
   end

@@ -1265,19 +1265,71 @@ module Carto
             it 'requires a user_id' do
               @event = @event_class.new(@user.id,
                                         visualization_id: @visualization.id,
-                                        format: 'csv')
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
             end
 
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
-                                        format: 'csv')
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a layer_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
             end
 
             it 'requires a format' do
               @event = @event_class.new(@user.id,
                                         visualization_id: @visualization.id,
-                                        user_id: @user.id)
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a source' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a table_name' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        visible: true)
+            end
+
+            it 'requires a visible' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test')
             end
           end
         end

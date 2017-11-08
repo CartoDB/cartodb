@@ -47,7 +47,7 @@ function createEngineMock () {
   return engine;
 }
 
-describe('category dataview public v4 API', function () {
+describe('api/v4/dataview/category', function () {
   var source = createSourceMock();
 
   describe('initialization', function () {
@@ -72,19 +72,21 @@ describe('category dataview public v4 API', function () {
 
       var dataview = new carto.dataview.Category(source, column);
 
-      expect(dataview._options).toBeDefined();
-      expect(dataview._options.operation).toEqual(carto.operation.COUNT);
-      expect(dataview._options.operationColumn).toEqual('column');
+      expect(dataview._limit).toEqual(6);
+      expect(dataview._operation).toEqual(carto.operation.COUNT);
+      expect(dataview._operationColumn).toEqual('population');
     });
 
     it('options set to the provided value', function () {
       var dataview = new carto.dataview.Category(source, 'population', {
+        limit: 10,
         operation: carto.operation.AVG,
         operationColumn: 'column-test'
       });
 
-      expect(dataview._options.operation).toEqual(carto.operation.AVG);
-      expect(dataview._options.operationColumn).toEqual('column-test');
+      expect(dataview._limit).toEqual(10);
+      expect(dataview._operation).toEqual(carto.operation.AVG);
+      expect(dataview._operationColumn).toEqual('column-test');
     });
 
     it('throw error if no correct operation is provided', function () {
@@ -95,6 +97,38 @@ describe('category dataview public v4 API', function () {
       };
 
       expect(test).toThrowError(TypeError, 'Operation for category dataview is not valid. Use carto.operation');
+    });
+  });
+
+  describe('.setLimit', function () {
+    var dataview;
+
+    beforeEach(function () {
+      dataview = new carto.dataview.Category(source, 'population');
+    });
+
+    it('checks if operation is valid', function () {
+      expect(function () { dataview.setLimit(); }).toThrowError(TypeError, 'Limit for category dataview is required.');
+      expect(function () { dataview.setLimit('12'); }).toThrowError(TypeError, 'Limit for category dataview must be a number.');
+      expect(function () { dataview.setLimit(0); }).toThrowError(TypeError, 'Limit for category dataview must be greater than 0.');
+    });
+
+    it('if limit is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
+      var returnedObject = dataview.setLimit(10);
+
+      expect(dataview.getLimit()).toEqual(10);
+      expect(returnedObject).toBe(dataview);
+    });
+
+    it('sets limit in internal model if exists', function () {
+      var internalModelMock = createInternalModelMock();
+      dataview._internalModel = internalModelMock;
+
+      dataview.setLimit(1);
+
+      var operationArgs = internalModelMock.set.calls.mostRecent().args;
+      expect(operationArgs[0]).toEqual('categories');
+      expect(operationArgs[1]).toEqual(1);
     });
   });
 
@@ -203,8 +237,7 @@ describe('category dataview public v4 API', function () {
             value: 9,
             group: true
           }
-        ],
-        type: 'category'
+        ]
       });
     });
   });
@@ -228,8 +261,9 @@ describe('category dataview public v4 API', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel.get('source')).toBe(dataview._source.$getInternalModel());
       expect(internalModel.get('column')).toEqual(dataview._column);
-      expect(internalModel.get('aggregation')).toEqual(dataview._options.operation);
-      expect(internalModel.get('aggregation_column')).toEqual(dataview._options.operationColumn);
+      expect(internalModel.get('categories')).toEqual(dataview._limit);
+      expect(internalModel.get('aggregation')).toEqual(dataview._operation);
+      expect(internalModel.get('aggregation_column')).toEqual(dataview._operationColumn);
       expect(internalModel.isEnabled()).toBe(false);
       expect(internalModel._engine.name).toEqual('Engine mock');
     });

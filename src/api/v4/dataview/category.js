@@ -7,9 +7,10 @@ var CategoryFilter = require('../../../windshaft/filters/category');
 /**
  * Category dataview object
  *
- * @param {carto.source.Base} source - The source where the datavew will fetch the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
+ * @param {number} options.limit - The maximum number of categories in the response.
  * @param {carto.operation} options.operation - The operation to apply to the data.
  * @param {string} options.operationColumn - The column name used in the operation.
  *
@@ -19,10 +20,41 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * @api
  */
 function Category (source, column, options) {
+  this.DEFAULTS.operationColumn = column;
+
   this._initialize(source, column, options);
+  this._limit = this._options.limit;
+  this._operation = this._options.operation;
+  this._operationColumn = this._options.operationColumn;
 }
 
 Category.prototype = Object.create(Base.prototype);
+
+/**
+ * Set the dataview limit
+ *
+ * @param  {number} limit
+ * @return {carto.dataview.Category} this
+ * @api
+ */
+Category.prototype.setLimit = function (limit) {
+  this._checkLimit(limit);
+  this._limit = limit;
+  if (this._internalModel) {
+    this._internalModel.set('categories', limit);
+  }
+  return this;
+};
+
+/**
+ * Return the current dataview limit
+ *
+ * @return {number} Current dataview limit
+ * @api
+ */
+Category.prototype.getLimit = function () {
+  return this._limit;
+};
 
 /**
  * Set the dataview operation
@@ -33,7 +65,7 @@ Category.prototype = Object.create(Base.prototype);
  */
 Category.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
-  this._options.operation = operation;
+  this._operation = operation;
   if (this._internalModel) {
     this._internalModel.set('aggregation', operation);
   }
@@ -47,7 +79,7 @@ Category.prototype.setOperation = function (operation) {
  * @api
  */
 Category.prototype.getOperation = function () {
-  return this._options.operation;
+  return this._operation;
 };
 
 /**
@@ -59,7 +91,7 @@ Category.prototype.getOperation = function () {
  */
 Category.prototype.setOperationColumn = function (operationColumn) {
   this._checkOperationColumn(operationColumn);
-  this._options.operationColumn = operationColumn;
+  this._operationColumn = operationColumn;
   if (this._internalModel) {
     this._internalModel.set('aggregation_column', operationColumn);
   }
@@ -73,7 +105,7 @@ Category.prototype.setOperationColumn = function (operationColumn) {
  * @api
  */
 Category.prototype.getOperationColumn = function () {
-  return this._options.operationColumn;
+  return this._operationColumn;
 };
 
 /**
@@ -99,7 +131,6 @@ Category.prototype.getData = function () {
      * @property {number} nulls
      * @property {string} operation
      * @property {CategoryItem[]} result
-     * @property {string} type - Constant 'category'
      * @api
      */
     var data = this._internalModel.get('data');
@@ -115,38 +146,64 @@ Category.prototype.getData = function () {
       max: this._internalModel.get('max'),
       min: this._internalModel.get('min'),
       nulls: this._internalModel.get('nulls'),
-      operation: this._options.operation,
-      result: result,
-      type: 'category'
+      operation: this._operation,
+      result: result
     };
   }
   return null;
 };
 
 Category.prototype.DEFAULTS = {
-  operation: constants.operation.COUNT,
-  operationColumn: 'column'
+  limit: 6,
+  operation: constants.operation.COUNT
 };
 
 Category.prototype._listenToInternalModelSpecificEvents = function () {
+  this.listenTo(this._internalModel, 'change:categories', this._onLimitChanged);
   this.listenTo(this._internalModel, 'change:aggregation', this._onOperationChanged);
   this.listenTo(this._internalModel, 'change:aggregation_column', this._onOperationColumnChanged);
 };
 
+Category.prototype._onLimitChanged = function () {
+  if (this._internalModel) {
+    this._limit = this._internalModel.get('categories');
+  }
+  this.trigger('limitChanged', this._limit);
+};
+
 Category.prototype._onOperationChanged = function () {
-  this.trigger('operationChanged', this._options.operation);
+  if (this._internalModel) {
+    this._operation = this._internalModel.get('aggregation');
+  }
+  this.trigger('operationChanged', this._operation);
 };
 
 Category.prototype._onOperationColumnChanged = function () {
-  this.trigger('operationColumnChanged', this._options.operationColumn);
+  if (this._internalModel) {
+    this._operationColumn = this._internalModel.get('aggregation_column');
+  }
+  this.trigger('operationColumnChanged', this._operationColumn);
 };
 
 Category.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Operation option for category dataview is not valid. Use carto.operation');
+    throw new TypeError('Category dataview options are not defined.');
   }
+  this._checkLimit(options.limit);
   this._checkOperation(options.operation);
   this._checkOperationColumn(options.operationColumn);
+};
+
+Category.prototype._checkLimit = function (limit) {
+  if (_.isUndefined(limit)) {
+    throw new TypeError('Limit for category dataview is required.');
+  }
+  if (!_.isNumber(limit)) {
+    throw new TypeError('Limit for category dataview must be a number.');
+  }
+  if (limit <= 0) {
+    throw new TypeError('Limit for category dataview must be greater than 0.');
+  }
 };
 
 Category.prototype._checkOperation = function (operation) {
@@ -171,8 +228,9 @@ Category.prototype._createInternalModel = function (engine) {
   this._internalModel = new CategoryDataviewModel({
     source: this._source.$getInternalModel(),
     column: this._column,
-    aggregation: this._options.operation,
-    aggregation_column: this._options.operationColumn,
+    aggregation: this._operation,
+    aggregation_column: this._operationColumn,
+    categories: this._limit,
     sync_on_data_change: true,
     sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled

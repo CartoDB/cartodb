@@ -140,8 +140,6 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when map view bounds are ready', function () {
       beforeEach(function () {
-        this.model._bboxFilter.setBounds([[1, 2], [3, 4]]);
-
         this.model.set('url', 'http://example.com');
       });
 
@@ -149,7 +147,7 @@ describe('dataviews/dataview-model-base', function () {
         expect(this.model.fetch).toHaveBeenCalled();
       });
 
-      xdescribe('when fetch succeeds', function () {
+      describe('when fetch succeeds', function () {
         beforeEach(function () {
           this.model.fetch.calls.argsFor(0)[0].success();
         });

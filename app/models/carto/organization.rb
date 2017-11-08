@@ -158,6 +158,10 @@ module Carto
       user.belongs_to_organization?(self) && user.organization_admin?
     end
 
+    def non_owner_users
+      users.reject { |u| owner && u.id == owner.id }
+    end
+
     private
 
     def ensure_auth_saml_configuration

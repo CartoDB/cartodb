@@ -1,8 +1,24 @@
 Development
 -----------
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+This release changes the way Google ouath login works. If you are using it, you need to add the client_secret
+to the oauth.google_plus section of the configuration file.
+
 ### Features
 * Account static view (#12749)
+* Add onboarding FS events (#13004)
+* Map: rearrange layer options in layers list (#13006)
+* Style: Rename "none" aggregation to "points" (#13005)
+* Clean assets script
+* Improve error on widgets (CartoDB/deep-insights.js#574)
+* Add pagination support in data imports listing in superadmin (#12938).
 * Profile static view (#12704)
 * Add FullStory (if available) in user dashboard
 * Change default style for polygon, point and line geometries (design#983)
@@ -20,7 +36,8 @@ Development
 * Improve legend items management (#12650)
 * Avoid multiple time-series by filtering the carousel options (#12395)
 * Add privacy button behavior for shared datasets (#11342)
-* Use add/replace notification for time-series (#12670)
+* Use add/replace notificat
+ion for time-series (#12670)
 * Fix icons in category legends (#11630)
 * Sidebar UI tweaks (#12479)
 * Add carto-node client library (#12677)
@@ -29,6 +46,7 @@ Development
 * Change select "attribute" placeholders (#12498)
 * Add pointer cursor to the sliders (#12499)
 * Fixed a bug that would break the bubble legend on IE11 (#support/891)
+* Open visualization endpoint to anonymous users, returning related_canonical_visualizations with visible ones, and related_canonical_visualizations_count with the full count (#12908)
 * Support for SAML signed logout requests (#12355)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
@@ -63,13 +81,26 @@ Development
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
 * Improve legends error (cartodb.js#1758)
+* Updates Dataservices API client default version to `0.21.0` (#12942)
+* Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fix dashboard redirections (#12775)
+* Fix upload dataset drag and drop (CartoDB/support#1072)
+* Fix legends request order with slow internet connection (#12733)
+* Documentation, fixed spelling and grammar in en.json
+* Update charlock_holmes gem to 0.7.5 to fix C++11 related problems.
+* Don't show basemap's labels layer in layer list (#13000)
+* Fallback to `username` when `name` is empty in share map view
+* Fix bounding box not updating with gmaps basemaps
+* Google oauth now works without JS (#12977)
+* Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.
 * Show map options when selecting a map in search view
 * Remove cumulative option when torque category (#12924)
 * Protects against frozen string manipulation in buggy ruby version `2.2.4p230`
+* Auto-select best geometry for DO (#12623)
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Improve legends for torque (CartoDB/support#979)
@@ -242,6 +273,7 @@ Development
 * Fix histogram zoom (#12945)
 
 ### Internals
+* Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
@@ -252,6 +284,13 @@ This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the foll
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
+
+To launch the clean assets script run the following in the terminal:
+```shell
+./script/clean_assets
+```
+
+It will remove old assets from `public/assets/` (older than version in `package.json`)
 
 #### Dropbox API v2 migration
 
@@ -400,6 +439,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Show infowindow when user reaches max layer limit (#12167)
 * Format quota infowindow numbers (#11743)
 * Improved analysis error tooltip (#12250)
+* Enable overwrite collision_strategy in import API (#11990)
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config
@@ -560,7 +600,9 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Color picker disappears in CartoCSS editor after clicking (#12097).
 * Bug found in dataset view when user had Google basemaps enabled (#12155)
 * Fixed incorrect analysis node being selected after deleting (#11899)
+* Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.0`. Run the following to have it available:

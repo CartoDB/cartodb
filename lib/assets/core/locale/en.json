@@ -1004,7 +1004,7 @@
           },
           "filter-by-node-column": {
             "title": "Filter by layer",
-            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
+            "desc": "Filter your layer depending on a second layer such that widgets will affect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",
@@ -1492,6 +1492,10 @@
         "body": "This layer is hidden. Changes won't be shown until you make it visible.",
         "show": "Show"
       },
+      "generic-error": {
+        "title": "Some tiles were not displayed",
+        "body": "If the problem persists check our docs or contact us."
+      },
       "limit": {
         "title": "Some tiles might not be working correctly",
         "body": "Looks like you are over your limits when trying to render some of your tiles.",
@@ -1584,7 +1588,7 @@
           "title": "Ready to Download"
         },
         "error": {
-          "title": "An error occured while exporting your map",
+          "title": "An error occurred while exporting your map",
           "desc": "Please try again. If the problem persists, please contact support"
         }
       },
@@ -1876,11 +1880,13 @@
         "linked-layer": "Filter by layer",
         "loading": "loading…",
         "longitude": "Longitude",
+        "max-or-equal": "Max or equal",
         "max": "Max",
         "measure-by": "Measure by",
         "meters": "m",
         "method": "Method",
         "miles": "mi",
+        "min-or-equal": "Min or equal",
         "min": "Min",
         "mode": "Mode",
         "more-info": "More info",
@@ -2012,8 +2018,10 @@
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
         "workflow": "Your workflow",
-        "write-max-value": "Write max value",
+        "write-min-or-equal-value": "Write min or equal value",
+        "write-max-or-equal-value": "Write max or equal value",
         "write-min-value": "Write min value",
+        "write-max-value": "Write max value",
         "yes": "Yes"
       },
       "infowindow": {
@@ -2057,7 +2065,9 @@
         "between": "Between",
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
-        "is-less-than": "Is less than"
+        "is-greater-or-equal-than": "Is greater or equal than",
+        "is-less-than": "Is less than",
+        "is-less-or-equal-than": "Is less or equal than"
       },
       "notifier": {
         "center-map": {
@@ -2147,7 +2157,7 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
           "accept": "CONTINUE"
         }
       }
@@ -2230,7 +2240,7 @@
     "style": {
       "types": {
         "none": "-",
-        "simple": "none",
+        "simple": "points",
         "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",
@@ -2326,7 +2336,7 @@
         "aggregation-dataset": "Admin. level",
         "labels-enabled": {
           "label": "labels",
-          "not-with-animated": "It won't be available with animations"
+          "not-with-animated": "Not available with animations"
         },
         "labels-attribute": {
           "label": "column",
@@ -2358,7 +2368,7 @@
         "animated-enabled": {
           "label": "animated",
           "already-one-torque": "There is already a torque layer in your map",
-          "not-with-labels": "It won't be available with labels"
+          "not-with-labels": "Not available with labels"
         },
         "animated-attribute": {
           "label": "column",

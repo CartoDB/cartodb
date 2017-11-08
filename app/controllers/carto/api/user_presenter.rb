@@ -37,7 +37,9 @@ module Carto
           viewer:                     @user.viewer?,
           org_admin:                  @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
-          all_visualization_count:    @user.all_visualization_count
+          all_visualization_count:    @user.all_visualization_count,
+          org_user:                   @user.organization_id.present?,
+          remove_logo:                @user.remove_logo?
         }
 
         if fetch_groups
@@ -64,9 +66,15 @@ module Carto
         poro = {
           id:               @user.id,
           username:         @user.username,
+          name:             @user.name,
+          last_name:        @user.last_name,
           avatar_url:       @user.avatar_url,
           base_url:         @user.public_url,
-          viewer:           @user.viewer?
+          disqus_shortname: @user.disqus_shortname,
+          viewer:           @user.viewer?,
+          org_admin:        @user.organization_admin?,
+          org_user:         @user.organization_id.present?,
+          remove_logo:      @user.remove_logo?
         }
 
         if fetch_groups

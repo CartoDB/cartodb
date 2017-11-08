@@ -54,7 +54,7 @@ Layer.prototype = Object.create(Base.prototype);
  * Set a new style for this layer.
  * 
  * @param {carto.style.CartoCSS} New style
- * @return {carto.layer.Layer} The layer
+ * @return {carto.layer.Layer} this
  * 
  * @api
  */
@@ -87,7 +87,7 @@ Layer.prototype.getStyle = function () {
  * add a source belonging to a different client.
  * 
  * @param {carto.source.Dataset|carto.source.SQL} source New source
- * @return {carto.layer.Layer} The layer
+ * @return {carto.layer.Layer} this
  *
  * @api
  */
@@ -119,7 +119,7 @@ Layer.prototype.getSource = function () {
  * Set new columns for `featureClick` events
  * 
  * @param {Array<string>} columns An array containing column names.
- * @return {carto.layer.Layer} The layer
+ * @return {carto.layer.Layer} this
  *
  * @api
  */
@@ -129,7 +129,7 @@ Layer.prototype.setFeatureClickColumns = function (columns) {
     this._internalModel.infowindow.update(_getInteractivityFields(columns));
   }
 
-  return this._reloadEngine();
+  return this;
 };
 
 /**
@@ -147,7 +147,7 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
  * Set new columns for `featureOver` events
  * 
  * @param {Array<string>} columns An array containing column names
- * @return {carto.layer.Layer} The layer
+ * @return {carto.layer.Layer} this
  *
  * @api
  */

@@ -9,7 +9,7 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  *
  * @example
  *
- * new carto.source.Dataset(european_cities');
+ * new carto.source.Dataset('european_cities');
  * 
  * @constructor
  * @extends carto.source.Base
@@ -22,14 +22,14 @@ function Dataset (dataset) {
   Base.apply(this, arguments);
 }
 
+Dataset.prototype = Object.create(Base.prototype);
+
 /**
  * Creates a new internal model with the given engine
  * and the attributes initialized in the constructor.
  * 
  * @param {Engine} engine - The engine object to be assigned to the internalModel.
  */
-Dataset.prototype = Object.create(Base.prototype);
-
 Dataset.prototype._createInternalModel = function (engine) {
   return new AnalysisModel({
     id: this.getId(),

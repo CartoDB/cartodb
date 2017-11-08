@@ -52,6 +52,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
 
   describe('layer events', function () {
     var spy;
+    var internalEventMock;
 
     beforeEach(function () {
       spy = jasmine.createSpy('spy');
@@ -63,69 +64,53 @@ describe('src/api/v4/leaflet/layer-group', function () {
       layer = new carto.layer.Layer(source, style);
 
       client.addLayer(layer, { reload: false });
+
+      internalEventMock = {
+        layer: {
+          id: layer.getId()
+        },
+        latlng: [ 10, 20 ],
+        feature: { name: 'foo' }
+      };
     });
 
     it('should trigger carto.layer.events.FEATURE_CLICKED event', function () {
       layer.on(carto.layer.events.FEATURE_CLICKED, spy);
 
-      var internalEvent = {
-        layer: {
-          id: layer.getId()
-        },
-        latlng: [ 10, 20 ],
-        feature: { name: 'foo' }
-      };
-
-      var externalEvent = {
+      var expectedExternalEvent = {
         data: { name: 'foo' },
         latLng: { lat: 10, lng: 20 }
       };
 
-      layerGroup._internalLayerGroupView.trigger('featureClick', internalEvent);
+      layerGroup._internalLayerGroupView.trigger('featureClick', internalEventMock);
 
-      expect(spy).toHaveBeenCalledWith(externalEvent);
+      expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
     });
 
     it('should trigger carto.layer.events.FEATURE_OVER event', function () {
       layer.on(carto.layer.events.FEATURE_OVER, spy);
 
-      var internalEvent = {
-        layer: {
-          id: layer.getId()
-        },
-        latlng: [ 10, 20 ],
-        feature: { name: 'foo' }
-      };
-
-      var externalEvent = {
+      var expectedExternalEvent = {
         data: { name: 'foo' },
         latLng: { lat: 10, lng: 20 }
       };
 
-      layerGroup._internalLayerGroupView.trigger('featureOver', internalEvent);
+      layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
 
-      expect(spy).toHaveBeenCalledWith(externalEvent);
+      expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
     });
 
     it('should trigger carto.layer.events.FEATURE_OUT featureOut events', function () {
       layer.on(carto.layer.events.FEATURE_OUT, spy);
 
-      var internalEvent = {
-        layer: {
-          id: layer.getId()
-        },
-        latlng: [ 10, 20 ],
-        feature: { name: 'foo' }
-      };
-
-      var externalEvent = {
+      var expectedExternalEvent = {
         data: { name: 'foo' },
         latLng: { lat: 10, lng: 20 }
       };
 
-      layerGroup._internalLayerGroupView.trigger('featureOut', internalEvent);
+      layerGroup._internalLayerGroupView.trigger('featureOut', internalEventMock);
 
-      expect(spy).toHaveBeenCalledWith(externalEvent);
+      expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
     });
   });
 

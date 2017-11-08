@@ -65,6 +65,7 @@ Histogram.prototype.setBins = function (bins) {
   this._validateBins(bins);
   var floorBins = Math.floor(bins);
   this._changeProperty('bins', floorBins);
+  return this;
 };
 
 /**

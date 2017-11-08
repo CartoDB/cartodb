@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Basic Carto.js example</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  <!--Include carto styles  -->
+  <!-- <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" /> -->
+  <!-- Include cartodb.js Library -->
+  <script src="../../dist/cartodb.uncompressed.js"></script>
+  <style>
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #widget {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 20px;
+      font-size: 2em;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 1000;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="widget"></div>
+  <div id="map"></div>
+  <script>
+    (async () => {
+      var i = 0; // Number of reload cycles.
+      var map = window.map = L.map('map').setView([42.431234, -8.643616], 5);
+
+      L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+      // Create the Client
+      var client = window.client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        serverUrl: 'https://{user}.carto.com:443',
+        username: 'cartojs-test'
+      });
+
+      client.on(carto.events.SUCCESS, function () {
+        console.log('Client reloaded', i++);
+      });
+
+      client.on(carto.events.ERROR, function () {
+        console.error('Client Error!', i++);
+      });
+
+      // Create a source
+      var spanishCitiesSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
+
+      // Create a style
+      var spanishCitiesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 10;
+          marker-fill: red;
+        }`);
+
+      // Create a layer
+      var spanishCities = window.spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle);
+
+      // Create a source
+      var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+
+      // Create a style
+      var populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 10;
+          marker-fill: #CDCDCD;
+        }`);
+
+      var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
+
+      client.addLayers([ spanishCities, populatedPlaces ]);
+
+      // Add the layer to the map
+      client.getLeafletLayer().addTo(map);
+
+      // Set a new style
+      var newPopulatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 15;
+          marker-fill: #DDDDDD;
+        }`);
+
+      populatedPlaces.setStyle(newPopulatedPlacesStyle);
+
+      // client.getLeafletLayer().removeFrom(map);
+    })();
+  </script>
+</body>
+
+</html>

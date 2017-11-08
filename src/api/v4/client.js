@@ -1,7 +1,9 @@
 var Events = require('./events');
 var Engine = require('../../engine');
-var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
+var Layers = require('./layers');
+var Leaflet = require('./leaflet');
 var VERSION = require('../../../package.json').version;
+var LayerBase = require('./layer/base');
 
 /**
  * This is the main object in a Carto.js application.
@@ -22,7 +24,7 @@ var VERSION = require('../../../package.json').version;
  * @fires carto.events.ERROR
  */
 function Client (settings) {
-  this._layers = [];
+  this._layers = new Layers();
   this._dataviews = [];
   this._engine = new Engine({
     apiKey: settings.apiKey,
@@ -106,8 +108,9 @@ Client.prototype.addLayers = function (layers, opts) {
  * @api
  */
 Client.prototype.removeLayer = function (layer, opts) {
+  _checkLayer(layer);
   opts = opts || {};
-  this._layers.splice(this._layers.indexOf(layer));
+  this._layers.remove(layer);
   this._engine.removeLayer(layer.$getInternalModel());
   if (opts.reload === false) {
     return Promise.resolve();
@@ -122,7 +125,7 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @api
  */
 Client.prototype.getLayers = function () {
-  return this._layers;
+  return this._layers.toArray();
 };
 
 /**
@@ -190,13 +193,9 @@ Client.prototype.getDataviews = function () {
 /**
  * ...
  */
-Client.prototype.getLeafletLayerView = function () {
-  return {
-    addTo: function (map) {
-      var leafletCartoLayerGroupView = new LeafletCartoLayerGroupView(this._engine._cartoLayerGroup, map);
-      leafletCartoLayerGroupView.leafletLayer.addTo(map);
-    }.bind(this)
-  };
+Client.prototype.getLeafletLayer = function () {
+  this._leafletLayer = this._leafletLayer || new Leaflet.LayerGroup(this._layers, this._engine);
+  return this._leafletLayer;
 };
 
 /**
@@ -204,7 +203,8 @@ Client.prototype.getLeafletLayerView = function () {
  * @private
  */
 Client.prototype._addLayer = function (layer, engine) {
-  this._layers.push(layer);
+  _checkLayer(layer);
+  this._layers.add(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
 };
@@ -218,5 +218,15 @@ Client.prototype._addDataview = function (dataview, engine) {
   dataview.$setEngine(this._engine);
   this._engine.addDataview(dataview.$getInternalModel());
 };
+
+/**
+ * Utility function to reduce duplicated code.
+ * Check if an object inherits from LayerBase.
+ */
+function _checkLayer (object) {
+  if (!(object instanceof LayerBase)) {
+    throw new TypeError('The given object is not a layer');
+  }
+}
 
 module.exports = Client;

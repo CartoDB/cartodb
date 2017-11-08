@@ -147,6 +147,10 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
   return this._featureClickColumns;
 };
 
+Layer.prototype.hasFeatureClickColumns = function (columns) {
+  return this.getFeatureClickColumns().length > 0;
+};
+
 /**
  * Set new columns for `featureOver` events
  * 
@@ -173,6 +177,10 @@ Layer.prototype.setFeatureOverColumns = function (columns) {
  */
 Layer.prototype.getFeatureOverColumns = function (columns) {
   return this._featureOverColumns;
+};
+
+Layer.prototype.hasFeatureOverColumns = function (columns) {
+  return this.getFeatureOverColumns().length > 0;
 };
 
 /**

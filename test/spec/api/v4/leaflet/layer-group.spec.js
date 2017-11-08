@@ -114,7 +114,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
 
     describe('mouse pointer', function () {
       describe('when mousing over a feature', function () {
-        it("should NOT set the mouse cursor to 'pointer' if layer doesn't have featureClickColumns", function () {
+        it("should NOT set the mouse cursor to 'pointer' if layer doesn't have featureOverColumns or featureClickColumns", function () {
           expect(map.getContainer().style.cursor).toEqual('');
 
           layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
@@ -122,8 +122,18 @@ describe('src/api/v4/leaflet/layer-group', function () {
           expect(map.getContainer().style.cursor).toEqual('');
         });
 
-        it("should set the mouse cursor to 'pointer' if layer has featureClickColumns", function () {
+        it("should set the mouse cursor to 'pointer' if layer has setFeatureOverColumns", function () {
           layer.setFeatureOverColumns([ 'foo' ]);
+
+          expect(map.getContainer().style.cursor).toEqual('');
+
+          layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
+
+          expect(map.getContainer().style.cursor).toEqual('pointer');
+        });
+
+        it("should set the mouse cursor to 'pointer' if layer has setFeatureClickColumns", function () {
+          layer.setFeatureClickColumns([ 'foo' ]);
 
           expect(map.getContainer().style.cursor).toEqual('');
 

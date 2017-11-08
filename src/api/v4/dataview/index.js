@@ -1,4 +1,5 @@
 var Formula = require('./formula');
+var Category = require('./category');
 var status = require('../constants').status;
 
 /**
@@ -7,5 +8,6 @@ var status = require('../constants').status;
  */
 module.exports = {
   Formula: Formula,
+  Category: Category,
   status: status
 };

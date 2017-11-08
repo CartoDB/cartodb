@@ -126,7 +126,7 @@ Base.prototype.DEFAULTS = {};
 /**
  * Initialize dataview
  *
- * @param {carto.source.Base} source - The source where the datavew will fetch the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param  {object} options - It depends on the instance.
  */
@@ -140,6 +140,7 @@ Base.prototype._initialize = function (source, column, options) {
   this._source = source;
   this._column = column;
   this._options = options;
+
   this._status = status.NOT_LOADED;
   this._enabled = true;
 };
@@ -198,6 +199,9 @@ Base.prototype._onDataChanged = function () {
 };
 
 Base.prototype._onColumnChanged = function () {
+  if (this._internalModel) {
+    this._column = this._internalModel.get('column');
+  }
   this.trigger('columnChanged', this._column);
 };
 
@@ -213,7 +217,7 @@ Base.prototype._onStatusLoaded = function () {
 
 Base.prototype._onStatusError = function (model, error) {
   this._status = status.ERROR;
-  this.trigger('statusChanged', this._status, error && error.statusText ? error.statusText : error);
+  this.trigger('statusChanged', this._status, error);
 };
 
 // Internal public methods

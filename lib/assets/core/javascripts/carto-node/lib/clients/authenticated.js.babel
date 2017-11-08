@@ -1,4 +1,4 @@
-const PublicClient = require('./public.js');
+const PublicClient = require('./public.js.babel');
 
 class AuthenticatedClient extends PublicClient {
   getConfig (callback) {

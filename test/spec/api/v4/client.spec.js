@@ -1,13 +1,13 @@
 var carto = require('../../../../src/api/v4');
 var LeafletLayerGroup = require('../../../../src/api/v4/leaflet/layer-group');
 
-describe('api/v4/client', function () {
+fdescribe('api/v4/client', function () {
   var client;
 
   beforeEach(function () {
     client = new carto.Client({
       apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-      serverUrl: 'https://{user}.carto.com:443',
+      serverUrl: 'https://cartojs-test.carto.com',
       username: 'cartojs-test'
     });
   });
@@ -16,6 +16,69 @@ describe('api/v4/client', function () {
     it('should build a new client', function () {
       expect(client).toBeDefined();
       expect(client.getLayers()).toEqual([]);
+    });
+
+    it('should autogenerate the carto url when is not given', function () {
+      client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+
+      expect(client._engine._windshaftSettings.urlTemplate).toEqual('https://cartojs-test.carto.com');
+    });
+
+    describe('error handling', function () {
+      describe('apiKey', function () {
+        it('should throw a descriptive error when apikey is not given', function () {
+          expect(function () {
+            new carto.Client({ username: 'cartojs-test' }); // eslint-disable-line
+          }).toThrowError('apiKey property is required.');
+        });
+
+        it('should throw a descriptive error when apikey is not a string', function () {
+          expect(function () {
+            new carto.Client({ apiKey: 1234, username: 'cartojs-test' }); // eslint-disable-line
+          }).toThrowError('apiKey property must be a string.');
+        });
+
+        it('should throw a descriptive error when apikey is not a string', function () {
+          expect(function () {
+            new carto.Client({ apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18' }); // eslint-disable-line
+          }).toThrowError('username property is required.');
+        });
+      });
+
+      describe('username', function () {
+        it('should throw a descriptive error when username is not a string', function () {
+          expect(function () {
+            new carto.Client({ apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18', username: 1234 }); // eslint-disable-line
+          }).toThrowError('username property must be a string.');
+        });
+      });
+
+      describe('serverUrl', function () {
+        it('should throw a descriptive error when serverUrl is given and is not valid', function () {
+          expect(function () {
+            // eslint-disable-next-line
+            new carto.Client({
+              apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+              username: 'cartojs-test',
+              serverUrl: 'invalid-url'
+            });
+          }).toThrowError('serverUrl is not a valid URL.');
+        });
+
+        it('should throw a descriptive error when serverUrl doesn\'t match the username', function () {
+          expect(function () {
+            // eslint-disable-next-line
+            new carto.Client({
+              apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+              username: 'cartojs-test',
+              serverUrl: 'https://invald-username.carto.com'
+            });
+          }).toThrowError('serverUrl doesn\'t match the username.');
+        });
+      });
     });
   });
 

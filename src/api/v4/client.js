@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Events = require('./events');
 var Engine = require('../../engine');
 var Layers = require('./layers');
@@ -24,12 +25,13 @@ var LayerBase = require('./layer/base');
  * @fires carto.events.ERROR
  */
 function Client (settings) {
+  _checkSettings(settings);
   this._layers = new Layers();
   this._dataviews = [];
   this._engine = new Engine({
     apiKey: settings.apiKey,
     username: settings.username,
-    serverUrl: settings.serverUrl,
+    serverUrl: settings.serverUrl || 'https://{user}.carto.com'.replace(/{user}/, settings.username),
     statTag: 'carto.js-v' + VERSION
   });
 }
@@ -226,6 +228,42 @@ Client.prototype._addDataview = function (dataview, engine) {
 function _checkLayer (object) {
   if (!(object instanceof LayerBase)) {
     throw new TypeError('The given object is not a layer');
+  }
+}
+
+function _checkSettings (settings) {
+  _checkApiKey(settings.apiKey);
+  _checkUsername(settings.username);
+  if (settings.serverUrl) {
+    _checkServerUrl(settings.serverUrl, settings.username);
+  }
+}
+
+function _checkApiKey (apiKey) {
+  if (!apiKey) {
+    throw new TypeError('apiKey property is required.');
+  }
+  if (!_.isString(apiKey)) {
+    throw new TypeError('apiKey property must be a string.');
+  }
+}
+
+function _checkUsername (username) {
+  if (!username) {
+    throw new TypeError('username property is required.');
+  }
+  if (!_.isString(username)) {
+    throw new TypeError('username property must be a string.');
+  }
+}
+
+function _checkServerUrl (serverUrl, username) {
+  var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+  if (!serverUrl.match(urlregex)) {
+    throw new TypeError('serverUrl is not a valid URL.');
+  }
+  if (serverUrl.indexOf(username) < 0) {
+    throw new TypeError('serverUrl doesn\'t match the username.');
   }
 }
 

@@ -1,7 +1,7 @@
 var _ = require('underscore');
-var Base = require('./base');
-var HistogramDataviewModel = require('../../..//dataviews/histogram-dataview-model');
-
+var Base = require('../base');
+var HistogramDataviewModel = require('../../../..//dataviews/histogram-dataview-model');
+var HistogramData = require('./histogram-data.js');
 /**
  * Histogram dataview object
  *
@@ -78,7 +78,11 @@ Histogram.prototype.getBins = function () {
 };
 
 /**
+<<<<<<< HEAD:src/api/v4/dataview/histogram.js
  * Return the distribution type of the current data according to Galtung’s AJUS System https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification
+=======
+ * Return the distribution type of the current data according to [Galtung’s AJUS System]{@link https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification}
+>>>>>>> Create HistogramData Object:src/api/v4/dataview/histogram/index.js
  * 
  * @return {string} Distribution type of current data
  * @api 
@@ -92,7 +96,11 @@ Histogram.prototype.getDistributionType = function () {
 };
 
 /**
+<<<<<<< HEAD:src/api/v4/dataview/histogram.js
  * Return the distribution type of the totals data according to Galtung’s AJUS System https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification
+=======
+ * Return the distribution type of the totals data according to [Galtung’s AJUS System]{@link https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification}
+>>>>>>> Create HistogramData Object:src/api/v4/dataview/histogram/index.js
  * 
  * @return {string} Distribution type of current data
  * @api 
@@ -112,6 +120,7 @@ Histogram.prototype._validateBins = function (bins) {
 };
 
 Histogram.prototype._parseData = function (data, nulls, totalAmount) {
+<<<<<<< HEAD:src/api/v4/dataview/histogram.js
   if (data) {
     /**
      * @typedef {object} BinItem
@@ -150,6 +159,9 @@ Histogram.prototype._parseData = function (data, nulls, totalAmount) {
     };
   }
   return null;
+=======
+  return HistogramData(data, nulls, totalAmount);
+>>>>>>> Create HistogramData Object:src/api/v4/dataview/histogram/index.js
 };
 
 Histogram.prototype._checkOptions = function (options) {

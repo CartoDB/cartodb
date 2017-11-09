@@ -35,6 +35,7 @@
             // Create the Client
             var client = window.client = new carto.Client({
                 apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+                serverUrl: 'https://cartojs-test.carto.com',
                 username: 'cartojs-test'
             });
 
@@ -42,12 +43,12 @@
                 console.log('Client reloaded', i++);
             });
 
-            client.on(carto.events.ERROR, function () {
-                console.error('Client Error!', i++);
+            client.on(carto.events.ERROR, function (clientError) {
+                console.error('Client Error generico');
             });
 
             // Create a source
-            var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+            var populatedPlacesDataset = new carto.source.SQL('SELECT FROM ne_10m_populated_places_simple');
 
             // Create a style
             var populatedPlacesStyle = new carto.style.CartoCSS(`
@@ -58,8 +59,11 @@
 
 
             var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
+            
+            client.addLayer(populatedPlaces).catch(function(clientError) {
+                console.error(clientError);
+            });
 
-            client.addLayer(populatedPlaces);
 
             // Add the layer to the map
             client.getLeafletLayer().addTo(map);

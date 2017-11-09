@@ -123,7 +123,7 @@ fdescribe('api/v4/client', function () {
       spyOn(client._engine, 'reload').and.returnValue(Promise.reject(errorMock));
 
       client.addLayer(layer).catch(function (error) {
-        expect(error).toEqual(errorMock);
+        expect(error.message).toEqual(errorMock.message);
         done();
       });
     });

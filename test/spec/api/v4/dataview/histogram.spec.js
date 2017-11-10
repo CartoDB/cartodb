@@ -185,37 +185,6 @@ describe('api/v4/dataview/histogram', function () {
     });
   });
 
-  describe('.getTotalsData', function () {
-    var dataview;
-
-    beforeEach(function () {
-      dataview = new carto.dataview.Histogram(source, 'population');
-    });
-
-    it('should return null if there is no internal model', function () {
-      var data = dataview.getTotalsData();
-
-      expect(data).toBe(null);
-    });
-
-    it('should return null if there is internal model but no totals', function () {
-      dataview._internalModel = createHistogramInternalModelMock();
-      dataview._internalModel.getUnfilteredData = function () { return null; };
-
-      var data = dataview.getTotalsData();
-
-      expect(data).toBe(null);
-    });
-
-    it('should return parsed total data if there is internal model with totals', function () {
-      dataview._internalModel = createHistogramInternalModelMock();
-
-      var data = dataview.getTotalsData();
-
-      expect(data).toEqual({ result: [ { freq: 23, normalized: 0.5 }, { freq: 46, normalized: 1 }, { normalized: 0 } ], nulls: 12, totalAmount: 707 });
-    });
-  });
-
   describe('.setBins', function () {
     var dataview;
 
@@ -332,35 +301,6 @@ describe('api/v4/dataview/histogram', function () {
       dataview._internalModel = internalModel;
 
       var distribution = dataview.getDistributionType();
-
-      expect(internalModel.getDistributionType).toHaveBeenCalledWith('token');
-      expect(distribution).toEqual('a');
-    });
-  });
-
-  describe('.getTotalsDistributionType', function () {
-    var dataview;
-
-    beforeEach(function () {
-      dataview = new carto.dataview.Histogram(source, 'population');
-    });
-
-    it('should return null if there is no internal model', function () {
-      var distribution = dataview.getTotalsDistributionType();
-
-      expect(distribution).toBe(null);
-    });
-
-    it('should call to the proper method in internal model', function () {
-      var internalModel = {
-        getUnfilteredData: function () {},
-        getDistributionType: function () {}
-      };
-      spyOn(internalModel, 'getUnfilteredData').and.returnValue('token');
-      spyOn(internalModel, 'getDistributionType').and.returnValue('a');
-      dataview._internalModel = internalModel;
-
-      var distribution = dataview.getTotalsDistributionType();
 
       expect(internalModel.getDistributionType).toHaveBeenCalledWith('token');
       expect(distribution).toEqual('a');

@@ -41,21 +41,6 @@ Histogram.prototype.getData = function () {
 };
 
 /**
- * Return the totals data (not affected by filters)
- *
- * @return {HistogramData}
- * @api
- */
-
-Histogram.prototype.getTotalsData = function () {
-  if (this._internalModel && this._internalModel.getUnfilteredData()) {
-    var totals = this._internalModel.getUnfilteredDataModel();
-    return this._parseData(this._internalModel.getUnfilteredData(), totals.get('nulls'), totals.get('totalAmount'));
-  }
-  return null;
-};
-
-/**
  * Set number of bins
  * 
  * @param {number} bins
@@ -87,20 +72,6 @@ Histogram.prototype.getBins = function () {
 Histogram.prototype.getDistributionType = function () {
   if (this._internalModel) {
     var data = this._internalModel.getData();
-    return this._internalModel.getDistributionType(data);
-  }
-  return null;
-};
-
-/**
- * Return the distribution type of the totals data according to [Galtung’s AJUS System]{@link https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification}
- * 
- * @return {string} Distribution type of current data
- * @api 
- */
-Histogram.prototype.getTotalsDistributionType = function () {
-  if (this._internalModel) {
-    var data = this._internalModel.getUnfilteredData();
     return this._internalModel.getDistributionType(data);
   }
   return null;

@@ -5,15 +5,11 @@
  * @return {CartoError} A well formed object representing the error.
  */
 function CartoError (error) {
-  if (!error) {
-    this.message = 'unexpected error';
-    return this;
-  }
   if (_isWindshaftError(error)) {
     this.message = error.errors[0];
     return this;
   }
-  if (error.message) {
+  if (error && error.message) {
     this.message = error.message;
     return this;
   }

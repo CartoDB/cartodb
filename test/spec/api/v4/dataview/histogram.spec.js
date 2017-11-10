@@ -100,14 +100,14 @@ describe('api/v4/dataview/histogram', function () {
       expect(dataview._bins).toEqual(808);
     });
 
-    it('throw error if no correct operation is provided', function () {
+    it('throw error if bins is not a positive integer value', function () {
       var test = function () {
         new carto.dataview.Histogram(source, 'population', { // eslint-disable-line no-new
           bins: 0
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Bins must be a positive value.');
+      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
     });
   });
 
@@ -228,22 +228,24 @@ describe('api/v4/dataview/histogram', function () {
         dataview.setBins(-1);
       };
 
-      expect(test).toThrowError(TypeError, 'Bins must be a positive value.');
+      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
     });
 
-    it('should set floored bins if called', function () {
-      dataview.setBins(15.7);
+    it('should throw error if called with a float number', function () {
+      var test = function () {
+        dataview.setBins(15.7);
+      };
 
-      // We assert .getBins() as well
-      expect(dataview.getBins()).toBe(15);
+      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
     });
 
-    it('should set floored bins to internal model as well', function () {
+    it('should set bins to internal model as well', function () {
       dataview._internalModel = createHistogramInternalModelMock();
 
       dataview.setBins(16);
 
       expect(dataview._internalModel.set).toHaveBeenCalledWith('bins', 16);
+      expect(dataview.getBins()).toBe(16); // We assert .getBins() as well
 
       // Clean
       dataview._internalModel = null;

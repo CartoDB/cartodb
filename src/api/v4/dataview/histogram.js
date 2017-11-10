@@ -63,8 +63,7 @@ Histogram.prototype.getTotalsData = function () {
  */
 Histogram.prototype.setBins = function (bins) {
   this._validateBins(bins);
-  var floorBins = Math.floor(bins);
-  this._changeProperty('bins', floorBins);
+  this._changeProperty('bins', bins);
   return this;
 };
 
@@ -79,7 +78,7 @@ Histogram.prototype.getBins = function () {
 };
 
 /**
- * Return the distribution type of the current data according to Galtung’s AJUS System http://druedin.com/2012/12/08/galtungs-ajus-system/
+ * Return the distribution type of the current data according to Galtung’s AJUS System https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification
  * 
  * @return {string} Distribution type of current data
  * @api 
@@ -93,7 +92,7 @@ Histogram.prototype.getDistributionType = function () {
 };
 
 /**
- * Return the distribution type of the totals data according to Galtung’s AJUS System http://druedin.com/2012/12/08/galtungs-ajus-system/
+ * Return the distribution type of the totals data according to Galtung’s AJUS System https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification
  * 
  * @return {string} Distribution type of current data
  * @api 
@@ -107,8 +106,8 @@ Histogram.prototype.getTotalsDistributionType = function () {
 };
 
 Histogram.prototype._validateBins = function (bins) {
-  if (!_.isFinite(bins) || bins < 1) {
-    throw new TypeError('Bins must be a positive value.');
+  if (!_.isFinite(bins) || bins < 1 || Math.floor(bins) !== bins) {
+    throw new TypeError('Bins must be a positive integer value.');
   }
 };
 
@@ -122,6 +121,7 @@ Histogram.prototype._parseData = function (data, nulls, totalAmount) {
      * @property {number} avg - Only appears if freq > 0
      * @property {number} freq
      * @property {number} normalized
+     * @memberof HistogramData
      * @api
      */
     /**
@@ -129,7 +129,7 @@ Histogram.prototype._parseData = function (data, nulls, totalAmount) {
      * @property {number} nulls
      * @property {number} totalAmount
      * @property {BinItem[]} result
-     * @property {string} type - Constant 'histogram'
+     * @memberof carto.dataview.Histogram
      * @api
      */
     var maxFreq = _.max(data, function (bin) {
@@ -157,7 +157,6 @@ Histogram.prototype._checkOptions = function (options) {
     throw new TypeError('Options object to create a histogram dataview is required.');
   }
   this._validateBins(options.bins);
-  options.bins = Math.floor(options.bins);
 };
 
 Histogram.prototype._listenToInternalModelSpecificEvents = function () {

@@ -123,6 +123,9 @@ class User < Sequel::Model
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
+  STATE_ACTIVE = 'active'.freeze
+  STATE_LOCKED = 'locked'.freeze
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -1662,6 +1665,14 @@ class User < Sequel::Model
 
   def relevant_frontend_version
     frontend_version || CartoDB::Application.frontend_version
+  end
+
+  def active?
+    state == STATE_ACTIVE
+  end
+
+  def locked?
+    state == STATE_LOCKED
   end
 
   private

@@ -20,6 +20,7 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
+  before_filter :check_user_state
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
@@ -161,6 +162,17 @@ class ApplicationController < ActionController::Base
     right_referer && right_origin
   end
 
+  def check_user_state
+    return unless (request.path =~ %r{^\/(upgrade_trial|login|logout|unauthenticated)}).nil?
+    viewed_username = CartoDB.extract_subdomain(request)
+    if current_user.nil? || current_user.username != viewed_username
+      user = Carto::User.find_by_username(viewed_username)
+      render_locked_owner if user.try(:locked?)
+    elsif current_user.locked?
+      render_locked_user
+    end
+  end
+
   def render_403
     respond_to do |format|
       format.html { render(file: 'public/403.html', status: 403, layout: false) }
@@ -210,6 +222,28 @@ class ApplicationController < ActionController::Base
     if params[:api_key].present?
       got_auth = authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
       validate_session(current_user) if got_auth
+    end
+  end
+
+  def render_locked_user
+    respond_to do |format|
+      format.html do
+        redirect_to CartoDB.path(self, 'upgrade_trial')
+      end
+      format.json do
+        head 404
+      end
+    end
+  end
+
+  def render_locked_owner
+    respond_to do |format|
+      format.html do
+        render_404
+      end
+      format.json do
+        head 404
+      end
     end
   end
 

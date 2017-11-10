@@ -107,6 +107,11 @@ class SignupController < ApplicationController
     end
   end
 
+  def upgrade_trial
+    # TODO Render the personalized upgrade trial view
+    render action: 'upgrade_trial'
+  end
+
   private
 
   def oauth_provider

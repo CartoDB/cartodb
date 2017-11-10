@@ -12,19 +12,62 @@
     <!-- <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" /> -->
     <!-- Include cartodb.js Library -->
     <script src="../../dist/cartodb.uncompressed.js"></script>
-    <style>
-        #map {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+    <!-- common styles for the examples -->
+    <link rel="stylesheet" href="./_style.css">
+    <!-- Syntax highlighting library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/prism.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/themes/prism.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/components/prism-javascript.js"></script>
+
+
 </head>
 
 <body>
     <div id="map"></div>
+    <aside>
+        <h1>Error handling</h1>
+        <p>This example shows how to handle map related erros.
+            <br> Click the button to add a layer poiting to a inexistent data source and generate a reload-error.
+        </p>
+        <button id="addLayerBtn">Add malformed layer</button>
+        <hr>
+        <p>The following code shows how to handle a .addLayer error.</p>
+        <pre><code class="language-javascript">
+// Create the Client
+var client = window.client = new carto.Client({
+    apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+    serverUrl: 'https://cartojs-test.carto.com',
+    username: 'cartojs-test'
+});
+
+// Listen to all client errors
+client.on(carto.events.ERROR, function (clientError) {
+    console.error(clientError.message);
+});
+
+// Create a source pointing to a inexistent dataset.
+var populatedPlacesDataset = new carto.source.SQL('SELECT * FROM inexistent_relation');
+
+// Create a style
+var populatedPlacesStyle = new carto.style.CartoCSS(`
+    #layer {
+        marker-width: 10;
+        marker-fill: red;
+    }`);
+
+// Create the layer
+var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
+
+// Add the layer to the map
+client.getLeafletLayer().addTo(map);
+
+// When clicking in the button add the populatedPlacesLayer
+document.querySelector('#addLayerBtn').addEventListener('click', () => {
+    client.addLayer(populatedPlaces)
+        .catch(clientError => { alert(clientError.message) });
+});
+        </code></pre>
+    </aside>
     <script>
         (async () => {
             var i = 0; // Number of reload cycles.
@@ -39,34 +82,32 @@
                 username: 'cartojs-test'
             });
 
-            client.on(carto.events.SUCCESS, function () {
-                console.log('Client reloaded', i++);
-            });
-
+            // Listen to all client errors
             client.on(carto.events.ERROR, function (clientError) {
-                console.error('Client Error generico');
+                console.error(clientError.message);
             });
 
-            // Create a source
-            var populatedPlacesDataset = new carto.source.SQL('SELECT FROM ne_10m_populated_places_simple');
+            // Create a source pointing to a inexistent dataset.
+            var populatedPlacesDataset = new carto.source.SQL('SELECT * FROM inexistent_relation');
 
             // Create a style
             var populatedPlacesStyle = new carto.style.CartoCSS(`
                 #layer {
                   marker-width: 10;
-                  marker-fill: #CDCDCD;
+                  marker-fill: red;
                 }`);
 
-
+            // Create the layer
             var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
-            
-            client.addLayer(populatedPlaces).catch(function(clientError) {
-                console.error(clientError);
-            });
-
 
             // Add the layer to the map
             client.getLeafletLayer().addTo(map);
+
+            // When clicking in the button add the populatedPlacesLayer
+            document.querySelector('#addLayerBtn').addEventListener('click', () => {
+                client.addLayer(populatedPlaces)
+                    .catch(clientError => { alert(clientError.message) });
+            });
         })();
     </script>
 </body>

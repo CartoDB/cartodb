@@ -1,21 +1,32 @@
 var _ = require('underscore');
 
 /**
- * @description
- * #Object containing histogram data.
+ * Transform the data obtained from an internal histogram dataview into a 
+ * public object.
  * 
- * @typedef {object} HistogramData
- * @property {number} nulls - The number of items with null value.
- * @property {number} totalAmount - The number of elements returned.
- * @property {BinItem[]} result - Array containing the {@link BinItem|data bins} for the histogram. .
- * @property {string} type - String with value: **histogram**
- * @api
+ * @param {object[]} data - The raw histogram data
+ * @param {number} nulls - Number of data with a null
+ * @param {number} totalAmount - Total number of data in the histogram.
+ * 
+ * @return {HistogramData} - The parsed and formatted data for the given parameters.
  */
-function HistogramData (data, nulls, totalAmount) {
+function parseHistogramData (data, nulls, totalAmount) {
   if (!data) {
     return null;
   }
   var maxFreq = _.max(data, function (bin) { return bin.freq || 0; }).freq;
+
+  /**
+   * @description
+   * #Object containing histogram data.
+   * 
+   * @typedef {object} HistogramData
+   * @property {number} nulls - The number of items with null value.
+   * @property {number} totalAmount - The number of elements returned.
+   * @property {BinItem[]} result - Array containing the {@link BinItem|data bins} for the histogram. .
+   * @property {string} type - String with value: **histogram**
+   * @api
+   */
   return {
     result: _createResult(data, maxFreq),
     nulls: nulls || 0,
@@ -42,4 +53,4 @@ function _createResult (data, maxFreq) {
   });
 }
 
-module.exports = HistogramData;
+module.exports = parseHistogramData;

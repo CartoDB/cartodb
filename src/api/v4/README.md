@@ -23,9 +23,9 @@ All the api methods and objects are exposed through the public `carto` object.
 - `carto.dataview` : Namespace for the dataviews
     - `Formula`: Constructor to build a Formula dataview
     - `Category`: Constructor to build a Category dataview
+    - `Histogram`: Constructor to build a Histogram dataview
 - `carto.filter` : Namespace for the filters
     - `BoundingBox`: Constructor to build a BoundingBox filter
-
 
 - `carto.events` : Enum with the events available in the client.
 - `carto.operation` : Enum with the operations available.

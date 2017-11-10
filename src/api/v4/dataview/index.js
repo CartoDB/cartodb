@@ -1,5 +1,6 @@
-var Formula = require('./formula');
 var Category = require('./category');
+var Formula = require('./formula');
+var Histogram = require('./histogram');
 var status = require('../constants').status;
 
 /**
@@ -7,7 +8,8 @@ var status = require('../constants').status;
  * @api
  */
 module.exports = {
-  Formula: Formula,
   Category: Category,
+  Formula: Formula,
+  Histogram: Histogram,
   status: status
 };

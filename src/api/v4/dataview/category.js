@@ -10,7 +10,7 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * @param {carto.source.Base} source - The source where the dataview will fetch the data.
  * @param {string} column - The column name to get the data.
  * @param {object} options
- * @param {number} options.limit - The maximum number of categories in the response.
+ * @param {number} [options.limit=6] - The maximum number of categories in the response.
  * @param {carto.operation} options.operation - The operation to apply to the data.
  * @param {string} options.operationColumn - The column name used in the operation.
  *
@@ -31,7 +31,7 @@ function Category (source, column, options) {
 Category.prototype = Object.create(Base.prototype);
 
 /**
- * Set the dataview limit
+ * Set the categories limit
  *
  * @param  {number} limit
  * @return {carto.dataview.Category} this
@@ -47,7 +47,7 @@ Category.prototype.setLimit = function (limit) {
 };
 
 /**
- * Return the current dataview limit
+ * Return the current categories limit
  *
  * @return {number} Current dataview limit
  * @api

@@ -38,12 +38,9 @@
   <script>
     function createHistogram (options) {
       var data = options.data || [];
-      var top = options.top || false;
       var status = options.status || '';
 
-      var id = top
-      ? 'histogram-top'
-      : 'histogram';
+      var id = 'histogram';
       var mainDiv = document.querySelector('#' + id);
       if (mainDiv !== null) {
         mainDiv.remove();
@@ -51,7 +48,7 @@
       mainDiv = document.createElement('div');
       mainDiv.id = id;
       mainDiv.style.position = 'absolute';
-      mainDiv.style.bottom = top ? '128px' : 0;
+      mainDiv.style.bottom = 0;
       mainDiv.style.left = 0;
       mainDiv.style.height = '128px';
       mainDiv.style.width = '100%';
@@ -76,9 +73,7 @@
           div.style.left = (index * divWidth + 32 + index * 2) + 'px';
           div.style.height = (bin.normalized * 128) + 'px';
           div.style.width = '' + divWidth + 'px';
-          div.style.backgroundColor = top
-            ? '#000000'
-            : '#FF0000';
+          div.style.backgroundColor = '#FF0000';
           div.style.zIndex = 1100;
           mainDiv.appendChild(div);
         });
@@ -132,14 +127,7 @@
 
       histogram.on('dataChanged', function (newData) {
         console.log('Data changed', newData);
-        createHistogram({
-          data: histogram.getData().result,
-          top: false
-        });
-        createHistogram({
-          data: histogram.getTotalsData().result,
-          top: true
-        });
+        createHistogram({ data: histogram.getData().result });
       });
 
       // histogram.on('columnChanged', function (newColumn) {

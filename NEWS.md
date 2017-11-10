@@ -13,6 +13,7 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
+* Remove forget confirmation from onboarding tour (#13039)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
 * Style: Rename "none" aggregation to "points" (#13005)
@@ -85,6 +86,7 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
 * Documentation, fixed spelling and grammar in en.json

@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Editor static view (#13043)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
 * Style: Rename "none" aggregation to "points" (#13005)

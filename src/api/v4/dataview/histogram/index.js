@@ -1,6 +1,7 @@
 var _ = require('underscore');
-var Base = require('./base');
-var HistogramDataviewModel = require('../../..//dataviews/histogram-dataview-model');
+var Base = require('../base');
+var HistogramDataviewModel = require('../../../..//dataviews/histogram-dataview-model');
+var parseHistogramData = require('./parse-histogram-data.js');
 
 /**
  * Histogram dataview object
@@ -78,7 +79,7 @@ Histogram.prototype.getBins = function () {
 };
 
 /**
- * Return the distribution type of the current data according to Galtung’s AJUS System https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification
+ * Return the distribution type of the current data according to [Galtung’s AJUS System]{@link https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification}
  * 
  * @return {string} Distribution type of current data
  * @api 
@@ -92,7 +93,7 @@ Histogram.prototype.getDistributionType = function () {
 };
 
 /**
- * Return the distribution type of the totals data according to Galtung’s AJUS System https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification
+ * Return the distribution type of the totals data according to [Galtung’s AJUS System]{@link https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification}
  * 
  * @return {string} Distribution type of current data
  * @api 
@@ -112,44 +113,7 @@ Histogram.prototype._validateBins = function (bins) {
 };
 
 Histogram.prototype._parseData = function (data, nulls, totalAmount) {
-  if (data) {
-    /**
-     * @typedef {object} BinItem
-     * @property {number} index
-     * @property {number} min - Only appears if freq > 0
-     * @property {number} max - Only appears if freq > 0
-     * @property {number} avg - Only appears if freq > 0
-     * @property {number} freq
-     * @property {number} normalized
-     * @memberof HistogramData
-     * @api
-     */
-    /**
-     * @typedef {object} HistogramData
-     * @property {number} nulls
-     * @property {number} totalAmount
-     * @property {BinItem[]} result
-     * @memberof carto.dataview.Histogram
-     * @api
-     */
-    var maxFreq = _.max(data, function (bin) {
-      return bin.freq || 0;
-    }).freq;
-    var result = data.map(function (bin) {
-      return _.extend(bin, {
-        normalized: _.isFinite(bin.freq)
-          ? bin.freq / maxFreq
-          : 0
-      });
-    });
-
-    return {
-      result: result,
-      nulls: nulls || 0,
-      totalAmount: totalAmount
-    };
-  }
-  return null;
+  return parseHistogramData(data, nulls, totalAmount);
 };
 
 Histogram.prototype._checkOptions = function (options) {

@@ -56,7 +56,7 @@ module Carto
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host),
           google_sign_in: carto_viewer.try(:google_sign_in),
-          iframe_src: carto_viewer.present? ? iframe_src : nil
+          google_plus_iframe_src: carto_viewer.present? ? google_plus_iframe_src : nil
         }
       end
 
@@ -137,7 +137,7 @@ module Carto
 
       private
 
-      def iframe_src
+      def google_plus_iframe_src
         @google_plus_config.present? ? @google_plus_config.iframe_src : nil
       end
 

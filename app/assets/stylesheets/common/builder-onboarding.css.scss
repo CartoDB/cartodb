@@ -248,10 +248,6 @@ $cBackgroundColor: #2E3C43;
   }
 }
 
-.BuilderOnboarding-forgetLabel {
-  cursor: pointer;
-}
-
 .BuilderOnboarding-shadow {
   @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   position: absolute;

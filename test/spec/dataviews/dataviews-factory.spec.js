@@ -15,7 +15,7 @@ var generateFakeAttributes = function (attrNames) {
 };
 
 var createMapMock = function () {
-  var map = jasmine.createSpyObj('map', ['getViewBounds']);
+  var map = jasmine.createSpyObj('map', ['getViewBounds', 'on']);
   map.getViewBounds.and.returnValue([[40.6, -3.5], [40.3, -3.8]]);
 
   return map;

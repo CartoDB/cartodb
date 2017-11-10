@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var WindshaftFiltersRange = require('../../../src/windshaft/filters/range');
 var WindshaftFiltersBoundingBox = require('../../../src/windshaft/filters/bounding-box');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
+var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');
 var MockFactory = require('../../helpers/mockFactory');
 
@@ -14,13 +15,13 @@ function randomString (length, chars) {
 describe('dataviews/histogram-dataview-model', function () {
   var engineMock;
   beforeEach(function () {
-    this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind']);
+    this.map = jasmine.createSpyObj('map', ['getViewBounds', 'on']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     engineMock = MockFactory.createEngine();
     spyOn(engineMock, 'reload');
 
     this.filter = new WindshaftFiltersRange();
-    this.bboxFilter = new WindshaftFiltersBoundingBox(this.map);
+    this.bboxFilter = new WindshaftFiltersBoundingBox(new MapModelBoundingBoxAdapter(this.map));
 
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();

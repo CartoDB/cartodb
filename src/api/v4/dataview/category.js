@@ -232,11 +232,12 @@ Category.prototype._createInternalModel = function (engine) {
     aggregation_column: this._operationColumn,
     categories: this._limit,
     sync_on_data_change: true,
-    sync_on_bbox_change: false,
+    sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled
   }, {
     engine: engine,
-    filter: new CategoryFilter()
+    filter: new CategoryFilter(),
+    bboxFilter: this._boundingBoxFilter && this._boundingBoxFilter.$getInternalModel()
   });
 };
 

@@ -2,6 +2,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var status = require('../constants').status;
 var SourceBase = require('../source/base');
+var FilterBase = require('../filter/base');
+var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
 
 /**
  * Base dataview object
@@ -115,6 +117,48 @@ Base.prototype.getColumn = function () {
   return this._column;
 };
 
+/**
+ * Add a filter
+ *
+ * @param  {carto.filter.Base} filter
+ * @return {carto.dataview.Base} this
+ * @api
+ */
+Base.prototype.addFilter = function (filter) {
+  this._checkFilter(filter);
+  if ((filter instanceof BoundingBoxLeafletFilter) && (filter !== this._boundingBoxFilter)) {
+    this._addBoundingBoxFilter(filter);
+  }
+  return this;
+};
+
+/**
+ * Remove a filter
+ *
+ * @param  {carto.filter.Base} filter
+ * @return {carto.dataview.Base} this
+ * @api
+ */
+Base.prototype.removeFilter = function (filter) {
+  this._checkFilter(filter);
+  if ((filter instanceof BoundingBoxLeafletFilter) && (filter === this._boundingBoxFilter)) {
+    this._removeBoundingBoxFilter();
+  }
+  return this;
+};
+
+/**
+ * Return true if the filter is added
+ *
+ * @param  {carto.filter.Base} filter
+ * @return {carto.dataview.Base} this
+ * @api
+ */
+Base.prototype.hasFilter = function (filter) {
+  this._checkFilter(filter);
+  return (filter instanceof BoundingBoxLeafletFilter) && (filter === this._boundingBoxFilter) && (this._internalModel && this._internalModel.get('sync_on_bbox_change'));
+};
+
 Base.prototype.getData = function () {
   throw new Error('getData must be implemented by the particular dataview.');
 };
@@ -143,6 +187,7 @@ Base.prototype._initialize = function (source, column, options) {
 
   this._status = status.NOT_LOADED;
   this._enabled = true;
+  this._boundingBoxFilter = null;
 };
 
 Base.prototype._checkSource = function (source) {
@@ -165,6 +210,12 @@ Base.prototype._checkColumn = function (column) {
 
 Base.prototype._checkOptions = function (options) {
   throw new Error('_checkOptions must be implemented by the particular dataview.');
+};
+
+Base.prototype._checkFilter = function (filter) {
+  if (!(filter instanceof FilterBase)) {
+    throw new TypeError('Filter property is required.');
+  }
 };
 
 Base.prototype._createInternalModel = function (engine) {
@@ -232,6 +283,20 @@ Base.prototype._changeProperty = function (key, value, internalKey) {
 
 Base.prototype._triggerChange = function (key, value) {
   this.trigger(key + 'Changed', value);
+};
+
+Base.prototype._addBoundingBoxFilter = function (filter) {
+  this._boundingBoxFilter = filter;
+  if (this._internalModel) {
+    this._internalModel.addBBoxFilter(this._boundingBoxFilter.$getInternalModel());
+    this._internalModel.set('sync_on_bbox_change', true);
+  }
+};
+
+Base.prototype._removeBoundingBoxFilter = function () {
+  if (this._internalModel) {
+    this._internalModel.set('sync_on_bbox_change', false);
+  }
 };
 
 // Internal public methods

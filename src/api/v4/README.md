@@ -5,7 +5,7 @@ This folder contains the source files used in the `v4 public api`.
 This api build using wrappers over the internal objects, those wrappers have an easy-to-use public methods,
 the reference to the internal objects can be obtained  with the `$getInternalModel` method.
 
-The `$` before a method name is a naming convetion. Those methods sall not be exposed in the public API
+The `$` before a method name is a naming convention. Those methods shall not be exposed in the public API
 but can be used from different files. (Public only for developers).
 
 ## Api structure
@@ -23,7 +23,14 @@ All the api methods and objects are exposed through the public `carto` object.
 - `carto.dataview` : Namespace for the dataviews
     - `Formula`: Constructor to build a Formula dataview
     - `Category`: Constructor to build a Category dataview
+<<<<<<< HEAD
     - `Histogram`: Constructor to build a Histogram dataview
+=======
+- `carto.filter` : Namespace for the filters
+    - `BoundingBox`: Constructor to build a BoundingBox filter
+
+
+>>>>>>> public-api
 - `carto.events` : Enum with the events available in the client.
 - `carto.operation` : Enum with the operations available.
 - `carto.dataview.status` : Enum with the dataview statuses available.
@@ -39,5 +46,5 @@ const carto = require('cartojs');
 ### Loading carto.js from a CDN
 
 ```javascript
-window.carto; // All the api is availiable here
+window.carto; // All the api is available here
 ```

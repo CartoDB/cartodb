@@ -4,6 +4,7 @@ var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-mo
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 var WindshaftFiltersBoundingBox = require('../../../src/windshaft/filters/bounding-box');
 var AnalysisService = require('../../../src/analysis/analysis-service');
+var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 var MockFactory = require('../../helpers/mockFactory');
 
 describe('dataviews/category-dataview-model', function () {
@@ -31,7 +32,7 @@ describe('dataviews/category-dataview-model', function () {
     }, {
       engine: engineMock,
       filter: new WindshaftFiltersCategory(),
-      bboxFilter: new WindshaftFiltersBoundingBox(this.map)
+      bboxFilter: new WindshaftFiltersBoundingBox(new MapModelBoundingBoxAdapter(this.map))
     });
   });
 

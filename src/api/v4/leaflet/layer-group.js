@@ -41,7 +41,10 @@ LayerGroup.prototype._onFeatureClick = function (internalEvent) {
 };
 
 LayerGroup.prototype._onFeatureOver = function (internalEvent) {
-  this._leafletMap.getContainer().style.cursor = 'pointer';
+  var layer = this._layers.findById(internalEvent.layer.id);
+  if (layer && (layer.hasFeatureClickColumns() || layer.hasFeatureOverColumns())) {
+    this._leafletMap.getContainer().style.cursor = 'pointer';
+  }
   this._triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, internalEvent);
 };
 

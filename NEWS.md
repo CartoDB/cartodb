@@ -83,6 +83,7 @@ ion for time-series (#12670)
 * Improve legends error (cartodb.js#1758)
 * Updates Dataservices API client default version to `0.21.0` (#12942)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
+* User accounts in locked state returns 404 for resources like maps or visualizatios and redirection for private endpoints (#13030)
 
 ### Bug fixes / enhancements
 * Fix dashboard redirections (#12775)

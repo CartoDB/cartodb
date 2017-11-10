@@ -72,7 +72,7 @@ module.exports = DataviewModelBase.extend({
     this._data = new Backbone.Collection(this.get('data'));
 
     if (attrs && (attrs.min || attrs.max)) {
-      this.filter.setRange(this.get('min'), this.get('max'));
+      this.filter && this.filter.setRange(this.get('min'), this.get('max'));
     }
   },
 
@@ -319,7 +319,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onColumnTypeChanged: function () {
-    this.filter.set('column_type', this.get('column_type'));
+    this.filter && this.filter.set('column_type', this.get('column_type'));
   },
 
   _onChangeBinds: function () {
@@ -395,7 +395,7 @@ module.exports = DataviewModelBase.extend({
 
   _resetFilter: function () {
     this.disableFilter();
-    this.filter.unsetRange();
+    this.filter && this.filter.unsetRange();
   },
 
   _getCurrentOffset: function () {

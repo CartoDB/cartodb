@@ -1,7 +1,7 @@
 var carto = require('../../../../src/api/v4');
 var LeafletLayerGroup = require('../../../../src/api/v4/leaflet/layer-group');
 
-fdescribe('api/v4/client', function () {
+describe('api/v4/client', function () {
   var client;
 
   beforeEach(function () {

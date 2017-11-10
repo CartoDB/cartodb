@@ -13,6 +13,7 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Stop adding legends automatically when styling a layer (#13052)
+* Remove forget confirmation from onboarding tour (#13039)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
 * Style: Rename "none" aggregation to "points" (#13005)

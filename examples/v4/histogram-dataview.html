@@ -88,7 +88,6 @@
       // Create the Client
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://cartojs-test.carto.com:443',
         username: 'cartojs-test'
       });
 
@@ -130,10 +129,6 @@
         createHistogram({ data: histogram.getData().result });
       });
 
-      // histogram.on('columnChanged', function (newColumn) {
-      //   console.log('Column changed', newColumn);
-      // });
-
       histogram.on('statusChanged', function (newStatus, error) {
         console.log('Status changed', newStatus, error);
         if (newStatus === carto.dataview.status.LOADING) {
@@ -143,6 +138,10 @@
         console.log('loaded');
         }
       });
+
+      // Add Bounding box filter
+      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+      histogram.addFilter(bboxFilter);
 
       client.addDataview(histogram);
     })();

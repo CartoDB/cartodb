@@ -174,7 +174,7 @@ module Carto
     def set_defaults
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
-
+      self.dry = false unless dry
       save
     end
   end

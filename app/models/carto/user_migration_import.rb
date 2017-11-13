@@ -167,7 +167,8 @@ module Carto
         into_org_name: nil,
         mode: :import,
         logger: log.logger,
-        import_job_logger: log.logger
+        import_job_logger: log.logger,
+        dry: dry
       }
     end
 

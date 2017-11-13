@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/style/cartocss', function () {
+fdescribe('api/v4/style/cartocss', function () {
   var cartoCSS;
 
   beforeEach(function () {
@@ -28,6 +28,24 @@ describe('api/v4/style/cartocss', function () {
       expect(function () {
         new carto.style.CartoCSS(3333); // eslint-disable-line
       }).toThrowError('cartoCSS must be a string.');
+    });
+  });
+
+  describe('errors', function () {
+    it('should trigger a CartoError when the style is not valid', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var source = carto.source.Dataset('ne_10m_populated_places_simple');
+      var invalidCartoCSS = new carto.style.CartoCSS('#layer { invalid-property: 10; }');
+
+      invalidCartoCSS.on('error', function (cartoError) {
+        expect(cartoError.message).toEqual('');
+        done();
+      });
+      var layer = new carto.layer.Layer(source, invalidCartoCSS);
+      client.addLayer(layer);
     });
   });
 });

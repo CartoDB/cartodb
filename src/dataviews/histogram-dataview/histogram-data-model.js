@@ -71,23 +71,23 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.on('change:url', function () {
-      this.fetch();
+      this.refresh();
     }, this);
 
     this.on('change:aggregation change:offset', function () {
       if (this.get('column_type') === 'date' && this.get('aggregation')) {
-        this.fetch();
+        this.refresh();
       }
     }, this);
 
     this.on('change:bins', function () {
       if (this.get('column_type') === 'number') {
-        this.fetch();
+        this.refresh();
       }
     }, this);
 
     this.on('change:localTimezone', function () {
-      this.fetch();
+      this.refresh();
     }, this);
 
     this.on('change:column', function () {
@@ -129,7 +129,7 @@ module.exports = Model.extend({
       parsedData.data[bin.bin] = bin;
     });
 
-    if (numberOfBins > DEFAULT_MAX_BUCKETS) {
+    if (numberOfBins > DEFAULT_MAX_BUCKETS && this.get('column_type') === 'date') {
       parsedData.error = 'Max bins limit reached';
       parsedData.bins = numberOfBins;
       return parsedData;

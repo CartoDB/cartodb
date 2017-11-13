@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
 var LegendViewBase = require('../../../../../../src/geo/ui/legends/base/legend-view-base.js');
 var LegendModelBase = require('../../../../../../src/geo/map/legends/legend-model-base.js');
+var MockFactory = require('../../../../../helpers/mockFactory');
 
 var MyLegendModel = LegendModelBase.extend({
   TYPE: 'something',
@@ -17,15 +17,16 @@ var MyLegendView = LegendViewBase.extend({
 });
 
 describe('geo/ui/legends/legend-view-base.js', function () {
+  var engineMock;
   beforeEach(function () {
-    this.visModel = new Backbone.Model();
+    engineMock = MockFactory.createEngine();
     this.model = new MyLegendModel({
       title: 'My Beautiful Legend',
       preHTMLSnippet: '<p>before</p>',
       postHTMLSnippet: '<p>after</p>',
       visible: true
     }, {
-      visModel: this.visModel
+      engine: engineMock
     });
 
     this.myLegend = new MyLegendView({
@@ -46,8 +47,8 @@ describe('geo/ui/legends/legend-view-base.js', function () {
       expect(this.myLegend.$el.hasClass('is-loading')).toBeTruthy();
     });
 
-    it('should render a placeholder', function () {
-      expect(this.myLegend.$el.html()).toMatch('Placeholder');
+    it('should only render a placeholder', function () {
+      expect(this.myLegend.$el.html()).toEqual('<p>Placeholder</p>');
     });
   });
 
@@ -64,6 +65,10 @@ describe('geo/ui/legends/legend-view-base.js', function () {
     it('should render a placeholder', function () {
       expect(this.myLegend.$el.html()).toMatch('Placeholder');
     });
+
+    it('should render an error', function () {
+      expect(this.myLegend.$el.html()).toMatch('Something went wrong');
+    });
   });
 
   describe('if model has been loaded and has no data', function () {
@@ -79,6 +84,10 @@ describe('geo/ui/legends/legend-view-base.js', function () {
 
     it('should render a placeholder', function () {
       expect(this.myLegend.$el.html()).toMatch('Placeholder');
+    });
+
+    it('should render a warning', function () {
+      expect(this.myLegend.$el.html()).toMatch('No data available');
     });
   });
 

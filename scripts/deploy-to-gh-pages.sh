@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Pull requests and commits to other branches shouldn't try to deploy
-if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" != "v4" ]; then
+if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" != "public-api" ]; then
   echo "The branch $TRAVIS_BRANCH does not generate docs"
   echo "Skip deploy."
   exit 0

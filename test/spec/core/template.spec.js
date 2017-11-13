@@ -10,14 +10,14 @@ describe('core/template', function () {
   });
 
   it('should render', function () {
-    expect(tmpl.render({name: 'rambo'})).toEqual('hi, my name is rambo');
+    expect(tmpl.render({name: 'cartojs-test'})).toEqual('hi, my name is cartojs-test');
   });
 
   it('should accept compiled templates', function () {
     tmpl = new Template({
       compiled: function (vars) { return 'hola ' + vars.name; }
     });
-    expect(tmpl.render({name: 'rambo'})).toEqual('hola rambo');
+    expect(tmpl.render({name: 'cartojs-test'})).toEqual('hola cartojs-test');
   });
 
   it('should render using mustache', function () {
@@ -26,6 +26,6 @@ describe('core/template', function () {
       type: 'mustache'
     });
 
-    expect(tmpl.render({name: 'rambo'})).toEqual('hi, my name is rambo');
+    expect(tmpl.render({name: 'cartojs-test'})).toEqual('hi, my name is cartojs-test');
   });
 });

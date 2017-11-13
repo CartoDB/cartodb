@@ -1,6 +1,17 @@
 var _ = require('underscore');
+var MockFactory = require('../../../helpers/mockFactory');
 
 module.exports = function (LayerModel) {
+  var layer;
+  var source;
+  var engineMock;
+
+  beforeEach(function () {
+    source = MockFactory.createAnalysisModel({ id: 'a0' });
+    engineMock = MockFactory.createEngine();
+    layer = new LayerModel({source: source}, { engine: engineMock });
+  });
+
   var METHODS = [
     'isVisible',
     'getName'
@@ -8,8 +19,6 @@ module.exports = function (LayerModel) {
 
   _.each(METHODS, function (method) {
     it('should respond to .' + method, function () {
-      var layer = new LayerModel({}, { vis: this.vis });
-
       expect(typeof layer[method] === 'function').toBeTruthy();
     });
   });
@@ -22,14 +31,45 @@ module.exports = function (LayerModel) {
       { type: 'custom', title: 'My Custom Legend' }
     ];
 
-    var layer = new LayerModel({
-      legends: legends
-    }, { vis: this.vis });
+    layer = new LayerModel({ legends: legends }, { engine: engineMock });
 
     expect(layer.get('legends')).toBeUndefined();
     expect(layer.legends.bubble.get('title')).toEqual('My Bubble Legend');
     expect(layer.legends.category.get('title')).toEqual('My Category Legend');
     expect(layer.legends.choropleth.get('title')).toEqual('My Choropleth Legend');
     expect(layer.legends.custom.get('title')).toEqual('My Custom Legend');
+  });
+
+  describe('source references', function () {
+    describe('when layer is initialized', function () {
+      it('should mark source as referenced', function () {
+        expect(source.isSourceOf(layer)).toBe(true);
+      });
+    });
+
+    describe('when layer is updated', function () {
+      it('should unmark source and mark new source as referenced', function () {
+        var oldSource = source;
+        var newSource = MockFactory.createAnalysisModel({ id: 'a1' });
+
+        expect(oldSource.isSourceOf(layer)).toBe(true);
+        expect(newSource.isSourceOf(layer)).toBe(false);
+
+        layer.setSource(newSource);
+
+        expect(oldSource.isSourceOf(layer)).toBe(false);
+        expect(newSource.isSourceOf(layer)).toBe(true);
+      });
+    });
+
+    describe('when layer is removed', function () {
+      it('should unmark source as referenced', function () {
+        expect(source.isSourceOf(layer)).toBe(true);
+
+        layer.remove();
+
+        expect(source.isSourceOf(layer)).toBe(false);
+      });
+    });
   });
 };

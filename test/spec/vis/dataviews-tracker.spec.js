@@ -1,24 +1,20 @@
-var VisModel = require('../../../src/vis/vis');
 var DataviewsCollection = require('../../../src/dataviews/dataviews-collection');
 var DataviewModel = require('../../../src/dataviews/dataview-model-base');
 var whenAllDataviewsFetched = require('../../../src/vis/dataviews-tracker');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('src/vis/dataviews-tracker', function () {
   var options = {
     map: {},
-    vis: {},
-    analysisCollection: []
+    engine: {}
   };
 
   beforeEach(function () {
     this.dataviewsFetched = jasmine.createSpy('dataviewsFetched');
 
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    this.source = MockFactory.createAnalysisModel({ id: 'a1' });
 
     this.onDataviewsfetched = jasmine.createSpy('onDataviewsfetched');
-    spyOn(DataviewModel.prototype, '_initBinds');
-    spyOn(DataviewModel.prototype, '_setupAnalysisStatusEvents');
 
     this.dataviewsCollection = new DataviewsCollection([]);
 
@@ -27,12 +23,12 @@ describe('src/vis/dataviews-tracker', function () {
 
   it('should check fetchStatus when any dataviews changes', function () {
     var dataview1 = new DataviewModel({
-      source: 'a1'
+      source: this.source
     }, options);
     this.dataviewsCollection.add(dataview1);
 
     var dataview2 = new DataviewModel({
-      source: 'a1'
+      source: this.source
     }, options);
     this.dataviewsCollection.add(dataview2);
 
@@ -44,12 +40,12 @@ describe('src/vis/dataviews-tracker', function () {
 
   it('should trigger dataviewsFetched event when all dataviews fetches', function () {
     var dataview1 = new DataviewModel({
-      source: 'a1'
+      source: this.source
     }, options);
     this.dataviewsCollection.add(dataview1);
 
     var dataview2 = new DataviewModel({
-      source: 'a1'
+      source: this.source
     }, options);
     this.dataviewsCollection.add(dataview2);
 

@@ -1,22 +1,19 @@
 var Backbone = require('backbone');
 var DataviewModel = require('../../../src/dataviews/dataview-model-base');
+var MockFactory = require('../../helpers/mockFactory');
 
 describe('dataviews/dataview-collection', function () {
   beforeEach(function () {
     this.collection = new Backbone.Collection();
+    this.source = MockFactory.createAnalysisModel({ id: 'a0' });
   });
 
   it('should remove item when removed', function () {
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'off']);
     map.getViewBounds.and.returnValue([[0, 0], [0, 0]]);
-    var vis = jasmine.createSpyObj('vis', ['reload']);
-    var layer = new Backbone.Model();
-    var dataviewModel = new DataviewModel({source: {id: 'a0'}}, {
-      map: map,
-      vis: vis,
-      analysisCollection: new Backbone.Collection(),
-      layer: layer
-    });
+    var engineMock = jasmine.createSpyObj('engine', ['reload']);
+    var dataviewModel = new DataviewModel({ source: this.source }, { map: map, engine: engineMock });
+
     this.collection.add(dataviewModel);
     expect(this.collection.length).toEqual(1);
     this.collection.first().remove();

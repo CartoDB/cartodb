@@ -23,7 +23,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
 
@@ -53,7 +53,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     var mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();
@@ -93,7 +93,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     var mapView = new GoogleMapsMapView({
       el: container,
       mapModel: map,
-      visModel: new Backbone.Model(),
+      engine: new Backbone.Model(),
       layerGroupModel: new Backbone.Model()
     });
     mapView.render();
@@ -140,6 +140,17 @@ describe('geo/gmaps/gmaps-map-view', function () {
       var latLngToPixel = map.latLngToPixel();
       latLngToPixel([0, 0]);
       expect(mapView.projector.latLngToPixel).toHaveBeenCalled();
+    });
+  });
+
+  describe('listeners', function () {
+    beforeEach(function (done) {
+      // Listen for the map to be loaded
+      mapView.listenOnce('idle', done);
+    });
+
+    it('sets isReady to true if idle event is triggered', function () {
+      expect(mapView._isReady).toBe(true);
     });
   });
 });

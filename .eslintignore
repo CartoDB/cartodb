@@ -1,6 +1,9 @@
 /dist
 /doc
+/docs
 /examples
 /grunt
 /themes
 /vendor
+/cartodb.js-bower
+

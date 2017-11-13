@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var LeafletLayerView = require('../../../../src/geo/leaflet/leaflet-layer-view');
 
 LeafletLayerView.prototype._createLeafletLayer = function () {
-  return jasmine.createSpyObj('leafletLayer', ['redraw']);
+  return jasmine.createSpyObj('leafletLayer', ['redraw', 'on']);
 };
 
 describe('leaflet-layer-view', function () {

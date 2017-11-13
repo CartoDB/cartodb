@@ -88,9 +88,9 @@ LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, native
   if (LayerViewClass) {
     try {
       return new LayerViewClass(layerModel, nativeMap, mapModel);
-    } catch (e) {
-      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + e.message);
-      throw e;
+    } catch (error) {
+      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + error.message);
+      throw error;
     }
   } else {
     log.error("Error creating an instance of layer view for '" + layerType + "' layer. Type is not supported");

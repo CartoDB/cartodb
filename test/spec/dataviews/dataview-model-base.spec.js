@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var VisModel = require('../../../src/vis/vis.js');
-var MapModel = require('../../../src/geo/map.js');
+var VisModel = require('../../../src/vis/vis');
+var MapModel = require('../../../src/geo/map');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
-var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
-var CartoDBLayer = require('../../../src/geo/map/cartodb-layer.js');
+var AnalysisService = require('../../../src/analysis/analysis-service');
+var MockFactory = require('../../helpers/mockFactory');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -37,6 +37,8 @@ var fakeCamshaftReference = {
 };
 
 describe('dataviews/dataview-model-base', function () {
+  var engineMock;
+
   beforeEach(function () {
     this.map = new MapModel(null, {
       layersFactory: {}
@@ -44,32 +46,36 @@ describe('dataviews/dataview-model-base', function () {
     this.map.setBounds([102, 200], [300, 400]);
 
     this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    engineMock = this.vis._createEngine({
+      urlTemplate: 'fakeUrlTemplate',
+      userName: 'fakeUsername',
+      statTag: 'fakeStatTag',
+      apiKey: 'fakeApiKey',
+      authToken: 'fakeAuthToken',
+      templateName: 'fakeTemplateName'
+    });
+
+    spyOn(engineMock, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
 
-    this.analysisCollection = new Backbone.Collection();
-    this.a0 = this.analysisCollection.add({
+    this.analysisService = new AnalysisService({
+      engine: engineMock,
+      camshaftReference: fakeCamshaftReference
+    });
+    this.source = this.analysisService.analyse({
       id: 'a0',
       type: 'source'
     });
-    this.layer = new CartoDBLayer(null, { vis: this.vis });
+    this.analysisNodes = this.source.getNodesCollection();
 
     this.model = new DataviewModelBase({
-      source: {id: 'a0'}
+      source: this.source
     }, {
-      layer: this.layer,
       map: this.map,
-      vis: this.vis,
-      analysisCollection: this.analysisCollection
+      engine: engineMock
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
-    this.vis._dataviewsCollection.add(this.model);
-
-    this.analysisFactory = new AnalysisFactory({
-      analysisCollection: this.analysisCollection,
-      camshaftReference: fakeCamshaftReference,
-      vis: this.vis
-    });
+    engineMock._dataviewsCollection.add(this.model);
 
     // Disable debounce
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
@@ -239,8 +245,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
-        this.analysisCollection.reset([]);
-        this.analysisFactory.analyse({
+        var analysisA = this.analysisService.analyse({
           id: 'a2',
           type: 'estimated-population',
           params: {
@@ -262,10 +267,9 @@ describe('dataviews/dataview-model-base', function () {
             }
           }
         });
+        var analysisNodes = analysisA.getNodesCollection();
 
-        this.model.set('source', {
-          id: 'a1'
-        }, { silent: true });
+        this.model.set('source', analysisNodes.get('a1'), { silent: true });
 
         spyOn(this.model, 'fetch');
       });
@@ -414,28 +418,20 @@ describe('dataviews/dataview-model-base', function () {
   });
 
   describe('bindings to the filter', function () {
-    beforeEach(function () {
-      this.layer = new CartoDBLayer({
-        id: 'layerId'
-      }, { vis: this.vis });
-    });
-
     it('should reload the map by default when the filter changes', function () {
       var filter = new Backbone.Model();
       new DataviewModelBase({ // eslint-disable-line
-        source: { id: 'a0' }
+        source: this.source
       }, {
-        layer: this.layer,
         map: this.map,
-        vis: this.vis,
-        filter: filter,
-        analysisCollection: this.analysisCollection
+        engine: engineMock,
+        filter: filter
       });
 
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.vis.reload).toHaveBeenCalledWith({ sourceId: 'a0' });
+      expect(engineMock.reload).toHaveBeenCalledWith({ sourceId: 'a0' });
     });
   });
 
@@ -444,9 +440,7 @@ describe('dataviews/dataview-model-base', function () {
       this.removeSpy = jasmine.createSpy('remove');
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
-      spyOn(this.model, '_reloadVis');
-      spyOn(this.model.layer, 'off').and.callThrough();
-      spyOn(this.a0, 'off').and.callThrough();
+      spyOn(this.source, 'off').and.callThrough();
 
       this.model.filter = jasmine.createSpyObj('filter', ['remove', 'isEmpty']);
       this.model.filter.isEmpty.and.returnValue(false);
@@ -460,7 +454,7 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should stop listening to events', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
-      expect(this.a0.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);
+      expect(this.source.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);
     });
   });
 
@@ -493,60 +487,33 @@ describe('dataviews/dataview-model-base', function () {
   describe('getSourceType', function () {
     it('should return the type of the source', function () {
       var dataview = new DataviewModelBase({
-        source: { id: 'a0' }
+        source: this.analysisNodes.get('a0')
       }, {
-        layer: this.layer,
         map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
+        engine: engineMock
       });
 
       expect(dataview.getSourceType()).toEqual('source');
     });
   });
 
-  describe('getLayerName', function () {
-    it('should return the name of the source', function () {
-      var dataview = new DataviewModelBase({
-        source: { id: 'a0' }
-      }, {
-        layer: this.layer,
-        map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
-      });
-      this.layer.set('layer_name', 'the name');
-
-      expect(dataview.getLayerName()).toEqual('the name');
-    });
-  });
-
   describe('getSourceId', function () {
     it('should return the id of the source', function () {
-      var layer = new CartoDBLayer({
-        id: 'layerId',
-        source: new Backbone.Model({ id: 'a1' })
-      }, { vis: this.vis });
-
       var dataview = new DataviewModelBase({
-        source: {
-          id: 'THE_SOURCE_ID'
-        }
+        source: this.source
       }, { // eslint-disable-line
-        layer: layer,
         map: this.map,
-        vis: this.vis,
-        analysisCollection: this.analysisCollection
+        engine: engineMock
       });
 
-      expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
+      expect(dataview.getSourceId()).toEqual('a0');
     });
   });
 
   describe('when analysis changes status', function () {
     beforeEach(function () {
-      this.a0.isLoading = jasmine.createSpy('a0.isLoading');
-      this.a0.isFailed = jasmine.createSpy('a0.isFailed');
+      this.source.isLoading = jasmine.createSpy('a0.isLoading');
+      this.source.isFailed = jasmine.createSpy('a0.isFailed');
       this.model.on({
         loading: this.loadingSpy = jasmine.createSpy('loading'),
         error: this.errorSpy = jasmine.createSpy('failed')
@@ -557,10 +524,42 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when changed source', function () {
       beforeEach(function () {
-        this.model.set('source', {id: 'a0'});
+        this.model.set('source', this.source);
       });
 
       sharedTestsForAnalysisEvents();
+    });
+  });
+
+  describe('source references', function () {
+    var source;
+    var dataview;
+
+    beforeEach(function () {
+      source = MockFactory.createAnalysisModel({ id: 'a0' });
+
+      dataview = new DataviewModelBase({
+        source: source
+      }, {
+        map: this.map,
+        engine: engineMock
+      });
+    });
+
+    describe('when dataview is initialized', function () {
+      it('should mark source as referenced', function () {
+        expect(source.isSourceOf(dataview)).toBe(true);
+      });
+    });
+
+    describe('when dataview is removed', function () {
+      it('should unmark source as referenced', function () {
+        expect(source.isSourceOf(dataview)).toBe(true);
+
+        dataview.remove();
+
+        expect(source.isSourceOf(dataview)).toBe(false);
+      });
     });
   });
 });
@@ -570,18 +569,18 @@ function sharedTestsForAnalysisEvents () {
     it('should trigger loading event', function () {
       this.loadingSpy.calls.reset();
       this.errorSpy.calls.reset();
-      this.a0.isLoading.and.returnValue(true);
+      this.source.isLoading.and.returnValue(true);
 
-      this.a0.set('status', 'whatever');
+      this.source.set('status', 'whatever');
       expect(this.loadingSpy).toHaveBeenCalled();
       expect(this.errorSpy).not.toHaveBeenCalled();
 
       this.loadingSpy.calls.reset();
       this.errorSpy.calls.reset();
-      this.a0.isLoading.and.returnValue(false);
-      this.a0.isFailed.and.returnValue(true);
+      this.source.isLoading.and.returnValue(false);
+      this.source.isFailed.and.returnValue(true);
 
-      this.a0.set({
+      this.source.set({
         status: 'failed',
         error: this.err = {}
       });

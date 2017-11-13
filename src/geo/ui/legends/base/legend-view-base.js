@@ -1,7 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var errorTitleTemplate = require('./error-title.tpl');
-var noDataAvailableTitleTemplate = require('./no-data-available-title.tpl');
 var sanitize = require('../../../../core/sanitize');
 var legendTitleTemplate = require('./legend-title.tpl');
 var ImageLoaderView = require('./img-loader-view');
@@ -10,8 +8,8 @@ var LegendViewBase = Backbone.View.extend({
 
   className: 'CDB-Legend-item',
 
-  initialize: function (deps) {
-    this._placeholderTemplate = deps.placeholderTemplate;
+  initialize: function (opts) {
+    this._placeholderTemplate = opts.placeholderTemplate;
 
     this.model.on('change', this.render, this);
   },
@@ -21,11 +19,9 @@ var LegendViewBase = Backbone.View.extend({
 
     this._loadImages();
 
-    if (this.model.isVisible()) {
-      this.$el.show();
-    } else {
-      this.$el.hide();
-    }
+    this.model.isVisible()
+      ? this.$el.show()
+      : this.$el.hide();
 
     this._toggleLoadingClass();
 
@@ -33,21 +29,21 @@ var LegendViewBase = Backbone.View.extend({
   },
 
   _generateHTML: function () {
-    var html = [];
-    if (this.model.isSuccess()) {
-      if (this.model.isAvailable()) {
-        html.push(this._getLegendHTML());
-      } else {
-        html.push(this._getNoDataAvailableHTML());
-        html.push(this._getPlaceholderHTML());
-      }
-    } else if (this.model.isError()) {
-      html.push(this._getErrorHeaderHTML());
-      html.push(this._getPlaceholderHTML());
-    } else if (this.model.isLoading()) {
-      html.push(this._getPlaceholderHTML());
+    if (this.model.isSuccess() && this.model.isAvailable()) {
+      return this._getLegendHTML();
     }
-    return html.join('\n');
+
+    var placeholder = this._getPlaceholderHTML();
+
+    if (this.model.isLoading()) {
+      return placeholder;
+    }
+
+    var message = this.model.isError()
+      ? this._generateTitle({ title: 'Something went wrong', error: 'error' })
+      : this._generateTitle({ title: 'No data available', error: 'alert' });
+
+    return [message, placeholder].join('\n');
   },
 
   _getLegendHTML: function () {
@@ -55,7 +51,7 @@ var LegendViewBase = Backbone.View.extend({
 
     // Legend title
     if (this.model.get('title')) {
-      html.push(legendTitleTemplate({ title: this.model.get('title') }));
+      html.push(this._generateTitle({ title: this.model.get('title') }));
     }
 
     // Pre HTML Snippet
@@ -74,16 +70,12 @@ var LegendViewBase = Backbone.View.extend({
     return html.join('\n');
   },
 
+  _generateTitle: function (data) {
+    return legendTitleTemplate({ title: data.title, error: data.error });
+  },
+
   _getPlaceholderHTML: function () {
     return (this._placeholderTemplate && this._placeholderTemplate()) || '';
-  },
-
-  _getErrorHeaderHTML: function () {
-    return errorTitleTemplate();
-  },
-
-  _getNoDataAvailableHTML: function () {
-    return noDataAvailableTitleTemplate();
   },
 
   _getCompiledTemplate: function () {

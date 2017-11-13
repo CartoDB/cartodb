@@ -34,9 +34,9 @@ GMapsLayerViewFactory.prototype.createLayerView = function (layerModel, nativeMa
   if (LayerViewClass) {
     try {
       return new LayerViewClass(layerModel, nativeMap);
-    } catch (e) {
-      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + e.message);
-      throw e;
+    } catch (error) {
+      log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + error.message);
+      throw error;
     }
   } else {
     log.error("Error creating an instance of layer view for '" + layerType + "' layer. Type is not supported");

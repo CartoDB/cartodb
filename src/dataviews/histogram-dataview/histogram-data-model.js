@@ -155,6 +155,10 @@ module.exports = Model.extend({
     return parsedData;
   },
 
+  refresh: function () {
+    this.fetch();
+  },
+
   _getCurrentOffset: function () {
     return this.get('localTimezone')
       ? this.get('localOffset')

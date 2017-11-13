@@ -1,12 +1,13 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
+var MockFactory = require('../../../helpers/mockFactory');
 
 describe('geo/map/torque-layer', function () {
+  var engineMock;
   beforeEach(function () {
-    this.vis = new Backbone.Model();
-    this.vis.reload = jasmine.createSpy('reload');
+    engineMock = MockFactory.createEngine();
+    spyOn(engineMock, 'reload');
   });
 
   sharedTestsForInteractiveLayers(TorqueLayer);
@@ -16,16 +17,16 @@ describe('geo/map/torque-layer', function () {
 
     _.each(ATTRIBUTES, function (attribute) {
       it("should reload the vis when '" + attribute + "' attribute changes", function () {
-        var layer = new TorqueLayer({}, { vis: this.vis });
+        var layer = new TorqueLayer({}, { engine: engineMock });
 
         layer.set(attribute, 'new_value');
 
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
       });
     });
 
     it('should reload the map just once when multiple attributes change', function () {
-      var layer = new TorqueLayer({}, { vis: this.vis });
+      var layer = new TorqueLayer({}, { engine: engineMock });
 
       var newAttributes = {};
       _.each(ATTRIBUTES, function (attr, index) {
@@ -33,26 +34,26 @@ describe('geo/map/torque-layer', function () {
       });
       layer.set(newAttributes);
 
-      expect(this.vis.reload).toHaveBeenCalled();
-      expect(this.vis.reload.calls.count()).toEqual(1);
+      expect(engineMock.reload).toHaveBeenCalled();
+      expect(engineMock.reload.calls.count()).toEqual(1);
     });
 
     it('should NOT reload the map when cartocss is set and it was previously empty', function () {
-      var layer = new TorqueLayer({}, { vis: this.vis });
+      var layer = new TorqueLayer({}, { engine: engineMock });
 
       layer.set('cartocss', 'new_value');
 
-      expect(this.vis.reload).not.toHaveBeenCalled();
+      expect(engineMock.reload).not.toHaveBeenCalled();
     });
 
     it('should NOT reload the map if cartocss property has changed and a reload is not needed', function () {
       var layer = new TorqueLayer({
         cartocss: 'Map { something: "a"; -torque-time-attribute: "column"; }'
-      }, { vis: this.vis });
+      }, { engine: engineMock });
 
       layer.set('cartocss', 'Map { something: "b"; -torque-time-attribute: "column"; }');
 
-      expect(this.vis.reload).not.toHaveBeenCalled();
+      expect(engineMock.reload).not.toHaveBeenCalled();
     });
 
     _.each([
@@ -65,11 +66,11 @@ describe('geo/map/torque-layer', function () {
       it('should reload the map if cartocss attribute has changed and "' + property + '"" property has changed', function () {
         var layer = new TorqueLayer({
           cartocss: 'Map { something: "a"; ' + property + ': "valueA"; }'
-        }, { vis: this.vis });
+        }, { engine: engineMock });
 
         layer.set('cartocss', 'Map { something: "b"; ' + property + ': "valueB"; }');
 
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
       });
     });
   });
@@ -78,7 +79,7 @@ describe('geo/map/torque-layer', function () {
     var layer;
 
     beforeEach(function () {
-      layer = new TorqueLayer({}, { vis: this.vis });
+      layer = new TorqueLayer({}, { engine: engineMock });
     });
 
     it('should take the animation duration if it is defined', function () {
@@ -95,21 +96,6 @@ describe('geo/map/torque-layer', function () {
 
       cartocss = 'Map { something: "a"; -torque-time-attribute: "column"; }';
       expect(layer.getAnimationDuration(cartocss)).toBe(30);
-    });
-  });
-
-  describe('.update', function () {
-    var layer;
-    var analysisNodeMock = { id: 'a0' };
-
-    beforeEach(function () {
-      this.vis.analysis = { findNodeById: jasmine.createSpy('findNodeById').and.returnValue(analysisNodeMock) };
-      layer = new TorqueLayer({}, { vis: this.vis });
-    });
-
-    it('should allow a string as parameter (deprecated: keep this only for prevent breaking changes in the api)', function () {
-      layer.update({ id: 3, source: 'a0' });
-      expect(layer.getSource()).toBe(analysisNodeMock);
     });
   });
 });

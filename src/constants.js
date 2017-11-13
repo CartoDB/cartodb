@@ -14,5 +14,12 @@ module.exports = {
     LEAFLET: 'leaflet'
   },
 
-  GMAPS_BASE_LAYER_TYPES: ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain']
+  GMAPS_BASE_LAYER_TYPES: ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'],
+
+  WINDSHAFT_ERRORS: {
+    ANALYSIS: 'analysis',
+    LAYER: 'layer',
+    LIMIT: 'limit',
+    TILE: 'tile' // Generic error for tiles
+  }
 };

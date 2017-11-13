@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var d3 = require('d3');
+var d3 = require('d3-array');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 var helper = require('./helpers/histogram-helper');
@@ -24,6 +24,9 @@ module.exports = DataviewModelBase.extend({
 
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
+      if (this.get('column_type') === 'number' && this.get('bins')) {
+        params.push('bins=' + this.get('bins'));
+      }
     } else {
       var offset = this._getCurrentOffset();
 
@@ -80,13 +83,13 @@ module.exports = DataviewModelBase.extend({
 
     // When original data gets fetched
     this._totals.bind('change:data', this._onDataChanged, this);
+    this._totals.bind('error', this.setUnavailable, this);
     this._totals.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
     this.on('change:localTimezone', this._onLocalTimezoneChanged, this);
     this.on('change', this._onFieldsChanged, this);
-
-    this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+    this.on('change:column_type', this._onColumnTypeChanged, this);
   },
 
   _onLocalTimezoneChanged: function () {
@@ -207,7 +210,7 @@ module.exports = DataviewModelBase.extend({
     });
     this.set('aggregation', undefined, { silent: true });
 
-    this._reloadVisAndForceFetch();
+    this._reloadAndForceFetch();
   },
 
   _calculateTotalAmount: function (buckets) {
@@ -315,8 +318,8 @@ module.exports = DataviewModelBase.extend({
     };
   },
 
-  _onChangeLayerMeta: function () {
-    this.filter.set('column_type', this.layer.get('meta').column_type);
+  _onColumnTypeChanged: function () {
+    this.filter.set('column_type', this.get('column_type'));
   },
 
   _onChangeBinds: function () {

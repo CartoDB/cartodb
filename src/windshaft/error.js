@@ -1,5 +1,4 @@
-var ERROR_TYPE_LAYER = 'layer';
-var ERROR_TYPE_ANALYSIS = 'analysis';
+var WINDSHAFT_ERRORS = require('../constants').WINDSHAFT_ERRORS;
 
 var WindshaftError = function (error) {
   this._error = error;
@@ -12,20 +11,25 @@ var WindshaftError = function (error) {
     this.context = error.layer && error.layer.context;
     this.layerId = error.layer && error.layer.id;
   }
+
   if (this.isAnalysisError(error.type)) {
     this.context = error.analysis && error.analysis.context;
     this.analysisId = error.analysis && error.analysis.node_id;
   }
 };
 
+WindshaftError.prototype.isGlobalError = function (errorType) {
+  return !this.isLayerError(errorType) && !this.isAnalysisError(errorType);
+};
+
 WindshaftError.prototype.isLayerError = function (errorType) {
   errorType = errorType || this._error.type;
-  return errorType === ERROR_TYPE_LAYER;
+  return errorType === WINDSHAFT_ERRORS.LAYER;
 };
 
 WindshaftError.prototype.isAnalysisError = function (errorType) {
   errorType = errorType || this._error.type;
-  return errorType === ERROR_TYPE_ANALYSIS;
+  return errorType === WINDSHAFT_ERRORS.ANALYSIS;
 };
 
 module.exports = WindshaftError;

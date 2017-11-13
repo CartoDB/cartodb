@@ -1,9 +1,8 @@
 var Backbone = require('backbone');
-var Model = require('../../../src/core/model');
-var VisModel = require('../../../src/vis/vis');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');
+var MockFactory = require('../../helpers/mockFactory');
 
 function randomString (length, chars) {
   var result = '';
@@ -12,31 +11,28 @@ function randomString (length, chars) {
 }
 
 describe('dataviews/histogram-dataview-model', function () {
+  var engineMock;
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    engineMock = MockFactory.createEngine();
+    spyOn(engineMock, 'reload');
 
     this.filter = new RangeFilter();
-
-    this.layer = new Model();
-
-    this.analysisCollection = new Backbone.Collection();
 
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, '_updateBindings');
     spyOn(HistogramDataviewModel.prototype, '_resetFilterAndFetch');
 
+    this.source = MockFactory.createAnalysisModel({ id: 'a0' });
+
     this.model = new HistogramDataviewModel({
-      source: { id: 'a0' }
+      source: this.source
     }, {
       map: this.map,
-      vis: this.vis,
-      layer: this.layer,
-      filter: this.filter,
-      analysisCollection: new Backbone.Collection()
+      engine: engineMock,
+      filter: this.filter
     });
   });
 
@@ -71,13 +67,11 @@ describe('dataviews/histogram-dataview-model', function () {
   it('should set the api_key attribute on the internal models', function () {
     this.model = new HistogramDataviewModel({
       apiKey: 'API_KEY',
-      source: { id: 'a0' }
+      source: this.source
     }, {
       map: this.map,
-      vis: this.vis,
-      layer: jasmine.createSpyObj('layer', ['get']),
-      filter: this.filter,
-      analysisCollection: new Backbone.Collection()
+      engine: engineMock,
+      filter: this.filter
     });
 
     expect(this.model._totals.get('apiKey')).toEqual('API_KEY');
@@ -191,7 +185,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('when column changes', function () {
     it('should set column_type to original data, set undefined aggregation, reload map and call _onUrlChanged', function () {
-      this.vis.reload.calls.reset();
+      engineMock.reload.calls.reset();
       this.model.set({
         aggregation: 'quarter',
         column: 'random_col',
@@ -200,7 +194,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       expect(this.model._totals.get('column_type')).toEqual('aColumnType');
       expect(this.model.get('aggregation')).toBeUndefined();
-      expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+      expect(engineMock.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
     });
   });
 
@@ -238,21 +232,19 @@ describe('dataviews/histogram-dataview-model', function () {
         ],
         bins_count: 4,
         bins_start: 55611,
-        source: {
-          id: 'a0'
-        },
         nulls: 0,
         type: 'histogram'
       };
 
-      var model = new HistogramDataviewModel(data, {
+      var model = new HistogramDataviewModel({
+        source: this.source
+      }, {
         map: this.map,
-        vis: this.vis,
-        layer: this.layer,
-        filter: this.filter,
-        analysisCollection: new Backbone.Collection(),
-        parse: true
+        engine: engineMock,
+        filter: this.filter
       });
+
+      model.set(model.parse(data));
 
       expect(model.hasNulls()).toBe(true);
     });
@@ -267,20 +259,19 @@ describe('dataviews/histogram-dataview-model', function () {
         ],
         bins_count: 4,
         bins_start: 55611,
-        source: {
-          id: 'a0'
-        },
         type: 'histogram'
       };
 
-      var model = new HistogramDataviewModel(data, {
+      var model = new HistogramDataviewModel({
+        source: this.source
+      }, {
         map: this.map,
-        vis: this.vis,
-        layer: this.layer,
-        filter: this.filter,
-        analysisCollection: new Backbone.Collection(),
-        parse: true
+        engine: engineMock,
+        filter: this.filter
       });
+
+      model.set(model.parse(data));
+
       model._totals = new Backbone.Model({ aggregation: 'quarter' });
 
       expect(model.hasNulls()).toBe(false);
@@ -434,14 +425,10 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('when layer changes meta', function () {
+  describe('when column_type changes', function () {
     beforeEach(function () {
       expect(this.model.filter.get('column_type')).not.toEqual('date');
-      this.model.layer.set({
-        meta: {
-          column_type: 'date'
-        }
-      });
+      this.model.set('column_type', 'date');
     });
 
     it('should change the filter column_type', function () {
@@ -495,7 +482,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
         this.model.enableFilter();
 
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1&bins=25');
       });
     });
 
@@ -645,8 +632,8 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('._onColumnChanged', function () {
-    it('should unset aggregation, and call _reloadVisAndForceFetch', function () {
-      this.vis.reload.calls.reset();
+    it('should unset aggregation, and call _reloadAndForceFetch', function () {
+      engineMock.reload.calls.reset();
 
       this.model.set({
         column: 'time',
@@ -656,7 +643,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       this.model._onColumnChanged();
 
-      expect(this.vis.reload).toHaveBeenCalled();
+      expect(engineMock.reload).toHaveBeenCalled();
       expect(this.model.get('aggregation')).toBeUndefined();
     });
   });

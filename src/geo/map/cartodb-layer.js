@@ -18,11 +18,15 @@ var CartoDBLayer = LayerModelBase.extend({
   initialize: function (attrs, options) {
     attrs = attrs || {};
     options = options || {};
-    if (!options.vis) throw new Error('vis is required');
+    if (!options.engine) throw new Error('engine is required');
 
-    this._vis = options.vis;
+    this._engine = options.engine;
     if (attrs && attrs.cartocss) {
       this.set('initialStyle', attrs.cartocss);
+    }
+
+    if (attrs.source) {
+      this.setSource(attrs.source);
     }
 
     // PUBLIC PROPERTIES
@@ -31,32 +35,30 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('infowindow');
     this.unset('tooltip');
 
-    this.legends = new Legends(attrs.legends, {
-      visModel: this._vis
-    });
+    this.legends = new Legends(attrs.legends, { engine: this._engine });
     this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);
-    this.infowindow.fields.bind('reset add remove', this._reloadVis, this);
-    this.tooltip.fields.bind('reset add remove', this._reloadVis, this);
+    this.infowindow.fields.bind('reset add remove', this._reload, this);
+    this.tooltip.fields.bind('reset add remove', this._reload, this);
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },
 
   _onAttributeChanged: function () {
-    var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
+    var reload = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         return true;
       }
     }, this);
 
-    if (reloadVis) {
-      this._reloadVis();
+    if (reload) {
+      this._reload();
     }
   },
 
-  _reloadVis: function () {
-    this._vis.reload({
+  _reload: function () {
+    this._engine.reload({
       sourceId: this.get('id')
     });
   },
@@ -112,8 +114,12 @@ var CartoDBLayer = LayerModelBase.extend({
     return this.get('source');
   },
 
-  setSource: function (source, options) {
-    this.set('source', source, options);
+  setSource: function (newSource, options) {
+    if (this.getSource()) {
+      this.getSource().unmarkAsSourceOf(this);
+    }
+    newSource.markAsSourceOf(this);
+    this.set('source', newSource, options);
   },
 
   /**
@@ -126,30 +132,22 @@ var CartoDBLayer = LayerModelBase.extend({
 
   update: function (attrs) {
     if (attrs.source) {
-      console.warn('Deprecated: Use ".setSource" to update a layer\'s source instead of the update method');
-      attrs.source = CartoDBLayer.getLayerSourceFromAttrs(attrs, this._vis.analysis);
+      throw new Error('Use ".setSource" to update a layer\'s source instead of the update method');
     }
     LayerModelBase.prototype.update.apply(this, arguments);
+  },
+
+  remove: function () {
+    this.getSource().unmarkAsSourceOf(this);
+    LayerModelBase.prototype.remove.apply(this, arguments);
   }
 },
-// Static methods and properties
+  // Static methods and properties
 {
-  /**
-   * Return the source analysis node from given attrs object.
-   */
-  getLayerSourceFromAttrs: function (attrs, analysis) {
-    if (typeof attrs.source === 'string') {
-      console.warn('Deprecated: Layers must have an analysis node as source instead of a string ID.');
-      var source = analysis.findNodeById(attrs.source);
-      if (source) {
-        return source;
-      }
-      throw new Error('No analysis found with id: ' + attrs.source);
+  _checkSourceAttribute: function (source) {
+    if (!(source instanceof AnalysisModel)) {
+      throw new Error('Source must be an instance of AnalysisModel');
     }
-    if (attrs.source instanceof AnalysisModel) {
-      return attrs.source;
-    }
-    throw new Error('Invalid layer source. Source must be an ID or an Analysis node but got: ' + attrs.source);
   }
 });
 

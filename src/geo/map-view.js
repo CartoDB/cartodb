@@ -19,19 +19,20 @@ var MapView = View.extend({
 
   className: 'CDB-Map-wrapper',
 
-  initialize: function (deps) {
+  initialize: function (opts) {
     View.prototype.initialize.apply(this, arguments);
 
     // For debugging purposes
     window.mapView = this;
 
-    if (!deps.mapModel) throw new Error('mapModel is required');
-    if (!deps.visModel) throw new Error('visModel is required');
-    if (!deps.layerGroupModel) throw new Error('layerGroupModel is required');
+    if (!opts.mapModel) throw new Error('mapModel is required');
+    if (!opts.engine) throw new Error('engine is required');
+    if (!opts.layerGroupModel) throw new Error('layerGroupModel is required');
 
-    this._mapModel = this.map = deps.mapModel;
-    this._visModel = deps.visModel;
-    this._cartoDBLayerGroup = deps.layerGroupModel;
+    this._showEmptyInfowindowFields = opts.showEmptyInfowindowFields;
+    this._mapModel = this.map = opts.mapModel;
+    this._engine = opts.engine;
+    this._cartoDBLayerGroup = opts.layerGroupModel;
 
     this.add_related_model(this.map);
 
@@ -67,12 +68,13 @@ var MapView = View.extend({
 
     // Initialise managers
     this._infowindowManager = new InfowindowManager({
-      visModel: this._visModel,
+      engine: this._engine,
       mapModel: this._mapModel,
       tooltipModel: tooltipModel,
       infowindowModel: infowindowModel
     }, {
-      showEmptyFields: this._visModel.get('showEmptyInfowindowFields')
+
+      showEmptyFields: this._showEmptyInfowindowFields
     });
     this._tooltipManager = new TooltipManager({
       mapModel: this._mapModel,

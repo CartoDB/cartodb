@@ -1,10 +1,17 @@
 var _ = require('underscore');
 var Model = require('../core/model');
+var util = require('../core/util');
 var CategoryFilter = require('../windshaft/filters/category');
 var RangeFilter = require('../windshaft/filters/range');
 var CategoryDataviewModel = require('./category-dataview-model');
 var FormulaDataviewModel = require('./formula-dataview-model');
 var HistogramDataviewModel = require('./histogram-dataview-model');
+
+var REQUIRED_OPTS = [
+  'map',
+  'engine',
+  'dataviewsCollection'
+];
 
 /**
  * Factory to create dataviews.
@@ -13,73 +20,58 @@ var HistogramDataviewModel = require('./histogram-dataview-model');
 module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
-    if (!opts.map) throw new Error('map is required');
-    if (!opts.vis) throw new Error('vis is required');
-    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
-    if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewsFactory');
 
     this._map = opts.map;
-    this._vis = opts.vis;
-    this._analysisCollection = opts.analysisCollection;
+    this._engine = opts.engine;
     this._dataviewsCollection = opts.dataviewsCollection;
   },
 
-  createCategoryModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column']);
-    attrs = this._generateAttrsForDataview(layerModel, attrs, CategoryDataviewModel.ATTRS_NAMES);
+  createCategoryModel: function (attrs) {
+    _checkProperties(attrs, ['source', 'column']);
+    attrs = this._generateAttrsForDataview(attrs, CategoryDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
     attrs.aggregation_column = attrs.aggregation_column || attrs.column;
 
-    var categoryFilter = new CategoryFilter({
-      layer: layerModel
-    });
+    var categoryFilter = new CategoryFilter();
 
     return this._newModel(
       new CategoryDataviewModel(attrs, {
         map: this._map,
-        vis: this._vis,
-        layer: layerModel,
-        filter: categoryFilter,
-        analysisCollection: this._analysisCollection
+        engine: this._engine,
+        filter: categoryFilter
       })
     );
   },
 
-  createFormulaModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column', 'operation']);
-    attrs = this._generateAttrsForDataview(layerModel, attrs, FormulaDataviewModel.ATTRS_NAMES);
+  createFormulaModel: function (attrs) {
+    _checkProperties(attrs, ['source', 'column', 'operation']);
+    attrs = this._generateAttrsForDataview(attrs, FormulaDataviewModel.ATTRS_NAMES);
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
-        vis: this._vis,
-        layer: layerModel,
-        analysisCollection: this._analysisCollection
+        engine: this._engine
       })
     );
   },
 
-  createHistogramModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column']);
-    attrs = this._generateAttrsForDataview(layerModel, attrs, HistogramDataviewModel.ATTRS_NAMES);
+  createHistogramModel: function (attrs) {
+    _checkProperties(attrs, ['source', 'column']);
+    attrs = this._generateAttrsForDataview(attrs, HistogramDataviewModel.ATTRS_NAMES);
 
-    var rangeFilter = new RangeFilter({
-      layer: layerModel
-    });
+    var rangeFilter = new RangeFilter();
 
     return this._newModel(
       new HistogramDataviewModel(attrs, {
         map: this._map,
-        vis: this._vis,
-        layer: layerModel,
-        filter: rangeFilter,
-        analysisCollection: this._analysisCollection
+        engine: this._engine,
+        filter: rangeFilter
       })
     );
   },
 
-  _generateAttrsForDataview: function (layerModel, attrs, whitelistedAttrs) {
+  _generateAttrsForDataview: function (attrs, whitelistedAttrs) {
     attrs = _.pick(attrs, whitelistedAttrs);
-    attrs.source = attrs.source || { id: layerModel.id };
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }

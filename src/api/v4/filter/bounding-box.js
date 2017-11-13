@@ -13,7 +13,6 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  */
 function BoundingBox () {
   this._internalModel = new BoundingBoxFilterModel();
-  this.listenTo(this._internalModel, 'boundsChanged', this._onBoundsChanged);
 }
 
 BoundingBox.prototype = Object.create(Base.prototype);
@@ -28,6 +27,7 @@ BoundingBox.prototype = Object.create(Base.prototype);
 BoundingBox.prototype.setBounds = function (bounds) {
   this._checkBounds(bounds);
   this._internalModel.setBounds(bounds);
+  this.trigger('boundsChanged', bounds);
   return this;
 };
 
@@ -39,10 +39,6 @@ BoundingBox.prototype.setBounds = function (bounds) {
  */
 BoundingBox.prototype.getBounds = function () {
   return this._internalModel.getBounds();
-};
-
-BoundingBox.prototype._onBoundsChanged = function (bounds) {
-  this.trigger('boundsChanged', bounds);
 };
 
 BoundingBox.prototype._checkBounds = function (bounds) {
@@ -57,6 +53,10 @@ BoundingBox.prototype._checkBounds = function (bounds) {
       !_.isNumber(bounds.north)) {
     throw new TypeError('Bounds object is not valid. Use a carto.filter.Bounds object');
   }
+};
+
+BoundingBox.prototype.$getInternalModel = function () {
+  return this._internalModel;
 };
 
 module.exports = BoundingBox;

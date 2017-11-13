@@ -100,15 +100,9 @@
 
 
       // Add Bounding box filter
-      var bboxFilter = new carto.filter.BoundingBox();
+      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
       formulaDataview.addFilter(bboxFilter);
       categoryDataview.addFilter(bboxFilter);
-
-      window.bboxFilter = bboxFilter;
-
-      bboxFilter.on('boundsChanged', function (bounds) {
-        console.log('BOUNDS CHANGED', bounds);
-      });
 
       function renderWidgetFormula(newData) {
         var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';

@@ -1454,6 +1454,29 @@ module Carto
             end
           end
         end
+
+        describe AppliedHtmlPopup do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id, visualization_id: @visualization.id)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id, user_id: @user.id)
+            end
+          end
+        end
       end
     end
   end

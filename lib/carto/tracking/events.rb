@@ -268,6 +268,15 @@ module Carto
 
         required_properties :user_id, :visualization_id, :previus_type, :type
       end
+
+      class AppliedHtmlPopup < Event
+        include Carto::Tracking::Services::Hubspot
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
     end
   end
 end

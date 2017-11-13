@@ -167,14 +167,15 @@ module Carto
         into_org_name: nil,
         mode: :import,
         logger: log.logger,
-        import_job_logger: log.logger
+        import_job_logger: log.logger,
+        dry: dry
       }
     end
 
     def set_defaults
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
-
+      self.dry = false unless dry
       save
     end
   end

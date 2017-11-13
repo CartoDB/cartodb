@@ -17,7 +17,7 @@ module CartoDB
       attr_reader :logger
 
       def initialize(options)
-        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true }
+        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true, dry: false }
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
@@ -579,8 +579,10 @@ module CartoDB
         # Note: this will change database_host on the user model to perform configuration but will not actually store
         # the change
         user_model = ::User.find(username: @target_username)
-        user_model.database_host = target_dbhost
-        user_model.database_name = @target_dbname
+        unless @config[:dry]
+          user_model.database_host = target_dbhost
+          user_model.database_name = @target_dbname
+        end
         user_model.organization_id = @target_org_id if !@target_org_id.nil?
 
         user_model.db_service.setup_organization_owner if @target_is_owner

@@ -29,6 +29,7 @@ namespace :cartodb do
             import_metadata: ume.export_metadata,
             exported_file: ume.exported_file,
             json_file: ume.json_file,
+            dry: false,
             database_host: '<destination db host>'
           }
           import_params[:user_id] = ume.user_id if !ume.export_metadata && ume.user_id
@@ -38,7 +39,7 @@ namespace :cartodb do
           puts JSON.pretty_generate(import_params)
           File.write(config_filename, JSON.pretty_generate(import_params))
           puts "Written to #{config_filename}"
-          puts "Don't forget to update the database host"
+          puts "Don't forget to update the database host and the dry option"
         else
           puts ume.log.entries
         end

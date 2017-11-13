@@ -60,10 +60,12 @@ module CartoDB
       def run_command(cmd)
         logger.debug "Running command: \"#{cmd}\""
         return_code = nil
+        log_message = ''
         Open3.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
-          stdout_and_stderr.each { |line| logger.debug line.strip }
+          stdout_and_stderr.each { |line| log_message = log_message + line.strip + "\n" }
           return_code = wait_thr.value
         end
+        logger.debug(log_message)
         throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
       end
 

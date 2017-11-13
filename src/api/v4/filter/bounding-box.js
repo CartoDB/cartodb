@@ -32,6 +32,16 @@ BoundingBox.prototype.setBounds = function (bounds) {
 };
 
 /**
+ * Reset the bounds
+ *
+ * @return {carto.filter.BoundingBox} this
+ * @api
+ */
+BoundingBox.prototype.resetBounds = function () {
+  return this.setBounds({ west: 0, south: 0, east: 0, north: 0 });
+};
+
+/**
  * Return the current bounds
  *
  * @return {carto.filter.Bounds} Current bounds

@@ -42,11 +42,13 @@ function _createResult (data, maxFreq) {
     /** 
       * @typedef {object} BinItem
       * @property {number} index - Number indicating the bin order.
-      * @property {number} min - Only appears if freq > 0
-      * @property {number} max - Only appears if freq > 0
-      * @property {number} avg - Only appears if freq > 0
+      * @property {number} start - Starting point of the bin.
+      * @property {number} end - Ending point of the bin.
+      * @property {number} min - Only appears if freq > 0.
+      * @property {number} max - Only appears if freq > 0.
+      * @property {number} avg - Only appears if freq > 0.
       * @property {number} freq - The number of the times the element appears in the data.
-      * @property {number} normalized - 
+      * @property {number} normalized - Normalized frequency with respect to the whole data.
       * @api
       */
     return _.extend(bin, { normalized: _.isFinite(bin.freq) ? bin.freq / maxFreq : 0 });

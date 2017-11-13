@@ -146,7 +146,7 @@ module.exports = Model.extend({
       parsedData.start = parsedData.data[0].start;
       parsedData.end = parsedData.data[parsedData.data.length - 1].end;
 
-      var limits = helper.calculateLimits(parsedData.data);
+      var limits = helper.calculateLimits(parsedData.data, this._getCurrentOffset());
       this._saveStartEnd(this.get('column_type'), parsedData.aggregation, parsedData.start, parsedData.end, limits, data.offset);
     }
 
@@ -202,7 +202,7 @@ module.exports = Model.extend({
       };
       this._startEndCache.saved = true;
     } else if (columnType === 'date') {
-      var ranges = helper.calculateDateRanges(limits.start, limits.end);
+      var ranges = helper.calculateDateRanges(limits.start, limits.end, offset);
       this._startEndCache[columnType] = ranges;
       this._startEndCache.saved = true;
     }

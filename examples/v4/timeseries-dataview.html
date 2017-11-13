@@ -82,7 +82,7 @@
 
     (async () => {
       var i = 0; // Number of reload cycles.
-      var map = L.map('map').setView([42.431234, -8.643616], 5);
+      var map = L.map('map').setView([40.4, 3.7], 5);
       L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
       // Create the Client
@@ -101,7 +101,7 @@
       });
 
       // Create a source
-      var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
+      var source0 = new carto.source.SQL('SELECT * FROM prueba_1970');
       window.source0 = source0;
 
       // Create a style
@@ -122,13 +122,16 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews
-      var timeSeries = new carto.dataview.TimeSeries(source0, 'postedtime');
+      var timeSeries = new carto.dataview.TimeSeries(source0, 'time', {
+        offset: -2,
+        aggregation: 'day'
+      });
       window.timeSeries = timeSeries;
 
-      // histogram.on('dataChanged', function (newData) {
-      //   console.log('Data changed', newData);
-      //   createHistogram({ data: histogram.getData().result });
-      // });
+      timeSeries.on('dataChanged', function (newData) {
+        console.log('Data changed', newData);
+        createHistogram({ data: timeSeries.getData().result });
+      });
 
       // histogram.on('statusChanged', function (newStatus, error) {
       //   console.log('Status changed', newStatus, error);
@@ -142,7 +145,7 @@
 
       // Add Bounding box filter
       // var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
-      // histogram.addFilter(bboxFilter);
+      // timeSeries.addFilter(bboxFilter);
 
       client.addDataview(timeSeries);
     })();

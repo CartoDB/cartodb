@@ -43,23 +43,39 @@ helper.isShorterThan = function (limit, aggregation) {
 };
 
 helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, offset, from, totalBuckets) {
-  var startOffset = helper.isShorterThan('day', aggregation) ? (offset || 0) : 0;
-  var startDate = moment.unix(start + startOffset).utc();
-  var UTCStartDate = moment.unix(start).utc();
+  if (!_.isFinite(offset)) {
+    offset = 0;
+  }
+  var startDate = moment.unix(start + offset).utc();
   var filledBuckets = []; // To catch empty buckets
+  var definedBucket = false;
+  var max;
+  var min;
 
   for (var i = 0; i < numberOfBins; i++) {
-    filledBuckets.push(buckets[i] !== void 0);
+    definedBucket = buckets[i] !== undefined;
+    filledBuckets.push(definedBucket);
+
+    if (definedBucket && _.isFinite(buckets[i].min) && _.isFinite(offset)) {
+      min = buckets[i].min + offset;
+    } else {
+      min = undefined;
+    }
+
+    max = definedBucket && _.isFinite(buckets[i].max) && _.isFinite(offset)
+      ? buckets[i].max + offset
+      : undefined;
 
     buckets[i] = _.extend({
       bin: i,
       start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
       end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
       next: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      UTCStart: UTCStartDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      UTCEnd: UTCStartDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
       freq: 0
-    }, buckets[i]);
+    }, buckets[i], {
+      min: min,
+      max: max
+    });
     delete buckets[i].timestamp;
   }
 
@@ -85,16 +101,18 @@ helper.hasChangedSomeOf = function (list, changed) {
   });
 };
 
-helper.calculateLimits = function (bins) {
+helper.calculateLimits = function (bins, offset) {
   var start = Infinity;
   var end = -Infinity;
 
+  // Start and end should be sent to Maps API in UTC, so we revert offset
+
   _.each(bins, function (bin) {
     if (_.isFinite(bin.min)) {
-      start = Math.min(bin.min, start);
+      start = Math.min(bin.min - offset, start);
     }
     if (_.isFinite(bin.max)) {
-      end = Math.max(bin.max, end);
+      end = Math.max(bin.max - offset, end);
     }
   });
 

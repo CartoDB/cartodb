@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Base = require('../base');
 var HistogramDataviewModel = require('../../../../dataviews/histogram-dataview-model');
+var parseTimeSeriesData = require('./parse-time-series-data');
 var timeAggregation = require('../../constants').timeAggregation;
 var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
 
@@ -45,7 +46,7 @@ TimeSeries.prototype.DEFAULTS = {
  */
 TimeSeries.prototype.getData = function () {
   if (this._internalModel) {
-    console.warn('To be implemented: getData');
+    return parseTimeSeriesData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'));
   }
   return null;
 };
@@ -124,10 +125,6 @@ TimeSeries.prototype.setLocalTimezone = function (localTimezone) {
 TimeSeries.prototype.getLocalTimezone = function () {
   return this._localTimezone;
 };
-
-// Histogram.prototype._parseData = function (data, nulls, totalAmount) {
-//   return parseHistogramData(data, nulls, totalAmount);
-// };
 
 TimeSeries.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {

@@ -35,7 +35,7 @@ Histogram.prototype.DEFAULTS = {
  */
 Histogram.prototype.getData = function () {
   if (this._internalModel) {
-    return this._parseData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'));
+    return parseHistogramData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'));
   }
   return null;
 };
@@ -81,10 +81,6 @@ Histogram.prototype._validateBins = function (bins) {
   if (!_.isFinite(bins) || bins < 1 || Math.floor(bins) !== bins) {
     throw new TypeError('Bins must be a positive integer value.');
   }
-};
-
-Histogram.prototype._parseData = function (data, nulls, totalAmount) {
-  return parseHistogramData(data, nulls, totalAmount);
 };
 
 Histogram.prototype._checkOptions = function (options) {

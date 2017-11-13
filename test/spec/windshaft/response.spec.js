@@ -56,12 +56,11 @@ describe('windshaft-response', function () {
       };
       var serverResponse = {
         layergroupid: '0123456789',
-        metadata: {
-          cdn_url: {
-            http: 'cdn.http.example.com',
-            https: 'cdn.https.example.com'
-          }
-        }
+        cdn_url: {
+          http: 'cdn.http.example.com',
+          https: 'cdn.https.example.com'
+        },
+        metadata: {}
       };
       var response = new Response(windshaftSettings, serverResponse);
 
@@ -75,12 +74,11 @@ describe('windshaft-response', function () {
       };
       var serverResponse = {
         layergroupid: '0123456789',
-        metadata: {
-          cdn_url: {
-            http: 'cdn.http.example.com',
-            https: 'cdn.https.example.com'
-          }
-        }
+        cdn_url: {
+          http: 'cdn.http.example.com',
+          https: 'cdn.https.example.com'
+        },
+        metadata: {}
       };
       var response = new Response(windshaftSettings, serverResponse);
 
@@ -94,22 +92,21 @@ describe('windshaft-response', function () {
       };
       var serverResponse = {
         layergroupid: '0123456789',
-        metadata: {
-          cdn_url: {
-            http: 'cdn1.http.example.com',
-            https: 'cdn1.https.example.com',
-            templates: {
-              http: {
-                url: 'http://{s}.cdn2.http.example.com',
-                subdomains: ['0', '1', '2']
-              },
-              https: {
-                url: 'https://{s}.cdn2.https.example.com',
-                subdomains: ['0', '1', '2']
-              }
+        cdn_url: {
+          http: 'cdn1.http.example.com',
+          https: 'cdn1.https.example.com',
+          templates: {
+            http: {
+              url: 'http://{s}.cdn2.http.example.com',
+              subdomains: ['0', '1', '2']
+            },
+            https: {
+              url: 'https://{s}.cdn2.https.example.com',
+              subdomains: ['0', '1', '2']
             }
           }
-        }
+        },
+        metadata: {}
       };
       var response = new Response(windshaftSettings, serverResponse);
 
@@ -152,29 +149,29 @@ describe('windshaft-response', function () {
         userName: 'cartojs-test'
       };
       var serverResponse = {
-        'layergroupid': '0123456789',
-        'metadata': {
-          'layers': [
+        layergroupid: '0123456789',
+        metadata: {
+          layers: [
             {
-              'type': 'mapnik',
-              'meta': {}
+              type: 'mapnik',
+              meta: {}
             },
             {
-              'type': 'torque',
-              'meta': {}
+              type: 'torque',
+              meta: {}
             }
           ],
           dataviews: {
-            'dataviewId': {
-              'url': {
-                'http': 'http://example.com',
-                'https': 'https://example.com'
+            dataviewId: {
+              url: {
+                http: 'http://example.com',
+                https: 'https://example.com'
               }
             },
-            'dataviewId2': {
-              'url': {
-                'http': 'http://example2.com',
-                'https': 'https://example2.com'
+            dataviewId2: {
+              url: {
+                http: 'http://example2.com',
+                https: 'https://example2.com'
               }
             }
           }
@@ -344,20 +341,19 @@ describe('windshaft-response', function () {
       };
       var serverResponse = {
         layergroupid: '0123456789',
-        metadata: {
-          cdn_url: {
-            templates: {
-              http: {
-                url: 'http://cdn.carto.com',
-                subdomains: ['a', 'b']
-              },
-              https: {
-                url: 'http://cdn.carto.com',
-                subdomains: ['c', 'd']
-              }
+        cdn_url: {
+          templates: {
+            http: {
+              url: 'http://cdn.carto.com',
+              subdomains: ['a', 'b']
+            },
+            https: {
+              url: 'http://cdn.carto.com',
+              subdomains: ['c', 'd']
             }
           }
-        }
+        },
+        metadata: {}
       };
       response = new Response(windshaftSettings, serverResponse);
     });

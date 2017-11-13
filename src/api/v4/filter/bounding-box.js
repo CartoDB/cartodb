@@ -48,6 +48,14 @@ BoundingBox.prototype.resetBounds = function () {
  * @api
  */
 BoundingBox.prototype.getBounds = function () {
+  /**
+   * @typedef {object} carto.filter.Bounds
+   * @property {number} west
+   * @property {number} south
+   * @property {number} east
+   * @property {number} north
+   * @api
+   */
   return this._internalModel.getBounds();
 };
 

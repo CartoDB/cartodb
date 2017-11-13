@@ -109,11 +109,12 @@ Histogram.prototype._createInternalModel = function (engine) {
     column: this._column,
     bins: this._bins,
     sync_on_data_change: true,
-    sync_on_bbox_change: false,
+    sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled,
     column_type: 'number'
   }, {
-    engine: engine
+    engine: engine,
+    bboxFilter: this._boundingBoxFilter && this._boundingBoxFilter.$getInternalModel()
   });
 };
 

@@ -198,10 +198,14 @@ describe('Engine', function () {
       engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
         var urls = engineMock._cartoLayerGroup.attributes.urls;
         // Ensure the modelUpdater has updated the cartoLayerGroup urls
-        expect(urls.attributes[0]).toEqual('http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/attributes');
-        expect(urls.grids[0]).toEqual(['http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json']);
-        expect(urls.image).toEqual('http://example.com/api/v1/map/static/center/2edba0a73a790c4afb83222183782123:1508164637676/{z}/{lat}/{lng}/{width}/{height}.{format}');
-        expect(urls.tiles).toEqual('http://example.com/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/{layerIndexes}/{z}/{x}/{y}.{format}');
+        expect(urls.attributes[0]).toEqual('http://3.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/attributes');
+        expect(urls.grids[0]).toEqual(
+          ['http://0.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json',
+            'http://1.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json',
+            'http://2.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json',
+            'http://3.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/{z}/{x}/{y}.grid.json']);
+        expect(urls.image).toEqual('http://{s}.ashbu.cartocdn.com/fake-username/api/v1/map/static/center/2edba0a73a790c4afb83222183782123:1508164637676/{z}/{lat}/{lng}/{width}/{height}.{format}');
+        expect(urls.tiles).toEqual('http://{s}.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/{layerIndexes}/{z}/{x}/{y}.{format}');
         done();
       });
 

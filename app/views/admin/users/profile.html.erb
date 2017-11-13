@@ -16,17 +16,6 @@
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
 
-<% if current_user.has_feature_flag?('no_free_tier') && current_user.account_type == 'PERSONAL30' %>
-  <div>
-    <span>
-      You're currently under your 30-day Trial Period. Add your billing info to keep using our platform
-    </span>
-    <a href="#"class="CDB-Button CDB-Button--secondary">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
-    </a>
-  </div>
-<% end %>
-
 <%= render :partial => 'shared/flash_message' %>
 
 <div class="CDB-Text FormAccount-Section u-inner">

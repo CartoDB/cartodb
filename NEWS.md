@@ -13,6 +13,7 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Stop adding legends automatically when styling a layer (#13052)
+* Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
 * Remove forget confirmation from onboarding tour (#13039)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
@@ -104,6 +105,7 @@ ion for time-series (#12670)
 * Auto-select best geometry for DO (#12623)
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
+* Clean permissions ACL on group deletion (CartoDB/support/issues/1057)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)

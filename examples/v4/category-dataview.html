@@ -12,14 +12,8 @@
   <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
   <!-- Include cartodb.js Library -->
   <script src="../../dist/cartodb.uncompressed.js"></script>
+  <link rel="stylesheet" href="./_style.css">
   <style>
-    #map {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
     #widget {
       position: absolute;
       top: 0;
@@ -41,15 +35,10 @@
       L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
       // Create the Client
-      // var client = new carto.Client({
-      //   apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-      //   serverUrl: 'https://{user}.carto.com:443',
-      //   username: 'cartojs-test'
-      // });
 
       var client = new carto.Client({
         apiKey: '4bf183ec5867bd5f9eb59d4d33693fa4fb4283bf',
-        serverUrl: 'http://{user}.localhost.lan:8181',
+        serverUrl: 'http://cdb.localhost.lan:8181',
         username: 'cdb'
       });
 

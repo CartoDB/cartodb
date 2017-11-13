@@ -11,6 +11,24 @@ describe('api/v4/source/dataset', function () {
       var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
       expect(populatedPlacesDataset.getId()).toMatch(/S\d+/);
     });
+
+    it('should throw an error if dataset is not provided', function () {
+      expect(function () {
+        new carto.source.Dataset(); // eslint-disable-line
+      }).toThrowError('dataset is required.');
+    });
+
+    it('should throw an error if dataset is empty', function () {
+      expect(function () {
+        new carto.source.Dataset(''); // eslint-disable-line
+      }).toThrowError('dataset is required.');
+    });
+
+    it('should throw an error if dataset is not a valid string', function () {
+      expect(function () {
+        new carto.source.Dataset(3333); // eslint-disable-line
+      }).toThrowError('dataset must be a string.');
+    });
   });
 
   describe('$setEngine', function () {

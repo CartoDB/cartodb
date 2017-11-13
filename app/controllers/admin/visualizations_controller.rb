@@ -80,7 +80,6 @@ class Admin::VisualizationsController < Admin::AdminController
     table_action = request.original_fullpath =~ %r{/tables/}
     unless current_user.present?
       if table_action
-        return render(file: "public/static/show/index.html", layout: false) if @viewed_user.has_feature_flag?('static_editor')
         return(redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id]))
       else
         return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', id: request.params[:id]))
@@ -144,6 +143,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
     return(redirect_to protocol: 'https://') if @visualization.is_privacy_private? \
                                                 && !(request.ssl? || request.local? || Rails.env.development?)
+
+    if @visualization.open_in_editor? && current_user.has_feature_flag?('static_editor')
+      return render(file: 'public/static/show/index.html', layout: false)
+    end
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)

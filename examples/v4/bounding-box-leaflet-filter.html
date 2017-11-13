@@ -101,6 +101,10 @@
 
       // Add Bounding box filter
       var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+      bboxFilter.on('boundsChanged', function (bounds) {
+        console.log('BOUNDS CHANGED', bounds);
+      });
+      
       formulaDataview.addFilter(bboxFilter);
       categoryDataview.addFilter(bboxFilter);
 

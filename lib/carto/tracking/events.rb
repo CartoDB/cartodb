@@ -270,7 +270,16 @@ module Carto
       end
 
       class AppliedHtmlPopup < Event
-        include Carto::Tracking::Services::Hubspot
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
+
+      class AppliedHtmlLegend < Event
+        include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User

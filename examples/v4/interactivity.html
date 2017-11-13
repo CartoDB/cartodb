@@ -60,7 +60,7 @@
 
       spanishCities.on(carto.layer.events.FEATURE_OVER, function (featureEvent) {
         console.log('featureOver', featureEvent.latLng, featureEvent.data);
-  
+
         var data = featureEvent.data;
         var content = data.name;
         content += data.adm0name ? (' (' + data.adm0name + ')') : '';

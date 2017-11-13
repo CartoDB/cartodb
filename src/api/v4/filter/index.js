@@ -1,3 +1,4 @@
+var BoundingBox = require('./bounding-box');
 var BoundingBoxLeaflet = require('./bounding-box-leaflet');
 
 /**
@@ -5,5 +6,6 @@ var BoundingBoxLeaflet = require('./bounding-box-leaflet');
  *  @api
  */
 module.exports = {
+  BoundingBox: BoundingBox,
   BoundingBoxLeaflet: BoundingBoxLeaflet
 };

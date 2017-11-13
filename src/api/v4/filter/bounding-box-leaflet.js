@@ -20,9 +20,24 @@ function BoundingBoxLeaflet (map) {
   var mapAdapter = new LeafletBoundingBoxAdapter(map);
   // Use the adapter for the internal BoundingBoxFilter model
   this._internalModel = new BoundingBoxFilterModel(mapAdapter);
+  this.listenTo(this._internalModel, 'boundsChanged', this._onBoundsChanged);
 }
 
 BoundingBoxLeaflet.prototype = Object.create(Base.prototype);
+
+/**
+ * Return the current bounds
+ *
+ * @return {carto.filter.Bounds} Current bounds
+ * @api
+ */
+BoundingBoxLeaflet.prototype.getBounds = function () {
+  return this._internalModel.getBounds();
+};
+
+BoundingBoxLeaflet.prototype._onBoundsChanged = function (bounds) {
+  this.trigger('boundsChanged', bounds);
+};
 
 BoundingBoxLeaflet.prototype.$getInternalModel = function () {
   return this._internalModel;

@@ -51,27 +51,79 @@ TimeSeries.prototype.getData = function () {
 };
 
 /**
- * Set number of bins
+ * Set time aggregation
  * 
- * @param {number} bins
- * @return {carto.dataview.Histogram} this
+ * @param {carto.dataview.timeAggregation} aggregation
+ * @return {carto.dataview.TimeSeries} this
  * @api
  */
-// Histogram.prototype.setBins = function (bins) {
-//   this._validateBins(bins);
-//   this._changeProperty('bins', bins);
-//   return this;
-// };
+TimeSeries.prototype.setTimeAggregation = function (aggregation) {
+  this._validateAggregation(aggregation);
+  this._changeProperty('aggregation', aggregation);
+  return this;
+};
 
 /**
- * Return the current number of bins
+ * Return the current time aggregation
  * 
- * @return {number} Current number of bins
+ * @return {carto.dataview.timeAggregation} Current time aggregation
  * @api 
  */
-// Histogram.prototype.getBins = function () {
-//   return this._bins;
-// };
+TimeSeries.prototype.getTimeAggregation = function () {
+  return this._aggregation;
+};
+
+/**
+ * Set time offset
+ * 
+ * @param {number} offset
+ * @return {carto.dataview.TimeSeries} this
+ * @api
+ */
+TimeSeries.prototype.setOffset = function (offset) {
+  this._validateOffset(offset);
+  var prevOffset = this._offset;
+  this._offset = offset;
+  if (this._internalModel) {
+    this._internalModel.set('offset', hoursToSeconds(offset));
+  } else if (prevOffset !== offset) {
+    this._triggerChange('offset', offset);
+  }
+  return this;
+};
+
+/**
+ * Return the current time offset
+ * 
+ * @return {number} Current time offset
+ * @api 
+ */
+TimeSeries.prototype.getOffset = function () {
+  return this._offset;
+};
+
+/**
+ * Set the local timezone flag. If enabled, the time offset is overriden by the use local timezone
+ * 
+ * @param {boolean} localTimezone
+ * @return {carto.dataview.TimeSeries} this
+ * @api
+ */
+TimeSeries.prototype.setLocalTimezone = function (localTimezone) {
+  this._validateLocalTimezone(localTimezone);
+  this._changeProperty('localTimezone', localTimezone);
+  return this;
+};
+
+/**
+ * Return the current local timezone flag
+ * 
+ * @return {boolean} Current local timezone flag
+ * @api 
+ */
+TimeSeries.prototype.getLocalTimezone = function () {
+  return this._localTimezone;
+};
 
 // Histogram.prototype._parseData = function (data, nulls, totalAmount) {
 //   return parseHistogramData(data, nulls, totalAmount);
@@ -105,13 +157,8 @@ TimeSeries.prototype._validateLocalTimezone = function (localTimezone) {
 };
 
 TimeSeries.prototype._listenToInternalModelSpecificEvents = function () {
-  console.warn('To be implemented: _listenToInternalModelSpecificEvents');
+  // Empty function
 };
-
-// Histogram.prototype._onBinsChanged = function () {
-//   this._bins = this._internalModel.get('bins');
-//   this._triggerChange('bins', this._bins);
-// };
 
 TimeSeries.prototype._createInternalModel = function (engine) {
   this._internalModel = new HistogramDataviewModel({

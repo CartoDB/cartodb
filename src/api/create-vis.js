@@ -12,7 +12,7 @@ var DEFAULT_OPTIONS = {
   tooltip: true, // TODO: it seems that this is no longer used
   logo: true,
   show_empty_infowindow_fields: false,
-  showLimitErrors: true,
+  showLimitErrors: false,
   interactiveFeatures: false
 };
 

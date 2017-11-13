@@ -146,14 +146,6 @@ module Carto
         @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
       end
 
-      def cant_be_deleted_reason(user)
-        if user.organization_owner?
-          "You can't delete your account because you are admin of an organization"
-        elsif Carto::UserCreation.http_authentication.where(user_id: user.id).first.present?
-          "You can't delete your account because you are using HTTP Header Authentication"
-        end
-      end
-
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil
 

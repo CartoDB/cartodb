@@ -16,7 +16,7 @@ describe('api/v4/filter/bounding-box', function () {
       bboxFilter = new carto.filter.BoundingBox();
     });
 
-    it('checks if operation is valid', function () {
+    it('checks if bounds are valid', function () {
       var test = function () {
         bboxFilter.setBounds({ west: 0 });
       };
@@ -24,7 +24,7 @@ describe('api/v4/filter/bounding-box', function () {
       expect(test).toThrowError(TypeError, 'Bounds object is not valid. Use a carto.filter.Bounds object');
     });
 
-    it('if operation is valid, it assigns it to property, triggers the boundsChanged event and returns this', function () {
+    it('if bounds are valid, it assigns it to property, triggers the boundsChanged event and returns this', function () {
       spyOn(bboxFilter, 'trigger');
       var bounds = { west: 1, south: 2, east: 3, north: 4 };
       var returnedObject = bboxFilter.setBounds(bounds);

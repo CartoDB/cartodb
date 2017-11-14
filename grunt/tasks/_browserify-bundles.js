@@ -23,6 +23,6 @@ module.exports = {
 
   cartodb: {
     src: 'src/cartodb.js',
-    dest: '<%= config.dist %>/cartodb.uncompressed.js'
+    dest: '<%= config.dist %>/internal/cartodb.uncompressed.js'
   }
 };

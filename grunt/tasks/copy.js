@@ -5,7 +5,7 @@ module.exports = {
         expand: true,
         cwd: 'node_modules/cartoassets/src/fonts/',
         src: [ '**/*.{eot,ttf,woff,svg}' ],
-        dest: '<%= config.dist %>/themes/fonts'
+        dest: '<%= config.dist %>/internal/themes/fonts'
       }
     };
   }

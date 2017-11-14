@@ -15,8 +15,8 @@ module.exports = {
   devtool: 'source-map',
   plugins: Object.keys(webpackFiles).map(function (entryName) {
     return new HtmlWebpackPlugin({
-      inject: false,
-      cache: false,
+      // inject: false,
+      // cache: false,
       filename: path.resolve(__dirname, `../public/static/${entryName}/index.html`),
       template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/static/index.jst.ejs'),
       config: webpackFiles[entryName]

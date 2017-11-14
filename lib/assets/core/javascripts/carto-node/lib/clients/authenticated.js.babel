@@ -4,6 +4,14 @@ class AuthenticatedClient extends PublicClient {
   getConfig (callback) {
     return this.get(['me'], callback);
   }
+
+  putConfig (payload, callback) {
+    var opts = {
+      data: JSON.stringify(payload),
+      dataType: 'json'
+    };
+    return this.put(['me'], opts, callback);
+  }
 }
 
 module.exports = exports = AuthenticatedClient;

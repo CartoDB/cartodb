@@ -55548,7 +55548,7 @@ return hooks;
 },{}],52:[function(require,module,exports){
 module.exports={
   "name": "cartodb.js",
-  "version": "4.0.0-alpha.22",
+  "version": "4.0.0-alpha.23",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -59878,22 +59878,20 @@ helper.isShorterThan = function (limit, aggregation) {
   return limitIndex > -1 && aggregationIndex > -1 && aggregationIndex < limitIndex;
 };
 
-helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, offset, from, totalBuckets) {
-  var startOffset = helper.isShorterThan('day', aggregation) ? (offset || 0) : 0;
-  var startDate = moment.unix(start + startOffset).utc();
-  var UTCStartDate = moment.unix(start).utc();
+helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, from, totalBuckets) {
+  var startDate = moment.unix(start).utc();
   var filledBuckets = []; // To catch empty buckets
+  var definedBucket = false;
 
   for (var i = 0; i < numberOfBins; i++) {
-    filledBuckets.push(buckets[i] !== void 0);
+    definedBucket = buckets[i] !== undefined;
+    filledBuckets.push(definedBucket);
 
     buckets[i] = _.extend({
       bin: i,
       start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
       end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
       next: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      UTCStart: UTCStartDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      UTCEnd: UTCStartDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
       freq: 0
     }, buckets[i]);
     delete buckets[i].timestamp;
@@ -59997,7 +59995,7 @@ module.exports = DataviewModelBase.extend({
         params.push('bins=' + this.get('bins'));
       }
     } else {
-      var offset = this._getCurrentOffset();
+      var offset = this.getCurrentOffset();
 
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
@@ -60041,7 +60039,7 @@ module.exports = DataviewModelBase.extend({
     this._data = new Backbone.Collection(this.get('data'));
 
     if (attrs && (attrs.min || attrs.max)) {
-      this.filter.setRange(this.get('min'), this.get('max'));
+      this.filter && this.filter.setRange(this.get('min'), this.get('max'));
     }
   },
 
@@ -60135,7 +60133,7 @@ module.exports = DataviewModelBase.extend({
     }, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'filtered', this._totals.get('data').length);
+      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, 'filtered', this._totals.get('data').length);
       numberOfBins = parsedData.data.length;
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
@@ -60288,7 +60286,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onColumnTypeChanged: function () {
-    this.filter.set('column_type', this.get('column_type'));
+    this.filter && this.filter.set('column_type', this.get('column_type'));
   },
 
   _onChangeBinds: function () {
@@ -60364,10 +60362,10 @@ module.exports = DataviewModelBase.extend({
 
   _resetFilter: function () {
     this.disableFilter();
-    this.filter.unsetRange();
+    this.filter && this.filter.unsetRange();
   },
 
-  _getCurrentOffset: function () {
+  getCurrentOffset: function () {
     return this.get('localTimezone')
       ? this._localOffset
       : this.get('offset');
@@ -60527,7 +60525,7 @@ module.exports = Model.extend({
     }
 
     if (this.get('column_type') === 'date') {
-      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'totals');
+      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, 'totals');
       numberOfBins = parsedData.data.length;
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
@@ -60538,7 +60536,7 @@ module.exports = Model.extend({
       parsedData.end = parsedData.data[parsedData.data.length - 1].end;
 
       var limits = helper.calculateLimits(parsedData.data);
-      this._saveStartEnd(this.get('column_type'), parsedData.aggregation, parsedData.start, parsedData.end, limits, data.offset);
+      this._saveStartEnd(this.get('column_type'), parsedData.aggregation, parsedData.start, parsedData.end, limits);
     }
 
     parsedData.bins = numberOfBins;
@@ -60581,7 +60579,7 @@ module.exports = Model.extend({
     return result;
   },
 
-  _saveStartEnd: function (columnType, aggregation, start, end, limits, offset) {
+  _saveStartEnd: function (columnType, aggregation, start, end, limits) {
     if (this._startEndCache.saved) {
       return;
     }

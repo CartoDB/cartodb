@@ -13,7 +13,7 @@ function Response (windshaftSettings, serverResponse) {
   this._layers = serverResponse.metadata.layers;
   this._dataviews = serverResponse.metadata.dataviews;
   this._analyses = serverResponse.metadata.analyses;
-  this._cdnUrl = serverResponse.metadata.cdn_url;
+  this._cdnUrl = serverResponse.cdn_url;
 }
 
 /**

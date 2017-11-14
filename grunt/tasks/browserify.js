@@ -1,12 +1,11 @@
-var path = require('path');
 var bundles = require('./_browserify-bundles');
 
 module.exports = {
-  task: function(grunt) {
+  task: function (grunt) {
     var cfg = {};
     for (var name in bundles) {
       var bundle = bundles[name];
-      var bCfg = cfg[name] = {
+      cfg[name] = {
         src: bundle.src,
         dest: bundle.dest,
         options: {

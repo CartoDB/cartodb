@@ -5,9 +5,7 @@
 .tmp
 .vscode
 *.swp
-bower_components
-cartodb.js-bower/
-dist
+dist/internal
 docs
 Gemfile.lock
 node_modules

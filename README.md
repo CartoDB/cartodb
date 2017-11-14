@@ -36,13 +36,6 @@ This library allows to embed visualizations created with CARTO in your map or we
     cartodb.createLayer(map, layerUrl).addTo(map);
     ```
 
-### Usage with Bower
-
-You can install **cartodb.js** with [bower](http://bower.io/) by running
-
-```sh
-bower install cartodb.js
-```
 
 ## ~Documentation
 You can find the documentation online [here](http://docs.carto.com/cartodb-platform/cartodb-js.html) and the [source](https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md) inside this repository.
@@ -61,9 +54,8 @@ You can find the documentation online [here](http://docs.carto.com/cartodb-platf
 Build CartoDB.js library:
 
 - Install [node.js](http://nodejs.org/download/), from 0.10 version
-- Install grunt & bower: `npm install -g grunt-cli bower`
+- Install grunt: `npm install -g grunt-cli`
 - Install node dependencies: `npm install`
-- Install bower dependencies: `bower install`
 - Install [ruby](https://www.ruby-lang.org/en/installation/) and [bundler](https://github.com/bundler/bundler)
 - Install ruby dependencies: `bundle install` (necessary for compass gem)
 - Start the server: `grunt build`

@@ -146,8 +146,8 @@
     "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs": "rm -rf docs/v4; jsdoc --configure config/jsdoc/api-conf.json",
-    "docs:all": "rm -rf docs/v4-internal; jsdoc --configure config/jsdoc/all-conf.json",
+    "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",
+    "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
     "postversion": "git push origin v4 --follow-tags",
     "watch": "npm-watch"
   },

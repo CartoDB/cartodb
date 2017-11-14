@@ -6,16 +6,14 @@
   },
   "templates": {
     "default": {
-      "outputSourceFiles": false,
-      "useLongnameInNav": true
+      "outputSourceFiles": false
     }
   },
   "plugins": [
-    "plugins/api",
     "plugins/markdown"
   ],
   "opts": {
     "recurse": true,
-    "destination": "./docs/v4"
+    "destination": "./docs/internal"
   }
 }

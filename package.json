@@ -28,12 +28,11 @@
   "dependencies": {
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-alpha.22",
+    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-alpha.23",
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
     "moment": "^2.18.1",
-    "moment-timezone": "^0.5.13",
     "node-polyglot": "^2.2.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",

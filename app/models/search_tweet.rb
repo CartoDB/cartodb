@@ -21,7 +21,7 @@ class SearchTweet < Sequel::Model
 
   def self.get_twitter_imports_count(dataset, date_from, date_to)
     dataset
-        .where('search_tweets.state = ?', ::SearchTweet::STATE_COMPLETE)
+        .where(state: ::SearchTweet::STATE_COMPLETE)
         .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
         .sum("retrieved_items".lit).to_i
   end

@@ -421,7 +421,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
       var parsedData = this.model.parse(data);
       expect(helper.fillTimestampBuckets).toHaveBeenCalled();
-      expect(JSON.stringify(parsedData)).toBe('{"data":[{"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"UTCStart":1496690940,"UTCEnd":1496690999,"freq":17,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"UTCStart":1496691000,"UTCEnd":1496691059,"freq":18,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"bins":2,"hasNulls":true}');
+      expect(JSON.stringify(parsedData)).toBe('{"data":[{"bin":0,"start":1496690940,"end":1496690999,"next":1496691000,"freq":17,"min":1496690944,"max":1496690999,"avg":1496690971.58824},{"bin":1,"start":1496691000,"end":1496691059,"next":1496691060,"freq":18,"min":1496691003,"max":1496691059,"avg":1496691031.22222}],"filteredAmount":0,"nulls":0,"totalAmount":35,"bins":2,"hasNulls":true}');
     });
   });
 
@@ -767,7 +767,7 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('._getCurrentOffset', function () {
+  describe('.getCurrentOffset', function () {
     beforeEach(function () {
       this.model.set('offset', 7200, { silent: true });
       this.model._localOffset = 43200;
@@ -776,7 +776,7 @@ describe('dataviews/histogram-dataview-model', function () {
     it('should return offset if `localTimezone` is not set', function () {
       this.model.set('localTimezone', false, { silent: true });
 
-      var offset = this.model._getCurrentOffset();
+      var offset = this.model.getCurrentOffset();
 
       expect(offset).toBe(7200);
     });
@@ -784,7 +784,7 @@ describe('dataviews/histogram-dataview-model', function () {
     it('should return local offset if `localTimezone` is set', function () {
       this.model.set('localTimezone', true, { silent: true });
 
-      var offset = this.model._getCurrentOffset();
+      var offset = this.model.getCurrentOffset();
 
       expect(offset).toBe(43200);
     });

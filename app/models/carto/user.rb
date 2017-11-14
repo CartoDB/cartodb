@@ -591,6 +591,10 @@ class Carto::User < ActiveRecord::Base
     account_url(request_protocol) + '/plan'
   end
 
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
+  end
+
   private
 
   def set_database_host

@@ -1504,6 +1504,10 @@ class User < Sequel::Model
     account_url(request_protocol) + '/plan'
   end
 
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
+  end
+
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')

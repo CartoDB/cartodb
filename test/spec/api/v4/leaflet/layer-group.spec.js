@@ -15,7 +15,6 @@ describe('src/api/v4/leaflet/layer-group', function () {
 
     client = new carto.Client({
       apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-      serverUrl: 'https://{user}.carto.com:443',
       username: 'cartojs-test'
     });
     map = L.map('map').setView([42.431234, -8.643616], 5);

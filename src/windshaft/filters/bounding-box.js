@@ -4,14 +4,13 @@ var BOUNDING_BOX_FILTER_WAIT = 300;
 
 module.exports = Model.extend({
   initialize: function (mapAdapter) {
-    if (!mapAdapter) {
-      throw new TypeError('Bounding box filter needs a map to get instantiated.');
-    }
-
     this._bounds = {};
-    this._mapAdapter = mapAdapter;
-    this.setBounds(this._mapAdapter.getBounds());
-    this._initBinds();
+
+    if (mapAdapter) {
+      this._mapAdapter = mapAdapter;
+      this.setBounds(this._mapAdapter.getBounds());
+      this._initBinds();
+    }
   },
 
   _initBinds: function () {
@@ -19,7 +18,9 @@ module.exports = Model.extend({
   },
 
   _stopBinds: function () {
-    this.stopListening(this._mapAdapter, 'boundsChanged');
+    if (this._mapAdapter) {
+      this.stopListening(this._mapAdapter, 'boundsChanged');
+    }
   },
 
   _boundsChanged: function (bounds) {
@@ -31,21 +32,21 @@ module.exports = Model.extend({
     this.trigger('boundsChanged', bounds);
   },
 
+  getBounds: function () {
+    return this._bounds;
+  },
+
   areBoundsAvailable: function () {
     return _.isFinite(this._bounds.west);
   },
 
   serialize: function () {
-    return this._getBounds().join(',');
-  },
-
-  _getBounds: function () {
     return [
       this._bounds.west,
       this._bounds.south,
       this._bounds.east,
       this._bounds.north
-    ];
+    ].join(',');
   },
 
   clean: function () {

@@ -77,7 +77,6 @@ describe('api/v4/layer', function () {
     it('should set the internal model style', function (done) {
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://{user}.carto.com:443',
         username: 'cartojs-test'
       });
 

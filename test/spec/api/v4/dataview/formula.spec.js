@@ -22,7 +22,7 @@ function createInternalModelMock () {
 }
 
 function createSourceMock () {
-  return new carto.source.Dataset();
+  return new carto.source.Dataset('foo');
 }
 
 function createEngineMock () {

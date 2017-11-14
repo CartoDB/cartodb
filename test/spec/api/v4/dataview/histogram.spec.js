@@ -51,7 +51,7 @@ function createHistogramInternalModelMock (options) {
 }
 
 function createSourceMock () {
-  return new carto.source.Dataset();
+  return new carto.source.Dataset('ne_10m_populated_places_simple');
 }
 
 function createEngineMock () {

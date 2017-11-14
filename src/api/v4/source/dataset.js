@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
@@ -18,6 +19,7 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  *
  */
 function Dataset (dataset) {
+  _checkDataset(dataset);
   this._dataset = dataset;
   Base.apply(this, arguments);
 }
@@ -40,5 +42,15 @@ Dataset.prototype._createInternalModel = function (engine) {
     engine: engine
   });
 };
+
+function _checkDataset (dataset) {
+  if (!dataset) {
+    throw new TypeError('dataset is required.');
+  }
+
+  if (!_.isString(dataset)) {
+    throw new Error('dataset must be a string.');
+  }
+}
 
 module.exports = Dataset;

@@ -3,7 +3,6 @@ var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 var helper = require('../helpers/histogram-helper');
 
-
 /**
  *  This model is used for getting the total amount of data
  *  from the histogram widget (without any filter).
@@ -127,14 +126,6 @@ module.exports = Model.extend({
     _.each(data.bins, function (bin) {
       parsedData.data[bin.bin] = bin;
     });
-
-    // if (numberOfBins > DEFAULT_MAX_BUCKETS && this.get('column_type') === 'date') {
-    //   parsedData.error = 'Max bins limit reached';
-    //   parsedData.bins = numberOfBins;
-    //   return parsedData;
-    // } else {
-    //   parsedData.error = undefined;
-    // }
 
     if (this.get('column_type') === 'date') {
       parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, 'totals');

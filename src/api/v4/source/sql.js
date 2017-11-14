@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
@@ -18,6 +19,7 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  *
  */
 function SQL (query) {
+  _checkQuery(query);
   this._query = query;
   Base.apply(this, arguments);
 }
@@ -30,6 +32,7 @@ SQL.prototype = Object.create(Base.prototype);
  * @param {string} query - The sql query that will be the source of the data. 
  */
 SQL.prototype.setQuery = function (query) {
+  _checkQuery(query);
   this._query = query;
   if (this._internalModel) {
     this._internalModel.set('query', query);
@@ -61,4 +64,13 @@ SQL.prototype._createInternalModel = function (engine) {
   });
 };
 
+function _checkQuery (query) {
+  if (!query) {
+    throw new TypeError('query is required.');
+  }
+
+  if (!_.isString(query)) {
+    throw new Error('query must be a string.');
+  }
+}
 module.exports = SQL;

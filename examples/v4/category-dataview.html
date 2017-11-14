@@ -13,6 +13,8 @@
   <script src="../../dist/public/carto.uncompressed.js"></script>
   <link rel="stylesheet" href="./_style.css">
   <style>
+    html, body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     #widget {
       position: absolute;
       top: 0;
@@ -108,6 +110,9 @@
       });
 
       client.addDataview(categoryDataview);
+
+      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+      categoryDataview.addFilter(bboxFilter);
     })();
 
   </script>

@@ -11,8 +11,10 @@
 
   <!-- Include cartodb.js Library -->
   <script src="../../dist/public/carto.uncompressed.js"></script>
-  <link rel="stylesheet" href="./_style.css">
-  <style></style>
+  <style>
+    html, body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  </style>
 </head>
 
 <body>
@@ -57,11 +59,13 @@
           marker-fill: #CDCDCD;
         }`);
 
+      // Create a layer
       var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
 
+      // Add the layers to the client
       client.addLayers([ spanishCities, populatedPlaces ]);
 
-      // Add the layer to the map
+      // Add the client layer to the map
       client.getLeafletLayer().addTo(map);
 
       // Set a new style
@@ -72,8 +76,6 @@
         }`);
 
       populatedPlaces.setStyle(newPopulatedPlacesStyle);
-
-      // client.getLeafletLayer().removeFrom(map);
     })();
   </script>
 </body>

@@ -46,11 +46,14 @@
   <div id="map"></div>
   <script>
     (async () => {
+      // Create the Leaflet Map
       var map = L.map('map').setView([42.431234, -8.643616], 5);
+
+      // Add Voyager Basemap
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
-   maxZoom: 18,
-   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
- }).addTo(map);
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      }).addTo(map);
 
       // Create the Client
       var client = new carto.Client({

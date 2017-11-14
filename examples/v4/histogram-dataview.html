@@ -80,12 +80,14 @@
     }
 
     (async () => {
-      var i = 0; // Number of reload cycles.
+      // Create the Leaflet Map
       var map = L.map('map').setView([42.431234, -8.643616], 5);
+
+      // Add Voyager Basemap
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
-   maxZoom: 18,
-   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
- }).addTo(map);
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      }).addTo(map);
 
       // Create the Client
       var client = new carto.Client({
@@ -103,7 +105,6 @@
 
       // Create a source
       var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
-      window.source0 = source0;
 
       // Create a style
       var style = new carto.style.CartoCSS(`
@@ -124,7 +125,6 @@
 
       // Dataviews
       var histogram = new carto.dataview.Histogram(source0, 'postedtime');
-      window.histogram = histogram;
 
       histogram.on('dataChanged', function (newData) {
         console.log('Data changed', newData);

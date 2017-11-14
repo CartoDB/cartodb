@@ -8,10 +8,9 @@
   <title>Basic Carto.js example</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-  <!--Include carto styles  -->
-  <!-- <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" /> -->
+
   <!-- Include cartodb.js Library -->
-  <script src="../../dist/cartodb.uncompressed.js"></script>
+  <script src="../../dist/public/carto.uncompressed.js"></script>
   <link rel="stylesheet" href="./_style.css">
   <style></style>
 </head>
@@ -20,23 +19,19 @@
   <div id="map"></div>
   <script>
     (async () => {
-      var i = 0; // Number of reload cycles.
-      var map = window.map = L.map('map').setView([42.431234, -8.643616], 5);
+      // Create the Leaflet Map
+      var map = L.map('map').setView([42.431234, -8.643616], 5);
 
-      L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+      // Add Voyager Basemap
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      }).addTo(map);
 
       // Create the Client
-      var client = window.client = new carto.Client({
+      var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
         username: 'cartojs-test'
-      });
-
-      client.on(carto.events.SUCCESS, function () {
-        console.log('Client reloaded', i++);
-      });
-
-      client.on(carto.events.ERROR, function () {
-        console.error('Client Error!', i++);
       });
 
       // Create a source
@@ -50,7 +45,7 @@
         }`);
 
       // Create a layer
-      var spanishCities = window.spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle);
+      var spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle);
 
       // Create a source
       var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');

@@ -27,7 +27,7 @@ var filter = require('./filter');
 var events = require('./events');
 var operation = require('./constants').operation;
 
-module.exports = {
+var carto = window.carto = {
   Client: Client,
   source: source,
   style: style,
@@ -37,3 +37,5 @@ module.exports = {
   events: events,
   operation: operation
 };
+
+module.exports = carto;

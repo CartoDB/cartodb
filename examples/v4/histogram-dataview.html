@@ -8,10 +8,9 @@
   <title>Basic Carto.js example</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-  <!--Include carto styles  -->
-  <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+
   <!-- Include cartodb.js Library -->
-  <script src="../../dist/cartodb.uncompressed.js"></script>
+  <script src="../../dist/public/carto.uncompressed.js"></script>
   <style>
   #map {
       position: absolute;
@@ -81,9 +80,14 @@
     }
 
     (async () => {
-      var i = 0; // Number of reload cycles.
+
       var map = L.map('map').setView([40.4169, -3.7035], 11);
-      L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+      // Add Voyager Basemap
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      }).addTo(map);
 
       // Create the Client
       var client = new carto.Client({
@@ -101,7 +105,6 @@
 
       // Create a source
       var source0 = new carto.source.SQL('SELECT * FROM airbnb_listings');
-      window.source0 = source0;
 
       // Create a style
       var style = new carto.style.CartoCSS(`

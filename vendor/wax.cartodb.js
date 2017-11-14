@@ -1,4 +1,4 @@
-/* wax - 7.0.1 - v6.0.4-181-ga34788e */
+/* wax - 7.0.1 - v6.0.4-192-g80f306b */
 
 
 !function (name, context, definition) {
@@ -955,11 +955,11 @@ var html = (function (html4) {
     lt   : '<',
     gt   : '>',
     amp  : '&',
-    nbsp : '\u00A0',
+    nbsp : '\240',
     quot : '"',
     apos : '\''
   };
-
+  
   // Schemes on which to defer to uripolicy. Urls with other schemes are denied
   var WHITELISTED_SCHEMES = /^(?:https?|mailto|data)$/i;
 
@@ -2310,6 +2310,7 @@ wax.gm = function() {
 
         wax.request.get(gurl, function(err, t) {
             if (err) return callback(err, null);
+            if (t.errors_with_context) return callback(t.errors_with_context, null);
             callback(null, wax.gi(t, {
                 formatter: formatter,
                 resolution: resolution
@@ -2490,7 +2491,7 @@ wax.interaction = function() {
         var _e = (e.type !== "MSPointerMove" && e.type !== "pointermove" ? e : e.originalEvent);
         var pos = wax.u.eventoffset(_e);
 
-        interaction.screen_feature(pos, function(feature) {
+        interaction.screen_feature(pos, function(error, feature) {
             if (feature) {
                 bean.fire(interaction, 'on', {
                     parent: parent(),
@@ -2499,7 +2500,9 @@ wax.interaction = function() {
                     e: e
                 });
             } else {
-                bean.fire(interaction, 'off');
+                bean.fire(interaction, 'off', error && {
+                    errors: error
+                });
             }
         });
     }
@@ -2625,7 +2628,7 @@ wax.interaction = function() {
 
     // Handle a click event. Takes a second
     interaction.click = function(e, pos) {
-        interaction.screen_feature(pos, function(feature) {
+        interaction.screen_feature(pos, function(err, feature) {
             if (feature) bean.fire(interaction, 'on', {
                 parent: parent(),
                 data: feature,
@@ -2637,11 +2640,12 @@ wax.interaction = function() {
 
     interaction.screen_feature = function(pos, callback) {
         var tile = getTile(pos);
-        if (!tile) callback(null);
+        if (!tile) callback(null, null);
         gm.getGrid(tile.src, function(err, g) {
-            if (err || !g) return callback(null);
+            if (err) return callback(err, null);
+            if (!g) return callback(null, null);
             var feature = g.tileFeature(pos.x, pos.y, tile);
-            callback(feature);
+            callback(null, feature);
         });
     };
 
@@ -3079,7 +3083,7 @@ wax.leaf.interaction = function() {
                         for (var tile in layers[layerId]._tiles) {
                             var _tile = layers[layerId]._tiles[tile].el;
                             // avoid adding tiles without src, grid url can't be found for them
-                            if(_tile && _tile.src) {
+                            if(_tile.src) {
                               var offset = wax.u.offset(_tile);
                               o.push([offset.top, offset.left, _tile]);
                             }
@@ -3359,8 +3363,7 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
 
     x = (x < 0) ? (coord.x % mod) + mod : x;
 
-    // Fix upper limit to load the default empty image if it is rebased
-    if (y < 0 || y >= mod ) return this.options.blankImage;
+    if (y < 0 || y > (mod - 1)) return this.options.blankImage;
 
     return this.options.tiles
         [parseInt(x + y, 10) %

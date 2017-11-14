@@ -274,6 +274,7 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

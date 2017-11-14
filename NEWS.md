@@ -87,6 +87,8 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Fix for torque category legends (CartoDB/support#1120)
+* Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)

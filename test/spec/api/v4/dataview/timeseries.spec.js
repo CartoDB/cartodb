@@ -21,6 +21,9 @@ function createHistogramInternalModelMock (options) {
         }, {
         }
       ];
+    },
+    getCurrentOffset: function () {
+      return 7200;
     }
   };
   spyOn(internalModelMock, 'set');
@@ -64,13 +67,13 @@ function createEngineMock () {
   return engine;
 }
 
-describe('api/v4/dataview/histogram', function () {
+describe('api/v4/dataview/time-series', function () {
   var source = createSourceMock();
 
   describe('initialization', function () {
     it('source must be provided', function () {
       var test = function () {
-        new carto.dataview.Histogram(); // eslint-disable-line no-new
+        new carto.dataview.TimeSeries(); // eslint-disable-line no-new
       };
 
       expect(test).toThrowError(TypeError, 'Source property is required.');
@@ -78,7 +81,7 @@ describe('api/v4/dataview/histogram', function () {
 
     it('column must be provided', function () {
       var test = function () {
-        new carto.dataview.Histogram(source); // eslint-disable-line no-new
+        new carto.dataview.TimeSeries(source); // eslint-disable-line no-new
       };
 
       expect(test).toThrowError(TypeError, 'Column property is required.');
@@ -87,27 +90,61 @@ describe('api/v4/dataview/histogram', function () {
     it('options set to default if not provided', function () {
       var column = 'population';
 
-      var dataview = new carto.dataview.Histogram(source, column);
+      var dataview = new carto.dataview.TimeSeries(source, column);
 
-      expect(dataview._bins).toEqual(10);
+      expect(dataview._aggregation).toEqual(carto.dataview.timeAggregation.AUTO);
+      expect(dataview._offset).toBe(0);
+      expect(dataview._localTimezone).toBe(false);
     });
 
     it('options set to the provided value', function () {
-      var dataview = new carto.dataview.Histogram(source, 'population', {
-        bins: 808
+      var dataview = new carto.dataview.TimeSeries(source, 'population', {
+        aggregation: carto.dataview.timeAggregation.QUARTER,
+        offset: -7,
+        localTimezone: true
       });
 
-      expect(dataview._bins).toEqual(808);
+      expect(dataview._aggregation).toEqual(carto.dataview.timeAggregation.QUARTER);
+      expect(dataview._offset).toBe(-7);
+      expect(dataview._localTimezone).toBe(true);
     });
 
-    it('throw error if bins is not a positive integer value', function () {
+    it('throw error if aggregation is not a proper value', function () {
       var test = function () {
-        new carto.dataview.Histogram(source, 'population', { // eslint-disable-line no-new
-          bins: 0
+        new carto.dataview.TimeSeries(source, 'population', { // eslint-disable-line no-new
+          aggregation: 'century'
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
+      expect(test).toThrowError(TypeError, 'Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
+    });
+
+    it('throw error if offset is not a valid hour', function () {
+      var test = function () {
+        new carto.dataview.TimeSeries(source, 'population', { // eslint-disable-line no-new
+          offset: 34
+        });
+      };
+
+      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+
+      test = function () {
+        new carto.dataview.TimeSeries(source, 'population', { // eslint-disable-line no-new
+          offset: 10.45
+        });
+      };
+
+      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+    });
+
+    it('throw error if localTimezone is not a binary value', function () {
+      var test = function () {
+        new carto.dataview.TimeSeries(source, 'population', { // eslint-disable-line no-new
+          localTimezone: 'Los Angeles'
+        });
+      };
+
+      expect(test).toThrowError(TypeError, 'LocalTimezone must be a boolean value.');
     });
   });
 
@@ -115,7 +152,7 @@ describe('api/v4/dataview/histogram', function () {
     var dataview;
 
     beforeEach(function () {
-      dataview = new carto.dataview.Histogram(source, 'population');
+      dataview = new carto.dataview.TimeSeries(source, 'population');
     });
 
     it('returns null if there is no internalModel', function () {
@@ -148,6 +185,7 @@ describe('api/v4/dataview/histogram', function () {
       expect(data.result[2].normalized).toBe(0);
       expect(data.nulls).toBe(42);
       expect(data.totalAmount).toBe(7654);
+      expect(data.offset).toBe(2);
     });
 
     it('returns nulls as 0 in case the internal model has no nulls', function () {
@@ -185,36 +223,90 @@ describe('api/v4/dataview/histogram', function () {
     });
   });
 
-  describe('.setBins', function () {
+  describe('.setAggregation', function () {
     var dataview;
 
     beforeEach(function () {
-      dataview = new carto.dataview.Histogram(source, 'population');
+      dataview = new carto.dataview.TimeSeries(source, 'population');
     });
 
-    it('should validate bins', function () {
+    it('should validate aggregation', function () {
       var test = function () {
-        dataview.setBins(-1);
+        dataview.setAggregation('century');
       };
 
-      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
+      expect(test).toThrowError(TypeError, 'Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
     });
 
-    it('should throw error if called with a float number', function () {
-      var test = function () {
-        dataview.setBins(15.7);
-      };
-
-      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
-    });
-
-    it('should set bins to internal model as well', function () {
+    it('should set aggregation to internal model as well', function () {
       dataview._internalModel = createHistogramInternalModelMock();
 
-      dataview.setBins(16);
+      dataview.setAggregation(carto.dataview.timeAggregation.HOUR);
 
-      expect(dataview._internalModel.set).toHaveBeenCalledWith('bins', 16);
-      expect(dataview.getBins()).toBe(16); // We assert .getBins() as well
+      expect(dataview._internalModel.set).toHaveBeenCalledWith('aggregation', carto.dataview.timeAggregation.HOUR);
+      expect(dataview.getAggregation()).toBe('hour');
+
+      // Clean
+      dataview._internalModel = null;
+    });
+  });
+
+  describe('.setOffset', function () {
+    var dataview;
+
+    beforeEach(function () {
+      dataview = new carto.dataview.TimeSeries(source, 'population');
+    });
+
+    it('should validate offset', function () {
+      var test = function () {
+        dataview.setOffset(32);
+      };
+
+      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+
+      test = function () {
+        dataview.setOffset(10.7);
+      };
+
+      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+    });
+
+    it('should set offset to internal model as well translated to seconds', function () {
+      dataview._internalModel = createHistogramInternalModelMock();
+
+      dataview.setOffset(-5);
+
+      expect(dataview._internalModel.set).toHaveBeenCalledWith('offset', -5 * 3600);
+      expect(dataview.getOffset()).toBe(-5);
+
+      // Clean
+      dataview._internalModel = null;
+    });
+  });
+
+  describe('.setLocalTimezone', function () {
+    var dataview;
+
+    beforeEach(function () {
+      dataview = new carto.dataview.TimeSeries(source, 'population');
+    });
+
+    it('should validate localTimezone', function () {
+      var test = function () {
+        dataview.setLocalTimezone('Compton');
+      };
+
+      expect(test).toThrowError(TypeError, 'LocalTimezone must be a boolean value.');
+    });
+
+    it('should set localTimezone to internal model as well', function () {
+      dataview._internalModel = createHistogramInternalModelMock();
+
+      dataview.setLocalTimezone(true);
+
+      expect(dataview._internalModel.set).toHaveBeenCalledWith('localTimezone', true);
+      expect(dataview.getLocalTimezone()).toBe(true);
 
       // Clean
       dataview._internalModel = null;
@@ -226,21 +318,25 @@ describe('api/v4/dataview/histogram', function () {
     var dataview;
 
     beforeEach(function () {
-      dataview = new carto.dataview.Histogram(source, 'population');
+      dataview = new carto.dataview.TimeSeries(source, 'population');
       engine = createEngineMock();
     });
 
     it('creates the internal model', function () {
       var filter = new carto.filter.BoundingBox();
       dataview.disable(); // To test that it passes the ._enabled property to the internal model
-      dataview.setBins(15);
+      dataview.setAggregation(carto.dataview.timeAggregation.WEEK);
+      dataview.setOffset(6);
+      dataview.setLocalTimezone(true);
       dataview.addFilter(filter);
       dataview.$setEngine(engine);
 
       var internalModel = dataview.$getInternalModel();
       expect(internalModel.get('source')).toBe(dataview._source.$getInternalModel());
       expect(internalModel.get('column')).toEqual(dataview._column);
-      expect(internalModel.get('bins')).toBe(15);
+      expect(internalModel.get('aggregation')).toBe('week');
+      expect(internalModel.get('localTimezone')).toBe(true);
+      expect(internalModel.get('offset')).toBe(6 * 3600);
       expect(internalModel.isEnabled()).toBe(false);
       expect(internalModel._bboxFilter).toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(true);
@@ -255,25 +351,6 @@ describe('api/v4/dataview/histogram', function () {
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
     });
 
-    it('internalModel events should be properly hooked up', function () {
-      var binsChangedTriggered = false;
-      dataview.on('binsChanged', function () {
-        binsChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setBins(dataview.getBins() + 1);
-
-      expect(binsChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      binsChangedTriggered = false;
-
-      dataview.$getInternalModel().set('bins', dataview.getBins() + 1);
-
-      expect(binsChangedTriggered).toBe(true);
-    });
-
     it('calling twice to $setEngine does not create another internalModel', function () {
       spyOn(dataview, '_createInternalModel').and.callThrough();
 
@@ -281,35 +358,6 @@ describe('api/v4/dataview/histogram', function () {
       dataview.$setEngine(engine);
 
       expect(dataview._createInternalModel.calls.count()).toBe(1);
-    });
-  });
-
-  describe('.getDistributionType', function () {
-    var dataview;
-
-    beforeEach(function () {
-      dataview = new carto.dataview.Histogram(source, 'population');
-    });
-
-    it('should return null if there is no internal model', function () {
-      var distribution = dataview.getDistributionType();
-
-      expect(distribution).toBe(null);
-    });
-
-    it('should call to the proper method in internal model', function () {
-      var internalModel = {
-        getData: function () {},
-        getDistributionType: function () {}
-      };
-      spyOn(internalModel, 'getData').and.returnValue('token');
-      spyOn(internalModel, 'getDistributionType').and.returnValue('a');
-      dataview._internalModel = internalModel;
-
-      var distribution = dataview.getDistributionType();
-
-      expect(internalModel.getDistributionType).toHaveBeenCalledWith('token');
-      expect(distribution).toEqual('a');
     });
   });
 });

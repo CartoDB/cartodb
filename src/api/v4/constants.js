@@ -55,8 +55,7 @@ var timeAggregation = {
   WEEK: 'week',
   DAY: 'day',
   HOUR: 'hour',
-  MINUTE: 'minute',
-  SECOND: 'second'
+  MINUTE: 'minute'
 };
 
 function isValidTimeAggregation (agg) {

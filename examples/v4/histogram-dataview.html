@@ -82,7 +82,7 @@
 
     (async () => {
       var i = 0; // Number of reload cycles.
-      var map = L.map('map').setView([42.431234, -8.643616], 5);
+      var map = L.map('map').setView([40.4169, -3.7035], 11);
       L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
       // Create the Client
@@ -100,7 +100,7 @@
       });
 
       // Create a source
-      var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
+      var source0 = new carto.source.SQL('SELECT * FROM airbnb_listings');
       window.source0 = source0;
 
       // Create a style
@@ -121,7 +121,7 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews
-      var histogram = new carto.dataview.Histogram(source0, 'postedtime');
+      var histogram = new carto.dataview.Histogram(source0, 'price');
       window.histogram = histogram;
 
       histogram.on('dataChanged', function (newData) {
@@ -132,10 +132,10 @@
       histogram.on('statusChanged', function (newStatus, error) {
         console.log('Status changed', newStatus, error);
         if (newStatus === carto.dataview.status.LOADING) {
-        createHistogram({ status: newStatus });
+          createHistogram({ status: newStatus });
         }
-        if (newStatus === carto.dataview.status.LOADED) {
-        console.log('loaded');
+        if (newStatus === carto.dataview.status.LOADED && histogram.getData().result.length === 0) {
+          createHistogram({ status: newStatus });
         }
       });
 

@@ -82,7 +82,7 @@
 
     (async () => {
       var i = 0; // Number of reload cycles.
-      var map = L.map('map').setView([40.4, 3.7], 5);
+      var map = L.map('map').setView([40.4169, -3.7035], 11);
       L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png').addTo(map);
 
       // Create the Client
@@ -100,7 +100,7 @@
       });
 
       // Create a source
-      var source0 = new carto.source.SQL('SELECT * FROM terremotos_desde_1517_granada');
+      var source0 = new carto.source.SQL('SELECT * FROM airbnb_listings');
       window.source0 = source0;
 
       // Create a style
@@ -121,9 +121,9 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews
-      var timeSeries = new carto.dataview.TimeSeries(source0, 'fecha', {
+      var timeSeries = new carto.dataview.TimeSeries(source0, 'last_review', {
         offset: 0,
-        aggregation: 'year'
+        aggregation: 'month'
       });
       window.timeSeries = timeSeries;
 
@@ -143,12 +143,11 @@
         if (newStatus === carto.dataview.status.ERROR) {
           console.log('error: ', error);
         }
-      
       });
 
       // Add Bounding box filter
-      // var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
-      // timeSeries.addFilter(bboxFilter);
+      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+      timeSeries.addFilter(bboxFilter);
 
       client.addDataview(timeSeries);
     })();

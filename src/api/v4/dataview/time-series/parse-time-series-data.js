@@ -18,7 +18,11 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
   if (!data) {
     return null;
   }
-  var maxFreq = _.max(data, function (bin) { return bin.freq || 0; }).freq;
+  var compactData = _.compact(data);
+  var maxBin = _.max(compactData, function (bin) { return bin.freq || 0; });
+  var maxFreq = _.isFinite(maxBin.freq) && maxBin.freq !== 0
+    ? maxBin.freq
+    : null;
 
   /**
    * @description
@@ -32,7 +36,7 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
    * @api
    */
   return {
-    result: _createResult(data, maxFreq),
+    result: _createResult(compactData, maxFreq),
     nulls: nulls || 0,
     offset: secondsToHours(offset),
     totalAmount: totalAmount
@@ -62,7 +66,7 @@ function _createResult (data, maxFreq) {
       min: bin.min,
       max: bin.max,
       freq: bin.freq,
-      normalized: _.isFinite(bin.freq) ? bin.freq / maxFreq : 0
+      normalized: _.isFinite(bin.freq) && maxFreq > 0 ? bin.freq / maxFreq : 0
     };
   });
 }

@@ -58,7 +58,7 @@ TimeSeries.prototype.getData = function () {
  * @return {carto.dataview.TimeSeries} this
  * @api
  */
-TimeSeries.prototype.setTimeAggregation = function (aggregation) {
+TimeSeries.prototype.setAggregation = function (aggregation) {
   this._validateAggregation(aggregation);
   this._changeProperty('aggregation', aggregation);
   return this;
@@ -70,7 +70,7 @@ TimeSeries.prototype.setTimeAggregation = function (aggregation) {
  * @return {carto.dataview.timeAggregation} Current time aggregation
  * @api 
  */
-TimeSeries.prototype.getTimeAggregation = function () {
+TimeSeries.prototype.getAggregation = function () {
   return this._aggregation;
 };
 

@@ -274,6 +274,7 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Fix ambiguous column call in the search tweets query (#13073)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

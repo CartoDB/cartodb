@@ -1,6 +1,8 @@
 var moment = require('moment');
 var _ = require('underscore');
 
+window.moment = moment;
+
 // Preserve the ascendant order!
 var MOMENT_AGGREGATIONS = {
   second: 's',
@@ -42,22 +44,20 @@ helper.isShorterThan = function (limit, aggregation) {
   return limitIndex > -1 && aggregationIndex > -1 && aggregationIndex < limitIndex;
 };
 
-helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, offset, from, totalBuckets) {
-  var startOffset = helper.isShorterThan('day', aggregation) ? (offset || 0) : 0;
-  var startDate = moment.unix(start + startOffset).utc();
-  var UTCStartDate = moment.unix(start).utc();
+helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, from, totalBuckets) {
+  var startDate = moment.unix(start).utc();
   var filledBuckets = []; // To catch empty buckets
+  var definedBucket = false;
 
   for (var i = 0; i < numberOfBins; i++) {
-    filledBuckets.push(buckets[i] !== void 0);
+    definedBucket = buckets[i] !== undefined;
+    filledBuckets.push(definedBucket);
 
     buckets[i] = _.extend({
       bin: i,
       start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
       end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
       next: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      UTCStart: UTCStartDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      UTCEnd: UTCStartDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
       freq: 0
     }, buckets[i]);
     delete buckets[i].timestamp;

@@ -8,14 +8,18 @@
   <title>Bounding box filter dataview example</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.12/leaflet.draw-src.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.12/leaflet.draw-src.js"></script>
   <!--Include carto styles  -->
   <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
   <!-- Include cartodb.js Library -->
   <script src="../../dist/cartodb.uncompressed.js"></script>
-  <link rel="stylesheet" href="./_style.css">
   <style>
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
     #widgetC {
       position: absolute;
       top: 80px;
@@ -95,45 +99,13 @@
 
 
       // Add Bounding box filter
-      var bboxFilter = new carto.filter.BoundingBox();
+      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
       bboxFilter.on('boundsChanged', function (bounds) {
         console.log('BOUNDS CHANGED', bounds);
       });
 
       formulaDataview.addFilter(bboxFilter);
       categoryDataview.addFilter(bboxFilter);
-
-      // Setup drawing rectangles to configure custom bounding boxes
-      var rectangle = null;
-      var drawnItems = L.featureGroup().addTo(map);
-      map.addControl(new L.Control.Draw({
-        draw: {
-          polyline: false,
-          polygon: false,
-          marker: false,
-          circle: false,
-          circlemarker: false
-        }
-      }));
-
-      var el = document.getElementsByClassName('leaflet-draw-draw-rectangle');
-      el[0].addEventListener('click', function () {
-        drawnItems.removeLayer(rectangle);
-        bboxFilter.resetBounds();
-      });
-
-      map.on(L.Draw.Event.CREATED, function (event) {
-          rectangle = event.layer;
-          drawnItems.addLayer(rectangle);
-          var latLngs = rectangle.getLatLngs();
-          var bounds = {
-            west: latLngs[0][1].lng,
-            south: latLngs[0][3].lat,
-            east: latLngs[0][3].lng,
-            north: latLngs[0][1].lat
-          }
-          bboxFilter.setBounds(bounds);
-      });
 
       function renderWidgetFormula(newData) {
         var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';

@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Base = require('./base');
 
 /**
@@ -18,14 +19,25 @@ var Base = require('./base');
  * @api
  *
  */
-function CartoCSS (cartocss) {
-  this.cartocss = cartocss;
+function CartoCSS (cartoCSS) {
+  _checkCartoCSS(cartoCSS);
+  this._cartoCSS = cartoCSS;
 }
 
 CartoCSS.prototype = Object.create(Base.prototype);
 
 CartoCSS.prototype.toCartoCSS = function () {
-  return this.cartocss;
+  return this._cartoCSS;
 };
+
+function _checkCartoCSS (cartoCSS) {
+  if (!cartoCSS) {
+    throw new TypeError('cartoCSS is required.');
+  }
+
+  if (!_.isString(cartoCSS)) {
+    throw new Error('cartoCSS must be a string.');
+  }
+}
 
 module.exports = CartoCSS;

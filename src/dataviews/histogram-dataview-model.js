@@ -28,7 +28,7 @@ module.exports = DataviewModelBase.extend({
         params.push('bins=' + this.get('bins'));
       }
     } else {
-      var offset = this._getCurrentOffset();
+      var offset = this.getCurrentOffset();
 
       if (this.get('column_type') === 'number' && this.get('bins')) {
         params.push('bins=' + this.get('bins'));
@@ -166,7 +166,7 @@ module.exports = DataviewModelBase.extend({
     }, { silent: true });
 
     if (this.get('column_type') === 'date') {
-      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'filtered', this._totals.get('data').length);
+      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, 'filtered', this._totals.get('data').length);
       numberOfBins = parsedData.data.length;
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
@@ -398,7 +398,7 @@ module.exports = DataviewModelBase.extend({
     this.filter && this.filter.unsetRange();
   },
 
-  _getCurrentOffset: function () {
+  getCurrentOffset: function () {
     return this.get('localTimezone')
       ? this._localOffset
       : this.get('offset');

@@ -285,7 +285,7 @@ module.exports = cdb.core.View.extend({
     this.formatter = formatter.formatNumber;
 
     if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.get('offset'), this._timeSeriesModel.get('local_timezone'));
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.getCurrentOffset());
     }
   },
 

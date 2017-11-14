@@ -604,7 +604,7 @@ module.exports = cdb.core.View.extend({
     }
 
     if (this._dataviewModel) {
-      this.listenTo(this._dataviewModel, 'change:offset', function () {
+      this.listenTo(this._dataviewModel, 'change:offset change:localTimezone', function () {
         this.refresh();
       });
     }
@@ -1689,7 +1689,7 @@ module.exports = cdb.core.View.extend({
     this.formatter = formatter.formatNumber;
 
     if (this._isDateTimeSeries()) {
-      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'));
+      this.formatter = formatter.timestampFactory(this._dataviewModel.get('aggregation'), this._dataviewModel.getCurrentOffset());
       this.options.divisionWidth = this._calculateDivisionWithByAggregation(this._dataviewModel.get('aggregation'));
     }
   },

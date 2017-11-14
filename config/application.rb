@@ -84,6 +84,7 @@ module CartoDB
 
       account_templates.js
       account_deps.js
+      account_static.js
       account.js
       profile.js
       profile_templates.js

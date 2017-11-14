@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.20.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -88,6 +88,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix for torque category legends (CartoDB/support#1120)
+* Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
@@ -283,7 +284,7 @@ ion for time-series (#12670)
 * Adapt widget integration and specs to dataviews refactor (#12850)
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.20.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install

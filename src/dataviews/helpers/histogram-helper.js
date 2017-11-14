@@ -1,8 +1,6 @@
 var moment = require('moment');
 var _ = require('underscore');
 
-window.moment = moment;
-
 // Preserve the ascendant order!
 var MOMENT_AGGREGATIONS = {
   second: 's',

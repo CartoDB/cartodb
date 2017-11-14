@@ -530,6 +530,7 @@ module CartoDB
       end
 
       def update_database_retries(userid, username, db_host, db_name, retries = 1)
+        return if @options[:dry]
         update_database(userid, username, db_host, db_name)
       rescue => e
         @logger.error "Error updating database"

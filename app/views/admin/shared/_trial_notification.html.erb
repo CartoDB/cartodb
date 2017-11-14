@@ -1,11 +1,11 @@
 <% if current_user.has_feature_flag?('no_free_tier') && current_user.account_type == 'PERSONAL30' %>
     <div class="CDB-Text FlashMessage FlashMessage--main">
         <div class="u-inner">
-            <div class="FlashMessage-info FlashMessage--main" style="width: 100%; display: flex; flex-direction: row;justify-content: space-between;">
-                <p style="display: flex;">You're currently under your 30-day Trial Period. Add your billing info to keep using our platform.</p>
-                <p style="display: flex;">
-                    <a href="#"class="CDB-Button CDB-Button--secondary">
-                        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Add payment info</span>
+            <div class="FlashMessage-info FlashMessage--main u-flex u-justifySpace u-alignCenter" style="width: 100%; flex-direction: row;">
+                <p class="u-flex">You're currently under your 30-day Trial Period. Add your billing info to keep using our platform.</p>
+                <p class="u-flex">
+                    <a href="#" class="CDB-Button CDB-Button--secondary CDB-Button--big" style="background-color: #fff">
+                        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Add payment method</span>
                     </a>
                 </p>
             </div>

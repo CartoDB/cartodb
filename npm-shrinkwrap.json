@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.9",
-      "from": "cartodb/deep-insights.js#12637-timezone-bug",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#e261d12f30bfb752948fc1baad43bde7952839a2",
+      "version": "0.4.10",
+      "from": "cartodb/deep-insights.js#v0.4.10",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#cb6fae5bc5aec7e05cb05b0a85dfe94e8465dd2d",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.22",
-      "from": "cartodb/cartodb.js#12637-timezone-bug",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#5c7e0746bd2aa5d4a1abdc167a0fd0d9feb41d58"
+      "version": "4.0.0-alpha.23",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.23",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9798f0d21e0ae3fa5e185ee567ca6012b3a5f1e9"
     },
     "center-align": {
       "version": "0.1.3",

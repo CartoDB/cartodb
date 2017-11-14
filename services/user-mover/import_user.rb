@@ -579,7 +579,7 @@ module CartoDB
         # Note: this will change database_host on the user model to perform configuration but will not actually store
         # the change
         user_model = ::User.find(username: @target_username)
-        unless @config[:dry]
+        unless @options[:dry]
           user_model.database_host = target_dbhost
           user_model.database_name = @target_dbname
         end

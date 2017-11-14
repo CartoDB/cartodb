@@ -34,4 +34,13 @@ describe('formatter', function () {
     expect(formatter.timestampFactory('hour', 0)(timestamp)).toEqual('10:00 - May 6th, 2017');
     expect(formatter.timestampFactory('minute', 0)(timestamp)).toEqual('10:36 - May 6th, 2017');
   });
+
+  it('should format timestamps correctly with offset', function () {
+    function hoursToSeconds (hours) {
+      return hours * 3600;
+    }
+    expect(formatter.timestampFactory('day', hoursToSeconds(-14))(timestamp)).toEqual('May 5th, 2017');
+    expect(formatter.timestampFactory('hour', hoursToSeconds(12))(timestamp)).toEqual('22:00 - May 6th, 2017');
+    expect(formatter.timestampFactory('minute', hoursToSeconds(-5))(timestamp)).toEqual('05:36 - May 6th, 2017');
+  });
 });

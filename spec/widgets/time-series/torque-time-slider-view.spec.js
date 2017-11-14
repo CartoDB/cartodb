@@ -266,6 +266,9 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       dataviewModel.getColumnType = function () {
         return 'number';
       };
+      dataviewModel.getCurrentOffset = function () {
+        return 0;
+      };
 
       view = new TorqueTimeSliderView({
         dataviewModel: dataviewModel,
@@ -290,7 +293,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
 
         view._createFormatter();
 
-        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0, false);
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0);
         expect(view.formatter).not.toBe(formatter.formatNumber);
       });
     });

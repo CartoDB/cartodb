@@ -90,6 +90,9 @@ describe('widgets/histogram/chart', function () {
       aggregation: 'minute',
       offset: 0
     });
+    this.dataviewModel.getCurrentOffset = function () {
+      return 0;
+    };
     this.layerModel = new cdb.core.Model();
 
     this.view = new WidgetHistogramChart(({
@@ -1570,7 +1573,7 @@ describe('widgets/histogram/chart', function () {
 
         this.view._createFormatter();
 
-        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute');
+        expect(formatter.timestampFactory).toHaveBeenCalledWith('minute', 0);
         expect(this.view._calculateDivisionWithByAggregation).toHaveBeenCalled();
         expect(this.view.formatter).not.toBe(formatter.formatNumber);
       });

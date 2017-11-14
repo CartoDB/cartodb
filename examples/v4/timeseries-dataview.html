@@ -88,7 +88,6 @@
       // Create the Client
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        serverUrl: 'https://{user}.carto.com:443',
         username: 'cartojs-test'
       });
 
@@ -101,7 +100,7 @@
       });
 
       // Create a source
-      var source0 = new carto.source.SQL('SELECT * FROM prueba_1970');
+      var source0 = new carto.source.SQL('SELECT * FROM terremotos_desde_1517_granada');
       window.source0 = source0;
 
       // Create a style
@@ -122,9 +121,9 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews
-      var timeSeries = new carto.dataview.TimeSeries(source0, 'time', {
-        offset: -2,
-        aggregation: 'day'
+      var timeSeries = new carto.dataview.TimeSeries(source0, 'fecha', {
+        offset: 0,
+        aggregation: 'year'
       });
       window.timeSeries = timeSeries;
 
@@ -133,15 +132,19 @@
         createHistogram({ data: timeSeries.getData().result });
       });
 
-      // histogram.on('statusChanged', function (newStatus, error) {
-      //   console.log('Status changed', newStatus, error);
-      //   if (newStatus === carto.dataview.status.LOADING) {
-      //   createHistogram({ status: newStatus });
-      //   }
-      //   if (newStatus === carto.dataview.status.LOADED) {
-      //   console.log('loaded');
-      //   }
-      // });
+      timeSeries.on('statusChanged', function (newStatus, error) {
+        console.log('Status changed', newStatus, error);
+        if (newStatus === carto.dataview.status.LOADING) {
+          console.log('loading');
+        }
+        if (newStatus === carto.dataview.status.LOADED) {
+          console.log('loaded');
+        }
+        if (newStatus === carto.dataview.status.ERROR) {
+          console.log('error: ', error);
+        }
+      
+      });
 
       // Add Bounding box filter
       // var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);

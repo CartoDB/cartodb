@@ -1,5 +1,9 @@
 var _ = require('underscore');
 
+function secondsToHours (seconds) {
+  return seconds / 3600;
+}
+
 /**
  * Transform the data obtained from an internal timeseries dataview into a 
  * public object.
@@ -10,7 +14,7 @@ var _ = require('underscore');
  * 
  * @return {TimeSeriesData} - The parsed and formatted data for the given parameters.
  */
-function parseTimeSeriesData (data, nulls, totalAmount) {
+function parseTimeSeriesData (data, nulls, totalAmount, offset) {
   if (!data) {
     return null;
   }
@@ -23,12 +27,14 @@ function parseTimeSeriesData (data, nulls, totalAmount) {
    * @typedef {object} TimeSeriesData
    * @property {number} nulls - The number of items with null value.
    * @property {number} totalAmount - The number of elements returned.
+   * @property {number} offset - The time offset in hours. Needed to format UTC timestamps into the proper timezone format.
    * @property {TimeSeriesBinItem[]} result - Array containing the {@link TimeSeriesBinItem|data bins} for the time series.
    * @api
    */
   return {
     result: _createResult(data, maxFreq),
     nulls: nulls || 0,
+    offset: secondsToHours(offset),
     totalAmount: totalAmount
   };
 }
@@ -41,10 +47,10 @@ function _createResult (data, maxFreq) {
     /** 
       * @typedef {object} TimeSeriesBinItem
       * @property {number} index - Number indicating the bin order.
-      * @property {number} start - Starting timestamp of the bin.
-      * @property {number} end - End timestamp of the bin.
-      * @property {number} min - Minimum timestamp present in the bin. Only appears if freq > 0
-      * @property {number} max - Maximum timestamp present in the bin. Only appears if freq > 0
+      * @property {number} start - Starting UTC timestamp of the bin.
+      * @property {number} end - End UTC timestamp of the bin.
+      * @property {number} min - Minimum UTC timestamp present in the bin. Only appears if freq > 0
+      * @property {number} max - Maximum UTC timestamp present in the bin. Only appears if freq > 0
       * @property {number} freq - Numbers of elements present in the bin
       * @property {number} normalized - Normalized frequency with respect to the whole data.
       * @api

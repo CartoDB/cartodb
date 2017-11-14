@@ -3,7 +3,6 @@ var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 var helper = require('../helpers/histogram-helper');
 
-var DEFAULT_MAX_BUCKETS = 367;
 
 /**
  *  This model is used for getting the total amount of data
@@ -129,11 +128,13 @@ module.exports = Model.extend({
       parsedData.data[bin.bin] = bin;
     });
 
-    if (numberOfBins > DEFAULT_MAX_BUCKETS && this.get('column_type') === 'date') {
-      parsedData.error = 'Max bins limit reached';
-      parsedData.bins = numberOfBins;
-      return parsedData;
-    }
+    // if (numberOfBins > DEFAULT_MAX_BUCKETS && this.get('column_type') === 'date') {
+    //   parsedData.error = 'Max bins limit reached';
+    //   parsedData.bins = numberOfBins;
+    //   return parsedData;
+    // } else {
+    //   parsedData.error = undefined;
+    // }
 
     if (this.get('column_type') === 'date') {
       parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, 'totals');
@@ -202,7 +203,7 @@ module.exports = Model.extend({
       };
       this._startEndCache.saved = true;
     } else if (columnType === 'date') {
-      var ranges = helper.calculateDateRanges(limits.start, limits.end, offset);
+      var ranges = helper.calculateDateRanges(limits.start, limits.end);
       this._startEndCache[columnType] = ranges;
       this._startEndCache.saved = true;
     }

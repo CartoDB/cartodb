@@ -82,60 +82,21 @@ Warden::Strategies.add(:enable_account_token) do
   end
 end
 
-Warden::Strategies.add(:google_access_token) do
+Warden::Strategies.add(:oauth) do
   include LoginEventTrigger
 
-  def valid_google_access_token_strategy_for_user(user)
-    user.organization.nil? || user.organization.auth_google_enabled
-  end
-
-  def authenticate!
-    if params[:google_access_token]
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user && valid_google_access_token_strategy_for_user(user)
-        if user.enable_account_token.nil?
-          trigger_login_event(user)
-
-          success!(user)
-        else
-          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
-        end
-      else
-        fail!
-      end
-    else
-      fail!
-    end
-  end
-end
-
-Warden::Strategies.add(:github_oauth) do
-  include LoginEventTrigger
-  include Carto::EmailCleaner
-
-  def valid_github_oauth_strategy_for_user(user)
+  def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
   end
 
   def authenticate!
-    if params[:github_api]
-      github_api = params[:github_api]
-      github_id = github_api.id
-      user = User.where(github_user_id: github_id).first
-      unless user
-        user = User.where(email: clean_email(github_api.email), github_user_id: nil).first
-        if user && valid_github_oauth_strategy_for_user(user)
-          user.github_user_id = github_id
-          user.save
-        end
-      end
-      if user && valid_github_oauth_strategy_for_user(user)
-        trigger_login_event(user)
+    fail! unless params[:oauth_api]
+    oauth_api = params[:oauth_api]
+    user = oauth_api.user
+    if user && oauth_api.config.valid_method_for?(user)
+      trigger_login_event(user)
 
-        success!(user)
-      else
-        fail!
-      end
+      success!(user)
     else
       fail!
     end

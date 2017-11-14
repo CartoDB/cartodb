@@ -55,6 +55,7 @@ module Carto
         if return_private_poro || @visualization.is_accessible_with_password?(@current_viewer, @password)
           poro[:auth_tokens] = auth_tokens
         end
+        poro[:table] = user_table_presentation if show_table
 
         poro
       end
@@ -94,7 +95,6 @@ module Carto
 
         poro[:related_tables] = related_tables if related
         poro[:likes] = @visualization.likes_count if show_likes
-        poro[:table] = user_table_presentation if show_table
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
 
@@ -105,9 +105,14 @@ module Carto
         {
           id:               @visualization.id,
           name:             @visualization.name,
+          display_name:     @visualization.display_name,
+          attributions:     @visualization.attributions,
+          source:           @visualization.source,
+          license:          @visualization.license,
           type:             @visualization.type,
           tags:             @visualization.tags,
           description:      @visualization.description,
+          created_at:       @visualization.created_at,
           updated_at:       @visualization.updated_at,
           title:            @visualization.title,
           kind:             @visualization.kind,

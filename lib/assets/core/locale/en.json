@@ -91,8 +91,7 @@
       "item4": "Some analysis queries add calculated results to columns in your dataset."
     },
     "done": "Done",
-    "add-analysis": "Add analysis",
-    "never-show-message": "Don't show me this again."
+    "add-analysis": "Add analysis"
   },
   "style-onboarding": {
     "title": "Style this map!",
@@ -112,7 +111,6 @@
     },
     "take-tour": "Take the tour",
     "style-layer": "Style layer",
-    "never-show-message": "Don't show me this again.",
     "exit": "Exit tour",
     "next": "Next"
   },
@@ -128,7 +126,6 @@
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
     "learn-more": "Learn more",
-    "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
     "new-column-added": "A new column has been added to your dataset.",
@@ -1004,7 +1001,7 @@
           },
           "filter-by-node-column": {
             "title": "Filter by layer",
-            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
+            "desc": "Filter your layer depending on a second layer such that widgets will affect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",
@@ -1588,7 +1585,7 @@
           "title": "Ready to Download"
         },
         "error": {
-          "title": "An error occured while exporting your map",
+          "title": "An error occurred while exporting your map",
           "desc": "Please try again. If the problem persists, please contact support"
         }
       },
@@ -2157,7 +2154,7 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
           "accept": "CONTINUE"
         }
       }
@@ -2240,7 +2237,7 @@
     "style": {
       "types": {
         "none": "-",
-        "simple": "none",
+        "simple": "points",
         "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",
@@ -2336,7 +2333,7 @@
         "aggregation-dataset": "Admin. level",
         "labels-enabled": {
           "label": "labels",
-          "not-with-animated": "It won't be available with animations"
+          "not-with-animated": "Not available with animations"
         },
         "labels-attribute": {
           "label": "column",
@@ -2368,7 +2365,7 @@
         "animated-enabled": {
           "label": "animated",
           "already-one-torque": "There is already a torque layer in your map",
-          "not-with-labels": "It won't be available with labels"
+          "not-with-labels": "Not available with labels"
         },
         "animated-attribute": {
           "label": "column",

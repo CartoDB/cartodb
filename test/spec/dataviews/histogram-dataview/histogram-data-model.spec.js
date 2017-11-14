@@ -155,41 +155,4 @@ describe('dataviews/histogram-data-model', function () {
       expect(offset).toBe(43200);
     });
   });
-
-  describe('.parse', function () {
-    beforeEach(function () {
-      this.model.set('column_type', 'date', { silent: true });
-    });
-
-    describe(' aggregated by day', function () {
-      fit(' with offset 0', function () {
-        // 1 event at 2 Jan 1970 - 00:00
-        // 1 event at 2 Jan 1970 - 01:00
-        var payload = {
-          aggregation: 'day',
-          offset: 0,
-          timestamp_start: 86400,
-          bin_width: 3600,
-          bins_count: 1,
-          bins_start: 86400,
-          nulls: 0,
-          bins: [
-            {
-              bin: 0,
-              min: 86400,
-              max: 90000,
-              avg: 88200,
-              freq: 2,
-              timestamp: 86400
-            }
-          ],
-          type: 'histogram'
-        };
-
-        var parsedData = this.model.parse(payload);
-
-        debugger;
-      });
-    });
-  });
 });

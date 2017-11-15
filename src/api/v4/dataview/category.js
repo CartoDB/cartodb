@@ -130,7 +130,7 @@ Category.prototype.getData = function () {
      * @property {number} min
      * @property {number} nulls
      * @property {string} operation
-     * @property {CategoryItem[]} categorues
+     * @property {CategoryItem[]} categories
      * @api
      */
     var data = this._internalModel.get('data');

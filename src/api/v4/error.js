@@ -14,7 +14,7 @@ function CartoError (error) {
     return this;
   }
   if (error && error.responseText) {
-    this.message = _handleDataviewResponse(error);
+    this.message = _handleAjaxResponse(error);
     return this;
   }
 
@@ -25,11 +25,7 @@ function _isWindshaftError (error) {
   return error && error.errors_with_context;
 }
 
-/**
- * `dataview-model-base` calls triggerError passing a server response as a parameter
- * While this is not changed we need to extract the message from the  response to create a CartoError.
- */
-function _handleDataviewResponse (error) {
+function _handleAjaxResponse (error) {
   var dataviewError = JSON.parse(error.responseText);
   return dataviewError.errors[0];
 }

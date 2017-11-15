@@ -95,14 +95,6 @@
         username: 'cartojs-test'
       });
 
-      client.on(carto.events.SUCCESS, function () {
-        console.log('Client reloaded', i++)
-      });
-
-      client.on(carto.events.ERROR, function () {
-        console.error('Client Error!', i++)
-      });
-
       // Create a source
       var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
 
@@ -124,7 +116,9 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews
-      var histogram = new carto.dataview.Histogram(source0, 'postedtime');
+      var histogram = new carto.dataview.Histogram(source0, 'postedtime', {
+        bins: 20
+      });
 
       histogram.on('dataChanged', function (newData) {
         console.log('Data changed', newData);
@@ -139,6 +133,10 @@
         if (newStatus === carto.dataview.status.LOADED) {
         console.log('loaded');
         }
+      });
+
+      histogram.on('error', function (error) {
+        console.error('Histogram error!! ', error);
       });
 
       // Add Bounding box filter

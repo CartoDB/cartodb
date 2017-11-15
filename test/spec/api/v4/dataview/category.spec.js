@@ -47,7 +47,7 @@ function createEngineMock () {
   return engine;
 }
 
-fdescribe('api/v4/dataview/category', function () {
+describe('api/v4/dataview/category', function () {
   var source = createSourceMock();
 
   describe('initialization', function () {
@@ -319,24 +319,6 @@ fdescribe('api/v4/dataview/category', function () {
       dataview.$setEngine(engine);
 
       expect(dataview._createInternalModel.calls.count()).toBe(1);
-    });
-  });
-
-  fdescribe('errors', function () {
-    it('should trigger an error when the internal model is invalid', function (done) {
-      var client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        username: 'cartojs-test'
-      });
-      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
-      var invalidCategoryDataview = new carto.dataview.Category(source, 'invalid_column');
-
-      invalidCategoryDataview.on('error', function (cartoError) {
-        expect(cartoError.message).toMatch(/column \"invalid_column\" does not exist/);
-        done();
-      });
-
-      client.addDataview(invalidCategoryDataview).catch(function () { }); // Prevent console "uncaught error" warning.
     });
   });
 });

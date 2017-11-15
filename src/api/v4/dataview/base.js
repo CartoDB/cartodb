@@ -242,7 +242,7 @@ Base.prototype._listenToInternalModelSharedEvents = function () {
     this.listenTo(this._internalModel, 'change:column', this._onColumnChanged);
     this.listenTo(this._internalModel, 'loading', this._onStatusLoading);
     this.listenTo(this._internalModel, 'loaded', this._onStatusLoaded);
-    this.listenTo(this._internalModel, 'error', this._onStatusError);
+    this.listenTo(this._internalModel, 'statusError', this._onStatusError);
     this._listenToInternalModelSpecificEvents();
   }
 };
@@ -275,6 +275,7 @@ Base.prototype._onStatusLoaded = function () {
 Base.prototype._onStatusError = function (model, error) {
   this._status = status.ERROR;
   this.trigger('statusChanged', this._status, error);
+  this._triggerError(this, error);
 };
 
 Base.prototype._changeProperty = function (key, value, internalKey) {

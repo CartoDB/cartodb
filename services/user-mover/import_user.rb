@@ -200,7 +200,7 @@ module CartoDB
           end
         end
 
-        if @options[:data]
+        if @options[:data] && @options[:update_metadata]
           configure_database(@target_dbhost)
         end
 

@@ -4,7 +4,7 @@ include Carto::Db::MigrationHelper
 
 migration(
   Proc.new do
-    add_column :user_migration_imports, :dry, :boolean
+    add_column :user_migration_imports, :dry, :boolean, default: true
   end,
   Proc.new do
     drop_column :user_migration_imports, :dry

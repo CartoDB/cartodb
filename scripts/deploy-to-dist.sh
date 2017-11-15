@@ -33,15 +33,15 @@ git checkout -b dist origin/dist || exit 1
 echo "Copying source content to root"
 rm -rf $PUBLIC_DIR || exit 1
 mv $TMP_DIST_DIR/$PUBLIC_DIR $PUBLIC_DIR || exit 1
-rm -rf $INTERNAL_DIR || exit 1
-mv $TMP_DIST_DIR/$INTERNAL_DIR $INTERNAL_DIR || exit 1
+# rm -rf $INTERNAL_DIR || exit 1
+# mv $TMP_DIST_DIR/$INTERNAL_DIR $INTERNAL_DIR || exit 1
 
 echo "Pushing new content to $ORIGIN_URL"
 git config user.name "Cartofante" || exit 1
 git config user.email "systems@cartodb.com" || exit 1
 
 git add $PUBLIC_DIR || exit 1
-git add $INTERNAL_DIR || exit 1
+# git add $INTERNAL_DIR || exit 1
 git commit --allow-empty -m "Update dist for $CURRENT_COMMIT" || exit 1
 git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
 

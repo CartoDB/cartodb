@@ -11,6 +11,7 @@ before_script:
 script:
   - npm test
 after_success:
+  - bash scripts/deploy-to-dist.sh
   - bash scripts/deploy-to-gh-pages.sh
 notifications:
   email:

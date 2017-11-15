@@ -5,7 +5,7 @@
 .tmp
 .vscode
 *.swp
-dist/internal
+dist
 docs
 Gemfile.lock
 node_modules

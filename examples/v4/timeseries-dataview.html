@@ -5,14 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Basic Carto.js example</title>
+  <title>Time series dataview Carto.js example</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 
   <!-- Include cartodb.js Library -->
   <script src="../../dist/public/carto.uncompressed.js"></script>
   <style>
-  #map {
+    #map {
       position: absolute;
       top: 0;
       left: 0;
@@ -58,7 +58,6 @@
 
       var width = mainDiv.clientWidth;
       var divWidth = (width - (32 * 2 + (data.length - 1) * 2)) / data.length;
-      var max = Number.MIN_VALUE;
 
       if (status === 'loading') {
         var p = document.createElement('p');
@@ -80,10 +79,9 @@
     }
 
     (async () => {
-
       var map = L.map('map').setView([40.4169, -3.7035], 11);
 
-      // Add Voyager Basemap
+        // Add Voyager Basemap
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
@@ -95,16 +93,9 @@
         username: 'cartojs-test'
       });
 
-      client.on(carto.events.SUCCESS, function () {
-        console.log('Client reloaded', i++)
-      });
-
-      client.on(carto.events.ERROR, function () {
-        console.error('Client Error!', i++)
-      });
-
       // Create a source
       var source0 = new carto.source.SQL('SELECT * FROM airbnb_listings');
+      window.source0 = source0;
 
       // Create a style
       var style = new carto.style.CartoCSS(`
@@ -124,29 +115,35 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews
-      var histogram = new carto.dataview.Histogram(source0, 'price');
-      window.histogram = histogram;
+      var timeSeries = new carto.dataview.TimeSeries(source0, 'last_review', {
+        offset: 0,
+        aggregation: 'month'
+      });
+      window.timeSeries = timeSeries;
 
-      histogram.on('dataChanged', function (newData) {
+      timeSeries.on('dataChanged', function (newData) {
         console.log('Data changed', newData);
-        createHistogram({ data: histogram.getData().bins });
+        createHistogram({ data: timeSeries.getData().bins });
       });
 
-      histogram.on('statusChanged', function (newStatus, error) {
-        console.log('Status changed', newStatus, error);
+      timeSeries.on('statusChanged', function (newStatus, error) {
+        console.log('Status changed', newStatus);
         if (newStatus === carto.dataview.status.LOADING) {
-          createHistogram({ status: newStatus });
+          console.log('loading');
         }
-        if (newStatus === carto.dataview.status.LOADED && histogram.getData().bins.length === 0) {
-          createHistogram({ status: newStatus });
+        if (newStatus === carto.dataview.status.LOADED) {
+          console.log('loaded');
+        }
+        if (newStatus === carto.dataview.status.ERROR) {
+          console.log('error: ', error);
         }
       });
 
       // Add Bounding box filter
       var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
-      histogram.addFilter(bboxFilter);
+      timeSeries.addFilter(bboxFilter);
 
-      client.addDataview(histogram);
+      client.addDataview(timeSeries);
     })();
 
   </script>

@@ -19,6 +19,10 @@ var operation = {
   MIN: 'min'
 };
 
+function isValidOperation (op) {
+  return _.contains(operation, op);
+}
+
 /**
  * Enum for dataview status values.
  *
@@ -34,12 +38,34 @@ var status = {
   ERROR: 'error'
 };
 
-function isValidOperation (op) {
-  return _.contains(operation, op);
+/**
+ * Enum for dataview time aggregations.
+ * 
+ * @enum {string} carto.dataview.timeAggregation
+ * @readonly
+ * @memberOf carto.dataview
+ * @api
+ */
+
+var timeAggregation = {
+  AUTO: 'auto',
+  YEAR: 'year',
+  QUARTER: 'quarter',
+  MONTH: 'month',
+  WEEK: 'week',
+  DAY: 'day',
+  HOUR: 'hour',
+  MINUTE: 'minute'
+};
+
+function isValidTimeAggregation (agg) {
+  return _.contains(timeAggregation, agg);
 }
 
 module.exports = {
   operation: operation,
   status: status,
-  isValidOperation: isValidOperation
+  timeAggregation: timeAggregation,
+  isValidOperation: isValidOperation,
+  isValidTimeAggregation: isValidTimeAggregation
 };

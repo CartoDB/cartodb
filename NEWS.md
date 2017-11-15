@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.20.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -87,6 +87,7 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 
 ### Bug fixes / enhancements
+* Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix for torque category legends (CartoDB/support#1120)
 * Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix dashboard redirections (#12775)

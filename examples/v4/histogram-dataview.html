@@ -129,7 +129,7 @@
 
       histogram.on('dataChanged', function (newData) {
         console.log('Data changed', newData);
-        createHistogram({ data: histogram.getData().result });
+        createHistogram({ data: histogram.getData().bins });
       });
 
       histogram.on('statusChanged', function (newStatus, error) {
@@ -137,7 +137,7 @@
         if (newStatus === carto.dataview.status.LOADING) {
           createHistogram({ status: newStatus });
         }
-        if (newStatus === carto.dataview.status.LOADED && histogram.getData().result.length === 0) {
+        if (newStatus === carto.dataview.status.LOADED && histogram.getData().bins.length === 0) {
           createHistogram({ status: newStatus });
         }
       });

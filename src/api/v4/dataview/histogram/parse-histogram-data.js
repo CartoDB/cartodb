@@ -27,12 +27,12 @@ function parseHistogramData (data, nulls, totalAmount) {
    * @typedef {object} HistogramData
    * @property {number} nulls - The number of items with null value.
    * @property {number} totalAmount - The number of elements returned.
-   * @property {BinItem[]} result - Array containing the {@link BinItem|data bins} for the histogram. .
+   * @property {BinItem[]} bins - Array containing the {@link BinItem|data bins} for the histogram. .
    * @property {string} type - String with value: **histogram**
    * @api
    */
   return {
-    result: _createResult(compactData, maxFreq),
+    bins: _createResult(compactData, maxFreq),
     nulls: nulls || 0,
     totalAmount: totalAmount
   };

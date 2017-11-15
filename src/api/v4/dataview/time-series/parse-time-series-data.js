@@ -32,11 +32,11 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
    * @property {number} nulls - The number of items with null value.
    * @property {number} totalAmount - The number of elements returned.
    * @property {number} offset - The time offset in hours. Needed to format UTC timestamps into the proper timezone format.
-   * @property {TimeSeriesBinItem[]} result - Array containing the {@link TimeSeriesBinItem|data bins} for the time series.
+   * @property {TimeSeriesBinItem[]} bins - Array containing the {@link TimeSeriesBinItem|data bins} for the time series.
    * @api
    */
   return {
-    result: _createResult(compactData, maxFreq),
+    bins: _createResult(compactData, maxFreq),
     nulls: nulls || 0,
     offset: secondsToHours(offset),
     totalAmount: totalAmount

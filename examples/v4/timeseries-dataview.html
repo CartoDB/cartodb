@@ -123,11 +123,11 @@
 
       timeSeries.on('dataChanged', function (newData) {
         console.log('Data changed', newData);
-        createHistogram({ data: timeSeries.getData().result });
+        createHistogram({ data: timeSeries.getData().bins });
       });
 
       timeSeries.on('statusChanged', function (newStatus, error) {
-        console.log('Status changed', newStatus, error);
+        console.log('Status changed', newStatus);
         if (newStatus === carto.dataview.status.LOADING) {
           console.log('loading');
         }

@@ -17,7 +17,7 @@ function hoursToSeconds (hours) {
  * @param {object} options
  * @param {carto.dataview.timeAggregation} [options.aggregation=auto] - Granularity of time aggregation.
  * @param {number} offset - Amount of hours to displace the aggregation from UTC.
- * @param {boolean} localTimezone - Indicates to use the user local timezone or not.
+ * @param {boolean} useLocalTimezone - Indicates to use the user local timezone or not.
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -27,7 +27,7 @@ function TimeSeries (source, column, options) {
   this._initialize(source, column, options);
   this._aggregation = this._options.aggregation;
   this._offset = this._options.offset;
-  this._localTimezone = this._options.localTimezone;
+  this._localTimezone = this._options.useLocalTimezone;
 }
 
 TimeSeries.prototype = Object.create(Base.prototype);
@@ -35,7 +35,7 @@ TimeSeries.prototype = Object.create(Base.prototype);
 TimeSeries.prototype.DEFAULTS = {
   aggregation: timeAggregation.AUTO,
   offset: 0,
-  localTimezone: false
+  useLocalTimezone: false
 };
 
 /**
@@ -110,9 +110,9 @@ TimeSeries.prototype.getOffset = function () {
  * @return {carto.dataview.TimeSeries} this
  * @api
  */
-TimeSeries.prototype.setLocalTimezone = function (localTimezone) {
-  this._validateLocalTimezone(localTimezone);
-  this._changeProperty('localTimezone', localTimezone);
+TimeSeries.prototype.useLocalTimezone = function (enable) {
+  this._validateLocalTimezone(enable);
+  this._changeProperty('localTimezone', enable);
   return this;
 };
 
@@ -122,7 +122,7 @@ TimeSeries.prototype.setLocalTimezone = function (localTimezone) {
  * @return {boolean} Current local timezone flag
  * @api 
  */
-TimeSeries.prototype.getLocalTimezone = function () {
+TimeSeries.prototype.isUsingLocalTimezone = function () {
   return this._localTimezone;
 };
 
@@ -132,7 +132,7 @@ TimeSeries.prototype._checkOptions = function (options) {
   }
   this._validateAggregation(options.aggregation);
   this._validateOffset(options.offset);
-  this._validateLocalTimezone(options.localTimezone);
+  this._validateLocalTimezone(options.useLocalTimezone);
 };
 
 TimeSeries.prototype._validateAggregation = function (aggregation) {

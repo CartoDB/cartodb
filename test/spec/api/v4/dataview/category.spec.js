@@ -226,7 +226,7 @@ describe('api/v4/dataview/category', function () {
         min: 1,
         nulls: 0,
         operation: carto.operation.SUM,
-        result: [
+        categories: [
           {
             name: 'cat1',
             value: 1,

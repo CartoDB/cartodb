@@ -9,7 +9,8 @@ describe Carto::UserMigrationImport do
         database_host: :database_host,
         user_id: :irrelevant_user_id,
         organization_id: :irrelevant_organization_id,
-        import_metadata: true
+        import_metadata: true,
+        dry: false
       )
       setup_mocks
     end

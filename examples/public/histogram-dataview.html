@@ -74,75 +74,72 @@
       }
     }
 
-    (async () => {
-      // Create the Leaflet Map
-      var map = L.map('map').setView([42.431234, -8.643616], 5);
+    // Create the Leaflet Map
+    var map = L.map('map').setView([42.431234, -8.643616], 5);
 
-      // Add Voyager Basemap
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
-      }).addTo(map);
+    // Add Voyager Basemap
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+    }).addTo(map);
 
-      // Create the Client
-      var client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        username: 'cartojs-test'
-      });
+    // Create the Client
+    var client = new carto.Client({
+      apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+      username: 'cartojs-test'
+    });
 
-      client.on(carto.events.SUCCESS, function () {
-        console.log('Client reloaded', i++)
-      });
+    client.on(carto.events.SUCCESS, function () {
+      console.log('Client reloaded', i++)
+    });
 
-      client.on(carto.events.ERROR, function () {
-        console.error('Client Error!', i++)
-      });
+    client.on(carto.events.ERROR, function () {
+      console.error('Client Error!', i++)
+    });
 
-      // Create a source
-      var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
+    // Create a source
+    var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
 
-      // Create a style
-      var style = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 10;
-          marker-fill: red;
-        }`
-      );
+    // Create a style
+    var style = new carto.style.CartoCSS(`
+      #layer {
+        marker-width: 10;
+        marker-fill: red;
+      }`
+    );
 
-      // Create a layer
-      var layer = new carto.layer.Layer(source0, style);
+    // Create a layer
+    var layer = new carto.layer.Layer(source0, style);
 
-      // Add the layers
-      client.addLayer(layer);
+    // Add the layers
+    client.addLayer(layer);
 
-      // Add the layer to the map
-      client.getLeafletLayer().addTo(map);
+    // Add the layer to the map
+    client.getLeafletLayer().addTo(map);
 
-      // Dataviews
-      var histogram = new carto.dataview.Histogram(source0, 'postedtime');
+    // Dataviews
+    var histogram = new carto.dataview.Histogram(source0, 'postedtime');
 
-      histogram.on('dataChanged', function (newData) {
-        console.log('Data changed', newData);
-        createHistogram({ data: histogram.getData().result });
-      });
+    histogram.on('dataChanged', function (newData) {
+      console.log('Data changed', newData);
+      createHistogram({ data: histogram.getData().result });
+    });
 
-      histogram.on('statusChanged', function (newStatus, error) {
-        console.log('Status changed', newStatus, error);
-        if (newStatus === carto.dataview.status.LOADING) {
-        createHistogram({ status: newStatus });
-        }
-        if (newStatus === carto.dataview.status.LOADED) {
-        console.log('loaded');
-        }
-      });
+    histogram.on('statusChanged', function (newStatus, error) {
+      console.log('Status changed', newStatus, error);
+      if (newStatus === carto.dataview.status.LOADING) {
+      createHistogram({ status: newStatus });
+      }
+      if (newStatus === carto.dataview.status.LOADED) {
+      console.log('loaded');
+      }
+    });
 
-      // Add Bounding box filter
-      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
-      histogram.addFilter(bboxFilter);
+    // Add Bounding box filter
+    var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+    histogram.addFilter(bboxFilter);
 
-      client.addDataview(histogram);
-    })();
-
+    client.addDataview(histogram);
   </script>
 </body>
 

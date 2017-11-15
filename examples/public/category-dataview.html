@@ -31,90 +31,87 @@
   <div id="widget"></div>
   <div id="map"></div>
   <script>
-    (async () => {
-      // Create the Leaflet Map
-      var map = L.map('map').setView([42.431234, -8.643616], 5);
+    // Create the Leaflet Map
+    var map = L.map('map').setView([42.431234, -8.643616], 5);
 
-      // Add Voyager Basemap
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
-      }).addTo(map);
+    // Add Voyager Basemap
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+    }).addTo(map);
 
-      // Create the Client
-      var client = new carto.Client({
-        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-        username: 'cartojs-test'
-      });
+    // Create the Client
+    var client = new carto.Client({
+      apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+      username: 'cartojs-test'
+    });
 
-      client.on('error', function(error) {
-        console.log('ERROR', error);
-      })
+    client.on('error', function(error) {
+      console.log('ERROR', error);
+    })
 
-      // Create a source
-      var source = new carto.source.Dataset('twitter_chiquito_calzada_chiquigif');
+    // Create a source
+    var source = new carto.source.Dataset('twitter_chiquito_calzada_chiquigif');
 
-      // Create a style
-      var style = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 10;
-          marker-fill: yellow;
-        }`
-      );
+    // Create a style
+    var style = new carto.style.CartoCSS(`
+      #layer {
+        marker-width: 10;
+        marker-fill: yellow;
+      }`
+    );
 
-      // Create a layer
-      var layer = new carto.layer.Layer(source, style);
+    // Create a layer
+    var layer = new carto.layer.Layer(source, style);
 
-      // Add the layer
-      client.addLayer(layer);
+    // Add the layer
+    client.addLayer(layer);
 
-      // Add the layer to the map
-      client.getLeafletLayer().addTo(map);
+    // Add the layer to the map
+    client.getLeafletLayer().addTo(map);
 
-      // Add a Category dataview
-      var categoryDataview = new carto.dataview.Category(source, 'actor_preferredusername', {
-        limit: 20,
-        operation: carto.operation.SUM,
-        operationColumn: 'retweetcount'
-      });
+    // Add a Category dataview
+    var categoryDataview = new carto.dataview.Category(source, 'actor_preferredusername', {
+      limit: 20,
+      operation: carto.operation.SUM,
+      operationColumn: 'retweetcount'
+    });
 
-      categoryDataview.on('dataChanged', function (newData) {
-        var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';
-        formattedData += '<ul>';
-        for (var category of newData.result) {
-          formattedData += '<li>' + category.name + ': ' + category.value + '</li>';
-        }
-        formattedData += '</ul>';
-        document.getElementById('widget').innerHTML = formattedData;
-        console.log('Data changed', newData);
-      });
+    categoryDataview.on('dataChanged', function (newData) {
+      var formattedData = '<b>' + newData.operation.toUpperCase() + '</b>';
+      formattedData += '<ul>';
+      for (var category of newData.result) {
+        formattedData += '<li>' + category.name + ': ' + category.value + '</li>';
+      }
+      formattedData += '</ul>';
+      document.getElementById('widget').innerHTML = formattedData;
+      console.log('Data changed', newData);
+    });
 
-      categoryDataview.on('columnChanged', function (newColumn) {
-        console.log('Column changed', newColumn);
-      });
+    categoryDataview.on('columnChanged', function (newColumn) {
+      console.log('Column changed', newColumn);
+    });
 
-      categoryDataview.on('statusChanged', function (newStatus, error) {
-        console.log('Status changed', newStatus, error);
-      });
+    categoryDataview.on('statusChanged', function (newStatus, error) {
+      console.log('Status changed', newStatus, error);
+    });
 
-      categoryDataview.on('limitChanged', function (newMaxCategories) {
-        console.log('Limit changed', newMaxCategories);
-      });
+    categoryDataview.on('limitChanged', function (newMaxCategories) {
+      console.log('Limit changed', newMaxCategories);
+    });
 
-      categoryDataview.on('operationChanged', function (newOperation) {
-        console.log('Operation changed', newOperation);
-      });
+    categoryDataview.on('operationChanged', function (newOperation) {
+      console.log('Operation changed', newOperation);
+    });
 
-      categoryDataview.on('operationColumnChanged', function (newOperationColumn) {
-        console.log('Operation column changed', newOperationColumn);
-      });
+    categoryDataview.on('operationColumnChanged', function (newOperationColumn) {
+      console.log('Operation column changed', newOperationColumn);
+    });
 
-      client.addDataview(categoryDataview);
+    client.addDataview(categoryDataview);
 
-      var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
-      categoryDataview.addFilter(bboxFilter);
-    })();
-
+    var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+    categoryDataview.addFilter(bboxFilter);
   </script>
 </body>
 

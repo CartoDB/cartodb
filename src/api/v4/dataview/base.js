@@ -294,8 +294,8 @@ Base.prototype._triggerChange = function (key, value) {
 /**
  * Fire a CartoError event from a internalDataviewError
  */
-Base.prototype._triggerError = function (internalDataviewError) {
-  this.trigger('error', new CartoError({ message: 'unknown error in the dataview' }));
+Base.prototype._triggerError = function (model, internalDataviewError) {
+  this.trigger('error', new CartoError(internalDataviewError));
 };
 
 Base.prototype._addBoundingBoxFilter = function (filter) {

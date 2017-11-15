@@ -332,8 +332,7 @@ fdescribe('api/v4/dataview/category', function () {
       var invalidCategoryDataview = new carto.dataview.Category(source, 'invalid_column');
 
       invalidCategoryDataview.on('error', function (cartoError) {
-        // expect(cartoError.message).toMatch(/column \"invalid_column\" does not exist/); // Not enough info for this
-        expect(cartoError.message).toMatch(/unknown error in the dataview/);
+        expect(cartoError.message).toMatch(/column \"invalid_column\" does not exist/);
         done();
       });
 

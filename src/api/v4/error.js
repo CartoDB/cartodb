@@ -13,11 +13,25 @@ function CartoError (error) {
     this.message = error.message;
     return this;
   }
+  if (error && error.responseText) {
+    this.message = _handleDataviewResponse(error);
+    return this;
+  }
+
   this.message = 'unexpected error';
 }
 
 function _isWindshaftError (error) {
   return error && error.errors_with_context;
+}
+
+/**
+ * `dataview-model-base` calls triggerError passing a server response as a parameter
+ * While this is not changed we need to extract the message from the  response to create a CartoError.
+ */
+function _handleDataviewResponse (error) {
+  var dataviewError = JSON.parse(error.responseText);
+  return dataviewError.errors[0];
 }
 
 module.exports = CartoError;

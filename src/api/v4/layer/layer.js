@@ -185,7 +185,7 @@ Layer.prototype.hasFeatureOverColumns = function (columns) {
 
 /**
  * Hides the layer.
- *
+ * @return {carto.layer.Layer} this
  * @api
  */
 Layer.prototype.hide = function () {
@@ -200,6 +200,7 @@ Layer.prototype.hide = function () {
 /**
  * Shows the layer.
  *
+ * @return {carto.layer.Layer} this
  * @api
  */
 Layer.prototype.show = function () {
@@ -209,6 +210,34 @@ Layer.prototype.show = function () {
   }
 
   return this;
+};
+
+/**
+ * Change the layer's visibility.
+ * @return {carto.layer.Layer} this
+ */
+Layer.prototype.toggle = function () {
+  return this.isVisible() ? this.hide() : this.show();
+};
+
+/**
+ * Return true if the layer is visible and false when not visible.
+ * 
+ * @return {boolean} - A boolean value indicating the layer's visibility.
+ * @api
+ */
+Layer.prototype.isVisible = function () {
+  return this._visible;
+};
+
+/**
+ * Return `true` if the layer is not visible and false when visible.
+ * 
+ * @return {boolean} - A boolean value indicating the layer's visibility.
+ * @api
+ */
+Layer.prototype.isHidden = function () {
+  return !this.isVisible();
 };
 
 // Private functions.

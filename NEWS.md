@@ -277,6 +277,7 @@ ion for time-series (#12670)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
 * Fix ambiguous column call in the search tweets query (#13073)
+* Fix email validator failing with empty emails (#13078)
 * Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals

@@ -47,5 +47,9 @@ git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" gh-pages > /dev/null 2>&
 echo "Cleaning up temp files"
 rm -rf $DOCS_DIR
 
+echo "Checking out $TRAVIS_BRANCH"
+git checkout -- . || exit 1
+git checkout $TRAVIS_BRANCH || exit 1
+
 echo "Deployed successfully."
 exit 0

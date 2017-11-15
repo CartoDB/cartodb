@@ -43,7 +43,6 @@ Base.prototype._createInternalModel = function (engine) {
 Base.prototype.$setEngine = function (engine) {
   if (!this._internalModel) {
     this._internalModel = this._createInternalModel(engine);
-    this._internalModel.on('change:query', this.triggerQueryChanged, this);
   }
 };
 

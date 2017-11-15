@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/style/cartocss', function () {
+fdescribe('api/v4/style/cartocss', function () {
   var cartoCSS;
 
   beforeEach(function () {
@@ -28,6 +28,15 @@ describe('api/v4/style/cartocss', function () {
       expect(function () {
         new carto.style.CartoCSS(3333); // eslint-disable-line
       }).toThrowError('cartoCSS must be a string.');
+    });
+  });
+
+  describe('.getStyle', function () {
+    it('should return the internal style', function () {
+      var expected = '#layer { marker-with:10; }';
+      var actual = cartoCSS.getStyle();
+
+      expect(actual).toEqual(expected);
     });
   });
 });

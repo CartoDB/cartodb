@@ -224,14 +224,6 @@ Layer.prototype._createInternalModel = function (engine) {
   }, { engine: engine });
 };
 
-Layer.prototype._reloadEngine = function () {
-  if (this._engine) {
-    return this._engine.reload();
-  }
-
-  return Promise.resolve();
-};
-
 // Internal functions.
 
 Layer.prototype.$setEngine = function (engine) {

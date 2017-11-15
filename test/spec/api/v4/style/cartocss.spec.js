@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-fdescribe('api/v4/style/cartocss', function () {
+describe('api/v4/style/cartocss', function () {
   var cartoCSS;
 
   beforeEach(function () {

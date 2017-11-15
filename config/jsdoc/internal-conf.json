@@ -6,7 +6,8 @@
   },
   "templates": {
     "default": {
-      "outputSourceFiles": false
+      "outputSourceFiles": false,
+      "useLongnameInNav": true
     }
   },
   "plugins": [

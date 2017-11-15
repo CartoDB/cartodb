@@ -35,6 +35,7 @@ echo "Fetching gh-pages branch"
 git fetch origin gh-pages:refs/remotes/origin/gh-pages || exit 1
 
 echo "Checking out gh-pages branch"
+git checkout -- . || exit 1
 git checkout -b gh-pages origin/gh-pages || exit 1
 
 echo "Copying source content to root"

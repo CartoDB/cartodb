@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/source/sql', function () {
+fdescribe('api/v4/source/sql', function () {
   var sqlQuery;
 
   beforeEach(function () {
@@ -62,6 +62,26 @@ describe('api/v4/source/sql', function () {
       expect(internalModel.get('id')).toEqual(sqlQuery.getId());
       expect(internalModel.get('query')).toEqual('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
       expect(internalModel._engine).toEqual('fakeEngine');
+    });
+  });
+
+  describe('errors', function () {
+    it('should trigger an error when invalid', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      // The following sql has the invalid operator: ===
+      var invalidSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name === \'Spain\'');
+      var cartoCss = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+
+      invalidSource.on('error', function (cartoError) {
+        expect(cartoError.message).toMatch(/operator does not exist/);
+        done();
+      });
+      var layer = new carto.layer.Layer(invalidSource, cartoCss);
+
+      client.addLayer(layer).catch(function () { }); // Prevent console "uncaught error" warning.
     });
   });
 });

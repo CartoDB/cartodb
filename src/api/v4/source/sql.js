@@ -54,7 +54,7 @@ SQL.prototype.getQuery = function () {
  * @param {Engine} engine - The engine object to be assigned to the internalModel.
  */
 SQL.prototype._createInternalModel = function (engine) {
-  return new AnalysisModel({
+  var internalModel = new AnalysisModel({
     id: this.getId(),
     type: 'source',
     query: this._query
@@ -62,6 +62,10 @@ SQL.prototype._createInternalModel = function (engine) {
     camshaftReference: CamshaftReference,
     engine: engine
   });
+
+  internalModel.on('change:error', this._triggerError, this);
+
+  return internalModel;
 };
 
 function _checkQuery (query) {

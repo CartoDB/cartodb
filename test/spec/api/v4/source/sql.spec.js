@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/source/sql', function () {
+fdescribe('api/v4/source/sql', function () {
   var sqlQuery;
 
   beforeEach(function () {
@@ -51,6 +51,34 @@ describe('api/v4/source/sql', function () {
       expect(function () {
         sqlQuery.setQuery(333);
       }).toThrowError('query must be a string.');
+    });
+
+    it('should trigger an queryChanged event when there is no internal model', function (done) {
+      var expectedQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
+      sqlQuery.on('queryChanged', function (newQuery) {
+        expect(newQuery).toEqual(expectedQuery);
+        done();
+      });
+      sqlQuery.setQuery(expectedQuery);
+    });
+
+    it('should trigger an queryChanged event when there is an internal model', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      var layer = new carto.layer.Layer(sqlQuery, style);
+
+      client.addLayer(layer).then(function () {
+        var expectedQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
+
+        sqlQuery.on('queryChanged', function (newQuery) {
+          expect(newQuery).toEqual(expectedQuery);
+          done();
+        });
+        sqlQuery.setQuery(expectedQuery);
+      });
     });
   });
 

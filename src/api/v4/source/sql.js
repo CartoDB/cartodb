@@ -36,6 +36,8 @@ SQL.prototype.setQuery = function (query) {
   this._query = query;
   if (this._internalModel) {
     this._internalModel.set('query', query);
+  } else {
+    this._triggerQueryChanged(this, query);
   }
   return this;
 };
@@ -54,7 +56,7 @@ SQL.prototype.getQuery = function () {
  * @param {Engine} engine - The engine object to be assigned to the internalModel.
  */
 SQL.prototype._createInternalModel = function (engine) {
-  return new AnalysisModel({
+  var internalModel = new AnalysisModel({
     id: this.getId(),
     type: 'source',
     query: this._query
@@ -62,6 +64,14 @@ SQL.prototype._createInternalModel = function (engine) {
     camshaftReference: CamshaftReference,
     engine: engine
   });
+
+  internalModel.on('change:query', this._triggerQueryChanged, this);
+
+  return internalModel;
+};
+
+SQL.prototype._triggerQueryChanged = function (model, value) {
+  this.trigger('queryChanged', value);
 };
 
 function _checkQuery (query) {

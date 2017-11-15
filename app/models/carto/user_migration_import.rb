@@ -168,7 +168,7 @@ module Carto
         mode: :import,
         logger: log.logger,
         import_job_logger: log.logger,
-        dry: dry
+        update_metadata: dry
       }
     end
 

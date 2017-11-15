@@ -17,7 +17,7 @@ module CartoDB
       attr_reader :logger
 
       def initialize(options)
-        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true, dry: false }
+        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true }
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
@@ -530,7 +530,6 @@ module CartoDB
       end
 
       def update_database_retries(userid, username, db_host, db_name, retries = 1)
-        return if @options[:dry]
         update_database(userid, username, db_host, db_name)
       rescue => e
         @logger.error "Error updating database"
@@ -580,10 +579,8 @@ module CartoDB
         # Note: this will change database_host on the user model to perform configuration but will not actually store
         # the change
         user_model = ::User.find(username: @target_username)
-        unless @options[:dry]
-          user_model.database_host = target_dbhost
-          user_model.database_name = @target_dbname
-        end
+        user_model.database_host = target_dbhost
+        user_model.database_name = @target_dbname
         user_model.organization_id = @target_org_id if !@target_org_id.nil?
 
         user_model.db_service.setup_organization_owner if @target_is_owner

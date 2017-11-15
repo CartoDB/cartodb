@@ -57,5 +57,9 @@ git add $EXAMPLES_DIR || exit 1
 git commit --allow-empty -m "Update docs/examples for $CURRENT_COMMIT" || exit 1
 git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" gh-pages > /dev/null 2>&1
 
+echo "Checking out $TRAVIS_BRANCH"
+git checkout -- . || exit 1
+git checkout $TRAVIS_BRANCH || exit 1
+
 echo "Deployed successfully."
 exit 0

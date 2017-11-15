@@ -45,5 +45,9 @@ git add $PUBLIC_DIR || exit 1
 git commit --allow-empty -m "Update dist for $CURRENT_COMMIT" || exit 1
 git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
 
+echo "Checking out $TRAVIS_BRANCH"
+git checkout -- . || exit 1
+git checkout $TRAVIS_BRANCH || exit 1
+
 echo "Deployed successfully."
 exit 0

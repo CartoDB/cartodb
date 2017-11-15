@@ -239,6 +239,8 @@ Category.prototype._createInternalModel = function (engine) {
     filter: new CategoryFilter(),
     bboxFilter: this._boundingBoxFilter && this._boundingBoxFilter.$getInternalModel()
   });
+
+  this._internalModel.on('error', this._triggerError, this);
 };
 
 module.exports = Category;

@@ -101,7 +101,7 @@ describe('api/v4/dataview/time-series', function () {
       var dataview = new carto.dataview.TimeSeries(source, 'population', {
         aggregation: carto.dataview.timeAggregation.QUARTER,
         offset: -7,
-        localTimezone: true
+        useLocalTimezone: true
       });
 
       expect(dataview._aggregation).toEqual(carto.dataview.timeAggregation.QUARTER);
@@ -140,7 +140,7 @@ describe('api/v4/dataview/time-series', function () {
     it('throw error if localTimezone is not a binary value', function () {
       var test = function () {
         new carto.dataview.TimeSeries(source, 'population', { // eslint-disable-line no-new
-          localTimezone: 'Los Angeles'
+          useLocalTimezone: 'Los Angeles'
         });
       };
 
@@ -176,13 +176,13 @@ describe('api/v4/dataview/time-series', function () {
 
       var data = dataview.getData();
 
-      expect(data.result.length).toBe(3);
-      expect(data.result[0].freq).toBe(35);
-      expect(data.result[1].freq).toBe(50);
-      expect(data.result[2].freq).toBeUndefined();
-      expect(data.result[0].normalized).toBe(0.7);
-      expect(data.result[1].normalized).toBe(1);
-      expect(data.result[2].normalized).toBe(0);
+      expect(data.bins.length).toBe(3);
+      expect(data.bins[0].freq).toBe(35);
+      expect(data.bins[1].freq).toBe(50);
+      expect(data.bins[2].freq).toBeUndefined();
+      expect(data.bins[0].normalized).toBe(0.7);
+      expect(data.bins[1].normalized).toBe(1);
+      expect(data.bins[2].normalized).toBe(0);
       expect(data.nulls).toBe(42);
       expect(data.totalAmount).toBe(7654);
       expect(data.offset).toBe(2);
@@ -203,13 +203,13 @@ describe('api/v4/dataview/time-series', function () {
 
       var data = dataview.getData();
 
-      expect(data.result.length).toBe(3);
-      expect(data.result[0].freq).toBe(35);
-      expect(data.result[1].freq).toBe(50);
-      expect(data.result[2].freq).toBeUndefined();
-      expect(data.result[0].normalized).toBe(0.7);
-      expect(data.result[1].normalized).toBe(1);
-      expect(data.result[2].normalized).toBe(0);
+      expect(data.bins.length).toBe(3);
+      expect(data.bins[0].freq).toBe(35);
+      expect(data.bins[1].freq).toBe(50);
+      expect(data.bins[2].freq).toBeUndefined();
+      expect(data.bins[0].normalized).toBe(0.7);
+      expect(data.bins[1].normalized).toBe(1);
+      expect(data.bins[2].normalized).toBe(0);
       expect(data.nulls).toBe(0);
       expect(data.totalAmount).toBe(7654);
     });
@@ -285,7 +285,7 @@ describe('api/v4/dataview/time-series', function () {
     });
   });
 
-  describe('.setLocalTimezone', function () {
+  describe('.useLocalTimezone', function () {
     var dataview;
 
     beforeEach(function () {
@@ -294,7 +294,7 @@ describe('api/v4/dataview/time-series', function () {
 
     it('should validate localTimezone', function () {
       var test = function () {
-        dataview.setLocalTimezone('Compton');
+        dataview.useLocalTimezone('Compton');
       };
 
       expect(test).toThrowError(TypeError, 'LocalTimezone must be a boolean value.');
@@ -303,10 +303,10 @@ describe('api/v4/dataview/time-series', function () {
     it('should set localTimezone to internal model as well', function () {
       dataview._internalModel = createHistogramInternalModelMock();
 
-      dataview.setLocalTimezone(true);
+      dataview.useLocalTimezone(true);
 
       expect(dataview._internalModel.set).toHaveBeenCalledWith('localTimezone', true);
-      expect(dataview.getLocalTimezone()).toBe(true);
+      expect(dataview.isUsingLocalTimezone()).toBe(true);
 
       // Clean
       dataview._internalModel = null;
@@ -327,7 +327,7 @@ describe('api/v4/dataview/time-series', function () {
       dataview.disable(); // To test that it passes the ._enabled property to the internal model
       dataview.setAggregation(carto.dataview.timeAggregation.WEEK);
       dataview.setOffset(6);
-      dataview.setLocalTimezone(true);
+      dataview.useLocalTimezone(true);
       dataview.addFilter(filter);
       dataview.$setEngine(engine);
 

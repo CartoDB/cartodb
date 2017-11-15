@@ -139,13 +139,13 @@ describe('api/v4/dataview/histogram', function () {
 
       var data = dataview.getData();
 
-      expect(data.result.length).toBe(3);
-      expect(data.result[0].freq).toBe(35);
-      expect(data.result[1].freq).toBe(50);
-      expect(data.result[2].freq).toBeUndefined();
-      expect(data.result[0].normalized).toBe(0.7);
-      expect(data.result[1].normalized).toBe(1);
-      expect(data.result[2].normalized).toBe(0);
+      expect(data.bins.length).toBe(3);
+      expect(data.bins[0].freq).toBe(35);
+      expect(data.bins[1].freq).toBe(50);
+      expect(data.bins[2].freq).toBeUndefined();
+      expect(data.bins[0].normalized).toBe(0.7);
+      expect(data.bins[1].normalized).toBe(1);
+      expect(data.bins[2].normalized).toBe(0);
       expect(data.nulls).toBe(42);
       expect(data.totalAmount).toBe(7654);
     });
@@ -165,13 +165,13 @@ describe('api/v4/dataview/histogram', function () {
 
       var data = dataview.getData();
 
-      expect(data.result.length).toBe(3);
-      expect(data.result[0].freq).toBe(35);
-      expect(data.result[1].freq).toBe(50);
-      expect(data.result[2].freq).toBeUndefined();
-      expect(data.result[0].normalized).toBe(0.7);
-      expect(data.result[1].normalized).toBe(1);
-      expect(data.result[2].normalized).toBe(0);
+      expect(data.bins.length).toBe(3);
+      expect(data.bins[0].freq).toBe(35);
+      expect(data.bins[1].freq).toBe(50);
+      expect(data.bins[2].freq).toBeUndefined();
+      expect(data.bins[0].normalized).toBe(0.7);
+      expect(data.bins[1].normalized).toBe(1);
+      expect(data.bins[2].normalized).toBe(0);
       expect(data.nulls).toBe(0);
       expect(data.totalAmount).toBe(7654);
     });

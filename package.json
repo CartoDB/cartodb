@@ -115,6 +115,7 @@
     "wax.cartodb.js": "./vendor/wax.cartodb.js"
   },
   "browserify-shim": {
+    "leaflet": "global:L",
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
     "lzma": "LZMA",

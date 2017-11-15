@@ -37,7 +37,7 @@ const config = {
   entry: './lib/assets/core/javascripts/carto-node/index.js.babel',
 
   output: {
-    path: path.resolve(__dirname, '../../lib/assets/javascripts/carto-node'),
+    path: path.resolve(__dirname, '../../vendor/assets/javascripts/carto-node'),
     filename: outputFile,
     library: libraryName,
     libraryTarget: 'umd'

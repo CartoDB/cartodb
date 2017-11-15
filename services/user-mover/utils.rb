@@ -63,7 +63,7 @@ module CartoDB
         return_code = nil
         log_message = ''
         file = Tempfile.new('datamover')
-        loger.debug("Logging command output to #{file.path}")
+        logger.debug("Logging command output to #{file.path}")
         Open3.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
           stdout_and_stderr.each do |line|
             message = line.strip + "\n"

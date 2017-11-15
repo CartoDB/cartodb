@@ -2,11 +2,11 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 
 var LeafletLayerView = function (layerModel, leafletMap, mapModel, showLimitErrors) {
+  this.showLimitErrors = showLimitErrors;
   this.leafletLayer = this._createLeafletLayer(layerModel);
   this.leafletMap = leafletMap;
   this.model = layerModel;
   this.mapModel = mapModel;
-  this.showLimitErrors = showLimitErrors;
 
   this.setModel(layerModel);
 

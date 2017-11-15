@@ -83,7 +83,7 @@ module Carto
         raise e
       end
       org_import? ? self.organization = imported : self.user = imported
-      update_database_host
+      update_database_host unless dry
       save!
       imported
     end
@@ -132,7 +132,6 @@ module Carto
     end
 
     def update_database_host
-      return if dry
       users.each do |user|
         Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
         user.database_host = database_host

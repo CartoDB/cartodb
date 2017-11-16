@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.11",
-      "from": "cartodb/deep-insights.js#v0.4.11",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#ab1cc9f2a2d8a5eafbf2b0952366812fa20b2aba",
+      "version": "0.4.12",
+      "from": "cartodb/deep-insights.js#public-api-integration",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#35456e743a858cabe486c0df1ca5eeac375bafb1",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.24",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.24",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#97f33d4c15b3bafed583809d0f714130b475f685"
+      "version": "4.0.0-alpha.23",
+      "from": "cartodb/cartodb.js#public-api",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#54ee3b435f4728b2d2cc55f8888fcaccbc661297"
     },
     "center-align": {
       "version": "0.1.3",
@@ -2167,7 +2167,7 @@
     },
     "tangram.cartodb": {
       "version": "0.5.7",
-      "from": "tangram.cartodb@>=0.5.7 <0.6.0",
+      "from": "tangram.cartodb@>=0.5.6 <0.6.0",
       "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.7.tgz"
     },
     "tapable": {
@@ -2223,7 +2223,7 @@
     "torque.js": {
       "version": "2.16.3",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#c998860ad3359f06b6d4f22c30205f7d14c0801a"
+      "resolved": "git://github.com/cartodb/torque.git#5d9b02a6da2c3b458fa4d60630a529b45bc5030b"
     },
     "transformify": {
       "version": "0.1.2",

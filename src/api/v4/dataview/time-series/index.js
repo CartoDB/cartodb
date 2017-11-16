@@ -41,7 +41,7 @@ TimeSeries.prototype.DEFAULTS = {
 /**
  * Return the resulting data.
  *
- * @return {TimeSeriesData}
+ * @return {carto.dataview.TimeSeriesData}
  * @api
  */
 TimeSeries.prototype.getData = function () {
@@ -53,7 +53,7 @@ TimeSeries.prototype.getData = function () {
 
 /**
  * Set time aggregation.
- * 
+ *
  * @param {carto.dataview.timeAggregation} aggregation
  * @return {carto.dataview.TimeSeries} this
  * @api
@@ -66,9 +66,9 @@ TimeSeries.prototype.setAggregation = function (aggregation) {
 
 /**
  * Return the current time aggregation.
- * 
+ *
  * @return {carto.dataview.timeAggregation} Current time aggregation
- * @api 
+ * @api
  */
 TimeSeries.prototype.getAggregation = function () {
   return this._aggregation;
@@ -76,7 +76,7 @@ TimeSeries.prototype.getAggregation = function () {
 
 /**
  * Set time offset.
- * 
+ *
  * @param {number} offset
  * @return {carto.dataview.TimeSeries} this
  * @api
@@ -95,9 +95,9 @@ TimeSeries.prototype.setOffset = function (offset) {
 
 /**
  * Return the current time offset.
- * 
+ *
  * @return {number} Current time offset
- * @api 
+ * @api
  */
 TimeSeries.prototype.getOffset = function () {
   return this._offset;
@@ -105,7 +105,7 @@ TimeSeries.prototype.getOffset = function () {
 
 /**
  * Set the local timezone flag. If enabled, the time offset is overriden by the use local timezone.
- * 
+ *
  * @param {boolean} localTimezone
  * @return {carto.dataview.TimeSeries} this
  * @api
@@ -118,9 +118,9 @@ TimeSeries.prototype.useLocalTimezone = function (enable) {
 
 /**
  * Return the current local timezone flag.
- * 
+ *
  * @return {boolean} Current local timezone flag
- * @api 
+ * @api
  */
 TimeSeries.prototype.isUsingLocalTimezone = function () {
   return this._localTimezone;

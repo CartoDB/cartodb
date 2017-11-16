@@ -30,7 +30,7 @@ Histogram.prototype.DEFAULTS = {
 /**
  * Return the resulting data
  *
- * @return {HistogramData}
+ * @return {carto.dataview.HistogramData}
  * @api
  */
 Histogram.prototype.getData = function () {
@@ -42,7 +42,7 @@ Histogram.prototype.getData = function () {
 
 /**
  * Set number of bins
- * 
+ *
  * @param {number} bins
  * @return {carto.dataview.Histogram} this
  * @api
@@ -55,9 +55,9 @@ Histogram.prototype.setBins = function (bins) {
 
 /**
  * Return the current number of bins
- * 
+ *
  * @return {number} Current number of bins
- * @api 
+ * @api
  */
 Histogram.prototype.getBins = function () {
   return this._bins;
@@ -65,9 +65,9 @@ Histogram.prototype.getBins = function () {
 
 /**
  * Return the distribution type of the current data according to [Galtung’s AJUS System]{@link https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification}
- * 
+ *
  * @return {string} Distribution type of current data
- * @api 
+ * @api
  */
 Histogram.prototype.getDistributionType = function () {
   if (this._internalModel) {

@@ -6,11 +6,11 @@ function secondsToHours (seconds) {
 
 /**
  * Transform the data obtained from an internal timeseries dataview into a  public object.
- * 
+ *
  * @param {object[]} data - The raw time series data
  * @param {number} nulls - Number of data with a null
  * @param {number} totalAmount - Total number of data in the histogram
- * 
+ *
  * @return {TimeSeriesData} - The parsed and formatted data for the given parameters
  */
 function parseTimeSeriesData (data, nulls, totalAmount, offset) {
@@ -26,12 +26,12 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
   /**
    * @description
    * #Object containing time series data.
-   * 
-   * @typedef {object} TimeSeriesData
+   *
+   * @typedef {object} carto.dataview.TimeSeriesData
    * @property {number} nulls - The number of items with null value
    * @property {number} totalAmount - The number of elements returned
    * @property {number} offset - The time offset in hours. Needed to format UTC timestamps into the proper timezone format
-   * @property {TimeSeriesBinItem[]} bins - Array containing the {@link TimeSeriesBinItem|data bins} for the time series
+   * @property {carto.dataview.TimeSeriesBinItem[]} bins - Array containing the {@link carto.dataview.TimeSeriesBinItem|data bins} for the time series
    * @api
    */
   return {
@@ -43,12 +43,12 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
 }
 
 /**
- * Transform the time series raw data into {@link TimeSeriesBinItem}.
+ * Transform the time series raw data into {@link carto.dataview.TimeSeriesBinItem}.
  */
 function _createResult (data, maxFreq) {
   return data.map(function (bin) {
-    /** 
-      * @typedef {object} TimeSeriesBinItem
+    /**
+      * @typedef {object} carto.dataview.TimeSeriesBinItem
       * @property {number} index - Number indicating the bin order
       * @property {number} start - Starting UTC timestamp of the bin
       * @property {number} end - End UTC timestamp of the bin

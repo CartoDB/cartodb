@@ -52,13 +52,13 @@ Formula.prototype.getOperation = function () {
 /**
  * Return the resulting data.
  *
- * @return {FormulaData}
+ * @return {carto.dataview.FormulaData}
  * @api
  */
 Formula.prototype.getData = function () {
   if (this._internalModel) {
     /**
-     * @typedef {object} FormulaData
+     * @typedef {object} carto.dataview.FormulaData
      * @property {number} nulls
      * @property {string} operation
      * @property {number} result

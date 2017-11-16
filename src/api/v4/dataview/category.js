@@ -111,26 +111,26 @@ Category.prototype.getOperationColumn = function () {
 /**
  * Return the resulting data.
  *
- * @return {CategoryData}
+ * @return {carto.dataview.CategoryData}
  * @api
  */
 Category.prototype.getData = function () {
   if (this._internalModel) {
     /**
-     * @typedef {object} CategoryItem
+     * @typedef {object} carto.dataview.CategoryItem
      * @property {boolean} group
      * @property {string} name
      * @property {number} value
      * @api
      */
     /**
-     * @typedef {object} CategoryData
+     * @typedef {object} carto.dataview.CategoryData
      * @property {number} count
      * @property {number} max
      * @property {number} min
      * @property {number} nulls
      * @property {string} operation
-     * @property {CategoryItem[]} categories
+     * @property {carto.dataview.CategoryItem[]} categories
      * @api
      */
     var data = this._internalModel.get('data');

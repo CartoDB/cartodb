@@ -1665,7 +1665,10 @@
         "add-analysis": "Add analysis",
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
-        "add-layer": "Add layer"
+        "add-layer": "Add layer",
+        "geocode-text": "To show data on this map, geocode your layer.",
+        "geocode": "Geocode",
+        "geocode-tooltip": "Geocode to visualize on the map"
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",

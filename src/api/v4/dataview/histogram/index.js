@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Base = require('../base');
 var HistogramDataviewModel = require('../../../../dataviews/histogram-dataview-model');
-var parseHistogramData = require('./parse-histogram-data.js');
+var parseHistogramData = require('./parse-data.js');
 
 /**
  * Histogram dataview object.

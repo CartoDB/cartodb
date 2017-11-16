@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Base = require('../base');
 var HistogramDataviewModel = require('../../../../dataviews/histogram-dataview-model');
-var parseTimeSeriesData = require('./parse-time-series-data');
+var parseTimeSeriesData = require('./parse-data');
 var timeAggregation = require('../../constants').timeAggregation;
 var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
 

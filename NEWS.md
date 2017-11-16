@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add interactivity error infobox (#13027)
 * Add limits for torque (#13085)
 * Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)

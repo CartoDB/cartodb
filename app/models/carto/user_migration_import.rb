@@ -179,7 +179,7 @@ module Carto
     end
 
     def import_metadata?
-      parent && !dry
+      super && !dry
     end
   end
 end

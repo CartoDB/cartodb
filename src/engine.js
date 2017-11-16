@@ -97,7 +97,6 @@ Engine.prototype.getLayerGroup = function () {
  * // Call the reload method and wait.
  * engine.reload();
  *
- * @api
  */
 Engine.prototype.on = function (event, callback, context) {
   this._eventEmmitter.on(event, callback, context);
@@ -115,7 +114,6 @@ Engine.prototype.on = function (event, callback, context) {
  * // Remove the the `displayMap` listener function so it wont be executed anymore when the engine fires the `load` event.
  * engine.off(Engine.Events.RELOAD_SUCCESS, onReload);
  *
- * @api
  */
 Engine.prototype.off = function (event, callback, context) {
   this._eventEmmitter.off(event, callback, context);
@@ -136,7 +134,6 @@ Engine.prototype.off = function (event, callback, context) {
  * @fires Engine#Engine:RELOAD_SUCCESS
  * @fires Engine#Engine:RELOAD_ERROR
  *
- * @api
  */
 Engine.prototype.reload = function (options) {
   return new Promise(function (resolve, reject) {
@@ -172,7 +169,6 @@ Engine.prototype.reload = function (options) {
  * @param {layer} layer - A new layer to be added to the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.addLayer = function (layer) {
   this._layersCollection.add(layer);
@@ -185,7 +181,6 @@ Engine.prototype.addLayer = function (layer) {
  * @param {layer} layer - A new layer to be removed from the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.removeLayer = function (layer) {
   this._layersCollection.remove(layer);
@@ -198,7 +193,6 @@ Engine.prototype.removeLayer = function (layer) {
  * @param {Dataview} dataview - A new dataview to be added to the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.addDataview = function (dataview) {
   this._dataviewsCollection.add(dataview);
@@ -211,7 +205,6 @@ Engine.prototype.addDataview = function (dataview) {
  * @param {Dataview} dataview - The Dataview to be removed to the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.removeDataview = function (dataview) {
   this._dataviewsCollection.remove(dataview);
@@ -319,7 +312,6 @@ Engine.prototype._manageClientError = function (error, options) {
  *
  * @readonly
  * @enum {string}
- * @api
  */
 Engine.Events = {
   /**

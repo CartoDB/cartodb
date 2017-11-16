@@ -3,6 +3,8 @@
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.
+ *
+ * @api
  */
 function CartoError (error) {
   if (_isWindshaftError(error)) {

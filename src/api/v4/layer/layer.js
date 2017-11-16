@@ -32,6 +32,7 @@ var StyleBase = require('../style/base');
  * 
  * @constructor
  * @extends carto.layer.Base
+ * @memberof carto.layer
  * @api
  */
 function Layer (source, style, options) {

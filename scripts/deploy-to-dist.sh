@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Pull requests and commits to other branches shouldn't try to deploy
-if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" != "public-api" ]; then
+# Deploy only semver tags (branches)
+
+SEMVER_PATTERN="^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$"
+
+if [[ ! $TRAVIS_BRANCH =~ $SEMVER_PATTERN ]]; then
   echo "Skip deploy: $TRAVIS_BRANCH"
   exit 0
 fi
@@ -31,23 +34,21 @@ git checkout -- . || exit 1
 git checkout -b dist origin/dist || exit 1
 
 echo "Copying source content to root"
-rm -rf $PUBLIC_DIR || exit 1
-mv $TMP_DIST_DIR/$PUBLIC_DIR $PUBLIC_DIR || exit 1
-# rm -rf $INTERNAL_DIR || exit 1
-# mv $TMP_DIST_DIR/$INTERNAL_DIR $INTERNAL_DIR || exit 1
+rm -rf *.js *.map || exit 1
+cp $TMP_DIST_DIR/$PUBLIC_DIR/* . || exit 1
 
 echo "Pushing new content to $ORIGIN_URL"
 git config user.name "Cartofante" || exit 1
 git config user.email "systems@cartodb.com" || exit 1
 
-git add $PUBLIC_DIR || exit 1
-# git add $INTERNAL_DIR || exit 1
-git commit --allow-empty -m "Update dist for $CURRENT_COMMIT" || exit 1
-git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
+git add *.js *.map || exit 1
+git commit --allow-empty -m "Update dist for $TRAVIS_BRANCH" || exit 1
+git tag "@${TRAVIS_BRANCH:1}"
+git push --force --follow-tags --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
 
 echo "Checking out $TRAVIS_BRANCH"
 git checkout -- . || exit 1
-git checkout $TRAVIS_BRANCH || exit 1
+git checkout -b $TRAVIS_BRANCH || exit 1
 
 echo "Deployed successfully."
 exit 0

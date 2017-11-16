@@ -5,7 +5,7 @@ var overlayContainerTemplate = require('./overlays-container.tpl');
 var C = require('../../constants');
 var Engine = require('../../engine');
 
-var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'limits', 'logo', 'search', 'zoom'];
+var CONTAINED_OVERLAYS = ['attribution', 'fullscreen', 'tiles', 'limits', 'logo', 'search', 'zoom'];
 
 var OverlaysView = View.extend({
   initialize: function (opts) {
@@ -46,6 +46,7 @@ var OverlaysView = View.extend({
 
     this.listenTo(this._overlaysCollection, 'add remove change', this.render, this);
     this.listenTo(this._mapModel, 'error:limit', this._addLimitsOverlay, this);
+    this.listenTo(this._mapModel, 'error:tile', this._addTilesOverlay, this);
   },
 
   _clearOverlays: function () {
@@ -118,7 +119,14 @@ var OverlaysView = View.extend({
     });
   },
 
+  _areLimitsErrorsEnabled: function () {
+    return this._visView.model.get('showLimitErrors');
+  },
+
   _addLimitsOverlay: function () {
+    if (!this._areLimitsErrorsEnabled()) return;
+    this._removeTilesOverlay();
+
     var limitsOverlay = this._getOverlayViewByType(C.OVERLAY_TYPES.LIMITS);
 
     limitsOverlay || this._overlaysCollection.add({
@@ -126,9 +134,30 @@ var OverlaysView = View.extend({
     });
   },
 
+  _hasLimitsOverlay: function () {
+    return !!this._getOverlayViewByType(C.OVERLAY_TYPES.LIMITS);
+  },
+
+  _addTilesOverlay: function () {
+    if (this._hasLimitsOverlay()) return;
+
+    var tilesOverlay = this._getOverlayViewByType(C.OVERLAY_TYPES.TILES);
+
+    tilesOverlay || this._overlaysCollection.add({
+      type: C.OVERLAY_TYPES.TILES
+    });
+  },
+
   _removeLimitsOverlay: function () {
     var overlay = this._overlaysCollection.findWhere({
       type: C.OVERLAY_TYPES.LIMITS
+    });
+    this._overlaysCollection.remove(overlay);
+  },
+
+  _removeTilesOverlay: function () {
+    var overlay = this._overlaysCollection.findWhere({
+      type: C.OVERLAY_TYPES.TILES
     });
     this._overlaysCollection.remove(overlay);
   },

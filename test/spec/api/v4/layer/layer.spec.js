@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/layer', function () {
+fdescribe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -159,14 +159,89 @@ describe('api/v4/layer', function () {
   });
 
   describe('.show', function () {
+    it('should set the layer visibility to true', function () {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
 
+      layer.hide();
+
+      expect(layer.isVisible()).toEqual(false);
+      expect(layer.isHidden()).toEqual(true);
+
+      layer.show();
+
+      expect(layer.isVisible()).toEqual(true);
+      expect(layer.isHidden()).toEqual(false);
+    });
+
+    it('should trigger a visibilityChanged event', function (done) {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.hide();
+
+      layer.on('visibilityChanged', function () {
+        expect(layer.isVisible()).toEqual(true);
+        expect(layer.isHidden()).toEqual(false);
+        done();
+      });
+
+      layer.show();
+    });
   });
 
   describe('.hide', function () {
+    it('should set the layer visibility to false', function () {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
 
+      layer.hide();
+
+      expect(layer.isVisible()).toEqual(false);
+      expect(layer.isHidden()).toEqual(true);
+    });
+
+    it('should trigger a visibilityChanged event', function (done) {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.on('visibilityChanged', function () {
+        expect(layer.isVisible()).toEqual(false);
+        expect(layer.isHidden()).toEqual(true);
+        done();
+      });
+
+      layer.hide();
+    });
   });
 
   describe('.toggle', function () {
+    it('should toggle the layer visibility', function () {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
 
+      layer.toggle();
+
+      expect(layer.isVisible()).toEqual(false);
+      expect(layer.isHidden()).toEqual(true);
+
+      layer.toggle();
+
+      expect(layer.isVisible()).toEqual(true);
+      expect(layer.isHidden()).toEqual(false);
+    });
+
+    it('should trigger a visibilityChanged event', function (done) {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.on('visibilityChanged', function () {
+        expect(layer.isVisible()).toEqual(false);
+        expect(layer.isHidden()).toEqual(true);
+        done();
+      });
+
+      layer.toggle();
+    });
   });
 });

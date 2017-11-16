@@ -51,6 +51,7 @@ Base.prototype._triggerError = function (model, internalError) {
 Base.prototype.$setEngine = function (engine) {
   if (!this._internalModel) {
     this._internalModel = this._createInternalModel(engine);
+    this._internalModel.on('change:error', this._triggerError, this);
   }
 };
 

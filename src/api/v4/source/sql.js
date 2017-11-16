@@ -63,8 +63,6 @@ SQL.prototype._createInternalModel = function (engine) {
     engine: engine
   });
 
-  internalModel.on('change:error', this._triggerError, this);
-
   return internalModel;
 };
 

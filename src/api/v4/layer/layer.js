@@ -288,7 +288,7 @@ function _checkSource (source) {
  * Return true when a windshaft error is because a styling error.
  */
 function _isStyleError (windshaftError) {
-  return windshaftError.message && windshaftError.message.indexOf('style') >= 0;
+  return windshaftError.message && windshaftError.message.indexOf('style') === 0;
 }
 /**
  * @typedef {Object} LatLng

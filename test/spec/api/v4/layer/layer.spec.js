@@ -92,6 +92,25 @@ describe('api/v4/layer', function () {
           layer.setStyle(newStyle);
         });
     });
+
+    fit('should fire a styleChanged event', function (done) {
+      layer.on('styleChanged', function (l) {
+        expect(l).toBe(layer);
+        expect(l.getStlye()).toEqual(newStyle);
+        done();
+      });
+
+      layer.setStyle(newStyle);
+    });
+
+    fit('should not fire a styleChanged event when setting the same style twice', function () {
+      var styleChangedSpy = jasmine.createSpy('styleChangedSpy');
+      layer.on('styleChanged', styleChangedSpy);
+
+      layer.setStyle(style);
+
+      expect(styleChangedSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('.setSource', function () {
@@ -157,7 +176,7 @@ describe('api/v4/layer', function () {
       });
     });
 
-    fit('should fire a sourceChanged event', function (done) {
+    it('should fire a sourceChanged event', function (done) {
       layer.on('sourceChanged', function (l) {
         expect(l).toBe(layer);
         expect(l.getSource()).toEqual(newSource);
@@ -167,7 +186,7 @@ describe('api/v4/layer', function () {
       layer.setSource(newSource);
     });
 
-    fit('should not fire a sourceChanged event when setting the same source twice', function () {
+    it('should not fire a sourceChanged event when setting the same source twice', function () {
       var sourceChangedSpy = jasmine.createSpy('sourceChangedSpy');
       layer.on('sourceChanged', sourceChangedSpy);
 

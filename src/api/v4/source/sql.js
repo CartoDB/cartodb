@@ -28,7 +28,6 @@ SQL.prototype = Object.create(Base.prototype);
  *
  * @param {string} query - The sql query that will be the source of the data
  * @api
- * @fires string:queryChanged
  */
 SQL.prototype.setQuery = function (query) {
   _checkQuery(query);

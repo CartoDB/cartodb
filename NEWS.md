@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.20.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -12,6 +12,9 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add interactivity error infobox (#13027)
+* Add limits for torque (#13085)
+* Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
 * Remove forget confirmation from onboarding tour (#13039)
@@ -85,8 +88,12 @@ ion for time-series (#12670)
 * Improve legends error (cartodb.js#1758)
 * Updates Dataservices API client default version to `0.21.0` (#12942)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
+* User accounts in locked state returns 404 for resources like maps or visualizatios and redirection for private endpoints (#13030)
 
 ### Bug fixes / enhancements
+* Upgrade cartodb extension to 0.20.0 (#13065)
+* Fix for torque category legends (CartoDB/support#1120)
+* Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
@@ -274,6 +281,9 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Fix ambiguous column call in the search tweets query (#13073)
+* Fix email validator failing with empty emails (#13078)
+* Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

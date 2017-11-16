@@ -72,7 +72,7 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews, the column does not exist!
-      var histogram = new carto.dataview.Histogram(source0, 'actor_listedcount');
+      var histogram = new carto.dataview.Histogram(source0, 'unknown_column');
 
       // Listen to all client errors
       client.on(carto.events.ERROR, function (clientError) {

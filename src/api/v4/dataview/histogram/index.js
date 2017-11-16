@@ -4,7 +4,9 @@ var HistogramDataviewModel = require('../../../../dataviews/histogram-dataview-m
 var parseHistogramData = require('./parse-data.js');
 
 /**
- * Histogram dataview object.
+ * An histogram is used to represent the distribution of numerical data.
+ * 
+ * See {@link https://en.wikipedia.org/wiki/Histogram}.
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data

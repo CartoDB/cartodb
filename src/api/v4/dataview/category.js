@@ -5,26 +5,47 @@ var CategoryDataviewModel = require('../../../dataviews/category-dataview-model'
 var CategoryFilter = require('../../../windshaft/filters/category');
 
 /**
- * Category dataview object.
+ * 
+ * A category dataview is used to aggregate data performing a operation.
+ * 
+ * This is similar to a group by SQL operation, for example:
+ * 
+ * ```sql
+ * SELECT country, AVG(population) GROUP BY country
+ * ```
+ * The following code is the carto.js equivalent:
+ * 
+ * ```javascript
+ * var categoryDataview = new carto.dataview.Category(citiesSource, 'country', {
+ *     operation: carto.operation.AVG, // Compute the average
+ *     operationColumn: 'population' // The name of the column where the operation will be applied.
+ *  });
+ * ```
+ * 
+ * Like all dataviews is an async object so you must wait for the data to be availiable.
+ * 
+ * The data format for the category-dataview is described in {@link carto.dataview.CategoryItem}
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
- * @param {string} column - The column name to get the data
+ * @param {string} column - The name of the column used to create categories
  * @param {object} options
  * @param {number} [options.limit=6] - The maximum number of categories in the response
  * @param {carto.operation} options.operation - The operation to apply to the data
- * @param {string} options.operationColumn - The column name used in the operation
+ * @param {string} options.operationColumn - The column where the operation will be applied
  *
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
  * @api
  * @example
- * // Display the total number of retweets for 20 users in our dataset.
- * var categoryDataview = new carto.dataview.Category(twitterSource, 'username', {
- *     limit: 20, // Limit to 20 categories
- *     operation: carto.operation.SUM, // Select SUM
- *     operationColumn: 'retweetcount' // The name of the column used in the operation.
+ * // From a cities dataset with name, country and population show the average city population per country:
+ * var column = 'country'; // Aggregate the data by country.
+ * var categoryDataview = new carto.dataview.Category(citiesSource, column, {
+ *     operation: carto.operation.AVG, // Compute the average
+ *     operationColumn: 'population' // The name of the column where the operation will be applied.
  *  });
+ * 
+ * // This will give data like this: { Spain: 1234, France: 3456 ...} To view the actual format see: "CategoryItem".
  * @example
  * // You can listen to multiple events emmited by the category-dataview.
  * // Data and status are fired by all dataviews.

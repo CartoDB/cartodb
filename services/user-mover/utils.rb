@@ -60,10 +60,12 @@ module CartoDB
 
       def run_command(cmd)
         logger.debug "Running command: \"#{cmd}\""
+        Temfile.open('datamover') { |f| run_command_with_log(cmd, f) }
+      end
+
+      def run_command_with_log(cmd, file)
         return_code = nil
         log_message = ''
-        file = Tempfile.new('datamover')
-        logger.debug("Logging command output to #{file.path}")
         Open3.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
           stdout_and_stderr.each do |line|
             message = line.strip + "\n"
@@ -74,7 +76,6 @@ module CartoDB
         end
         logger.debug(log_message)
         throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
-        file.close
       end
 
       def default_logger

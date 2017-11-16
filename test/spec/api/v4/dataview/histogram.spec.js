@@ -172,7 +172,7 @@ describe('api/v4/dataview/histogram', function () {
       expect(data.bins[0].normalized).toBe(0.7);
       expect(data.bins[1].normalized).toBe(1);
       expect(data.bins[2].normalized).toBe(0);
-      expect(data.nulls).toBe(42);
+      expect(data.nulls).toBe(0);
       expect(data.totalAmount).toBe(7654);
     });
 

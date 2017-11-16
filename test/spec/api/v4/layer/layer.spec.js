@@ -157,4 +157,16 @@ describe('api/v4/layer', function () {
       });
     });
   });
+
+  describe('.show', function () {
+
+  });
+
+  describe('.hide', function () {
+
+  });
+
+  describe('.toggle', function () {
+
+  });
 });

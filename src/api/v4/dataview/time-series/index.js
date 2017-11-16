@@ -10,7 +10,7 @@ function hoursToSeconds (hours) {
 }
 
 /**
- * Time-Series dataview object.
+ * A dataview to represent an histogram of temporal data allowing to specify the granularity of the temporal-bins.
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data
@@ -22,6 +22,18 @@ function hoursToSeconds (hours) {
  * @extends carto.dataview.Base
  * @memberof carto.dataview
  * @api
+ * @example
+ * // We have a tweets dataset and we want to show a "per hour histogram" with the data.
+ * var timeSeries = new carto.dataview.TimeSeries(source0, 'last_review', {
+ *  offset: 0,
+ *  aggregation: 'hour'
+ * }); 
+ * @example
+ * // You can listen to multiple events emmited by the time-series-dataview.
+ * // Data and status are fired by all dataviews.
+ * timeSeries.on('dataChanged', newData => { });
+ * timeSeries.on('statusChanged', (newData, error) => { });
+ * timeSeries.on('error', cartoError => { });
  */
 function TimeSeries (source, column, options) {
   this._initialize(source, column, options);

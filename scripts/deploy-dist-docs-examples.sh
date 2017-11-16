@@ -100,7 +100,7 @@ git config user.email "systems@cartodb.com" || exit 1
 git add index.html || exit 1
 git add $DOCS_DIR || exit 1
 git add $EXAMPLES_DIR || exit 1
-git commit --allow-empty -m "Update docs/examples for $CURRENT_COMMIT" || exit 1
+git commit --allow-empty -m "Update docs/examples for $TRAVIS_BRANCH $CURRENT_COMMIT" || exit 1
 git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" gh-pages > /dev/null 2>&1
 
 echo "Docs/examples deployed successfully."

@@ -63,14 +63,14 @@ Layer.prototype = Object.create(Base.prototype);
  * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
-  var oldStyle = this._style;
+  var prevStyle = this._style;
   _checkStyle(style);
   opts = opts || {};
   this._style = style;
   if (this._internalModel) {
     this._internalModel.set('cartocss', style.toCartoCSS());
   }
-  if (oldStyle !== style) {
+  if (prevStyle !== style) {
     this.trigger('styleChanged', this);
   }
   return this;
@@ -99,7 +99,7 @@ Layer.prototype.getStyle = function () {
  * @api
  */
 Layer.prototype.setSource = function (source) {
-  var oldSource = this._source;
+  var prevSource = this._source;
   _checkSource(source);
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
@@ -109,7 +109,7 @@ Layer.prototype.setSource = function (source) {
     this._internalModel.set('source', source.$getInternalModel());
   }
   this._source = source;
-  if (oldSource !== source) {
+  if (prevSource !== source) {
     this.trigger('sourceChanged', this);
   }
   return this;
@@ -196,12 +196,12 @@ Layer.prototype.hasFeatureOverColumns = function (columns) {
  * @api
  */
 Layer.prototype.hide = function () {
-  var oldStatus = this._visible;
+  var prevStatus = this._visible;
   this._visible = false;
   if (this._internalModel) {
     this._internalModel.set('visible', false);
   }
-  if (oldStatus) {
+  if (prevStatus) {
     this.trigger('visibilityChanged', false);
   }
   return this;
@@ -214,12 +214,12 @@ Layer.prototype.hide = function () {
  * @api
  */
 Layer.prototype.show = function () {
-  var oldStatus = this._visible;
+  var prevStatus = this._visible;
   this._visible = true;
   if (this._internalModel) {
     this._internalModel.set('visible', true);
   }
-  if (!oldStatus) {
+  if (!prevStatus) {
     this.trigger('visibilityChanged', false);
   }
   return this;

@@ -24,7 +24,7 @@ function Formula (source, column, options) {
 Formula.prototype = Object.create(Base.prototype);
 
 /**
- * Set the dataview operation
+ * Set the dataview operation.
  *
  * @param  {carto.operation} operation
  * @return {carto.dataview.Formula} this
@@ -40,7 +40,7 @@ Formula.prototype.setOperation = function (operation) {
 };
 
 /**
- * Return the current dataview operation
+ * Return the current dataview operation.
  *
  * @return {carto.operation} Current dataview operation
  * @api
@@ -50,7 +50,7 @@ Formula.prototype.getOperation = function () {
 };
 
 /**
- * Return the resulting data
+ * Return the resulting data.
  *
  * @return {FormulaData}
  * @api

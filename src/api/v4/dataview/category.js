@@ -31,7 +31,7 @@ function Category (source, column, options) {
 Category.prototype = Object.create(Base.prototype);
 
 /**
- * Set the categories limit
+ * Set the categories limit.
  *
  * @param  {number} limit
  * @return {carto.dataview.Category} this
@@ -47,7 +47,7 @@ Category.prototype.setLimit = function (limit) {
 };
 
 /**
- * Return the current categories limit
+ * Return the current categories limit.
  *
  * @return {number} Current dataview limit
  * @api
@@ -57,7 +57,7 @@ Category.prototype.getLimit = function () {
 };
 
 /**
- * Set the dataview operation
+ * Set the dataview operation.
  *
  * @param  {carto.operation} operation
  * @return {carto.dataview.Category} this
@@ -73,7 +73,7 @@ Category.prototype.setOperation = function (operation) {
 };
 
 /**
- * Return the current dataview operation
+ * Return the current dataview operation.
  *
  * @return {carto.operation} Current dataview operation
  * @api
@@ -83,7 +83,7 @@ Category.prototype.getOperation = function () {
 };
 
 /**
- * Set the dataview operationColumn
+ * Set the dataview operationColumn.
  *
  * @param  {string} operationColumn
  * @return {carto.dataview.Category} this
@@ -99,7 +99,7 @@ Category.prototype.setOperationColumn = function (operationColumn) {
 };
 
 /**
- * Return the current dataview operationColumn
+ * Return the current dataview operationColumn.
  *
  * @return {string} Current dataview operationColumn
  * @api
@@ -109,7 +109,7 @@ Category.prototype.getOperationColumn = function () {
 };
 
 /**
- * Return the resulting data
+ * Return the resulting data.
  *
  * @return {CategoryData}
  * @api

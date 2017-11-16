@@ -95,14 +95,6 @@
         username: 'cartojs-test'
       });
 
-      client.on(carto.events.SUCCESS, function () {
-        console.log('Client reloaded', i++)
-      });
-
-      client.on(carto.events.ERROR, function () {
-        console.error('Client Error!', i++)
-      });
-
       // Create a source
       var source0 = new carto.source.SQL('SELECT * FROM airbnb_listings');
 
@@ -140,6 +132,10 @@
         if (newStatus === carto.dataview.status.LOADED && histogram.getData().bins.length === 0) {
           createHistogram({ status: newStatus });
         }
+      });
+
+      histogram.on('error', function (error) {
+        console.error('Histogram error!! ', error);
       });
 
       // Add Bounding box filter

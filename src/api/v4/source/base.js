@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var CartoError = require('../error');
 
 /**
  * Base source object
@@ -40,9 +41,17 @@ Base.prototype._createInternalModel = function (engine) {
   throw new Error('_createInternalModel must be implemented by the particular source');
 };
 
+/**
+ * Fire a CartoError event from a internalError
+ */
+Base.prototype._triggerError = function (model, internalError) {
+  this.trigger('error', new CartoError(internalError));
+};
+
 Base.prototype.$setEngine = function (engine) {
   if (!this._internalModel) {
     this._internalModel = this._createInternalModel(engine);
+    this._internalModel.on('change:error', this._triggerError, this);
   }
 };
 

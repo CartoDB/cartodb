@@ -1,3 +1,6 @@
+var _ = require('underscore');
+var Backbone = require('backbone');
+
 /**
  * Base style object
  *
@@ -7,5 +10,12 @@
  * @api
  */
 function Base () {}
+
+_.extend(Base.prototype, Backbone.Events);
+
+Base.prototype.$setError = function (cartoError) {
+  this._error = cartoError;
+  this.trigger('error', cartoError);
+};
 
 module.exports = Base;

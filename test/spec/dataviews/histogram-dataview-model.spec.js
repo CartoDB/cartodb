@@ -186,6 +186,37 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
+  describe('when totals has an error', function () {
+    it('dataview status is set to error and status error is properly triggered', function () {
+      var ajaxResponse = {
+        readyState: 4,
+        responseText: '{"errors":["column unknown_column does not exist"],"errors_with_context":[{"type":"unknown","message":"column unknown_column does not exist"}]}',
+        responseJSON: {
+          errors: [
+            'column "unknown_column" does not exist'
+          ],
+          errors_with_context: [
+            {
+              type: 'unknown',
+              message: 'column unknown_column does not exist'
+            }
+          ]
+        },
+        status: 404,
+        statusText: 'Not Found'
+      };
+      var capturedError = null;
+      this.model.on('statusError', function (model, error) {
+        capturedError = error;
+      });
+
+      this.model._totals.trigger('error', this.model._totals, ajaxResponse);
+
+      expect(this.model.get('status')).toEqual('error');
+      expect(capturedError.message).toEqual('column unknown_column does not exist');
+    });
+  });
+
   describe('when column changes', function () {
     it('should set column_type to original data, set undefined aggregation, reload map and call _onUrlChanged', function () {
       engineMock.reload.calls.reset();

@@ -518,7 +518,7 @@ describe('dataviews/dataview-model-base', function () {
       this.source.isFailed = jasmine.createSpy('a0.isFailed');
       this.model.on({
         loading: this.loadingSpy = jasmine.createSpy('loading'),
-        error: this.errorSpy = jasmine.createSpy('failed')
+        statusError: this.errorSpy = jasmine.createSpy('failed')
       });
     });
 

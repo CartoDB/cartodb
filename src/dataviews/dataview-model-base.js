@@ -3,6 +3,7 @@ var Model = require('../core/model');
 var BackboneAbortSync = require('../util/backbone-abort-sync');
 var AnalysisModel = require('../analysis/analysis-model');
 var util = require('../core/util');
+var parseWindshaftErrors = require('../windshaft/error-parser');
 
 var UNFETCHED_STATUS = 'unfetched';
 var FETCHING_STATUS = 'fetching';
@@ -159,7 +160,7 @@ module.exports = Model.extend({
     if (analysis.isLoading()) {
       this._triggerLoading();
     } else if (analysis.isFailed()) {
-      this._triggerError(analysis.get('error'));
+      this._triggerStatusError(analysis.get('error'));
     }
     // loaded will be triggered through the default behavior, so not necessary to react on that status here
   },
@@ -168,8 +169,8 @@ module.exports = Model.extend({
     this.trigger('loading', this);
   },
 
-  _triggerError: function (error) {
-    this.trigger('error', this, error);
+  _triggerStatusError: function (error) {
+    this.trigger('statusError', this, error); // Backbone already emits an event `error` in failed requests. Avoiding name collision.
   },
 
   /**
@@ -269,7 +270,8 @@ module.exports = Model.extend({
       error: function (_model, response) {
         if (!response || (response && response.statusText !== 'abort')) {
           this.set('status', FETCH_ERROR_STATUS);
-          this._triggerError(response);
+          var error = this._parseAjaxError(response);
+          this._triggerStatusError(error);
         }
       }.bind(this)
     }));
@@ -323,8 +325,7 @@ module.exports = Model.extend({
     return this.get('enabled');
   },
 
-  setUnavailable: function (error) {
-    this._triggerError(error);
+  setUnavailable: function () {
     return this.set('status', FETCH_ERROR_STATUS);
   },
 
@@ -358,6 +359,17 @@ module.exports = Model.extend({
     if (this._bboxFilter) {
       this.stopListening(this._bboxFilter, 'boundsChanged');
     }
+  },
+
+  _parseAjaxError: function (response) {
+    var error = response && response.statusText;
+    if (response && response.responseJSON) {
+      var errors = parseWindshaftErrors(response.responseJSON);
+      if (errors.length > 0) {
+        error = errors[0];
+      }
+    }
+    return error;
   }
 },
 

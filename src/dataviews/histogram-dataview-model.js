@@ -83,6 +83,8 @@ module.exports = DataviewModelBase.extend({
 
     // When original data gets fetched
     this._totals.bind('change:data', this._onDataChanged, this);
+    this._totals.bind('error', this.setUnavailable, this);
+    this._totals.bind('error', this._onTotalsError, this);
     this._totals.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
@@ -395,6 +397,11 @@ module.exports = DataviewModelBase.extend({
   _resetFilter: function () {
     this.disableFilter();
     this.filter && this.filter.unsetRange();
+  },
+
+  _onTotalsError: function (model, error) {
+    var parsedError = error && this._parseAjaxError(error);
+    this._triggerStatusError(parsedError);
   },
 
   getCurrentOffset: function () {

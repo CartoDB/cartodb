@@ -2,7 +2,7 @@ var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 var SourceBase = require('../source/base');
 var StyleBase = require('../style/base');
-
+var CartoError = require('../error');
 /**
  * Represent a layer Object.
  * 
@@ -256,7 +256,7 @@ Layer.prototype.isHidden = function () {
 // Private functions.
 
 Layer.prototype._createInternalModel = function (engine) {
-  return new CartoDBLayer({
+  var internalModel = new CartoDBLayer({
     id: this._id,
     source: this._source.$getInternalModel(),
     cartocss: this._style.toCartoCSS(),
@@ -264,6 +264,14 @@ Layer.prototype._createInternalModel = function (engine) {
     infowindow: _getInteractivityFields(this._featureClickColumns),
     tooltip: _getInteractivityFields(this._featureOverColumns)
   }, { engine: engine });
+
+  internalModel.on('change:error', function (model, value) {
+    if (_isStyleError(value)) {
+      this._style.$setError(new CartoError(value));
+    }
+  }, this);
+
+  return internalModel;
 };
 
 // Internal functions.
@@ -308,6 +316,13 @@ function _checkSource (source) {
   if (!(source instanceof SourceBase)) {
     throw new TypeError('The given object is not a valid source. See "carto.source.Base"');
   }
+}
+
+/**
+ * Return true when a windshaft error is because a styling error.
+ */
+function _isStyleError (windshaftError) {
+  return windshaftError.message && windshaftError.message.indexOf('style') === 0;
 }
 /**
  * @typedef {Object} LatLng

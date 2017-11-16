@@ -30,6 +30,16 @@ CartoCSS.prototype.toCartoCSS = function () {
   return this._cartoCSS;
 };
 
+/**
+ * Return the TurboCarto style for this CartoCSS object.
+ * 
+ * @return {string} - The TurboCarto style for this CartoCSS object.
+ * @api
+ */
+CartoCSS.prototype.getStyle = function () {
+  return this._cartoCSS;
+};
+
 function _checkCartoCSS (cartoCSS) {
   if (!cartoCSS) {
     throw new TypeError('cartoCSS is required.');

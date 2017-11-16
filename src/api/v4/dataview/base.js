@@ -5,6 +5,7 @@ var SourceBase = require('../source/base');
 var FilterBase = require('../filter/base');
 var BoundingBoxFilter = require('../filter/bounding-box');
 var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
+var CartoError = require('../error');
 
 /**
  * Base dataview object
@@ -14,7 +15,7 @@ var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
  * @memberof carto.dataview
  * @api
  */
-function Base () {}
+function Base () { }
 
 _.extend(Base.prototype, Backbone.Events);
 
@@ -128,7 +129,7 @@ Base.prototype.getColumn = function () {
 Base.prototype.addFilter = function (filter) {
   this._checkFilter(filter);
   if ((filter !== this._boundingBoxFilter) &&
-      (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
     this._addBoundingBoxFilter(filter);
   }
   return this;
@@ -144,7 +145,7 @@ Base.prototype.addFilter = function (filter) {
 Base.prototype.removeFilter = function (filter) {
   this._checkFilter(filter);
   if ((filter === this._boundingBoxFilter) &&
-      (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
     this._removeBoundingBoxFilter();
   }
   return this;
@@ -160,8 +161,8 @@ Base.prototype.removeFilter = function (filter) {
 Base.prototype.hasFilter = function (filter) {
   this._checkFilter(filter);
   return (filter === this._boundingBoxFilter) &&
-         (this._internalModel && this._internalModel.get('sync_on_bbox_change')) &&
-         (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter);
+    (this._internalModel && this._internalModel.get('sync_on_bbox_change')) &&
+    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter);
 };
 
 Base.prototype.getData = function () {
@@ -241,7 +242,7 @@ Base.prototype._listenToInternalModelSharedEvents = function () {
     this.listenTo(this._internalModel, 'change:column', this._onColumnChanged);
     this.listenTo(this._internalModel, 'loading', this._onStatusLoading);
     this.listenTo(this._internalModel, 'loaded', this._onStatusLoaded);
-    this.listenTo(this._internalModel, 'error', this._onStatusError);
+    this.listenTo(this._internalModel, 'statusError', this._onStatusError);
     this._listenToInternalModelSpecificEvents();
   }
 };
@@ -274,6 +275,7 @@ Base.prototype._onStatusLoaded = function () {
 Base.prototype._onStatusError = function (model, error) {
   this._status = status.ERROR;
   this.trigger('statusChanged', this._status, error);
+  this._triggerError(this, error);
 };
 
 Base.prototype._changeProperty = function (key, value, internalKey) {
@@ -288,6 +290,13 @@ Base.prototype._changeProperty = function (key, value, internalKey) {
 
 Base.prototype._triggerChange = function (key, value) {
   this.trigger(key + 'Changed', value);
+};
+
+/**
+ * Fire a CartoError event from a internalDataviewError
+ */
+Base.prototype._triggerError = function (model, internalDataviewError) {
+  this.trigger('error', new CartoError(internalDataviewError));
 };
 
 Base.prototype._addBoundingBoxFilter = function (filter) {

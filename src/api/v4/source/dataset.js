@@ -33,7 +33,7 @@ Dataset.prototype = Object.create(Base.prototype);
  * @param {Engine} engine - The engine object to be assigned to the internalModel.
  */
 Dataset.prototype._createInternalModel = function (engine) {
-  return new AnalysisModel({
+  var internalModel = new AnalysisModel({
     id: this.getId(),
     type: 'source',
     query: 'SELECT * from ' + this._dataset
@@ -41,6 +41,8 @@ Dataset.prototype._createInternalModel = function (engine) {
     camshaftReference: CamshaftReference,
     engine: engine
   });
+
+  return internalModel;
 };
 
 function _checkDataset (dataset) {

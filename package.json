@@ -115,6 +115,7 @@
     "wax.cartodb.js": "./vendor/wax.cartodb.js"
   },
   "browserify-shim": {
+    "leaflet": "global:L",
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
     "lzma": "LZMA",
@@ -149,6 +150,7 @@
     "docs": "rm -rf docs/v4; jsdoc --configure config/jsdoc/api-conf.json",
     "docs:all": "rm -rf docs/v4-internal; jsdoc --configure config/jsdoc/all-conf.json",
     "postversion": "git push origin v4 --follow-tags",
+    "dist": "grunt build",
     "watch": "npm-watch"
   },
   "watch": {

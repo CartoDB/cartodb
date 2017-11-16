@@ -226,7 +226,7 @@ describe('api/v4/dataview/category', function () {
         min: 1,
         nulls: 0,
         operation: carto.operation.SUM,
-        result: [
+        categories: [
           {
             name: 'cat1',
             value: 1,
@@ -255,7 +255,9 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('creates the internal model', function () {
+      var filter = new carto.filter.BoundingBox();
       dataview.disable(); // To test that it passes the ._enabled property to the internal model
+      dataview.addFilter(filter);
       dataview.$setEngine(engine);
 
       var internalModel = dataview.$getInternalModel();
@@ -265,13 +267,17 @@ describe('api/v4/dataview/category', function () {
       expect(internalModel.get('aggregation')).toEqual(dataview._operation);
       expect(internalModel.get('aggregation_column')).toEqual(dataview._operationColumn);
       expect(internalModel.isEnabled()).toBe(false);
+      expect(internalModel._bboxFilter).toBeDefined();
+      expect(internalModel.syncsOnBoundingBoxChanges()).toBe(true);
       expect(internalModel._engine.name).toEqual('Engine mock');
     });
 
-    it('pass the syncOnBBox to the internal model', function () {
-      // This check should go in the previous spec but I made this one
-      // to mark it as pending until we implement the Bbox filter logic.
-      pending();
+    it('creates the internal model with no bounding box if not provided', function () {
+      dataview.$setEngine(engine);
+
+      var internalModel = dataview.$getInternalModel();
+      expect(internalModel._bboxFilter).not.toBeDefined();
+      expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
     });
 
     it('internalModel event operationChanged should be properly hooked up', function () {

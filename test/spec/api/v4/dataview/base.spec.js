@@ -1,5 +1,21 @@
 var DataviewBase = require('../../../../../src/api/v4/dataview/base');
 var status = require('../../../../../src/api/v4/constants').status;
+var carto = require('../../../../../src/api/v4/index');
+var CartoError = require('../../../../../src/api/v4/error');
+
+function createSourceMock () {
+  return new carto.source.Dataset('foo');
+}
+
+function createEngineMock () {
+  var engine = {
+    name: 'Engine mock',
+    reload: function () {}
+  };
+  spyOn(engine, 'reload');
+
+  return engine;
+}
 
 describe('api/v4/dataview/base', function () {
   var base = new DataviewBase();
@@ -135,6 +151,54 @@ describe('api/v4/dataview/base', function () {
 
       expect([usedKey, usedValue]).toEqual(['example', 'whatever']);
       expect(base._triggerChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('.$setEngine', function () {
+    var engine;
+    var dataview;
+
+    beforeEach(function () {
+      // We use Formula for these tests. Any other dataview could be used instead.
+      dataview = new carto.dataview.Formula(createSourceMock(), 'population', {
+        operation: carto.operation.MIN
+      });
+      engine = createEngineMock();
+    });
+
+    it('internalModel events should be properly hooked up', function () {
+      dataview.$setEngine(engine);
+      var internalModel = dataview._internalModel;
+      var eventStatus = null;
+      var eventError = null;
+      var dataviewError = null;
+      dataview.on('statusChanged', function (newStatus, error) {
+        eventStatus = newStatus;
+        eventError = error;
+      });
+      dataview.on('error', function (error) {
+        dataviewError = error;
+      });
+
+      // Loading
+      internalModel.trigger('loading');
+
+      expect(dataview.getStatus()).toEqual('loading');
+      expect(eventStatus).toEqual('loading');
+
+      // Loaded
+      internalModel.trigger('loaded');
+
+      expect(dataview.getStatus()).toEqual('loaded');
+      expect(eventStatus).toEqual('loaded');
+
+      // Error
+      internalModel.trigger('statusError', internalModel, 'an error');
+
+      expect(dataview.getStatus()).toEqual('error');
+      expect(eventStatus).toEqual('error');
+      expect(eventError).toEqual('an error');
+      expect(dataviewError instanceof CartoError).toBe(true);
     });
   });
 });

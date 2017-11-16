@@ -83,7 +83,7 @@ module Carto
         raise e
       end
       org_import? ? self.organization = imported : self.user = imported
-      update_database_host unless dry
+      update_database_host
       save!
       imported
     end
@@ -168,7 +168,7 @@ module Carto
         mode: :import,
         logger: log.logger,
         import_job_logger: log.logger,
-        update_metadata: !dry
+        import_metadata: !dry
       }
     end
 
@@ -176,6 +176,10 @@ module Carto
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
       save
+    end
+
+    def import_metadata?
+      parent && !dry
     end
   end
 end

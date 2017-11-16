@@ -80,8 +80,8 @@
     }
 
     (async () => {
-      // Create the Leaflet Map
-      var map = L.map('map').setView([42.431234, -8.643616], 5);
+
+      var map = L.map('map').setView([40.4169, -3.7035], 11);
 
       // Add Voyager Basemap
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
@@ -96,7 +96,7 @@
       });
 
       // Create a source
-      var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
+      var source0 = new carto.source.SQL('SELECT * FROM airbnb_listings');
 
       // Create a style
       var style = new carto.style.CartoCSS(`
@@ -116,22 +116,21 @@
       client.getLeafletLayer().addTo(map);
 
       // Dataviews
-      var histogram = new carto.dataview.Histogram(source0, 'postedtime', {
-        bins: 20
-      });
+      var histogram = new carto.dataview.Histogram(source0, 'price');
+      window.histogram = histogram;
 
       histogram.on('dataChanged', function (newData) {
         console.log('Data changed', newData);
-        createHistogram({ data: histogram.getData().result });
+        createHistogram({ data: histogram.getData().bins });
       });
 
       histogram.on('statusChanged', function (newStatus, error) {
         console.log('Status changed', newStatus, error);
         if (newStatus === carto.dataview.status.LOADING) {
-        createHistogram({ status: newStatus });
+          createHistogram({ status: newStatus });
         }
-        if (newStatus === carto.dataview.status.LOADED) {
-        console.log('loaded');
+        if (newStatus === carto.dataview.status.LOADED && histogram.getData().bins.length === 0) {
+          createHistogram({ status: newStatus });
         }
       });
 

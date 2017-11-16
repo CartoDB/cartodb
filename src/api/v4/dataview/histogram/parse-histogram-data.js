@@ -14,7 +14,11 @@ function parseHistogramData (data, nulls, totalAmount) {
   if (!data) {
     return null;
   }
-  var maxFreq = _.max(data, function (bin) { return bin.freq || 0; }).freq;
+  var compactData = _.compact(data);
+  var maxBin = _.max(compactData, function (bin) { return bin.freq || 0; });
+  var maxFreq = _.isFinite(maxBin.freq) && maxBin.freq !== 0
+    ? maxBin.freq
+    : null;
 
   /**
    * @description
@@ -23,12 +27,12 @@ function parseHistogramData (data, nulls, totalAmount) {
    * @typedef {object} HistogramData
    * @property {number} nulls - The number of items with null value.
    * @property {number} totalAmount - The number of elements returned.
-   * @property {BinItem[]} result - Array containing the {@link BinItem|data bins} for the histogram. .
+   * @property {BinItem[]} bins - Array containing the {@link BinItem|data bins} for the histogram. .
    * @property {string} type - String with value: **histogram**
    * @api
    */
   return {
-    result: _createResult(data, maxFreq),
+    bins: _createResult(compactData, maxFreq),
     nulls: nulls || 0,
     totalAmount: totalAmount
   };
@@ -42,14 +46,16 @@ function _createResult (data, maxFreq) {
     /** 
       * @typedef {object} BinItem
       * @property {number} index - Number indicating the bin order.
-      * @property {number} min - Only appears if freq > 0
-      * @property {number} max - Only appears if freq > 0
-      * @property {number} avg - Only appears if freq > 0
+      * @property {number} start - Starting point of the bin.
+      * @property {number} end - Ending point of the bin.
+      * @property {number} min - Only appears if freq > 0.
+      * @property {number} max - Only appears if freq > 0.
+      * @property {number} avg - Only appears if freq > 0.
       * @property {number} freq - The number of the times the element appears in the data.
-      * @property {number} normalized - 
+      * @property {number} normalized - Normalized frequency with respect to the whole data.
       * @api
       */
-    return _.extend(bin, { normalized: _.isFinite(bin.freq) ? bin.freq / maxFreq : 0 });
+    return _.extend(bin, { normalized: _.isFinite(bin.freq) && maxFreq > 0 ? bin.freq / maxFreq : 0 });
   });
 }
 

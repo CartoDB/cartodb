@@ -400,7 +400,8 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onTotalsError: function (model, error) {
-    this._triggerStatusError(this._parseAjaxError(error));
+    var parsedError = error && this._parseAjaxError(error);
+    this._triggerStatusError(parsedError);
   },
 
   getCurrentOffset: function () {

@@ -139,13 +139,13 @@ describe('api/v4/dataview/histogram', function () {
 
       var data = dataview.getData();
 
-      expect(data.result.length).toBe(3);
-      expect(data.result[0].freq).toBe(35);
-      expect(data.result[1].freq).toBe(50);
-      expect(data.result[2].freq).toBeUndefined();
-      expect(data.result[0].normalized).toBe(0.7);
-      expect(data.result[1].normalized).toBe(1);
-      expect(data.result[2].normalized).toBe(0);
+      expect(data.bins.length).toBe(3);
+      expect(data.bins[0].freq).toBe(35);
+      expect(data.bins[1].freq).toBe(50);
+      expect(data.bins[2].freq).toBeUndefined();
+      expect(data.bins[0].normalized).toBe(0.7);
+      expect(data.bins[1].normalized).toBe(1);
+      expect(data.bins[2].normalized).toBe(0);
       expect(data.nulls).toBe(42);
       expect(data.totalAmount).toBe(7654);
     });
@@ -160,19 +160,19 @@ describe('api/v4/dataview/histogram', function () {
           }, {
           }
         ],
-        nulls: 42
+        nulls: undefined
       });
 
       var data = dataview.getData();
 
-      expect(data.result.length).toBe(3);
-      expect(data.result[0].freq).toBe(35);
-      expect(data.result[1].freq).toBe(50);
-      expect(data.result[2].freq).toBeUndefined();
-      expect(data.result[0].normalized).toBe(0.7);
-      expect(data.result[1].normalized).toBe(1);
-      expect(data.result[2].normalized).toBe(0);
-      expect(data.nulls).toBe(42);
+      expect(data.bins.length).toBe(3);
+      expect(data.bins[0].freq).toBe(35);
+      expect(data.bins[1].freq).toBe(50);
+      expect(data.bins[2].freq).toBeUndefined();
+      expect(data.bins[0].normalized).toBe(0.7);
+      expect(data.bins[1].normalized).toBe(1);
+      expect(data.bins[2].normalized).toBe(0);
+      expect(data.nulls).toBe(0);
       expect(data.totalAmount).toBe(7654);
     });
 
@@ -231,8 +231,10 @@ describe('api/v4/dataview/histogram', function () {
     });
 
     it('creates the internal model', function () {
+      var filter = new carto.filter.BoundingBox();
       dataview.disable(); // To test that it passes the ._enabled property to the internal model
       dataview.setBins(15);
+      dataview.addFilter(filter);
       dataview.$setEngine(engine);
 
       var internalModel = dataview.$getInternalModel();
@@ -240,13 +242,17 @@ describe('api/v4/dataview/histogram', function () {
       expect(internalModel.get('column')).toEqual(dataview._column);
       expect(internalModel.get('bins')).toBe(15);
       expect(internalModel.isEnabled()).toBe(false);
+      expect(internalModel._bboxFilter).toBeDefined();
+      expect(internalModel.syncsOnBoundingBoxChanges()).toBe(true);
       expect(internalModel._engine.name).toEqual('Engine mock');
     });
 
-    it('pass the syncOnBBox to the internal model', function () {
-      // This check should go in the previous spec but I made this one
-      // to mark it as pending until we implement the Bbox filter logic.
-      pending();
+    it('creates the internal model with no bounding box if not provided', function () {
+      dataview.$setEngine(engine);
+
+      var internalModel = dataview.$getInternalModel();
+      expect(internalModel._bboxFilter).not.toBeDefined();
+      expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
     });
 
     it('internalModel events should be properly hooked up', function () {

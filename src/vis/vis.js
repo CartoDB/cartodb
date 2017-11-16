@@ -18,6 +18,7 @@ var VisModel = Backbone.Model.extend({
   defaults: {
     loading: false,
     showEmptyInfowindowFields: false,
+    showLimitErrors: false,
     state: STATE_INIT
   },
 

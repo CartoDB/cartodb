@@ -38,6 +38,7 @@ function _createGoogleMap (visModel) {
 function _generateOptions (visModel) {
   return {
     showEmptyInfowindowFields: visModel.get('showEmptyInfowindowFields'),
+    showLimitErrors: visModel.get('showLimitErrors'),
     mapModel: visModel.map,
     engine: visModel.getEngine(),
     layerGroupModel: visModel.getEngine().getLayerGroup()

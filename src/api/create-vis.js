@@ -12,6 +12,7 @@ var DEFAULT_OPTIONS = {
   tooltip: true, // TODO: it seems that this is no longer used
   logo: true,
   show_empty_infowindow_fields: false,
+  showLimitErrors: false,
   interactiveFeatures: false
 };
 
@@ -33,6 +34,7 @@ var createVis = function (el, vizjson, options) {
     apiKey: options.apiKey,
     authToken: options.authToken,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
+    showLimitErrors: options.showLimitErrors === true,
     https: isProtocolHTTPs || options.https === true,
     interactiveFeatures: options.interactiveFeatures
   });

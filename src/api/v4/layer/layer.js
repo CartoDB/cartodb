@@ -189,11 +189,14 @@ Layer.prototype.hasFeatureOverColumns = function (columns) {
  * @api
  */
 Layer.prototype.hide = function () {
+  var oldStatus = this._visible;
   this._visible = false;
   if (this._internalModel) {
     this._internalModel.set('visible', false);
   }
-
+  if (oldStatus) {
+    this.trigger('visibilityChanged', false);
+  }
   return this;
 };
 
@@ -204,11 +207,14 @@ Layer.prototype.hide = function () {
  * @api
  */
 Layer.prototype.show = function () {
+  var oldStatus = this._visible;
   this._visible = true;
   if (this._internalModel) {
     this._internalModel.set('visible', true);
   }
-
+  if (!oldStatus) {
+    this.trigger('visibilityChanged', false);
+  }
   return this;
 };
 

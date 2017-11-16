@@ -1,7 +1,7 @@
 var UNEXPECTED_ERROR = 'unexpected error';
 
 /**
- * Build a cartoError from a generic error
+ * Build a cartoError from a generic error.
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.

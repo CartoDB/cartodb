@@ -3,7 +3,7 @@ var LeafletBoundingBoxAdapter = require('../../../geo/adapters/leaflet-bounding-
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
- * Bounding box filter for Leaflet maps
+ * Bounding box filter for Leaflet maps.
  *
  * @param {L.Map} map - The map view
  *
@@ -26,7 +26,7 @@ function BoundingBoxLeaflet (map) {
 BoundingBoxLeaflet.prototype = Object.create(Base.prototype);
 
 /**
- * Return the current bounds
+ * Return the current bounds.
  *
  * @return {carto.filter.Bounds} Current bounds
  * @api

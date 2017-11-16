@@ -6,13 +6,13 @@ var CartoError = require('../error');
 /**
  * Represent a layer Object.
  * 
- * @param {object} source - The source where the layer will fetch the data.
- * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling.
+ * @param {object} source - The source where the layer will fetch the data
+ * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
- * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events. 
- * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events.
- * @param {carto.source.Base} source - The source where the layer will fetch the data.
- * @param {carto.style.Base} style - A CartoCSS object with the layer styling.
+ * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
+ * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
+ * @param {carto.source.Base} source - The source where the layer will fetch the data
+ * @param {carto.style.Base} style - A CartoCSS object with the layer styling
  * @fires carto.layer.Layer.FeatureEvent
  * @example 
  * // no options
@@ -73,8 +73,7 @@ Layer.prototype.setStyle = function (style, opts) {
 /**
  * Get the current style for this layer.
  * 
- * @return {carto.style.CartoCSS} Current style.
- *
+ * @return {carto.style.CartoCSS} Current style
  * @api
  */
 Layer.prototype.getStyle = function () {
@@ -89,7 +88,6 @@ Layer.prototype.getStyle = function () {
  * 
  * @param {carto.source.Dataset|carto.source.SQL} source New source
  * @return {carto.layer.Layer} this
- *
  * @api
  */
 Layer.prototype.setSource = function (source) {
@@ -110,10 +108,9 @@ Layer.prototype.setSource = function (source) {
 };
 
 /**
- * Get the current source for this layer
+ * Get the current source for this layer.
  * 
- * @return {carto.source.Dataset|carto.source.SQL} Current source.
- *
+ * @return {carto.source.Dataset|carto.source.SQL} Current source
  * @api
  */
 Layer.prototype.getSource = function () {
@@ -121,11 +118,10 @@ Layer.prototype.getSource = function () {
 };
 
 /**
- * Set new columns for `featureClick` events
+ * Set new columns for `featureClick` events.
  * 
- * @param {Array<string>} columns An array containing column names.
+ * @param {Array<string>} columns An array containing column names
  * @return {carto.layer.Layer} this
- *
  * @api
  */
 Layer.prototype.setFeatureClickColumns = function (columns) {
@@ -141,7 +137,6 @@ Layer.prototype.setFeatureClickColumns = function (columns) {
  * Return the columns available in `featureClicked` events.
  * 
  * @return  {Array<string>} Column names available in `featureClicked` events
- *
  * @api
  */
 Layer.prototype.getFeatureClickColumns = function (columns) {
@@ -153,11 +148,10 @@ Layer.prototype.hasFeatureClickColumns = function (columns) {
 };
 
 /**
- * Set new columns for `featureOver` events
+ * Set new columns for `featureOver` events.
  * 
  * @param {Array<string>} columns An array containing column names
  * @return {carto.layer.Layer} this
- *
  * @api
  */
 Layer.prototype.setFeatureOverColumns = function (columns) {
@@ -173,7 +167,6 @@ Layer.prototype.setFeatureOverColumns = function (columns) {
  * Return the columns available in `featureOver` events.
  * 
  * @return  {Array<string>} Column names available in `featureOver` events
- *
  * @api
  */
 Layer.prototype.getFeatureOverColumns = function (columns) {
@@ -186,6 +179,7 @@ Layer.prototype.hasFeatureOverColumns = function (columns) {
 
 /**
  * Hides the layer.
+ * 
  * @return {carto.layer.Layer} this
  * @api
  */
@@ -221,6 +215,7 @@ Layer.prototype.show = function () {
 
 /**
  * Change the layer's visibility.
+ * 
  * @return {carto.layer.Layer} this
  */
 Layer.prototype.toggle = function () {
@@ -230,7 +225,7 @@ Layer.prototype.toggle = function () {
 /**
  * Return true if the layer is visible and false when not visible.
  * 
- * @return {boolean} - A boolean value indicating the layer's visibility.
+ * @return {boolean} - A boolean value indicating the layer's visibility
  * @api
  */
 Layer.prototype.isVisible = function () {
@@ -240,7 +235,7 @@ Layer.prototype.isVisible = function () {
 /**
  * Return `true` if the layer is not visible and false when visible.
  * 
- * @return {boolean} - A boolean value indicating the layer's visibility.
+ * @return {boolean} - A boolean value indicating the layer's visibility
  * @api
  */
 Layer.prototype.isHidden = function () {

@@ -10,14 +10,14 @@ function hoursToSeconds (hours) {
 }
 
 /**
- * Time-Series dataview object
+ * Time-Series dataview object.
  *
- * @param {carto.source.Base} source - The source where the dataview will fetch the data.
- * @param {string} column - The column name to get the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data
+ * @param {string} column - The column name to get the data
  * @param {object} options
- * @param {carto.dataview.timeAggregation} [options.aggregation=auto] - Granularity of time aggregation.
- * @param {number} offset - Amount of hours to displace the aggregation from UTC.
- * @param {boolean} useLocalTimezone - Indicates to use the user local timezone or not.
+ * @param {carto.dataview.timeAggregation} [options.aggregation=auto] - Granularity of time aggregation
+ * @param {number} offset - Amount of hours to displace the aggregation from UTC
+ * @param {boolean} useLocalTimezone - Indicates to use the user local timezone or not
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -39,7 +39,7 @@ TimeSeries.prototype.DEFAULTS = {
 };
 
 /**
- * Return the resulting data
+ * Return the resulting data.
  *
  * @return {TimeSeriesData}
  * @api
@@ -52,7 +52,7 @@ TimeSeries.prototype.getData = function () {
 };
 
 /**
- * Set time aggregation
+ * Set time aggregation.
  * 
  * @param {carto.dataview.timeAggregation} aggregation
  * @return {carto.dataview.TimeSeries} this
@@ -65,7 +65,7 @@ TimeSeries.prototype.setAggregation = function (aggregation) {
 };
 
 /**
- * Return the current time aggregation
+ * Return the current time aggregation.
  * 
  * @return {carto.dataview.timeAggregation} Current time aggregation
  * @api 
@@ -75,7 +75,7 @@ TimeSeries.prototype.getAggregation = function () {
 };
 
 /**
- * Set time offset
+ * Set time offset.
  * 
  * @param {number} offset
  * @return {carto.dataview.TimeSeries} this
@@ -94,7 +94,7 @@ TimeSeries.prototype.setOffset = function (offset) {
 };
 
 /**
- * Return the current time offset
+ * Return the current time offset.
  * 
  * @return {number} Current time offset
  * @api 
@@ -104,7 +104,7 @@ TimeSeries.prototype.getOffset = function () {
 };
 
 /**
- * Set the local timezone flag. If enabled, the time offset is overriden by the use local timezone
+ * Set the local timezone flag. If enabled, the time offset is overriden by the use local timezone.
  * 
  * @param {boolean} localTimezone
  * @return {carto.dataview.TimeSeries} this
@@ -117,7 +117,7 @@ TimeSeries.prototype.useLocalTimezone = function (enable) {
 };
 
 /**
- * Return the current local timezone flag
+ * Return the current local timezone flag.
  * 
  * @return {boolean} Current local timezone flag
  * @api 

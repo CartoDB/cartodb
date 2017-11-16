@@ -34,7 +34,7 @@ var WindshaftError = require('./windshaft/error');
  * @param {string} params.serverUrl - Url of the windshaft server.
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
  * @param {boolean} params.statTag - Token used to get map view statistics.
- * @class
+ * @constructor
  */
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');

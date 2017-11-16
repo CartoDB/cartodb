@@ -3,7 +3,7 @@ var Base = require('./base');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
- * Bounding box filter
+ * Bounding box filter.
  *
  * @constructor
  * @extends carto.filter.Base
@@ -18,7 +18,7 @@ function BoundingBox () {
 BoundingBox.prototype = Object.create(Base.prototype);
 
 /**
- * Set the bounds
+ * Set the bounds.
  *
  * @param  {carto.filter.Bounds} bounds
  * @return {carto.filter.BoundingBox} this
@@ -32,7 +32,7 @@ BoundingBox.prototype.setBounds = function (bounds) {
 };
 
 /**
- * Reset the bounds
+ * Reset the bounds.
  *
  * @return {carto.filter.BoundingBox} this
  * @api
@@ -42,7 +42,7 @@ BoundingBox.prototype.resetBounds = function () {
 };
 
 /**
- * Return the current bounds
+ * Return the current bounds.
  *
  * @return {carto.filter.Bounds} Current bounds
  * @api

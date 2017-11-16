@@ -4,12 +4,12 @@ var HistogramDataviewModel = require('../../../../dataviews/histogram-dataview-m
 var parseHistogramData = require('./parse-histogram-data.js');
 
 /**
- * Histogram dataview object
+ * Histogram dataview object.
  *
- * @param {carto.source.Base} source - The source where the dataview will fetch the data.
- * @param {string} column - The column name to get the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data
+ * @param {string} column - The column name to get the data
  * @param {object} options
- * @param {number} [options.bins=10] - Number of bins to aggregate the data range into.
+ * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
  *
  * @constructor
  * @extends carto.dataview.Base

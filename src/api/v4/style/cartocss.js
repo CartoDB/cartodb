@@ -14,7 +14,6 @@ var Base = require('./base');
  * @extends carto.style.Base
  * @memberof carto.style
  * @api
- *
  */
 function CartoCSS (cartoCSS) {
   _checkCartoCSS(cartoCSS);
@@ -30,7 +29,7 @@ CartoCSS.prototype.toCartoCSS = function () {
 /**
  * Return the TurboCarto style for this CartoCSS object.
  * 
- * @return {string} - The TurboCarto style for this CartoCSS object.
+ * @return {string} - The TurboCarto style for this CartoCSS object
  * @api
  */
 CartoCSS.prototype.getStyle = function () {

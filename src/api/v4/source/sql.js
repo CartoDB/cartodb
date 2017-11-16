@@ -13,7 +13,6 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * @extends carto.source.Base
  * @memberof carto.source
  * @api
- *
  */
 function SQL (query) {
   _checkQuery(query);
@@ -26,7 +25,7 @@ SQL.prototype = Object.create(Base.prototype);
 /**
  * Store the query internally and if in the internal model when exists.
  * 
- * @param {string} query - The sql query that will be the source of the data. 
+ * @param {string} query - The sql query that will be the source of the data
  */
 SQL.prototype.setQuery = function (query) {
   _checkQuery(query);
@@ -47,10 +46,9 @@ SQL.prototype.getQuery = function () {
 };
 
 /**
- * Creates a new internal model with the given engine
- * and the attributes initialized in the constructor.
+ * Creates a new internal model with the given engine and attributes initialized in the constructor.
  * 
- * @param {Engine} engine - The engine object to be assigned to the internalModel.
+ * @param {Engine} engine - The engine object to be assigned to the internalModel
  */
 SQL.prototype._createInternalModel = function (engine) {
   var internalModel = new AnalysisModel({

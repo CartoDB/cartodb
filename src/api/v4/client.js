@@ -11,13 +11,13 @@ var VERSION = require('../../../package.json').version;
 /**
  * This is the main object in a Carto.js application.
  *
- * The carto client keeps both layer and dataview lists internaly. Every time some layer/dataview changes
- * the client will trigger a carto-reload cycle.
+ * The carto client keeps both layer and dataview lists internaly.
+ * Every time some layer/dataview changes the client will trigger a carto-reload cycle.
  *
  * @param {object} settings
- * @param {string} settings.apiKey - Api key used to be autenticate in the windshaft server.
- * @param {string} settings.username - Name of the user registered in the windshaft server.
- * @param {string} settings.serverUrl - Url of the windshaft server.
+ * @param {string} settings.apiKey - Api key used to be autenticate in the windshaft server
+ * @param {string} settings.username - Name of the user registered in the windshaft server
+ * @param {string} settings.serverUrl - Url of the windshaft server
  *
  * @constructor
  * @memberof carto
@@ -48,7 +48,7 @@ _.extend(Client.prototype, Backbone.Events);
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed.
+ * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
 Client.prototype.addLayer = function (layer, opts) {
@@ -62,7 +62,7 @@ Client.prototype.addLayer = function (layer, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
 Client.prototype.addLayers = function (layers, opts) {
@@ -81,7 +81,7 @@ Client.prototype.addLayers = function (layers, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
 Client.prototype.removeLayer = function (layer, opts) {
@@ -98,7 +98,7 @@ Client.prototype.removeLayer = function (layer, opts) {
 /**
  * Get all the layers from the client
  *
- * @returns {carto.layer.Base[]} An array with all the Layers from the client.
+ * @returns {carto.layer.Base[]} An array with all the Layers from the client
  * @api
  */
 Client.prototype.getLayers = function () {
@@ -111,7 +111,7 @@ Client.prototype.getLayers = function () {
  * @param {carto.dataview.Base} - The dataview to be added
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed.
+ * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
 Client.prototype.addDataview = function (dataview, opts) {
@@ -125,7 +125,7 @@ Client.prototype.addDataview = function (dataview, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
 Client.prototype.addDataviews = function (dataviews, opts) {
@@ -138,13 +138,13 @@ Client.prototype.addDataviews = function (dataviews, opts) {
 };
 
 /**
- * Remove a dataview from the client
+ * Remove a dataview from the client.
  *
  * @param {carto.dataview.Base} - The dataview array to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed.
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
 Client.prototype.removeDataview = function (dataview, opts) {
@@ -160,7 +160,7 @@ Client.prototype.removeDataview = function (dataview, opts) {
 /**
  * Get all the dataviews from the client
  *
- * @returns {carto.dataview.Base[]} An array with all the dataviews from the client.
+ * @returns {carto.dataview.Base[]} An array with all the dataviews from the client
  * @api
  */
 Client.prototype.getDataviews = function () {
@@ -168,7 +168,9 @@ Client.prototype.getDataviews = function () {
 };
 
 /**
- * ...
+ * Return the a leaflet layer for the given client.
+ * 
+ * @api
  */
 Client.prototype.getLeafletLayer = function () {
   this._leafletLayer = this._leafletLayer || new Leaflet.LayerGroup(this._layers, this._engine);

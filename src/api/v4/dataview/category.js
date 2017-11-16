@@ -5,14 +5,14 @@ var CategoryDataviewModel = require('../../../dataviews/category-dataview-model'
 var CategoryFilter = require('../../../windshaft/filters/category');
 
 /**
- * Category dataview object
+ * Category dataview object.
  *
- * @param {carto.source.Base} source - The source where the dataview will fetch the data.
- * @param {string} column - The column name to get the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data
+ * @param {string} column - The column name to get the data
  * @param {object} options
- * @param {number} [options.limit=6] - The maximum number of categories in the response.
- * @param {carto.operation} options.operation - The operation to apply to the data.
- * @param {string} options.operationColumn - The column name used in the operation.
+ * @param {number} [options.limit=6] - The maximum number of categories in the response
+ * @param {carto.operation} options.operation - The operation to apply to the data
+ * @param {string} options.operationColumn - The column name used in the operation
  *
  * @constructor
  * @extends carto.dataview.Base

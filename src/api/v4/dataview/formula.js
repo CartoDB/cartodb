@@ -4,12 +4,12 @@ var constants = require('../constants');
 var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
 
 /**
- * Formula dataview object
+ * Formula dataview object.
  *
- * @param {carto.source.Base} source - The source where the dataview will fetch the data.
- * @param {string} column - The column name to get the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data
+ * @param {string} column - The column name to get the data
  * @param {object} options
- * @param {carto.operation} options.operation - The operation to apply to the data.
+ * @param {carto.operation} options.operation - The operation to apply to the data
  *
  * @constructor
  * @extends carto.dataview.Base

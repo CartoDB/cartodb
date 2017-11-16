@@ -20,12 +20,14 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
     this.map = new Map(null, {
       layersFactory: {}
     });
+    spyOn(this.map, 'trigger');
     this.mapView = new LeafletMapView({
       el: container,
       mapModel: this.map,
       engine: new Backbone.Model(),
       layerViewFactory: new LeafletLayerViewFactory(),
-      layerGroupModel: new Backbone.Model()
+      layerGroupModel: new Backbone.Model(),
+      showLimitErrors: false
     });
     this.mapView.render();
 
@@ -73,5 +75,26 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
     ]);
 
     expect(this.view.leafletLayer.provider.templateUrl).toEqual('http://pepe.carto.com/{z}/{x}/{y}.torque');
+  });
+
+  describe('when LeafletTorqueLayer triggers tileError', function () {
+    it('should trigger error:limit in mapModel if showLimitErrors is true', function () {
+      this.view.showLimitErrors = true;
+      this.view.nativeTorqueLayer.fire('tileError');
+      var calls = this.map.trigger.calls.all();
+      var types = calls.map(function (call) {
+        return call.args[0];
+      });
+      expect(types).toContain('error:limit');
+    });
+
+    it('should not trigger error:limit in mapModel if showLimitErrors is false', function () {
+      this.view.nativeTorqueLayer.fire('tileError');
+      var calls = this.map.trigger.calls.all();
+      var types = calls.map(function (call) {
+        return call.args[0];
+      });
+      expect(types).not.toContain('error:limit');
+    });
   });
 });

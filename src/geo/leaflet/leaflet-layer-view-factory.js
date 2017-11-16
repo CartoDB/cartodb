@@ -20,7 +20,7 @@ var LayerGroupViewConstructor = function (layerGroupModel, nativeMap, mapModel, 
     return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, nativeMap, showLimitErrors);
   }
 
-  return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap);
+  return new LeafletCartoDBLayerGroupView(layerGroupModel, nativeMap, showLimitErrors);
 };
 
 function getRenderModeResult (mapModel) {

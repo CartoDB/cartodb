@@ -4,10 +4,12 @@ var Backbone = require('backbone');
 /**
  * base layer for all google maps layers
  */
-var GMapsLayerView = function (layerModel, gmapsMap) {
+var GMapsLayerView = function (layerModel, gmapsMap, mapModel, showLimitErrors) {
   this.map = this.gmapsMap = gmapsMap;
   this.model = layerModel;
   this.model.bind('change', this._onModelUpdated, this);
+  this.mapModel = mapModel;
+  this.showLimitErrors = showLimitErrors;
 };
 
 _.extend(GMapsLayerView.prototype, Backbone.Events);

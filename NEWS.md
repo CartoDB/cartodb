@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
 * Remove forget confirmation from onboarding tour (#13039)

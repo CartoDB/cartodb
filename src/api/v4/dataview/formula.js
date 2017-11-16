@@ -4,7 +4,9 @@ var constants = require('../constants');
 var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
 
 /**
- * Formula dataview object.
+ * A formula is a simple numeric operation applied to a column in a dataset.
+ * 
+ * Like all dataviews is an async object so you must wait for the data to be availiable.
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data
@@ -15,6 +17,21 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  * @extends carto.dataview.Base
  * @memberof carto.dataview
  * @api
+ * @example
+ * // Given a cities dataset get the most populated city
+ * var formulaDataview = new carto.dataview.Formula(citiesSource, 'population', {
+ *  operation: carto.operation.MAX,
+ * });
+ * @example
+ * // You can listen to multiple events emmited by the formula-dataview.
+ * // Data and status are fired by all dataviews.
+ * formulaDataview.on('dataChanged', newData => { });
+ * formulaDataview.on('statusChanged', (newData, error) => { });
+ * formulaDataview.on('error', cartoError => { });
+ * 
+ * // Listen to specific formula-dataview events
+ * formulaDataview.on('columnChanged', newData => { });
+ * formulaDataview.on('operationChanged', newData => { });
  */
 function Formula (source, column, options) {
   this._initialize(source, column, options);

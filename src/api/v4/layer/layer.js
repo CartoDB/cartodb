@@ -96,6 +96,7 @@ Layer.prototype.getStyle = function () {
  * @api
  */
 Layer.prototype.setSource = function (source) {
+  var oldSource = this._source;
   _checkSource(source);
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
@@ -105,6 +106,9 @@ Layer.prototype.setSource = function (source) {
     this._internalModel.set('source', source.$getInternalModel());
   }
   this._source = source;
+  if (oldSource !== source) {
+    this.trigger('sourceChanged', this);
+  }
   return this;
 };
 

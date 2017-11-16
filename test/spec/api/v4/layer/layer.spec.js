@@ -158,8 +158,9 @@ describe('api/v4/layer', function () {
     });
 
     fit('should fire a sourceChanged event', function (done) {
-      layer.on('sourceChanged', function () {
-        expect(layer.getSource()).toEqual(newSource);
+      layer.on('sourceChanged', function (l) {
+        expect(l).toBe(layer);
+        expect(l.getSource()).toEqual(newSource);
         done();
       });
 

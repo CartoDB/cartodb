@@ -59,14 +59,14 @@
         zIndex: 100
       }).addTo(map);
 
-      // 1.3 Defining a carto.Client
+      // 2 Defining a carto.Client
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
         username: 'cartojs-test'
       });
 
-      // 2. Displaying countries and cities on the map
-      // 2.1 Defining the layers
+      // 3. Displaying countries and cities on the map
+      // 3.1 Defining the layers
       // European Countries layer
       var europeanCountriesDataset = new carto.source.Dataset('ne_adm0_europe');
       var europeanCountriesStyle = new carto.style.CartoCSS(`
@@ -98,14 +98,14 @@
         featureOverColumns: ['name']
       });
 
-      // 2.2 Adding the layers to the map
+      // 3.2 Adding the layers to the map
       // Adding the layers to the client
       client.addLayers([ europeanCountries, populatedPlaces ]);
       // Adding a leaflet layer to the map
       client.getLeafletLayer().addTo(map);
 
-      // 3. Setting up tooltips
-      // 3.1 Showing the tooltip when user mouses over a city
+      // 4. Setting up tooltips
+      // 4.1 Showing the tooltip when user mouses over a city
       var popup;
       populatedPlaces.on('featureOver', function (featureEvent) {
         if (!popup) {
@@ -116,20 +116,20 @@
         popup.openOn(map);
       });
 
-      // 3.2 Hiding the tooltip
+      // 4.2 Hiding the tooltip
       populatedPlaces.on('featureOut', function (featureEvent) {
         if (popup) {
           popup.removeFrom(map);
         }
       });
 
-      // 4 Creating a formula widget
-      // 4.1 Defining a formula dataview
+      // 5 Creating a formula widget
+      // 5.1 Defining a formula dataview
       var averagePopulation = new carto.dataview.Formula(populatedPlacesSQL, 'pop_max', {
         operation: carto.operation.AVG
       });
   
-      // 4.2 Listening to data changes on the dataview
+      // 5.2 Listening to data changes on the dataview
       averagePopulation.on('dataChanged', function (newData) {
         refreshAveragePopulationWidget(newData.result);
       });
@@ -140,17 +140,17 @@
         $averagePopulation.innerText = Math.floor(avgPopulation);
       };
 
-      // 4.3 Adding the dataview to the client
+      // 5.3 Adding the dataview to the client
       client.addDataview(averagePopulation);
 
 
-      // 5 Creating a country selector widget
-      // 5.1 Defining a category dataview
+      // 6 Creating a country selector widget
+      // 6.1 Defining a category dataview
       var countriesDataview = new carto.dataview.Category(europeanCountriesDataset, 'admin', {
         limit: 100
       });
 
-      // 5.2 Listening to data changes on the dataview
+      // 6.2 Listening to data changes on the dataview
       countriesDataview.on('dataChanged', function (newData) {
         var countryNames = newData.result.map(function (category) { return category.name; }).sort();
         refreshCountriesWidget(countryNames);
@@ -207,7 +207,7 @@
         populatedPlacesSQL.setQuery(query);
       };
 
-      // 5.3 Adding the dataview to the client
+      // 6.3 Adding the dataview to the client
       client.addDataview(countriesDataview);
     </script>
   </body>

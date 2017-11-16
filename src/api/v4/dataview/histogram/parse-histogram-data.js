@@ -32,7 +32,7 @@ function parseHistogramData (data, nulls, totalAmount) {
    * @api
    */
   return {
-    bins: _createResult(compactData, maxFreq),
+    bins: _createResult(data, maxFreq),
     nulls: nulls || 0,
     totalAmount: totalAmount
   };

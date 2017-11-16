@@ -130,11 +130,11 @@ Category.prototype.getData = function () {
      * @property {number} min
      * @property {number} nulls
      * @property {string} operation
-     * @property {CategoryItem[]} result
+     * @property {CategoryItem[]} categories
      * @api
      */
     var data = this._internalModel.get('data');
-    var result = _.map(data, function (item) {
+    var categories = _.map(data, function (item) {
       return {
         group: item.agg,
         name: item.name,
@@ -147,7 +147,7 @@ Category.prototype.getData = function () {
       min: this._internalModel.get('min'),
       nulls: this._internalModel.get('nulls'),
       operation: this._operation,
-      result: result
+      categories: categories
     };
   }
   return null;

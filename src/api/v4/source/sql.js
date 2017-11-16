@@ -7,11 +7,8 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * A SQL Query that can be used as the data source for layers and dataviews.
  * 
  * @param {string} query A SQL query containing a SELECT statement
- *
  * @example
- *
  * new carto.source.SQL('SELECT * FROM european_cities');
- * 
  * @constructor
  * @extends carto.source.Base
  * @memberof carto.source

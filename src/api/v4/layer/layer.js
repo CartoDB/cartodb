@@ -11,25 +11,18 @@ var CartoError = require('../error');
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events. 
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events.
- *
  * @param {carto.source.Base} source - The source where the layer will fetch the data.
  * @param {carto.style.Base} style - A CartoCSS object with the layer styling.
- *
  * @fires carto.layer.Layer.FeatureEvent
- * 
  * @example 
- * 
  * // no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
- *
  * @example
- *
  * // with options
  * new carto.layer.Layer(citiesSource, citiesStyle, {
  *   featureClickColumns: [ 'name', 'population' ],
  *   featureOverColumns: [ 'name' ]
  * });
- * 
  * @constructor
  * @extends carto.layer.Base
  * @memberof carto.layer

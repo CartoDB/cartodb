@@ -53,13 +53,11 @@ module.exports = CartoError;
  * 
  * The cartoErrors can be obtained listening to the client {@link carto.events|error events} `client.on(carto.events.ERROR, callback);` 
  * or through the promise returned by each async action.
- * 
  * @example
  * // Listen when a layer has been added or there has been an error.
  * client.addLayer(layerWithErrors)
  *  .then(()=> console.log('Layer added succesfully'))
  *  .catch(cartoError => console.error(cartoError.message))
- * 
  * @example 
  * // Events also will be registered here when the map changes.
  * client.on(carto.events.SUCCESS, function () {

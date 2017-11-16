@@ -7,11 +7,8 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * A Dataset that can be used as the data source for layers and dataviews.
  * 
  * @param {string} dataset The name of an existing dataset
- *
  * @example
- *
  * new carto.source.Dataset('european_cities');
- * 
  * @constructor
  * @extends carto.source.Base
  * @memberof carto.source

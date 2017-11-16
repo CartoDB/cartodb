@@ -42,7 +42,7 @@ SQL.prototype.setQuery = function (query) {
 /**
  * Get the query being used in this SQL source.
  *
- * @return {string} - The query being used in this SQL object
+ * @return {string} The query being used in this SQL object
  * @api
  */
 SQL.prototype.getQuery = function () {

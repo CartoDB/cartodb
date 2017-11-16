@@ -25,7 +25,7 @@ Dataset.prototype = Object.create(Base.prototype);
 /**
  * Return the table name being used in  this Dataset object.
  *
- * @return {string} - The table name being used in  this Dataset object
+ * @return {string} The table name being used in  this Dataset object
  * @api
  */
 Dataset.prototype.getTableName = function () {
@@ -51,12 +51,14 @@ Dataset.prototype._createInternalModel = function (engine) {
 };
 
 function _checkTableName (tableName) {
-  if (!tableName) {
+  if (_.isUndefined(tableName)) {
     throw new TypeError('Table name is required.');
   }
-
   if (!_.isString(tableName)) {
-    throw new Error('Table name must be a string.');
+    throw new TypeError('Table name must be a string.');
+  }
+  if (_.isEmpty(tableName)) {
+    throw new TypeError('Table name must be not empty.');
   }
 }
 

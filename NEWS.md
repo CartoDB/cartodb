@@ -13,6 +13,8 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Account static view (#12749)
+* Add interactivity error infobox (#13027)
+* Add limits for torque (#13085)
 * Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)

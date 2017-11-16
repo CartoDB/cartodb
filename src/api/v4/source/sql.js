@@ -12,6 +12,7 @@ var CamshaftReference = require('../../../analysis/camshaft-reference');
  * @constructor
  * @extends carto.source.Base
  * @memberof carto.source
+ * @fires carto.source.SQL.queryChangedEvent
  * @api
  */
 function SQL (query) {
@@ -27,6 +28,7 @@ SQL.prototype = Object.create(Base.prototype);
  *
  * @param {string} query - The sql query that will be the source of the data
  * @api
+ * @fires string:queryChanged
  */
 SQL.prototype.setQuery = function (query) {
   _checkQuery(query);
@@ -82,4 +84,14 @@ function _checkQuery (query) {
     throw new Error('query must be a string.');
   }
 }
+
 module.exports = SQL;
+
+/**
+ * Triggered every time the query is changed.
+ * Contains a string with the new query.
+ *
+ * @event carto.source.SQL.queryChangedEvent
+ * @type {string}
+ * @api
+ */

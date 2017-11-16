@@ -63,13 +63,16 @@ Layer.prototype = Object.create(Base.prototype);
  * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
+  var oldStyle = this._style;
   _checkStyle(style);
   opts = opts || {};
   this._style = style;
   if (this._internalModel) {
     this._internalModel.set('cartocss', style.toCartoCSS());
   }
-
+  if (oldStyle !== style) {
+    this.trigger('styleChanged', this);
+  }
   return this;
 };
 

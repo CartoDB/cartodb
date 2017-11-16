@@ -325,8 +325,7 @@ module.exports = Model.extend({
     return this.get('enabled');
   },
 
-  setUnavailable: function (error) {
-    this._triggerError(error);
+  setUnavailable: function () {
     return this.set('status', FETCH_ERROR_STATUS);
   },
 

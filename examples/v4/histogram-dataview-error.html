@@ -81,7 +81,7 @@
 
       // Listen to histogram errors
       histogram.on('error', function (error) {
-        console.error('Error captured by histogram-error callback ', error);
+        console.error('Error captured by histogram-error callback ', error.message);
       });
 
       client.addDataview(histogram)

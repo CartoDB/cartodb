@@ -35,7 +35,8 @@ var TorqueLayerViewBase = {
 
     this.nativeTorqueLayer.on('tileError', function (error) {
       if (this.showLimitErrors) {
-        this.mapModel.trigger('error:limit', error);
+        // TODO: Replace type with a new name
+        this.mapModel.trigger('error:limit', _.extend(error, { type: 'limit' }));
       }
     }, this);
 

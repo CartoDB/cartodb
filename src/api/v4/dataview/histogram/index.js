@@ -15,6 +15,28 @@ var parseHistogramData = require('./parse-data.js');
  * @extends carto.dataview.Base
  * @memberof carto.dataview
  * @api
+ * @example
+ * // Create a cities population histogram.
+ * var histogram = new carto.dataview.Histogram(citiesSource, 'population');
+ * // Set up a callback to render the histogram data every time new data is obtained.
+ *  histogram.on('dataChanged', renderData);
+ * // Add the histogram to the client
+ * client.addDataview(histogram);
+ * @example 
+ * // Create a cities population histogram with only 4 bins
+ * var histogram = new carto.dataview.Histogram(citiesSource, 'population', {bins: 4});
+ * // Add a bounding box filter, so the data will change when the map is moved.
+ * var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
+ * // Set up a callback to render the histogram data every time new data is obtained.
+ *  histogram.on('dataChanged', renderData);
+ * // Add the histogram to the client
+ * client.addDataview(histogram);
+ * @example
+ * // The histogram is an async object so it can be on different states: LOADING, ERROR...
+ * // Listen to state events
+ * histogram.on('statusChanged', (newStatus, error) => { });
+ * // Listen to histogram errors
+ * histogram.on('error', error => { });
  */
 function Histogram (source, column, options) {
   this._initialize(source, column, options);

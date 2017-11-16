@@ -78,7 +78,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def show
     table_action = request.original_fullpath =~ %r{/tables/}
-    unless current_user.present?
+    if !current_user.present?
       if table_action
         return(redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id]))
       else
@@ -90,27 +90,21 @@ class Admin::VisualizationsController < Admin::AdminController
     @basemaps = @visualization.user.basemaps
 
     if table_action
-
+      if !current_user.builder_enabled? && @visualization.has_read_permission?(current_user) && current_user.has_feature_flag?('static_editor')
+        return render(file: 'public/static/show/index.html', layout: false)
+      end
       if current_user.builder_enabled? && @visualization.has_read_permission?(current_user)
         return redirect_to CartoDB.url(self, 'builder_dataset', { id: request.params[:id] }, current_user)
-
-      elsif !current_user.builder_enabled? && @visualization.has_read_permission?(current_user) && current_user.has_feature_flag?('static_editor')
-        return render(file: 'public/static/show/index.html', layout: false)
-
       elsif !@visualization.has_write_permission?(current_user)
         return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       end
-
+    elsif !current_user.builder_enabled? && @visualization.open_in_editor? && current_user.has_feature_flag?('static_editor')
+      return render(file: 'public/static/show/index.html', layout: false)
     elsif !@visualization.has_write_permission?(current_user)
       return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
-        id: request.params[:id],
-        redirected: true)
-
-    elsif current_user.builder_enabled?
+                                     id: request.params[:id], redirected: true)
+    elsif current_user.builder_enabled? && !@visualization.open_in_editor?
       return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
-
-    elsif @visualization.open_in_editor? && current_user.has_feature_flag?('static_editor')
-      return render(file: 'public/static/show/index.html', layout: false)
     end
 
     respond_to { |format| format.html }
@@ -143,10 +137,6 @@ class Admin::VisualizationsController < Admin::AdminController
 
     return(redirect_to protocol: 'https://') if @visualization.is_privacy_private? \
                                                 && !(request.ssl? || request.local? || Rails.env.development?)
-
-    if @visualization.open_in_editor? && current_user.has_feature_flag?('static_editor')
-      return render(file: 'public/static/show/index.html', layout: false)
-    end
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)

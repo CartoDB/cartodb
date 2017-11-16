@@ -47,7 +47,7 @@ git add *.js *.map || exit 1
 git commit --allow-empty -m "Update dist for $TRAVIS_BRANCH $CURRENT_COMMIT" || exit 1
 git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
 git tag "@${TRAVIS_BRANCH:1}"
-git push origin "@${TRAVIS_BRANCH:1}"
+git push "$ORIGIN_URL_WITH_CREDENTIALS" "@${TRAVIS_BRANCH:1}"
 
 echo "Dist deployed successfully."
 
@@ -55,7 +55,7 @@ echo "Dist deployed successfully."
 
 echo "Checking out $TRAVIS_BRANCH"
 git checkout -- . || exit 1
-git checkout origin/$TRAVIS_BRANCH || exit 1
+git checkout -b $TRAVIS_BRANCH || exit 1
 
 # - Docs/examples deployment
 

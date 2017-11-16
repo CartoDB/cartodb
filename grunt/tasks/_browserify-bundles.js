@@ -31,6 +31,9 @@ module.exports = {
 
   'carto-public': {
     src: 'src/api/v4/index.js',
-    dest: '<%= config.dist %>/public/carto.uncompressed.js'
+    dest: '<%= config.dist %>/public/carto.uncompressed.js',
+    options: {
+      external: [ 'leaflet' ]
+    }
   }
 };

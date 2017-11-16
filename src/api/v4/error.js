@@ -26,8 +26,11 @@ function _isWindshaftError (error) {
 }
 
 function _handleAjaxResponse (error) {
-  var dataviewError = JSON.parse(error.responseText);
-  return dataviewError.errors[0];
+  try {
+    var parsedError = JSON.parse(error.responseText);
+    return parsedError.errors[0];
+  } catch (exc) {
+  }
 }
 
 module.exports = CartoError;

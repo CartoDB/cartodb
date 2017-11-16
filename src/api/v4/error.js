@@ -1,3 +1,5 @@
+var UNEXPECTED_ERROR = 'unexpected error';
+
 /**
  * Build a cartoError from a generic error
  * @constructor
@@ -18,7 +20,7 @@ function CartoError (error) {
     return this;
   }
 
-  this.message = 'unexpected error';
+  this.message = UNEXPECTED_ERROR;
 }
 
 function _isWindshaftError (error) {
@@ -26,11 +28,15 @@ function _isWindshaftError (error) {
 }
 
 function _handleAjaxResponse (error) {
+  var errorMessage = '';
+
   try {
     var parsedError = JSON.parse(error.responseText);
-    return parsedError.errors[0];
+    errorMessage = parsedError.errors[0];
   } catch (exc) {
+    // Swallow parse error
   }
+  return errorMessage || UNEXPECTED_ERROR;
 }
 
 module.exports = CartoError;

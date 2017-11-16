@@ -9,6 +9,7 @@ if [[ ! $TRAVIS_BRANCH =~ $SEMVER_PATTERN ]]; then
   exit 0
 fi
 
+# - Dist deployment
 
 echo "Starting dist deployment"
 echo "Target: dist branch"
@@ -50,11 +51,13 @@ git push origin "@${TRAVIS_BRANCH:1}"
 
 echo "Dist deployed successfully."
 
+# - Checking out main branch
 
 echo "Checking out $TRAVIS_BRANCH"
 git checkout -- . || exit 1
 git checkout origin/$TRAVIS_BRANCH || exit 1
 
+# - Docs/examples deployment
 
 echo "Starting docs/examples deployment"
 echo "Target: gh-pages branch"
@@ -96,6 +99,11 @@ mv $TMP_DOCS_DIR/internal $DOCS_DIR/v4-internal || exit 1
 rm -rf $EXAMPLES_DIR/v4 || exit 1
 mv $TMP_EXAMPLES_DIR/public $EXAMPLES_DIR/v4 || exit 1
 mv $TMP_DOCS_DIR/index.html index.html || exit 1
+
+echo "Use CDN carto.js in the v4 examples"
+OLD="../../dist/public/carto.uncompressed.js"
+CDN="https://cdn.rawgit.com/CartoDB/cartodb.js/@${TRAVIS_BRANCH:1}/carto.js"
+sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/*
 
 echo "Pushing new content to $ORIGIN_URL"
 git config user.name "Cartofante" || exit 1

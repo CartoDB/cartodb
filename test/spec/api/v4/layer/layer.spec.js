@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-fdescribe('api/v4/layer', function () {
+describe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -155,6 +155,24 @@ fdescribe('api/v4/layer', function () {
           }).toThrowError('A layer can\'t have a source which belongs to a different client');
         });
       });
+    });
+
+    fit('should fire a sourceChanged event', function (done) {
+      layer.on('sourceChanged', function () {
+        expect(layer.getSource()).toEqual(newSource);
+        done();
+      });
+
+      layer.setSource(newSource);
+    });
+
+    fit('should not fire a sourceChanged event when setting the same source twice', function () {
+      var sourceChangedSpy = jasmine.createSpy('sourceChangedSpy');
+      layer.on('sourceChanged', sourceChangedSpy);
+
+      layer.setSource(source);
+
+      expect(sourceChangedSpy).not.toHaveBeenCalled();
     });
   });
 

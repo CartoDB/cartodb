@@ -16,6 +16,12 @@ var ERRORS = {
     error: 'No data available',
     message: 'There are no results for the combination of filters applied to your data. Try tweaking your filters, or zoom and pan the map to adjust the Map View.',
     refresh: false
+  },
+  too_many_bins: {
+    level: 'error',
+    error: 'Too many bins returned',
+    message: 'There are too many bins returned. Try selecting a less granular aggregation or filtering the data source.',
+    refresh: false
   }
 };
 

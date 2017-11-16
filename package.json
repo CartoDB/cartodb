@@ -28,7 +28,7 @@
   "dependencies": {
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-alpha.25",
+    "cartodb.js": "CartoDB/cartodb.js#public-api",
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
@@ -73,6 +73,7 @@
     "grunt-gh-pages": "1.0.0",
     "grunt-sass": "2.0.0",
     "jstify": "0.13.0",
+    "leaflet": "1.2.0",
     "load-grunt-tasks": "3.3.0",
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",

@@ -60,7 +60,7 @@ module CartoDB
 
       def run_command(cmd)
         logger.debug "Running command: \"#{cmd}\""
-        Temfile.open('datamover') { |f| run_command_with_log(cmd, f) }
+        Tempfile.open('datamover') { |f| run_command_with_log(cmd, f) }
       end
 
       def run_command_with_log(cmd, file)

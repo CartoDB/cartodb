@@ -59,9 +59,9 @@ Formula.prototype.getData = function () {
   if (this._internalModel) {
     /**
      * @typedef {object} carto.dataview.FormulaData
-     * @property {number} nulls
-     * @property {string} operation
-     * @property {number} result
+     * @property {number} nulls - Number of null categories
+     * @property {string} operation - Operation used
+     * @property {number} result - Result of the operation
      * @api
      */
     return {

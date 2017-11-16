@@ -52,7 +52,7 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * categoryDataview.on('dataChanged', newData => { });
  * categoryDataview.on('statusChanged', (newData, error) => { });
  * categoryDataview.on('error', cartoError => { });
- * 
+ *
  * // Listen to specific category-dataview events.
  * categoryDataview.on('columnChanged', newData => { });
  * categoryDataview.on('limitChanged', newData => { });
@@ -158,18 +158,18 @@ Category.prototype.getData = function () {
   if (this._internalModel) {
     /**
      * @typedef {object} carto.dataview.CategoryItem
-     * @property {boolean} group
-     * @property {string} name
-     * @property {number} value
+     * @property {boolean} group - Category is a group
+     * @property {string} name - Category name
+     * @property {number} value - Category value
      * @api
      */
     /**
      * @typedef {object} carto.dataview.CategoryData
-     * @property {number} count
-     * @property {number} max
-     * @property {number} min
-     * @property {number} nulls
-     * @property {string} operation
+     * @property {number} count - The total number of categories
+     * @property {number} max - Maximum category value
+     * @property {number} min - Minimum category value
+     * @property {number} nulls - Number of null categories
+     * @property {string} operation - Operation used
      * @property {carto.dataview.CategoryItem[]} categories
      * @api
      */

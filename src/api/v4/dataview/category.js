@@ -18,6 +18,25 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * @extends carto.dataview.Base
  * @memberof carto.dataview
  * @api
+ * @example
+ * // Display the total number of retweets for 20 users in our dataset.
+ * var categoryDataview = new carto.dataview.Category(twitterSource, 'username', {
+ *     limit: 20, // Limit to 20 categories
+ *     operation: carto.operation.SUM, // Select SUM
+ *     operationColumn: 'retweetcount' // The name of the column used in the operation.
+ *  });
+ * @example
+ * // You can listen to multiple events emmited by the category-dataview.
+ * // Data and status are fired by all dataviews.
+ * categoryDataview.on('dataChanged', newData => { });
+ * categoryDataview.on('statusChanged', (newData, error) => { });
+ * categoryDataview.on('error', cartoError => { });
+ * 
+ * // Listen to specific category-dataview events.
+ * categoryDataview.on('columnChanged', newData => { });
+ * categoryDataview.on('limitChanged', newData => { });
+ * categoryDataview.on('operationChanged', newData => { });
+ * categoryDataview.on('operationColumnChanged', newData => { });
  */
 function Category (source, column, options) {
   this.DEFAULTS.operationColumn = column;

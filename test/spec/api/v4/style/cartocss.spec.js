@@ -67,4 +67,13 @@ describe('api/v4/style/cartocss', function () {
         });
     });
   });
+
+  describe('.getStyle', function () {
+    it('should return the internal style', function () {
+      var expected = '#layer { marker-with:10; }';
+      var actual = cartoCSS.getStyle();
+
+      expect(actual).toEqual(expected);
+    });
+  });
 });

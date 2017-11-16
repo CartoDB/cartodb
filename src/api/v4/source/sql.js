@@ -36,6 +36,8 @@ SQL.prototype.setQuery = function (query) {
   this._query = query;
   if (this._internalModel) {
     this._internalModel.set('query', query);
+  } else {
+    this._triggerQueryChanged(this, query);
   }
   return this;
 };
@@ -63,7 +65,13 @@ SQL.prototype._createInternalModel = function (engine) {
     engine: engine
   });
 
+  internalModel.on('change:query', this._triggerQueryChanged, this);
+
   return internalModel;
+};
+
+SQL.prototype._triggerQueryChanged = function (model, value) {
+  this.trigger('queryChanged', value);
 };
 
 function _checkQuery (query) {

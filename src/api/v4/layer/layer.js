@@ -63,13 +63,16 @@ Layer.prototype = Object.create(Base.prototype);
  * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
+  var prevStyle = this._style;
   _checkStyle(style);
   opts = opts || {};
   this._style = style;
   if (this._internalModel) {
     this._internalModel.set('cartocss', style.toCartoCSS());
   }
-
+  if (prevStyle !== style) {
+    this.trigger('styleChanged', this);
+  }
   return this;
 };
 
@@ -96,6 +99,7 @@ Layer.prototype.getStyle = function () {
  * @api
  */
 Layer.prototype.setSource = function (source) {
+  var prevSource = this._source;
   _checkSource(source);
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
@@ -105,6 +109,9 @@ Layer.prototype.setSource = function (source) {
     this._internalModel.set('source', source.$getInternalModel());
   }
   this._source = source;
+  if (prevSource !== source) {
+    this.trigger('sourceChanged', this);
+  }
   return this;
 };
 
@@ -185,30 +192,65 @@ Layer.prototype.hasFeatureOverColumns = function (columns) {
 
 /**
  * Hides the layer.
- *
+ * @return {carto.layer.Layer} this
  * @api
  */
 Layer.prototype.hide = function () {
+  var prevStatus = this._visible;
   this._visible = false;
   if (this._internalModel) {
     this._internalModel.set('visible', false);
   }
-
+  if (prevStatus) {
+    this.trigger('visibilityChanged', false);
+  }
   return this;
 };
 
 /**
  * Shows the layer.
  *
+ * @return {carto.layer.Layer} this
  * @api
  */
 Layer.prototype.show = function () {
+  var prevStatus = this._visible;
   this._visible = true;
   if (this._internalModel) {
     this._internalModel.set('visible', true);
   }
-
+  if (!prevStatus) {
+    this.trigger('visibilityChanged', false);
+  }
   return this;
+};
+
+/**
+ * Change the layer's visibility.
+ * @return {carto.layer.Layer} this
+ */
+Layer.prototype.toggle = function () {
+  return this.isVisible() ? this.hide() : this.show();
+};
+
+/**
+ * Return true if the layer is visible and false when not visible.
+ * 
+ * @return {boolean} - A boolean value indicating the layer's visibility.
+ * @api
+ */
+Layer.prototype.isVisible = function () {
+  return this._visible;
+};
+
+/**
+ * Return `true` if the layer is not visible and false when visible.
+ * 
+ * @return {boolean} - A boolean value indicating the layer's visibility.
+ * @api
+ */
+Layer.prototype.isHidden = function () {
+  return !this.isVisible();
 };
 
 // Private functions.
@@ -230,14 +272,6 @@ Layer.prototype._createInternalModel = function (engine) {
   }, this);
 
   return internalModel;
-};
-
-Layer.prototype._reloadEngine = function () {
-  if (this._engine) {
-    return this._engine.reload();
-  }
-
-  return Promise.resolve();
 };
 
 // Internal functions.

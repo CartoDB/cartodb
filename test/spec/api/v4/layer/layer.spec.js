@@ -92,6 +92,25 @@ describe('api/v4/layer', function () {
           layer.setStyle(newStyle);
         });
     });
+
+    it('should fire a styleChanged event', function (done) {
+      layer.on('styleChanged', function (l) {
+        expect(l).toBe(layer);
+        expect(l.getStyle()).toEqual(newStyle);
+        done();
+      });
+
+      layer.setStyle(newStyle);
+    });
+
+    it('should not fire a styleChanged event when setting the same style twice', function () {
+      var styleChangedSpy = jasmine.createSpy('styleChangedSpy');
+      layer.on('styleChanged', styleChangedSpy);
+
+      layer.setStyle(style);
+
+      expect(styleChangedSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('.setSource', function () {
@@ -155,6 +174,112 @@ describe('api/v4/layer', function () {
           }).toThrowError('A layer can\'t have a source which belongs to a different client');
         });
       });
+    });
+
+    it('should fire a sourceChanged event', function (done) {
+      layer.on('sourceChanged', function (l) {
+        expect(l).toBe(layer);
+        expect(l.getSource()).toEqual(newSource);
+        done();
+      });
+
+      layer.setSource(newSource);
+    });
+
+    it('should not fire a sourceChanged event when setting the same source twice', function () {
+      var sourceChangedSpy = jasmine.createSpy('sourceChangedSpy');
+      layer.on('sourceChanged', sourceChangedSpy);
+
+      layer.setSource(source);
+
+      expect(sourceChangedSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('.show', function () {
+    it('should set the layer visibility to true', function () {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.hide();
+
+      expect(layer.isVisible()).toEqual(false);
+      expect(layer.isHidden()).toEqual(true);
+
+      layer.show();
+
+      expect(layer.isVisible()).toEqual(true);
+      expect(layer.isHidden()).toEqual(false);
+    });
+
+    it('should trigger a visibilityChanged event', function (done) {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.hide();
+
+      layer.on('visibilityChanged', function () {
+        expect(layer.isVisible()).toEqual(true);
+        expect(layer.isHidden()).toEqual(false);
+        done();
+      });
+
+      layer.show();
+    });
+  });
+
+  describe('.hide', function () {
+    it('should set the layer visibility to false', function () {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.hide();
+
+      expect(layer.isVisible()).toEqual(false);
+      expect(layer.isHidden()).toEqual(true);
+    });
+
+    it('should trigger a visibilityChanged event', function (done) {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.on('visibilityChanged', function () {
+        expect(layer.isVisible()).toEqual(false);
+        expect(layer.isHidden()).toEqual(true);
+        done();
+      });
+
+      layer.hide();
+    });
+  });
+
+  describe('.toggle', function () {
+    it('should toggle the layer visibility', function () {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.toggle();
+
+      expect(layer.isVisible()).toEqual(false);
+      expect(layer.isHidden()).toEqual(true);
+
+      layer.toggle();
+
+      expect(layer.isVisible()).toEqual(true);
+      expect(layer.isHidden()).toEqual(false);
+    });
+
+    it('should trigger a visibilityChanged event', function (done) {
+      var layer = new carto.layer.Layer(source, style);
+      expect(layer.isVisible()).toEqual(true);
+
+      layer.on('visibilityChanged', function () {
+        expect(layer.isVisible()).toEqual(false);
+        expect(layer.isHidden()).toEqual(true);
+        done();
+      });
+
+      layer.toggle();
     });
   });
 });

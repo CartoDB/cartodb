@@ -1,83 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CARTO.js Basic example</title>
+    <!-- Include Leaflet 1.2.0 Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <!-- Include cartodb.js Library -->
+    <script src="../../dist/public/carto.uncompressed.js"></script>
+    <style>
+      html, body { margin: 0; padding: 0; }
+      #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      // 1. Setting up the Leaflet Map
+      // 1.1 Creating the Leaflet Map
+      var map = L.map('map').setView([58.722598828043395, 18.544921875000004], 4);
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Basic Carto.js example</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-
-  <!-- Include cartodb.js Library -->
-  <script src="../../dist/public/carto.uncompressed.js"></script>
-  <style>
-    html, body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-  </style>
-</head>
-
-<body>
-  <div id="map"></div>
-  <script>
-    (async () => {
-      // Create the Leaflet Map
-      var map = L.map('map').setView([42.431234, -8.643616], 5);
-
-      // Add Voyager Basemap
+      // 1.2 Adding basemap and labels layers
+      // Adding Voyager Basemap
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+        attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
       }).addTo(map);
 
-      // Create the Client
+      // 2 Defining a carto.Client
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
         username: 'cartojs-test'
       });
 
-      // Create a source
-      var spanishCitiesSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name = \'Spain\'');
-
-      // Create a style
-      var spanishCitiesStyle = new carto.style.CartoCSS(`
+      // 3. Displaying countries on the map
+      // 3.1 Defining the layers
+      // European Countries layer
+      var europeanCountriesDataset = new carto.source.Dataset('ne_adm0_europe');
+      var europeanCountriesStyle = new carto.style.CartoCSS(`
         #layer {
-          marker-width: 10;
-          marker-fill: red;
+          polygon-fill: #162945;
+          polygon-opacity: 0.5;
+          ::outline {
+            line-color: #FFFFFF;
+            line-width: 1;
+            line-opacity: 0.5;
+          }
         }`);
+      var europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
 
-      // Create a layer
-      var spanishCities = new carto.layer.Layer(spanishCitiesSource, spanishCitiesStyle);
+      // 3.2 Adding the layers to the client
+      client.addLayer(europeanCountries);
 
-      // Create a source
-      var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
-
-      // Create a style
-      var populatedPlacesStyle = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 10;
-          marker-fill: #CDCDCD;
-        }`);
-
-      // Create a layer
-      var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
-
-      // Add the layers to the client
-      client.addLayers([ spanishCities, populatedPlaces ]);
-
-      // Add the client layer to the map
+      // 3.3. Adding the layers to the map
       client.getLeafletLayer().addTo(map);
-
-      // Set a new style
-      var newPopulatedPlacesStyle = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 15;
-          marker-fill: #DDDDDD;
-        }`);
-
-      populatedPlaces.setStyle(newPopulatedPlacesStyle);
-    })();
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>

@@ -12,6 +12,8 @@ var CartoError = require('../error');
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
  * @fires carto.layer.Layer.FeatureEvent
+ * @fires carto.layer.Layer.sourceChanged
+ * @fires carto.layer.Layer.styleChanged
  * @example
  * // no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
@@ -311,11 +313,32 @@ function _checkSource (source) {
 function _isStyleError (windshaftError) {
   return windshaftError.message && windshaftError.message.indexOf('style') === 0;
 }
+
 /**
  * @typedef {Object} LatLng
  * @property {number} lat - Latitude
  * @property {number} lng - Longitude
  *
+ * @api
+ */
+
+/**
+ * Event triggered when the source of the layer changes.
+ *
+ * Contains a single argument with the Layer where the source has changed.
+ * 
+ * @event carto.layer.Layer.sourceChanged
+ * @type {carto.layer.Layer}
+ * @api
+ */
+
+/**
+ * Event triggered when the style of the layer changes.
+ *
+ * Contains a single argument with the Layer where the style has changed.
+ * 
+ * @event carto.layer.Layer.styleChanged
+ * @type {carto.layer.Layer}
  * @api
  */
 

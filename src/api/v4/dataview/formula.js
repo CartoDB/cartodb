@@ -12,6 +12,9 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  * @param {string} column - The column name to get the data
  * @param {object} options
  * @param {carto.operation} options.operation - The operation to apply to the data
+ * 
+ * @fires carto.dataview.Formula.dataChanged
+ * @fires carto.dataview.Formula.operationChanged
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -133,3 +136,23 @@ Formula.prototype._createInternalModel = function (engine) {
 };
 
 module.exports = Formula;
+
+/**
+ * Event triggered when the data in a formula-dataview changes.
+ *
+ * Contains a single argument with the new data.
+ * 
+ * @event carto.dataview.Formula.dataChanged
+ * @type {carto.dataview.FormulaData}
+ * @api
+ */ 
+
+/**
+ * Event triggered when the operation in a formula-dataview changes.
+ *
+ * Contains a single argument with new operation.
+ * 
+ * @event carto.dataview.Formula.operationChanged
+ * @type {carto.operation}
+ * @api
+ */ 

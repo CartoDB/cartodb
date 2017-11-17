@@ -90,7 +90,11 @@ module Carto
           parent_id: @visualization.parent_id,
           transition_options: @visualization.transition_options,
           active_child: nil,
-          children: []
+          children: [],
+          remove_logo: @visualization.user.remove_logo?,
+          has_logo: @visualization.overlays.any? { |o| o.type == "logo" },
+          google_maps_query_string: @visualization.user.google_maps_query_string,
+          likes: @visualization.likes_count
         }
 
         poro[:related_tables] = related_tables if related

@@ -5,19 +5,19 @@
 
 
 .Badge {
-  position: absolute;
   display: block;
+  position: absolute;
   top: -9px;
   right: -9px;
   width: 17px;
   height: 17px;
-  line-height: 17px; /* same as width/height */
   border-radius: 23px;
+  background-color: $cIcons-default;
   color: #FFF;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-normal;
+  line-height: 17px; /* same as width/height */
   text-align: center;
-  background-color: $cIcons-default;
 
   &.is-icon {
     position: relative;

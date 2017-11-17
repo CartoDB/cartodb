@@ -30,13 +30,13 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 
 .Button,
 .Button span {
+  box-sizing: border-box;
   color: #FFF;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-bold;
   line-height: $sLineHeight-button;
   text-transform: uppercase;
   white-space: nowrap;
-  box-sizing: border-box;
 }
 
 .Button-inner {

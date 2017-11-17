@@ -6,8 +6,8 @@
 @import "../variables/mixins";
 
 .DefaultDescription {
-  overflow-wrap: break-word;
   position: relative;
+  overflow-wrap: break-word;
 }
 
 .DefaultDescription > * {

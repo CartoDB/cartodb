@@ -6,20 +6,20 @@
   width: 940px;
   margin: auto;
   padding: 40px 0;
-  overflow: hidden;
   clear: both;
+  overflow: hidden;
   border-top: 1px solid #DDD;
 }
 
 .PecanMap-MapsList {
-  position: relative;
   display: block;
-  margin: 0;
-  padding: 0;
+  position: relative;
   width: 5000px;
   height: 247px;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
   clear: both;
+  overflow: hidden;
 
   @include transition(margin, 150ms);
 }
@@ -37,20 +37,20 @@
 
 .PecanMap-MapsList .DefaultTitle,
 .PecanMap-MapsList .DefaultTitle a {
-  font-weight: 300;
   color: #999;
+  font-weight: 300;
 }
 
 .PecanMap-MapsList .DefaultTitle strong {
-  font-weight: normal;
   color: #666;
+  font-weight: normal;
 }
 .PecanMap-MapsList .DefaultTitle a:hover { color: #666 }
 
 .PecanMap-navigation {
   position:absolute;
-  width: 940px;
   z-index: 100000;
+  width: 940px;
 }
 
 .PecanMap-navigation.is-hidden {
@@ -84,6 +84,7 @@
 
 .Pecan-TorqueWirzardIcon {
   position: absolute;
+  z-index: 10;
   top: 49px;
   left: 50%;
   width: 84px;
@@ -91,7 +92,6 @@
   margin-left: -42px;
 
   @include background(image-url('layout/pecan_torque_wizard.png') center center);
-  z-index: 10;
 }
 
 .PecanCard-footer {
@@ -102,16 +102,16 @@
 }
 
 .NullCount {
+  color: #999;
   font-size: 11px;
   font-style: italic;
-  color: #999;
   line-height:0;
 }
 
 .CategoryList {
-  float:left;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  float:left;
   line-height:0;
 }
 
@@ -119,9 +119,9 @@
   @include inline-block();
   width: 5px;
   height: 5px;
-  background:#DDD;
-  border-radius: 50%;
   margin: 0 2px 0 0;
+  border-radius: 50%;
+  background:#DDD;
 }
 
 .CategoryList .CategoryList-item:last-child {

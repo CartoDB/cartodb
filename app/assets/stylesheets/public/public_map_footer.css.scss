@@ -7,21 +7,21 @@
 @import "../old_common/vars";
 
 .cartodb-footer {
-  font-size:13px;
-  font-family: $text-fonts;
-  color: #999;
-  background: #F6F6F6;
-  border-top: 1px solid #D1D1D1;
   padding: 40px 0;
+  border-top: 1px solid #D1D1D1;
+  background: #F6F6F6;
+  color: #999;
+  font-family: $text-fonts;
+  font-size:13px;
 
   a {
-    font-size:13px;
     color: #2483B2;
+    font-size:13px;
     text-decoration: none;
 
     &:hover {
-      text-decoration: underline;
       color: #333;
+      text-decoration: underline;
     }
   }
 
@@ -34,8 +34,8 @@
 
 @media only screen and (max-width: 710px) {
   div.cartodb-footer .inner .embed-left-col  {
-    text-align: center;
     padding: 10px 0;
+    text-align: center;
   }
 
   div.cartodb-footer .inner .embed-right-col  {
@@ -46,13 +46,13 @@
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
   div.cartodb-footer .inner .embed-left-col  {
-    float:left;
     width: 50%;
+    float:left;
   }
 
   div.cartodb-footer .inner .embed-right-col  {
-    float: right;
     width: 50%;
+    float: right;
     text-align:right;
   }
 }

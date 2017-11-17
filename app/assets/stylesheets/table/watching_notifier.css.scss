@@ -10,13 +10,13 @@
 
 .watching-notifier {
   position: fixed;
-  bottom: -50px;
+  z-index: 100;
   right: 0;
+  bottom: -50px;
   padding: 8px 10px;
   background: #FF4D4D;
   color: white;
   font-size: 13px;
-  z-index: 100;
 
   @include border-top-left-radius(3px);
   @include transform-style("linear");

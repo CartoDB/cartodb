@@ -9,9 +9,9 @@
   
 footer {
   display:block;
+  color: #999;
 
   @include box-sizing(border-box);
-  color: #999;
 
   p { width: auto; }
 

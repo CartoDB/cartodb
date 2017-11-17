@@ -44,12 +44,12 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 
 .Header-navigationBreadcrumbParagraph {
-  text-overflow: ellipsis;
-  max-width: 150px;
   display: inline-block;
-  white-space: nowrap;
+  max-width: 150px;
   overflow: hidden;
+  text-overflow: ellipsis;
   vertical-align: bottom;
+  white-space: nowrap;
 }
 
 .Header-navigationItem {
@@ -57,15 +57,15 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 
 .Header-navigationLink {
-  font-weight: $sFontWeight-bold;
-  font-size: $sFontSize-normal;
-  line-height: $sLineHeight-largest;
-  color: #FFF;
   transition: all .15s;
+  color: #FFF;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-bold;
+  line-height: $sLineHeight-largest;
 
   &:hover {
-    text-decoration: none;
     color: rgba(#FFF, 0.6);
+    text-decoration: none;
   }
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
@@ -100,8 +100,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 .Header-settingsItem--avatar {}
 
 .Header-settingsLink {
-  color: #FFF;
   transition: all .2s;
+  color: #FFF;
 
   &:hover {
     color: rgba(#FFF, .6);
@@ -143,8 +143,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   }
 
   .Header .Header-settingsList .UserAvatar-img--medium {
-    height: $height/2;
     width: $height/2;
+    height: $height/2;
   }
 
   .Header .Header-settingsList .Button {

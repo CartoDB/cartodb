@@ -15,14 +15,14 @@
 .cartodb-map-data .inner {
   max-width: 1024px;
   margin: auto;
+  padding: 0 20px;
   clear:both;
   overflow:hidden;
-  padding: 0 20px;
 }
 
 .cartodb-map-data .no_script,
 .cartodb-map-data .dsq-brlink {
+  color: #397DB8;
   font-family: $text-fonts;
   font-size:15px;
-  color: #397DB8;
 }

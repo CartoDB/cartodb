@@ -10,8 +10,8 @@ $facebook: #3A5999;
 $linkedin: #007BB6;
 
 @mixin button($color1, $color2) {
-  color: $color1;
   border-color: rgba($color1, 0.3);
+  color: $color1;
 
   &:hover {
     border-color: rgba($color1, 0.4);

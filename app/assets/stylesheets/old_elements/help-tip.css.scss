@@ -11,32 +11,32 @@
 @import "../table/table-sprite";
 
 .help-tip {
-  position: absolute;
   display:none;
-  width: 100%;
+  position: absolute;
+  z-index:10;
   top: 0;
   left: 0;
+  width: 100%;
   padding: 10px;
+  border-bottom: 1px solid rgba(#DDD, .5);
   background: #F5F8FF;
-  z-index:10;
-
-  @include box-sizing(border-box);
+  color: #999;
   font-size: 13px;
   font-style: italic;
-  border-bottom: 1px solid rgba(#DDD, .5);
-  color: #999;
+
+  @include box-sizing(border-box);
 
   p { padding: 0 25px 0 44px; }
 
   .close {
-    position: absolute;
-    right: 27px;
-    top: 12px;
 
     display:block;
-    vertical-align:middle;
+    position: absolute;
+    top: 12px;
+    right: 27px;
     width:13px;
     height:13px;
+    vertical-align:middle;
 
     @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
 
@@ -46,10 +46,10 @@
 
   &:before {
     content:'';
+    z-index: 11;
 
     @include size(10px, 6px);
     @include position(-6px, 29px, false, false);
     @include background(sprite($table-sprites, infowindow_panel_purple_tip) no-repeat);
-    z-index: 11;
   }
 }

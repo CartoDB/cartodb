@@ -18,12 +18,12 @@ $opacityTransition: 250ms;
 
 .Md-container {
   position: absolute;
+  z-index: 10;
   right: 1px;
   bottom: 1px;
   padding: 8px;
   border-radius: 4px;
   background: rgba(#FFF, 0.6);
-  z-index: 10;
 }
 
 .field_with_errors {
@@ -67,11 +67,11 @@ $opacityTransition: 250ms;
 .NotificationsList-item {
   @include display-flex();
   position: relative;
+  box-sizing: border-box;
   margin-bottom: -1px;
   padding: 20px 0;
   border: 1px solid transparent;
   border-bottom: 1px solid $cStructure-softLine;
-  box-sizing: border-box;
 
   &:first-child {
     padding-top: 0;
@@ -90,12 +90,12 @@ $opacityTransition: 250ms;
   @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
   display: inline-block;
   position: relative;
+  z-index: 1;
   min-width: 40px;
   height: 40px;
   margin-top: 3px;
   margin-right: 16px;
   border: none;
-  z-index: 1;
 }
 
 .NotificationsList-itemCategory--warning {
@@ -138,12 +138,12 @@ $opacityTransition: 250ms;
   @include display-flex();
   @include align-items(center);
   margin-bottom: 0;
-
-  overflow-wrap: break-word;
   word-wrap: break-word;
 
   -ms-word-break: break-all;
   word-break: break-word;
+
+  overflow-wrap: break-word;
 
   ul,
   ol {

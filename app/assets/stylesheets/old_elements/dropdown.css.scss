@@ -10,23 +10,23 @@
 @import "../old_common/vars";
 
 div.dropdown {
-  position:absolute;
   display:none;
+  position:absolute;
+  z-index:50;
+  border:none;
   background:white;
 
   @include border-radius(3px);
-  border:none;
 
   @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
-  z-index:50;
 
   &:before {
     content:' ';
-    position:absolute;
     display:block!important;
+    position:absolute;
+    z-index:10;
     width:0;
     height:0;
-    z-index:10;
   }
 
   // Tick for 12 possibilities
@@ -34,8 +34,8 @@ div.dropdown {
     &.horizontal_left {
       &:before {
         left:-5px;
-        border-right:6px solid white;
         border-top:6px solid transparent;
+        border-right:6px solid white;
         border-bottom:6px solid transparent;
       }
     }
@@ -43,9 +43,9 @@ div.dropdown {
     &.horizontal_right {
       &:before {
         right:-5px;
-        border-left:6px solid white;
         border-top:6px solid transparent;
         border-bottom:6px solid transparent;
+        border-left:6px solid white;
       }
     }
   }
@@ -60,17 +60,17 @@ div.dropdown {
       &:before {
         bottom:-5px;
         border-top:6px solid white;
-        border-left:6px solid transparent;
         border-right:6px solid transparent;
+        border-left:6px solid transparent;
       }
     }
 
     &.vertical_bottom {
       &:before {
         top:-5px;
+        border-right:6px solid transparent;
         border-bottom:6px solid white;
         border-left:6px solid transparent;
-        border-right:6px solid transparent;
       }
     }
   }
@@ -88,11 +88,11 @@ div.dropdown {
 
     &:after {
       content:' ';
-      position:absolute;
       display:block!important;
+      position:absolute;
+      z-index:1;
       width:0;
       height:0;
-      z-index:1;
     }
 
     // Tick for 12 possibilities
@@ -100,8 +100,8 @@ div.dropdown {
       &.horizontal_left {
         &:after {
           left:-6px;
-          border-right:6px solid $after_color;
           border-top:6px solid transparent;
+          border-right:6px solid $after_color;
           border-bottom:6px solid transparent;
         }
       }
@@ -109,9 +109,9 @@ div.dropdown {
       &.horizontal_right {
         &:after {
           right:-6px;
-          border-left:6px solid $after_color;
           border-top:6px solid transparent;
           border-bottom:6px solid transparent;
+          border-left:6px solid $after_color;
         }
       }
     }
@@ -126,17 +126,17 @@ div.dropdown {
         &:after {
           bottom:-6px;
           border-top:6px solid $after_color;
-          border-left:6px solid transparent;
           border-right:6px solid transparent;
+          border-left:6px solid transparent;
         }
       }
 
       &.vertical_bottom {
         &:after {
           top:-6px;
+          border-right:6px solid transparent;
           border-bottom:6px solid $after_color;
           border-left:6px solid transparent;
-          border-right:6px solid transparent;
         }
       }
     }
@@ -156,13 +156,13 @@ div.dropdown {
 
   ul {
     position:relative;
-
-    @include inline-block();
     width:100%;
     margin:0;
     padding:0;
-    list-style:none;
     overflow:visible;
+    list-style:none;
+
+    @include inline-block();
 
     li {
       display:block;

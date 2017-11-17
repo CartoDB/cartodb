@@ -20,10 +20,10 @@
 
 .FeatureData-mapWrapper {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 115px;
   margin-top: 30px;
-  z-index: 1;
 }
 
 .FeatureData-mapContainer {
@@ -35,18 +35,18 @@
 .FeatureData-mapMamufas {
   content: '';
   position: absolute;
+  z-index: 2;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   width: 100%;
-  background: transparent;
   border: 1px solid rgba(black, 0.1);
-  border-left: 0;
   border-right: 0;
+  border-left: 0;
+  background: transparent;
 
   @include css3-prefix(box-sizing, content-box);
-  z-index: 2;
 }
 
 .FeatureData-mapContainer .leaflet-control-attribution,
@@ -59,11 +59,11 @@
   &:after {
     content: '';
     position: fixed;
+    z-index: 5;
     left: 50%;
     width: 620px;
     height: 18px;
     margin-left: -310px;
-    z-index: 5;
   }
 
   &:before {
@@ -81,8 +81,8 @@
 }
 
 .FeatureData .Dialog-stickyFooter {
-  left: 0;
   z-index: 10;
+  left: 0;
 }
 
 .FeatureData-formContent,

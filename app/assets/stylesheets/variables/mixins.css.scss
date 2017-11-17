@@ -36,11 +36,11 @@
 }
 
 @mixin flex($v) {
-  -webkit-box-flex: $v;
-  -moz-box-flex: $v;
   -webkit-flex: $v;
   -ms-flex: $v;
   flex: $v;
+  -webkit-box-flex: $v;
+  -moz-box-flex: $v;
 }
 
 @mixin flex-direction($v) {
@@ -52,9 +52,9 @@
 }
 
 @mixin flex-grow($v) {
+  -ms-flex: $v 0 auto;
   -webkit-flex-grow: $v;
   -moz-flex-grow: $v;
-  -ms-flex: $v 0 auto;
   -ms-flex-grow: $v;
   flex-grow: $v;
   // IE10 fallback
@@ -69,13 +69,13 @@
 }
 
 @mixin flex-order($v) {
+  -ms-order: $v;
+  order: $v;
   -webkit-flex-order: $v;
   -webkit-box-ordinal-group: $v;
   -moz-box-ordinal-group: $v;
   -moz-flex-order: $v;
   -ms-flex-order: $v;
-  -ms-order: $v;
-  order: $v;
 }
 
 @mixin justify-content($v, $ie-v: "") {
@@ -149,8 +149,8 @@
     (min-resolution: 1.3dppx) {
     /* on retina, use image that's scaled by 2 */
     background: image-url($image);
-    background-size: $width $height;
     background-position: $x $y;
+    background-size: $width $height;
   }
 }
 
@@ -209,19 +209,19 @@
 
 @mixin line-clamp($lines) {
   display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $lines;
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
 
   &:after {
     content: ' ';
     display: block;
     position: absolute;
-    bottom: 0;
     right: 0;
-    height: $sLineHeight-normal;
+    bottom: 0;
     width: 2 * $sLineHeight-normal;
+    height: $sLineHeight-normal;
 
     @include background-horizontal(rgba(255,255,255,0), rgba(255,255,255,1));
   }

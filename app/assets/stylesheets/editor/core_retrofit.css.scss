@@ -14,8 +14,8 @@ a {
   text-decoration: none;
 
   &:hover {
-    text-decoration: underline;
     color: #333;
+    text-decoration: underline;
   }
 
   &.disabled {
@@ -30,11 +30,11 @@ a {
 
   &.tag {
     padding: 6px 7px;
-    color: #397DB9;
+    border: 1px solid #397DBA;
     background: #E1ECF5;
+    color: #397DB9;
 
     @include border-radius(2px);
-    border: 1px solid #397DBA;
 
     @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
   }
@@ -44,8 +44,8 @@ h2,h3,h4,h5,h6 { color: #333 }
 h2 {
   font-size: 28px;
   letter-spacing: -1px;
-  word-spacing: -1px;
   line-height: 34px;
+  word-spacing: -1px;
 }
 h3 { font-size: 25px }
 strong { font-weight: bold }
@@ -74,8 +74,8 @@ strong { font-weight: bold }
 .margin-bottom-10 { margin-bottom: 10px }
 
 .ellipsis {
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap
 }
 .hide { display: none }
@@ -101,7 +101,7 @@ strong { font-weight: bold }
 .separate {
   display: block;
   width: 100%;
-  margin: 40px 0;
   height: 1px;
+  margin: 40px 0;
   background: rgba(#CCC,0.5);
 }

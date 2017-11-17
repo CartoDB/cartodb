@@ -21,13 +21,13 @@ $fieldBorderColor: #DFE8EC;
   }
 
   .EditableField-input {
-    background: none;
-    border: none;
-    outline: none;
     display: none;
+    width: 100%;
     height: 100%;
     overflow: hidden;
-    width: 100%;
+    border: none;
+    outline: none;
+    background: none;
 
     background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
     background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;

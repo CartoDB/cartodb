@@ -55,10 +55,10 @@ $br: 4px;
 
 .DatasetSelected-sync {
   display: block;
-  border-bottom-left-radius: $br;
-  border-bottom-right-radius: $br;
-  background: #FFF;
   overflow: hidden;
+  border-bottom-right-radius: $br;
+  border-bottom-left-radius: $br;
+  background: #FFF;
 }
 
 .DatasetSelected-syncOptions {

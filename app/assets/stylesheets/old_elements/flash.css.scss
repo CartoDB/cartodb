@@ -11,8 +11,8 @@
 .flash {
   position:relative;
   padding:22px 40px;
-  background:rgba(#FA9494,0.15);
   border-bottom:1px solid rgba(#CCC,0.5);
+  background:rgba(#FA9494,0.15);
 
   &.success {
     background: rgba(green,0.1);
@@ -20,8 +20,8 @@
 
   a.close {
     position:absolute;
-    right:40px;
     top:24px;
+    right:40px;
     width:13px;
     height:13px;
 

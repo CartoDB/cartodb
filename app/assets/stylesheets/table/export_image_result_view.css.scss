@@ -18,9 +18,9 @@
   @include inline-block();
   width: auto;
   max-width: 400px;
-  vertical-align: top;
-  text-overflow: ellipsis;
-  text-align: left;
-  white-space: nowrap;
   overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  vertical-align: top;
+  white-space: nowrap;
 }

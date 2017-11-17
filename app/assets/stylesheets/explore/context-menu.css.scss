@@ -8,13 +8,13 @@
 .ContextMenu {
   display: block;
   position: absolute;
+  z-index: 100;
   top: 0;
   left: 0;
   width: 100%;
   background: transparent;
   color: $cTypography-linkSecondary;
   font-size: 14px;
-  z-index: 100;
 }
 // Moved with scroll behaviour
 .ContextMenu.is-fixed {

@@ -20,9 +20,9 @@
   position: relative;
   width: 16px;
   height: 16px;
-  outline: none;
   border: 2px solid $cStructure-mainLine;
   border-radius: 3px;
+  outline: none;
   background: white;
 
   &:hover {
@@ -67,8 +67,8 @@
   @include opacity(0.4);
 
   &:hover {
-    cursor:default;
     border-color: $cStructure-mainLine;
+    cursor:default;
   }
   &:focus { border-color: $cStructure-mainLine }
 }

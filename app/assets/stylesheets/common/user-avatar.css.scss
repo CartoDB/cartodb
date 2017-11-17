@@ -22,6 +22,7 @@
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
+  content: 'x';
   position: absolute;
   top: -8px;
   right: -8px;
@@ -32,7 +33,6 @@
   color: #FFF;
   font-size: $sFontSize-smallUpperCase;
   text-align: center;
-  content: 'x';
 }
 
 .UserAvatar-img {
@@ -111,11 +111,11 @@
   @include justify-content(center);
   @include align-items(baseline);
   border-radius: $sAvatar-borderRadius;
+  box-shadow: 0 0 0 1px $cIcons-default inset; // use box-shadow to get border inside of the box
   color: $cIcons-default;
   font-size: 26px;
   font-weight: $sFontWeight-normal;
   line-height: 26px;
-  box-shadow: 0 0 0 1px $cIcons-default inset; // use box-shadow to get border inside of the box
 }
 
 .UserAvatar-moreItems:before {

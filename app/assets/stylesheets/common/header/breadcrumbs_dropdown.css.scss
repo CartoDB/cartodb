@@ -18,8 +18,8 @@
 }
 
 .BreadcrumbsDropdown-listItem.is-dark {
-  background: $cStructure-grayBkg;
   border-radius: 0 0 2px 2px;
+  background: $cStructure-grayBkg;
 }
 
 .BreadcrumbsDropdown-listItem.is-first {
@@ -57,7 +57,7 @@
   height: 20px;
   border-radius: 2px;
   background: $cIcons-default;
-  font-weight: $sFontWeight-lighter;
-  font-size: $sFontSize-smaller;
   color: white;
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-lighter;
 }

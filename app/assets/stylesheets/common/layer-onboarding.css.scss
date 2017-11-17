@@ -29,10 +29,10 @@ $sHighlightHeight: 64;
   @include flex(1);
   @include display-flex();
   @include align-items(center);
+  z-index: 5;
   height: 100%;
   background: rgba($cBackgroundColor, 0.88);
   pointer-events: all;
-  z-index: 5;
 }
 
 .LayerOnboarding-headerTitle {
@@ -55,9 +55,9 @@ $sHighlightHeight: 64;
 
 .LayerOnboarding-contentBody.is-step0 {
   display: block;
+  z-index: 20;
   width: 0;
   margin: 0 80px;
-  z-index: 20;
 }
 
 .LayerOnboarding-footer,
@@ -110,8 +110,8 @@ $sHighlightHeight: 64;
 .LayerOnboarding-toolbarOverlay,
 .LayerOnboarding-pads {
   @include transition(width, 300ms, ease-in-out);
-  height: 100%;
   z-index: 10;
+  height: 100%;
 }
 
 .LayerOnboarding-padTop,

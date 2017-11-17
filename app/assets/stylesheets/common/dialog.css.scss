@@ -13,6 +13,7 @@ body.is-inDialog {
 
 .Dialog {
   position: fixed;
+  z-index: 1000;
   top: 0;
   left: 0;
   width: 100%;
@@ -24,7 +25,6 @@ body.is-inDialog {
   background: -o-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
   background: -ms-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
   background: linear-gradient(to bottom, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  z-index: 1000;
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=1 );
 }
 
@@ -53,9 +53,9 @@ body.is-inDialog {
 
 .Dialog-closeBtn {
   position: fixed;
+  z-index: 2;
   top: $sMargin-group; // to be aligned with header icon
   right: $sMargin-section;
-  z-index: 2;
 }
 
 .Dialog-backBtn {
@@ -73,8 +73,8 @@ body.is-inDialog {
   @include flex-direction(column);
   @include justify-content(space-around, stretch);
   @include align-items(stretch, stretch);
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 .Dialog-header--expanded { @include flex-grow(1) }
 
@@ -88,9 +88,9 @@ body.is-inDialog {
 }
 
 .Dialog-footer--expanded {
-  width: 100%;
   position: fixed;
   bottom: 0;
+  width: 100%;
 }
 
 .Dialog-content.is-newContent {
@@ -98,16 +98,16 @@ body.is-inDialog {
 }
 
 .Dialog-header {
-  text-align: center;
   padding: $sMargin-group 0;
+  text-align: center;
 }
 
 .Dialog-body {
+  width: $sLayout-width;
+  margin: 0 auto;
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
   border-top: 1px solid $cStructure-mainLine;
-  width: $sLayout-width;
-  margin: 0 auto;
 }
 
 .Dialog-body.Dialog-body--tall {
@@ -183,27 +183,27 @@ body.is-inDialog {
 
 .Dialog-preFooter {
   position: fixed;
+  z-index: 3;
+  right: 5%;
   bottom: 100px; // to be located on top of the .Dialog-footer
   left: 0;
-  background: $cStructure-grayBkg;
-  z-index: 3;
   // Make the item not go all the way to the edge, since that would cover the scrollbar…
   // Make margins on both sides to accomodate this
   left: 5%;
-  right: 5%;
   width: 90%;
+  background: $cStructure-grayBkg;
 
   // same as .CreateDialog-footerShadow but using :before to not have to add more markup
   &:before {
     content: '';
-    position: absolute;
-    top: -18px;
     display: block;
+    position: absolute;
+    z-index: 2;
+    top: -18px;
     width: 100%;
     height: 18px;
 
     @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
-    z-index: 2;
   }
 }
 
@@ -211,11 +211,11 @@ body.is-inDialog {
   position: relative;
   width: $sIcon-layout;
   height: $sIcon-layout;
-  border: 1px solid $cStructure-softLine;
-  border-radius: $sIcon-borderRadius;
-  margin-left: auto; // auto to center it in the container
   margin-right: auto;
   margin-bottom: $sMargin-elementInline;
+  margin-left: auto; // auto to center it in the container
+  border: 1px solid $cStructure-softLine;
+  border-radius: $sIcon-borderRadius;
   font-size: 22px;
   line-height: 44px;
 }
@@ -235,25 +235,25 @@ body.is-inDialog {
 }
 
 .Dialog-headerIcon--negative {
-  color: $cError;
   border-color: $cError;
+  color: $cError;
 }
 
 .Dialog-headerIcon--positive {
-  color: $cHighlight-positive;
   border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
 }
 
 .Dialog-headerIcon--alert {
-  color: $cHighlight-alert2;
   border-color: $cHighlight-alert2;
+  color: $cHighlight-alert2;
 }
 
 .Dialog-headerIcon--small {
-  font-size: 10px;
-  vertical-align: middle;
   position: relative;
   top: -3px;
+  font-size: 10px;
+  vertical-align: middle;
 }
 
 .Dialog-headerIconBadge {
@@ -262,10 +262,10 @@ body.is-inDialog {
 }
 
 .Dialog-headerTitle {
-  line-height: $sLineHeight-larger;
+  color: $cTypography-paragraphs;
   font-size: $sFontSize-larger;
   font-weight: $sFontWeight-normal;
-  color: $cTypography-paragraphs;
+  line-height: $sLineHeight-larger;
 }
 
 .Dialog-headerTitle--warning {
@@ -274,18 +274,18 @@ body.is-inDialog {
 .Dialog-headerTitle--error { color: $cHighlight-negative }
 
 .Dialog-headerText {
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-large;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-large;
 }
 .Dialog-headerText:not(:last-child) { margin-bottom: $sMargin-elementInline }
 .Dialog-headerText--centered { margin: auto }
 
 .Dialog-headerText--ellipsis {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
 }
 
 .Dialog-headerText--small {
@@ -310,8 +310,8 @@ $sStickyHeight: 97px;
   @include flex-direction(column);
   @include justify-content(space-around, stretch);
   @include align-items(stretch, stretch);
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 
 .Dialog-header--expanded {
@@ -321,10 +321,10 @@ $sStickyHeight: 97px;
 
 .Dialog-expandedSubContent {
   @include flex-grow(100);
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 1px solid $cStructure-mainLine;
   background-color: $cStructure-grayBkg;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .Dialog-expandedSubContentInner {
@@ -374,8 +374,8 @@ $sNarrower-width: 620px;
 .Dialog-narrowerContent { width: $sNarrower-width }
 
 .Dialog-countryBack {
-  float: right;
   margin-left: 12px;
+  float: right;
   pointer-events: auto;
 }
 

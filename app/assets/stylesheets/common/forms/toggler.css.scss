@@ -49,6 +49,7 @@ $sHeight: 20px;
 
 .Toggler label:before {
   @include transition(all 150ms ease);
+  content: ' ';
   display: block;
   position: absolute;
   top: 4px;
@@ -57,7 +58,6 @@ $sHeight: 20px;
   height: 12px;
   border-radius: 30px;
   background-color: #FFF;
-  content: ' ';
 }
 
 .Toggler input:checked + label:before {

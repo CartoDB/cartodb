@@ -2,16 +2,16 @@
 
 // Overrides rules defines in the table/**/*.scss files, to not have to carry them all over
 .table th {
-  text-align: left;
   font-weight: normal;
+  text-align: left;
 }
 div.table table thead tr th>div label { line-height: 0.8 }
 div.table table thead tr th>div p.auto { padding-right: 38px }
 
 .header_content div.left h1 a.title {
+  font-family: 'Lato', sans-serif;
   font-size: 20px;
   font-weight: $sFontWeight-bold;
-  font-family: 'Lato', sans-serif;
 }
 
 .header_content div.left div.metadata p a {

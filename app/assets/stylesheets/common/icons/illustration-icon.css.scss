@@ -28,8 +28,8 @@ $cLingon:     rgba(#AC638B, 1);
   @include align-items(center);
   width: 50px;
   height: 50px;
-  color: white;
   border-radius: 30px; // Enough to make it round
+  color: white;
   font-size: 20px;
 }
 .IllustrationIcon--neutral { background-color: $cNeutral }

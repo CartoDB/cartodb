@@ -8,28 +8,28 @@
 }
 
 .List.List--selections {
-  background-color: $cStructure-mainBkg;
+  margin-bottom: $sMargin-elementInline;
   border: 1px solid $cStructure-mainLine;
   border-radius: $sCard-borderRadius;
-  margin-bottom: $sMargin-elementInline;
+  background-color: $cStructure-mainBkg;
 }
 
 .List-row {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-  border: 1px solid transparent;
-  box-sizing: content-box; // to make sure size is consistent w/ borders
 
   // Makes sure prev border is overlapped but the is-selected one
   position: relative;
+  box-sizing: content-box; // to make sure size is consistent w/ borders
   margin-top: -2px;
+  border: 1px solid transparent;
 }
 
 .List-row.is-selected {
-  background-color: $cCard-selectedFill;
   border: 1px solid $cCard-selectedBorder;
   border-radius: $sCard-borderRadius;
+  background-color: $cCard-selectedFill;
 }
 .List-row.List-row.is-disabled { opacity: 0.4 }
 
@@ -43,11 +43,11 @@
   @include justify-content(space-between, justify);
   @include align-items(center);
   box-sizing: content-box; // to make sure size is consistent w/ borders
-  margin-left: $sMargin-element;
+  width: 100%;
   margin-right: $sMargin-element;
+  margin-left: $sMargin-element;
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
-  width: 100%;
   border-bottom: 1px solid $cStructure-mainLine;
 }
 
@@ -57,8 +57,8 @@
 }
 
 .List-rowItem.List-rowItem--withoutSideMargins {
-  margin-left: 0;
   margin-right: 0;
+  margin-left: 0;
 }
 .List-rowItem.List-rowItem--withoutBottomBorder { border-bottom: 0 }
 .List-rowItem.List-rowItem--withoutBottomPadding { padding-bottom: 0 }

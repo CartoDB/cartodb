@@ -22,12 +22,12 @@
 
 .Footer.Footer--public {
   padding-bottom: 0;
-  box-shadow: none;
   overflow: hidden;
-  text-rendering: optimizeLegibility;
-  -webkit-text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
   border-top: 0;
+  box-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
 }
 
 .Footer-inner {
@@ -88,9 +88,9 @@
 }
 
 .Footer-link {
-  line-height: 28px;
   transition: color 0.2s ease;
   color: #3AA9E3;
+  line-height: 28px;
 
   &:hover {
     color: #2E3C43;
@@ -105,14 +105,14 @@
 }
 
 .Footer-credits {
-  text-align: left;
   color: #979EA1;
+  text-align: left;
 }
 
 .Footer-title {
+  display: block;
   color: #2E3C43;
   font-weight: 600;
-  display: block;
 }
 
 .Colophon {
@@ -157,15 +157,15 @@
   right: 0;
   bottom: 0;
   width: 100px;
+  transition: all .15s;
   border: 0;
-  font: 400 13px Lato, sans-serif;
+  border-radius: 0 4px 4px 0;
+  outline: none;
   background: #3AA9E3;
   color: #FFF;
-  border-radius: 0 4px 4px 0;
-  transition: all .15s;
-  cursor: pointer;
-  outline: none;
+  font: 400 13px Lato, sans-serif;
   text-transform: none;
+  cursor: pointer;
 
   &:hover {
     background: darken(#3AA9E3, 5%);
@@ -239,8 +239,8 @@
   }
 
   .Footer-inner .Footer-logo {
-    position: relative;
     display: inline-block;
+    position: relative;
     top: auto;
     left: auto;
     margin-left: auto;

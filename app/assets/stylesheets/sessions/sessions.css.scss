@@ -91,10 +91,10 @@ $cWhite: #FFF;
 }
 
 .Sessions-navy .Sessions-title {
-  font-weight: 300;
-  font-size: 32px;
-  line-height: 48px;
   color: #FFF;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 48px;
 }
 
 .Sessions-logoContainer {
@@ -120,12 +120,12 @@ $cWhite: #FFF;
 }
 
 .Sessions-navy .Sessions-description {
-  font-weight: 200;
-  font-size: 13px;
-  line-height: 20px;
   margin-bottom: 16px;
-  text-align: center;
   color: $sessions-text-color;
+  font-size: 13px;
+  font-weight: 200;
+  line-height: 20px;
+  text-align: center;
 
   a {
     color: $cWhite;
@@ -165,8 +165,8 @@ $cWhite: #FFF;
 }
 
 .Sessions-leftInner {
-  margin: auto;
   width: 100%;
+  margin: auto;
 }
 
 .Sessions-right {
@@ -175,9 +175,9 @@ $cWhite: #FFF;
 
 .Sessions-field {
   position: relative;
-  float: left;
   width: 100%;
   margin-bottom: 5px;
+  float: left;
 
   &:last-child {
     margin-bottom: 0;
@@ -185,15 +185,15 @@ $cWhite: #FFF;
 }
 
 .Sessions-input {
-  padding: 10px;
   width: 100%;
   height: 48px;
-  font-weight: 300;
-  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #EEE;
+  outline: none;
   background: #FFF;
   color: #162746;
-  outline: none;
-  border: 1px solid #EEE;
+  font-size: 14px;
+  font-weight: 300;
 
   &::-webkit-input-placeholder {
     color: $cTypo3;
@@ -225,15 +225,15 @@ $cWhite: #FFF;
 }
 
 .Sessions-navy-input {
-  padding: 10px;
   width: 100%;
   height: 48px;
-  font-weight: 300;
-  font-size: 14px;
+  padding: 10px;
+  border: 1px solid $cDarkBlue;
+  outline: none;
   background: $cDarkBlue;
   color: $cWhite;
-  outline: none;
-  border: 1px solid $cDarkBlue;
+  font-size: 14px;
+  font-weight: 300;
 
   &::-webkit-input-placeholder {
     color: $cTypo3;
@@ -292,11 +292,11 @@ $cWhite: #FFF;
 .Sessions-submitButton {
   width: 100%;
   height: 48px;
+  margin: 2px 0 7px 0;
+  border-radius: 4px;
   background-color: #60C556;
   color: $cWhite;
   font-size: 12px;
-  margin: 2px 0 7px 0;
-  border-radius: 4px;
   text-transform: uppercase;
 
   &:hover {
@@ -305,13 +305,13 @@ $cWhite: #FFF;
 }
 
 .Sessions-text {
-  font-weight: 200;
-  font-size: 14px;
   color: $sessions-text-color;
+  font-size: 14px;
+  font-weight: 200;
 
   a {
-    text-decoration: none;
     color: $cLocationBlue;
+    text-decoration: none;
 
     &:hover {
       text-decoration: underline;
@@ -340,15 +340,15 @@ $cWhite: #FFF;
 }
 
 .Sessions-navy .Sessions-inputLinkAside {
-  color: $cWhite;
   position: absolute;
   top: 0;
   right: 0;
   height: 48px;
-  line-height: 50px;
   margin-right: 10px;
-  font-weight: 200;
+  color: $cWhite;
   font-size: 14px;
+  font-weight: 200;
+  line-height: 50px;
 
   a {
     color: $cWhite;
@@ -360,8 +360,8 @@ $cWhite: #FFF;
 }
 
 .Sessions-text--footer {
-  padding: 0 20px;
   margin-bottom: 16px;
+  padding: 0 20px;
 
   &:last-child {
     margin-bottom: 0;
@@ -370,16 +370,16 @@ $cWhite: #FFF;
 
 .Sessions-fieldError {
   position: absolute;
-  right: -32px;
   top: 14px;
+  right: -32px;
   width: 22px;
   height: 22px;
-  line-height: 22px;
-  font-weight: 400;
-  text-align: center;
-  color: $cWhite;
-  background: $cLocationRed;
   border-radius: 50%;
+  background: $cLocationRed;
+  color: $cWhite;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: center;
 
   &:hover {
     cursor: pointer;
@@ -388,9 +388,9 @@ $cWhite: #FFF;
 
 .Loading-item {
   display: inline-block;
+  position: relative;
   width: 8px;
   height: 8px;
-  position: relative;
   margin-left: 1px;
   list-style-type: none;
 
@@ -406,30 +406,30 @@ $cWhite: #FFF;
   right: 0;
   width: 8px;
   height: 8px;
-  border-radius: 50%;
-  background: #FFF;
-  opacity: .2;
   -webkit-animation-name: loading;
-  -webkit-animation-duration: .7s;
-  -webkit-animation-iteration-count: infinite;
   animation-name: loading;
+  -webkit-animation-duration: .7s;
   animation-duration: .7s;
+  -webkit-animation-iteration-count: infinite;
   animation-iteration-count: infinite;
+  border-radius: 50%;
+  opacity: .2;
+  background: #FFF;
 }
 
 .Loading-itemInner--01 {
-  animation-delay: .1s;
   -webkit-animation-delay: .1s;
+  animation-delay: .1s;
 }
 
 .Loading-itemInner--02 {
-  animation-delay: .2s;
   -webkit-animation-delay: .2s;
+  animation-delay: .2s;
 }
 
 .Loading-itemInner--03 {
-  animation-delay: .4s;
   -webkit-animation-delay: .4s;
+  animation-delay: .4s;
 }
 
 .tipsy {
@@ -438,23 +438,23 @@ $cWhite: #FFF;
 
 .Sessions-referrer {
   position: absolute;
+  z-index: 10;
   top: 50%;
   left: 50%;
-  z-index: 10;
-  height: 60px;
   width: 300px;
+  height: 60px;
   margin-top: -30px;
   margin-left: -150px;
-  text-align: center;
-  background: #FFF;
   border-radius: 4px;
+  background: #FFF;
+  text-align: center;
 
   picture,
   img {
     display: inline-block;
-    vertical-align: middle;
     width: 100px;
     height: 50px;
+    vertical-align: middle;
   }
 }
 
@@ -500,34 +500,34 @@ $cWhite: #FFF;
 
 @-webkit-keyframes loading {
   0% {
-    opacity: .2;
     -webkit-transform: scale3d(1, 1, 1);
+    opacity: .2;
   }
 
   50% {
-    opacity: .6;
     -webkit-transform: scale3d(1.4, 1.4, 1);
+    opacity: .6;
   }
 
   100% {
-    opacity: .2;
     -webkit-transform: scale3d(1, 1, 1);
+    opacity: .2;
   }
 }
 
 @keyframes loading {
   0% {
-    opacity: .2;
     transform: scale3d(1, 1, 1);
+    opacity: .2;
   }
 
   50% {
-    opacity: .6;
     transform: scale3d(1.4, 1.4, 1);
+    opacity: .6;
   }
 
   100% {
-    opacity: .2;
     transform: scale3d(1, 1, 1);
+    opacity: .2;
   }
 }

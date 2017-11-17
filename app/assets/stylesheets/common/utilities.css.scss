@@ -21,10 +21,10 @@
 }
 
 .u-ellipsLongText {
-  white-space: nowrap;
+  display: block; // required for text-overflow to work with some elements that are inline by default (e.g. <a> tags)
   overflow: hidden;
   text-overflow: ellipsis;
-  display: block; // required for text-overflow to work with some elements that are inline by default (e.g. <a> tags)
+  white-space: nowrap;
 }
 
 .u-hide,
@@ -55,10 +55,10 @@
 }
 
 .u-valign:before {
-  display: inline-block;
-  vertical-align: middle;
   content: "";
+  display: inline-block;
   height: 100%;
+  vertical-align: middle;
 }
 
 .u-malign {

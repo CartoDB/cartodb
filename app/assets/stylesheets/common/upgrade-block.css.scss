@@ -9,9 +9,9 @@
   @include justify-content(space-between, justify);
   @include align-items(center);
   padding: 20px;
-  background: $cCard-hoverFill;
   border: 1px solid #E0E0E0;
   border-radius: $sIcon-borderRadius;
+  background: $cCard-hoverFill;
 }
 
 .UpgradeElement--fixed {
@@ -32,15 +32,15 @@
 }
 
 .UpgradeElement-infoIcon {
+  margin-right: $sMargin-element;
   border-color: #1899DD;
   color: #008EDA;
-  margin-right: $sMargin-element;
   line-height: $sLineHeight-normal;
 }
 
 .UpgradeElement-infoText {
-  font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
+  font-size: $sFontSize-large;
   line-height: $sLineHeight-normal;
 }
 

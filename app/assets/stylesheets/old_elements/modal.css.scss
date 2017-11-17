@@ -10,12 +10,12 @@
 
 .mamufas {
   position:fixed;
+  z-index:50;
   top:0;
   left:0;
   width:100%;
   height:100%;
   background:rgba(black,0.5);
-  z-index:50;
 
   section.modal {
     position:relative;
@@ -28,18 +28,18 @@
 
     a.close {
       position:absolute;
+      z-index:5;
       top:-15px;
       right:-15px;
       width:30px;
       height:15px;
       padding:7px 0 8px;
       background:white;
+      line-height:14px;
+      text-align:center;
 
       @include box-shadow(rgba(black,0.15) 0 0 0 4px);
       @include border-radius(50px);
-      line-height:14px;
-      text-align:center;
-      z-index:5;
 
       &:focus, &:hover {
         outline:none;
@@ -59,7 +59,7 @@
           top:13px;
 
           .switch { margin: 0 10px 0 0; }
-          label { cursor: pointer; color:#999; }
+          label { color:#999; cursor: pointer; }
 
         }
 

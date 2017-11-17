@@ -40,11 +40,11 @@ $width: 800px;
 
 .InviteUsers-formFooterSticky {
   position: fixed;
+  z-index: 10;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 97px;
-  z-index: 10;
 }
 
 .InviteUsers .Form-rowInfoText--error {

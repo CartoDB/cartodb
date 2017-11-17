@@ -19,6 +19,7 @@
 
 .TabLink {
   display: block;
+  box-sizing: content-box;
   width: 138px;
   height: 38px;
   padding: 0;
@@ -27,7 +28,6 @@
   color: $cTypography-secondary;
   font-size: 14px;
   line-height: 38px;
-  box-sizing: content-box;
 
   &:hover {
     border-color: rgba(#BBD7F2, 1);
@@ -86,10 +86,10 @@
 }
 
 .TabLink.box {
+  display: block;
   width: auto;
   height: auto;
   margin: 0;
-  display: block;
 }
 
 

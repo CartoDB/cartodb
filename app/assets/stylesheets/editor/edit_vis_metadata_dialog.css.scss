@@ -14,13 +14,13 @@ $width: 620px;
 
   &:before,
   &:after {
+    content: '';
     position: fixed;
+    z-index: 5;
     left: 50%;
     width: $width;
     height: 18px;
     margin-left: -310px;
-    content: '';
-    z-index: 5;
   }
 
   &:before {
@@ -94,8 +94,8 @@ $width: 620px;
 }
 
 .EditVisMetadata .Dialog-stickyFooter {
-  left: 0;
   z-index: 10;
+  left: 0;
 }
 
 .EditVisMetadata-formFooter .Button {

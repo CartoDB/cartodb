@@ -33,10 +33,10 @@
     width:16px;
     height:16px;
     margin:0 0 0 23px;
+    background:#A9A9A9;
+    color:#ECECEC;
     line-height:16px;
     text-align:center;
-    color:#ECECEC;
-    background:#A9A9A9;
 
     @include text-indent();
     @include border-radius(2px);
@@ -48,8 +48,8 @@
     @include inline-block();
     margin:0 0 0 27px;
     font:500 17px $text-fonts;
-    line-height:20px;
     letter-spacing:0;
+    line-height:20px;
   }
 
   &:hover {

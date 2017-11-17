@@ -9,11 +9,11 @@
   @include align-items(center, center);
 
   & > .Puzzle-piece:not(:first-child):not(:last-child) {
-    border-radius: 0;
-    border-left: 0;
-    border-right: 0;
-    margin-left: -1px;
     margin-right: -1px;
+    margin-left: -1px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
   }
 }
 
@@ -39,9 +39,9 @@
   &.connect-right:before,
   &.connect-right:after {
     content: '';
+    display: block;
     position: absolute;
     top: 10px;
-    display: block;
     width: 10px;
     height: 10px;
     border: 1px solid $cStructure-mainLine;
@@ -50,15 +50,15 @@
 
   &.connect-left:before,
   &.connect-right:before {
-    border-radius: 50px;
     z-index: 2;
+    border-radius: 50px;
   }
 
   &.connect-left:after,
   &.connect-right:after {
+    z-index: 3;
     height: 12px;
     border: 0;
-    z-index: 3;
   }
 
   &.connect-left:before { left: -7px }

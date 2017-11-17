@@ -1,5 +1,8 @@
 {
-  "extends": "stylelint-config-standard",
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-property-sort-order-smacss"
+  ],
   "ignoreFiles": [
     "lib/assets/stylesheets/old_common/**/*.css.scss",
     "app/assets/stylesheets/table/table_panel/layer-views-panels/filters_panel.css.scss",

@@ -8,19 +8,19 @@
 @import "../old_common/vars";
 
 ul.ui-autocomplete {
-  position:absolute;
   display:block;
-  width:108px;
+  position:absolute;
+  z-index:1000!important;
   top:-10px;
+  width:108px;
   max-width:140px;
   height:auto;
   max-height:120px;
+  overflow-y: auto;
+  border:1px solid #999;
   background:white;
-  z-index:1000!important;
 
   @include border-radius(3px);
-  border:1px solid #999;
-  overflow-y: auto;
 
   li {
     display:block;
@@ -28,11 +28,11 @@ ul.ui-autocomplete {
 
     a {
       display:block;
-      line-height:35px;
       padding:0 10px;
-      font-size:13px;
-      text-overflow:ellipsis;
       overflow:hidden;
+      font-size:13px;
+      line-height:35px;
+      text-overflow:ellipsis;
       white-space:nowrap;
     }
 

@@ -29,13 +29,14 @@
   position: relative;
   width: 380px;
   height: 6px;
+  overflow: hidden;
   border-radius: 3px;
   background: #F5F5F5;
-  overflow: hidden;
 }
 
 .ProgressBar-bar {
   position: absolute;
+  z-index: 2;
   top: 0;
   bottom: 0;
   left: 0;
@@ -43,7 +44,6 @@
   margin: 0;
   border-radius: 3px;
   background: #1181FB;
-  z-index: 2;
 }
 
 .ProgressBar-bar.is-danger {

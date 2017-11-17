@@ -5,13 +5,13 @@
 // Dashboard filters
 // ---
 .Filters {
-  position: absolute;
   display:block;
+  position: absolute;
+  z-index: 10;
   top: 0;
   left: 0;
   width:100%;
   background: transparent;
-  z-index: 10;
 }
 
 .Filters--thin {
@@ -37,19 +37,19 @@
   &:before {
     content: '';
     position:absolute;
-    left: 0;
+    z-index: 0;
     top: 80px;
+    left: 0;
     width: 100%;
     height: 1px;
     background-color: $cStructure-softLine;
-    z-index: 0;
   }
   .Filters-separator { display: none }
 }
 
 .Filters > .u-inner {
-  position:relative;
   display:block;
+  position:relative;
   height: 81px;
   padding: 0;
   overflow:hidden;
@@ -72,12 +72,12 @@
 
 .Filters-separator {
   position:absolute;
-  left:0;
+  z-index:0;
   top:74px;
+  left:0;
   width:100%;
   height:1px;
   background-color: $cStructure-softLine;
-  z-index:0;
 }
 
 .Filters-row {
@@ -122,8 +122,8 @@
 
 .Filters-typeItem--searchField {
   @include flex-grow(1);
-  margin-right: 0;
   display: none;
+  margin-right: 0;
 }
 
 .Filters-typeItem--moreMargins {
@@ -149,28 +149,28 @@
 
 .Filters-searchLinkIcon {
   @include inline-block();
-  vertical-align: middle;
   margin-right:5px;
   margin-left: 1px;
+  vertical-align: middle;
 
 }
 a.Filters-searchLink:hover { color: #333 }
 
 .Filters-searchForm {
   position:relative;
+  width: 100%;
+  height: 80px;
 
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  width: 100%;
-  height: 80px;
 }
 
 .Filters-searchInput {
   width: 100%;
   padding-left:5px;
-  outline:none;
   border:none;
+  outline:none;
   background:none;
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
@@ -178,9 +178,9 @@ a.Filters-searchLink:hover { color: #333 }
 
 .Filters-cleanSearch {
   position:absolute;
-  margin-top: -8px;
   top: 50%;
   right: 0;
+  margin-top: -8px;
 }
 
 .Filters-cleanSearch.Filters-cleanSearch--short {
@@ -189,21 +189,21 @@ a.Filters-searchLink:hover { color: #333 }
 a.Filters-cleanSearch { line-height:32px }
 // We can't group this style :(
 .Filters-searchInput::-webkit-input-placeholder {
-  font-weight: $sFontWeight-normal;
-  font-style:italic;
   color:#DDD;
+  font-style:italic;
+  font-weight: $sFontWeight-normal;
 }
 
 .Filters-searchInput::-moz-placeholder {
-  font-weight: $sFontWeight-normal;
-  font-style:italic;
   color:#DDD;
+  font-style:italic;
+  font-weight: $sFontWeight-normal;
 }
 
 .Filters-searchInput:-ms-placeholder {
-  font-weight: $sFontWeight-normal;
-  font-style:italic;
   color:#DDD;
+  font-style:italic;
+  font-weight: $sFontWeight-normal;
 }
 
 .Filters-typeLink:hover {
@@ -220,24 +220,24 @@ a.Filters-cleanSearch { line-height:32px }
 }
 
 .Filters-typeLink.is-selected {
-  height: 16px;
   display: block;
+  height: 16px;
   color:$cTypography-linkSelected;
 
   &:before {
     content:'';
     position: absolute;
+    right: 0;
     bottom: -30px;
     left: 0;
-    right: 0;
     width: 100%;
     height: 1px;
     background: $cTypography-linkSelected;
   }
 
   &:hover {
-    cursor:default;
     text-decoration: none;
+    cursor:default;
   }
 }
 
@@ -245,9 +245,9 @@ a.Filters-cleanSearch { line-height:32px }
   color: rgba(black, 0.3);
 
   &:hover {
-    cursor: default;
-    text-decoration: none;
     color: rgba(black, 0.3);
+    text-decoration: none;
+    cursor: default;
   }
 }
 
@@ -260,8 +260,8 @@ a.Filters-cleanSearch { line-height:32px }
 
 .Filters-orderLink {
   @include inline-block();
-  font-size: 19px;
   color: #CCC;
+  font-size: 19px;
   line-height:19px;
   &:hover { color: #666 }
 }
@@ -287,8 +287,8 @@ a.Filters-cleanSearch { line-height:32px }
 
 .Filters-actionsText {
   padding-left: 25px;
-  font-size: 13px;
   color: $cTypography-help;
+  font-size: 13px;
 }
 
 .Filters-actionsLink {
@@ -315,8 +315,8 @@ a.Filters-cleanSearch { line-height:32px }
 }
 
 .Filters-typeItem.Filters-typeItem--searchEnabler {
-  padding-right: 32px;
   margin-right: 32px;
+  padding-right: 32px;
 }
 
 .Filters-typeItem.is-searching {
@@ -351,6 +351,7 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters--navListing:after {
   content: '';
   position: absolute;
+  z-index: 2;
   bottom: -18px;
   left: 50%;
   width: 1020px;
@@ -359,7 +360,6 @@ a.Filters-cleanSearch { line-height:32px }
   background-color: transparent!important;
 
   @include background-gradient(rgba(#F9F9F9,1), rgba(#F9F9F9,0));
-  z-index: 2;
 }
 .Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }
 .Filters--navListing .Filters-searchInput { margin-top: -2px } /* hacking line-height between search and input */
@@ -377,11 +377,11 @@ a.Filters-cleanSearch { line-height:32px }
 
 .Filters--static {
   position: relative;
+  top: auto;
+  left: auto;
   width: 100%;
   height: 81px;
   min-height: 81px;
-  left: auto;
-  top: auto;
   margin-left: auto;
 }
 
@@ -405,8 +405,8 @@ a.Filters-cleanSearch { line-height:32px }
   .categoriesDropdown-label {
     max-width: 80px;
     float: left;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
   }
 }

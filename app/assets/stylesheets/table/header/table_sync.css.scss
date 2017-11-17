@@ -15,29 +15,29 @@
 
 
 div.sync_info {
-  position:absolute;
   display:block;
+  position:absolute;
+  z-index:1;
+  right:0;
   bottom:0;
   left:0;
-  right:0;
-  padding:0 0 8px 43px;
   height:auto;
-  z-index:1;
+  padding:0 0 8px 43px;
 
   &.failure {
-    background: image-url('layout/sync_error_bkg.png') repeat-x 0 0;
     border-top:1px solid rgba(black, .2);
+    background: image-url('layout/sync_error_bkg.png') repeat-x 0 0;
   }
 
   ul {
     position:relative;
     top:0;
+    height:20px;
+    margin-top:0;
 
     @include display-flex();
     @include align-items(center, center);
     @include justify-content(flex-start, start);
-    height:20px;
-    margin-top:0;
 
     li {
       position:relative;
@@ -49,8 +49,8 @@ div.sync_info {
 
         &:before {
           content:'';
-          position:absolute;
           display:block;
+          position:absolute;
           top:50%;
           left:0;
           width:2px;
@@ -65,15 +65,16 @@ div.sync_info {
 
   div.circle {
     position:relative;
-
-    @include inline-block();
-    vertical-align:top;
     width:10px;
     height:10px;
     margin-top: 5px;
+    vertical-align:top;
+
+    @include inline-block();
 
     span.point {
       position:absolute;
+      z-index:1;
       top:0;
       left:0;
       width:8px;
@@ -81,26 +82,25 @@ div.sync_info {
       margin:0;
       padding:0;
       border:1px solid rgba(black,.5);
+      text-shadow:none;
 
       @include border-radius(10px);
       @include background(linear-gradient(#C9FF26,#41B200));
-      text-shadow:none;
-      z-index:1;
     }
 
     span.pulse {
       position: absolute;
-      left:-2px;
+      z-index:0;
       top:-2px;
-      height: 8px;
+      left:-2px;
       width: 8px;
+      height: 8px;
+      border: 3px solid #BBB;
+      opacity: 0.0;
 
       @include animation(pulsate 1.5s ease-out infinite);
-      border: 3px solid #BBB;
 
       @include border-radius(20px);
-      opacity: 0.0;
-      z-index:0;
     }
 
     &.syncing {
@@ -119,18 +119,18 @@ div.sync_info {
   }
 
   p {
-    font-size:13px;
-    font-family:$text-fonts;
-    font-weight:300;
     color:white;
+    font-family:$text-fonts;
+    font-size:13px;
+    font-weight:300;
     letter-spacing:0;
   }
 
   .light {color:rgba(white, .35)}
 
   a {
-    font-size:13px;
     color:white;
+    font-size:13px;
     text-decoration:underline;
   }
 

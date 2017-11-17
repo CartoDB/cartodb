@@ -15,8 +15,8 @@
 }
 
 .ImportItem--sticky {
-  padding: 0 20px;
   margin: 0;
+  padding: 0 20px;
   background: $cCard-hoverFill;
 }
 .ImportItem:last-child { border: none }
@@ -24,11 +24,11 @@
 .ImportItem-text {
   display: block;
   width: 207px;
-
-  @include css3-prefix(text-overflow, ellipsis);
-  white-space: nowrap;
   overflow: hidden;
   color: $cTypography-paragraphs;
+  white-space: nowrap;
+
+  @include css3-prefix(text-overflow, ellipsis);
 }
 
 .ImportItem-text.is-long {
@@ -73,17 +73,17 @@
   width: 24px;
   height: 24px;
   margin-left: 5px;
-  line-height: 26px;
   border: 1px solid $cNavButton-default;
   border-radius: 22px;
-  text-align: center;
-  background: transparent;
   outline: none;
+  background: transparent;
+  line-height: 26px;
+  text-align: center;
 }
 
 .ImportItem-closeButtonIcon {
-  font-size: $sFontSize-normal;
   color: $cTypography-help;
+  font-size: $sFontSize-normal;
 }
 
 .ImportItem-closeButton:hover {

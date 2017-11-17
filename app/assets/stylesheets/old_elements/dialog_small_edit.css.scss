@@ -8,30 +8,30 @@
   height: 62px;
 
   .input_field {
-    width: 100%;
     position: absolute;
-    width: 289px;
-    margin: 0 3px 0 0;
     top: 5px;
-    left: 5px;
     right: 65px;
     bottom: 5px;
-    font-size: 15px;
-    color: #333;
+    left: 5px;
+    width: 100%;
+    width: 289px;
+    margin: 0 3px 0 0;
+    padding: 8px 10px;
     border: 1px solid #000;
+    background:#FFF;
+    color: #333;
+    font-size: 15px;
     line-height: normal;
 
     @include border-radius(4px);
-    padding: 8px 10px;
-    background:#FFF;
 
     .hint {
-      border-top: 1px solid #CCC;
       margin: 7px 0 0 0;
       padding: 4px 3px 0 0;
+      border-top: 1px solid #CCC;
+      color: #CCC;
       font-size: 12px;
       text-align: right;
-      color: #CCC;
 
       strong { margin-right: 3px; }
       em { margin-right: 3px; font-style: italic; }
@@ -41,11 +41,11 @@
     input {
       @include box-sizing(border-box);
       position:relative;
-      top: 0; left: 0; bottom: 0; right: 0;
-      border:none;
+      top: 0; right: 0; bottom: 0; left: 0;
+      width: 100%;
       margin: 0;
       padding: 0;
-      width: 100%;
+      border:none;
       background:none;
 
       @include border-radius(0);
@@ -61,15 +61,15 @@
 
 .edit_text_dialog {
   position:absolute!important;
+  z-index:0!important;
+  max-width:500px;
+  max-height:500px;
   padding: 11px;
+  border: 1px solid #B7B7B7;
 
   @include box-shadow(rgba(black, 0.17) 0 0 6px 1px);
   @include border-radius(4px);
   @include background(linear-gradient(#FEFEFE, #F4F4F4));
-  border: 1px solid #B7B7B7;
-  max-width:500px;
-  max-height:500px;
-  z-index:0!important;
 
   a.button {
     margin-top: 9px;
@@ -91,32 +91,32 @@
 
   a.link {
     margin-top: 19px;
+    margin-right: 3px;
     font-size: 13px;
     text-decoration: underline;
     text-transform: lowercase;
-    margin-right: 3px;
   }
 
   input, textarea {
-    position:relative;
     display:block;
-    max-width:500px - 22;
+    position:relative;
     width: 100%;
+    max-width:500px - 22;
     max-height:500px - 60;
     margin: 0!important;
     padding: 10px;
-    font-family: $text-fonts;
-    font-size: 15px;
-    color: #666;
     border: 1px solid #C0C1C2;
     background: #FFF;
+    color: #666;
+    font-family: $text-fonts;
+    font-size: 15px;
 
     @include border-radius(4px);
     @include box-sizing(border-box);
 
     &:focus {
-      outline:none;
       border-color:#999;
+      outline:none;
     }
   }
 
@@ -133,16 +133,16 @@
       
       & > div.column {
         @include inline-block();
+        margin-right:4px;
         letter-spacing: 0;
         word-spacing: 0;
-        margin-right:4px;
 
         label {
           display:block;
-          padding:0;
           margin:0 0 3px;
-          font:normal 12px $text-fonts;
+          padding:0;
           color:#DDD;
+          font:normal 12px $text-fonts;
         }
 
         div.form_spinner {
@@ -160,13 +160,13 @@
           @include default-input();
 
           input {
-            border-color:#9E9E9E;
             width:59px;
             padding:2px 3px;
+            border-color:#9E9E9E;
             font-size:13px;
             // Actions
             &.error {border-color:rgba(red,0.5);}
-            &[readonly] {background:#F4F4F4; border-color:#DDD;}
+            &[readonly] { border-color:#DDD;background:#F4F4F4;}
           }
         }
 
@@ -212,15 +212,15 @@
   div.field.boolean {
     nav {
       display:block;
+      min-width: 205px;
+      padding:10px 5px 12px 20px;
       border:1px solid #CCC;
+      background:white;
 
       @include border-radius(4px);
-      background:white;
-      padding:10px 5px 12px 20px;
-      min-width: 205px;
 
       a {
-        @include inline-block(); width:65px; font-weight:normal; font-size:13px;
+        @include inline-block(); width:65px; font-size:13px; font-weight:normal;
         span.radio {margin-top:0!important;}
         &:hover {text-decoration:none;}
       }
@@ -244,8 +244,8 @@
     }
 
     .switches label {
-      font-size: 13px;
       color: #AAA;
+      font-size: 13px;
     }
 
     div.loader {
@@ -257,8 +257,8 @@
     div.rest {display:none;}
 
     div.point {
-      position:relative;
       display:none;
+      position:relative;
       width:auto;
       max-width:322px;
       height:30px;
@@ -266,34 +266,34 @@
 
       & > span, & > p {
         position:relative;
+        margin:0;
 
         @include inline-block();
-        margin:0;
       }
 
       input {
         display:block;
-        height:31px;
         width:105px;
-        padding:5px 5px 5px 36px;
+        height:31px;
         margin:0;
+        padding:5px 5px 5px 36px;
         font-size:15px;
         line-height:19px;
         text-align:right;
         &.error {border-color:rgba(red,0.5);}
       }
 
-      p {width:17px; text-align:center; font-size:20px;}
+      p {width:17px; font-size:20px; text-align:center;}
 
       label {
         position:absolute;
+        z-index:10;
         top:6px;
         left:8px;
-        font-style:italic;
         color:#AAA; 
         font-size:13px;
+        font-style:italic;
         pointer-events:none;
-        z-index:10;
       }
     }
   }
@@ -321,17 +321,17 @@
   input {
     position:absolute;
     top:5px;
-    left:5px;
     right:65px;
     bottom:5px;
-    font-size: 15px;
-    color: #333;
-    border: 1px solid #000;
+    left:5px;
+    margin: 0 3px 0 0;
     padding: 8px 10px;
+    border: 1px solid #000;
+    color: #333;
+    font-size: 15px;
     line-height:normal;
 
     @include border-radius(4px);
-    margin: 0 3px 0 0;
 
     &:focus {
       outline:none;
@@ -361,28 +361,28 @@
 
     ul {
       position:relative;
-
-      @include inline-block();
-      min-height:24px;
-      max-height:300px!important;
       min-width:215px;
       max-width:400px;
+      min-height:24px;
+      max-height:300px!important;
       margin:0 3px 0 0;
       padding:4px 4px 1px 4px;
-      background:white;
       border: 1px solid #000;
+      background:white;
+
+      @include inline-block();
 
       @include border-radius(4px);
 
       li.tagit-choice {
         margin:0 3px 3px 0;
         padding:0;
-        background:#4086C3;
         border:1px solid #2B5B85;
+        background:#4086C3;
+        color:#FFF;
+        font:normal 11px "Arial";
 
         @include border-radius(3px);
-        font:normal 11px "Arial";
-        color:#FFF;
 
         span.tagit-label {
           @include inline-block();
@@ -393,12 +393,12 @@
 
         a.tagit-close {
           position:relative;
-
-          @include inline-block();
           width:auto;
           height:100%;
           margin:0;
           line-height:19px;
+
+          @include inline-block();
 
           &:hover {
             span.text-icon {color:white;}
@@ -409,24 +409,24 @@
             display:block;
             margin:0;
             padding:0 5px 0 7px;
-            line-height:19px;
             color:#1F4362;
+            line-height:19px;
           }
         }
       }
 
       li.tagit-new {
-        padding:0;
         margin-top:0;
         margin-bottom:0;
+        padding:0;
 
         input {
           @include inline-block();
           position:relative;
           top:0;
           right:auto;
-          left:auto;
           bottom:auto;
+          left:auto;
           margin:3px 0 3px 5px;
           padding:0;
           font-size:13px;

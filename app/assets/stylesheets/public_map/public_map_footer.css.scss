@@ -19,10 +19,10 @@
 }
 
 .Feature-text {
+  transition: all 0.2s;
   color: #636D72;
   font-size: 15px;
   line-height: 26px;
-  transition: all 0.2s;
 }
 
 hr,
@@ -75,10 +75,10 @@ hr,
 
 .FooterIcon {
   display: inline-block;
+  -moz-osx-font-smoothing: grayscale;
   font-style: normal;
   font-weight: 400;
   line-height: 1;
-  -moz-osx-font-smoothing: grayscale;
 
   path {
     transition: all 0.2s ease;

@@ -7,13 +7,13 @@ $sWidth: 4px;
 
 .FeedMast {
   position: absolute;
-
-  @include flex(0 0 $sWidth);
   top: 0;
   width: $sWidth;
   height: 100%;
   margin-left: 29px;
   background: $cFeedMast;
+
+  @include flex(0 0 $sWidth);
 }
 
 .FeedMast.is-hidden {
@@ -42,18 +42,18 @@ $sWidth: 4px;
 
 @media only screen and (min-width: 521px) and (max-width: 899px) {
   .FeedMast {
-    top: 0;
-    margin-left: -2px;
-    left: 50%;
     z-index: 0;
+    top: 0;
+    left: 50%;
+    margin-left: -2px;
   }
 }
 
 @media only screen and (max-width: 520px) {
   .FeedMast {
-    top: 0;
-    margin-left: -2px;
-    left: 50%;
     z-index: 0;
+    top: 0;
+    left: 50%;
+    margin-left: -2px;
   }
 }

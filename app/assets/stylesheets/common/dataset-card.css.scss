@@ -29,9 +29,9 @@ $sEditButtonSize: 50px;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
   position: relative;
+  z-index: 1;
   padding: 17px $sMargin-element 16px;
   border-radius: $sCard-borderRadius;
-  z-index: 1;
 }
 
 .DatasetCard-contentFooter {

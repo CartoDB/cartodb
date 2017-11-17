@@ -22,12 +22,12 @@ $w: 780px;
   @include display-flex();
   @include align-items(center, center);
   @include transition(border, 200ms, ease-in);
-  padding: 16px;
-  background: #FFF;
-  margin-top: 16px;
-  border-radius: 4px;
   box-sizing: border-box;
+  margin-top: 16px;
+  padding: 16px;
   border: 1px solid transparent;
+  border-radius: 4px;
+  background: #FFF;
 }
 .ServiceList-item:last-child { margin: 0; }
 
@@ -36,9 +36,9 @@ $w: 780px;
 }
 
 .ServiceList-itemInfoTitle {
+  box-sizing: border-box;
   max-width: 550px;
   padding-right: 24px;
-  box-sizing: border-box;
 }
 
 .ServiceList-itemExt {
@@ -50,8 +50,8 @@ $w: 780px;
   height: 38px;
   border: 1px solid #CCC;
   border-radius: 4px;
-  text-transform: uppercase;
   color: #CCC;
+  text-transform: uppercase;
 }
 
 .ServiceList-itemInfo {
@@ -64,8 +64,8 @@ $w: 780px;
 
 .ServiceList-itemButton {
   padding: 0 44px;
-  background: transparent;
   border: 1px solid #CCC;
+  background: transparent;
   color: $cTypography-paragraphs;
 
   &:hover {

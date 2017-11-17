@@ -14,10 +14,10 @@
 
 .TwitterCategory {
   height: 0;
+  overflow: hidden;
 
   @include opacity(0);
   @include transition(all, 250ms, linear);
-  overflow: hidden;
 }
 
 .TwitterCategory.enabled {

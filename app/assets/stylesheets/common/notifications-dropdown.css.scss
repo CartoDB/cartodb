@@ -4,14 +4,14 @@
 
 .NotificationsDropdown {
   width: 258px;
-  padding: 0!important;
   margin: 0!important;
+  padding: 0!important;
 }
 
 .NotificationsDropdown-item {
   position: relative;
-  padding: 0 0 15px 25px !important;
   margin: 15px !important;
+  padding: 0 0 15px 25px !important;
 }
 
 .NotificationsDropdown-item:not(:last-child) {
@@ -50,18 +50,18 @@
   left: 0;
   width: 18px;
   height: 18px;
+  color: #B1B8C1;
   font-size: $sFontSize-small;
 
   line-height: 20px;
-  color: #B1B8C1;
   text-align: center;
 }
 
 .NotificationsDropdown-title {
+  color: $cTypography-headers;
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
   text-transform: capitalize;
-  color: $cTypography-headers;
 }
 
 .NotificationsDropdown-text {
@@ -73,14 +73,14 @@
   top:21px;
   width: $sLineHeight-normal;
   height: $sLineHeight-normal;
+  border: none;
+  border-radius: 20px;
   background: rgba(#CCC, 1);
+  color: white;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-bold;
   line-height: $sLineHeight-normal;
-  color: white;
   text-align: center;
-  border-radius: 20px;
-  border: none;
 }
 
 .Notifications-iconCount.new--items {

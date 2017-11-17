@@ -23,21 +23,21 @@
   // TYPES MENU
   ul.types {
     position:relative;
+    z-index:2;
     padding:10px 0 0 8px;
+    background: image-url('layout/linen.png') repeat 0 0;
 
     @include border-top-left-radius(3px);
-    background: image-url('layout/linen.png') repeat 0 0;
-    z-index:2;
       
     &:after {
       content: '';
       position:absolute;
-      left:0;
+      z-index:1;
       bottom:0;
+      left:0;
       width:100%;
       height:1px;
       background:rgba(black,.10);
-      z-index:1;
     }
 
     li {
@@ -46,11 +46,11 @@
       a {
         @include inline-block();
         width:99px;
+        background:white;
         line-height:41px;
         text-align:center;
 
         @include border-top-radius(3px);
-        background:white;
 
         &.selected {
           position:relative;
@@ -61,12 +61,12 @@
           &:before {
             content: '';
             position:absolute;
-            left:0;
+            z-index:2;
             bottom:0;
+            left:0;
             width:100%;
             height:1px;
             background:white;
-            z-index:2;
           }
         }
       }
@@ -82,20 +82,20 @@
 
   .header {
     position:relative;
+    padding: 21px 30px 19px 30px;
     clear:both;
     overflow:hidden;
-    padding: 21px 30px 19px 30px;
 
     h3  {
-      float:left;
       padding: 0;
+      float:left;
       border:0;
     }
 
     .controls {
       span.label {
-        float:left;
         margin:2px 7px 0 0;
+        float:left;
         color:#CCC;
         line-height:18px;
       }
@@ -113,8 +113,8 @@
 
     .menu {
       li:first-child { margin-left: 23px; }
-      &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
-      &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      &:after  { content:' '; position:absolute; top:0; bottom:0; left:34px; width:1px; height:100%; background:rgba($cGray4,0.50); }
+      &:before { content:' '; position:absolute; top:0; bottom:0; left:36px; width:1px; height:100%; background:rgba(#509DD7,0.25); }
     }
   }
 
@@ -124,15 +124,15 @@
   .menu {
     position: absolute;
 
-    @include box-sizing(border-box);
+    z-index: 9;
     top: 112px;
     width: 100%;
     padding: 9px 23px 3px 30px;
-    background:#F6F6F6;
     border-top: 1px solid rgba(#DDD, .5);
     border-bottom: 1px solid rgba(#DDD, .5);
+    background:#F6F6F6;
 
-    z-index: 9;
+    @include box-sizing(border-box);
 
     .tip {
       @include size(10px, 6px);
@@ -147,12 +147,12 @@
 
       li {
         min-width: 20px;
+        margin: 0 15px 0 0;
         text-align:center;
 
         a { margin: auto; }
 
         @include inline-block();
-        margin: 0 15px 0 0;
 
         a { display: block; }
 
@@ -196,35 +196,35 @@
   }
 
   .blocked {
+    display:none;
     position:absolute;
+    z-index:10;
     top:0;
     right:0;
-    left:0;
     bottom:0;
-    display:none;
+    left:0;
     padding:20px 40px;
+    background:rgba(white,0.9);
+    line-height: normal;
+
+    text-align:center;
 
     @include border-top-left-radius(4px);
 
-    text-align:center;
-    line-height: normal;
-    background:rgba(white,0.9);
-    z-index:10;
-
     span.block-icon {
       position:relative;
-
-      @include inline-block();
       width:111px;
       height:110px;
+
+      @include inline-block();
 
       @include table-sprite(block_icon);
     }
 
     p {
       margin: 30px 0 3px 0;
-      line-height: normal;
       color: #999;
+      line-height: normal;
     }
 
     a {
@@ -237,22 +237,22 @@
   .fields {
     li {
       padding:13px 0;
-      font-size: 15px;
-      color: $cGray4;
-      border-bottom:1px solid rgba(#999,0.25);
       overflow:hidden;
+      border-bottom:1px solid rgba(#999,0.25);
+      color: $cGray4;
+      font-size: 15px;
 
       & > span {
         @include inline-block();
-        vertical-align:middle;
         max-width:50%;
         line-height:16px;
+        vertical-align:middle;
         &:hover {cursor:all-scroll;}
       }
 
       .form_combo {
-        float:right;
         width:auto;
+        float:right;
 
         .select2-container {width:143px;}
       }
@@ -267,8 +267,8 @@
         z-index:2;
 
         input {
-          font-size: 13px;
           padding: 6px;
+          font-size: 13px;
         }
       }
 
@@ -288,17 +288,17 @@
       }
 
       &.ui-sortable-helper {
-        padding:15px 15px 15px 20px;
         margin-left:-15px!important;
+        padding:15px 15px 15px 20px;
+        border:1px solid #999;
+        background-color:white;
+        cursor:all-scroll;
 
         @include box-shadow(rgba(0,0,0,0.1) 0 0 5px 2px);
-        border:1px solid #999;
 
         @include table-sprite(drag_points, $offset-y:23px, $offset-x:10px);
-        background-color:white;
 
         @include border-radius(3px);
-        cursor:all-scroll;
         & > span {color:#999;}
       }
 

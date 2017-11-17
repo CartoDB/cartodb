@@ -10,10 +10,10 @@ $selectedColor: white;
 
 .UserNotifications {
   position:relative;
+  color: $idleColor;
+  text-decoration: none!important;
 
   @include display-flex();
-  text-decoration: none!important;
-  color: $idleColor;
 }
 
 .UserNotifications:hover {
@@ -21,8 +21,8 @@ $selectedColor: white;
 }
 
 .UserNotifications-Icon {
-  font-size: $sFontSize-large;
   color: #FFF;
+  font-size: $sFontSize-large;
   &:hover { color: $selectedColor }
 }
 
@@ -30,8 +30,8 @@ $selectedColor: white;
   @include opacity(0);
   @include transition(all, .5s, ease-in-out);
   @include transform(scale(0));
-  color: $cHighlight-negative;
   background-color: $cNotification;
+  color: $cHighlight-negative;
 }
 // States
 .UserNotifications.has--alerts {

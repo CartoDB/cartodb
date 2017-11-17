@@ -3,10 +3,10 @@
   height: 1px;
 }
 
-.lvml {
-  behavior: url(#default#VML); 
+.lvml { 
   display: inline-block; 
   position: absolute;
+  behavior: url(#default#VML);
 }
 	
 .leaflet-control {
@@ -18,9 +18,9 @@
   _width: 27px;
   margin: 0 auto;
   _margin-top: -3px;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
 	
   filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
-  -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
 }
 
 .leaflet-popup-tip-container {

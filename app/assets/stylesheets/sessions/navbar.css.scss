@@ -16,8 +16,8 @@ $text-color: rgba(white, 0.5);
 .Navbar--left { text-align: left }
 
 .Navbar-brand {
-  height: 48px;
   max-width: 92px;
+  height: 48px;
   margin: 0 auto;
   margin-bottom: 40px;
 
@@ -33,9 +33,9 @@ $text-color: rgba(white, 0.5);
 
 .Navbar-menuItem {
   position: relative;
-  float: left;
   margin: -20px 0 -20px 20px;
   padding: 20px 0;
+  float: left;
   color: #999;
 
   &:first-child {
@@ -59,8 +59,8 @@ $text-color: rgba(white, 0.5);
 
 .Navbar-text {
   margin-top: 18px;
-  font-size: 16px;
   color: $text-color;
+  font-size: 16px;
 }
 
 .Navbar-textLink {

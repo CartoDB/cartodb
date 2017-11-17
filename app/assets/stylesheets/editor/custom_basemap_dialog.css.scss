@@ -13,16 +13,16 @@
 
 .XYZPanel-inputCheckbox {
   position: absolute;
+  z-index: 2;
   top: 10px;
   right: 14px;
-  z-index: 2;
   &:hover { cursor: pointer }
 }
 
 
 // WMS panel view
 .WMSSSelectLayer-Filter {
+  z-index: 0;
   width: 900px;
   margin:auto;
-  z-index: 0;
 }

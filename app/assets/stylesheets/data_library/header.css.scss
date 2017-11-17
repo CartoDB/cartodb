@@ -43,9 +43,9 @@
 
 .Header-inner {
   @include css3-prefix(box-sizing, border-box);
+  z-index: 10;
   width: 100%;
   max-width: 940px;
-  z-index: 10;
   height: 80px;
 }
 

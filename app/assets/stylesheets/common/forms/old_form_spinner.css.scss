@@ -13,16 +13,16 @@
 */
 
 .form_spinner {
-  position:relative;
   display: inline-block;
-  min-width:20px;
+  position:relative;
   width:auto;
-  padding:2px 19px 2px 4px;
-  line-height: 20px;
+  min-width:20px;
   margin:0;
+  padding:2px 19px 2px 4px;
   border:1px solid #9E9E9E;
   border-radius: 3px;
   background: white;
+  line-height: 20px;
 
 
   &:hover { cursor: pointer }
@@ -34,16 +34,16 @@
   &:hover input.value { color: #333 }
 
   input.value {
-    float:none;
+    width:25px;
     margin:0;
     padding:0;
-    width:25px;
-    text-align:left;
-    line-height:15px;
-    font-size:13px;
-    color:#666;
-    background: none;
+    float:none;
     border:none;
+    background: none;
+    color:#666;
+    font-size:13px;
+    line-height:15px;
+    text-align:left;
 
     &:focus {
       outline:none;
@@ -65,8 +65,8 @@
       left:5px;
       width:0;
       height:0;
-      border-left:2px solid transparent;
       border-right:2px solid transparent;
+      border-left:2px solid transparent;
     }
 
     &.plus {

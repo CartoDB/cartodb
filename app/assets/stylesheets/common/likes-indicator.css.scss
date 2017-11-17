@@ -19,9 +19,9 @@ $cLiked: #D93F56;
 
 .LikesIndicator-icon {
   @include transform(1);
+  margin-top: 1px;
   color: $cTypography-help;
   font-size: $sFontSize-small;
-  margin-top: 1px;
 }
 
 .LikesIndicator-icon.LikesIndicator-icon--big {

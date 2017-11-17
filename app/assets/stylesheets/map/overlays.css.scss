@@ -39,11 +39,11 @@
 
 .cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 span {
   @include inline-block();
-  float: left;
   width: 150px;
-  white-space: nowrap;
+  float: left;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .overlay-properties ul li .field .btn:active {
@@ -67,21 +67,21 @@
 }
 
 .overlay-properties ul li .btn {
-  position: relative;
   display: block;
-  float: left;
-  min-width: 25px;
+  position: relative;
   width: auto;
+  min-width: 25px;
   height: 20px;
   margin: 0;
+  float: left;
   border: 1px solid #9E9E9E;
-
-  @include border-radius(3px);
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #FFF), color-stop(100%, #F2F2F2));
   background: -webkit-linear-gradient(#FFF,#F2F2F2);
   background: -moz-linear-gradient(#FFF,#F2F2F2);
   background: -o-linear-gradient(#FFF,#F2F2F2);
   background: linear-gradient(#FFF,#F2F2F2);
+
+  @include border-radius(3px);
 
   &:hover {
     @include background(linear-gradient(#F3F3F3, #FFF));
@@ -89,10 +89,10 @@
 
   &:after {
     content: '';
-    position: absolute;
-    left: 8px;
-    top: 6px;
     display: block;
+    position: absolute;
+    top: 6px;
+    left: 8px;
     width: 10px;
     height: 9px;
   }
@@ -195,9 +195,9 @@
 .cartodb-logo {
   display:none;
   position:absolute;
+  z-index: 100000;
   bottom: 0;
   left: 0;
-  z-index: 100000;
 }
 
 .overlay-properties {
@@ -218,8 +218,8 @@
 }
 
 .overlay-properties ul li:last-child {
-  border-right: none;
   padding-right: 0;
+  border-right: none;
 }
 
 .overlay-properties ul li .field {
@@ -228,8 +228,8 @@
 
 .overlay-properties ul li .field .form-view {
   @include inline-block();
-  vertical-align: top;
   margin: 0 8px 0 0;
+  vertical-align: top;
 }
 
 .overlay-properties ul li .field .form-view:hover span {
@@ -245,27 +245,29 @@
 }
 
 .overlay-properties ul li > span {
-  margin: 0 0 5px 0;
-  font-size: 13px;
-  color: #7A7A7A;
   display:block;
+  margin: 0 0 5px 0;
+  color: #7A7A7A;
   font-family: "Helvetica", Arial;
+  font-size: 13px;
   font-weight:normal;
   line-height:12px;
 }
 
 .header.overlay-static {
   display: none;
+
+  position: absolute;
+
+  z-index:1;
   width: 100%;
+  max-width: inherit;
+  background:rgba(#333, .5);
 
   @include border-radius(0);
-  max-width: inherit;
 
   .content:hover { cursor: default; }
   &:hover { background:rgba(#333, .5); }
-
-  position: absolute;
-  background:rgba(#333, .5);
 
   @include simple-transition(background, .10s, ease-in-out);
 
@@ -276,9 +278,9 @@
   }
 
   .title {
-    font-weight: bold;
-    font-size:15px;
     color: #FFF;
+    font-size:15px;
+    font-weight: bold;
     line-height:22px;
   }
 
@@ -298,22 +300,20 @@
 
   }
 
-  z-index:1;
-
 }
 
 .overlay {
 
   display: none;
   position: absolute!important; // !important required to work on IE10.
+
+  z-index: 4;
+
+  max-width: 800px;
   background:rgba(#333, .5);
 
   @include border-radius(3px);
   @include simple-transition(background, .10s, ease-in-out);
-
-  max-width: 800px;
-
-  z-index: 4;
 
   &:hover { 
     background:rgba(#333, .7);
@@ -324,9 +324,9 @@
 
     margin: 2px 1px 0 0;
     padding: 0 0 0 20px;
+    color: #FFF;
     font-size: 11px;
     text-align: right;
-    color: #FFF;
 
     @include opacity(.7);
 
@@ -352,7 +352,7 @@
     $ballWidth: 6px;
 
     &.align-right {
-      .stick .ball { left: auto; right: -$ballWidth; }
+      .stick .ball { right: -$ballWidth; left: auto; }
     }
 
     .stick {
@@ -360,20 +360,20 @@
       $height: 2px;
       position: absolute;
       top: 50%;
-      margin-top: -$height/2;
       left: -$width;
       width: $width;
       height: $height;
+      margin-top: -$height/2;
       background: #333;
     }
 
     .stick .ball {
       position:absolute;
-      left: -$ballWidth;
       top: 50%;
-      margin-top: -$ballWidth/2;
+      left: -$ballWidth;
       width: $ballWidth;
       height: $ballWidth;
+      margin-top: -$ballWidth/2;
       background: #333;
 
       @include border-radius(2000px)
@@ -416,15 +416,15 @@
 
     &.mobile.editable {
       width: 200px;
-      max-width: 200px;
       min-width: 100px;
+      max-width: 200px;
     }
 
     &.editable {
 
       width: 400px;
-      max-width: 400px;
       min-width: 100px;
+      max-width: 400px;
 
       .content .text {
         line-height:normal;
@@ -480,13 +480,13 @@
 
       padding: 5px 9px;
 
+      border: 1px dashed #CCC;
+      cursor: text!important;
+
       .content {
         padding: 10px 10px 3px 10px;
         line-height:normal!important;
       }
-
-      border: 1px dashed #CCC;
-      cursor: text!important;
 
       @include simple-transition(padding, 100ms, ease-in);
     }
@@ -512,28 +512,28 @@
     @include simple-transition(opacity, .10s, ease-in-out);
 
     ul li > span:first-child { width: 63px; }
-    ul li .select2-container .select2-choice { overflow: visible; width: 100px;  }
+    ul li .select2-container .select2-choice { width: 100px; overflow: visible;  }
     ul li .select2-container.font-family { width: 90px; }
 
     input.value {
-      top: -2px;
       position: relative;
+      top: -2px;
     }
 
   }
 
   .close, .edit {
 
-    cursor: pointer;
-
     position: absolute;
-    color: #FFF;
     border: 1px solid #FFF;
     background: #333;
-    font-size: 10px;
+    color: #FFF;
     font-family: "helvetica neue", "helvetica", arial;
+    font-size: 10px;
     text-align: center;
     text-transform: uppercase;
+
+    cursor: pointer;
 
     @include opacity(0);
     @include simple-transition(opacity, .10s, ease-in-out);
@@ -543,8 +543,8 @@
   .close {
     top: -12px;
     left: -15px;
-    height: 16px;
     width: 17px;
+    height: 16px;
     padding: 3px;
     line-height: 16px;
 
@@ -560,8 +560,8 @@
     top: -12px;
     right: -15px;
     padding: 5px 18px 5px 11px;
-    letter-spacing: 1px;
     font-weight: 500;
+    letter-spacing: 1px;
 
     @include border-radius(20px);
 
@@ -571,10 +571,10 @@
       top: 10px;
       right: 8px;
       width: 0; 
-      height: 0; 
-      border-left: 3px solid transparent;
-      border-right: 3px solid transparent;
+      height: 0;
       border-top: 4px solid #FFF;
+      border-right: 3px solid transparent; 
+      border-left: 3px solid transparent;
     }
   }
 
@@ -622,10 +622,10 @@
     &.text img {
       display:block;
     }
+    color: #FFF;
 
     font-size: 20px;
     line-height: normal;
-    color: #FFF;
 
     -ms-word-break: break-all;
     word-break: break-all;
@@ -648,41 +648,41 @@ div.cartodb-timeslider {
 }
 
 div.cartodb-zoom .info {
-  position:absolute;
   display:block;
-  margin:17px 0 0 0;
+  position:absolute;
+
+  z-index: 5;
   width: 28px;
+  margin:17px 0 0 0;
   padding: 8px 0 7px 0;
-  font:normal 13px "Helvetica",Arial;
-  line-height: normal;
-  color:#858585;
-  text-align: center;
+  border: 1px solid #999;
+  background: white;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  color:#858585;
+  font:normal 13px "Helvetica",Arial;
+  line-height: normal;
+  text-align: center;
 
   @include border-radius(4px);
-  border: 1px solid #999;
-  background: white;
-
-  z-index: 5;
 
 }
 
 div.rule {
   position:absolute;
-  height: 100%;
+  z-index: 10;
   width: 1px;
+  height: 100%;
   background: #AAA;
 
   @include opacity(0);
-  z-index: 10;
 
   @include simple-transition(opacity, .10s, ease-in-out);
 
-  &.horizontal {
+  &.horizontal { 
+    width: 100%;
     height: 1px; 
-    width: 100%; 
   }
 
 } // .rule
@@ -708,12 +708,12 @@ div.dropdown.properties_dropdown {
 
       span {
 
+        margin-right: 20px;
+
         color: #BABABA;
         font-size: 13px;
 
         @include inline-block();
-
-        margin-right: 20px;
 
         &.handle { margin: 0; }
 
@@ -723,8 +723,8 @@ div.dropdown.properties_dropdown {
 
         &.field .form_combo span {
           display: block;
-          padding: 0 7px;
           margin-right: 12px;
+          padding: 0 7px;
           color: #666;
         }
 

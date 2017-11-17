@@ -12,9 +12,9 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include display-flex();
   @include justify-content(flex-start, start);
   @include flex-wrap(wrap);
+  width: 100%;
   margin-top: 1px; // makes the list not be overlapped by a .Filters block (so selected/hoevered item's border looks OK)
   padding-bottom: 30px;
-  width: 100%;
 }
 
 .OrganizationList--centered {
@@ -32,27 +32,27 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 // TODO: this is duplicated from .DatasetsList-item, can we consolidate these styles somehow?
 .OrganizationList-user.is-selectable:hover {
-  background-color: $cCard-hoverFill;
+  margin-top: -1px;
+  margin-right: -#{$sMargin-element};
+  margin-left: -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
   border: 1px $cCard-hoverBorder solid;
   border-radius: 4px;
-  margin-left: -#{$sMargin-element};
-  margin-right: -#{$sMargin-element};
-  margin-top: -1px;
-  padding: 0 $selectedItemPaddingOnSides;
+  background-color: $cCard-hoverFill;
 }
 
 .OrganizationList-user.is-selected {
-  background-color: $cCard-selectedFill;
+  margin-top: -1px; // to overlap border of prev element
+  margin-right: -#{$sMargin-element};
+  margin-left: -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
   border: 1px $cCard-selectedBorder solid;
   border-radius: 4px;
-  margin-left: -#{$sMargin-element};
-  margin-right: -#{$sMargin-element};
-  margin-top: -1px; // to overlap border of prev element
-  padding: 0 $selectedItemPaddingOnSides;
+  background-color: $cCard-selectedFill;
 
   &:hover {
-    background-color: $cCard-selectedFill;
     border: 1px $cCard-selectedBorder solid;
+    background-color: $cCard-selectedFill;
   }
 }
 
@@ -120,8 +120,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 
 .OrganizationList-userLink.is-disabled {
-  cursor: initial;
   opacity: 0.5;
+  cursor: initial;
 }
 
 .OrganizationList-paginator {

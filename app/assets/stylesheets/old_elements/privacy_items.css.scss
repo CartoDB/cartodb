@@ -18,14 +18,14 @@
 
 .privacy-status {
   @include inline-block();
-  vertical-align: middle;
   width:auto;
   min-width:20px;
   height:20px;
+  border:0;
+  text-decoration: none;
+  vertical-align: middle;
 
   @include border-radius(3px);
-  text-decoration: none;
-  border:0;
 
   // Total shared users
   span.shared_users {
@@ -33,14 +33,14 @@
     @include align-items(center, center);
     width:auto;
     height:20px;
-    line-height:20px;
     margin:0 0 0 20px;
     padding:0 6px 0 5px;
-    color:rgba(black,0.3);
     border-left:1px solid rgba(black,0.1);
+    color:rgba(black,0.3);
+    font-family: Arial;
     font-size:11px;
     font-weight:bold;
-    font-family: Arial;
+    line-height:20px;
     text-decoration:none;
   }
 
@@ -82,7 +82,7 @@
 
   &.loading {
     background: rgba(#FF7373, .5) image-url('layout/private_loader.gif') no-repeat;
-    background-size: 12px;
     background-position: 50%;
+    background-size: 12px;
   }
 }

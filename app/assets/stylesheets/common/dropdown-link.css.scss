@@ -17,13 +17,13 @@
   &:after {
     content: '';
     position: absolute;
-    right: 0;
     top: 50%;
+    right: 0;
     width: 0;
     height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
     border-top: 4px solid $cIcons-default;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
   }
 
   &:hover {

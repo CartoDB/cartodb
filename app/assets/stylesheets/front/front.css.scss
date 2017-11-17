@@ -35,9 +35,9 @@ body {
     position:relative;
     width:960px;
     margin:0 auto;
+    background:white;
 
     @include border-radius(3px);
-    background:white;
 
 
     /* skeleton of a section */
@@ -52,14 +52,14 @@ body {
     }
 
     div.content {
-      position:relative;
       display:block;
+      position:relative;
       padding:40px;
 
       /* content options */
       &.overflow {overflow:hidden}
       &.no_padding {width:960px; padding:0;}
-      &.less_padding {overflow:hidden; padding-top:25px; padding-bottom:25px}
+      &.less_padding { padding-top:25px; padding-bottom:25px;overflow:hidden}
     }
 
 
@@ -102,15 +102,15 @@ body {
   section.sessions {
     div.browsers {
       margin:30px 0 0 100px;
-      letter-spacing:-4px;
       font-size:0;
+      letter-spacing:-4px;
 
       a {
         @include inline-block();
-        letter-spacing:0;
-        vertical-align:middle;
         margin:0 35px 0 0;
         padding:0;
+        letter-spacing:0;
+        vertical-align:middle;
 
         img {margin:0!important}
       }
@@ -119,14 +119,14 @@ body {
 
     form {
       div.field {
-        position:relative;
         display:inline-block;
+        position:relative;
         width:100%;
 
         &.short {
           width:312px;
-          margin-left:25px;
           margin-right:25px;
+          margin-left:25px;
           padding:15px 0 0 40px;
         }
 
@@ -139,11 +139,11 @@ body {
 
       label {
         position:absolute;
+        z-index:0;
         top:0;
         left:16px;
-        font:normal 15px $text-fonts;
         color:#CCC;
-        z-index:0;
+        font:normal 15px $text-fonts;
         font-style:italic;
 
         @include user-select(none);
@@ -153,22 +153,22 @@ body {
       input[type="text"],
       input[type="password"],
       input[type="email"] {
+        z-index:10;
         width:280px;
         height:auto;
-        padding:11px 15px;
         margin:0;
-
-        @include border-radius(3px);
-        background:none;
+        padding:11px 15px;
         border:1px solid #CCC;
-        font:normal 15px $text-fonts;
+        background:none;
         color:#333;
-        z-index:10;
+        font:normal 15px $text-fonts;
         line-height:normal;
 
+        @include border-radius(3px);
+
         &:focus {
-          outline:none;
           border-color:#999;
+          outline:none;
 
           @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
         }
@@ -188,9 +188,9 @@ body {
       /* Errors */
       div.field_with_errors {
         width:auto;
+        vertical-align:top;
 
         @include inline-block();
-        vertical-align:top;
 
         input[type="text"],
         input[type="password"],
@@ -208,14 +208,14 @@ body {
 
       div.field_error {
         position:absolute;
-        right:7px;
+        z-index:5;
         top:7px;
+        right:7px;
         width:26px;
         height:27px;
 
         @include text-indent();
         @include common-sprite(field_error);
-        z-index:5;
         &:hover {cursor:pointer}
       }
     }
@@ -241,23 +241,23 @@ body {
 
     span.cartodb {
       position:absolute;
+      z-index:10;
       top:-112px;
       left:-10px;
       width:84px;
       height:105px;
-      z-index:10;
     }
 
     div.left {height:19px; p {vertical-align:middle}}
 
     &.short {
-      min-width:124px;
       width:124px;
+      min-width:124px;
       height:42px;
       margin:0 auto 30px;
       padding:0;
-      background:none;
       border:none;
+      background:none;
 
       a.cartodb {display:block; width:124px; height:42px;
 
@@ -281,9 +281,9 @@ body {
     div.bkg {
       position:absolute;
       top:0;
-      left:0;
       right:0;
       bottom:0;
+      left:0;
       width:100%;
       height:100%;
 
@@ -292,13 +292,13 @@ body {
 
     header {
       position:relative;
-      border:none;
-      box-shadow:none;
-      background:none;
       width:480px;
       height:42px;
       margin: 0 auto;
       padding:40px 0;
+      border:none;
+      background:none;
+      box-shadow:none;
 
       &:before {
         display:none;
@@ -315,8 +315,8 @@ body {
     }
 
     section {
-      margin-top:0;
       width:505px;
+      margin-top:0;
       background: image-url('layout/cartodb20.png') no-repeat right 0 white; // IE
 
       .content {

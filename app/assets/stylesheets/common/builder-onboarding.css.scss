@@ -31,10 +31,10 @@ $cBackgroundColor: #2E3C43;
   @include flex(1);
   @include display-flex();
   @include align-items(center);
+  z-index: 5;
   height: 100%;
   background: rgba($cBackgroundColor, 0.88);
   pointer-events: all;
-  z-index: 5;
 }
 
 .BuilderOnboarding-contentWrapper.is-step0 {
@@ -132,6 +132,7 @@ $cBackgroundColor: #2E3C43;
 .BuilderOnboarding-pad5 {
   @include transition(all, 200ms, ease-in-out, 300ms);
   position: absolute;
+  z-index: 0;
   top: 0;
   right: -$sWidgetsPadWidth;
   width: $sWidgetsPadWidth;
@@ -139,7 +140,6 @@ $cBackgroundColor: #2E3C43;
   background: image-url('layout/widgets.png') no-repeat center center;
   background-color: $cSecondaryBackground;
   background-position: 50% 0;
-  z-index: 0;
 }
 
 .BuilderOnboarding-pad,
@@ -147,9 +147,9 @@ $cBackgroundColor: #2E3C43;
 .BuilderOnboarding-pad3,
 .BuilderOnboarding-pad4 {
   @include transition(width, 300ms, ease-in-out);
+  z-index: 10;
   width: 0;
   height: 100%;
-  z-index: 10;
 }
 
 .BuilderOnboarding.is-step1 {
@@ -261,9 +261,9 @@ $cBackgroundColor: #2E3C43;
 .BuilderOnboarding-shadow {
   @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   position: absolute;
+  z-index: 1;
   right: 0;
   bottom: 0;
   width: $sWidgetsPadWidth - 13;
   height: 60px;
-  z-index: 1;
 }

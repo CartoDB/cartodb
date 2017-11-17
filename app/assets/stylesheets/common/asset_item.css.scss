@@ -2,32 +2,32 @@
 
 .AssetItem {
   position:relative;
-
-  @include inline-block();
   width:58px;
   height:58px;
   margin:0 20px 20px 0;
+  overflow: hidden;
   border:1px solid #DDD;
   border-radius:3px;
-  overflow: hidden;
   background: image-url("layout/loader_transparent.gif") no-repeat center;
+
+  @include inline-block();
 
   &:nth-child(12n) { margin-right:0 } 
 }
 
 .AssetItem .image {
   position:absolute;
-
-  @include inline-block();
   width:60px;
-  height:60px;
   max-width: 60px;
+  height:60px;
   max-height: 60px;
   border-radius:3px;
-  text-align: center;
-  line-height: 60px;
   background-repeat: no-repeat;
   background-position: center;
+  line-height: 60px;
+  text-align: center;
+
+  @include inline-block();
 }
 
 .AssetItem:hover .delete {
@@ -37,11 +37,11 @@
 }
 
 .AssetItem.AssetItem-User.is-selected .image {
-  background-color: #FFF;
   top: 1px;
   left: 1px;
   width: 56px;
   height: 56px;
+  background-color: #FFF;
 }
 
 .AssetItem.is-selected {
@@ -54,33 +54,33 @@
 
 .AssetItem .delete {
   position:absolute;
-  width: 14px;
-  height: 10px;
+  z-index:2;
   right: 0;
   bottom: 0;
-
-  @include transition(opacity, 100ms);
+  width: 14px;
+  height: 10px;
   padding: 0;
-  background:#333;
-  text-indent:0;
   border-top-left-radius:2px;
   border-bottom-right-radius:2px;
+  background:#333;
   background:rgba(black, 0.5);
-  z-index:2;
+  text-indent:0;
+
+  @include transition(opacity, 100ms);
 
   @include opacity(0);
 }
 
 .AssetItem .delete:before {
-  position:absolute;
   content:' ';
+  position:absolute;
   top:4px;
   left:4px;
   width:0;
   height:0;
-  border-left:3px solid transparent;
-  border-right:3px solid transparent;
   border-top:3px solid white;
+  border-right:3px solid transparent;
+  border-left:3px solid transparent;
 }
 
 .AssetItem.destroying:hover a.delete { 

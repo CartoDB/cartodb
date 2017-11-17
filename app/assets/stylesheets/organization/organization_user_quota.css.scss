@@ -32,8 +32,8 @@
 
 .OrganizationUser-quotaLegendItem {
   margin: 0 12px 0 0;
-  font-size: $sFontSize-normal;
   color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
 }
 
 .OrganizationUser-quotaLegendIcon {
@@ -58,19 +58,19 @@
 }
 
 .OrganizationUser-quotaInfoInput {
+  box-sizing: border-box;
   width: 70px !important;
   height: 32px;
   padding: 0 5px;
   text-align: right;
-  box-sizing: border-box;
 }
 
 .OrganizationUser-quotaInfoLink {
   color: $cTypography-link;
 
   &:hover {
-    text-decoration: underline;
     color: $cTypography-linkHover;
+    text-decoration: underline;
   }
 }
 
@@ -81,9 +81,9 @@
 
 .UserQuotaDropdown-title {
   padding-bottom: 18px;
-  font-size: $sFontSize-large;
-  color: $cTypography-headers;
   border-bottom: 1px solid $cStructure-softLine;
+  color: $cTypography-headers;
+  font-size: $sFontSize-large;
 }
 
 .UserQuotaDropdown-quota {
@@ -93,8 +93,8 @@
 .UserQuotaDropdown-info {
   display: block;
   margin-top: 15px;
-  font-size: $sFontSize-normal;
   color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
 }
 
 .UserQuotaDropdown-slider {

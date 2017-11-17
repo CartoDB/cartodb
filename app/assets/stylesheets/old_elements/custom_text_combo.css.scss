@@ -27,12 +27,12 @@
       &:after { display:none }
 
       &:before {
-        left:0;
         top:3px;
+        left:0;
         width:1px;
         height:12px;
-        background:#CFCFCF;
         border:0;
+        background:#CFCFCF;
       }
     }
   }
@@ -63,10 +63,10 @@
   .select2-input-free {
     padding:0;
     border:none;
-    font-size:13px;
-    font-family: Arial;
-    color:#397EB9;
     outline:none;
+    color:#397EB9;
+    font-family: Arial;
+    font-size:13px;
   }
 
   .select2-icon {

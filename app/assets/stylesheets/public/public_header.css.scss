@@ -12,19 +12,19 @@
 @import "../old_common/mixins";
 
 .cartodb-public-header {
-  position: relative;
   display: block;
+  position: relative;
+  z-index: 10;
   width:auto;
   height: 67px;
   margin:0;
   padding:0;
+  border: none;
+  font-family: $text-fonts;
 
   @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
-  border: none;
 
   @include box-shadow(none);
-  font-family: $text-fonts;
-  z-index: 10;
 }
 
 // Inner block
@@ -32,9 +32,9 @@
   width: auto;
   max-width: 1024px;
   margin: auto;
+  padding: 0 20px;
   clear:both;
   overflow:hidden;
-  padding: 0 20px;
 }
 
 // h1 reset style
@@ -42,15 +42,15 @@
 
 // Logo
 .cartodb-public-header .logo {
-  float:left;
   display: block;
   width: 128px;
   height: 39px;
   margin: 14px 0;
-  line-height:67px;
-  text-indent: -9999px;
-  line-height: 0;
+  float:left;
   font-size: 0;
+  line-height:67px;
+  line-height: 0;
+  text-indent: -9999px;
   text-transform: uppercase;
 
   @include background(image-url('layout/cartodb_logo_with_cartofante.png') no-repeat);
@@ -58,17 +58,17 @@
 
 // Options
 .cartodb-public-header .options {
-  float: right;
   display: block;
   width: auto;
   height: 67px;
   margin: 0;
+  float: right;
 
   li {
     @include inline-block();
-    vertical-align: middle;
-    line-height: 64px;
     margin-left:0;
+    line-height: 64px;
+    vertical-align: middle;
 
     &:first-child a { margin-left:0 }
   }
@@ -76,11 +76,11 @@
   // Options link
   a {
     padding:10px 18px;
-    font-size: 12px;
-    font-family: 'ProximaNova', Arial;
-    text-transform: uppercase;
-    text-decoration: none;
     color:white;
+    font-family: 'ProximaNova', Arial;
+    font-size: 12px;
+    text-decoration: none;
+    text-transform: uppercase;
 
     @include border-radius(50px);
     @include transform-style("linear");
@@ -92,8 +92,8 @@
 
   // Options link with border
   a.border {
-    padding:8px 20px;
     margin-left:10px;
+    padding:8px 20px;
     border:2px solid white;
 
     &:hover {
@@ -104,34 +104,34 @@
 
   // Options with old font (editor font)
   a.editor {
-    padding:0 0 0 20px;
     margin-left:10px;
+    padding:0 0 0 20px;
     border:none;
-    text-transform: none;
+    font-family: $text-fonts, Arial;
     font-size:15px;
     font-weight:300;
-    font-family: $text-fonts, Arial;
+    text-transform: none;
 
     &:hover {
       background:none;
-      text-decoration: underline;
       color:white;
+      text-decoration: underline;
     }
   }
 
   // Account link
   a.account {
     position:relative;
-    padding:0 20px 0 0;
     margin-left:20px;
+    padding:0 20px 0 0;
 
     span.separator {
       position:absolute;
       top:50%;
       right:12px;
-      margin-top:-6px;
       width:1px;
       height:14px;
+      margin-top:-6px;
       background:#8FBADE;
     }
   }
@@ -148,7 +148,7 @@
   only screen and (     -o-min-device-pixel-ratio: 2/1),
   only screen and (        min-device-pixel-ratio: 2),
   only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx) {
+  only screen and (                min-resolution: 2dppx) {
   .cartodb-public-header .logo {
     @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat!important);
     background-size: 128px 35px!important;
@@ -176,15 +176,15 @@ only screen and (                min-resolution: 2dppx) {
 
     .options .account {
       @include display-flex();
-      font-size:11px;
       padding:8px 10px;
+      font-size:11px;
     }
 
     .options .login,
     .options .signup {
       display:inline;
-      font-size:11px;
       padding:8px 10px;
+      font-size:11px;
     }
   }
 }

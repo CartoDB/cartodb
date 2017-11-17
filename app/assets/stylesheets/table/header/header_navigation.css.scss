@@ -13,37 +13,37 @@
 // Navigation block
 div.vis_navigation {
   position:absolute;
-  $width: 300px;
-  width: $width;
+
+  z-index: 100;
   top: 4px;
   left:50%;
+  width: $width;
   margin-left: -$width/2;
   padding:0;
   text-align:center;
-
-  z-index: 100;
+  $width: 300px;
 
   nav {
     position:relative;
 
-    @include inline-block();
-    padding: 1px;
+    z-index:1;
     margin:0;
-
-    @include border-radius(30px);
+    padding: 1px;
     border: 2px solid #FFF;
 
-    z-index:1;
+    @include inline-block();
+
+    @include border-radius(30px);
 
     a.tab {
       padding:7px 25px;
-
-      @include inline-block();
+      color:#FFF;
       font-size:12px;
       font-weight:500;
-      color:#FFF;
 
       text-transform: uppercase;
+
+      @include inline-block();
 
       @include border-radius(30px);
 
@@ -51,8 +51,8 @@ div.vis_navigation {
 
       &.selected {
         margin:0;
-        color: #326A98;
         background:#FFF;
+        color: #326A98;
 
         &:hover {text-decoration:none; cursor:default;}
         &:focus, &:active {}
@@ -67,37 +67,37 @@ div.vis_navigation {
 // Global error element
 div.globalerror {
   position: absolute;
+  z-index:0;
   top:auto;
-  left:0;
   bottom:0;
+  left:0;
   width:100%;
   height:30px;
   padding:0;
   overflow:hidden;
   text-align:center;
-  z-index:0;
 
   p {
     @include border-top-radius(3px);
+    width:auto;
+    height:14px;
     margin-top:39px;
+    padding:8px 15px;
+    background:rgba(0,0,0,0.35);
+    color:white;
+    font:normal 13px $text-fonts;
+    line-height:15px;
 
     @include inline-block();
-    height:14px;
-    width:auto;
-    padding:8px 15px;
-    line-height:15px;
-    background:rgba(0,0,0,0.35);
-    font:normal 13px $text-fonts;
-    color:white;
 
     &.error {
-      color: #EB2466;
       background-color: #FFEBF1;
+      color: #EB2466;
     }
 
     &.warn {
-      color: #555;
       background-color: rgba(#FFFFBF, 0.90);
+      color: #555;
     }
 
     img {

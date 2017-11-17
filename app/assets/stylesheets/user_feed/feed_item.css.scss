@@ -31,20 +31,20 @@
 
   @include flex(1);
   position: absolute;
+  z-index: 10;
   width: $avatarSize;
   height: $avatarSize;
-  z-index: 10;
 
   &:after {
+    content: '';
     position: absolute;
+    z-index: 1000;
     top: 0;
     left: 0;
     width: $avatarSize;
     height: $avatarSize;
     border-radius: 6px;
     box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.5);
-    content: '';
-    z-index: 1000;
   }
 }
 

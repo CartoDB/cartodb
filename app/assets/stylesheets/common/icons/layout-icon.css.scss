@@ -15,14 +15,14 @@
   @include justify-content(center);
   @include align-items(center);
   position: relative;
-  min-width: $sIcon-layout; // to no be deformed due to flex layout
-  width: $sIcon-layout;
-  height: $sIcon-layout;
   box-sizing: border-box;
+  width: $sIcon-layout;
+  min-width: $sIcon-layout; // to no be deformed due to flex layout
+  height: $sIcon-layout;
   border: 1px solid $cIcons-default;
   border-radius: $sIcon-borderRadius;
-  font-size: 22px;
   color: $cIcons-default;
+  font-size: 22px;
 }
 
 .LayoutIcon--positive {

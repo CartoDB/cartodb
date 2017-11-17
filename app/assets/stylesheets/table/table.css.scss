@@ -38,8 +38,8 @@ div.panes {
   &.synced { top: 102px; }
 
   .emptyTableContainer {
-    position: fixed;
     display: inline-block;
+    position: fixed;
     width: 100%;
     text-align: center;
 
@@ -48,9 +48,9 @@ div.panes {
     @include transition-duration(300ms);
 
     .emptynessInfo {
+      display: inline-block;
       position: relative;
       top: 1.5em;
-      display: inline-block;
       width: 600px;
       height: 375px;
 
@@ -71,15 +71,15 @@ div.panes {
       h4 {
         margin-top: 8em;
         color: #333;
-        font-weight: bold;
-        font-size: 17px;
         font-family: $title-fonts;
+        font-size: 17px;
+        font-weight: bold;
         text-indent:0;
       }
 
       p {
-        margin: 1em auto;
         width: 325px;
+        margin: 1em auto;
         color: #999;
         font-size: 15px;
         text-indent:0;
@@ -103,31 +103,31 @@ div.table {
       height: 60px;
 
       div.sqlview {
+        display: block;
         position: absolute;
+        z-index: 0;
         top: 55px;
         right: 0;
         left: 0;
-        display: block;
         width: 100%;
         height: 37px;
-        z-index: 0;
 
         p {
-          position: fixed;
-          left: 50%;
           display: inline;
+          position: fixed;
+          z-index:2;
+          left: 50%;
+          width: 100%;
           margin: 12px 0 0 -50%;
           padding: 12px 0;
-          width: 100%;
           border-bottom: 1px solid #CCC;
           background-color: #E5FAEA;
           color: #333;
           color: #666;
-          text-align: center;
-          font-size: 13px;
           font-family: $text-fonts;
+          font-size: 13px;
+          text-align: center;
           text-indent:0;
-          z-index:2;
 
           @include transform-style("linear");
           @include transition-property("text-indent");
@@ -137,9 +137,9 @@ div.table {
       }
 
       tr {
+        z-index: 2;
         width: 100%;
         height: 64px;
-        z-index: 2;
         background: image-url('layout/thead_bkg.jpg') repeat 0 0;
 
         th {
@@ -147,33 +147,33 @@ div.table {
           vertical-align: top;
 
           & > div {
-            position: relative;
             display: block;
+            position: relative;
+            z-index: 1;
             width: 100%;
             height: 66px;
-            z-index: 1;
 
             & > div {
               position: fixed;
-
-              @include inline-block();
+              z-index: 1;
               width: inherit;
               height: 41px;
               margin: 0;
               padding: 10px 0 15px;
-              background: image-url('layout/thead_bkg.jpg') repeat 0 0;
               border-bottom: 1px solid #CCC;
-              z-index: 1;
+              background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+
+              @include inline-block();
 
               &:after {
+                content: ' ';
                 position: absolute;
+                z-index: 0;
                 top: 13px;
                 left: 0;
-                z-index: 0;
                 width: 1px;
                 height: 42px;
                 background: rgba(#D9D9D9,0.5);
-                content: ' ';
               }
             }
 
@@ -200,12 +200,12 @@ div.table {
 
                   &:after {
                     @include inline-block();
+                    content: '';
                     position: relative;
                     left: 2px;
                     border-top: 3px solid #7C7C7C;
                     border-right: 3px solid transparent;
                     border-left: 3px solid transparent;
-                    content: '';
                   }
 
                   &:hover {
@@ -258,8 +258,8 @@ div.table {
             }
 
             p {
-              line-height: 20px;
               padding: 0 10px;
+              line-height: 20px;
 
               a {
                 padding: 0 10px 0 0;
@@ -276,13 +276,13 @@ div.table {
                   text-decoration: none;
 
                   &.own:after {
+                    content: ' ';
                     position: absolute;
                     right: 0;
                     margin: 10px 0 0 5px;
                     border-top: 3px solid #7C7C7C;
                     border-right: 3px solid transparent;
                     border-left: 3px solid transparent;
-                    content: ' ';
                   }
                 }
               }
@@ -296,8 +296,8 @@ div.table {
           }
 
           &:first-child {
-            min-width: 35px;
             width: 35px;
+            min-width: 35px;
           }
 
           &:last-child {
@@ -317,46 +317,46 @@ div.table {
       // Shadow
       div.shadow {
         position:fixed;
-        left:0;
+        z-index:0;
         top:144px;
         right:0;
+        left:0;
         width:100%;
         height:10px;
         background: image-url('layout/thead_shadow.png') repeat 0 0;
 
         pointer-events:none;
-        z-index:0;
       }
 
       // Horizontal movement
       &.horizontal {
         tr th > div > div {
           position: absolute;
-          left: 0;
           top: 0;
+          left: 0;
         }
       }
     } // thead
 
     // Table body
     tbody {
+      z-index: 1;
       width: 100%;
       border: none;
-      z-index: 1;
 
       tr.empty_table {}
 
       tr.placeholder, tr.placeholder td {
-        border: 1px solid #ECECEC;
         height: 40px;
+        border: 1px solid #ECECEC;
         cursor: pointer;
 
         .addNewRow {
           color: #E5E5E5;
-          vertical-align: middle;
-          text-align: center;
-          font-weight: bolder;
           font-size: 22px;
+          font-weight: bolder;
+          text-align: center;
+          vertical-align: middle;
         }
 
       }
@@ -381,8 +381,8 @@ div.table {
         border-bottom:0;
 
         &:hover {
-          border-color:#ECECEC;
           border-top: 0;
+          border-color:#ECECEC;
           border-top-color:#ECECEC;
           background:inherit;
         }
@@ -391,9 +391,9 @@ div.table {
 
       tr {
         width:100%;
+        border-top:1px solid #ECECEC;
         // z-index:0;
         background:white;
-        border-top:1px solid #ECECEC;
 
         td {
           vertical-align: top;
@@ -413,16 +413,16 @@ div.table {
 
           div.cell {
             display:block;
-            overflow: hidden;
-            padding:15px 10px;
             max-width:280px;
             min-height:13px;
             max-height:26px;
+            padding:15px 10px;
+            overflow: hidden;
+            border-left:1px solid #ECECEC;
             color:#666;
+            font-size:13px;
             text-overflow: ellipsis;
             white-space: nowrap;
-            font-size:13px;
-            border-left:1px solid #ECECEC;
 
             &.disabled {
               color: #AAA;
@@ -441,33 +441,34 @@ div.table {
 
           &.rowHeader:first-child {
             & > div.row_header {
-              position:relative;
               display:block;
+              position:relative;
               height:100%;
               overflow:visible;
 
               &:before {
                 content:'';
+                display:none;
                 position:absolute;
+                z-index:0;
                 top:15px;
                 left:10px;
-
-                @include border-radius(3px);
-                background:#FAFAFA;
-
-                @include background(linear-gradient(#FAFAFA,#E8E8E8));
-                display:none;
-                padding:0;
                 width:12px;
                 height:12px;
+                padding:0;
                 border:1px solid #999;
-                z-index:0;
+                background:#FAFAFA;
+
+                @include border-radius(3px);
+
+                @include background(linear-gradient(#FAFAFA,#E8E8E8));
               }
 
               &:after {
-                position:absolute;
-                display:none;
                 content:'';
+                display:none;
+                position:absolute;
+                z-index:0;
                 top:21px;
                 left:15px;
                 width:0;
@@ -475,17 +476,16 @@ div.table {
                 border-top:3px solid #666;
                 border-right:2px solid transparent;
                 border-left:2px solid transparent;
+                line-height:16px;
 
                 @include opacity(1);
-                z-index:0;
-                line-height:16px;
               }
 
               &:hover:before {
                 background:#E8E8E8;
+                cursor:pointer;
 
                 @include background(linear-gradient(#FAFAFA,#E3D3E3));
-                cursor:pointer;
               }
 
               &:active:before {
@@ -500,8 +500,8 @@ div.table {
             @include transform-style("linear");
             @include transition-property("padding-right");
             @include transition-duration(500ms);
-            border-right:none;
             padding-right:65px;
+            border-right:none;
           }
         }
 
@@ -510,8 +510,8 @@ div.table {
         }
 
         &:hover {
-          background:#E8F9EC;
           border-color:#CCC;
+          background:#E8F9EC;
 
           & + tr {border-top-color:#CCC;}
 
@@ -548,15 +548,15 @@ div.table {
       &.sql_loader {
         div.float_info {
           position:fixed;
-
-          @include inline-block();
-          left:50%;
           top:50%;
+          left:50%;
           width:240px;
           height:36px;
           margin:-100px 0 0 -120px;
           padding:0;
           vertical-align:top;
+
+          @include inline-block();
 
           @include transform-style("linear");
           @include transition-property("margin");
@@ -568,11 +568,11 @@ div.table {
       }
 
       &.page_loader {
+        z-index:-1;
         border:1px solid #ECECEC;
         border-right:0;
         border-left:0;
         background:white;
-        z-index:-1;
 
         th {
           padding:70px 0;
@@ -581,8 +581,7 @@ div.table {
 
         div.float_info, div.float_action {
           position:fixed;
-
-          @include inline-block();
+          z-index:-10;
           left:50%;
           width:195px;
           height:36px;
@@ -590,7 +589,8 @@ div.table {
           padding:0 0 0 45px;
           background: image-url('layout/loading_page_static.png') no-repeat 0 0;
           vertical-align:top;
-          z-index:-10;
+
+          @include inline-block();
 
           h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
           p {display:block; font-size:13px;}
@@ -632,8 +632,8 @@ div.table {
     &.displaced {
       // Last column of the table
       tbody tr td:last-child, thead tr th:last-child {
-        border-right:none;
         padding-right:600px;
+        border-right:none;
       }
 
       // When a query is applied, the text should be moved some pixels
@@ -674,8 +674,8 @@ div.table {
   }
 
   &.page_up {
-    padding-bottom:0;
     padding-top:180px; // More space due to the thead height
+    padding-bottom:0;
     thead tr th div > div {
       margin-top:-180px;
     }
@@ -723,9 +723,9 @@ div.order_selector {
     padding: (21px - 9px)/2 8px;
     background-color: $button-bkg-color;
     color: #397DB9;
-    text-transform: uppercase;
-    font-weight: bold;
     font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
 
     &:hover {
       background-color: #397DB9;
@@ -742,9 +742,9 @@ div.order_selector {
 
 .iconClock {
   display: inline-block;
-  margin-right: 8px;
   width: 15px;
   height: 15px;
+  margin-right: 8px;
   background: image-url('layout/clock.png') no-repeat 0 0 transparent;
 }
 

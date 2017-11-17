@@ -41,16 +41,16 @@ $actionBarHeight: 17px;
   @include display-flex();
   @include align-items(center);
   @include justify-content(center);
+  box-sizing: border-box;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;
   margin-right: $iconMargin;
   margin-bottom: $iconMargin;
+  overflow: hidden;
   border: 1px solid $cForms-border;
   border-radius: 4px;
   background: $cStructure-mainBkg;
-  box-sizing: border-box;
-  overflow: hidden;
 
   &:last-child {
     margin-right: 0;

@@ -4,8 +4,8 @@
 
 
 .CreateDialog-header {
-  max-height: 100px;
   min-height: 100px!important;
+  max-height: 100px;
 }
 .CreateDialog-header.with-separator { border-bottom: 1px solid $cStructure-mainLine }
 
@@ -40,15 +40,15 @@
 }
 
 .CreateDialog-header .Dialog-headerTitle {
-  line-height: $sLineHeight-large;
-  font-size: $sFontSize-larger;
   color: $cTypography-help;
+  font-size: $sFontSize-larger;
+  line-height: $sLineHeight-large;
 }
 
 .CreateDialog-header .Dialog-headerText {
+  color: $cTypography-help;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
-  color: $cTypography-help;
 }
 
 .CreateDialog-header .Dialog-headerIconBadge {
@@ -57,36 +57,36 @@
   right: -8px;
   width: 15px;
   height: 15px;
-  line-height: $sLineHeight-smaller;
-  text-align: center;
   border: 1px solid #CCC;
   border-radius: 15px;
   background: white;
+  line-height: $sLineHeight-smaller;
+  text-align: center;
 }
 
 .CreateDialog-header .Dialog-headerIconBadge .CDB-IconFont {
+  margin-top: 1px;
   color: $cTypography-secondary;
   font-size: $sFontSize-smaller;
   vertical-align: top;
-  margin-top: 1px;
 }
 
 .CreateDialog-headerButton {
-  position: absolute;
   display: block;
-  left: 30px;
+  position: absolute;
+  z-index: 1;
   top: 40px;
+  left: 30px;
   width: 38px;
   height: 38px;
-  line-height: 38px;
   border: 1px solid #CCC;
+  border-radius: 40px;
   outline: none;
+  background: none;
+  color: #CCC;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
-  color: #CCC;
-  border-radius: 40px;
-  background: none;
-  z-index: 1;
+  line-height: 38px;
 
   &:hover {
     border: 1px solid #999;

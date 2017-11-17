@@ -14,20 +14,20 @@ $heightTall: 450px;
 .FavMap {
   position: relative;
   height: $height / 2;
-  background: #333 image-url('layout/noise.png') repeat 0 0;
   overflow: hidden;
+  background: #333 image-url('layout/noise.png') repeat 0 0;
 }
 
 .FavMap:before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.1));
   @include transition(all, 100ms, ease-in-out);
+  content: '';
   position: absolute;
+  z-index: 9995;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 0;
-  content: '';
-  z-index: 9995;
 }
 
 .FavMap:not(.is-pre-loading):not(.is-loading):before {
@@ -64,11 +64,11 @@ $heightTall: 450px;
 .FavMapTitle {
   @include opacity(1);
   position: absolute;
+  z-index: 10000;
   bottom: 45px;
   width: 100%;
   transition: opacity 150ms ease-in-out;
   line-height: normal;
-  z-index: 10000;
 }
 
 .FavMapTitle.is-hidden {
@@ -76,9 +76,9 @@ $heightTall: 450px;
 }
 
 .FavMapTitle-inner {
+  box-sizing: border-box;
   width: 940px;
   margin: auto;
-  box-sizing: border-box;
 }
 
 .FavMapTitle-sectionTitle,

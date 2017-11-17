@@ -3,12 +3,12 @@
 
 .Btn {
   display: inline-block;
-  text-align: center;
-  white-space: nowrap;
+  transition: all .15s;
+  border-radius: 50px;
   font-weight: 400;
   line-height: 1;
-  border-radius: 50px;
-  transition: all .15s;
+  text-align: center;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: none;
@@ -21,8 +21,8 @@
 
   > span {
     display: block;
-    font-weight: 400;
     border-radius: 50px;
+    font-weight: 400;
   }
 }
 
@@ -57,8 +57,8 @@
 }
 
 .Btn--white {
-  color: #FFF;
   border-color: rgba(#FFF, .3);
+  color: #FFF;
 
   &:hover {
     background: #FFF;
@@ -67,8 +67,8 @@
 }
 
 .Btn--green {
-  color: #8EB83F;
   border-color: #8EB83F;
+  color: #8EB83F;
 
   &:hover {
     background: #8EB83F;
@@ -87,8 +87,8 @@
 }
 
 .Btn--blue {
-  color: #397EB9;
   border-color: #397EB9;
+  color: #397EB9;
 
   &:hover {
     background: #397EB9;

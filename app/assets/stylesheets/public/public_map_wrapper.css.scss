@@ -15,24 +15,24 @@
 
   .Checkbox {
     position: absolute;
+    z-index: 30;
     top: 28px;
     right: 28px;
-    z-index: 30;
-    background-color: rgba(#000, .5);
     padding: 3px 5px;
     border-radius: 3px;
+    background-color: rgba(#000, .5);
   }
 
   .Checkbox-label {
-    font-size: $sFontSize-normal;
     color: #FFF;
+    font-size: $sFontSize-normal;
   }
 }
 
 .cartodb-map.public {
   @include position(0, 0, 0, 0);
-  border-radius: 3px;
   overflow: hidden;
+  border-radius: 3px;
 
   .cartodb-map-wrapper.with_header div.cartodb-zoom,
   .cartodb-map-wrapper.with_header div.cartodb-share,
@@ -48,34 +48,34 @@
 
   div.cartodb-layer-selector-box {
     position:relative;
-    float:right;
     margin: 20px 20px 0 0;
+    float:right;
   }
 
   div.cartodb-share {
     display:none;
     position:relative;
-    float:right;
-    margin: 20px 20px 0 0;
     z-index: 5;
+    margin: 20px 20px 0 0;
+    float:right;
   }
 
   div.cartodb-tiles-loader {
-    position:relative;
-    float:left;
     display:block;
-    left:0;
+    position:relative;
     top:0;
+    left:0;
+    float:left;
   }
 
   div.cartodb-tiles-loader div.loader {
-    position:absolute;
     display:block;
+    position:absolute;
     top:70px;
     left:-30px;
-    margin:20px 0 0 0;
     width: 28px;
     height:28px;
+    margin:20px 0 0 0;
   }
 
   div.cartodb-zoom {

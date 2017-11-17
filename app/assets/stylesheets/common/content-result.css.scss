@@ -20,42 +20,42 @@
 
 .ContentResult.is-empty {
   width: auto;
+  min-height: 0;
   margin: 0 auto;
   padding-top: 0;
-  min-height: 0;
 }
 
 .ContentResult.no-datasets {
   $blueBkg: #F5FAFE;
   position: relative;
+  z-index: 9;
   width: auto;
   height: 232px;
   min-height: 0;
   margin: 0 auto;
   padding: 28px 0 0 0;
-  border-bottom: 1px solid $cStructure-softLine;
   overflow: hidden;
-  z-index: 9;
+  border-bottom: 1px solid $cStructure-softLine;
 
   &:after,
   &:before {
     content: '';
     position: absolute;
+    z-index: 0;
     top: 0;
     bottom: 0;
-    z-index: 0;
   }
 
   .NoDatasets-illustration {
     position: absolute;
-    left: 50%;
     bottom: -52px;
+    left: 50%;
     width: 671px;
     height: 195px;
     margin-left: -335px;
     background-image: image-url('layout/search_lens_bkg.png');
-    background-position: center;
     background-repeat: no-repeat;
+    background-position: center;
     background-size: 100%;
   }
   .NoDatasets-illustration--secondary { @include background(image-url('layout/connect-dataset.png') center center no-repeat) }
@@ -63,21 +63,21 @@
 
 .ContentResult-smallLoader {
   position: absolute;
+  z-index: 10;
   top: -2px;
-  left: 0;
   right: 0;
+  left: 0;
   width: 100%;
   height: 2px;
-  background: transparent;
   overflow: hidden;
-  z-index: 10;
+  background: transparent;
 
   &:before {
     content: '';
-    position: absolute;
     display: block;
-    width: 600px;
+    position: absolute;
     right: 0;
+    width: 600px;
     height: 2px;
     background: rgba(black, 0.55);
 
@@ -91,9 +91,9 @@
   height: 38px;
   border: 1px solid $cStructure-mainLine;
   border-radius: 2px;
-  line-height:36px;
-  font-size: 22px;
   color: $cTypography-help;
+  font-size: 22px;
+  line-height:36px;
 }
 // Icon types
 .ContentResult-iconNegative {
@@ -114,16 +114,16 @@
 .ContentResult-title {
   display: block;
   margin: 15px 0 10px 0;
+  color: $cTypography-paragraphs;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-normal;
   line-height: $sLineHeight-largest;
-  color: $cTypography-paragraphs;
 }
 
 .ContentResult-text {
   display: block;
-  font-size: $sFontSize-large;
   color: $cTypography-paragraphs;
+  font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
 }
 

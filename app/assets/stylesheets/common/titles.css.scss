@@ -48,11 +48,11 @@
 }
 
 .Title--em {
+  color: rgba(#FFF, .6);
+  font-size: 18px;
   font-style: italic;
   font-weight: 200;
-  font-size: 18px;
   line-height: 1;
-  color: rgba(#FFF, .6);
 }
 
 .Title--bold {
@@ -60,12 +60,12 @@
 }
 
 .Title-small {
-  font-size: 16px;
-  line-height: 19px;
-  color: rgba(#FFF, .5);
-  text-transform: uppercase;
-  letter-spacing: 1px;
   margin-bottom: 12px;
+  color: rgba(#FFF, .5);
+  font-size: 16px;
+  letter-spacing: 1px;
+  line-height: 19px;
+  text-transform: uppercase;
 }
 
 @media (max-width: 960px) {

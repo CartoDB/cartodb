@@ -28,6 +28,7 @@ ul { list-style: none }
 a {
   text-decoration: none;
   color: #1181FB;
+
   &:hover {
     text-decoration: underline;
   }
@@ -39,6 +40,7 @@ button {
   border: 0;
   background: transparent;
 }
+
 button:focus {
   outline: none;
 }

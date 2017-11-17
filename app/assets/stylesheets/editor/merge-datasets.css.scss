@@ -8,6 +8,7 @@
   @include justify-content(space-between, justify);
   @include align-items(stretch, stretch);
 }
+
 .MergeDatasets-stickyHeader {
   background-color: $cStructure-mainBkg;
   border-bottom: 1px solid $cStructure-mainLine;
@@ -17,16 +18,19 @@
   width: 100%;
   z-index: 2;
 }
+
 .MergeDatasets-stickyHeaderContent {
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
 }
+
 .MergeDatasets-instructions {
   width: 630px;
   margin: 0 auto $sMargin-group auto;
   text-align: center;
 }
+
 .MergeDatasets-desc {
   @include display-flex();
   @include flex-direction(column);
@@ -36,15 +40,18 @@
   width: 245px;
   margin-left: auto;
   margin-right: auto;
+
   &.MergeDatasets-desc--legend {
     & > *:first-child { margin-top: $sMargin-group }
     & > *:nth-child(even) { margin-bottom: $sMargin-group }
     & > *:nth-child(odd) { margin-bottom: $sMargin-elementInline }
   }
 }
+
 .MergeDatasets-countDescIcon {
   width: 50px;
   height: 50px;
+
   @include background(sprite($table-sprites, 'spatial-merge-count') no-repeat);
   margin-top: $sMargin-section;
   margin-bottom: $sMargin-elementInline;
@@ -61,11 +68,13 @@
 // compensate for List--selections that occupy more space and thus adds more margins to items
 .MergeDatasets-list--sticky1st { margin-left: 6px }
 .MergeDatasets-list--sticky2nd { margin-left: 90px }
+
 .MergeDatasets-rowItem {
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(flex-start);
 }
+
 .MergeDatasets-rowItemRadio {
   margin-top: $sMargin-min; // make the radio button aligned with the text on the right side
   margin-right: $sMargin-elementInline;
@@ -73,6 +82,7 @@
 .MergeDatasets-radioPlaceholder { width: 16px }
 
 .MergeDatasets-selectAllText { margin-right: $sMargin-elementInline }
+
 .MergeDatasets-fixedAboveFooter {
   position: fixed;
   bottom: 100px; //to appear above fixed footer
@@ -87,10 +97,12 @@
     display: block;
     width: 100%;
     height: 18px;
+
     @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     z-index: 2;
   }
 }
+
 .MergeDatasets-puzzleMergeMethod {
   padding-left: $sMargin-elementInline;
   padding-right: $sMargin-elementInline;

@@ -10,18 +10,22 @@ $selectedColor: white;
 
 .UserNotifications {
   position:relative;
+
   @include display-flex();
   text-decoration: none!important;
   color: $idleColor;
 }
+
 .UserNotifications:hover {
   color: $selectedColor;
 }
+
 .UserNotifications-Icon {
   font-size: $sFontSize-large;
-  color: #FFFFFF;
+  color: #FFF;
   &:hover { color: $selectedColor }
 }
+
 .UserNotifications-badge {
   @include opacity(0);
   @include transition(all, .5s, ease-in-out);
@@ -32,6 +36,7 @@ $selectedColor: white;
 // States
 .UserNotifications.has--alerts {
   color: $selectedColor;
+
   .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
     @include transform(scale(1));
@@ -39,6 +44,7 @@ $selectedColor: white;
     color: $selectedColor;
   }
 }
+
 .UserNotifications.has--alerts:hover {
   .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);

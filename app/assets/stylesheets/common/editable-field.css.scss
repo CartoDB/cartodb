@@ -4,7 +4,6 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 @import "../variables/mixins";
-
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -13,7 +12,6 @@ $fieldBgColor: transparent;
 $fieldBorderColor: #DFE8EC;
 
 .EditableField {  
-
   .EditableField-button {
     margin-right: 0;
 
@@ -21,6 +19,7 @@ $fieldBorderColor: #DFE8EC;
       text-decoration: underline;
     }
   }
+
   .EditableField-input {
     background: none;
     border: none;
@@ -30,11 +29,11 @@ $fieldBorderColor: #DFE8EC;
     overflow: hidden;
     width: 100%;
 
-    background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
-    background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
-    background: -ms-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
-    background: -o-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
-    background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
+    background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
+    background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
+    background: -ms-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
+    background: -o-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
+    background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
     background-size: 100% $baseSize * 2;
   }
 }
@@ -45,6 +44,7 @@ $fieldBorderColor: #DFE8EC;
   .EditableField-button {
     display: none;
   }
+
   .EditableField-input {
     display: block;
     resize: none;

@@ -9,6 +9,7 @@
   width: 100%;
   background: #FFF7DF;
 }
+
 .FlashMessage > .u-inner {
   @include display-flex();
   @include justify-content(center, justify);
@@ -17,6 +18,7 @@
   height: 80px;
   line-height: $sLineHeight-larger;
 }
+
 .FlashMessage.FlashMessage--inDialogWithFiltersNavListing {
   position: fixed;
   top: 157px;
@@ -26,35 +28,44 @@
     @include justify-content(center, center);
   }
 }
+
 .FlashMessage--success {
   background: #E8F0D6;
 }
+
 .FlashMessage--error {
   background: #FFDBDB;
 }
+
 .FlashMessage--warning {
   background: #FFFFD9;
 }
+
 .FlashMessage--main {
   background: #F0F7FC;
 }
+
 .FlashMessage-info {
   color: $cTypography-headers;
   font-size: $sFontSize-large;
 }
+
 .FlashMessage-detail {
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
 }
+
 .FlashMessage-info--larger {
   max-width: 720px;
 }
+
 .FlashMessage-content {
   @include display-flex();
   @include justify-content(space-between);
   @include align-items(center);
   width: 100%;
 }
+
 .FlashMessage--button {
   height: 28px;
   padding: 0 20px;
@@ -71,6 +82,7 @@
   text-decoration: none;
   text-transform: uppercase;
   box-sizing: border-box;
+
   &:hover {
     background-color: $cHighlight-mainHover;
   }

@@ -8,10 +8,12 @@
   min-height: 100px!important;
 }
 .CreateDialog-header.with-separator { border-bottom: 1px solid $cStructure-mainLine }
+
 .CreateDialog-headerSteps {
   display: block;
   text-align: center;
 }
+
 .CreateDialog-headerStep {
   display: inline-block;
   width: auto;
@@ -28,22 +30,27 @@
   border-color: #CCC;
   line-height: 42px;
 }
+
 .CreateDialog-header .Dialog-headerIcon .CDB-IconFont {
   color: #CCC;
 }
+
 .CreateDialog-header .CDB-IconFont-add {
   font-size: 20px;
 }
+
 .CreateDialog-header .Dialog-headerTitle {
   line-height: $sLineHeight-large;
   font-size: $sFontSize-larger;
   color: $cTypography-help;
 }
+
 .CreateDialog-header .Dialog-headerText {
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }
+
 .CreateDialog-header .Dialog-headerIconBadge {
   position: absolute;
   top: -8px;
@@ -56,12 +63,14 @@
   border-radius: 15px;
   background: white;
 }
+
 .CreateDialog-header .Dialog-headerIconBadge .CDB-IconFont {
   color: $cTypography-secondary;
   font-size: $sFontSize-smaller;
   vertical-align: top;
   margin-top: 1px;
 }
+
 .CreateDialog-headerButton {
   position: absolute;
   display: block;
@@ -78,6 +87,7 @@
   border-radius: 40px;
   background: none;
   z-index: 1;
+
   &:hover {
     border: 1px solid #999;
     color: #999;
@@ -88,18 +98,22 @@
 .CreateDialog-headerStep.is-selected,
 .CreateDialog-headerStep.is-selectable:hover {
   .Dialog-headerIcon { border-color: $cIcons-active }
+
   .CDB-IconFont {
     color: $cIcons-active;
   }
+
   .Dialog-headerText,
   .Dialog-headerTitle {
     color: $cTypography-paragraphs;
   }
+
   .Dialog-headerIconBadge {
     border-color: $cHighlight-main;
     color: $cHighlight-positive;
   }
 }
+
 .CreateDialog-headerStep.CreateDialog-headerStep--single {
   .Dialog-headerText,
   .Dialog-headerTitle {

@@ -64,6 +64,7 @@ $linkedin: #007BB6;
     display: inline-block;
   }
 }
+
 .PublicButton--responsive {
   width: 100%;
 
@@ -84,16 +85,19 @@ $linkedin: #007BB6;
     padding: 8px $spacing-unit;
   }
 }
+
 .PublicButton--sMedium {
   > span {
     padding: $spacing-unit / 2 $spacing-unit;
   }
 }
+
 .PublicButton--sLarge {
   > span {
     padding: 12px $spacing-unit;
   }
 }
+
 .PublicButton--sXlarge {
   > span {
     padding: 14px $spacing-unit * 2;
@@ -104,6 +108,7 @@ $linkedin: #007BB6;
 .PublicButton--cWhite {
   @include button(#FFF, $blue1);
 }
+
 .PublicButton--cBlue {
   @include button($blue1, #FFF);
 
@@ -137,6 +142,7 @@ $linkedin: #007BB6;
     }
   }
 }
+
 .PublicButton--public {
   font-size: $sFontSize-normal;
   text-transform: none;

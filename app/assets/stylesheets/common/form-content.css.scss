@@ -7,11 +7,13 @@
 
 $sLabel-width: 140px;
 .Form--minHeight { min-height: 400px }
+
 .Form-title {
   display: block;
   margin: $sMargin-section 0;
   width: 100%;
 }
+
 .Form-titleHeader {
   display: block;
   padding-bottom: 12px;
@@ -21,6 +23,7 @@ $sLabel-width: 140px;
   color: $cTypography-headers;
   font-weight: $sFontWeight-bold;
 }
+
 .Form-titleText {
   width: 460px;
   font-size: $sFontSize-large;
@@ -30,38 +33,47 @@ $sLabel-width: 140px;
   font-style: normal;
 }
 .Form-titleText--negative { color: $cHighlight-negative }
+
 .Form-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
   list-style-type: disc;
 }
+
 .Form-listItem {
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
 }
+
 .Form-modal {
   @include justify-content(center);
   @include align-items(center);
   width: 100%;
 }
+
 .Form-row {
   @include display-flex();
   @include justify-content(flex-start, start);
   padding: 10px 0;
 }
+
 .Form-title + .Form-row {
   padding-top: 0;
 }
+
 .Form-row.Form-row--centered {
   @include justify-content(center);
 }
+
 .Form-row.Form-row--step {
   position: relative;
+
   @include justify-content(space-between, justify);
   @include align-items(center);
   padding-top: 0;
   padding-bottom: $sMargin-group;
+
   &:before {
     content: '';
     border-radius: 50px;
@@ -80,27 +92,32 @@ $sLabel-width: 140px;
   &:nth-child(5):before { content: '5' }
 }
 .Form-row.Form-row--step:first-child { padding-top: 0 }
+
 .Form-row.Form-row--step.is-done {
   &:before {
     color: $cHighlight-stepDone;
     border-color: $cHighlight-stepDone;
   }
 }
+
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
   margin-left: -$sLabel-width;
 }
 .Form-row.Form-row--spaced { padding: $sMargin-element 0 }
+
 .Form-rowLabel {
   width: 140px;
   margin-right: $sMargin-element;
   text-align: right;
 }
+
 .Form-rowLabel.Form-rowLabel--leftAligned {
   width: $sLabel-width;
   margin-right: $sMargin-element;
   text-align: left;
 }
+
 .Form-label {
   line-height: 40px;
   font-size: $sFontSize-normal;
@@ -108,14 +125,17 @@ $sLabel-width: 140px;
   color: $cTypography-paragraphs;
   text-transform: capitalize;
 }
+
 .Form-label.has-error {
   color: $cHighlight-negative;
 }
+
 .Form-label.Form-label--verticalAlignTop {
   line-height: inherit;
 }
 .Form-label--multipleLines { line-height: 20px }
 .Form-label.Form-label--large { font-size: $sFontSize-large }
+
 .Form-label.Form-label--step {
   @include flex-grow(1);
   line-height: normal;
@@ -125,6 +145,7 @@ $sLabel-width: 140px;
 
 .Form-rowData {
   position: relative;
+
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
@@ -143,13 +164,16 @@ $sLabel-width: 140px;
 .Form-rowData--long { width: 380px }
 .Form-rowData--med { width: 300px }
 .Form-rowData--short { width: 170px }
+
 .Form-rowData--shorter {
   width: 130px;
 }
+
 .Form-rowData--step {
   width: 260px;
   margin-right: 0;
 }
+
 .Form-rowDataExtra {
   position: absolute;
   right: -52px;
@@ -180,9 +204,11 @@ $sLabel-width: 140px;
   color: #666;
   z-index: 2;
 }
+
 .Form-inputField--withLabel {
   padding: 0 12px  0;
   background: #FFF;
+
   &:hover {
     border-color: #999;
   }
@@ -192,9 +218,11 @@ $sLabel-width: 140px;
   color: $cHighlight-negative;
   border-color: rgba(#DD3B37,0.6);
 }
+
 .Form-inputField--withLabel.has-error .Form-inputLabel {
   color: rgba($cHighlight-negative, 0.6);
 }
+
 .Form-inputField--withLabel.has-error .Form-input {
   color: $cHighlight-negative;
 }
@@ -209,11 +237,13 @@ $sLabel-width: 140px;
   border-radius: 0;
   background: none;
 }
+
 .Form-inputField .Form-inputLabel {
   color: #CCC;
 }
 
 .Form-input.Form-input--error { border-color: rgba(#DD3B37,0.6) }
+
 .Form-input.Form-input--error:focus,
 .Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
 
@@ -226,6 +256,7 @@ $sLabel-width: 140px;
 .Form-input--long { width: 354px }
 .Form-input--med { width: 274px }
 .Form-input--short { width: 114px }
+
 .Form-input--shorter {
   width: 30px;
 }
@@ -243,6 +274,7 @@ $sLabel-width: 140px;
     padding-right: 100px;
   }
 }
+
 .Form-input.has-submit {
   padding: 0 70px 0 12px;
 
@@ -251,6 +283,7 @@ $sLabel-width: 140px;
   &.Form-input--med { width: 227px }
   &.Form-input--short {}
 }
+
 .Form-inputSubmit {
   position: absolute;
   top: 50%;
@@ -261,6 +294,7 @@ $sLabel-width: 140px;
   background: none;
   z-index: 2;
 }
+
 .Form-inputIcon {
   position: absolute;
   right: 14px;
@@ -270,6 +304,7 @@ $sLabel-width: 140px;
   color: $cTypography-help;
 }
 .Form-inputIcon--clock { top: 11px }
+
 .Form-inputError {
   position: absolute;
   top: 50%;
@@ -285,17 +320,22 @@ $sLabel-width: 140px;
   color: $cHighlight-negative;
   font-size: $sFontSize-normal;
   border-radius: 4px;
+
   @include transition(margin, 200ms, ease-in-out);
 }
+
 .Form-inputError.is-visible {
   margin-top: 15px;
 }
+
 .Form-input.is-disabled {
   background: $cStructure-grayBkg;
 }
+
 .Form-input.is-invalid {
   border-color: $cHighlight-negative;
 }
+
 .Form-inputField.is-focused {
   border-color: $cTypography-secondary;
 }
@@ -304,6 +344,7 @@ $sLabel-width: 140px;
 .Form-input--noBorder {
   border: none;
 }
+
 .Form-input--noBkg,
 .Form-input--noBkg.is-disabled {
   background: transparent;
@@ -315,20 +356,24 @@ $sLabel-width: 140px;
   max-height: 110px;
 }
 .Form-textarea.is-disabled { color: $cTypography-help }
+
 .Form-copyIcon {
   top: 10px;
   right: 12px;
   font-size: $sFontSize-largest;
 }
 .Form-copyIcon.hover { color: $cTypography-paragraphs }
+
 .Form-text--preview {
   font-size: $sFontSize-normal;
   color: $cTypography-secondary;
   line-height: $sLineHeight-large;
 }
+
 .Form-avatar {
 
 }
+
 .Form-avatarPreview {
   position: relative;
   width: 100px;
@@ -338,12 +383,14 @@ $sLabel-width: 140px;
   border-radius: 4px;
   overflow: hidden;
 }
+
 .Form-avatarPreviewImage {
   position: relative;
   max-width: 100px;
   border-radius: 4px;
   background: $cStructure-grayBkg;
 }
+
 .Form-avatarPreviewLoader {
   position: absolute;
   top: 0;
@@ -354,6 +401,7 @@ $sLabel-width: 140px;
   border-radius: 4px;
   z-index: 2;
 }
+
 .Spinner.Form-avatarPreviewSpinner {
   position: absolute;
   top: 50%;
@@ -361,11 +409,13 @@ $sLabel-width: 140px;
   margin: -20px 0 0 -20px;
   z-index: 1;
 }
+
 .Form-avatar .input-group {
   position: absolute;
   top: 10px;
   left: 120px;
 }
+
 .Form-avatar .form-control {
   position: absolute;
   top: 0;
@@ -375,42 +425,51 @@ $sLabel-width: 140px;
   color: $cTypography-secondary;
   display: none;
 }
+
 .Form-avatar .btn {
   position: absolute;
   top: 0;
   left: 0;
   width: 85px;
   color: $cTypography-link;
+
   &:hover {
     cursor: pointer;
     text-decoration: underline;
     color: $cTypography-linkHover;
   }
 }
+
 .Form-avatar .btn[disabled] {
   color: $cTypography-help;
+
   &:hover {
     cursor: default;
     text-decoration: none;
     color: $cTypography-help;
   }
 }
+
 .Form-link {
   color: $cTypography-link;
   text-decoration: underline;
+
   &:hover {
     color: $cTypography-linkHover;
     cursor: pointer;
   }
 }
+
 .Form-link.is-disabled {
   color: $cTypography-help;
   text-decoration: none;
+
   &:hover {
     color: $cTypography-help;
     cursor: default;
   }
 }
+
 .Form-upload {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -418,19 +477,23 @@ $sLabel-width: 140px;
   width: 213px;
   height: 50px;
   padding: 0 10px 0 74px;
+
   @include background(image-url('layout/export-files.png') no-repeat 10px 10px #F3F3F3);
   border: 1px dashed $cStructure-mainLine;
   border-radius: 2px;
 }
+
 .Form-upload.is-dropping {
   border-color: rgba(black, 0.4);
   .Form-fileButton { display: none; }
   .Form-fileLabel { color: rgba(black, 0.4); }
 }
+
 .Form-file {
-  &:hover .Button--main { background: #007fbd }
+  &:hover .Button--main { background: #007FBD }
   &:hover .Button--negative { background-color: rgba(#B93F37, 1) }
 }
+
 .Form-file input[type="file"] {
   position: absolute;
   top: 0;
@@ -445,16 +508,19 @@ $sLabel-width: 140px;
   cursor: pointer;
   z-index: 3;
 }
+
 .Form-fileLabel {
   width: 130px;
   line-height: 17px;
   color: $cTypography-secondary;
   font-size: $sFontSize-smallUpperCase;
 }
+
 .Form-fileLabel--error {
   display: none;
   color: $cHighlight-negative;
 }
+
 .Form-fileButton {
   height: 26px;
   padding: 0 14px;
@@ -462,6 +528,7 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-normal;
 }
 .Form .dz-preview { display: none }
+
 .Form-fileDropzone {
   position: absolute;
   display: none;
@@ -478,11 +545,13 @@ $sLabel-width: 140px;
   font-size: $sFontSize-large;
   z-index: 1;
 }
+
 .Form-rowInfo {
   @include display-flex();
   line-height: 40px;
   max-width: 380px;
 }
+
 .Form-rowInfoText {
   font-size: $sFontSize-normal;
   color: $cTypography-help;
@@ -490,14 +559,17 @@ $sLabel-width: 140px;
 .Form-rowInfoText--centered { text-align: center }
 .Form-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
 .Form-rowInfoText--block { width: 100% }
+
 .Form-rowInfoText--multipleLines {
   line-height: 20px;
 }
 .Form-rowInfoText--error { color: #DD3B37 }
+
 .Form-rowInfoText--error .Form-link {
   color: #DD3B37;
   text-decoration: underline;
 }
+
 .Form-footer {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -506,11 +578,13 @@ $sLabel-width: 140px;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
 }
+
 .Form-footerText {
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
   color: $cTypography-secondary;
 }
+
 .Form-footerIcon {
   width: 20px;
   height: 20px;
@@ -523,6 +597,7 @@ $sLabel-width: 140px;
   color: white;
   text-align: center;
 }
+
 .Form-tags {
   position: relative;
   width: 100%;
@@ -537,6 +612,7 @@ $sLabel-width: 140px;
   line-height: 16px;
 }
 .Form-tagsList.tagit { padding: 0 5px 5px 5px }
+
 .Form-tagsList.tagit .tagit-choice {
   padding: 0 30px 0 11px;
   margin: 5px 5px 0 0;
@@ -545,32 +621,38 @@ $sLabel-width: 140px;
   color: #746E76;
   border-radius: 2px;
 }
+
 .Form-tagsList.tagit .tagit-choice .tagit-close {
   line-height: normal;
   right: 10px;
 }
+
 .Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
   display: inline-block;
   color: #C5CCD1;
   &:hover { color: #AAA }
 }
 .Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
+
 .Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
   font-weight: $sFontWeight-normal;
   font-style: italic;
   color: #AAA
 }
+
 .Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
   font-weight: $sFontWeight-normal;
   font-style: italic;
   color: #AAA
 }
+
 .Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
   font-weight: $sFontWeight-normal;
   font-style: italic;
   color: #AAA
 }
 .Form-tags.is-focus { border-color: #1181FB }
+
 .Form-tags.is-disabled {
   background: $cStructure-grayBkg;
 

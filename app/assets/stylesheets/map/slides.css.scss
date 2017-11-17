@@ -11,7 +11,6 @@
 @import "../old_elements/elements-sprite";
 
 .slides_panel {
-
   &.active {
     left: 0;
   }
@@ -30,9 +29,10 @@
   .scrollpane {
     padding-top: 20px;
     height: 100%;
-    top: 0px;
+    top: 0;
     bottom: 0;
     position:absolute;
+
     /*overflow: hidden;*/
     outline:none;
     width: 100%;
@@ -45,11 +45,14 @@
     .jspVerticalBar * { margin: 0; padding: 0; }
     .jspCap { display: none; }
     .jspTrack { background: none; position: relative; }
-    .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+
+    .jspDrag { background: rgba(#BBB, .5);
+
+      @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
     .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
     .jspVerticalBar .jspArrow { height: 10px; }
     .jspVerticalBar .jspArrow:focus { outline: none; }
-    .jspCorner { background: #eeeef4; float: left; height: 100%; }
+    .jspCorner { background: #EEEEF4; float: left; height: 100%; }
   }
 
   .slide_view {
@@ -68,17 +71,19 @@
       pointer-events: none;
       cursor: default;
     }
+
     &.fake a.close,
     &.fake a.info {
       display: none;
     }
+
     &.fake:hover .count { 
       background: rgba(#000, .1);
     }
 
     &.active:hover .count { background: #AAC6DF; }
 
-    &:hover .count { background: #BBBBBB; }
+    &:hover .count { background: #BBB; }
     &:hover .close { @include opacity(1); }
 
     &.active { 
@@ -97,6 +102,7 @@
 
     &.add {
       background: rgba(#E8E8E8, .1);
+
       @include simple-transition(background, 150ms);
 
       margin-bottom: 70px;
@@ -145,8 +151,8 @@
 
       @include box-shadow(1px 1px 5px rgba(#000, .5));
 
-      color: #fff;
-      border: 1px solid #fff;
+      color: #FFF;
+      border: 1px solid #FFF;
       background: #333;
       font-size: 10px;
       font-family: "helvetica neue", "helvetica", arial;
@@ -155,7 +161,6 @@
 
       @include opacity(0);
       @include simple-transition(opacity, .10s, ease-in-out);
-
       @include border-radius(90px);
 
       &:hover { text-decoration:none; }
@@ -169,6 +174,7 @@
       height: 16px;
       padding: 4px 6px;
       background: #333;
+
       @include border-radius(2px);
       @include box-sizing(border-box);
 
@@ -198,9 +204,10 @@
       line-height: normal;
       vertical-align: middle;
       text-align: center;
-      color: #fff;
+      color: #FFF;
       font-weight: bold;
       font-size: 31px;
+
       @include simple-transition(background, 150ms);
 
     }
@@ -216,13 +223,13 @@
     @include border-radius(2px);
     text-decoration:none;
 
-    background: #eeeeee;
-    background: -moz-linear-gradient(top, #eeeeee 0%, #e5e5e5 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#e5e5e5));
-    background: -webkit-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
-    background: -o-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
-    background: -ms-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
-    background: linear-gradient(to bottom, #eeeeee 0%,#e5e5e5 100%);
+    background: #EEE;
+    background: -moz-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#EEE), color-stop(100%,#E5E5E5));
+    background: -webkit-linear-gradient(top, #EEE 0%,#E5E5E5 100%);
+    background: -o-linear-gradient(top, #EEE 0%,#E5E5E5 100%);
+    background: -ms-linear-gradient(top, #EEE 0%,#E5E5E5 100%);
+    background: linear-gradient(to bottom, #EEE 0%,#E5E5E5 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
   }
 
@@ -241,6 +248,7 @@
       &.seconds {
         .form { text-align: center; }
         a.radiobutton { margin: 0 3px 0 0; }
+
         a.radiobutton, .form {
           @include inline-block();
         }

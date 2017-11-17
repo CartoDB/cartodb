@@ -14,6 +14,7 @@
   width:100%;
   padding: 13px 0 0 0;
   margin: 30px 0 0 0;
+
   @include clearfix();
 
   &.disabled { display:none }
@@ -100,9 +101,11 @@
     top:7px;
     width:14px;
     height:13px;
+
     @include background(image-url('layout/clone-icon.png') no-repeat 0 0);
   }
 }
+
 .extra_options .button.grey.edit,
 .extra_options .button.grey.oneclick {
   position:relative;
@@ -120,7 +123,6 @@
 @media only screen and (max-width: 710px) {
   body.public-map .extra_options,
   body.public .extra_options {
-    
     .download_options {
       display:block!important;
       margin: 10px 0 20px 0!Important;
@@ -131,7 +133,7 @@
     .user-options {
       float:left!important;
       width:100%;
-      margin-top:0px;
+      margin-top:0;
     }
   }
 }
@@ -139,7 +141,6 @@
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
   body.public-map .extra_options,
   body.public .extra_options {
-    
     .download_options {
       display:block!important;
       margin: 10px 0 20px 0!Important;

@@ -10,14 +10,14 @@ $elements-sprite-base-class: ".elements-sprite" !default;
 $elements-sprite-dimensions: false !default;
 
 $elements-sprites: sprite-map("sprites/elements/*.png",
-  $position:                                  0%,
-  $spacing:                                   0,
-  $repeat:                                    no-repeat,
-  $readonly-spacing:                          0,
-  $elements-question-spacing:                 10px,
-  $elements-image_color-spacing:              5px,
-  $elements-image_fill-spacing:               15px,
-  $elements-custom_text_combo_icons-spacing:  10px
+$position:                                  0%,
+$spacing:                                   0,
+$repeat:                                    no-repeat,
+$readonly-spacing:                          0,
+$elements-question-spacing:                 10px,
+$elements-image_color-spacing:              5px,
+$elements-image_fill-spacing:               15px,
+$elements-custom_text_combo_icons-spacing:  10px
 );
 
 // All sprites should extend this class
@@ -41,6 +41,7 @@ $elements-sprites: sprite-map("sprites/elements/*.png",
 // It will also apply the image dimensions if $dimensions is true.
 @mixin elements-sprite($name, $dimensions: $elements-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$elements-sprite-base-class};
+
   @include sprite($elements-sprites, $name, $dimensions, $offset-x, $offset-y)
 }
 

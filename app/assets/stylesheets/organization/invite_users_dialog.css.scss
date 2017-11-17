@@ -10,15 +10,18 @@ $width: 800px;
 .InviteUsers-form {
   width: $width;
 }
+
 .InviteUsers-formContent,
 .InviteUsers-formFooter {
   width: $width;
   margin: 0 auto;
 }
+
 .InviteUsers-formContent {
   position: relative;
   padding: 28px 0 120px;
 }
+
 .InviteUsers-formFooter {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -26,6 +29,7 @@ $width: 800px;
   width: $width;
   background: #F9F9F9;
 }
+
 .Form-rowData.InviteUsers-userType {
   @include justify-content(flex-start);
 
@@ -33,6 +37,7 @@ $width: 800px;
     margin-left: 10px;
   }
 }
+
 .InviteUsers-formFooterSticky {
   position: fixed;
   bottom: 0;
@@ -41,6 +46,7 @@ $width: 800px;
   height: 97px;
   z-index: 10;
 }
+
 .InviteUsers .Form-rowInfoText--error {
   width: 140px;
 }

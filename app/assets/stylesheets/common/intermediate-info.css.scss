@@ -17,6 +17,7 @@
   margin: 0 auto;
   text-align: center;
 }
+
 _:-ms-lang(x),
 .IntermediateInfo {
   padding-top: 100px;
@@ -30,6 +31,7 @@ _:-ms-lang(x),
 .IntermediateInfo-title--error {
   color: $cHighlight-negative;
 }
+
 .IntermediateInfo.IntermediateInfo--pullUp {
   margin-top: -50px;
   padding: 0 0 50px;

@@ -9,8 +9,9 @@
   
 footer {
   display:block;
+
   @include box-sizing(border-box);
-  color: #999999;
+  color: #999;
 
   p { width: auto; }
 
@@ -52,9 +53,9 @@ footer {
 
 /* iPad landscape */
 @media only screen
-and (min-device-width : 768px)
-and (max-device-width : 1024px)
-and (orientation : landscape) {
+  and (min-device-width : 768px)
+  and (max-device-width : 1024px)
+  and (orientation : landscape) {
   footer {
     padding: 44px 35px;
     .inner { width: 100%; }
@@ -63,10 +64,9 @@ and (orientation : landscape) {
 
 /* iPhone portrait */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
-
+  and (min-device-width : 320px)
+  and (max-device-width : 480px)
+  and (orientation : portrait) {
   footer nav a.signup,
   footer nav span { display:none; }
   footer { padding: 24px 15px 34px 15px }
@@ -74,8 +74,8 @@ and (orientation : portrait) {
 
 /* iPhone landscape */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : landscape) {
+  and (min-device-width : 320px)
+  and (max-device-width : 480px)
+  and (orientation : landscape) {
   footer { padding: 24px 15px 34px 15px }
 }

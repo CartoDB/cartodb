@@ -10,13 +10,14 @@ $size: 36px;
   display: inline-block;
   position: relative;
 }
+
 .Logo--avatar {
   @include transition(border-radius, 0.2s, linear);
   display: inline-block;
   width: $size;
   height: $size;
   border-radius: 4px;
-  background: #FFFFFF;
+  background: #FFF;
   line-height: $size + 10;
   text-align: center;
   vertical-align: top;
@@ -30,27 +31,31 @@ $size: 36px;
     }
   }
 }
+
 .Logo--footer {
   background: #2E3C43;
   margin-right: 20px;
 
   i {
-    color: #FFFFFF;
+    color: #FFF;
   }
 }
+
 .Logo--grey {
   width: $size;
   min-width: $size;
   height: $size;
   border-radius: 3px;
-  background-color: #CCCCCC;
+  background-color: #CCC;
   line-height: 48px;
   text-align: center;
+
   .CDB-IconFont {
-    color: #FFFFFF;
+    color: #FFF;
     font-size: 24px;
   }
 }
+
 .Logo-sub {
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
   position: absolute;
@@ -62,6 +67,7 @@ $size: 36px;
   z-index: 1;
 }
 .Logo-sub--google { @include background(image-url('layout/google-platform-logo.png') no-repeat center center #FFFFFF) }
+
 .Logo.is-loading {
   .Logo--avatar { border-radius: $size + 1; }
 
@@ -82,17 +88,21 @@ $size: 36px;
     @include opacity(0);
     @include transform(translateY(6px));
   }
+
   15% {
     @include opacity(0.8);
     @include transform(translateY(-3px));
   }
+
   45% {
     @include opacity(1);
     @include transform(translateY(2px));
   }
+
   70% {
     @include transform(translateY(-1px));
   }
+
   100% {
     @include opacity(1);
     @include transform(translateY(0));

@@ -23,12 +23,13 @@ body.public { /* Public table CSS */
     z-index: 10;
     border-radius: 3px;
     overflow: hidden;
+
     &.is-active {
-      background: #fff;
+      background: #FFF;
     }
   }
 
-  .pane_map { top: 0px; overflow-x: hidden; }
+  .pane_map { top: 0; overflow-x: hidden; }
 
   .panes .emptyTableContainer {
     position:relative;
@@ -42,7 +43,6 @@ body.public { /* Public table CSS */
     z-index: 10000;
 
     .block.modal.api {
-
       .content {
         padding: 0;
         position:relative;
@@ -58,11 +58,12 @@ body.public { /* Public table CSS */
         height: 60px;
         bottom: 0;
         width: 100%;
+
         @extend .white-gradient-shadow-bottom;
       }
 
       code {
-        color: #666666;
+        color: #666;
         font-size: 13px;
         line-height: 120%;
       }
@@ -74,14 +75,14 @@ body.public { /* Public table CSS */
 
         p {
           font-size: 13px;
-          color: #999999;
+          color: #999;
         }
 
       }
 
       h4 {
         margin: 0 0 5px 0;
-        color: #666666;
+        color: #666;
         text-transform: uppercase;
         font-family: $text-fonts;
         font-size:11px;
@@ -94,7 +95,7 @@ body.public { /* Public table CSS */
         p {
           float:left;
           width: 357px;
-          color: #666666;
+          color: #666;
           font-size: 13px;
           line-height: 120%;
           padding: 5px 0;
@@ -152,6 +153,7 @@ body.public { /* Public table CSS */
 
     position:relative;
     z-index: 100;
+
     @include opacity(0);
     width: 100%;
     text-align: center;
@@ -160,6 +162,7 @@ body.public { /* Public table CSS */
 
       max-width: 1024px;
       margin: auto;
+
       @include clearfix();
 
       li {
@@ -189,8 +192,8 @@ body.public { /* Public table CSS */
         }
 
         a.selected {
-          color: #fff;
-          border-color: #fff;
+          color: #FFF;
+          border-color: #FFF;
           cursor:default;
         }
 
@@ -221,11 +224,11 @@ body.public { /* Public table CSS */
   }
 
   div.panes.panes_mobile {
-    top: 0px;
+    top: 0;
     overflow-x: hidden;
 
     .table.public {
-      background: #fff;
+      background: #FFF;
     }
 
     .Checkbox {
@@ -239,7 +242,7 @@ body.public { /* Public table CSS */
     }
 
     .Checkbox-label {
-      color: #fff;
+      color: #FFF;
     }
 
     .table.public,

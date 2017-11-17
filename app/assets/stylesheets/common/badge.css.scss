@@ -13,11 +13,12 @@
   height: 17px;
   line-height: 17px; /* same as width/height */
   border-radius: 23px;
-  color: #fff;
+  color: #FFF;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-normal;
   text-align: center;
   background-color: $cIcons-default;
+
   &.is-icon {
     position: relative;
     top: auto;

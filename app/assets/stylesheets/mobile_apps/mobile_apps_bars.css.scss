@@ -11,6 +11,7 @@
   @include align-items(flex-start);
   padding: 25px 0;
 }
+
 .ProgressBar-container {
   @include display-flex();
   @include flex-direction(row);
@@ -22,6 +23,7 @@
     margin-bottom: 20px;
   }
 }
+
 .ProgressBar {
   display: block;
   position: relative;
@@ -31,6 +33,7 @@
   background: #F5F5F5;
   overflow: hidden;
 }
+
 .ProgressBar-bar {
   position: absolute;
   top: 0;
@@ -42,12 +45,15 @@
   background: #1181FB;
   z-index: 2;
 }
+
 .ProgressBar-bar.is-danger {
   background: $cHighlight-negative;
 }
+
 .ProgressBar-bar.is-caution {
   background: $cHighlight-caution;
 }
+
 .ProgressBar-legend {
   margin-left: $sMargin-elementInline;
   color: $cTypography-secondary;

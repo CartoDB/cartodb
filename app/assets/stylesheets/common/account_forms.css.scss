@@ -12,22 +12,27 @@ $sLabel-width: 140px;
   @include flex-direction(row);
   @include justify-content(space-between);
 }
+
 .FormAccount-container {
   margin-top: 25px;
 }
+
 .FormAccount-container--short {
   margin-top: 16px;
 }
+
 .FormAccount-Content {
   display: block;
   position: relative;
   width: 65%;
 }
+
 .FormAccount-title {
   display: inline-block;
   width: 100%;
   margin: 30px 0 28px 0;
 }
+
 .FormAccount-titleHeader {
   display: block;
   margin-bottom: $sMargin-section;
@@ -35,53 +40,66 @@ $sLabel-width: 140px;
   border-bottom: 1px solid $cStructure-mainLine;
   color: $cTypography-headers;
 }
+
 .FormAccount-titleText {
   color: $cTypography-paragraphs;
 }
+
 .FormAccount-titleText--negative {
   color: $cHighlight-negative;
 }
+
 .FormAccount-subtitleText {
   font-size: 75%;
 }
+
 .FormAccount-list {
   padding: 0 0 20px 160px;
   color: $cTypography-paragraphs;
 
   list-style-type: disc;
 }
+
 .FormAccount-listItem {
   color: $cTypography-paragraphs;
 }
+
 .VerticalAligned--FormRow {
   @include display-flex();
   @include flex-direction(row);
   @include justify-content(space-between);
 }
+
 .FormAccount-row {
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(flex-start, start);
   margin: 0 0 32px;
 }
+
 .FormAccount-row--smallMarginBottom {
   margin-bottom: 16px;
 }
+
 .FormAccount-row--wideMarginBottom {
   margin-bottom: 100px;
 }
+
 .FormAccount-title + .FormAccount-row {
   padding-top: 0;
 }
+
 .FormAccount-row.FormAccount-row--centered {
   @include justify-content(center);
 }
+
 .FormAccount-row.FormAccount-row--step {
   @include justify-content(space-between, justify);
   @include align-items(center);
   position: relative;
   padding-top: 0;
   padding-bottom: $sMargin-group;
+
   &:before {
     margin-right: $sMargin-elementInline;
     padding: 5px 10px;
@@ -90,31 +108,39 @@ $sLabel-width: 140px;
     color: $cTypography-paragraphs;
     content: '';
   }
+
   &:first-child:before {
     content: '1';
   }
+
   &:nth-child(2):before {
     content: '2';
   }
+
   &:nth-child(3):before {
     content: '3';
   }
+
   &:nth-child(4):before {
     content: '4';
   }
+
   &:nth-child(5):before {
     content: '5';
   }
 }
+
 .FormAccount-row.FormAccount-row--step:first-child {
   padding-top: 0;
 }
+
 .FormAccount-row.FormAccount-row--step.is-done {
   &:before {
     border-color: $cHighlight-stepDone;
     color: $cHighlight-stepDone;
   }
 }
+
 .FormAccount-row.has-label {
   @include flex-direction(row);
   // compensate for label width, to make the rowData appear as centered
@@ -129,34 +155,43 @@ $sLabel-width: 140px;
     text-align: right;
   }
 }
+
 .FormAccount-rowLabel {
   margin-bottom: 8px;
   text-align: left;
 }
+
 .FormAccount-rowLabel.FormAccount-rowLabel--leftAligned {
   width: $sLabel-width;
   margin-right: $sMargin-element;
   text-align: left;
 }
+
 .FormAccount-label {
   color: $cTypography-paragraphs;
   text-transform: capitalize;
 }
+
 .FormAccount-label.FormAccount-label--verticalAlignTop {
   line-height: inherit;
 }
+
 .FormAccount-label--multipleLines {
   line-height: 20px;
 }
+
 .FormAccount-label.FormAccount-label--large {
   font-size: $sFontSize-large;
 }
+
 .FormAccount-label.FormAccount-label--step {
   @include flex-grow(1);
 }
+
 .FormAccount-rowPreview {
   width: 600px;
 }
+
 .FormAccount-separator {
   display: block;
   position: relative;
@@ -166,31 +201,37 @@ $sLabel-width: 140px;
   background-color: $cStructure-darkGrey;
   z-index: 0;
 }
+
 .FormAccount-separator--marginTop {
   margin-top: 30px;
 }
+
 .FormAccount-rowData {
   @include display-flex();
   @include align-items(center);
   position: relative;
 }
+
 .FormAccount-rowData.in-block {
   @include flex-direction(column);
   @include align-items(flex-start);
 }
+
 .FormAccount-planTag {
   padding: 5px 10px;
   border-radius: 4px;
   background-color: $cHighlight-positive;
-  color: #FFFFFF;
+  color: #FFF;
 }
 
 .FormAccount-rowData.FormAccount-rowData--alignLeft {
   @include justify-content(flex-start, start);
 }
+
 .FormAccount-rowData--withLabel {
   margin-bottom: 30px;
 }
+
 .FormAccount-rowData--noMargin {
   margin: 0;
 }
@@ -199,26 +240,33 @@ $sLabel-width: 140px;
 .FormAccount-rowData--full {
   width: 100%;
 }
+
 .FormAccount-rowData--longer {
   width: 460px;
 }
+
 .FormAccount-rowData--long {
   width: 380px;
 }
+
 .FormAccount-rowData--med {
   width: 300px;
 }
+
 .FormAccount-rowData--short {
   width: 170px;
 }
+
 .FormAccount-rowData--step {
   width: 260px;
   margin-right: 0;
 }
+
 .FormAccount-rowDataExtra {
   position: absolute;
   right: -52px;
 }
+
 .FormAccount-rowData ~ .FormAccount-rowDataExtra {
   top: 10px;
 } // to compensate for its top-padding
@@ -230,59 +278,70 @@ $sLabel-width: 140px;
   position: relative;
   height: 38px;
   padding: 0 12px;
-  border: 1px solid #cccccc;
+  border: 1px solid #CCC;
   border-radius: 4px;
   outline: none;
-  color: #666666;
+  color: #666;
   z-index: 2;
 
   &:focus {
-    border-color: #999999;
+    border-color: #999;
   }
 }
+
 .FormAccount-input.FormAccount-input--error {
-  border-color: rgba(#dd3B37, 0.6);
+  border-color: rgba(#DD3B37, 0.6);
 }
+
 .FormAccount-input.FormAccount-input--error:focus,
 .FormAccount-input.FormAccount-input--error:hover {
-  border-color: rgba(#dd3B37, 1);
+  border-color: rgba(#DD3B37, 1);
 }
 
 .FormAccount-input::-webkit-input-placeholder {
-  color: #aaaaaa;
+  color: #AAA;
   font-style: italic;
 }
+
 .FormAccount-input:-moz-placeholder {
-  color: #aaaaaa;
+  color: #AAA;
   font-style: italic;
 }
+
 .FormAccount-input::-moz-placeholder {
-  color: #aaaaaa;
+  color: #AAA;
   font-style: italic;
 }
+
 .FormAccount-input:-ms-input-placeholder {
-  color: #aaaaaa;
+  color: #AAA;
   font-style: italic;
 }
 // Sizes
 .FormAccount-input--totalwidth {
   width: 100% !important;
 }
+
 .field_with_errors {
   width: 100%;
 }
+
 .FormAccount-input--longer {
   width: 434px !important;
 }
+
 .FormAccount-input--long {
   width: 354px !important;
 }
+
 .FormAccount-input--med {
   width: 274px !important;
 }
+
 .FormAccount-input--small {
   width: 131px !important;
 }
+
 .FormAccount-input--short {
   width: 114px !important;
 }
@@ -293,27 +352,33 @@ $sLabel-width: 140px;
   &.FormAccount-input--longer {
     width: 414px;
   }
+
   &.FormAccount-input--long {
     width: 324px;
   }
+
   &.FormAccount-input--short {
     width: 92px;
   }
+
   &.FormAccount-input--longerMorePadding {
     width: 356px;
     padding-right: 100px;
   }
 }
+
 .FormAccount-input.has-submit {
   padding: 0 95px 0 12px;
 
   &.FormAccount-input--longer {
     width: 351px;
   }
+
   &.FormAccount-input--long {
     width: 297px;
   }
 }
+
 .FormAccount-inputSubmit {
   position: absolute;
   top: 6px;
@@ -323,6 +388,7 @@ $sLabel-width: 140px;
   background: none;
   z-index: 2;
 }
+
 .FormAccount-inputIcon {
   top: 12px;
   right: 14px;
@@ -331,9 +397,11 @@ $sLabel-width: 140px;
   font-size: $sFontSize-larger;
   z-index: 3;
 }
+
 .FormAccount-inputIcon--clock {
   top: 11px;
 }
+
 .FormAccount-inputIcon--noIcon {
   width: 100%;
   height: 100%;
@@ -343,6 +411,7 @@ $sLabel-width: 140px;
   text-align: center;
   text-transform: uppercase;
 }
+
 .FormAccount-inputError {
   @include transition(top, 200ms, ease-in-out);
   position: absolute;
@@ -351,19 +420,22 @@ $sLabel-width: 140px;
   left: 0;
   height: 38px;
   padding: 0 12px;
-  border: 1px solid #cccccc;
+  border: 1px solid #CCC;
   border-radius: 4px;
   background: #FFF4F4;
   color: $cHighlight-negative;
   line-height: 38px;
   z-index: 1;
 }
+
 .FormAccount-inputError.is-visible {
   top: 36px;
 }
+
 .FormAccount-input.is-disabled {
   background: $cStructure-grayBkg;
 }
+
 .FormAccount-input.is-invalid {
   border-color: $cHighlight-negative;
 }
@@ -371,6 +443,7 @@ $sLabel-width: 140px;
 .FormAccount-input--noBorder {
   border: none;
 }
+
 .FormAccount-input--noBkg,
 .FormAccount-input--noBkg.is-disabled {
   background: transparent;
@@ -381,40 +454,50 @@ $sLabel-width: 140px;
   max-height: 110px;
   padding: 9px 12px;
 }
+
 .FormAccount-textarea.no-resize {
   resize: none;
 }
+
 .FormAccount-textarea--longHeight {
   height: 90px;
 }
+
 .FormAccount-textarea.is-disabled {
   color: $cTypography-help;
 }
+
 .FormAccount-copyIcon {
   position: relative;
   top: 0;
   right: 30px;
   font-size: $sFontSize-largest;
 }
+
 .FormAccount-copyIcon.hover {
   color: $cTypography-paragraphs;
 }
+
 .FormAccount-text--preview {
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-large;
 }
+
 .FormAccount-row.FormAccount-rowHorizontal {
   @include flex-direction(row);
   @include justify-content(space-between, justify);
 }
+
 .FormAccount-userRole {
   margin-top: 20px;
+
   @include display-flex();
   @include flex-direction(column);
   @include align-items(baseline, baseline);
   @include justify-content(space-between, justify);
 }
+
 .FormAccount-avatarPreview {
   @include display-flex();
   @include flex-direction(row);
@@ -423,15 +506,17 @@ $sLabel-width: 140px;
   height: 100px;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
-  background: #ffffff;
+  background: #FFF;
   overflow: hidden;
 }
+
 .FormAccount-avatarPreviewImage {
   position: relative;
   max-width: 100px;
   border-radius: 4px;
-  background: #ffffff;
+  background: #FFF;
 }
+
 .FormAccount-avatarPreviewLoader {
   position: absolute;
   top: 0;
@@ -439,9 +524,10 @@ $sLabel-width: 140px;
   width: 100px;
   height: 100px;
   border-radius: 4px;
-  background: rgba(#000000, 0.4);
+  background: rgba(#000, 0.4);
   z-index: 2;
 }
+
 .Spinner.FormAccount-avatarPreviewSpinner {
   position: absolute;
   top: 50%;
@@ -449,14 +535,17 @@ $sLabel-width: 140px;
   margin: -20px 0 0 -20px;
   z-index: 1;
 }
+
 .FormAccount-fileAvatar {
   margin-left: 20px;
 }
+
 .FormAccount-avatar .input-group {
   position: absolute;
   top: 14px;
   left: 114px;
 }
+
 .FormAccount-avatar .form-control {
   display: none;
   position: absolute;
@@ -466,6 +555,7 @@ $sLabel-width: 140px;
   border: none;
   color: $cTypography-secondary;
 }
+
 .FormAccount-avatar .btn {
   position: absolute;
   top: 0;
@@ -473,44 +563,54 @@ $sLabel-width: 140px;
   width: 120px;
   font-size: 12px;
   color: $cTypography-link;
+
   &:hover {
     color: $cTypography-linkHover;
     text-decoration: underline;
     cursor: pointer;
   }
 }
+
 .FormAccount-avatar .btn[disabled] {
   color: $cTypography-help;
+
   &:hover {
     color: $cTypography-help;
     text-decoration: none;
     cursor: default;
   }
 }
+
 .FormAccount-link {
   color: #1181FB;
   font-weight: normal;
+
   &:hover {
     text-decoration: underline;
     cursor: pointer;
   }
 }
+
 .FormAccount-link.is-disabled {
   color: $cTypography-help;
   text-decoration: none;
+
   &:hover {
     color: $cTypography-help;
     cursor: default;
   }
 }
+
 .FormAccount-file {
   &:hover .Button--main {
-    background: #007fbd;
+    background: #007FBD;
   }
+
   &:hover .Button--negative {
-    background-color: rgba(#b93f37, 1);
+    background-color: rgba(#B93F37, 1);
   }
 }
+
 .FormAccount-file input[type='file'] {
   position: absolute;
   top: 0;
@@ -524,6 +624,7 @@ $sLabel-width: 140px;
   -moz-transform: translate(26px, 0) scale(1);
   direction: ltr;
 }
+
 .FormAccount-fileLabel {
   width: 300px;
   color: $cTypography-secondary;
@@ -534,9 +635,11 @@ $sLabel-width: 140px;
   display: none;
   color: $cHighlight-negative;
 }
+
 .FormAccount .dz-preview {
   display: none;
 }
+
 .FormAccount-fileDropzone {
   display: none;
   position: absolute;
@@ -553,6 +656,7 @@ $sLabel-width: 140px;
   text-align: center;
   z-index: 1;
 }
+
 .FormAccount-rowInfo {
   @include display-flex();
 
@@ -560,10 +664,12 @@ $sLabel-width: 140px;
     margin-left: 12px;
     width: 224px;
   }
+
   &.FormAccount-rowInfoText--multipleLines {
     width: 500px;
   }
 }
+
 .FormAccount-rowInfoText {
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
@@ -573,25 +679,32 @@ $sLabel-width: 140px;
     color: #FFB713;
   }
 }
+
 .FormAccount-rowInfoText--centered {
   text-align: center;
 }
+
 .FormAccount-rowInfoText--smaller {
   width: 180px;
 }
+
 .FormAccount-rowInfoText--block {
   width: 100%;
 }
+
 .FormAccount-rowInfoText--maxWidth {
   max-width: 480px;
 }
+
 .FormAccount-rowInfoText--error {
   color: #DD3B37;
 }
+
 .FormAccount-rowInfoText--error .FormAccount-link {
   color: #DD3B37;
   text-decoration: underline;
 }
+
 .FormAccount-footer {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -605,12 +718,15 @@ $sLabel-width: 140px;
 .FormAccount-footerItemAsFirst {
   @include flex-order(1);
 }
+
 .FormAccount-footerItemAsSecond {
   @include flex-order(2);
 }
+
 .FormAccount-footer--noMarginBottom {
   margin-bottom: 0;
 }
+
 .FormAccount-footerText {
   @include display-flex();
   @include flex-direction(row);
@@ -620,6 +736,7 @@ $sLabel-width: 140px;
   font-weight: $sFontWeight-lighter;
   line-height: 22px;
 }
+
 .FormAccount-footerIcon {
   width: 20px;
   height: 20px;
@@ -627,25 +744,28 @@ $sLabel-width: 140px;
   border: 1px solid #F2C000;
   border-radius: 20px;
   background: #F6D35C;
-  color: #FFFFFF;
+  color: #FFF;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal !important;
   text-align: center;
 }
+
 .FormAccount-tags {
   position: relative;
   width: 308px;
   min-height: 38px;
   padding: 0;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #CCC;
   border-radius: 4px;
   outline: none;
-  background: #FFFFFF;
+  background: #FFF;
   z-index: 2;
 }
+
 .FormAccount-tagsList.tagit {
   padding: 0 5px 5px;
 }
+
 .FormAccount-tagsList.tagit .tagit-choice {
   margin: 5px 5px 0 0;
   padding: 0 30px 0 11px;
@@ -654,45 +774,55 @@ $sLabel-width: 140px;
   color: #746E76;
   line-height: 28px;
 }
+
 .FormAccount-tagsList.tagit .tagit-choice .tagit-close {
   right: 10px;
   line-height: normal;
 }
+
 .FormAccount-tagsList.tagit .tagit-close .text-icon {
   display: inline-block;
   color: #C5CCD1;
+
   &:hover {
-    color: #AAAAAA;
+    color: #AAA;
   }
 }
+
 .FormAccount-tagsList.tagit .tagit-new {
   width: 160px;
   padding: 7px 4px 2px 7px;
 }
+
 .FormAccount-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
-  color: #AAAAAA;
+  color: #AAA;
   font-style: italic;
   font-weight: $sFontWeight-normal;
 }
+
 .FormAccount-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
-  color: #AAAAAA;
+  color: #AAA;
   font-style: italic;
   font-weight: $sFontWeight-normal;
 }
+
 .FormAccount-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
-  color: #AAAAAA;
+  color: #AAA;
   font-style: italic;
   font-weight: $sFontWeight-normal;
 }
+
 .FormAccount-tags.is-focus {
-  border-color: #999999;
+  border-color: #999;
 }
+
 .FormAccount-tags.is-disabled {
   background: $cStructure-grayBkg;
 
   .tagit-choice {
     padding: 0 11px;
   }
+
   .tagit-choice .tagit-close {
     display: none;
   }

@@ -20,6 +20,7 @@
   color: $cTypography-paragraphs;
   z-index: 10000;
 }
+
 .NotSupportedDialog-title {
   @include inline-block();
   width: 77px;
@@ -29,12 +30,14 @@
   font-weight: bold;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+
 .NotSupportedDialog-desc {
   display: block;
   padding: 0 40px;
   margin: 12px 0 0;
   font-size: 15px;
 }
+
 .NotSupportedDialog-list {
   position: absolute;
   bottom: 0;
@@ -46,6 +49,7 @@
   list-style: none;
   border-top: 1px solid $cStructure-mainLine;
 }
+
 .NotSupportedDialog-item {
   float: left;
   margin: 0;
@@ -54,6 +58,7 @@
 
   &.is-last { border: none }
 }
+
 .NotSupportedDialog-itemLink {
   display: block;
   width: 118px;

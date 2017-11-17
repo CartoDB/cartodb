@@ -9,10 +9,12 @@
   overflow-wrap: break-word;
   position: relative;
 }
+
 .DefaultDescription > * {
   margin: 0;
   padding: 0;
 }
+
 .DefaultDescription--error {
   color: $cHighlight-negative;
 }

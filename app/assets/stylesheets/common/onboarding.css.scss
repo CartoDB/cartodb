@@ -139,10 +139,12 @@
     @include opacity(1);
     @include transform(scale(1));
   }
+
   80% {
     @include opacity(0.05);
     @include transform(scale(1.4));
   }
+
   100% {
     @include opacity(0);
     @include transform(scale(2));
@@ -154,10 +156,12 @@
     @include opacity(0);
     @include transform(scale(2));
   }
+
   10% {
     @include opacity(0.9);
     @include transform(scale(1.1));
   }
+
   100% {
     @include opacity(1);
     @include transform(scale(1));

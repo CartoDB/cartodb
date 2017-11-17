@@ -24,18 +24,22 @@
   font-size: 22px;
   color: $cIcons-default;
 }
+
 .LayoutIcon--positive {
   border-color: $cHighlight-positive;
   color: $cHighlight-positive;
 }
+
 .LayoutIcon--negative {
   border-color: $cHighlight-negative;
   color: $cHighlight-negative;
 }
+
 .LayoutIcon--warning {
   border-color: $cHighlight-alert4;
   color: $cHighlight-alert4;
 }
+
 .LayoutIcon--darkGrey {
   border-color: $cStructure-darkLine;
   color: $cIcons-active;

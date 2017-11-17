@@ -25,6 +25,7 @@
   position: relative;
   width: 100%;
 }
+
 .OnBoarding-welcome {
   position: absolute;
   top: 0;
@@ -35,10 +36,12 @@
   z-index: 10;
   overflow: hidden;
 }
+
 .OnBoarding-welcome--fixed {
   position: fixed;
   z-index: 1000;
 }
+
 .OnBoarding-welcomeContent {
   position: absolute;
   top: 50%;
@@ -48,10 +51,12 @@
   margin-top: -170px;
   z-index: 1001;
 }
+
 .OnBoarding-welcomeContent--wide {
   width: 800px;
   margin-left: -332px;
 }
+
 .OnBoarding-welcomeContentInner {
   position: absolute;
   width: 404px;
@@ -59,6 +64,7 @@
   right: 0;
   z-index: 1000;
 }
+
 .OnBoarding-welcomeContentTitle,
 .OnBoarding-welcomeContentText {
   display: block;
@@ -68,15 +74,18 @@
   line-height: 22px;
 }
 .OnBoarding-welcomeContentTitle { font-weight: $sFontWeight-normal }
+
 .OnBoarding-welcomeContentTitle .is-highlighted,
 .OnBoarding-welcomeContentText .is-highlighted {
   font-weight: $sFontWeight-normal;
   font-style: italic;
 }
+
 .OnBoarding-welcomeContentSup {
   @include supElement(13px, 9px);
   margin: 4px 0 0 2px;
 }
+
 .OnBoarding-importAnimation {
   position: absolute;
   background: image-url("layout/import_animation.gif") no-repeat center center;
@@ -86,6 +95,7 @@
   top: -200px;
   left: -460px;
 }
+
 .OnBoarding-fakeLink {
   position: absolute;
   right: 50%;
@@ -100,37 +110,45 @@
 
   &:before {
     content: 'A';
+
     @include supElement(20px, 11px);
     position: absolute;
     top: -10px;
     left: -30px;
   }
 }
+
 .OnBoarding-fakeSection {
   position: absolute;
   left: 50%;
   bottom: 30px;
   margin-left: -245px;
+
   @include supElement(20px, 11px);
 }
+
 .OnBoarding-fakeSection--connect {
   top: 186px;
   margin-left: -402px;
 }
+
 .OnBoarding-fakeSection--datalibrary {
   top: 186px;
   margin-left: -280px;
 }
+
 .OnBoarding-fakeSection--datalibrary2 {
   top: 186px;
   margin-left: 120px;
 }
+
 .OnBoarding-fakeSection--scratch {
   top: 186px;
   left: auto;
   right: 50%;
   margin: 0 -320px 0 0;
 }
+
 .OnBoarding-fakeSection--scratch2 {
   top: 186px;
   left: auto;
@@ -138,9 +156,11 @@
   margin: 0 -340px 0 0;
 }
 .OnBoarding-welcomeContentMargin { margin-top: 30px }
+
 .OnBoarding-map {
   width: 100%;
   height: 100%;
+
   &:before {
     content: '';
     position: absolute;

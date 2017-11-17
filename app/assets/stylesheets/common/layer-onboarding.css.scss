@@ -52,6 +52,7 @@ $sHighlightHeight: 64;
 .LayerOnboarding-contentBody {
   display: none;
 }
+
 .LayerOnboarding-contentBody.is-step0 {
   display: block;
   width: 0;
@@ -151,6 +152,7 @@ $sHighlightHeight: 64;
 .LayerOnboarding-contentWrapper--analysis {
   @include justify-content(center);
 }
+
 .LayerOnboarding-description--analysis {
   width: $sBigDescriptionWidth;
 }

@@ -7,15 +7,18 @@
 }
 div.table table thead tr th>div label { line-height: 0.8 }
 div.table table thead tr th>div p.auto { padding-right: 38px }
+
 .header_content div.left h1 a.title {
   font-size: 20px;
   font-weight: $sFontWeight-bold;
   font-family: 'Lato', sans-serif;
 }
+
 .header_content div.left div.metadata p a {
   font-size: 15px;
   font-weight: $sFontWeight-lighter;
 }
+
 div.vis_navigation nav a.tab {
   padding-top: 3px;
   padding-bottom: 3px;

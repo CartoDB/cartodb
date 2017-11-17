@@ -13,13 +13,16 @@
   line-height: 18px;
   text-transform: uppercase;
 }
+
 .UserRoleIndicator--filled {
   color: $cWhite;
 }
+
 .UserRoleIndicator--filled.is-green {
   border-color: #8EB83F;
   background: #8EB83F;
 }
+
 .UserRoleIndicator--filled.is-grey {
   border-color: #979EA1;
   background: #979EA1;

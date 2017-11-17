@@ -6,6 +6,7 @@
   position: relative;
   min-height: 500px;
 }
+
 .Explore-inner {
   @include display-flex();
   @include justify-content(flex-start, start);
@@ -16,10 +17,12 @@
   margin: 35px auto 60px;
   text-align: center;
 }
+
 .Explore-feed {
   @include flex(1);
   margin: 50px 0 0;
 }
+
 .Explore-content {
   margin: 0 0 30px;
   padding: 15px 0;
@@ -35,6 +38,7 @@
   .Explore-content.Feed-content .MapCard-preview.is-big {
     display: block !Important;
   }
+
   .Explore-content.Feed-content .MapCard-preview.is-medium,
   .Explore-content.Feed-content .MapCard-preview.is-small {
     display: none !Important;
@@ -45,6 +49,7 @@
   .Explore-inner {
     width: 100%;
   }
+
   .Explore-content.Feed-content .FeedItem {
     @include justify-content(space-around, stretch);
     @include align-items(stretch, stretch);
@@ -63,10 +68,12 @@
     @include flex-wrap(wrap);
     @include flex-direction(row);
   }
+
   .Explore-content.Feed-content .MapCard-preview.is-big,
   .Explore-content.Feed-content .MapCard-preview.is-small {
     display: none !Important;
   }
+
   .Explore-content.Feed-content .MapCard-preview.is-medium {
     display: block !Important;
   }
@@ -74,6 +81,7 @@
   .FeedItem--card .FeedItem-avatar {
     display: none;
   }
+
   .LikesIndicator-label {
     display: none;
   }
@@ -84,15 +92,18 @@
   .Explore-inner {
     width: 100%;
   }
+
   .Explore-content.Feed-content .FeedItem {
     @include justify-content(space-around, stretch);
     @include align-items(stretch, stretch);
   }
+
   .Explore-content.Feed-content .FeedItem .MapCard,
   .Explore-content.Feed-content .FeedItem .DatasetCard {
     @include flex(0 0 288px);
     margin-right: 0;
   }
+
   .Explore-content.Feed-content {
     @include display-flex();
     @include justify-content(center);
@@ -100,13 +111,16 @@
     @include flex-wrap(wrap);
     @include flex-direction(row);
   }
+
   .Explore-content.Feed-content .MapCard-preview.is-big,
   .Explore-content.Feed-content .MapCard-preview.is-medium {
     display: none !Important;
   }
+
   .Explore-content.Feed-content .MapCard-preview.is-small {
     display: block !Important;
   }
+
   .FeedItem--card .FeedItem-avatar,
   .LikesIndicator-label {
     display: none;

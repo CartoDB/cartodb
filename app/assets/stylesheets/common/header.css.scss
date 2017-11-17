@@ -4,7 +4,6 @@
 @import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
-
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -19,26 +18,31 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   height: 80px;
   background: $cBlue;
 }
+
 .Header-inner {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
   position: relative;
 }
+
 .Header-navigationList {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
 }
+
 .Header-navigationBreadcrumb {
   @include display-flex();
   @include align-items(center);
   margin-left: $sMargin-element;
 }
+
 .Header-navigationBreadcrumbItem {
   padding-left:6px;
   color: rgba($cWhite, 0.6);
 }
+
 .Header-navigationBreadcrumbParagraph {
   text-overflow: ellipsis;
   max-width: 150px;
@@ -47,14 +51,16 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   overflow: hidden;
   vertical-align: bottom;
 }
+
 .Header-navigationItem {
   margin-left: $sMargin-section;
 }
+
 .Header-navigationLink {
   font-weight: $sFontWeight-bold;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-largest;
-  color: #fff;
+  color: #FFF;
   transition: all .15s;
 
   &:hover {
@@ -63,6 +69,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   }
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
+
 .Header-navigationBreadcrumbLink {
   color: $cWhite;
 
@@ -71,38 +78,45 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     cursor: default;
   }
 }
+
 .Header-settingsList {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height: 100%;
 }
+
 .Header-settingsItem {
   position: relative;
   margin-left: $sMargin-section;
   text-transform: uppercase;
 }
+
 .Header-settingsLink--public {
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-bold;
   text-transform: none;
 }
 .Header-settingsItem--avatar {}
+
 .Header-settingsLink {
-  color: #fff;
+  color: #FFF;
   transition: all .2s;
 
   &:hover {
-    color: rgba(#fff, .6);
+    color: rgba(#FFF, .6);
     text-decoration: none;
   }
 }
+
 .Header-settingsLink.Header-settingsLink--dashboard {
   color: #FFF;
 }
+
 .Header-settingsLink.Header-settingsLink--dashboard:hover {
   text-decoration: underline;
 }
+
 .Header-darrow {
   position: relative;
   top: -1px;
@@ -119,25 +133,31 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   .Header .Header-inner {
     height: $height;
   }
+
   .Header {
     height: $height;
   }
+
   .Header-settingsItem--avatar {
     height: $height/2;
   }
+
   .Header .Header-settingsList .UserAvatar-img--medium {
     height: $height/2;
     width: $height/2;
   }
+
   .Header .Header-settingsList .Button {
     height: $height/2;
     padding: 0 20px;
   }
+
   .Header .Logo--avatar {
     width: $height/2;
     height: $height/2;
     line-height: 45px;
   }
+
   .Header .Logo--avatar i {
     font-size: 22px;
   }

@@ -7,6 +7,7 @@
   margin: 0 0 30px;
   text-align: center;
 }
+
 .Feed-content {
   position: relative;
   padding: 20px 0;
@@ -20,11 +21,14 @@
   position: relative;
   margin: 0 0 20px;
 }
+
 .FeedItem:last-child {
   margin: 0;
 }
+
 .FeedItem-avatar {
   $avatarSize: 60px;
+
   @include flex(1);
   position: absolute;
   width: $avatarSize;
@@ -48,25 +52,30 @@
   .Feed-content .FeedItem {
     margin-bottom: 40px;
   }
+
   .FeedItem .FeedItem-avatar {
     margin: 20px;
     border-radius: 8px;
+
     &:after {
-      box-shadow: 1px 1px 1px rgba(#000000, 0.2);
+      box-shadow: 1px 1px 1px rgba(#000, 0.2);
     }
   }
 }
-@media only screen and (min-width: 545px) and (max-width: 899px)  {
+
+@media only screen and (min-width: 545px) and (max-width: 899px) {
   .Feed-content .FeedItem {
     @include justify-content(center);
     margin-bottom: 40px;
   }
+
   .FeedItem .FeedItem-avatar {
     margin: 20px;
     border-radius: 8px;
-    box-shadow: 1px 1px 1px rgba(#000000, 0.2);
+    box-shadow: 1px 1px 1px rgba(#000, 0.2);
+
     &:after {
-      box-shadow: 1px 1px 1px rgba(#000000, 0.2);
+      box-shadow: 1px 1px 1px rgba(#000, 0.2);
     }
   }
 }

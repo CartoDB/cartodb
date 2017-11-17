@@ -14,6 +14,7 @@
 .Select .select2-container { background: none }
 .Select .select2-container:hover .select2-choice { border-color: $cStructure-mainLine !important }
 .Select .select2-container .select2-choice { background: $cStructure-mainBkg }
+
 .Select .select2-container .select2-choice span {
   font-size: $sFontSize-normal;
   line-height: 16px;
@@ -21,6 +22,7 @@
   color: $cTypography-paragraphs;
   margin-right: 24px;
 }
+
 .Select .select2-container {
   .select2-choice,
   .select2-choice:hover {

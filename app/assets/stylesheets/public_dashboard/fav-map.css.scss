@@ -17,6 +17,7 @@ $heightTall: 450px;
   background: #333 image-url('layout/noise.png') repeat 0 0;
   overflow: hidden;
 }
+
 .FavMap:before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.1));
   @include transition(all, 100ms, ease-in-out);
@@ -28,9 +29,11 @@ $heightTall: 450px;
   content: '';
   z-index: 9995;
 }
+
 .FavMap:not(.is-pre-loading):not(.is-loading):before {
   height: 20px;
 }
+
 .FavMap-spinner {
   display: none;
   position: absolute;
@@ -38,21 +41,26 @@ $heightTall: 450px;
   left: 50%;
   margin-left: -#{$sSpinner-default / 2};
 }
+
 .FavMap.is-pre-loading .FavMap-spinner,
 .FavMap.is-loading .FavMap-spinner {
   display: block;
 }
+
 .FavMap.FavMap--tall {
   height: $heightTall / 2;
 }
+
 .FavMap.FavMap--highShadow:before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.5));
   height: 180px;
   pointer-events: none;
 }
+
 .FavMap.FavMap--highShadow:not(.is-pre-loading):not(.is-loading):before {
   height: 150px;
 }
+
 .FavMapTitle {
   @include opacity(1);
   position: absolute;
@@ -62,31 +70,37 @@ $heightTall: 450px;
   line-height: normal;
   z-index: 10000;
 }
+
 .FavMapTitle.is-hidden {
   opacity: 0;
 }
+
 .FavMapTitle-inner {
   width: 940px;
   margin: auto;
   box-sizing: border-box;
 }
+
 .FavMapTitle-sectionTitle,
 .FavMapTitle-mapTitle {
-  color: #FFFFFF;
+  color: #FFF;
   text-decoration: none;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
+
 .FavMapTitle-sectionTitle {
   margin: 0 0 10px;
   font-size: 16px;
   font-weight: lighter;
   text-transform: uppercase;
 }
+
 .FavMapTitle-mapTitle {
   margin: 0;
   font-size: 48px;
   font-weight: normal;
 }
+
 .FavMapTitle-mapTitleLink {
   color: #FFF;
 
@@ -95,70 +109,90 @@ $heightTall: 450px;
     text-decoration: none;
   }
 }
+
 @media (min-width: $sMedia-tablet) {
   .FavMap {
     height: $height;
   }
+
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
+
   .FavMap.FavMap--tall {
     height: $heightTall;
   }
+
   .FavMap--tall .FavMap-spinner {
     top: ($heightTall / 2) - $sSpinner-default;
   }
 }
+
 @media only screen and (max-width: 320px) {
   $height: 280px;
+
   .FavMap {
     height: $height;
   }
+
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
+
   .FavMap.FavMap--tall {
     height: $heightTall;
   }
+
   .FavMap--tall .FavMap-spinner {
     top: ($heightTall / 2) - $sSpinner-default;
   }
 }
+
 @media only screen and (min-width: 320px) and (max-width: 955px)  {
   .FavMap .FavMapTitle-inner {
     width: 100%;
     padding: 0 20px;
   }
 }
+
 @media only screen and (min-width: 320px) and (max-width: 760px)  {
   $height: 320px;
+
   .FavMap {
     height: $height;
   }
+
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
+
   .FavMap.FavMap--tall {
     height: $height;
   }
+
   .FavMap--tall .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
 }
+
 @media only screen
-and (min-device-width: 320px)
-and (max-device-width: 480px)
-and (-webkit-min-device-pixel-ratio: 2) {
+  and (min-device-width: 320px)
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2) {
   $height: 300px;
+
   .FavMap {
     height: $height;
   }
+
   .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }
+
   .FavMap.FavMap--tall {
     height: $height;
   }
+
   .FavMap--tall .FavMap-spinner {
     top: ($height / 2) - $sSpinner-default;
   }

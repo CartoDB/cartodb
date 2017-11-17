@@ -1,0 +1,23 @@
+{
+  "extends": "stylelint-config-standard",
+  "ignoreFiles": [
+    "lib/assets/stylesheets/old_common/**/*.css.scss",
+    "app/assets/stylesheets/table/table_panel/layer-views-panels/filters_panel.css.scss",
+    "app/assets/stylesheets/editor-3/codemirror.css.scss",
+    "app/assets/stylesheets/editor-3/form-tags.css.scss"
+  ],
+  "rules": {
+    "color-hex-case": "upper",
+    "at-rule-no-unknown": [true, {
+      "ignoreAtRules": ["extend", "at-root", "debug", "warn", "error", "if", "else", "for", "each", "while", "mixin", "include", "content", "return", "function"
+      ]}
+    ],
+    "selector-pseudo-element-colon-notation": "single",
+    "function-name-case": [ "lower", {
+      "ignoreFunctions": ["/^DXImageTransform.Microsoft.*$/"]
+    }],
+    "media-feature-name-no-unknown": null,
+    "declaration-empty-line-before": null,
+    "declaration-colon-space-after": "always"
+  }
+}

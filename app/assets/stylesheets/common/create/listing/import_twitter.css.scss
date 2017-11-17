@@ -11,14 +11,18 @@
   font-size: 20px;
 }
 .TwitterCategory .Form-inputIcon.is-highlighted { color: #6F9FD0 }
+
 .TwitterCategory {
   height: 0;
+
   @include opacity(0);
   @include transition(all, 250ms, linear);
   overflow: hidden;
 }
+
 .TwitterCategory.enabled {
   height:60px;
+
   @include opacity(1);
 }
 // Datepicker

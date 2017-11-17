@@ -16,11 +16,14 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   padding-bottom: 30px;
   width: 100%;
 }
+
 .OrganizationList--centered {
   min-height: 300px;
+
   @include justify-content(center, center);
   @include align-items(center, center);
 }
+
 .OrganizationList-user {
   position: relative;
   width: 100%;
@@ -37,6 +40,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   margin-top: -1px;
   padding: 0 $selectedItemPaddingOnSides;
 }
+
 .OrganizationList-user.is-selected {
   background-color: $cCard-selectedFill;
   border: 1px $cCard-selectedBorder solid;
@@ -45,19 +49,23 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   margin-right: -#{$sMargin-element};
   margin-top: -1px; // to overlap border of prev element
   padding: 0 $selectedItemPaddingOnSides;
+
   &:hover {
     background-color: $cCard-selectedFill;
     border: 1px $cCard-selectedBorder solid;
   }
 }
+
 .OrganizationList-userAvatar {
   width: 42px;
   height: 42px;
   margin-right: 20px;
 }
+
 .OrganizationList-userAvatar--img {
   border: 0;
 }
+
 .OrganizationList-userLink {
   @include display-flex();
   @include flex-direction(row);
@@ -65,6 +73,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   padding: $sMargin-element 0;
   text-decoration: none!important;
 }
+
 .OrganizationList-userInfo {
   @include display-flex();
   @include flex-direction(row);
@@ -72,6 +81,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include justify-content(space-between);
   width: 100%;
 }
+
 .OrganizationList-userInfoName {
   @include display-flex();
   @include flex-direction(column);
@@ -81,21 +91,26 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   height: 40px;
   padding: 1px 0;
 }
+
 .OrganizationList-userInfoSubtitle {
   color: $cTypography-secondary;
   font-size: 13px;
   font-weight: 300;
   line-height: 16px;
 }
+
 .OrganizationList-userInfoData {
   @include display-flex();
   @include flex-direction(row);
 }
+
 .OrganizationList-userStats {
   width: 200px;
   margin-top: 10px;
+
   @include progress-bar(6px, 20px, false, 4px);
 }
+
 .OrganizationList-userLink:hover {
   cursor: pointer;
 
@@ -103,10 +118,12 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
     color: $cTypography-linkHover;
   }
 }
+
 .OrganizationList-userLink.is-disabled {
   cursor: initial;
   opacity: 0.5;
 }
+
 .OrganizationList-paginator {
   @include display-flex();
   @include justify-content(flex-end, end);

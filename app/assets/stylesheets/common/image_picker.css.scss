@@ -5,6 +5,7 @@
   width: 945px;
   margin: 67px auto 60px auto;
 }
+
 .AssetsList {
   position:relative;
   display:block;
@@ -14,14 +15,17 @@
   margin: 35px 0 70px 0;
   overflow: auto;
 }
+
 .Form-row.Form-row--streched {
   margin: auto;
   width: 780px;
 }
+
 .CreateDialog-footerShadow.CreateDialog-footerShadow--tall {
   height: 48px;
   top:-48px;
 }
+
 .ImportPanel-state.is-active {
   display: block;
 }

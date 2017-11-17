@@ -10,9 +10,11 @@
     height: auto;
   }
 }
+
 .Header--dark {
   background: #2E3C43;
 }
+
 .Header--tall {
   @include display-flex();
   @include flex-direction(column);
@@ -20,6 +22,7 @@
   height: 100%;
   min-height: 450px;
 }
+
 .Header-title {
   @include display-flex();
   @include flex-grow(1);
@@ -32,10 +35,12 @@
     display: none;
   }
 }
+
 .Header-innerTitle {
   width: 100%;
   max-width: 760px;
 }
+
 .Header-inner {
   @include css3-prefix(box-sizing, border-box);
   width: 100%;
@@ -43,6 +48,7 @@
   z-index: 10;
   height: 80px;
 }
+
 .Header-footer {
   position: absolute;
   bottom: 0;

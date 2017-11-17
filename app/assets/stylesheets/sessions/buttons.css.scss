@@ -27,7 +27,7 @@
 }
 
 .Btn--background {
-  background: #fff;
+  background: #FFF;
 }
 
 .Btn--m {
@@ -57,11 +57,11 @@
 }
 
 .Btn--white {
-  color: #fff;
-  border-color: rgba(#fff, .3);
+  color: #FFF;
+  border-color: rgba(#FFF, .3);
 
   &:hover {
-    background: #fff;
+    background: #FFF;
     color: #333;
   }
 }
@@ -72,15 +72,15 @@
 
   &:hover {
     background: #8EB83F;
-    color: #fff;
+    color: #FFF;
   }
 
   &.is-highlight {
     background: #8EB83F;
-    color: #fff;
+    color: #FFF;
 
     &:hover {
-      background: #fff;
+      background: #FFF;
       color: #8EB83F;
     }
   }
@@ -92,15 +92,15 @@
 
   &:hover {
     background: #397EB9;
-    color: #fff;
+    color: #FFF;
   }
 
   &.is-highlight {
     background: #397EB9;
-    color: #fff;
+    color: #FFF;
 
     &:hover {
-      background: #fff;
+      background: #FFF;
       color: #397EB9;
     }
   }

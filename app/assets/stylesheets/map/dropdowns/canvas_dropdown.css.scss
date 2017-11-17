@@ -10,7 +10,6 @@
 @import '../../old_elements/elements-sprite';
 
 div.dropdown.canvas_setup_dropdown {
-
   ul {
     clear:both;
     width: 225px;
@@ -21,10 +20,12 @@ div.dropdown.canvas_setup_dropdown {
     float:left;
     border:none;
     background: #F2F2F2; 
+
     @include border-radius(5px);
 
     &:first-child { 
       margin-right: 1px;
+
       @include border-radius(5px 0 0 5px);
     }
 
@@ -41,7 +42,9 @@ div.dropdown.canvas_setup_dropdown {
 
       background: #F2F2F2; 
 
-      strong { color: #397DB8; @include opacity(1); }
+      strong { color: #397DB8;
+
+        @include opacity(1); }
 
       &.desktop a { background: image-url('layout/computer.png') no-repeat 50% 16px; }
       &.mobile  a { background: image-url('layout/mobile.png') no-repeat 50% 16px; }
@@ -64,6 +67,7 @@ div.dropdown.canvas_setup_dropdown {
       text-transform: uppercase;
       font-size: 10px;
       color: #444;
+
       @include opacity(.5);
     }
 

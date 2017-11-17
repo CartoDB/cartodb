@@ -17,20 +17,21 @@
     right: 65px;
     bottom: 5px;
     font-size: 15px;
-    color: #333333;
+    color: #333;
     border: 1px solid #000;
     line-height: normal;
+
     @include border-radius(4px);
     padding: 8px 10px;
-    background:#fff;
+    background:#FFF;
 
     .hint {
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #CCC;
       margin: 7px 0 0 0;
       padding: 4px 3px 0 0;
       font-size: 12px;
       text-align: right;
-      color: #ccc;
+      color: #CCC;
 
       strong { margin-right: 3px; }
       em { margin-right: 3px; font-style: italic; }
@@ -46,6 +47,7 @@
       padding: 0;
       width: 100%;
       background:none;
+
       @include border-radius(0);
     }
 
@@ -60,6 +62,7 @@
 .edit_text_dialog {
   position:absolute!important;
   padding: 11px;
+
   @include box-shadow(rgba(black, 0.17) 0 0 6px 1px);
   @include border-radius(4px);
   @include background(linear-gradient(#FEFEFE, #F4F4F4));
@@ -104,15 +107,16 @@
     padding: 10px;
     font-family: $text-fonts;
     font-size: 15px;
-    color: #666666;
+    color: #666;
     border: 1px solid #C0C1C2;
     background: #FFF;
+
     @include border-radius(4px);
     @include box-sizing(border-box);
 
     &:focus {
       outline:none;
-      border-color:#999999;
+      border-color:#999;
     }
   }
 
@@ -143,15 +147,18 @@
 
         div.form_spinner {
           background:white;
-          &.disabled {border-color:#DDDDDD!important;}
+          &.disabled {border-color:#DDD!important;}
         }
 
         &.day_field {width:46px;}
         &.month_field {width:101px;}
         &.year_field {width:54px;}
+
         &.time_field {
           width:66px;
+
           @include default-input();
+
           input {
             border-color:#9E9E9E;
             width:59px;
@@ -159,7 +166,7 @@
             font-size:13px;
             // Actions
             &.error {border-color:rgba(red,0.5);}
-            &[readonly] {background:#f4f4f4; border-color:#DDDDDD;}
+            &[readonly] {background:#F4F4F4; border-color:#DDD;}
           }
         }
 
@@ -205,11 +212,13 @@
   div.field.boolean {
     nav {
       display:block;
-      border:1px solid #CCCCCC;
+      border:1px solid #CCC;
+
       @include border-radius(4px);
       background:white;
       padding:10px 5px 12px 20px;
       min-width: 205px;
+
       a {
         @include inline-block(); width:65px; font-weight:normal; font-size:13px;
         span.radio {margin-top:0!important;}
@@ -246,6 +255,7 @@
       background:image-url("layout/loader_gray.gif") no-repeat center center transparent;
     }
     div.rest {display:none;}
+
     div.point {
       position:relative;
       display:none;
@@ -256,6 +266,7 @@
 
       & > span, & > p {
         position:relative;
+
         @include inline-block();
         margin:0;
       }
@@ -279,7 +290,7 @@
         top:6px;
         left:8px;
         font-style:italic;
-        color:#AAAAAA; 
+        color:#AAA; 
         font-size:13px;
         pointer-events:none;
         z-index:10;
@@ -291,16 +302,19 @@
     display: none;
   }
 }
+
 .floating.edit_name_dialog {
   min-width:280px;
   height:37px;
   padding: 5px;
+
   @include background(linear-gradient(rgba(black, 0.5), rgba(#212121,0.5)));
   @include border-radius(4px);
   @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
 
   .content {
     float: left;
+
     @include inline-block();
   }
 
@@ -311,12 +325,14 @@
     right:65px;
     bottom:5px;
     font-size: 15px;
-    color: #333333;
+    color: #333;
     border: 1px solid #000;
     padding: 8px 10px;
     line-height:normal;
+
     @include border-radius(4px);
     margin: 0 3px 0 0;
+
     &:focus {
       outline:none;
     }
@@ -328,11 +344,13 @@
     font-size: 15px !important;
     font-weight: bold !important;
     letter-spacing:0;
+
     @include border-radius(4px);
 
     &:active {
       border-color:#ACACAC;
       background:#D3D3D3; // IE
+
       @include background(linear-gradient(#F9F9F9,#E1E1E1));
       @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset);
     }
@@ -343,6 +361,7 @@
 
     ul {
       position:relative;
+
       @include inline-block();
       min-height:24px;
       max-height:300px!important;
@@ -352,6 +371,7 @@
       padding:4px 4px 1px 4px;
       background:white;
       border: 1px solid #000;
+
       @include border-radius(4px);
 
       li.tagit-choice {
@@ -359,19 +379,21 @@
         padding:0;
         background:#4086C3;
         border:1px solid #2B5B85;
+
         @include border-radius(3px);
         font:normal 11px "Arial";
-        color:#FFFFFF;
+        color:#FFF;
 
         span.tagit-label {
           @include inline-block();
-          padding:0px 5px;
+          padding:0 5px;
           border-right:1px solid #2B5B85;
           line-height:19px;
         }
 
         a.tagit-close {
           position:relative;
+
           @include inline-block();
           width:auto;
           height:100%;
@@ -386,7 +408,7 @@
           span.text-icon {
             display:block;
             margin:0;
-            padding:0 5px 0px 7px;
+            padding:0 5px 0 7px;
             line-height:19px;
             color:#1F4362;
           }
@@ -419,11 +441,13 @@
       font-size: 15px !important;
       font-weight: bold !important;
       letter-spacing:0;
+
       @include border-radius(4px);
 
       &:active {
         border-color:#ACACAC;
         background:#D3D3D3; // IE
+
         @include background(linear-gradient(#F9F9F9,#E1E1E1));
         @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset);
       }

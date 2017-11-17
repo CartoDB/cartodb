@@ -25,29 +25,36 @@
     border-right: 4px solid transparent;
     border-top: 4px solid $cIcons-default;
   }
+
   &:hover {
     &:after {
       border-top-color: $cIcons-active;
     }
   }
 }
+
 .Dropdownlink--secondary {
   &:after {
     border-top-color: $cTypography-secondary;
   }
+
   &:hover {
     border-top-color: $cTypography-secondary;
+
     &:after {
       border-top-color: $cTypography-secondary;
     }
   }
 }
+
 .DropdownLink--white {
   &:after {
     border-top-color: white;
   }
+
   &:hover {
     border-top-color: white;
+
     &:after {
       border-top-color: white;
     }

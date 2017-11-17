@@ -15,6 +15,7 @@
   @include display-flex();
   @include align-items(center, center);
 }
+
 .RadioButton-input {
   position: relative;
   width: 16px;
@@ -28,6 +29,7 @@
     border-color: #AAA;
   }
 }
+
 .RadioButton-input.is-checked {
   &::before {
     position: absolute;
@@ -40,51 +42,66 @@
     content: '';
   }
 }
+
 .RadioButton-input.is-disabled {
   cursor: default;
+
   &::before {
     background: #DDD;
     cursor: default;
   }
 }
+
 .RadioButton-label {
   margin-left: 8px;
   color: $cTypography-secondary;
 }
+
 .RadioButton-label.dark-color {
   color: $cTypography-headers;
 }
+
 .RadioButton.is-checked .RadioButton-label {
   color: $cTypography-linkSelected;
 }
+
 .RadioButton.is-alert .RadioButton-label {
   color: $cHighlight-alert3;
 }
+
 .RadioButton.is-alert .RadioButton-input {
   border-color: $cHighlight-alert3;
+
   &::before {
     background: $cHighlight-alert3;
   }
 }
+
 .RadioButton.is-warning .RadioButton-label {
   color: $cHighlight-alert;
 }
+
 .RadioButton.is-warning .RadioButton-input {
   border-color: $cHighlight-alert;
+
   &::before {
     background: $cHighlight-alert;
   }
 }
+
 .RadioButton.is-disabled .RadioButton-input {
   @include opacity(0.4);
+
   &:hover {
     border-color: $cStructure-mainLine;
     cursor: default;
   }
+
   &:focus {
     border-color: $cStructure-mainLine;
   }
 }
+
 .RadioButton.is-disabled .RadioButton-label {
   @include opacity(0.4);
 }
@@ -99,6 +116,7 @@
   vertical-align: middle;
   z-index: 1;
 }
+
 .RadioButtonInput-face {
   position: relative;
   width: 16px;
@@ -119,6 +137,7 @@
     content: '';
   }
 }
+
 .RadioButtonInput:checked + .RadioButtonInput-face {
   &::before {
     position: absolute;
@@ -131,16 +150,20 @@
     content: '';
   }
 }
+
 .RadioButtonInput:disabled + .RadioButtonInput-face {
   @include opacity(0.4);
+
   &:focus {
     border-color: $cStructure-mainLine;
   }
+
   &:hover {
     border-color: $cStructure-mainLine;
     cursor: default;
   }
 }
+
 .RadioButtonInput:hover + .RadioButtonInput-face {
   border-color: #AAA;
 }

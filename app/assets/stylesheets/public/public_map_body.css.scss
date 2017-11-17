@@ -15,7 +15,7 @@
 .cartodb-body .comments .content p {
   font-size: 17px;
   font-family: $text-fonts;
-  color: #444444;
+  color: #444;
   line-height: normal;
 }
 
@@ -33,7 +33,7 @@
   font-size: 17px;
   font-family: $text-fonts;
   font-weight:bold;
-  color: #444444;
+  color: #444;
   line-height: normal;
 }
 
@@ -54,7 +54,7 @@
   font-family: $text-fonts;
 }
 
-.cartodb-body .inner .map-info ul li.private { color: #CCCCCC }
+.cartodb-body .inner .map-info ul li.private { color: #CCC }
 
 .cartodb-body .inner .map-info ul li a {
   float:left;
@@ -73,6 +73,7 @@
 
 .cartodb-body .inner .map-info ul li .disabled {
   color: #333;
+
   @include opacity(.5);
   &:hover { text-decoration:none; color: #333; }
 }
@@ -87,7 +88,7 @@
   top: 4px;
   float:right;
   font-size: 11px;
-  color: #CCCCCC;
+  color: #CCC;
   font-family: 'ProximaNova', $text-fonts2;
   line-height: 120%;
 }
@@ -108,7 +109,6 @@
 // Hello media queries
 
 @media only screen and (max-width: 710px) {
-
   div.cartodb-map-data .cartodb-body .inner .map-info {
     top: 0;
   }
@@ -117,9 +117,9 @@
 
 /* iPhone portrait */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
+  and (min-device-width : 320px)
+  and (max-device-width : 480px)
+  and (orientation : portrait) {
   div.cartodb-map-data .cartodb-body .inner .map-info {
     top: 0;
   }
@@ -127,9 +127,9 @@ and (orientation : portrait) {
 
 /* iPhone landscape */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : landscape) {
+  and (min-device-width : 320px)
+  and (max-device-width : 480px)
+  and (orientation : landscape) {
   div.cartodb-map-data .cartodb-body .inner .map-info { top: 0 }
 }
 

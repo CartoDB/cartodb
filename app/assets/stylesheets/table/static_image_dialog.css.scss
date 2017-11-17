@@ -10,7 +10,6 @@
 @import "old_common/mixins";
 
 .static_image_dialog {
-
   @include default-form-info();
   @include default-input();
   @include default-textarea();
@@ -32,6 +31,7 @@
   .row .input_field {
     margin: 0 20px 0 0;
   }
+
   .row .input_field:last-child {
     margin: 0;
   }
@@ -53,19 +53,24 @@
   .attribution {
     margin: 20px 0 0 0;
   }
+
   .attribution p {
     margin: 0 0 10px 0;
     line-height:130%;
   }
+
   .attribution p.highlighted {
-    background: #f1f1f1;
+    background: #F1F1F1;
     padding: 10px;
+
     @include border-radius(2px);
-    border: 1px solid #ccc;
+    border: 1px solid #CCC;
   }
+
   .attribution p:last-child {
     margin: 0;
   }
+
   .attribution p a {
     letter-spacing: normal;
   }
@@ -86,7 +91,7 @@
   }
 
   .unit {
-    color: #ccc;
+    color: #CCC;
   }
 
   section.modal.confirmation {

@@ -7,15 +7,17 @@
 /** customization of codemirror styles */
 .cm-s-default .cm-color {
   color: black;
+
   @include border-radius(2px);
   &:hover { cursor:pointer }
 }
-.cm-s-default .cm-variable {color: #666666;}
-.cm-s-default .cm-keyword {color: #FF9900;}
-.cm-s-default .cm-atom {color: #FF9900;}
-.cm-s-default .cm-invalidchar {color: #f00;}
+.cm-s-default .cm-variable {color: #666;}
+.cm-s-default .cm-keyword {color: #F90;}
+.cm-s-default .cm-atom {color: #F90;}
+.cm-s-default .cm-invalidchar {color: #F00;}
+
 .CodeMirror-lines * {
-   color: #666666;
+  color: #666;
 }
 
 .CodeMirror {
@@ -35,7 +37,7 @@
 
 .CodeMirror-linenumber {
   font-size: 11px;
-  color: #666666;
+  color: #666;
 }
 
 .CodeMirror pre {
@@ -48,6 +50,7 @@
   border: none;
   background: none;
 }
+
 .CodeMirror-gutter {
   background: none;
 }
@@ -74,16 +77,17 @@
   padding:0;
   background:white;
   z-index:1000!important;
+
   @include border-radius(3px);
   @include box-shadow(none);
-  border:1px solid #999999;
+  border:1px solid #999;
   overflow-y: auto;
   z-index:20;
 
   .CodeMirror-hint {
     position:relative;
     display:block;
-    border-top:1px solid rgba(#CCCCCC,0.35);
+    border-top:1px solid rgba(#CCC,0.35);
     display:block;
     line-height:35px;
     padding:0 10px;
@@ -91,7 +95,9 @@
     color:#2483B4;
     margin:0;
 
-    &:first-child {border-top:0; @include border-top-radius(2px)}
+    &:first-child {border-top:0;
+
+      @include border-top-radius(2px)}
     &:last-child {@include border-bottom-radius(2px)}
 
     span.value, span.text {
@@ -110,7 +116,8 @@
       position:absolute;
       top:8px; right:8px;
       width:20px;
-      background:#CCCCCC;
+      background:#CCC;
+
       @include border-radius(2px);
       font-size:11px;
       font-weight:bold;
@@ -123,7 +130,7 @@
   }
 
   .CodeMirror-hint-active {
-    color:#fff;
+    color:#FFF;
     text-decoration:none;
     background:#397DBA;
   }

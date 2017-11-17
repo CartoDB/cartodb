@@ -7,12 +7,15 @@ $opacityTransition: 250ms;
 .OrganizationNotifications {
   margin: $sMargin-section 0 100px;
 }
+
 .OrganizationNotifications-button {
   height: 34px;
 }
+
 .OrganizationNotifications-textarea {
   height: 80px;
 }
+
 .Md-container {
   position: absolute;
   right: 1px;
@@ -22,6 +25,7 @@ $opacityTransition: 250ms;
   background: rgba(#FFF, 0.6);
   z-index: 10;
 }
+
 .field_with_errors {
   .OrganizationNotifications-textarea {
     border: 1px solid rgba($cHighlight-negative, 0.48);
@@ -33,10 +37,12 @@ $opacityTransition: 250ms;
     bottom: 3px;
   }
 }
+
 .Md-icon,
 .Md-text {
   float: left;
 }
+
 .Md-icon {
   width: 24px;
   height: 16px;
@@ -44,10 +50,12 @@ $opacityTransition: 250ms;
   background: #DDD;
   text-align: center;
 }
+
 .Md-buttonInner {
   position: relative;
   top: -2px;
 }
+
 .NotificationsList {
   @include display-flex();
   @include flex-direction(column);
@@ -55,6 +63,7 @@ $opacityTransition: 250ms;
   width: 100%;
   margin: 0 auto;
 }
+
 .NotificationsList-item {
   @include display-flex();
   position: relative;
@@ -88,9 +97,11 @@ $opacityTransition: 250ms;
   border: none;
   z-index: 1;
 }
+
 .NotificationsList-itemCategory--warning {
   @include notification-type-icon();
 }
+
 .NotificationsList-itemInfo {
   @include display-flex();
   @include flex-direction(row);
@@ -101,6 +112,7 @@ $opacityTransition: 250ms;
   position: relative;
   z-index: 1;
 }
+
 .NotificationsList-itemPrimaryInfo {
   @include display-flex();
   @include flex-direction(column);
@@ -108,17 +120,20 @@ $opacityTransition: 250ms;
   width: 400px;
   margin-right: $sMargin-element;
 }
+
 .NotificationsList-itemSecondaryInfo {
   @include display-flex();
   @include flex-direction(column);
   margin-top: 0;
 }
+
 .NotificationsList-itemMeta {
   @include display-flex();
   @include align-items(center);
   @include justify-content(flex-start, end);
   margin-bottom: 2 * $sMargin-min;
 }
+
 .NotificationsList-itemTitle {
   @include display-flex();
   @include align-items(center);
@@ -135,18 +150,23 @@ $opacityTransition: 250ms;
     padding-left: 20px;
     list-style-type: disc;
   }
+
   ol {
     list-style-type: decimal;
   }
+
   ul {
     list-style-type: disc;
   }
+
   em {
     font-style: italic;
   }
+
   strong {
     font-weight: 600;
   }
+
   code {
     margin: 0;
     padding: 3px;
@@ -156,6 +176,7 @@ $opacityTransition: 250ms;
     line-height: 25px;
   }
 }
+
 .NotificationsList-itemDescription {
   height: 16px;
   margin-top: 4px;
@@ -164,9 +185,11 @@ $opacityTransition: 250ms;
     border: 0;
   }
 }
+
 .NotificationsList-itemLink {
   font-size: 12px;
 }
+
 .Md-counter.Md-counter--negative,
 .NotificationsList-itemLink--remove {
   color: $cHighlight-negative;

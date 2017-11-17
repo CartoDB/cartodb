@@ -16,6 +16,7 @@
     margin-right: -1px;
   }
 }
+
 .Puzzle-piece {
   position: relative;
   box-sizing: border-box;
@@ -66,12 +67,14 @@
   &.connect-right:before { right: -7px }
   &.connect-right:after { right: 0 }
 }
+
 .Puzzle-piece--inset {
   min-width: 50px;
-  background-color: rgba(#ddd, 0.2);
+  background-color: rgba(#DDD, 0.2);
 }
+
 .Puzzle-pieceIcon {
   max-height: 13px; // for content not to expand it's size
   margin-top: -2px; // vertically center, since not square
-  color: #ccc;
+  color: #CCC;
 }

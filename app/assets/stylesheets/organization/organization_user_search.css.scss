@@ -14,9 +14,11 @@
   padding: 16px 0;
   margin-top: -16px;
 }
+
 .OrganizationSearch-Form {
   position: relative;
 }
+
 .OrganizationSearch-Item {
   line-height: 30px;
 
@@ -25,6 +27,7 @@
     white-space: nowrap;
   }
 }
+
 .OrganizationSearch-FormButton {
   padding-right: 2px;
   font-size: 14px;
@@ -54,6 +57,7 @@
 
   }
 }
+
 .OrganizationSearch-FormButton--clean {
   position: absolute;
   top: 50%;
@@ -69,6 +73,7 @@
     color: $cNavButton-active;
   }
 }
+
 .OrganizationSearch-FormInput {
   width: 220px;
   padding-left: 5px;
@@ -83,11 +88,13 @@
     font-style:italic;
     color:#DDD;
   }
+
   &::-moz-placeholder {
     font-weight: $sFontWeight-normal;
     font-style:italic;
     color:#DDD;
   }
+
   &:-ms-placeholder {
     font-weight: $sFontWeight-normal;
     font-style:italic;

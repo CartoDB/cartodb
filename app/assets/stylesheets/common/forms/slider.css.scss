@@ -17,10 +17,12 @@ $br: 10px;
   width: 140px;
   height: 10px;
 }
+
 .UISlider.ui-slider {
   background: white;
   border-radius: $br;
 }
+
 .UISlider.ui-slider:before {
   content: '';
   position: absolute;
@@ -32,11 +34,13 @@ $br: 10px;
   border-radius: $br;
   z-index: 1;
 }
+
 .UISlider .ui-slider-range-min {
   height: 10px;
   background-color: #1181FB;
   border-radius: $br;
 }
+
 .UISlider .ui-slider-handle {
   position: absolute;
   outline:none;

@@ -22,29 +22,35 @@
   border-bottom: 1px solid $cStructure-mainLine;
   background: #FFF;
 }
+
 .ContextMenu-row {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   height: 80px;
 }
+
 @media only screen and (max-width: 959px) {
   .ContextMenu-row {
     padding-right: 20px;
     padding-left: 20px;
   }
 }
+
 .ContextMenu-dropdown {
   text-align: left;
 }
+
 .ContextMenu-dropdownArrow {
   position: relative;
   top: -1px;
   font-size: 6px;
 }
+
 .ContextMenu-label {
   margin-right: 20px;
 }
+
 .ContextMenu > .u-inner {
   display: block;
   position: relative;
@@ -52,41 +58,51 @@
   padding: 0;
   overflow: hidden;
 }
+
 .ContextMenu-group {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+
 .ContextMenu-group.is-hidden {
   display: none;
 }
+
 .ContextMenu-groupItem {
   @include inline-block();
   margin-right: 20px;
   color: $cTypography-secondary;
   line-height: normal;
+
   &:last-child {
     margin-right: 0;
   }
 }
+
 .ContextMenu-orderLink {
   @include inline-block();
   color: #CCC;
   font-size: 15px;
   line-height: 19px;
+
   &:hover {
     color: #666;
   }
 }
+
 .ContextMenu-orderLink.is-selected {
   color: #666;
+
   &:hover {
     cursor: default;
   }
 }
+
 .ContextMenu-orderLink--graph {
   line-height: 26px;
 }
+
 .ContextMenu-orderLink--size {
   font-size: 17px;
   line-height: 17px;

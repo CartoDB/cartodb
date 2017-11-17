@@ -18,8 +18,10 @@
   height: 67px;
   margin:0;
   padding:0;
+
   @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
   border: none;
+
   @include box-shadow(none);
   font-family: $text-fonts;
   z-index: 10;
@@ -47,9 +49,10 @@
   margin: 14px 0;
   line-height:67px;
   text-indent: -9999px;
-  line-height: 0px;
-  font-size: 0px;
+  line-height: 0;
+  font-size: 0;
   text-transform: uppercase;
+
   @include background(image-url('layout/cartodb_logo_with_cartofante.png') no-repeat);
 }
 
@@ -78,6 +81,7 @@
     text-transform: uppercase;
     text-decoration: none;
     color:white;
+
     @include border-radius(50px);
     @include transform-style("linear");
     @include transition-property("background");
@@ -139,11 +143,11 @@
 
 
 @media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
-only screen and (        min-device-pixel-ratio: 2),
-only screen and (                min-resolution: 192dpi),
+  only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (   min--moz-device-pixel-ratio: 2),
+  only screen and (     -o-min-device-pixel-ratio: 2/1),
+  only screen and (        min-device-pixel-ratio: 2),
+  only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) {
   .cartodb-public-header .logo {
     @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat!important);
@@ -157,11 +161,10 @@ only screen and (                min-resolution: 2dppx) {
 
 /* iPhone portrait */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
+  and (min-device-width : 320px)
+  and (max-device-width : 480px)
+  and (orientation : portrait) {
   .cartodb-public-header {
-
     .logo {
       width: 96px;
       height: 27px;

@@ -12,6 +12,7 @@ $iconSelectedColor: #4A90E2;
   margin: 0 auto;
   padding-top: 81px;
 }
+
 .Categories > .u-inner {
   @include display-flex();
   @include justify-content(center, center);
@@ -20,22 +21,27 @@ $iconSelectedColor: #4A90E2;
   text-align: center;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+
 .Categories-breadcrumb {
   font-size: 14px;
   color: $cTypography-secondary;
+
   &:hover {
     color: $cTypography-paragraphs;
     &:after { border-top-color: $cTypography-paragraphs }
   }
 }
+
 .Categories-list {
   display: inline-block;
   margin-left: 20px;
 }
+
 .Categories-listItem {
   display: inline-block;
   margin-right: 3px;
 }
+
 .Categories-option {
   display: inline-block;
   width: $sIcon-layout - 2;
@@ -43,20 +49,24 @@ $iconSelectedColor: #4A90E2;
   line-height: $sIcon-layout - 2;
   border: 1px solid $iconStandardColor;
   border-radius: $sIcon-borderRadius;
+
   &:hover {
     border-color: $iconSelectedColor;
     .Categories-optionIcon { color: $iconSelectedColor }
   }
 }
+
 .Categories-optionIcon {
   font-size: 17px;
   line-height: 38px;
   color: $cTypography-help;
 }
+
 .Categories-option.is-selected {
   border-color: $iconSelectedColor;
   &:hover { cursor: default }
 }
+
 .Categories-option.is-selected .Categories-optionIcon {
   color: $iconSelectedColor;
 }

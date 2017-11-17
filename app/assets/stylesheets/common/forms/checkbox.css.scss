@@ -15,6 +15,7 @@
   @include display-flex();
   @include align-items(center, center);
 }
+
 .Checkbox-input {
   position: relative;
   width: 16px;
@@ -28,9 +29,11 @@
     border-color: #AAA;
   }
 }
+
 .Checkbox-input:focus {
   border-color: #AAA;
 }
+
 .Checkbox-input.is-checked {
   &:before, &:after {
     content: '';
@@ -42,30 +45,38 @@
   &:before {
     left: 2px;
     width: 4px;
+
     @include transform(rotate(55deg));
   }
+
   &:after {
     top: 5px;
     left: 3px;
     width: 8px;
+
     @include transform(rotate(-60deg));
   }
 }
+
 .Checkbox-label {
   margin-left: 8px;
   color: $cTypography-secondary;
 }
+
 .Checkbox.is-disabled .Checkbox-input {
   @include opacity(0.4);
+
   &:hover {
     cursor:default;
     border-color: $cStructure-mainLine;
   }
   &:focus { border-color: $cStructure-mainLine }
 }
+
 .Checkbox.is-disabled .Checkbox-label {
   @include opacity(0.4);
 }
+
 .Checkbox-strong {
   color: #2E3C43;
 }

@@ -13,6 +13,7 @@
   min-height: 600px;
   width: 260px;
 }
+
 .SideMenu-progress {
   @include display-flex();
   @include justify-content(space-between);
@@ -20,10 +21,12 @@
   @include align-items(center, center);
   margin: 30px 0;
 }
+
 .SideMenu-progressBar {
   @include progress-bar(6px, 9px, true, false);
   width: 140px;
 }
+
 .SideMenu-separator {
   position: relative;
   display: block;
@@ -32,11 +35,13 @@
   background-color: $cStructure-darkGrey;
   z-index:0;
 }
+
 .SideMenu-list {
   @include justify-content(space-between, justify);
   @include align-items(center, center);
   margin: 25px 0;
 }
+
 .SideMenu-typeItem {
   position:relative;
   line-height: 35px;
@@ -44,6 +49,7 @@
   &:first-child { margin-left: 0 }
   &:last-child { margin-right: 0 }
 }
+
 .SideMenu-typeLink {
   display: inline-block;
   font-size: 14px;
@@ -56,6 +62,7 @@
     text-decoration: underline;
   }
 }
+
 .SideMenu-typeLink.is-selected {
   color:$cTypography-linkSelected;
   font-weight: bold;
@@ -65,22 +72,27 @@
     text-decoration: none;
   }
 }
+
 .SideMenu-typeLink.is-disabled {
   color: rgba(black, 0.3);
+
   &:hover {
     cursor: default;
     text-decoration: none;
     color: rgba(black, 0.3);
   }
 }
+
 .SideMenu-typeLink.is-disabled {
   color: rgba(black, 0.3);
+
   &:hover {
     cursor: default;
     text-decoration: none;
     color: rgba(black, 0.3);
   }
 }
+
 .SideMenu-helpSegment {
   @include display-flex();
   @include flex-direction(row);
@@ -89,6 +101,7 @@
   background: $cStructure-grayBkg;
   border: 1px solid $cTypography-help;
 }
+
 .SideMenu-helpSegment--paragraph {
   @include display-flex();
   @include flex-direction(column);

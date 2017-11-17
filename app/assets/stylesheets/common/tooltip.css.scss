@@ -1,5 +1,5 @@
 
-  /*
+/*
    * Styles for tipsy tooltip
    */
 
@@ -20,6 +20,7 @@
 .tipsy-inner { border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; }
 
 /* Uncomment for shadow */
+
 /*.tipsy-inner { box-shadow: 0 0 5px #000000; -webkit-box-shadow: 0 0 5px #000000; -moz-box-shadow: 0 0 5px #000000; }*/
 
 .tipsy-arrow { position: absolute; width: 0; height: 0; line-height: 0; border: 4px dashed #000; }
@@ -30,7 +31,7 @@
 .tipsy-arrow-e { border-left-color: #000; }
 .tipsy-arrow-w { border-right-color: #000; }
 
-.tipsy-n .tipsy-arrow { top: 0px; left: 50%; margin-left: -8px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent; }
+.tipsy-n .tipsy-arrow { top: 0; left: 50%; margin-left: -8px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent; }
 .tipsy-nw .tipsy-arrow { top: 0; left: 10px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent;}
 .tipsy-ne .tipsy-arrow { top: 0; right: 10px; border-bottom-style: solid; border-top: none;  border-left-color: transparent; border-right-color: transparent;}
 .tipsy-s .tipsy-arrow { bottom: 4px; left: 50%; margin-left: -8px; border-top-style: solid; border-bottom: none;  border-left-color: transparent; border-right-color: transparent; }

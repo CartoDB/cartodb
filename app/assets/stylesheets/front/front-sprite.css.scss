@@ -13,10 +13,10 @@ $front-spacing: 0 !default;
 $front-repeat: no-repeat !default;
  
 $front-sprites: sprite-map("sprites/front/*.png",
-  $position: $front-position,
-  $spacing: $front-spacing,
-  $repeat: $front-repeat,
-  $readonly-spacing: 0);
+$position: $front-position,
+$spacing: $front-spacing,
+$repeat: $front-repeat,
+$readonly-spacing: 0);
  
 // All sprites should extend this class
 // The front-sprite mixin will do so for you.
@@ -39,6 +39,7 @@ $front-sprites: sprite-map("sprites/front/*.png",
 // It will also apply the image dimensions if $dimensions is true.
 @mixin front-sprite($name, $dimensions: $front-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$front-sprite-base-class};
+
   @include sprite($front-sprites, $name, $dimensions, $offset-x, $offset-y)
 }
  

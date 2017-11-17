@@ -8,6 +8,7 @@
 .FeatureData {
 
 }
+
 .FeatureData .Dialog-header {
   height: 245px;
   min-height: 245px;
@@ -16,6 +17,7 @@
 }
 .FeatureData .Dialog-headerTitle { font-size: 16px }
 .FeatureData .Dialog-headerText { font-size: 14px }
+
 .FeatureData-mapWrapper {
   position: relative;
   width: 100%;
@@ -23,11 +25,13 @@
   margin-top: 30px;
   z-index: 1;
 }
+
 .FeatureData-mapContainer {
   position: relative;
   width: 100%;
   height: 100%;
 }
+
 .FeatureData-mapMamufas {
   content: '';
   position: absolute;
@@ -40,11 +44,14 @@
   border: 1px solid rgba(black, 0.1);
   border-left: 0;
   border-right: 0;
+
   @include css3-prefix(box-sizing, content-box);
   z-index: 2;
 }
+
 .FeatureData-mapContainer .leaflet-control-attribution,
 .FeatureData-mapContainer .cartodb-gmaps-attribution { display: none }
+
 .FeatureData .Dialog-expandedSubContent {
   position: relative;
 
@@ -62,27 +69,33 @@
   &:before {
     top: 275px;
     background-color: transparent!important;
+
     @include background-gradient(rgba(#F9F9F9,1),rgba(#F9F9F9,0));
   }
 
   &:after {
     bottom: 97px;
+
     @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
   }
 }
+
 .FeatureData .Dialog-stickyFooter {
   left: 0;
   z-index: 10;
 }
+
 .FeatureData-formContent,
 .FeatureData-formFooter {
   width: 620px;
   margin: 0 auto;
 }
+
 .FeatureData-formContent {
   position: relative;
   padding: 28px 0 120px;
 }
+
 .FeatureData-formFooter {
   @include display-flex();
   @include justify-content(space-between, justify);

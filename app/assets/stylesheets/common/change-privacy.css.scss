@@ -6,6 +6,7 @@
   padding: 20px 0;
   background: #F0F7FC;
 }
+
 .UpgradeElement.ChangePrivacy-upgradeBannerInner {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -15,29 +16,35 @@
   background: none;
   border: none;
 }
+
 .ChangePrivacy-shareBanner {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
 }
+
 .ChangePrivacy-shareBannerIcon {
   margin-right: $sMargin-elementInline;
 }
+
 .ChangePrivacy-startFooter {
   @include display-flex();
   @include justify-content(center);
   @include align-items(stretch);
   @include align-content(space-between, justify);
 }
+
 .ChangePrivacy-shareHeader {
   @include display-flex();
   @include justify-content(flex-start);
   @include align-items(center);
   border-top: none; // override Dialog-body default
 }
+
 .ChangePrivacy-shareHeaderBackIcon {
   margin-right: $sMargin-element;
 }
+
 .ChangePrivacy-passwordInput {
   position: absolute;
   left: 9px;
@@ -45,6 +52,7 @@
   width: 172px;
   outline:none;
 }
+
 .ChangePrivacy-shareListItem {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -54,20 +62,25 @@
   margin: 0 auto;
 }
 .ChangePrivacy-shareListItem:not(:nth-child(1)) { border-top: 1px solid $cStructure-mainLine }
+
 .ChangePrivacy-shareListItemInfo {
   @include display-flex();
   @include justify-content(flex-start);
   max-width: 400px;
 }
+
 .ChangePrivacy-shareListItemToggler {
   margin-right: 8px;
 }
+
 .ChangePrivacy-shareListItemTogglerContainer {
   margin-right: 30px;
 }
+
 .ChangePrivacy-shareListItemIcon {
   margin-right: $sMargin-elementInline;
 }
+
 .ChangePrivacy-infoIcon {
   @include display-flex();
   @include justify-content(center);
@@ -80,10 +93,12 @@
   border-radius: 30px;
   margin-right: $sMargin-elementInline;
 }
+
 .ChangePrivacy-shareFooter {
   height: 97px;
   box-sizing: border-box;
   background-color: $cStructure-grayBkg;
+
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);

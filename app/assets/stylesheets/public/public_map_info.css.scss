@@ -26,7 +26,7 @@
   font-family: 'ProximaNova-Semibold', $text-fonts2;
   font-weight: normal;
   font-size:27px;
-  color: #444444;
+  color: #444;
   padding: 0;
   margin: 0 0 5px 0;
   line-height: 110%;
@@ -82,6 +82,7 @@
   font-family:'Arial';
   letter-spacing:0;
 }
+
 .user-options .button.grey.like .icon {
   @include inline-block();
   position:relative;
@@ -126,16 +127,19 @@
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   50% {
     -webkit-transform: scale(.5);
     -ms-transform: scale(.5);
     transform: scale(.5);
   }
+
   75% {
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   100% {
     -webkit-transform: scale(.7);
     -ms-transform: scale(.7);
@@ -155,16 +159,19 @@
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   50% {
     -webkit-transform: scale(.5);
     -ms-transform: scale(.5);
     transform: scale(.5);
   }
+
   75% {
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   100% {
     -webkit-transform: scale(.7);
     -ms-transform: scale(.7);
@@ -190,7 +197,8 @@
   vertical-align: top;
   width: 46px;
   height: 46px;
-  background: #fff;
+  background: #FFF;
+
   @include border-radius(100px);
 }
 
@@ -220,7 +228,7 @@
 .cartodb-info .inner .user h4 {
   margin: 0 0 6px 0;
   font-size: 17px;
-  color: #444444;
+  color: #444;
 }
 
 .cartodb-info .inner .user h5 {
@@ -234,21 +242,20 @@
 
 /* iPhone portrait */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
+  and (min-device-width : 320px)
+  and (max-device-width : 480px)
+  and (orientation : portrait) {
 
   .cartodb-map-data .cartodb-info { padding: 20px 0 }
 
   .cartodb-map-data .cartodb-info .inner .details h1 {
     font-size:20px;
-    padding-right: 0px;
+    padding-right: 0;
   }
 }
 
 
 @media only screen and (max-width: 710px) {
-
   .cartodb-map-data .cartodb-info .inner .details h1 {
     padding-right: 20px;
   }
@@ -274,12 +281,12 @@ and (orientation : portrait) {
 
 /* iPhone landscape */
 @media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : landscape) {
+  and (min-device-width : 320px)
+  and (max-device-width : 480px)
+  and (orientation : landscape) {
   .cartodb-map-data .cartodb-info .inner .details h1 {
     font-size:20px;
-    padding-right: 0px;
+    padding-right: 0;
   }
 }
 

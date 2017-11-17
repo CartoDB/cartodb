@@ -20,6 +20,7 @@ $text-color: rgba(white, 0.5);
   max-width: 92px;
   margin: 0 auto;
   margin-bottom: 40px;
+
   @include display-flex;
   @include justify-content(center, center);
 
@@ -69,5 +70,5 @@ $text-color: rgba(white, 0.5);
 }
 
 .Navbar-link {
-  color: #fff;
+  color: #FFF;
 }

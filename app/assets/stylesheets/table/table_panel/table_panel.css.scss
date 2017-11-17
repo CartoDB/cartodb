@@ -16,7 +16,7 @@ $corner_radius: 6px;
   position:fixed;
   right:-537px;
   top:64px;
-  bottom:0px;
+  bottom:0;
   width:600px;
   padding-top:25px;
   background:white;
@@ -25,6 +25,7 @@ $corner_radius: 6px;
   border-bottom:0;
   border-right:0;
   background:#EDEDED;
+
   @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
   @include border-top-left-radius($corner_radius);
   z-index:20;
@@ -36,7 +37,8 @@ $corner_radius: 6px;
     height:100%;
     margin-top:-25px;
     background:#EDEDED;
-    border-top:1px solid #999999;
+    border-top:1px solid #999;
+
     @include border-top-left-radius($corner_radius);
     @include box-shadow(rgba(black,0.1) 0 -10px 20px 0);
     @include transform-style("linear");
@@ -69,6 +71,7 @@ $corner_radius: 6px;
       right: 10px;
       bottom: 0;
       border:2px dashed #AAA;
+
       @include border-top-left-radius(3px);
       z-index:0;
     }
@@ -96,7 +99,7 @@ $corner_radius: 6px;
     padding-bottom:0;
 
     .layer-info .info {
-      .order {background:#666666;}
+      .order {background:#666;}
       .name_info {color:#999;}
       .name { color:#666; }
     }
@@ -132,6 +135,7 @@ $corner_radius: 6px;
   // due to it is not possible drag layers in table view.
   &.ui-sortable .layer_panel.active .layer-info .info:hover {
     cursor:move;
+
     .order {
       @include table-sprite(layer_move_icon);
       background-color:none;

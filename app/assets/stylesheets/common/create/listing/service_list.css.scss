@@ -11,11 +11,13 @@ $w: 780px;
   width: $w;
   margin: 0 auto;
 }
+
 .ServiceList-header {
   padding: 28px 0 16px;
 }
 .ServiceList-body {}
 .ServiceList-items { display: block }
+
 .ServiceList-item {
   @include display-flex();
   @include align-items(center, center);
@@ -28,9 +30,11 @@ $w: 780px;
   border: 1px solid transparent;
 }
 .ServiceList-item:last-child { margin: 0; }
+
 .ServiceList-item:hover {
   border: 1px solid #AAA;
 }
+
 .ServiceList-itemInfoTitle {
   max-width: 550px;
   padding-right: 24px;
@@ -49,22 +53,26 @@ $w: 780px;
   text-transform: uppercase;
   color: #CCC;
 }
+
 .ServiceList-itemInfo {
   @include flex(1);
 }
+
 .ServiceList-itemDescription {
   margin-top: 3px;
 }
+
 .ServiceList-itemButton {
   padding: 0 44px;
   background: transparent;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #CCC;
   color: $cTypography-paragraphs;
 
   &:hover {
 
   }
 }
+
 .IntermediateInfo.ServiceList-empty {
   width: 100%;
   min-height: 250px;

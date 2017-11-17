@@ -7,28 +7,35 @@
   padding: 0!important;
   margin: 0!important;
 }
+
 .NotificationsDropdown-item {
   position: relative;
   padding: 0 0 15px 25px !important;
   margin: 15px !important;
 }
+
 .NotificationsDropdown-item:not(:last-child) {
   margin: 0 15px;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+
 .NotificationsDropdown-item:last-child {
   padding: 0 0 0 25px !important;
 }
+
 .NotificationsDropdown-item ul {
   padding-left: 16px;
   list-style-type: disc;
 }
+
 .NotificationsDropdown-item em {
   font-style: italic;
 }
+
 .NotificationsDropdown-item strong {
   font-weight: bold;
 }
+
 .NotificationsDropdown-item code {
   margin: 0;
   padding: 3px;
@@ -37,6 +44,7 @@
   font-size: 85%;
   line-height: 20px;
 }
+
 .NotificationsDropdown-icon {
   position: absolute;
   left: 0;
@@ -48,16 +56,19 @@
   color: #B1B8C1;
   text-align: center;
 }
+
 .NotificationsDropdown-title {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
   text-transform: capitalize;
   color: $cTypography-headers;
 }
+
 .NotificationsDropdown-text {
   margin-top: 0!important;
   color: $cTypography-secondary;
 }
+
 .Notifications-iconCount {
   top:21px;
   width: $sLineHeight-normal;
@@ -71,18 +82,22 @@
   border-radius: 20px;
   border: none;
 }
+
 .Notifications-iconCount.new--items {
   background: rgba(#C74B43, 1);
 }
+
 .NotificationsDropdown-header {
   @include display-flex();
   @include align-items(center, center);
   background: none;
 }
+
 .NotificationsDropdown-item.is-new {
   .NotificationsDropdown-text {
     color: #162945;
   }
+
   .NotificationsDropdown-icon {
     color: inherit;
   }
@@ -92,18 +107,22 @@
   border-color: $cNotification;
   color: $cNotification;
 }
+
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--positive {
   border-color: $cHighlight-positive;
   color: $cHighlight-positive;
 }
+
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--negative {
   border-color: $cHighlight-negative;
   color: $cHighlight-negative;
 }
+
 .NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--main {
   border-color: $cHighlight-main;
   color: $cHighlight-main;
 }
+
 .NotificationsDropdown-item.NotificationsDropdown-item--no-notifications {
   padding-left: 0 !important;
 }

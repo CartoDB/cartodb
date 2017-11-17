@@ -10,6 +10,7 @@ $sSmallWidth: 670px;
 body.is-inDialog {
   overflow: hidden;
 }
+
 .Dialog {
   position: fixed;
   top: 0;
@@ -26,6 +27,7 @@ body.is-inDialog {
   z-index: 1000;
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=1 );
 }
+
 .Dialog-contentWrapper { // this is necessary since the Dialog element might have `position: block` set by .hide/.show
   @include display-flex();
   @include flex-direction(column);
@@ -34,31 +36,38 @@ body.is-inDialog {
   width: 100%;
   height: 100%;
 }
+
 /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
 .Dialog.is-opening {
   @include animation(fade-and-scale-in 100ms ease-out);
 }
+
 .Dialog.is-closing {
   /* "forwards" to keep the last keyframe's styles after animation ended */
   @include animation(fade-and-scale-out 80ms ease-in forwards);
 }
+
 .Dialog.is-sticky .Dialog-closeBtn {
   display: none;
 }
+
 .Dialog-closeBtn {
   position: fixed;
   top: $sMargin-group; // to be aligned with header icon
   right: $sMargin-section;
   z-index: 2;
 }
+
 .Dialog-backBtn {
   position: fixed;
   top: $sMargin-group; // to be aligned with header icon
   left: $sMargin-section;
 }
+
 .Dialog-content {
   width: 100%;
 }
+
 .Dialog-content--expanded {
   @include display-flex();
   @include flex-direction(column);
@@ -68,6 +77,7 @@ body.is-inDialog {
   width: 100%;
 }
 .Dialog-header--expanded { @include flex-grow(1) }
+
 .Dialog-body--expanded {
   @include flex-grow(100);
   // Forcing to get 80% of height
@@ -76,18 +86,22 @@ body.is-inDialog {
   -ms-flex: 100 0 80%;
   background-color: $cStructure-grayBkg;
 }
+
 .Dialog-footer--expanded {
   width: 100%;
   position: fixed;
   bottom: 0;
 }
+
 .Dialog-content.is-newContent {
   @include animation(fade-and-scale-in 100ms ease-out);
 }
+
 .Dialog-header {
   text-align: center;
   padding: $sMargin-group 0;
 }
+
 .Dialog-body {
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
@@ -95,63 +109,78 @@ body.is-inDialog {
   width: $sLayout-width;
   margin: 0 auto;
 }
+
 .Dialog-body.Dialog-body--tall {
   padding-top: $sMargin-section;
   padding-bottom: $sMargin-section;
 }
 .Dialog-body.Dialog-body--noPaddingTop { padding-top: 0 }
 .Dialog-body.Dialog-body--withoutBorder { border-top: none }
+
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
   overflow: auto;
 }
+
 .Dialog-body.Dialog-body--share {
   @include display-flex();
   @include align-items(center);
   @include flex-direction(column);
-  padding-top: 0px;
+  padding-top: 0;
   & .u-inner { width: 620px }
 }
 .Dialog-body.Dialog-body--small { width: $sSmallWidth }
+
 .Dialog-Stretcher {
   width: $sLayout-width;
+
   @include display-flex();
   @include justify-content(center);
 }
+
 .Dialog-Stretcher--small {
   width: 700px;
 }
+
 .Dialog-Stretcher--medium {
   width: 830px;
 }
+
 .Filters.Dialog-bodyFilters {
   position: relative;
   background: none;
 }
+
 .Filters.Dialog-bodyFilters {
   position: relative;
   background: none;
 }
+
 .Dialog-body .ListingContent {
   margin-bottom: 100px;
 }
+
 .Dialog-footer {
   padding: $sMargin-group 0;
   text-align: center;
 }
 .Dialog-footer--withoutBorder { border-top: none }
+
 .Dialog-footer--simple {
   @include display-flex();
   @include justify-content(center);
 }
+
 .Dialog-footer--small {
   width: $sSmallWidth;
 }
+
 .Dialog-footerContent {
   @include display-flex();
   @include justify-content(center);
 }
+
 .Dialog-preFooter {
   position: fixed;
   bottom: 100px; // to be located on top of the .Dialog-footer
@@ -172,10 +201,12 @@ body.is-inDialog {
     display: block;
     width: 100%;
     height: 18px;
+
     @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     z-index: 2;
   }
 }
+
 .Dialog-headerIcon {
   position: relative;
   width: $sIcon-layout;
@@ -188,49 +219,60 @@ body.is-inDialog {
   font-size: 22px;
   line-height: 44px;
 }
+
 .Dialog-headerIcon--neutral {
   // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
   border-color: $cIcons-active !important;
+
   .CDB-IconFont {
     color: $cIcons-active !important;
   }
 }
+
 .Dialog-headerIcon--twitter {
   border-color: #55ACEE;
   color: #55ACEE;
 }
+
 .Dialog-headerIcon--negative {
   color: $cError;
   border-color: $cError;
 }
+
 .Dialog-headerIcon--positive {
   color: $cHighlight-positive;
   border-color: $cHighlight-positive;
 }
+
 .Dialog-headerIcon--alert {
   color: $cHighlight-alert2;
   border-color: $cHighlight-alert2;
 }
+
 .Dialog-headerIcon--small {
   font-size: 10px;
   vertical-align: middle;
   position: relative;
   top: -3px;
 }
+
 .Dialog-headerIconBadge {
   /* "backwards" to use the first keyframe's styles before animation starts */
   @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
 }
+
 .Dialog-headerTitle {
   line-height: $sLineHeight-larger;
   font-size: $sFontSize-larger;
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs;
 }
+
 .Dialog-headerTitle--warning {
   color: $cHighlight-alert2;
 }
 .Dialog-headerTitle--error { color: $cHighlight-negative }
+
 .Dialog-headerText {
   font-size: $sFontSize-large;
   line-height: $sLineHeight-large;
@@ -239,17 +281,21 @@ body.is-inDialog {
 }
 .Dialog-headerText:not(:last-child) { margin-bottom: $sMargin-elementInline }
 .Dialog-headerText--centered { margin: auto }
+
 .Dialog-headerText--ellipsis {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
+
 .Dialog-headerText--small {
   width: $sSmallWidth;
 }
+
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
 }
+
 .Dialog-affectedEntities {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -267,10 +313,12 @@ $sStickyHeight: 97px;
   height: 100%;
   width: 100%;
 }
+
 .Dialog-header--expanded {
   @include flex-grow(1);
   min-height: 100px; // required to have its content visible, actual height is more like 17Xpx
 }
+
 .Dialog-expandedSubContent {
   @include flex-grow(100);
   border: 1px solid $cStructure-mainLine;
@@ -278,6 +326,7 @@ $sStickyHeight: 97px;
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 .Dialog-expandedSubContentInner {
   position: relative; // necessary to position subHeader properly
 }
@@ -292,6 +341,7 @@ $sStickyHeight: 97px;
   width: 100%;
   height: $sStickyHeight;
 }
+
 .Dialog-contentSubHeader {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -304,6 +354,7 @@ $sStickyHeight: 97px;
 
 // Results body, used for modals with additional "step" info (e.g. georeference results, help dialogs)
 $sNarrower-width: 620px;
+
 .Dialog-resultsBody {
   @include display-flex();
   @include justify-content(flex-start, justify);
@@ -312,6 +363,7 @@ $sNarrower-width: 620px;
 }
 .Dialog-resultsBody--vcenter { @include align-items(center, center) }
 .Dialog-resultsBodyIcon { margin-right: $sMargin-element }
+
 .Dialog-resultsBodyTexts {
   @include display-flex();
   @include flex-direction(column);
@@ -320,20 +372,24 @@ $sNarrower-width: 620px;
   width: 520px;
 }
 .Dialog-narrowerContent { width: $sNarrower-width }
+
 .Dialog-countryBack {
   float: right;
   margin-left: 12px;
   pointer-events: auto;
 }
+
 @include keyframes(fade-and-scale-in) {
   0% {
     @include opacity(0.0);
     @include transform(scale(2.0));
   }
+
   10% {
     @include opacity(0.9);
     @include transform(scale(1.1));
   }
+
   100% {
     @include opacity(1.0);
     @include transform(scale(1.0));
@@ -345,17 +401,21 @@ $sNarrower-width: 620px;
     @include opacity(0.0);
     @include transform(translateY(6px));
   }
+
   15% {
     @include opacity(0.8);
     @include transform(translateY(-3px));
   }
+
   45% {
     @include opacity(1.0);
     @include transform(translateY(2px));
   }
+
   70% {
     @include transform(translateY(-1px));
   }
+
   100% {
     @include opacity(1.0);
     @include transform(translateY(0));
@@ -367,10 +427,12 @@ $sNarrower-width: 620px;
     @include opacity(1.0);
     @include transform(scale(1.0));
   }
+
   80% {
     @include opacity(0.05);
     @include transform(scale(1.40));
   }
+
   100% {
     @include opacity(0.0);
     @include transform(scale(2.0));

@@ -7,6 +7,7 @@
 .PublicTitle {
   color: #2E3C43;
 }
+
 .PublicTitle--feature {
   margin-bottom: 8px;
   color: #979EA1;
@@ -16,12 +17,14 @@
   line-height: 20px;
   text-transform: uppercase;
 }
+
 .Feature-text {
   color: #636D72;
   font-size: 15px;
   line-height: 26px;
   transition: all 0.2s;
 }
+
 hr,
 .Sep {
   display: block;
@@ -31,21 +34,25 @@ hr,
   border: 0;
   background: #EEE;
 }
+
 .Sep.u-vspace-l {
   margin-bottom: 40px;
 }
+
 .Title--sectionMedium {
   margin-bottom: 20px;
   color: #2E3C43;
   font-size: 24px;
   line-height: 36px;
 }
+
 .Footer-arrow {
   position: absolute;
   top: 21px;
   right: 0;
   color: #DDD;
 }
+
 .Footer-social {
   color: #636D72;
   line-height: 40px;
@@ -54,15 +61,18 @@ hr,
     margin-top: 20px;
   }
 }
+
 .FooterIcon--facebook,
 .FooterIcon--linkedin,
 .FooterIcon--twitter {
   position: relative;
   top: -2px;
 }
+
 .FooterIcon--s14 {
   font-size: 14px;
 }
+
 .FooterIcon {
   display: inline-block;
   font-style: normal;
@@ -81,13 +91,16 @@ hr,
     }
   }
 }
+
 .u-lspace--20 {
   margin-left: 20px;
 }
+
 .Footer-link {
   transition: color 0.2s ease;
   line-height: 28px;
 }
+
 .Footer-item--mobile {
   display: block;
   position: relative;
@@ -99,6 +112,7 @@ hr,
     display: block;
   }
 }
+
 .FooterIcon--mobile {
   path {
     transition: all 0.2s ease;

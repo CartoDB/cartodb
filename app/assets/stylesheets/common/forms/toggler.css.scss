@@ -21,15 +21,19 @@ $sHeight: 20px;
   width: $sWidth;
   height: $sHeight;
 }
+
 .Toggler.is-disabled {
   @include opacity(0.4);
+
   label {
     cursor: default;
   }
 }
+
 .Toggler input {
   visibility: hidden;
 }
+
 .Toggler label {
   @include transition(all 150ms ease);
   display: block;
@@ -42,6 +46,7 @@ $sHeight: 20px;
   background-color: #DDD;
   cursor: pointer;
 }
+
 .Toggler label:before {
   @include transition(all 150ms ease);
   display: block;
@@ -54,15 +59,18 @@ $sHeight: 20px;
   background-color: #FFF;
   content: ' ';
 }
+
 .Toggler input:checked + label:before {
   left: 20px;
 }
+
 .Toggler input:checked + label {
   background-color: #73C86B;
 }
 
 // Toggler grey
 $color: #BBB;
+
 .Toggler--grey label {
   width: $sWidth - 2px;
   height: $sHeight - 2px;
@@ -70,13 +78,16 @@ $color: #BBB;
   background: #FFF;
   box-shadow: none;
 }
+
 .Toggler--grey label:before {
   top: 3px;
   background: $color;
 }
+
 .Toggler--grey input:checked + label:before {
   left: 19px;
 }
+
 .Toggler--grey input:checked + label {
   background-color: #FFF;
 }

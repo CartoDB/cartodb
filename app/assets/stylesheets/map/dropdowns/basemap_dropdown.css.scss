@@ -10,13 +10,12 @@
 @import '../../old_elements/elements-sprite';
 
 .option-button.basemap_dropdown {
-
   @include inline-block();
 
   cursor: pointer;
 
   strong {
-    color: #fff;
+    color: #FFF;
     font-weight:normal;
   }
 
@@ -26,6 +25,7 @@
   & > .thumb {
 
     margin: 0 5px 0 0;
+
     @include position(6px, false, false, 6px);
     @include inline-block();
     @include size(22px);
@@ -39,6 +39,7 @@
 
     &:before {
       content: ' ';
+
       @include position(0, 0, 0, 0);
       @include border-radius(2px);
       border: 1px solid rgba(0, 0,0, 0.15);
@@ -52,7 +53,7 @@
 
 div.dropdown.basemap {
 
-  border: 1px solid #999999;
+  border: 1px solid #999;
 
 
   div.custom {
@@ -69,6 +70,7 @@ div.dropdown.basemap {
 
   div.custom > ul {
     width: auto;
+
     @include box-sizing(border-box);
     margin: 0 10px;
     padding: 10px 10px;
@@ -76,11 +78,10 @@ div.dropdown.basemap {
     border-bottom: 1px solid rgba(204,204,204,0.35);
 
     & > li {
-
       &:first-child {
         width: 60px;
         margin: 5px 4px 0 0;
-        color: #CCCCCC;
+        color: #CCC;
       }
 
     }
@@ -109,9 +110,9 @@ div.dropdown.basemap {
     &:last-child { margin-right: 0; }
 
     &.wms {
-
       .thumb {
         background-size:auto;
+
         @include map-sprite(wms);
       }
 
@@ -128,6 +129,7 @@ div.dropdown.basemap {
     &.add_basemap > a {
       small, &:hover small {
         color: #397DB8;
+
         @include opacity(.5);
       }
     }
@@ -142,6 +144,7 @@ div.dropdown.basemap {
       box-sizing: border-box;
 
       line-height: 13px;
+
       @include clearfix();
 
       small {
@@ -149,11 +152,11 @@ div.dropdown.basemap {
         margin: 0 0 0 29px;
         font-size: 9px;
         line-height:11px;
-        color: #AAAAAA;
+        color: #AAA;
       }
 
       &:hover small {
-        color: #AAAAAA;
+        color: #AAA;
       }
 
       .name {
@@ -184,6 +187,7 @@ div.dropdown.basemap {
 
         &:before {
           content: '';
+
           @include position(0,0,0,0);
           @include border-radius(2px);
           border: 1px solid rgba(0,0,0, 0.15);
@@ -198,6 +202,7 @@ div.dropdown.basemap {
           @include simple-transition(opacity, 100ms);
 
           background:rgba(black, 0.5);
+
           @include border-top-left-radius(2px);
           @include border-bottom-right-radius(2px);
           text-indent:0;
@@ -273,7 +278,6 @@ div.dropdown.basemap {
       span.button {
         @include position(false, 2px, 2px, false);
         @include size(10px);
-
         @include border-radius(10px);
         text-indent:0;
         background:white;
@@ -281,6 +285,7 @@ div.dropdown.basemap {
 
         &:before {
           content:' ';
+
           @include position(4px, false, false, 3px);
           @include size(0);
 

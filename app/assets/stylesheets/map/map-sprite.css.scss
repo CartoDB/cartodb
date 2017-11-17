@@ -11,17 +11,17 @@ $map-sprite-base-class: ".map-sprite" !default;
 $map-sprite-dimensions: false !default;
  
 $map-sprites: sprite-map("sprites/map/*.png",
-  $position:                         0%,
-  $spacing:                          0,
-  $repeat:                           no-repeat,
-  $readonly-spacing:                 0,
-  $map-wms-spacing:                  5px,
-  $map-cog-spacing:                  10px,
-  $map-plus-spacing:                 11px,
-  $map-toggle-slides-spacing:        11px,
-  $map-toggle-slides_active-spacing: 11px,
-  $map-slide_frame-spacing:          11px,
-  $map-infowindow-edit-tools-spacing: 10px
+$position:                         0%,
+$spacing:                          0,
+$repeat:                           no-repeat,
+$readonly-spacing:                 0,
+$map-wms-spacing:                  5px,
+$map-cog-spacing:                  10px,
+$map-plus-spacing:                 11px,
+$map-toggle-slides-spacing:        11px,
+$map-toggle-slides_active-spacing: 11px,
+$map-slide_frame-spacing:          11px,
+$map-infowindow-edit-tools-spacing: 10px
 );
  
 // All sprites should extend this class
@@ -45,6 +45,7 @@ $map-sprites: sprite-map("sprites/map/*.png",
 // It will also apply the image dimensions if $dimensions is true.
 @mixin map-sprite($name, $dimensions: $map-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$map-sprite-base-class};
+
   @include sprite($map-sprites, $name, $dimensions, $offset-x, $offset-y)
 }
  

@@ -41,12 +41,13 @@
     text-align:left;
     line-height:15px;
     font-size:13px;
-    color:#666666;
+    color:#666;
     background: none;
     border:none;
+
     &:focus {
       outline:none;
-      color:#333333;
+      color:#333;
     }
   }
 
@@ -71,6 +72,7 @@
     &.plus {
       top:0;
       border-bottom:1px solid #A8A8A8;
+
       &:before {
         top: 4px;
         border-bottom:3px solid #999;
@@ -80,6 +82,7 @@
     &.minus {
       bottom:0;
       height: 12px;
+
       &:before {
         top: 5px;
         border-top:3px solid #999;
@@ -90,6 +93,7 @@
       &.plus {
         &:before {border-bottom:3px solid #666;}
       }
+
       &.minus {
         bottom:0;
         &:before {border-top:3px solid #666;}
@@ -99,9 +103,11 @@
 
   // Disabled state
   &.disabled {
-    background:#f4f4f4!important;
+    background:#F4F4F4!important;
+
     a {
-      background:#f4f4f4!important;
+      background:#F4F4F4!important;
+
       @include opacity(0.5);
       &:hover {cursor:default;}
     }

@@ -10,19 +10,24 @@
   width:100%;
   padding: $sMargin-element 0 $sMargin-section;
 }
+
 .SupportBanner-inner {
   position:relative;
+
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+
 .SupportBanner-link {
   display: block;
 }
 .SupportBanner-info { width: 640px }
+
 .SupportBanner-infoDescription {
   margin-top: 4px;
 }
+
 .SupportBanner-infoDescriptionLink {
   text-decoration: underline;
   color: $cTypography-secondary;

@@ -15,7 +15,7 @@
 
 div.map {
   @include box-sizing(border-box);
-  @include position(0px, 0, 0, 0); // 1px to cause header opacity black border needs to be present
+  @include position(00 0, 0, 0); // 1px to cause header opacity black border needs to be present
   @include size(100%);
   background: #333 image-url('layout/noise.png') repeat 0 0;
   z-index:1;
@@ -33,7 +33,6 @@ div.map.animated .cartodb-map {
 }
 
 div.map {
-
   &.mobile #cartodb-gmaps-attribution {
     display: none;
   }
@@ -47,6 +46,7 @@ div.map {
       width:270px;
       left:-68px;
     }
+
     span.tooltip p {
       font-size: 11px;
     }
@@ -79,11 +79,10 @@ div.map {
     }
 
     &.mobile div.cartodb-map { // MOBILE VERSION
-
       @include border-radius(0);
 
       .cartodb-logo {
-        margin-bottom: 0px;
+        margin-bottom: 0;
         bottom: 10px!important;
       }
 
@@ -94,7 +93,7 @@ div.map {
       }
 
       .leaflet-right .leaflet-control, #cartodb_attribution {
-        margin-right: 0px;
+        margin-right: 0;
       }
 
       & > div.cartodb-searchbox {
@@ -155,7 +154,7 @@ div.map {
   }
 
   div.map_toolbar {
-    @include position(0, false, false, 0px);
+    @include position(0, false, false, 00;
     @include size(100%, 66px);
     @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
     background: image-url('layout/thead_bkg.jpg') repeat 0 0;
@@ -172,17 +171,18 @@ div.map {
       position:absolute;
       top: 0;
       left: 0;
+
       @include inline-block();
     }
   }
 
   .options {
     float: left;
+
     @include inline-block();
     margin: 20px 0 0 45px;
 
     & > li.button {
-
       &.canvas_setup, &.add_overlay, &.toggle_slides, &.export_image {
 
         position:relative;
@@ -202,7 +202,6 @@ div.map {
     }
 
     & > li {
-
       &.export_image .info h5 {
         padding: 0 0 0 0;
       }
@@ -214,14 +213,15 @@ div.map {
 
       &.full_screen .thumb {
         border: none;
+
         @include map-sprite(full_screen);
-        @include border-radius(0px);
+        @include border-radius(00;
       }
 
       &.dropdown > h5 {
-
         &:before {
           content:' ';
+
           @include position(-3px, -9px, false, false);
           margin:8px 0 0 5px;
 
@@ -234,6 +234,7 @@ div.map {
 
         &:after {
           content:' ';
+
           @include position(-1px, -9px, false, false);
           margin:9px 0 0 5px;
 
@@ -258,6 +259,7 @@ div.map {
       & > .thumb {
         position:relative;
         margin: 0 5px 0 0;
+
         @include inline-block();
         @include size(30px);
         @include border-radius(2px);
@@ -268,6 +270,7 @@ div.map {
 
         &:before {
           content: ' ';
+
           @include position(0, 0, 0, 0);
           @include border-radius(2px);
           border: 1px solid rgba(0,0,0, 0.15);
@@ -338,14 +341,16 @@ div.map {
   .option-button {
     position:relative;
     box-sizing: border-box;
+
     @include inline-block();
     padding: 10px 14px 10px 37px;
     margin: 0 3px 0 0;
     height: auto;
     min-width: 70px;
     background: rgba(#000, .7);
-    color: #fff;
+    color: #FFF;
     font-size: 13px;
+
     @include border-radius(3px);
 
     &:last-child {
@@ -355,7 +360,6 @@ div.map {
   }
 
   .option-button.show-table-options {
-
     &.open:before {
 
       -webkit-transform: rotate(180deg);
@@ -388,7 +392,8 @@ div.map {
     }
 
     &:after {
-      background-color: #fff;
+      background-color: #FFF;
+
       @include box-shadow(0 0 1px rgba(#000, .9));
       @include border-radius(3px);
     }
@@ -401,14 +406,12 @@ div.map {
   /* CartoDB map styles */
 
   &.table div.cartodb-map {
-
     @include position(66px, 0, 0, 0);
     @include border-radius(0);
 
   }
 
   &.derived div.cartodb-map {
-
     @include position(82px, 79px, 15px, 15px);
     @include border-radius(3px);
     @include size(auto);
@@ -416,7 +419,6 @@ div.map {
   }
 
   div.cartodb-map {
-
     & > div.cartodb-searchbox{
       top: 20px;
       right: 77px;
@@ -436,6 +438,7 @@ div.map {
 
     div.cartodb-legend {
       display:none;
+
       @include position(false, 0, 0, false);
       position:relative;
       margin: 0;
@@ -519,20 +522,24 @@ div.map {
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
     position: absolute;
+
     @include inline-block;
     top: 20px;
     left: 50%;
     margin-left:-120px;
     padding:11px;
     background: #FFF;
-    border:1px solid #999999;
+    border:1px solid #999;
+
     @include box-shadow(rgba(0,0,0,0.1) 0 0 4px 3px);
     background:white;
+
     @include border-radius(3px);
     z-index: 1000;
 
     a {
       position:relative;
+
       @include inline-block();
       vertical-align: top;
     }
@@ -543,6 +550,7 @@ div.map {
       top:65px;
       left:-90px;
       background:rgba(0,0,0,0.8);
+
       @include border-radius(2px);
       text-align:center;
 
@@ -578,15 +586,16 @@ div.map {
       margin: 0 0 0 -50%;
       padding: 12px 0;
       width: 100%;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid #CCC;
       background-color: #E5FAEA;
       color: #333;
-      color: #666666;
+      color: #666;
       text-align: center;
       font-size: 13px;
       font-family: $text-fonts;
       text-indent:0;
       z-index:2;
+
       @include transform-style("linear");
       @include transition-property("text-indent");
       @include transition-duration(300ms);
@@ -600,14 +609,12 @@ div.map {
 
   // When a panel view is open or closed
   &.displaced {
-
     div.sqlview p {
       text-indent: -600px;
     }
 
     // Vis
     &.map.derived .cartodb-map {
-
       .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
@@ -620,6 +627,7 @@ div.map {
     &.map.derived.mobile .mobile_bkg:before {
       left: -300px;
     }
+
     &.map.derived.mobile .cartodb-map {
       margin-left: -445px!Important;
     }
@@ -627,13 +635,13 @@ div.map {
     &.narrow.map.derived.mobile .mobile_bkg:before {
       left: -155px;
     }
+
     &.narrow.map.derived.mobile .cartodb-map {
       margin-left: -300px!Important;
     }
 
     // Vis Narrow
     &.narrow.map.derived .cartodb-map {
-
       .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-share,
@@ -647,7 +655,6 @@ div.map {
 
     // Table
     &.map.table .cartodb-map {
-
       .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
@@ -659,7 +666,6 @@ div.map {
 
     // Table Narrow
     &.narrow.map.table .cartodb-map {
-
       .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
@@ -674,7 +680,6 @@ div.map {
 
     &.narrow.map.derived.mobile .cartodb-map,
     &.map.derived.mobile .cartodb-map {
-
       .leaflet-control-attribution.leaflet-control,
       div.cartodb-share,
       div.cartodb-layer-selector-box,
@@ -722,8 +727,8 @@ div.cartodb-edit-buttons {
     color: #999;
     font-size: 13px;
     margin-top:8px;
-    letter-spacing:0px;
-    word-spacing:0px;
+    letter-spacing:0;
+    word-spacing:0;
   }
 
   // Edit buttons
@@ -741,7 +746,8 @@ div.cartodb-edit-buttons {
     text-indent: -9999px;
     font-size:0;
     line-height:0;
-    letter-spacing:0px;
+    letter-spacing:0;
+
     @include border-radius(0);
 
     &.edit_data {@include edit-bottom-states(10, 6, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
@@ -760,6 +766,7 @@ div.cartodb-edit-buttons {
 div.cartodb-popup.dark  {
   div.cartodb-edit-buttons {
     border-color:#676767;
+
     a.button {
       border-color:#676767!important;
       &.edit_data {@include edit-bottom-states(10, -16, #222, #222, #222, #222);}
@@ -776,6 +783,7 @@ div.cartodb-popup.dark  {
   width:9px!important;
   height:9px!important;
   margin:-5px 0 0 -5px!important;
+
   @include border-radius(6px);
   border:1px solid #397DBA;
 }
@@ -783,12 +791,15 @@ div.cartodb-popup.dark  {
 :-webkit-full-screen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
+
 :-moz-full-screen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
+
 :-ms-fullscreen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
+
 :fullscreen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }

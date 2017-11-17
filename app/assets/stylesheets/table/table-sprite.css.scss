@@ -10,20 +10,20 @@ $table-sprite-base-class: ".table-sprite" !default;
 $table-sprite-dimensions: false !default;
 
 $table-sprites: sprite-map("sprites/table/*.png",
-  $position:                              0%,
-  $spacing:                               0,
-  $repeat:                                no-repeat,
-  $readonly-spacing:                      0,
-  $table-infowindow_panel_icons-spacing:  20px,
-  $table-drag_points-spacing:             40px,
-  $table-unredo-spacing:                  15px,
-  $table-lock_open-spacing:               15px,
-  $table-lock_open_2-spacing:             15px,
-  $table-lock_closed-spacing:             15px,
-  $table-lock_key-spacing:                15px,
-  $table-lock_user-spacing:               15px,
-  $table-share-spacing:                   15px,
-  $table-blue-back-arrow-spacing:         10px
+$position:                              0%,
+$spacing:                               0,
+$repeat:                                no-repeat,
+$readonly-spacing:                      0,
+$table-infowindow_panel_icons-spacing:  20px,
+$table-drag_points-spacing:             40px,
+$table-unredo-spacing:                  15px,
+$table-lock_open-spacing:               15px,
+$table-lock_open_2-spacing:             15px,
+$table-lock_closed-spacing:             15px,
+$table-lock_key-spacing:                15px,
+$table-lock_user-spacing:               15px,
+$table-share-spacing:                   15px,
+$table-blue-back-arrow-spacing:         10px
 );
 
 // All sprites should extend this class
@@ -47,6 +47,7 @@ $table-sprites: sprite-map("sprites/table/*.png",
 // It will also apply the image dimensions if $dimensions is true.
 @mixin table-sprite($name, $dimensions: $table-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$table-sprite-base-class};
+
   @include sprite($table-sprites, $name, $dimensions, $offset-x, $offset-y)
 }
 

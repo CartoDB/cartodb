@@ -9,6 +9,7 @@
   @include display-flex();
   @include align-items(center, center);
 }
+
 .DefaultTimeDiff-icon {
   margin-right: 5px;
   font-size: $sFontSize-smallUpperCase;

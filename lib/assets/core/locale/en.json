@@ -2459,6 +2459,10 @@
         }
       }
     },
+    "context-switcher": {
+      "map": "Map",
+      "data": "Data"
+    },
     "edit-feature": {
       "features": {
         "point": "point",

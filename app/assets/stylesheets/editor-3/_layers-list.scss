@@ -35,7 +35,7 @@
   }
 }
 .Editor-ListLayer-item.is-empty {
-  background: $cHighlightYellow;
+  background: rgba($cHighlightYellow, 0.64);
 }
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;

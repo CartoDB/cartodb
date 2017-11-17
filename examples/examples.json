@@ -1,9 +1,14 @@
 {
   "publish": [
     {
-      "title": "Basic",
-      "desc": "Create a map and render data.",
-      "file": "public/basic.html"
+      "title": "Single layer",
+      "desc": "",
+      "file": "public/single-layer.html"
+    },
+    {
+      "title": "Multi layer",
+      "desc": "",
+      "file": "public/multi-layer.html"
     },
     {
       "title": "Formula Dataview",

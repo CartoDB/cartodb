@@ -27,6 +27,13 @@
         attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
       }).addTo(map);
 
+      // Adding Voyager Labels
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>',
+        zIndex: 100
+      }).addTo(map);
+
       // 2 Defining a carto.Client
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
@@ -49,8 +56,25 @@
         }`);
       var europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
 
+      // Spanish cities layer
+      var populatedPlacesSQL = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)'); // WHERE adm0name = .admin
+      var populatedPlacesStyle = new carto.style.CartoCSS(`
+       #layer {
+         marker-width: 7;
+         marker-fill: #FF583E;
+         marker-fill-opacity: 0.9;
+         marker-line-color: #FFFFFF;
+         marker-line-width: 0.5;
+         marker-line-opacity: 1;
+         marker-type: ellipse;
+         marker-allow-overlap: false;
+       }`);
+      var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle, {
+        featureOverColumns: ['name']
+      });
+
       // 3.2 Adding the layers to the client
-      client.addLayer(europeanCountries);
+      client.addLayers([ europeanCountries, populatedPlaces ]);
 
       // 3.3. Adding the layers to the map
       client.getLeafletLayer().addTo(map);

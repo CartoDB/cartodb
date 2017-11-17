@@ -98,19 +98,16 @@
         featureOverColumns: ['name']
       });
 
-      // 3.2 Adding the layers to the map
-      // Adding the layers to the client
+      // 3.2 Adding the layers to the client
       client.addLayers([ europeanCountries, populatedPlaces ]);
-      // Adding a leaflet layer to the map
+
+      // 3.3. Adding the layers to the map
       client.getLeafletLayer().addTo(map);
 
       // 4. Setting up tooltips
       // 4.1 Showing the tooltip when user mouses over a city
-      var popup;
+      var popup = L.popup();
       populatedPlaces.on('featureOver', function (featureEvent) {
-        if (!popup) {
-          popup = L.popup();
-        }
         popup.setLatLng(featureEvent.latLng);
         popup.setContent(featureEvent.data.name);
         popup.openOn(map);
@@ -118,9 +115,7 @@
 
       // 4.2 Hiding the tooltip
       populatedPlaces.on('featureOut', function (featureEvent) {
-        if (popup) {
-          popup.removeFrom(map);
-        }
+        popup.removeFrom(map);
       });
 
       // 5 Creating a formula widget

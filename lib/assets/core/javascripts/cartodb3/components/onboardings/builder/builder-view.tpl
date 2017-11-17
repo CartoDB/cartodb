@@ -21,12 +21,6 @@
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('builder-onboarding.edit-map')%></span>
         </button>
       </div>
-
-      <div class="u-iBlock is-step1">
-        <input class="CDB-Checkbox js-forget" type="checkbox" id="forget-me" name="forget-me" value="true">
-        <span class="u-iBlock CDB-Checkbox-face"></span>
-        <label for="forget-me" class="BuilderOnboarding-forgetLabel Checkbox-label CDB-Text CDB-Size-small u-altTextColor u-lSpace"><%- _t('analyses-onboarding.never-show-message') %></label>
-      </div>
     </div>
 
     <div class="BuilderOnboarding-step is-step1">

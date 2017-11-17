@@ -17,12 +17,12 @@ $corner_radius: 6px;
   z-index: 20;
   top: 64px;
   right: -537px;
-  bottom:0;
+  bottom: 0;
   width: 600px;
   padding-top: 25px;
-  border: 1px solid rgba(black,0.4);
-  border-right:0;
-  border-bottom:0;
+  border: 1px solid rgba(black, 0.4);
+  border-right: 0;
+  border-bottom: 0;
   background: white;
   background: #EDEDED;
   letter-spacing: -4px;
@@ -30,10 +30,9 @@ $corner_radius: 6px;
   @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
   @include border-top-left-radius($corner_radius);
 
-
   .layer_panel {
     position: relative;
-    z-index:1;
+    z-index: 1;
     width: 100%;
     height: 100%;
     margin-top: -25px;
@@ -46,14 +45,18 @@ $corner_radius: 6px;
     @include transition-property("padding,margin");
     @include transition-duration(250ms);
 
-    &:hover {padding-bottom:15px}
-    &:first-child {margin-top:0;}
-    &:last-child:hover {margin-top:-38px}
+    &:hover {
+      padding-bottom: 15px;
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child:hover {
+      margin-top: -38px;
+    }
   }
-
-
-
-
 
   ////////////////////////////////
   // ANIMATIONS FOR LAYER_PANEL //
@@ -61,12 +64,12 @@ $corner_radius: 6px;
 
   // Sorting
   .layer_panel.ui-sortable-placeholder {
-    visibility: visible!important;
+    visibility: visible !important;
 
     &:after {
       content: '';
       position: absolute;
-      z-index:0;
+      z-index: 0;
       top: 10px;
       right: 10px;
       bottom: 0;
@@ -79,11 +82,11 @@ $corner_radius: 6px;
     &:before {
       content: 'Drop your layer here';
       position: absolute;
-      z-index:1;
+      z-index: 1;
       top: 25px;
-      right:0;
-      bottom:0;
-      left:0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       width: 100%;
       color: #CDCDCD;
       font: bold 17px $text-fonts;
@@ -96,25 +99,35 @@ $corner_radius: 6px;
   // Active layer
   .layer_panel.active {
     margin-bottom: 20px;
-    padding-bottom:0;
+    padding-bottom: 0;
 
     .layer-info .info {
-      .order {background:#666;}
-      .name_info {color:#999;}
-      .name { color:#666; }
+      .order {
+        background: #666;
+      }
+
+      .name_info {
+        color: #999;
+      }
+
+      .name {
+        color: #666;
+      }
     }
 
     &:hover {
       margin-top: -25px;
       margin-bottom: 20px;
-      padding-bottom:0;
+      padding-bottom: 0;
     }
   }
 
   // Active layer in visualization
   .layer_panel.active.vis {
     .layer-info {
-      .info .name:hover { color:#454545 }
+      .info .name:hover {
+        color: #454545;
+      }
     }
   }
 
@@ -142,5 +155,4 @@ $corner_radius: 6px;
       text-indent: -9999px;
     }
   }
-
 }

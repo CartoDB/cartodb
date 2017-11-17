@@ -1249,7 +1249,7 @@ module Carto
           end
         end
 
-        describe DownloadLayer do
+        describe DownloadedLayer do
           before (:all) { @event_class = self.class.description.constantize }
           after  (:all) { @event_class = nil }
 
@@ -1357,7 +1357,7 @@ module Carto
           end
         end
 
-        describe AddedLayer do
+        describe CreatedLayer do
           before (:all) { @event_class = self.class.description.constantize }
           after  (:all) { @event_class = nil }
 

@@ -4,6 +4,41 @@
       "title": "Basic",
       "desc": "Create a map and render data.",
       "file": "public/basic.html"
+    },
+    {
+      "title": "Formula Dataview",
+      "desc": "Use a formula dataview filtering over a map.",
+      "file": "public/formula-dataview.html"
+    },
+    {
+      "title": "Category Dataview",
+      "desc": "Use category dataview with custom data.",
+      "file": "public/category-dataview.html"
+    },
+    {
+      "title": "Histogram Dataview",
+      "desc": "Create a histogram dataview over a map.",
+      "file": "public/histogram-dataview.html"
+    },
+    {
+      "title": "Time Series Dataview",
+      "desc": "Create a time series dataview over a map.",
+      "file": "public/timeseries-dataview.html"
+    },
+    {
+      "title": "Interactivity",
+      "desc": "Add interactivity over actions on the map. Just hover the points and enjoy.",
+      "file": "public/interactivity.html"
+    },
+    {
+      "title": "Custom Bounding Box",
+      "desc": "Create a custom bounding box filter.",
+      "file": "public/bounding-box-filter.html"
+    },
+    {
+      "title": "Guide",
+      "desc": "",
+      "file": "public/guide.html"
     }
   ]
 }

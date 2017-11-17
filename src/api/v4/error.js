@@ -1,7 +1,7 @@
 var UNEXPECTED_ERROR = 'unexpected error';
 
 /**
- * Build a cartoError from a generic error
+ * Build a cartoError from a generic error.
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.
@@ -44,22 +44,21 @@ function _handleAjaxResponse (error) {
 module.exports = CartoError;
 
 /**
- * 
- * Represents an error in the carto library.
+* Represents an error in the carto library.
  * 
  * Some actions like adding a layer to a map will trigger a **reload cycle**
  * if some error happens during this reload cycle will be captured and transformed into a 
  * `CartoError`.
  * 
  * The cartoErrors can be obtained listening to the client {@link carto.events|error events} `client.on(carto.events.ERROR, callback);` 
- * or through the promise returned by each async action.
+ * or through any async action events.
  * 
+ * Promises are also rejected with a cartoError.
  * @example
  * // Listen when a layer has been added or there has been an error.
  * client.addLayer(layerWithErrors)
  *  .then(()=> console.log('Layer added succesfully'))
  *  .catch(cartoError => console.error(cartoError.message))
- * 
  * @example 
  * // Events also will be registered here when the map changes.
  * client.on(carto.events.SUCCESS, function () {
@@ -69,8 +68,8 @@ module.exports = CartoError;
  * client.on(carto.events.ERROR, function (clientError) {
  *  console.error(clientError.message);
  * });
- * 
- * @typedef CartoError
+ * @event CartoError
+ * @type {object}
  * @property {string} message - A short error description.
  * @api
  */

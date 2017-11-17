@@ -8,11 +8,13 @@ var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
 var CartoError = require('../error');
 
 /**
- * Base dataview object
+ * Base dataview object.
  *
  * @constructor
  * @abstract
  * @memberof carto.dataview
+ * @fires carto.dataview.Base.columnChanged
+ * @fires carto.dataview.Base.statusChanged
  * @api
  */
 function Base () { }
@@ -20,7 +22,7 @@ function Base () { }
 _.extend(Base.prototype, Backbone.Events);
 
 /**
- * Return the current dataview status
+ * Return the current dataview status.
  *
  * @return {carto.dataview.status} Current dataview status
  * @api
@@ -84,7 +86,7 @@ Base.prototype.disable = function () {
 };
 
 /**
- * Return true if the dataview is enabled
+ * Return true if the dataview is enabled.
  *
  * @return {boolean}
  * @api
@@ -94,9 +96,10 @@ Base.prototype.isEnabled = function () {
 };
 
 /**
- * Set the dataview column
+ * Set the dataview column.
  *
  * @param  {string} column
+ * @fires carto.dataview.Base.columnChanged
  * @return {carto.dataview.Base} this
  * @api
  */
@@ -110,7 +113,7 @@ Base.prototype.setColumn = function (column) {
 };
 
 /**
- * Return the current dataview column
+ * Return the current dataview column.
  *
  * @return {string} Current dataview column
  * @api
@@ -120,7 +123,7 @@ Base.prototype.getColumn = function () {
 };
 
 /**
- * Add a filter
+ * Add a filter.
  *
  * @param  {carto.filter.Base} filter
  * @return {carto.dataview.Base} this
@@ -136,7 +139,7 @@ Base.prototype.addFilter = function (filter) {
 };
 
 /**
- * Remove a filter
+ * Remove a filter.
  *
  * @param  {carto.filter.Base} filter
  * @return {carto.dataview.Base} this
@@ -152,7 +155,7 @@ Base.prototype.removeFilter = function (filter) {
 };
 
 /**
- * Return true if the filter is added
+ * Return true if the filter is added.
  *
  * @param  {carto.filter.Base} filter
  * @return {carto.dataview.Base} this
@@ -174,11 +177,11 @@ Base.prototype.getData = function () {
 Base.prototype.DEFAULTS = {};
 
 /**
- * Initialize dataview
+ * Initialize dataview.
  *
- * @param {carto.source.Base} source - The source where the dataview will fetch the data.
- * @param {string} column - The column name to get the data.
- * @param  {object} options - It depends on the instance.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data
+ * @param {string} column - The column name to get the data
+ * @param  {object} options - It depends on the instance
  */
 Base.prototype._initialize = function (source, column, options) {
   options = _.defaults(options || {}, this.DEFAULTS);
@@ -293,7 +296,7 @@ Base.prototype._triggerChange = function (key, value) {
 };
 
 /**
- * Fire a CartoError event from a internalDataviewError
+ * Fire a CartoError event from a internalDataviewError.
  */
 Base.prototype._triggerError = function (model, internalDataviewError) {
   this.trigger('error', new CartoError(internalDataviewError));
@@ -328,3 +331,23 @@ Base.prototype.$getInternalModel = function () {
 };
 
 module.exports = Base;
+
+/**
+ * Event triggered when the column in a dataview changes.
+ *
+ * Contains a single argument with the name of the changed column.
+ * 
+ * @event carto.dataview.Base.columnChanged
+ * @type {string}
+ * @api
+ */
+
+/**
+ * Event triggered when the status in a dataview changes.
+ *
+ * Contains a single argument with the new status.
+ * 
+ * @event carto.dataview.Base.statusChanged
+ * @type {carto.dataview.status}
+ * @api
+ */

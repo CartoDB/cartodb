@@ -12,22 +12,29 @@ describe('api/v4/source/dataset', function () {
       expect(populatedPlacesDataset.getId()).toMatch(/S\d+/);
     });
 
-    it('should throw an error if dataset is not provided', function () {
+    it('should throw an error if tableName is not provided', function () {
       expect(function () {
         new carto.source.Dataset(); // eslint-disable-line
-      }).toThrowError('dataset is required.');
+      }).toThrowError('Table name is required.');
     });
 
-    it('should throw an error if dataset is empty', function () {
+    it('should throw an error if tableName is empty', function () {
       expect(function () {
         new carto.source.Dataset(''); // eslint-disable-line
-      }).toThrowError('dataset is required.');
+      }).toThrowError('Table name must be not empty.');
     });
 
-    it('should throw an error if dataset is not a valid string', function () {
+    it('should throw an error if tableName is not a valid string', function () {
       expect(function () {
         new carto.source.Dataset(3333); // eslint-disable-line
-      }).toThrowError('dataset must be a string.');
+      }).toThrowError('Table name must be a string.');
+    });
+  });
+
+  describe('.getTableName', function () {
+    it('should return the table name', function () {
+      var dataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+      expect(dataset.getTableName()).toBe('ne_10m_populated_places_simple');
     });
   });
 

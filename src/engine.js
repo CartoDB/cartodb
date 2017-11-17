@@ -34,7 +34,7 @@ var WindshaftError = require('./windshaft/error');
  * @param {string} params.serverUrl - Url of the windshaft server.
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
  * @param {boolean} params.statTag - Token used to get map view statistics.
- * @class
+ * @constructor
  */
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');
@@ -83,17 +83,13 @@ Engine.prototype.getLayerGroup = function () {
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function to be executed when the event is fired.
  * @param {function} [context] - The context value for this when the callback is invoked.
- *
  * @example
- *
  * // Define a callback to be executed once the map is reloaded.
  * function onReload(event) {
  *  console.log(event); // "reload-success"
  * }
- *
  * // Attach the callback to the RELOAD_SUCCESS event.
  * engine.on(Engine.Events.RELOAD_SUCCESS, onReload);
- *
  * // Call the reload method and wait.
  * engine.reload();
  *
@@ -108,12 +104,14 @@ Engine.prototype.on = function (event, callback, context) {
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function callback to be removed when the event is fired.
  * @param {function} [context] - The context value for this when the callback is invoked.
- *
  * @example
- *
  * // Remove the the `displayMap` listener function so it wont be executed anymore when the engine fires the `load` event.
  * engine.off(Engine.Events.RELOAD_SUCCESS, onReload);
+<<<<<<< HEAD
  *
+=======
+ * @api
+>>>>>>> Remove @example whitespaces
  */
 Engine.prototype.off = function (event, callback, context) {
   this._eventEmmitter.off(event, callback, context);

@@ -11,7 +11,7 @@
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
     <!-- Include cartodb.js Library -->
-    <script src="https://cdn.rawgit.com/CartoDB/cartodb.js/public-api/dist/public/carto.js"></script>
+    <script src="../../dist/public/carto.uncompressed.js"></script>
     <style>
       * { margin:0; padding:0; }
       html { box-sizing:border-box; height:100%; }
@@ -123,7 +123,7 @@
       var averagePopulation = new carto.dataview.Formula(populatedPlacesSQL, 'pop_max', {
         operation: carto.operation.AVG
       });
-  
+
       // 5.2 Listening to data changes on the dataview
       averagePopulation.on('dataChanged', function (newData) {
         refreshAveragePopulationWidget(newData.result);

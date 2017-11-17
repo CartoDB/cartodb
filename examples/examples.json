@@ -36,6 +36,11 @@
       "file": "public/bounding-box-filter.html"
     },
     {
+      "title": "Errors",
+      "desc": "",
+      "file": "public/errors.html"
+    },
+    {
       "title": "Guide",
       "desc": "",
       "file": "public/guide.html"

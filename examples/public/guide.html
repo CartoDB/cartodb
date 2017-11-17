@@ -147,7 +147,7 @@
 
       // 6.2 Listening to data changes on the dataview
       countriesDataview.on('dataChanged', function (newData) {
-        var countryNames = newData.result.map(function (category) { return category.name; }).sort();
+        var countryNames = newData.categories.map(function (category) { return category.name; }).sort();
         refreshCountriesWidget(countryNames);
       });
 

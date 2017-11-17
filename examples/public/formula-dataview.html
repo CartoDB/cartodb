@@ -94,9 +94,7 @@
          marker-type: ellipse;
          marker-allow-overlap: false;
        }`);
-      var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle, {
-        featureOverColumns: ['name']
-      });
+      var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle);
 
       // 3.2 Adding the layers to the client
       client.addLayers([ europeanCountries, populatedPlaces ]);

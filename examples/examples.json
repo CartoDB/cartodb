@@ -11,13 +11,13 @@
       "file": "public/multi-layer.html"
     },
     {
-      "title": "Formula Dataview",
-      "desc": "Use a formula dataview filtering over a map.",
+      "title": "Formula dataview",
+      "desc": "",
       "file": "public/formula-dataview.html"
     },
     {
-      "title": "Category Dataview",
-      "desc": "Use category dataview with custom data.",
+      "title": "Category dataview",
+      "desc": "",
       "file": "public/category-dataview.html"
     },
     {

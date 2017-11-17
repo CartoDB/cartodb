@@ -159,6 +159,7 @@ module CartoDB
       password_protected.css
       public_dashboard.css
       public_map.css
+      embed_map.css
       data_library.css
       public_table.css
       sessions.css

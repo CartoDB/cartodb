@@ -13,6 +13,8 @@ var CartoError = require('../error');
  * @constructor
  * @abstract
  * @memberof carto.dataview
+ * @fires carto.dataview.Base.columnChanged
+ * @fires carto.dataview.Base.statusChanged
  * @api
  */
 function Base () { }
@@ -328,3 +330,23 @@ Base.prototype.$getInternalModel = function () {
 };
 
 module.exports = Base;
+
+/**
+ * Event triggered when the column in a dataview changes.
+ *
+ * Contains a single argument with the name of the changed column.
+ * 
+ * @event carto.dataview.Base.columnChanged
+ * @type {string}
+ * @api
+ */
+
+/**
+ * Event triggered when the status in a dataview changes.
+ *
+ * Contains a single argument with the new status.
+ * 
+ * @event carto.dataview.Base.statusChanged
+ * @type {carto.dataview.status}
+ * @api
+ */

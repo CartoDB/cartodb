@@ -1,0 +1,9 @@
+{
+  "publish": [
+    {
+      "title": "Basic",
+      "desc": "Create a map and render data.",
+      "file": "public/basic.html"
+    }
+  ]
+}

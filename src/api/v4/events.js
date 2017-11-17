@@ -4,19 +4,18 @@
  */
 
 /**
-  * @constant {string} SUCCESS
-  * @description
   * Reload started event, fired every time the reload process is completed succesfully.
+  *
+  * @constant {string} SUCCESS
   * @memberof carto.events
   * @api
   */
 var SUCCESS = 'success';
 
 /**
- * @constant {string} ERROR
- * @description 
  * Reload started event, fired every time the reload process has some error.
- * 
+ *
+ * @constant {string} ERROR
  * @memberof carto.events
  * @api
  */

@@ -5,19 +5,64 @@ var CategoryDataviewModel = require('../../../dataviews/category-dataview-model'
 var CategoryFilter = require('../../../windshaft/filters/category');
 
 /**
- * Category dataview object
+ * 
+ * A category dataview is used to aggregate data performing a operation.
+ * 
+ * This is similar to a group by SQL operation, for example:
+ * 
+ * ```sql
+ * SELECT country, AVG(population) GROUP BY country
+ * ```
+ * The following code is the carto.js equivalent:
+ * 
+ * ```javascript
+ * var categoryDataview = new carto.dataview.Category(citiesSource, 'country', {
+ *     operation: carto.operation.AVG, // Compute the average
+ *     operationColumn: 'population' // The name of the column where the operation will be applied.
+ *  });
+ * ```
+ * 
+ * Like all dataviews is an async object so you must wait for the data to be availiable.
+ * 
+ * The data format for the category-dataview is described in {@link carto.dataview.CategoryItem}
  *
- * @param {carto.source.Base} source - The source where the dataview will fetch the data.
- * @param {string} column - The column name to get the data.
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data
+ * @param {string} column - The name of the column used to create categories
  * @param {object} options
- * @param {number} [options.limit=6] - The maximum number of categories in the response.
- * @param {carto.operation} options.operation - The operation to apply to the data.
- * @param {string} options.operationColumn - The column name used in the operation.
+ * @param {number} [options.limit=6] - The maximum number of categories in the response
+ * @param {carto.operation} options.operation - The operation to apply to the data
+ * @param {string} options.operationColumn - The column where the operation will be applied
  *
+ * @fires carto.dataview.Category.dataChanged
+ * @fires carto.dataview.Category.limitChanged
+ * @fires carto.dataview.Category.operationChanged
+ * @fires carto.dataview.Category.operationColumnChanged
+ * 
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
  * @api
+ * @example
+ * // From a cities dataset with name, country and population show the average city population per country:
+ * var column = 'country'; // Aggregate the data by country.
+ * var categoryDataview = new carto.dataview.Category(citiesSource, column, {
+ *     operation: carto.operation.AVG, // Compute the average
+ *     operationColumn: 'population' // The name of the column where the operation will be applied.
+ *  });
+ * 
+ * // This will give data like this: { Spain: 1234, France: 3456 ...} To view the actual format see: "CategoryItem".
+ * @example
+ * // You can listen to multiple events emmited by the category-dataview.
+ * // Data and status are fired by all dataviews.
+ * categoryDataview.on('dataChanged', newData => { });
+ * categoryDataview.on('statusChanged', (newData, error) => { });
+ * categoryDataview.on('error', cartoError => { });
+ *
+ * // Listen to specific category-dataview events.
+ * categoryDataview.on('columnChanged', newData => { });
+ * categoryDataview.on('limitChanged', newData => { });
+ * categoryDataview.on('operationChanged', newData => { });
+ * categoryDataview.on('operationColumnChanged', newData => { });
  */
 function Category (source, column, options) {
   this.DEFAULTS.operationColumn = column;
@@ -31,9 +76,10 @@ function Category (source, column, options) {
 Category.prototype = Object.create(Base.prototype);
 
 /**
- * Set the categories limit
+ * Set the categories limit.
  *
  * @param  {number} limit
+ * @fires carto.dataview.Category.limitChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -47,7 +93,7 @@ Category.prototype.setLimit = function (limit) {
 };
 
 /**
- * Return the current categories limit
+ * Return the current categories limit.
  *
  * @return {number} Current dataview limit
  * @api
@@ -57,9 +103,10 @@ Category.prototype.getLimit = function () {
 };
 
 /**
- * Set the dataview operation
+ * Set the dataview operation.
  *
  * @param  {carto.operation} operation
+ * @fires carto.dataview.Category.operationChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -73,7 +120,7 @@ Category.prototype.setOperation = function (operation) {
 };
 
 /**
- * Return the current dataview operation
+ * Return the current dataview operation.
  *
  * @return {carto.operation} Current dataview operation
  * @api
@@ -83,9 +130,10 @@ Category.prototype.getOperation = function () {
 };
 
 /**
- * Set the dataview operationColumn
+ * Set the dataview operationColumn.
  *
  * @param  {string} operationColumn
+ * @fires carto.dataview.Category.operationColumnChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -99,7 +147,7 @@ Category.prototype.setOperationColumn = function (operationColumn) {
 };
 
 /**
- * Return the current dataview operationColumn
+ * Return the current dataview operationColumn.
  *
  * @return {string} Current dataview operationColumn
  * @api
@@ -109,32 +157,32 @@ Category.prototype.getOperationColumn = function () {
 };
 
 /**
- * Return the resulting data
+ * Return the resulting data.
  *
- * @return {CategoryData}
+ * @return {carto.dataview.CategoryData}
  * @api
  */
 Category.prototype.getData = function () {
   if (this._internalModel) {
     /**
-     * @typedef {object} CategoryItem
-     * @property {boolean} group
-     * @property {string} name
-     * @property {number} value
+     * @typedef {object} carto.dataview.CategoryItem
+     * @property {boolean} group - Category is a group
+     * @property {string} name - Category name
+     * @property {number} value - Category value
      * @api
      */
     /**
-     * @typedef {object} CategoryData
-     * @property {number} count
-     * @property {number} max
-     * @property {number} min
-     * @property {number} nulls
-     * @property {string} operation
-     * @property {CategoryItem[]} result
+     * @typedef {object} carto.dataview.CategoryData
+     * @property {number} count - The total number of categories
+     * @property {number} max - Maximum category value
+     * @property {number} min - Minimum category value
+     * @property {number} nulls - Number of null categories
+     * @property {string} operation - Operation used
+     * @property {carto.dataview.CategoryItem[]} categories
      * @api
      */
     var data = this._internalModel.get('data');
-    var result = _.map(data, function (item) {
+    var categories = _.map(data, function (item) {
       return {
         group: item.agg,
         name: item.name,
@@ -147,7 +195,7 @@ Category.prototype.getData = function () {
       min: this._internalModel.get('min'),
       nulls: this._internalModel.get('nulls'),
       operation: this._operation,
-      result: result
+      categories: categories
     };
   }
   return null;
@@ -242,3 +290,43 @@ Category.prototype._createInternalModel = function (engine) {
 };
 
 module.exports = Category;
+
+/**
+ * Event triggered when the data in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the {@link carto.dataview.CategoryData}
+ * 
+ * @event carto.dataview.Category.dataChanged
+ * @type {carto.dataview.CategoryData}
+ * @api
+ */
+
+/**
+ * Event triggered when the limit in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the new limit.
+ * 
+ * @event carto.dataview.Category.limitChanged
+ * @type {number}
+ * @api
+ */
+
+/**
+ * Event triggered when the operation in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the new operation name.
+ * 
+ * @event carto.dataview.Category.operationChanged
+ * @type {string}
+ * @api
+ */
+
+/**
+ * Event triggered when the operationColumn in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the new operationColumn name.
+ * 
+ * @event carto.dataview.Category.operationColumnChanged
+ * @type {string}
+ * @api
+ */ 

@@ -12,10 +12,15 @@ var _ = require('underscore');
  * @api
  */
 var operation = {
+  /** Number of elements */
   COUNT: 'count',
+  /** Sum */
   SUM: 'sum',
+  /** Average */
   AVG: 'avg',
+  /** Maximum */
   MAX: 'max',
+  /** Minimum */
   MIN: 'min'
 };
 
@@ -32,15 +37,19 @@ function isValidOperation (op) {
  * @api
  */
 var status = {
+  /** Not fetched with the server */
   NOT_LOADED: 'notLoaded',
+  /** Fetching with the server */
   LOADING: 'loading',
+  /** Fetch completed */
   LOADED: 'loaded',
+  /** Error in fetch */
   ERROR: 'error'
 };
 
 /**
  * Enum for dataview time aggregations.
- * 
+ *
  * @enum {string} carto.dataview.timeAggregation
  * @readonly
  * @memberOf carto.dataview

@@ -311,6 +311,7 @@ Base.prototype._addBoundingBoxFilter = function (filter) {
 };
 
 Base.prototype._removeBoundingBoxFilter = function () {
+  this._boundingBoxFilter = null;
   if (this._internalModel) {
     this._internalModel.set('sync_on_bbox_change', false);
   }
@@ -336,7 +337,7 @@ module.exports = Base;
  * Event triggered when the column in a dataview changes.
  *
  * Contains a single argument with the name of the changed column.
- * 
+ *
  * @event carto.dataview.Base.columnChanged
  * @type {string}
  * @api
@@ -346,7 +347,7 @@ module.exports = Base;
  * Event triggered when the status in a dataview changes.
  *
  * Contains a single argument with the new status.
- * 
+ *
  * @event carto.dataview.Base.statusChanged
  * @type {carto.dataview.status}
  * @api

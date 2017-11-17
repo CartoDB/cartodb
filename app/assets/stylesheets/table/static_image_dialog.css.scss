@@ -21,7 +21,7 @@
 
   div.foot  {
     padding: 0 40px 35px 40px!important;
-    border:none!important;
+    border: none!important;
   }
 
   .row label {
@@ -41,12 +41,12 @@
     @include inline-block();
     width: 106px;
     margin: 0;
-    padding:14px 11px;
+    padding: 14px 11px;
   }
 
   label {
-    display:block;
-    margin:0 0 7px 0;
+    display: block;
+    margin: 0 0 7px 0;
     padding: 0;
   }
 
@@ -56,7 +56,7 @@
 
   .attribution p {
     margin: 0 0 10px 0;
-    line-height:130%;
+    line-height: 130%;
   }
 
   .attribution p.highlighted {
@@ -80,13 +80,13 @@
   }
 
   .loader {
-    display:none;
-    width:38px;
-    height:16px;
-    margin:14px 10px 0 0;
+    display: none;
+    width: 38px;
+    height: 16px;
+    margin: 14px 10px 0 0;
     padding:0;
-    float:right;
-    border:none;
+    float: right;
+    border: none;
     background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
   }
 
@@ -95,7 +95,7 @@
   }
 
   section.modal.confirmation {
-    display:none;
+    display: none;
   }
 
 }

@@ -17,8 +17,8 @@
 
 
 div.legends_panel {
-  display:block;
-  width:100%;
+  display: block;
+  width: 100%;
   overflow: auto;
 
   .panel_content {
@@ -28,22 +28,22 @@ div.legends_panel {
   .panel_content .wrapper .content .fields li span { cursor: default; }
 
   .panel_content .wrapper .content .fields {
-    position:relative;
+    position: relative;
     z-index: 10;
-    background:#FFF;
+    background: #FFF;
   }
 
   .panel_content .wrapper { top: 29px; }
 
   .header {
-    position:relative;
+    position: relative;
     padding: 21px 30px 19px 30px;
-    clear:both;
-    overflow:hidden;
+    clear: both;
+    overflow: hidden;
 
     h3  {
       padding: 0!important;
-      float:left;
+      float: left;
       border:0;
     }
 
@@ -51,42 +51,42 @@ div.legends_panel {
   }
 
   .all {
-    padding:15px 0;
-    overflow:auto;
+    padding: 15px 0;
+    overflow: auto;
     span.label {margin-right:12px;}
   }
 
   .titlePane .fields li {
-    position:relative;
+    position: relative;
     & > span:hover {cursor: default; }
   }
 
   // When custom html template is applied, blocked block should show up
   // and overflow should be hidden
   .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
-    overflow:hidden;
+    overflow: hidden;
   }
 
   .blocked {
-    display:none;
-    position:absolute;
-    z-index:10;
+    display: none;
+    position: absolute;
+    z-index: 10;
     top:0;
     right:0;
     bottom:0;
     left:0;
-    padding:20px 40px;
-    background:rgba(white,0.9);
+    padding: 20px 40px;
+    background: rgba(white,0.9);
     line-height: normal;
 
-    text-align:center;
+    text-align: center;
 
     @include border-top-left-radius(4px);
 
     span.block-icon {
-      position:relative;
-      width:111px;
-      height:110px;
+      position: relative;
+      width: 111px;
+      height: 110px;
 
       @include inline-block();
 
@@ -101,7 +101,7 @@ div.legends_panel {
 
     a {
       @include inline-block();
-      margin:20px 0 0 0;
+      margin: 20px 0 0 0;
     }
 
   }
@@ -123,7 +123,7 @@ div.legends_panel {
   }
 
   .help-tip {
-    top:90px;
+    top: 90px;
   }
 
   .menu {
@@ -135,7 +135,7 @@ div.legends_panel {
     padding: 9px 23px 3px 30px;
     border-top: 1px solid rgba(#DDD, .5);
     border-bottom: 1px solid rgba(#DDD, .5);
-    background:#F6F6F6;
+    background: #F6F6F6;
 
     @include box-sizing(border-box);
 
@@ -148,13 +148,13 @@ div.legends_panel {
 
     ul {
 
-      clear:both;
-      overflow:hidden;
+      clear: both;
+      overflow: hidden;
 
       li {
         min-width: 20px;
         margin: 0 15px 0 0;
-        text-align:center;
+        text-align: center;
 
         a { margin: auto; }
 
@@ -193,7 +193,7 @@ div.legends_panel {
 
       .footer {
         margin: 14px 0 0 0;
-        text-align:center;
+        text-align: center;
 
         .add { font-size: 24px; }
       }
@@ -207,11 +207,11 @@ div.legends_panel {
         ul li:hover .remove { @include opacity(1); }
 
         ul li .remove {
-          position:relative;
+          position: relative;
           top: 3px;
-          margin-left:5px;
+          margin-left: 5px;
           letter-spacing:0;
-          vertical-align:middle;
+          vertical-align: middle;
 
           @include opacity(0);
           @include inline-block();
@@ -236,7 +236,7 @@ div.legends_panel {
       }
 
       ul li {
-        position:relative;
+        position: relative;
         color: #CCC;
         font-size: 15px;
 
@@ -258,7 +258,7 @@ div.legends_panel {
           .value.empty { color: #CCC; }
 
           input {
-            width:150px;
+            width: 150px;
             padding: 4px 7px;
             font-size: 13px;
           }
@@ -267,16 +267,16 @@ div.legends_panel {
     }
 
     ul {
-      width:100%;
-      margin:6px 0 0 0;
+      width: 100%;
+      margin: 6px 0 0 0;
     }
 
     ul li {
-      display:block;
-      width:100%;
+      display: block;
+      width: 100%;
       height: 50px;
-      padding:13px 0;
-      overflow:hidden;
+      padding: 13px 0;
+      overflow: hidden;
       border-bottom:1px solid rgba(#E5E5E5,0.5);
 
       @include box-sizing(border-box);
@@ -284,13 +284,13 @@ div.legends_panel {
       &.title span.field { position:relative; top: 3px; }
 
       & > span:first-child {
-        margin-top:2px;
-        float:left;
-        color:$cGray4;
+        margin-top: 2px;
+        float: left;
+        color: $cGray4;
       }
 
       & > span:last-child {
-        float:right;
+        float: right;
       }
 
       .form_combo {
@@ -307,29 +307,29 @@ div.legends_panel {
 
   .fields {
     li {
-      padding:13px 0;
-      overflow:hidden;
-      border-bottom:1px solid rgba(#999,0.25);
+      padding: 13px 0;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(#999,0.25);
       color: $cGray4;
       font-size: 15px;
 
       & > span {
         @include inline-block();
-        max-width:50%;
-        line-height:16px;
-        vertical-align:middle;
+        max-width: 50%;
+        line-height: 16px;
+        vertical-align: middle;
         &:hover {cursor:all-scroll;}
       }
 
       .form_combo {
-        width:auto;
-        float:right;
+        width: auto;
+        float: right;
 
         .select2-container {width:143px;}
       }
 
       .form_combo ~ span {
-        margin-top:3px;
+        margin-top: 3px;
       }
 
     }

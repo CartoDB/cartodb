@@ -13,12 +13,12 @@ div.dropdown.canvas_setup_dropdown {
   ul {
     width: 225px;
     padding: 10px;
-    clear:both;
+    clear: both;
   }
 
   li {
-    float:left;
-    border:none;
+    float: left;
+    border: none;
     background: #F2F2F2; 
 
     @include border-radius(5px);
@@ -51,15 +51,15 @@ div.dropdown.canvas_setup_dropdown {
     }
 
     a { 
-      display:block;
-      position:relative;
+      display: block;
+      position: relative;
       width: 86px;
-      height:58px;
+      height: 58px;
     }
 
     strong {
-      display:block;
-      position:absolute;
+      display: block;
+      position: absolute;
       bottom: 16px;
       left:0;
       width: 100%;

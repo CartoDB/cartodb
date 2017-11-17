@@ -20,28 +20,28 @@
 
   // Info doc icon
   a.doc_info {
-    position:absolute;
-    top:22px;
-    right:21px;
-    width:16px;
-    height:16px;
-    padding:0!important;
-    border:none;
-    background:#E5E5E5;
-    color:white;
-    font-size:12px;
-    line-height:16px;
-    text-align:center;
+    position: absolute;
+    top: 22px;
+    right: 21px;
+    width: 16px;
+    height: 16px;
+    padding: 0!important;
+    border: none;
+    background: #E5E5E5;
+    color: white;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
 
     @include border-radius(20px);
 
     &:hover {
-      background:#AAA;
-      text-decoration:none;
+      background: #AAA;
+      text-decoration: none;
     }
 
     &:active {
-      background:#898989;
+      background: #898989;
     }
   }
 
@@ -52,19 +52,19 @@
   // - Apply
   // - ...etc
   div.actions {
-    display:block;
-    position:absolute;
+    display: block;
+    position: absolute;
     z-index:1;
     right:0;
     bottom:0;
     left:0;
-    height:38px;
-    padding:20px 20px 20px 56px;
-    border-top:1px solid rgba(#999,0.25);
+    height: 38px;
+    padding: 20px 20px 20px 56px;
+    border-top: 1px solid rgba(#999,0.25);
 
     a.next, a.back {
-      width:30px;
-      height:25px;
+      width: 30px;
+      height: 25px;
       margin: 4px 0 0 0;
       padding:0;
 
@@ -97,7 +97,7 @@
     }
 
     a.disabled {
-      opacity:0.6;
+      opacity: 0.6;
 
       &.next, &.next:active, &.next:hover {
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
@@ -122,45 +122,45 @@
   // - Warning
   // - ...etc
   div.info {
-    display:none;
-    position:absolute;
+    display: none;
+    position: absolute;
     z-index:2;
     right:0;
-    bottom:78px;
+    bottom: 78px;
     left:0;
-    max-height:30%;
-    padding:17px 17px 17px 52px;
-    border-top:1px solid #EBDCE0;
-    background:#FFF7E0;
-    color:#888;
-    font-size:13px;
+    max-height: 30%;
+    padding: 17px 17px 17px 52px;
+    border-top: 1px solid #EBDCE0;
+    background: #FFF7E0;
+    color: #888;
+    font-size: 13px;
     letter-spacing:0;
 
     p {
-      display:inline-block;
-      color:#666;
+      display: inline-block;
+      color: #666;
       letter-spacing:0;
-      line-height:17px;
+      line-height: 17px;
       word-wrap: break-word;
     }
 
     &.error {
-      background:rgba(#FFD7E3,0.5);
+      background: rgba(#FFD7E3,0.5);
       p {color:#EB2466;}
     }
 
     &.warning {
-      display:block;
+      display: block;
       z-index:1001; // Filter shadow forces me to do it :S
       bottom:0;
-      height:auto;
-      max-height:none;
+      height: auto;
+      max-height: none;
       padding:0;
 
       p { padding:20px 30px }
 
       &.editor {
-        bottom:79px;
+        bottom: 79px;
         p { padding-left:56px }
       }
     }

@@ -23,7 +23,7 @@
 // Map info
 
 .cartodb-body .inner .map-info {
-  position:relative;
+  position: relative;
   top: 8px;
 }
 
@@ -33,7 +33,7 @@
   color: #444;
   font-family: $text-fonts;
   font-size: 17px;
-  font-weight:bold;
+  font-weight: bold;
   line-height: normal;
 }
 
@@ -41,14 +41,14 @@
   margin: 0;
   padding: 14px 0 0 0;
   border-top: 2px solid #EBEEF0;
-  list-style:none;
+  list-style: none;
 }
 
 .cartodb-body .inner .map-info ul li {
   margin: 0 0 17px 0;
   padding: 0 0 17px 0;
-  clear:both;
-  overflow:hidden;
+  clear: both;
+  overflow: hidden;
   border-bottom: 1px solid #E4E4E4;
   font-family: $text-fonts;
   font-size: 15px;
@@ -58,13 +58,13 @@
 
 .cartodb-body .inner .map-info ul li a {
   width: 200px;
-  float:left;
+  float: left;
   overflow: hidden;
   color: #397DB8;
   font-family: $text-fonts;
   font-size: 15px;
   line-height: 120%;
-  text-decoration:none;
+  text-decoration: none;
   text-overflow: ellipsis;
 
   /* Ellipsis */
@@ -84,9 +84,9 @@
 }
 
 .cartodb-body .inner .map-info ul li span {
-  position:relative;
+  position: relative;
   top: 4px;
-  float:right;
+  float: right;
   color: #CCC;
   font-family: 'ProximaNova', $text-fonts2;
   font-size: 11px;

@@ -17,12 +17,12 @@
 
 @mixin progress-bar($h, $r, $grad, $min) {
   div.progress-bar {
-    display:block;
-    position:relative;
-    width:100%;
+    display: block;
+    position: relative;
+    width: 100%;
     height: $h;
-    overflow:hidden;
-    background:#E5E5E5;
+    overflow: hidden;
+    background: #E5E5E5;
 
     @include border-radius($r);
 
@@ -30,12 +30,12 @@
     .bar-2,
     .bar-1,
     .bar-0 {
-      position:absolute;
+      position: absolute;
       top:0;
       bottom:0;
 
       @if $min {
-        min-width:$min;
+        min-width: $min;
       }
 
       @include border-radius($r);
@@ -43,8 +43,8 @@
       @if $grad {
         &:after {
           content: '';
-          position:absolute;
-          width:100%;
+          position: absolute;
+          width: 100%;
 
           @include position(0,0,0,0);
 
@@ -68,13 +68,13 @@
     // Grey light
     .bar-1 {
       z-index:1;
-      background:#E5E5E5;
+      background: #E5E5E5;
       &:after { display:none }
 
       &:before {
         content: '';
-        position:absolute;
-        border-right:1px solid white;
+        position: absolute;
+        border-right: 1px solid white;
 
         @include position(0,0,0,auto);
       }

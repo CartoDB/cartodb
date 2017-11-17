@@ -18,7 +18,7 @@
   @include simple-transition(left, 100ms);
 
   $width: 140px;
-  position:absolute;
+  position: absolute;
   z-index: 1;
   top: 62px;
   bottom: 0;
@@ -27,7 +27,7 @@
   background: #333 image-url('layout/noise.png') repeat 0 0;
 
   .scrollpane {
-    position:absolute;
+    position: absolute;
     top: 0;
     bottom: 0;
     width: 100%;
@@ -35,7 +35,7 @@
     padding-top: 20px;
 
     /*overflow: hidden;*/
-    outline:none;
+    outline: none;
 
     &:hover .jspVerticalBar { @include opacity(1); }
 
@@ -73,7 +73,7 @@
     background: linear-gradient(to bottom, #EEE 0%,#E5E5E5 100%);
 
     text-align: center;
-    text-decoration:none;
+    text-decoration: none;
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
 
     &.ui-sortable-helper {
@@ -108,7 +108,7 @@
 
       &:before {
         content: '';
-        position:absolute;
+        position: absolute;
         top: -3px;
         left: -3px;
         width: 109px;
@@ -192,7 +192,7 @@
       padding: 4px 6px;
       background: #333;
       color: #9CA0A3;
-      font-size:9px;
+      font-size: 9px;
 
       line-height: 80%;
       text-align: center;
@@ -204,7 +204,7 @@
       @include box-sizing(border-box);
 
       &:hover {
-        color:#666;
+        color: #666;
       }
 
     }

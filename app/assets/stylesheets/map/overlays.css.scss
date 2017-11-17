@@ -30,7 +30,7 @@
 
 .cartodb-mobile .cartodb-attribution {
   max-width: 150px;
-  font:11px/1 "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font: 11px/1 "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
 .cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 {
@@ -193,8 +193,8 @@
 }
 
 .cartodb-logo {
-  display:none;
-  position:absolute;
+  display: none;
+  position: absolute;
   z-index: 100000;
   bottom: 0;
   left: 0;
@@ -245,13 +245,13 @@
 }
 
 .overlay-properties ul li > span {
-  display:block;
+  display: block;
   margin: 0 0 5px 0;
   color: #7A7A7A;
   font-family: "Helvetica", Arial;
   font-size: 13px;
-  font-weight:normal;
-  line-height:12px;
+  font-weight: normal;
+  line-height: 12px;
 }
 
 .header.overlay-static {
@@ -262,7 +262,7 @@
   z-index:1;
   width: 100%;
   max-width: inherit;
-  background:rgba(#333, .5);
+  background: rgba(#333, .5);
 
   @include border-radius(0);
 
@@ -274,20 +274,20 @@
   .content { padding: 10px; }
 
   .title, .description {
-    display:none;
+    display: none;
   }
 
   .title {
     color: #FFF;
-    font-size:15px;
+    font-size: 15px;
     font-weight: bold;
-    line-height:22px;
+    line-height: 22px;
   }
 
   .description {
     color: #FFF;
-    font-size:13px;
-    line-height:19px;
+    font-size: 13px;
+    line-height: 19px;
 
     a {
       color: inherit;
@@ -310,17 +310,17 @@
   z-index: 4;
 
   max-width: 800px;
-  background:rgba(#333, .5);
+  background: rgba(#333, .5);
 
   @include border-radius(3px);
   @include simple-transition(background, .10s, ease-in-out);
 
   &:hover { 
-    background:rgba(#333, .7);
+    background: rgba(#333, .7);
   }
 
   .hint {
-    display:none;
+    display: none;
 
     margin: 2px 1px 0 0;
     padding: 0 0 0 20px;
@@ -368,7 +368,7 @@
     }
 
     .stick .ball {
-      position:absolute;
+      position: absolute;
       top: 50%;
       left: -$ballWidth;
       width: $ballWidth;
@@ -394,13 +394,13 @@
     }
 
     .content {
-      position:relative;
+      position: relative;
 
       @include border-radius(3px);
     }
 
     &.error .loader {
-      display:none;
+      display: none;
     }
 
     &.error .content .text {
@@ -427,7 +427,7 @@
       max-width: 400px;
 
       .content .text {
-        line-height:normal;
+        line-height: normal;
       }
 
       .content div {
@@ -437,7 +437,7 @@
       }
 
       .text { 
-        font-weight:normal;
+        font-weight: normal;
       }
     }
 
@@ -485,7 +485,7 @@
 
       .content {
         padding: 10px 10px 3px 10px;
-        line-height:normal!important;
+        line-height: normal!important;
       }
 
       @include simple-transition(padding, 100ms, ease-in);
@@ -567,7 +567,7 @@
 
     &:after { /* triangle icon */
       content: '';
-      position:absolute;
+      position: absolute;
       top: 10px;
       right: 8px;
       width: 0; 
@@ -602,8 +602,8 @@
   &[contenteditable="true"]:active,
   &[contenteditable="true"]:focus {
 
-    border:none;
-    outline:none;
+    border: none;
+    outline: none;
 
     .text, .text:hover { cursor: text; }
 
@@ -620,7 +620,7 @@
     this breaks safari edition 
 
     &.text img {
-      display:block;
+      display: block;
     }
     color: #FFF;
 
@@ -648,20 +648,20 @@ div.cartodb-timeslider {
 }
 
 div.cartodb-zoom .info {
-  display:block;
-  position:absolute;
+  display: block;
+  position: absolute;
 
   z-index: 5;
   width: 28px;
-  margin:17px 0 0 0;
+  margin: 17px 0 0 0;
   padding: 8px 0 7px 0;
   border: 1px solid #999;
   background: white;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  color:#858585;
-  font:normal 13px "Helvetica",Arial;
+  color: #858585;
+  font: normal 13px "Helvetica",Arial;
   line-height: normal;
   text-align: center;
 
@@ -670,7 +670,7 @@ div.cartodb-zoom .info {
 }
 
 div.rule {
-  position:absolute;
+  position: absolute;
   z-index: 10;
   width: 1px;
   height: 100%;
@@ -701,7 +701,7 @@ div.dropdown.properties_dropdown {
     li {
 
       padding: 8px 0;
-      border:none;
+      border: none;
       border-bottom: 1px solid rgba(#CCC, .35);
 
       a { padding: 0; }

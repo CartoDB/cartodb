@@ -20,12 +20,12 @@ $corner_radius: 6px;
 
 // Layer info, as name, order, ... etc
 .layer-info {
-  position:absolute;
+  position: absolute;
   z-index:0;
-  top:0; right:0; bottom:auto; left:0;
-  height:67px;
-  border-bottom:1px solid rgba(#999,0.25);
-  line-height:62px;
+  top: 0; right:0; bottom:auto; left:0;
+  height: 67px;
+  border-bottom: 1px solid rgba(#999,0.25);
+  line-height: 62px;
 
   @include border-top-left-radius($corner_radius);
 
@@ -36,9 +36,9 @@ $corner_radius: 6px;
     
   // Layer info block
   .info {
-    display:block;
-    top:0!important;
-    left:0!important;
+    display: block;
+    top: 0!important;
+    left: 0!important;
     width: 100%;
     padding-left: 24px;
     text-align: left;
@@ -47,41 +47,41 @@ $corner_radius: 6px;
 
     // Order element
     .order {
-      width:16px;
-      padding:1px 0;
-      background:#A9A9A9;
-      color:#ECECEC;
-      font:bold 11px $text-fonts;
-      line-height:16px;
-      text-align:center;
+      width: 16px;
+      padding: 1px 0;
+      background: #A9A9A9;
+      color: #ECECEC;
+      font: bold 11px $text-fonts;
+      line-height: 16px;
+      text-align: center;
 
       @include border-radius(2px);
     }
 
     // Layer name
     .name {
-      width:auto;
-      max-width:80%;
-      margin-left:23px;
-      overflow:hidden;
-      color:#A9A9A9;
-      font:bold 17px $text-fonts;
-      line-height:20px;
+      width: auto;
+      max-width: 80%;
+      margin-left: 23px;
+      overflow: hidden;
+      color: #A9A9A9;
+      font: bold 17px $text-fonts;
+      line-height: 20px;
 
       @include text-overflow();
 
       i.synced {
         @include inline-block();
-        width:12px;
-        height:12px;
-        margin:5px 0 0 4px;
-        vertical-align:top;
+        width: 12px;
+        height: 12px;
+        margin: 5px 0 0 4px;
+        vertical-align: top;
 
         @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
       }
 
       &:hover {
-        cursor:pointer;
+        cursor: pointer;
 
         i.synced {
           @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
@@ -91,7 +91,7 @@ $corner_radius: 6px;
 
     // Layer info (second name?)
     .name_info {
-      position:absolute;
+      position: absolute;
       top: 34px;
       left: 67px;
       width: auto;
@@ -99,7 +99,7 @@ $corner_radius: 6px;
       overflow: hidden;
       color: #AAA;
       font: normal 11px $text-fonts;
-      line-height:15px;
+      line-height: 15px;
 
       @include display-flex();
 
@@ -110,8 +110,8 @@ $corner_radius: 6px;
 
 
     &:hover {
-      text-decoration:none;
-      cursor:pointer;
+      text-decoration: none;
+      cursor: pointer;
       .name {color:#666;}
       .order {background:#666;}
     }
@@ -123,24 +123,24 @@ $corner_radius: 6px;
 
   input.alias {
     @include default-input();
-    display:none;
-    position:absolute;
-    top:7px;
-    left:57px;
-    padding:6px 9px;
-    color:#787878;
-    font:bold 17px $text-fonts;
+    display: none;
+    position: absolute;
+    top: 7px;
+    left: 57px;
+    padding: 6px 9px;
+    color: #787878;
+    font: bold 17px $text-fonts;
   }
 
 
   // Remove button
   .remove {
     @include inline-block();
-    width:13px;
-    height:13px;
-    margin-left:5px;
+    width: 13px;
+    height: 13px;
+    margin-left: 5px;
     letter-spacing:0;
-    vertical-align:middle;
+    vertical-align: middle;
 
     @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
     &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}

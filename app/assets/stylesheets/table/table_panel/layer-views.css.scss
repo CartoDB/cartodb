@@ -21,16 +21,16 @@ $corner_radius: 6px;
 
 // Layer actions view!
 .layer-views {
-  position:absolute;
+  position: absolute;
   z-index:5;
-  top:60px;
+  top: 60px;
   right:0;
   bottom:0;
-  left:65px;
-  border:1px solid #D0D0D0;
+  left: 65px;
+  border: 1px solid #D0D0D0;
   border-right:0;
   border-bottom:0;
-  background:white;
+  background: white;
   letter-spacing:0;
 
   @include inline-block();
@@ -42,67 +42,67 @@ $corner_radius: 6px;
 
   h3 {
     padding: 22px 0 21px 30px;
-    border-bottom:1px solid rgba(#999,0.25);
+    border-bottom: 1px solid rgba(#999,0.25);
     color: #666;
-    font:normal 15px $text-fonts;
-    line-height:normal;
+    font: normal 15px $text-fonts;
+    line-height: normal;
   }
 
   // For any 
   & > div {
     @include inline-block();
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
   }
 
   // Panel content for absolute positioning
   // and render with scrollbars if it is higher
   // than the panel
   .panel_content {
-    position:absolute;
-    top:61px;
+    position: absolute;
+    top: 61px;
     right:0;
     bottom:0;
     left:0;
-    overflow:hidden;
+    overflow: hidden;
 
     .wrapper {
-      position:absolute;
-      top:0; right:0; bottom:0; left:0;
-      padding:0 30px 16px 30px;
-      overflow:auto;
+      position: absolute;
+      top: 0; right:0; bottom:0; left:0;
+      padding: 0 30px 16px 30px;
+      overflow: auto;
     }
       
     div.content {
-      right:30px!important;
-      left:30px;
-      overflow-x:visible;
+      right: 30px!important;
+      left: 30px;
+      overflow-x: visible;
     }
       
     div.no_content {
-      margin:20px 0 0 0;
-      padding:20px;
-      border:1px solid #E6E6E6;
-      color:#666;
-      line-height:18px;
-      text-align:center;
+      margin: 20px 0 0 0;
+      padding: 20px;
+      border: 1px solid #E6E6E6;
+      color: #666;
+      line-height: 18px;
+      text-align: center;
 
       @include border-radius(4px);
     }
 
     span.scroll {
-      position:absolute;
-      right:5px;
+      position: absolute;
+      right: 5px;
       left:0;
-      width:100%;
-      height:10px;
+      width: 100%;
+      height: 10px;
       margin:0;
       padding:0;
-      background:transparent;
+      background: transparent;
 
       @include border-radius(0);
 
-      &.top {top:-10px;
+      &.top {top: -10px;
 
         @include box-shadow(rgba(0,0,0,0.1) 0 5px 20px 0);}
       &.bottom {@include box-shadow(rgba(0,0,0,0.12) 0 -5px 20px 0); bottom:-10px;}
@@ -114,11 +114,11 @@ $corner_radius: 6px;
   // and show the white gradient
   div.editor {
     &:after, &:before {
-      content:' ';
-      position:absolute;
-      top:0; bottom:0; left:34px;
-      width:1px;
-      height:100%;
+      content: ' ';
+      position: absolute;
+      top: 0; bottom:0; left:34px;
+      width: 1px;
+      height: 100%;
     }
       
     &:after { background:rgba($cGray4,0.50); }
@@ -127,12 +127,12 @@ $corner_radius: 6px;
     h3 { padding-left:22px }
       
     span.white-gradient {
-      position:absolute;
-      z-index:10;
+      position: absolute;
+      z-index: 10;
       top:0;
       left:0;
-      width:100%;
-      height:22px;
+      width: 100%;
+      height: 22px;
 
       @include background(linear-gradient(top, white, rgba(white,0)));
     }

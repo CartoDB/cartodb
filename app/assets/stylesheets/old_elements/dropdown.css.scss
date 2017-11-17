@@ -10,21 +10,21 @@
 @import "../old_common/vars";
 
 div.dropdown {
-  display:none;
-  position:absolute;
-  z-index:50;
-  border:none;
-  background:white;
+  display: none;
+  position: absolute;
+  z-index: 50;
+  border: none;
+  background: white;
 
   @include border-radius(3px);
 
   @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
 
   &:before {
-    content:' ';
-    display:block!important;
-    position:absolute;
-    z-index:10;
+    content: ' ';
+    display: block!important;
+    position: absolute;
+    z-index: 10;
     width:0;
     height:0;
   }
@@ -33,19 +33,19 @@ div.dropdown {
   &.tick_top, &.tick_middle, &.tick_bottom {
     &.horizontal_left {
       &:before {
-        left:-5px;
-        border-top:6px solid transparent;
-        border-right:6px solid white;
-        border-bottom:6px solid transparent;
+        left: -5px;
+        border-top: 6px solid transparent;
+        border-right: 6px solid white;
+        border-bottom: 6px solid transparent;
       }
     }
 
     &.horizontal_right {
       &:before {
-        right:-5px;
-        border-top:6px solid transparent;
-        border-bottom:6px solid transparent;
-        border-left:6px solid white;
+        right: -5px;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 6px solid white;
       }
     }
   }
@@ -58,19 +58,19 @@ div.dropdown {
   &.tick_left, &.tick_center, &.tick_right {
     &.vertical_top {
       &:before {
-        bottom:-5px;
-        border-top:6px solid white;
-        border-right:6px solid transparent;
-        border-left:6px solid transparent;
+        bottom: -5px;
+        border-top: 6px solid white;
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
       }
     }
 
     &.vertical_bottom {
       &:before {
-        top:-5px;
-        border-right:6px solid transparent;
-        border-bottom:6px solid white;
-        border-left:6px solid transparent;
+        top: -5px;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid white;
+        border-left: 6px solid transparent;
       }
     }
   }
@@ -84,12 +84,12 @@ div.dropdown {
   // With border
   &.border {
     $after_color: rgba(0,0,0,0.35);
-    border:1px solid $after_color;
+    border: 1px solid $after_color;
 
     &:after {
-      content:' ';
-      display:block!important;
-      position:absolute;
+      content: ' ';
+      display: block!important;
+      position: absolute;
       z-index:1;
       width:0;
       height:0;
@@ -99,19 +99,19 @@ div.dropdown {
     &.tick_top, &.tick_middle, &.tick_bottom {
       &.horizontal_left {
         &:after {
-          left:-6px;
-          border-top:6px solid transparent;
-          border-right:6px solid $after_color;
-          border-bottom:6px solid transparent;
+          left: -6px;
+          border-top: 6px solid transparent;
+          border-right: 6px solid $after_color;
+          border-bottom: 6px solid transparent;
         }
       }
 
       &.horizontal_right {
         &:after {
-          right:-6px;
-          border-top:6px solid transparent;
-          border-bottom:6px solid transparent;
-          border-left:6px solid $after_color;
+          right: -6px;
+          border-top: 6px solid transparent;
+          border-bottom: 6px solid transparent;
+          border-left: 6px solid $after_color;
         }
       }
     }
@@ -124,19 +124,19 @@ div.dropdown {
     &.tick_left, &.tick_center, &.tick_right {
       &.vertical_top {
         &:after {
-          bottom:-6px;
-          border-top:6px solid $after_color;
-          border-right:6px solid transparent;
-          border-left:6px solid transparent;
+          bottom: -6px;
+          border-top: 6px solid $after_color;
+          border-right: 6px solid transparent;
+          border-left: 6px solid transparent;
         }
       }
 
       &.vertical_bottom {
         &:after {
-          top:-6px;
-          border-right:6px solid transparent;
-          border-bottom:6px solid $after_color;
-          border-left:6px solid transparent;
+          top: -6px;
+          border-right: 6px solid transparent;
+          border-bottom: 6px solid $after_color;
+          border-left: 6px solid transparent;
         }
       }
     }
@@ -147,42 +147,42 @@ div.dropdown {
   }
 
   &.short {
-    width:164px!important;
+    width: 164px!important;
   }
 
   &.tiny {
-    width:105px!important;
+    width: 105px!important;
   }
 
   ul {
-    position:relative;
-    width:100%;
+    position: relative;
+    width: 100%;
     margin:0;
     padding:0;
-    overflow:visible;
-    list-style:none;
+    overflow: visible;
+    list-style: none;
 
     @include inline-block();
 
     li {
-      display:block;
-      border-top:1px solid rgba(#CCC,0.35);
+      display: block;
+      border-top: 1px solid rgba(#CCC,0.35);
 
       a {
-        display:block;
-        padding:13px 13px 15px 13px;
+        display: block;
+        padding: 13px 13px 15px 13px;
       }
 
       &:first-child {@include border-top-radius(3px)}
       &:last-child {@include border-bottom-radius(3px)}
 
       &:hover {
-        background:#F7F7F7;
+        background: #F7F7F7;
         a {color:#333; text-decoration:none}
       }
 
       &.disabled {
-        background:white;
+        background: white;
         a {@include opacity(0.4); color:$link-color; text-decoration:none; &:hover {cursor:default;}}
       }
     }

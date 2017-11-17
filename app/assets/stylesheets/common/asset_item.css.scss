@@ -1,27 +1,27 @@
 @import "../variables/mixins";
 
 .AssetItem {
-  position:relative;
-  width:58px;
-  height:58px;
-  margin:0 20px 20px 0;
+  position: relative;
+  width: 58px;
+  height: 58px;
+  margin: 0 20px 20px 0;
   overflow: hidden;
-  border:1px solid #DDD;
-  border-radius:3px;
+  border: 1px solid #DDD;
+  border-radius: 3px;
   background: image-url("layout/loader_transparent.gif") no-repeat center;
 
   @include inline-block();
 
-  &:nth-child(12n) { margin-right:0 } 
+  &:nth-child(12n) { margin-right: 0; }
 }
 
 .AssetItem .image {
-  position:absolute;
-  width:60px;
+  position: absolute;
+  width: 60px;
   max-width: 60px;
-  height:60px;
+  height: 60px;
   max-height: 60px;
-  border-radius:3px;
+  border-radius: 3px;
   background-repeat: no-repeat;
   background-position: center;
   line-height: 60px;
@@ -31,7 +31,7 @@
 }
 
 .AssetItem:hover .delete {
-  display:block;
+  display: block;
 
   @include opacity(1);
 }
@@ -45,7 +45,7 @@
 }
 
 .AssetItem.is-selected {
-  border:1px solid #BBD7F2;
+  border: 1px solid #BBD7F2;
 }
 
 .AssetItem.is-selected .image {
@@ -53,17 +53,17 @@
 }
 
 .AssetItem .delete {
-  position:absolute;
+  position: absolute;
   z-index:2;
   right: 0;
   bottom: 0;
   width: 14px;
   height: 10px;
   padding: 0;
-  border-top-left-radius:2px;
-  border-bottom-right-radius:2px;
-  background:#333;
-  background:rgba(black, 0.5);
+  border-top-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  background: #333;
+  background: rgba(black, 0.5);
   text-indent:0;
 
   @include transition(opacity, 100ms);
@@ -72,19 +72,19 @@
 }
 
 .AssetItem .delete:before {
-  content:' ';
-  position:absolute;
-  top:4px;
-  left:4px;
+  content: ' ';
+  position: absolute;
+  top: 4px;
+  left: 4px;
   width:0;
   height:0;
-  border-top:3px solid white;
-  border-right:3px solid transparent;
-  border-left:3px solid transparent;
+  border-top: 3px solid white;
+  border-right: 3px solid transparent;
+  border-left: 3px solid transparent;
 }
 
 .AssetItem.destroying:hover a.delete { 
-  display:none;
+  display: none;
 }
 
 .AssetItem.simpleicon a {

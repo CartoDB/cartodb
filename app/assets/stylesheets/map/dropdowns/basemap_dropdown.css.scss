@@ -16,7 +16,7 @@
 
   strong {
     color: #FFF;
-    font-weight:normal;
+    font-weight: normal;
   }
 
 
@@ -57,15 +57,15 @@ div.dropdown.basemap {
 
 
   div.custom {
-    display:inline;
-    vertical-align:top;
+    display: inline;
+    vertical-align: top;
   }
 
   div.custom ul {
     @include display-flex();
     padding: 0 5px 0 10px;
     border-bottom: none;
-    vertical-align:top;
+    vertical-align: top;
   }
 
   div.custom > ul {
@@ -87,7 +87,7 @@ div.dropdown.basemap {
     }
 
     li {
-      border:none;
+      border: none;
       font-size: 13px;
     }
   }
@@ -111,7 +111,7 @@ div.dropdown.basemap {
 
     &.wms {
       .thumb {
-        background-size:auto;
+        background-size: auto;
 
         @include map-sprite(wms);
       }
@@ -139,7 +139,7 @@ div.dropdown.basemap {
     }
 
     & > a {
-      display:block;
+      display: block;
       box-sizing: border-box;
       padding: 0;
 
@@ -148,11 +148,11 @@ div.dropdown.basemap {
       @include clearfix();
 
       small {
-        display:block;
+        display: block;
         margin: 0 0 0 29px;
         color: #AAA;
         font-size: 9px;
-        line-height:11px;
+        line-height: 11px;
       }
 
       &:hover small {
@@ -162,11 +162,11 @@ div.dropdown.basemap {
       .name {
         width: 150px;
         margin: 0 0 0 5px;
-        float:left;
+        float: left;
         overflow: hidden;
-        font-size:13px;
-        line-height:14px;
-        text-overflow:ellipsis;
+        font-size: 13px;
+        line-height: 14px;
+        text-overflow: ellipsis;
         white-space: nowrap;
       }
 
@@ -174,12 +174,12 @@ div.dropdown.basemap {
       &:hover .thumb .remove_layer { opacity: 1; }
 
       .thumb {
-        position:relative;
-        float:left;
+        position: relative;
+        float: left;
         background-position: 50% 50%;
 
         background-size: 34px 34px;
-        text-decoration:none;
+        text-decoration: none;
 
         @include size(24px);
         @include border-radius(2px);
@@ -199,7 +199,7 @@ div.dropdown.basemap {
 
           padding: 0;
 
-          background:rgba(black, 0.5);
+          background: rgba(black, 0.5);
           text-indent:0;
 
           @include size(14px, 10px);
@@ -212,11 +212,11 @@ div.dropdown.basemap {
           @include opacity(0);
 
           &:before {
-            content:' ';
-            border-top:3px solid white;
-            border-right:3px solid transparent;
+            content: ' ';
+            border-top: 3px solid white;
+            border-right: 3px solid transparent;
 
-            border-left:3px solid transparent;
+            border-left: 3px solid transparent;
 
             @include position(4px, false, false, 4px);
             @include size(0);
@@ -225,7 +225,7 @@ div.dropdown.basemap {
         }
 
         &:hover {
-          cursor:pointer;
+          cursor: pointer;
           &:before { border: 1px solid rgba(0,0,0, 0.5); }
         }
 
@@ -262,17 +262,17 @@ div.dropdown.basemap {
       &.pattern .thumb      { @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px); }
 
       span.color {
-        display:block;
-        position:relative;
-        width:100%;
-        height:14px;
-        padding:15px 0;
-        color:rgba(#999,0.8);
-        font:bold 9px $text-fonts;
-        text-align:center;
+        display: block;
+        position: relative;
+        width: 100%;
+        height: 14px;
+        padding: 15px 0;
+        color: rgba(#999,0.8);
+        font: bold 9px $text-fonts;
+        text-align: center;
         text-indent:0;
-        text-shadow:0 0 1px rgba(#FFF,0.5);
-        text-transform:uppercase;
+        text-shadow: 0 0 1px rgba(#FFF,0.5);
+        text-transform: uppercase;
       }
 
       span.button {
@@ -280,15 +280,15 @@ div.dropdown.basemap {
         @include size(10px);
         @include border-radius(10px);
         z-index:2;
-        background:white;
+        background: white;
         text-indent:0;
 
         &:before {
-          content:' ';
-          border-top:3px solid #397DBA;
-          border-right:2px solid transparent;
+          content: ' ';
+          border-top: 3px solid #397DBA;
+          border-right: 2px solid transparent;
 
-          border-left:2px solid transparent;
+          border-left: 2px solid transparent;
 
           @include position(4px, false, false, 3px);
           @include size(0);

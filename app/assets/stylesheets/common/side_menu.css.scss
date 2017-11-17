@@ -31,8 +31,8 @@
   display: block;
   position: relative;
   z-index:0;
-  width:100%;
-  height:1px;
+  width: 100%;
+  height: 1px;
   background-color: $cStructure-darkGrey;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .SideMenu-typeItem {
-  position:relative;
+  position: relative;
   line-height: 35px;
 
   &:first-child { margin-left: 0 }
@@ -64,12 +64,12 @@
 }
 
 .SideMenu-typeLink.is-selected {
-  color:$cTypography-linkSelected;
+  color: $cTypography-linkSelected;
   font-weight: bold;
 
   &:hover {
     text-decoration: none;
-    cursor:default;
+    cursor: default;
   }
 }
 

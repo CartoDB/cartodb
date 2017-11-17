@@ -21,13 +21,13 @@
 
 .edit_in_place {
   .value {
-    position:relative;
+    position: relative;
     z-index: 100;
-    margin:4px 5px 0 0;
+    margin: 4px 5px 0 0;
     padding: 0 5px 3px 5px;
     background: rgba(#FFDC73, .3);
     color: #666;
-    font-size:15px;
+    font-size: 15px;
 
     @include transform(skew(-25deg));
 
@@ -38,7 +38,7 @@
     span {
       @include inline-block();
       max-width: 150px;
-      padding:1px;
+      padding: 1px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -59,8 +59,8 @@
   }
 
   input {
-    display:none;
-    position:relative;
+    display: none;
+    position: relative;
     z-index: 100;
   }
 }

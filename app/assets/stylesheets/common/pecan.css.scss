@@ -48,13 +48,13 @@
 .PecanMap-MapsList .DefaultTitle a:hover { color: #666 }
 
 .PecanMap-navigation {
-  position:absolute;
+  position: absolute;
   z-index: 100000;
   width: 940px;
 }
 
 .PecanMap-navigation.is-hidden {
-  display:none;
+  display: none;
 }
 
 .PecanMap-navigationButton {
@@ -111,7 +111,7 @@
 .CategoryList {
   margin: 0;
   padding: 0;
-  float:left;
+  float: left;
   line-height:0;
 }
 
@@ -121,7 +121,7 @@
   height: 5px;
   margin: 0 2px 0 0;
   border-radius: 50%;
-  background:#DDD;
+  background: #DDD;
 }
 
 .CategoryList .CategoryList-item:last-child {

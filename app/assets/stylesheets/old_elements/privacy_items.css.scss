@@ -18,9 +18,9 @@
 
 .privacy-status {
   @include inline-block();
-  width:auto;
-  min-width:20px;
-  height:20px;
+  width: auto;
+  min-width: 20px;
+  height: 20px;
   border:0;
   text-decoration: none;
   vertical-align: middle;
@@ -31,23 +31,23 @@
   span.shared_users {
     @include display-flex();
     @include align-items(center, center);
-    width:auto;
-    height:20px;
-    margin:0 0 0 20px;
-    padding:0 6px 0 5px;
-    border-left:1px solid rgba(black,0.1);
-    color:rgba(black,0.3);
+    width: auto;
+    height: 20px;
+    margin: 0 0 0 20px;
+    padding: 0 6px 0 5px;
+    border-left: 1px solid rgba(black,0.1);
+    color: rgba(black,0.3);
     font-family: Arial;
-    font-size:11px;
-    font-weight:bold;
-    line-height:20px;
-    text-decoration:none;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 20px;
+    text-decoration: none;
   }
 
   @mixin privacy-disabled($color) {
     @include opacity(0.5);
-    background-color:rgba($color, .7);
-    cursor:default!important;
+    background-color: rgba($color, .7);
+    cursor: default!important;
   }
 
   &.public {

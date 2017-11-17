@@ -11,9 +11,9 @@
 @import "../table/table-sprite";
 
 .help-tip {
-  display:none;
+  display: none;
   position: absolute;
-  z-index:10;
+  z-index: 10;
   top: 0;
   left: 0;
   width: 100%;
@@ -30,13 +30,13 @@
 
   .close {
 
-    display:block;
+    display: block;
     position: absolute;
     top: 12px;
     right: 27px;
-    width:13px;
-    height:13px;
-    vertical-align:middle;
+    width: 13px;
+    height: 13px;
+    vertical-align: middle;
 
     @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
 
@@ -45,7 +45,7 @@
   }
 
   &:before {
-    content:'';
+    content: '';
     z-index: 11;
 
     @include size(10px, 6px);

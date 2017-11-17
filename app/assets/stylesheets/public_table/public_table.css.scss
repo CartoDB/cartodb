@@ -48,18 +48,18 @@ div.separator {
 }
 
 a {
-  // font-family:$text-fonts;
-  color:#2483B4;
-  text-decoration:none;
+  // font-family: $text-fonts;
+  color: #2483B4;
+  text-decoration: none;
   &:hover { color:#333;text-decoration:underline}
   &.disabled { @include opacity(0.3); &:hover {color:$link-color; text-decoration:none; cursor:default;}}
 
   &.tag {
-    padding:6px 7px;
-    border:1px solid #397DBA;
-    background:#E1ECF5;
-    // font:normal 15px $text-fonts2;
-    color:#397DB9;
+    padding: 6px 7px;
+    border: 1px solid #397DBA;
+    background: #E1ECF5;
+    // font: normal 15px $text-fonts2;
+    color: #397DB9;
 
     @include border-radius(2px);
 

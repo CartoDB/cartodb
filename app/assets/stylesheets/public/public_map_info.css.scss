@@ -27,7 +27,7 @@
   padding: 0;
   color: #444;
   font-family: 'ProximaNova-Semibold', $text-fonts2;
-  font-size:27px;
+  font-size: 27px;
   font-weight: normal;
   line-height: 110%;
 }
@@ -37,7 +37,7 @@
   padding: 0;
   color: #868686;
   font-family: $text-fonts;
-  font-size:15px;
+  font-size: 15px;
   line-height: normal;
 }
 
@@ -53,7 +53,7 @@
 
   a { 
     color: #397DB8;
-    text-decoration:none;
+    text-decoration: none;
 
     &:hover { text-decoration:underline; }
   }
@@ -73,19 +73,19 @@
 
 .user-options .button.grey.like {
   @include inline-block();
-  position:relative;
-  padding:0 9px;
-  font-family:'Arial';
-  font-size:11px;
+  position: relative;
+  padding: 0 9px;
+  font-family: 'Arial';
+  font-size: 11px;
   letter-spacing:0;
-  line-height:27px;
+  line-height: 27px;
   text-shadow: none;
   text-transform: uppercase;
 }
 
 .user-options .button.grey.like .icon {
   @include inline-block();
-  position:relative;
+  position: relative;
   top: -1px;
   width: 14px;
   height: 14px;
@@ -189,7 +189,7 @@
 
 .cartodb-info .inner .user {
   padding: 2px 0;
-  text-align:right;
+  text-align: right;
 }
 
 .cartodb-info .inner .user .avatar {
@@ -203,7 +203,7 @@
 }
 
 .cartodb-info .inner .user .content {
-  text-decoration:none;
+  text-decoration: none;
 
   &:hover .user-info h5 {
     text-decoration: underline;
@@ -213,7 +213,7 @@
 .cartodb-info .inner .user .user-info {
   @include inline-block();
   margin: 5px 8px 0 0;
-  text-align:right;
+  text-align: right;
   vertical-align: top;
 }
 
@@ -250,7 +250,7 @@
 
   .cartodb-map-data .cartodb-info .inner .details h1 {
     padding-right: 0;
-    font-size:20px;
+    font-size: 20px;
   }
 }
 
@@ -261,12 +261,12 @@
   }
 
   .cartodb-info .inner .user.embed-right-col {
-    float:right;
+    float: right;
     text-align: left;
   }
 
   .cartodb-info .inner .user.embed-right-col .user-info {
-    position:absolute;
+    position: absolute;
     left: 75px;
     float: right;
     text-align: left;
@@ -286,7 +286,7 @@
   and (orientation : landscape) {
   .cartodb-map-data .cartodb-info .inner .details h1 {
     padding-right: 0;
-    font-size:20px;
+    font-size: 20px;
   }
 }
 
@@ -302,7 +302,7 @@
 
   .inner .details.embed-left-col {
     max-width: 70%;
-    float:left;
+    float: left;
     border-right: 1px solid #D1D1D1;
   }
 

@@ -8,8 +8,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 */
 
 .combo-wrapper {
-  padding:12px;
-  background:#F2F2F2;
+  padding: 12px;
+  background: #F2F2F2;
 
   @include border-radius(6px);
 }
@@ -18,11 +18,11 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   display: inline-block;
   *display: inline;
   position: relative;
-  width:130px;
+  width: 130px;
 
   /* inline-block for ie7 */
   zoom: 1;
-  font-size:13px;
+  font-size: 13px;
   vertical-align: top;
 }
 
@@ -117,8 +117,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   position: absolute;
   z-index: 9999;
   top: 100%;
-  width:100%;
-  margin-top:5px;
+  width: 100%;
+  margin-top: 5px;
   border: 1px solid #AAA;
   background: #FFF;
   color: #000;
@@ -127,7 +127,7 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-drop.select2-drop-above {
-  margin-top:-5px;
+  margin-top: -5px;
   border-top: 1px solid #AAA;
 
   @include border-radius(4px);
@@ -152,23 +152,23 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   height: 100%;
 
   &:before,&:after {
-    content:' ';
-    position:absolute;
-    right:6px;
+    content: ' ';
+    position: absolute;
+    right: 6px;
     width:0;
     height:0;
-    border-right:2px solid transparent;
-    border-left:2px solid transparent;
+    border-right: 2px solid transparent;
+    border-left: 2px solid transparent;
   }
 
   &:after {
-    bottom:5px;
-    border-top:3px solid #535353;
+    bottom: 5px;
+    border-top: 3px solid #535353;
   }
 
   &:before {
-    top:5px;
-    border-bottom:3px solid #535353;
+    top: 5px;
+    border-bottom: 3px solid #535353;
   }
 }
 
@@ -178,7 +178,7 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   width: 100%;
   min-height: 26px;
   margin: 0;
-  padding:4px;
+  padding: 4px;
   white-space: nowrap;
 }
 
@@ -189,8 +189,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-search input {
-  width:100%;
-  height:auto !important;
+  width: 100%;
+  height: auto !important;
   min-height: 26px;
   margin:0;
 
@@ -205,12 +205,12 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   // background: url('select2.png') no-repeat 100% -22px, -ms-linear-gradient(top, #ffffff 85%, #eeeeee 99%);
   // background: url('select2.png') no-repeat 100% -22px, linear-gradient(top, #ffffff 85%, #eeeeee 99%);
 
-  background:-webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #EEE));
-  background:-webkit-linear-gradient(center bottom, white 85%, #EEE 99%);
-  background:-moz-linear-gradient(center bottom, white 85%, #EEE 99%);
-  background:-o-linear-gradient(bottom, white 85%, #EEE 99%);
-  background:-ms-linear-gradient(top, #FFF 85%, #EEE 99%);
-  background:linear-gradient(top, #FFF 85%, #EEE 99%);
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #EEE));
+  background: -webkit-linear-gradient(center bottom, white 85%, #EEE 99%);
+  background: -moz-linear-gradient(center bottom, white 85%, #EEE 99%);
+  background: -o-linear-gradient(bottom, white 85%, #EEE 99%);
+  background: -ms-linear-gradient(top, #FFF 85%, #EEE 99%);
+  background: linear-gradient(top, #FFF 85%, #EEE 99%);
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
@@ -220,8 +220,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   @include border-radius(3px);
 
   &:focus {
-    border-color:#999;
-    outline:none;
+    border-color: #999;
+    outline: none;
 
     @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
   }
@@ -298,10 +298,10 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 
 .select2-results li {
   display: list-item;
-  padding:5px 0;
-  border-top:1px solid rgba(black,0.1);
-  border-bottom:1px solid rgba(black,0);
-  color:#666;
+  padding: 5px 0;
+  border-top: 1px solid rgba(black,0.1);
+  border-bottom: 1px solid rgba(black,0);
+  color: #666;
   list-style: none;
 
   &:first-child {border-top:none;}
@@ -317,14 +317,14 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   margin: 0;
   padding: 3px 7px 4px;
   overflow: hidden;
-  font-size:13px;
+  font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
 }
 
 .select2-results .select2-highlighted {
-  border-bottom:1px solid rgba(black,0.1);
+  border-bottom: 1px solid rgba(black,0.1);
   background: #397DBA;
   color: #FFF;
   &:last-child {border-bottom:none;}
@@ -344,8 +344,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 .select2-results .select2-selection-limit {
   display: list-item;
   background: none;
-  font-size:13px;
-  text-align:center;
+  font-size: 13px;
+  text-align: center;
 }
 
 /*
@@ -553,22 +553,22 @@ disabled look for already selected choices in the results dropdown
   padding: 0 10px 0 8px;
 
   ul {
-    display:table;
-    position:absolute;
+    display: table;
+    position: absolute;
     top:0;
     right:0;
     left:0;
-    height:20px;
-    margin:0!important;
+    height: 20px;
+    margin: 0!important;
     padding-right:0;
-    overflow:hidden;
+    overflow: hidden;
 
     li {
       display: table-cell!important;
-      position:relative!important;
-      width:auto!important;
-      padding:0!important;
-      border:1px solid transparent!important;
+      position: relative!important;
+      width: auto!important;
+      padding: 0!important;
+      border: 1px solid transparent!important;
 
       &:first-child {
         @include border-left-radius(4px);
@@ -583,25 +583,25 @@ disabled look for already selected choices in the results dropdown
 
 .select2-result-label {
   table {
-    width:100%;
-    empty-cells:show;
-    border-collapse:separate;
+    width: 100%;
+    empty-cells: show;
+    border-collapse: separate;
   }
   tbody {width:100%;}
   tr {width:100%; height:10px;}
 
   td {
-    border-top:1px solid rgba(black,0.25)!important;
-    border-bottom:1px solid rgba(black,0.25);
+    border-top: 1px solid rgba(black,0.25)!important;
+    border-bottom: 1px solid rgba(black,0.25);
 
     &:first-child {
-      border-left:1px solid rgba(black,0.25);
+      border-left: 1px solid rgba(black,0.25);
 
       @include border-left-radius(2px);
     }
 
     &:last-child {
-      border-right:1px solid rgba(black,0.25);
+      border-right: 1px solid rgba(black,0.25);
 
       @include border-right-radius(2px);
     }
@@ -614,30 +614,30 @@ disabled look for already selected choices in the results dropdown
 /////////////////
 
 .column-type .select2-result-label {
-  position:relative;
-  padding:3px 7px 1px;
-  overflow:visible;
+  position: relative;
+  padding: 3px 7px 1px;
+  overflow: visible;
 
   span.type {
-    position:absolute;
+    position: absolute;
     z-index:1;
-    top:4px; right:0;
-    width:20px;
-    background:#CCC;
-    color:white;
-    font-size:11px;
-    font-weight:bold;
-    line-height:19px;
-    text-align:center;
-    text-transform:uppercase;
+    top: 4px; right:0;
+    width: 20px;
+    background: #CCC;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 19px;
+    text-align: center;
+    text-transform: uppercase;
 
     @include border-radius(2px);
   }
 
   span.value {
     @include inline-block();
-    width:85%;
-    line-height:22px;
+    width: 85%;
+    line-height: 22px;
 
     @include text-overflow();
   }
@@ -651,11 +651,11 @@ disabled look for already selected choices in the results dropdown
   .select2-result-label table tbody tr td,
   .select2-result-label table tbody tr td:first-child,
   .select2-result-label table tbody tr td:last-child {
-    border:none!important;
+    border: none!important;
   }
 
   .select2-result-label table {
-    border:1px solid rgba(black,0.25);
+    border: 1px solid rgba(black,0.25);
 
     @include border-radius(3px);
   }

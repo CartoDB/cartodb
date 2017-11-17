@@ -21,14 +21,14 @@
 }
 
 .CodeMirror {
-  display:block;
-  position:absolute;
+  display: block;
+  position: absolute;
   z-index:1;
   top:0;
   right:0;
-  bottom:80px;
+  bottom: 80px;
   left:0;
-  height:auto;
+  height: auto;
   padding: 8px 0;
   background: none;
   font-family: "Liberation Mono", monospace, "Courier New", "Arial";
@@ -67,33 +67,33 @@
 /** codemirror hints */
 
 .CodeMirror-hints {
-  display:block;
-  position:absolute;
-  z-index:1000!important;
-  z-index:20;
-  top:-10px;
-  width:200px;
-  max-width:240px;
-  height:auto;
-  max-height:120px;
+  display: block;
+  position: absolute;
+  z-index: 1000!important;
+  z-index: 20;
+  top: -10px;
+  width: 200px;
+  max-width: 240px;
+  height: auto;
+  max-height: 120px;
   padding:0;
   overflow-y: auto;
-  border:1px solid #999;
-  background:white;
+  border: 1px solid #999;
+  background: white;
 
   @include border-radius(3px);
   @include box-shadow(none);
 
   .CodeMirror-hint {
-    display:block;
-    display:block;
-    position:relative;
+    display: block;
+    display: block;
+    position: relative;
     margin:0;
-    padding:0 10px;
-    border-top:1px solid rgba(#CCC,0.35);
-    color:#2483B4;
-    font-family:$text-fonts;
-    line-height:35px;
+    padding: 0 10px;
+    border-top: 1px solid rgba(#CCC,0.35);
+    color: #2483B4;
+    font-family: $text-fonts;
+    line-height: 35px;
 
     &:first-child {border-top:0;
 
@@ -101,38 +101,38 @@
     &:last-child {@include border-bottom-radius(2px)}
 
     span.value, span.text {
-      display:block;
-      overflow:hidden;
-      font-size:13px;
-      text-overflow:ellipsis;
-      white-space:nowrap;
+      display: block;
+      overflow: hidden;
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     span.value {
-      width:85%;
+      width: 85%;
     }
 
     span.type {
-      position:absolute;
+      position: absolute;
       z-index:1;
-      top:8px; right:8px;
-      width:20px;
-      background:#CCC;
-      color:white;
-      font-size:11px;
-      font-weight:bold;
-      line-height:19px;
-      text-align:center;
-      text-transform:uppercase;
+      top: 8px; right:8px;
+      width: 20px;
+      background: #CCC;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 19px;
+      text-align: center;
+      text-transform: uppercase;
 
       @include border-radius(2px);
     }
   }
 
   .CodeMirror-hint-active {
-    background:#397DBA;
-    color:#FFF;
-    text-decoration:none;
+    background: #397DBA;
+    color: #FFF;
+    text-decoration: none;
   }
 }
 

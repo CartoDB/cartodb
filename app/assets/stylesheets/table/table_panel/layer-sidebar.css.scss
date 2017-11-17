@@ -16,9 +16,9 @@
 
 // Layer actions sidebar
 .layer-sidebar {
-  position:absolute;
+  position: absolute;
   z-index:6;
-  top:68px;
+  top: 68px;
   bottom:0;
   left:0;
   letter-spacing:0;
@@ -30,28 +30,28 @@
   @include single-box-shadow( -4px, 0, 5px, 0, rgba(black,0.03), true);
 
   nav {
-    position:absolute;
+    position: absolute;
     left:0;
-    width:100%;
+    width: 100%;
 
     // Tools menu
     &.tools {
       top:0;
         
       a.has_errors {
-        position:relative;
+        position: relative;
 
         span.error {
-          content:'!';
-          position:absolute;
-          top:19px;
-          left:36px;
-          width:8px;
-          height:8px;
-          background:#EB2466;
-          color:white;
-          font-size:8px;
-          line-height:10px;
+          content: '!';
+          position: absolute;
+          top: 19px;
+          left: 36px;
+          width: 8px;
+          height: 8px;
+          background: #EB2466;
+          color: white;
+          font-size: 8px;
+          line-height: 10px;
 
           @include border-radius(10px);
           @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
@@ -64,30 +64,30 @@
 
       a.applied {
         span.run {
-          position:absolute;
-          top:32px;
-          left:39px;
-          width:8px;
-          height:8px;
-          background:#36D900;
-          color:white;
-          font-size:8px;
-          line-height:10px;
+          position: absolute;
+          top: 32px;
+          left: 39px;
+          width: 8px;
+          height: 8px;
+          background: #36D900;
+          color: white;
+          font-size: 8px;
+          line-height: 10px;
 
           @include background(linear-gradient(#36D900,#238C00));
           @include border-radius(10px);
           @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
 
           &:before {
-            content:'';
-            position:absolute;
-            top:2px;
-            left:3px;
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 3px;
             width:0;
             height:0;
-            border-top:2px solid transparent;
-            border-bottom:2px solid transparent;
-            border-left:2px solid white;
+            border-top: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+            border-left: 2px solid white;
           }
         }
       }
@@ -100,12 +100,12 @@
     }
 
     a {
-      display:block;
-      position:relative;
+      display: block;
+      position: relative;
       z-index:0;
-      width:100%;
-      height:60px;
-      border-bottom:1px solid rgba(#999,0.25);
+      width: 100%;
+      height: 60px;
+      border-bottom: 1px solid rgba(#999,0.25);
 
       @include text-indent();
 
@@ -118,7 +118,7 @@
       &.legends_mod    { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-663px);}
 
       &.wizards_mod    {
-        @include table-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
+        @include table-sprite(table_icons, $offset-x: 21px, $offset-y:-370px);
         &.selected:before, &.selected:after { border-right-color: #575757; }
         &.selected:after {right:-1px;}
       }
@@ -129,51 +129,51 @@
       &.merge_datasets {@include table-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
 
       &.add_feature {
-        border-top:1px solid rgba(#999,0.25);
+        border-top: 1px solid rgba(#999,0.25);
 
-        @include table-sprite(table_icons, $offset-x:19px, $offset-y:-489px);
+        @include table-sprite(table_icons, $offset-x: 19px, $offset-y:-489px);
       }
 
       &:hover {
-        cursor:pointer;
+        cursor: pointer;
 
         @include opacity(1);
       }
 
       &.disabled {
         @include opacity(0.15);
-        border-color:#999;
+        border-color: #999;
       }
 
       &.selected {
         @include opacity(1);
 
         &:before {
-          content:'';
-          position:absolute;
+          content: '';
+          position: absolute;
           z-index:1;
-          top:50%;
-          right:-1px;
+          top: 50%;
+          right: -1px;
           width:0;
           height:0;
-          margin:-7px 0 0 0;
-          border-top:7px solid transparent;
-          border-right:7px solid white;
-          border-bottom:7px solid transparent;
+          margin: -7px 0 0 0;
+          border-top: 7px solid transparent;
+          border-right: 7px solid white;
+          border-bottom: 7px solid transparent;
         }
 
         &:after {
-          content:'';
-          position:absolute;
+          content: '';
+          position: absolute;
           z-index:0;
-          top:50%;
+          top: 50%;
           right:0;
           width:0;
           height:0;
-          margin:-7px 0 0 0;
-          border-top:7px solid transparent;
-          border-right:7px solid #D0D0D0;
-          border-bottom:7px solid transparent;
+          margin: -7px 0 0 0;
+          border-top: 7px solid transparent;
+          border-right: 7px solid #D0D0D0;
+          border-bottom: 7px solid transparent;
         }
       }
     }

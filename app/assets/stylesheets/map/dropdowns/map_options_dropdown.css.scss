@@ -21,17 +21,17 @@ div.dropdown.map_options_dropdown {
       @include display-flex();
       @include justify-content(space-between, justify);
       @include align-items(center, center);
-      position:relative;
+      position: relative;
       margin: 0;
       padding: 10px 0;
-      border:none;
+      border: none;
       border-bottom: 1px solid rgba(204,204,204,0.35);
       font-size: 13px;
       cursor: default;
 
       &:before {
         content: '';
-        position:absolute;
+        position: absolute;
         top: 14px;
         width: 10px;
         height: 10px;
@@ -110,7 +110,7 @@ div.dropdown.map_options_dropdown {
 
       &:last-child {
         padding-bottom: 0; 
-        border:none;
+        border: none;
       }
 
 
@@ -128,9 +128,9 @@ div.dropdown.map_options_dropdown {
         @include opacity(0.3);
 
         &:hover {
-          color:$link-color;
-          text-decoration:none;
-          cursor:default;
+          color: $link-color;
+          text-decoration: none;
+          cursor: default;
         }
 
       }
@@ -141,7 +141,7 @@ div.dropdown.map_options_dropdown {
         @include inline-block();
         margin: 0 ;
         padding: 0;
-        float:right;
+        float: right;
       }
 
     }

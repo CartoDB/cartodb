@@ -19,7 +19,7 @@
   
 
   div.filters_panel {
-    width:100%;
+    width: 100%;
     @include box-sizing(border-box);
 
     h3 { padding-left:30px; }
@@ -36,12 +36,12 @@
     }
 
     .content {
-      position:relative;
+      position: relative;
 
-      text-align:center;
+      text-align: center;
 
       .chooser {
-        display:none;
+        display: none;
         @include position(85px, false, false, 0);
         @include size(100%, 200px);
 
@@ -49,10 +49,10 @@
         z-index: 100;
 
         .applied_query {
-          display:none;
+          display: none;
 
           .clear {
-            width:234px;
+            width: 234px;
             background: rgba(#FFEFBF, .5);
             padding: 14px;
             @include border-radius(5px);
@@ -79,7 +79,7 @@
 
         .form_combo {
           margin: 0 auto 0 auto;
-          display:block;
+          display: block;
           width: 200px;
 
           background: #f2f2f2;
@@ -124,20 +124,20 @@
       z-index: 10000;
 
       a {
-        float:right;
-        font-size:13px;
+        float: right;
+        font-size: 13px;
         text-decoration: underline;
       }
     }
 
     .add_filter {
-      display:none;
-      position:relative;
+      display: none;
+      position: relative;
       width: 385px;
       margin: 0 0 40px 0;
 
       & > a.add {
-        position:relative;
+        position: relative;
         top: 15px;
         padding: 15px;
         color: #6A9DCA;
@@ -148,9 +148,9 @@
 
         @include box-shadow(inset 0px 4px 4px #EDEDED);
 
-        display:none;
+        display: none;
         @include box-sizing(border-box);
-        position:relative;
+        position: relative;
         top: 0;
         padding: 24px;
 
@@ -175,31 +175,31 @@
     }
 
     ul.filters {
-      position:relative;
+      position: relative;
 
       width: 385px;
       margin: 0;
 
       .filter { // generic styles for all the filters
-        position:relative;
+        position: relative;
 
         padding: 15px 0 0 0;
 
         border-bottom: 1px solid rgba(#999999, .25);
         @include box-shadow(0px 4px 4px #EDEDED);
 
-        text-align:left;
+        text-align: left;
 
         .header {
-          position:relative;
+          position: relative;
           padding: 5px 0;
           margin: 0;
           width: 340px;
 
-          text-align:left;
+          text-align: left;
 
-          clear:both;
-          overflow:hidden;
+          clear: both;
+          overflow: hidden;
 
           .hidden { display: none; }
 
@@ -218,7 +218,7 @@
 
         .remove {
           float: right;
-          display:block;
+          display: block;
           @include opacity(0);
 
           @include size(13px);
@@ -258,7 +258,7 @@
 
         &.hidden { display: none; }
 
-        float:left;
+        float: left;
 
         li {
           color: #4DC964;
@@ -266,7 +266,7 @@
           a {
             vertical-align: top;
             color: #4DC964;
-            font-size:13px;
+            font-size: 13px;
 
             &.selected { display:none; }
           }
@@ -275,7 +275,7 @@
       } // controllers
 
       .fields {
-        position:relative;
+        position: relative;
         margin: 0 0 20px 0;
 
         &.only, &.empty { margin: 0 0 15px 0; }
@@ -299,7 +299,7 @@
         @include box-sizing(border-box);
         @include position(0, false, false, 0);
         @include size(323px, 40px);
-        display:none;
+        display: none;
         padding: 0;
         margin: 0 0 0 30px;
 
@@ -313,14 +313,14 @@
           background: #E7E7E7;
           @include background(linear-gradient(top, rgba(#F9F9F9, 0), rgba(#E7E7E7, .7)));
           color: #555;
-          font:bold 11px $text-fonts2;
-          line-height:normal;
-          text-shadow:0 1px 0 white;
+          font: bold 11px $text-fonts2;
+          line-height: normal;
+          text-shadow: 0 1px 0 white;
           background:#F9F9F9; // IE
           @include background(linear-gradient(#F9F9F9,#EBEBEB));
           @include border-radius(5px);
-          border:1px solid #B0B0B0;
-          letter-spacing:-1px;
+          border: 1px solid #B0B0B0;
+          letter-spacing: -1px;
           @include transform-style("linear");
           @include transition-property("box-shadow,border");
           @include transition-duration(250ms);
@@ -329,12 +329,12 @@
           &:hover {
             background:#DEDEDE; // IE
             @include background(linear-gradient(#F9F9F9,#E1E1E1));
-            text-decoration:none;
-            cursor:pointer;
+            text-decoration: none;
+            cursor: pointer;
           }
           // Active
           &:active {
-            border-color:#ACACAC;
+            border-color: #ACACAC;
             background:#D3D3D3; // IE
             @include background(linear-gradient(#F9F9F9,#E1E1E1));
             @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0);
@@ -345,20 +345,20 @@
         input {
           @include box-sizing(border-box);
           @include size(275px, 39px);
-          max-width:100%;
-          max-height:39px;
+          max-width: 100%;
+          max-height: 39px;
           padding: 11px;
-          border:none;
+          border: none;
           font-family: $text-fonts;
-          font-size:13px;
-          background:none;
-          outline:none;
+          font-size: 13px;
+          background: none;
+          outline: none;
           resize: none;
         }
       } // textarea
 
       .data {
-        position:relative;
+        position: relative;
 
         .items { display:none;}
         .white-gradient-shadow {
@@ -378,23 +378,23 @@
 
 
       .options {
-        position:relative;
+        position: relative;
         width: 325px;
         margin: 2px 0 0 30px;
         padding: 0;
-        clear:both;
-        overflow:hidden;
+        clear: both;
+        overflow: hidden;
         z-index: 100;
-        background:#fff;
+        background: #fff;
 
         .view_mode {
 
-          float:left;
+          float: left;
 
           .switch { // small switch
             @include inline-block();
             @include size(21px, 12px);
-            margin:2px 0 0 0;
+            margin: 2px 0 0 0;
 
             span.handle {
               @include position(0, false, false, 9px);
@@ -408,8 +408,8 @@
 
           label {
             @include inline-block();
-            font-size:13px;
-            color:#999999;
+            font-size: 13px;
+            color: #999999;
             cursor: pointer;
           }
         }
@@ -425,7 +425,7 @@
         .btn {
           @include inline-block();
           @include size(25px, 21px);
-          background:#f1f1f1;
+          background: #f1f1f1;
           margin-right: -3px;
 
           @include simple-transition(opacity, 100ms);
@@ -454,20 +454,20 @@
       }
 
       .items {
-        text-align:left;
+        text-align: left;
         margin: 0 0 0 30px;
         padding: 0;
         width: 325px;
 
         li {
-          clear:both;
-          overflow:hidden;
+          clear: both;
+          overflow: hidden;
 
-          position:relative;
+          position: relative;
           padding: 10px 0 10px 15px;
           margin: 0;
           color: #666666;
-          font-size:13px;
+          font-size: 13px;
           border-top: 1px solid rgba(#999, .25);
 
           cursor: pointer;
@@ -512,14 +512,14 @@
           &.selected .value { background: #82D992; color:#fff; }
 
           .value {
-            position:absolute;
+            position: absolute;
             top: 10px; right: 0;
-            font-size:10px;
+            font-size: 10px;
             padding: 2px 4px;
-            border:1px solid #82D992;
-            background:#fff;
+            border: 1px solid #82D992;
+            background: #fff;
             @include border-radius(2px);
-            color:#82D992;
+            color: #82D992;
 
             @include simple-transition(background-color, 100ms);
           }
@@ -530,7 +530,7 @@
     // Histogram filter
     ul.filters .filter.histogram {
 
-      text-align:center;
+      text-align: center;
 
       .empty  { display:none; }
 

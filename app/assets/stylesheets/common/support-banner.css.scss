@@ -6,13 +6,13 @@
 @import "../variables/colors";
 
 .SupportBanner {
-  display:block;
-  width:100%;
+  display: block;
+  width: 100%;
   padding: $sMargin-element 0 $sMargin-section;
 }
 
 .SupportBanner-inner {
-  position:relative;
+  position: relative;
 
   @include display-flex();
   @include justify-content(space-between, justify);

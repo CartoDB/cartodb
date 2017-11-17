@@ -206,7 +206,7 @@ $sEditButtonSize: 50px;
   color: #EEE;
   font-size: 20px;
   line-height: 48px  !important; // Overwritten by icon font style
-  text-align:center;
+  text-align: center;
 }
 
 .MapCard-headerFakeIcon.CDB-IconFont-people {
@@ -263,7 +263,7 @@ $sEditButtonSize: 50px;
 
 .MapCard-preview {
   display: none;
-  position:absolute;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -277,7 +277,7 @@ $sEditButtonSize: 50px;
 
 .MapCard-error {
   display: none;
-  position:absolute;
+  position: absolute;
   top: 50%;
   left: 50%;
   width: 60px;
@@ -321,9 +321,9 @@ $sEditButtonSize: 50px;
   background: #1181FB;
   color: $cWhite;
   font-size: 20px;
-  line-height:$sEditButtonSize;
+  line-height: $sEditButtonSize;
   text-align: center;
-  text-decoration:none;
+  text-decoration: none;
 
   @include opacity(0);
   @include css3-prefix(box-sizing, border-box);

@@ -84,20 +84,20 @@
   font-weight: 300;
 
   &::-webkit-input-placeholder {
-    color:#DDD;
-    font-style:italic;
+    color: #DDD;
+    font-style: italic;
     font-weight: $sFontWeight-normal;
   }
 
   &::-moz-placeholder {
-    color:#DDD;
-    font-style:italic;
+    color: #DDD;
+    font-style: italic;
     font-weight: $sFontWeight-normal;
   }
 
   &:-ms-placeholder {
-    color:#DDD;
-    font-style:italic;
+    color: #DDD;
+    font-style: italic;
     font-weight: $sFontWeight-normal;
   }
 }

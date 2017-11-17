@@ -21,40 +21,40 @@
 // Styles for static pages like 404, 500, HTML5,...
 
 html {
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 }
 
 body {
-  min-width:600px;
+  min-width: 600px;
 
   @include background(image-url("layout/grey-carto.jpg") repeat 0 0);
 
   /* SECTIONS */
   section {
-    position:relative;
-    width:960px;
-    margin:0 auto;
-    background:white;
+    position: relative;
+    width: 960px;
+    margin: 0 auto;
+    background: white;
 
     @include border-radius(3px);
 
 
     /* skeleton of a section */
     div.header {
-      padding:40px;
-      border-bottom:1px solid #E5E5E5;
+      padding: 40px;
+      border-bottom: 1px solid #E5E5E5;
     }
 
     div.footer {
-      padding:40px;
-      border-top:1px solid #E5E5E5;
+      padding: 40px;
+      border-top: 1px solid #E5E5E5;
     }
 
     div.content {
-      display:block;
-      position:relative;
-      padding:40px;
+      display: block;
+      position: relative;
+      padding: 40px;
 
       /* content options */
       &.overflow {overflow:hidden}
@@ -65,9 +65,9 @@ body {
 
     /* sessions flat section*/
     &.sessions {
-      position:relative;
-      width:392px;
-      margin:100px auto 50px;
+      position: relative;
+      width: 392px;
+      margin: 100px auto 50px;
     }
 
     /* add shadow to the section */
@@ -101,16 +101,16 @@ body {
   /* SESSIONS FORM */
   section.sessions {
     div.browsers {
-      margin:30px 0 0 100px;
+      margin: 30px 0 0 100px;
       font-size:0;
-      letter-spacing:-4px;
+      letter-spacing: -4px;
 
       a {
         @include inline-block();
-        margin:0 35px 0 0;
+        margin: 0 35px 0 0;
         padding:0;
         letter-spacing:0;
-        vertical-align:middle;
+        vertical-align: middle;
 
         img {margin:0!important}
       }
@@ -119,32 +119,32 @@ body {
 
     form {
       div.field {
-        display:inline-block;
-        position:relative;
-        width:100%;
+        display: inline-block;
+        position: relative;
+        width: 100%;
 
         &.short {
-          width:312px;
-          margin-right:25px;
-          margin-left:25px;
-          padding:15px 0 0 40px;
+          width: 312px;
+          margin-right: 25px;
+          margin-left: 25px;
+          padding: 15px 0 0 40px;
         }
 
         &.border {
-          border-top:1px solid #E5E5E5;
+          border-top: 1px solid #E5E5E5;
         }
       }
 
       p {@include inline-block();}
 
       label {
-        position:absolute;
+        position: absolute;
         z-index:0;
         top:0;
-        left:16px;
-        color:#CCC;
-        font:normal 15px $text-fonts;
-        font-style:italic;
+        left: 16px;
+        color: #CCC;
+        font: normal 15px $text-fonts;
+        font-style: italic;
 
         @include user-select(none);
         &:hover {cursor:text}
@@ -153,66 +153,66 @@ body {
       input[type="text"],
       input[type="password"],
       input[type="email"] {
-        z-index:10;
-        width:280px;
-        height:auto;
+        z-index: 10;
+        width: 280px;
+        height: auto;
         margin:0;
-        padding:11px 15px;
-        border:1px solid #CCC;
-        background:none;
-        color:#333;
-        font:normal 15px $text-fonts;
-        line-height:normal;
+        padding: 11px 15px;
+        border: 1px solid #CCC;
+        background: none;
+        color: #333;
+        font: normal 15px $text-fonts;
+        line-height: normal;
 
         @include border-radius(3px);
 
         &:focus {
-          border-color:#999;
-          outline:none;
+          border-color: #999;
+          outline: none;
 
           @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
         }
 
         &.error {
-          width:255px;
-          padding-right:40px;
-          border-color:#F08A84;
-          color:#E95850;
+          width: 255px;
+          padding-right: 40px;
+          border-color: #F08A84;
+          color: #E95850;
 
           &:focus {
-            border-color:#D17671;
+            border-color: #D17671;
           }
         }
       }
 
       /* Errors */
       div.field_with_errors {
-        width:auto;
-        vertical-align:top;
+        width: auto;
+        vertical-align: top;
 
         @include inline-block();
 
         input[type="text"],
         input[type="password"],
         input[type="email"] {
-          width:255px;
-          padding-right:40px;
-          border-color:#F08A84;
-          color:#E95850;
+          width: 255px;
+          padding-right: 40px;
+          border-color: #F08A84;
+          color: #E95850;
 
           &:focus {
-            border-color:#D17671;
+            border-color: #D17671;
           }
         }
       }
 
       div.field_error {
-        position:absolute;
+        position: absolute;
         z-index:5;
-        top:7px;
-        right:7px;
-        width:26px;
-        height:27px;
+        top: 7px;
+        right: 7px;
+        width: 26px;
+        height: 27px;
 
         @include text-indent();
         @include common-sprite(field_error);
@@ -222,7 +222,7 @@ body {
 
     // Longer than large :)
     &.longer {
-      width:562px;
+      width: 562px;
 
       img.alone {margin:50px 0 0 125px}
     }
@@ -230,36 +230,36 @@ body {
 
   /* FOOTER */
   footer {
-    width:100%;
-    min-width:960px;
-    height:18px;
-    padding:38px 0 40px;
+    width: 100%;
+    min-width: 960px;
+    height: 18px;
+    padding: 38px 0 40px;
     border-top: 1px solid #E5E5E5;
-    background:white;
+    background: white;
 
     div.wrap {overflow:visible;}
 
     span.cartodb {
-      position:absolute;
-      z-index:10;
-      top:-112px;
-      left:-10px;
-      width:84px;
-      height:105px;
+      position: absolute;
+      z-index: 10;
+      top: -112px;
+      left: -10px;
+      width: 84px;
+      height: 105px;
     }
 
     div.left {height:19px; p {vertical-align:middle}}
 
     &.short {
-      width:124px;
-      min-width:124px;
-      height:42px;
-      margin:0 auto 30px;
+      width: 124px;
+      min-width: 124px;
+      height: 42px;
+      margin: 0 auto 30px;
       padding:0;
-      border:none;
-      background:none;
+      border: none;
+      background: none;
 
-      a.cartodb {display:block; width:124px; height:42px;
+      a.cartodb {display: block; width:124px; height:42px;
 
         @include text-indent(); @include front-sprite(cartodb_opacity);}
     }
@@ -268,9 +268,9 @@ body {
 
   /* NEW VERSION */
   &.new_version {
-    position:relative;
-    width:100%;
-    height:100%;
+    position: relative;
+    width: 100%;
+    height: 100%;
     margin:0;
     padding:0;
     background-color: #377CB9; // IE
@@ -279,48 +279,48 @@ body {
     @include background(linear-gradient(#519FD9,#1E5496));
       
     div.bkg {
-      position:absolute;
+      position: absolute;
       top:0;
       right:0;
       bottom:0;
       left:0;
-      width:100%;
-      height:100%;
+      width: 100%;
+      height: 100%;
 
       @include background(image-url("layout/relief.png") repeat 0 0);
     }
 
     header {
-      position:relative;
-      width:480px;
-      height:42px;
+      position: relative;
+      width: 480px;
+      height: 42px;
       margin: 0 auto;
-      padding:40px 0;
-      border:none;
-      background:none;
-      box-shadow:none;
+      padding: 40px 0;
+      border: none;
+      background: none;
+      box-shadow: none;
 
       &:before {
-        display:none;
-        background:none;
+        display: none;
+        background: none;
       }
 
       h1 {
         margin:0;
 
-        a {display:block; width:124px; height:42px;
+        a {display: block; width:124px; height:42px;
 
           @include text-indent(); @include front-sprite(cartodb_dark);}
       } 
     }
 
     section {
-      width:505px;
+      width: 505px;
       margin-top:0;
       background: image-url('layout/cartodb20.png') no-repeat right 0 white; // IE
 
       .content {
-        padding-right:190px;
+        padding-right: 190px;
         h2 {font-size:34px; line-height:36px;}
         p {line-height:19px;}
       }

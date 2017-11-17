@@ -6,17 +6,17 @@
 @import "compass/css3/border-radius";
 
 div.tooltip-trails {
-  display:none;
-  position:absolute;
-  z-index:1000;
+  display: none;
+  position: absolute;
+  z-index: 1000;
   top:0;
   left:0;
-  max-width:234px;
-  padding:12px;
-  border:1px solid #B3AF9C;
-  background:#FCF3DB;
-  color:#666;
-  font-size:13px;
+  max-width: 234px;
+  padding: 12px;
+  border: 1px solid #B3AF9C;
+  background: #FCF3DB;
+  color: #666;
+  font-size: 13px;
   letter-spacing:0;
 
   @include border-radius(3px);

@@ -17,45 +17,45 @@
 $corner_radius: 6px;
 
 div.wizards_panel {
-  display:block;
-  width:100%;
-  overflow:hidden;
+  display: block;
+  width: 100%;
+  overflow: hidden;
 
   h3 {
     padding-left: 30px;
   }
 
   div.wizard_wrap {
-    position:absolute;
-    top:60px;
+    position: absolute;
+    top: 60px;
     right:0;
     left:0;
-    height:149px;
-    overflow:hidden;
+    height: 149px;
+    overflow: hidden;
 
     background: image-url('layout/linen.png');
 
     &.left_shadow:before {
-      content:'';
-      position:absolute;
+      content: '';
+      position: absolute;
       z-index:1;
       top:0;
       bottom:0;
       left:0;
-      width:30px;
+      width: 30px;
       pointer-events: none;
 
       @include background(linear-gradient(left, rgba(#333, .7), rgba(#333,0)));
     }
 
     &:after {
-      content:'';
-      position:absolute;
+      content: '';
+      position: absolute;
       z-index:1;
       top:0;
       right:0;
       bottom:0;
-      width:30px;
+      width: 30px;
       pointer-events: none;
 
       @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, .7)));
@@ -65,17 +65,17 @@ div.wizards_panel {
 
   div.wizard_arrows {
     a {
-      display:block;
-      position:absolute;
-      z-index:10;
-      top:55px;
-      width:43px;
-      height:43px;
+      display: block;
+      position: absolute;
+      z-index: 10;
+      top: 55px;
+      width: 43px;
+      height: 43px;
 
       @include table-sprite(wizard-arrows);
 
       &.left {
-        left:8px;
+        left: 8px;
 
         &:hover {
           @include table-sprite(wizard-arrows, $offset-y:-43px);
@@ -84,7 +84,7 @@ div.wizards_panel {
 
       &.right {
         @include table-sprite(wizard-arrows, $offset-x:-43px);
-        right:8px;
+        right: 8px;
 
         &:hover {
           @include table-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
@@ -92,7 +92,7 @@ div.wizards_panel {
       }
 
       &.disabled {
-        display:none;
+        display: none;
 
         @include opacity(0);
 
@@ -108,21 +108,21 @@ div.wizards_panel {
   }
 
   ul.vis_options {
-    display:block;
-    position:absolute;
-    width:1050px;
-    padding:0 30px;
-    border-bottom:1px solid #E5E5E5;
+    display: block;
+    position: absolute;
+    width: 1050px;
+    padding: 0 30px;
+    border-bottom: 1px solid #E5E5E5;
 
-    letter-spacing:-4px;
+    letter-spacing: -4px;
 
     @include position(0, 0, false, 0);
 
     @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
     li {
-      position:relative;
-      margin:0 12px 0 0;
+      position: relative;
+      margin: 0 12px 0 0;
       padding:0;
       letter-spacing:0;
       word-space: 0;
@@ -130,9 +130,9 @@ div.wizards_panel {
       @include inline-block();
 
       a {
-        display:block;
-        position:relative;
-        margin:30px 0;
+        display: block;
+        position: relative;
+        margin: 30px 0;
 
         @include size(92px, 90px);
 
@@ -147,13 +147,13 @@ div.wizards_panel {
           padding: 8px 0;
 
           border-top: 1px solid #CCC;
-          background:#FFF;
+          background: #FFF;
           color: #397DBA;
-          font-size:11px;
+          font-size: 11px;
 
-          font-weight:bold;
+          font-weight: bold;
 
-          text-align:center;
+          text-align: center;
           text-transform: uppercase;
 
           @include border-radius(0 0 3px 3px);
@@ -199,13 +199,13 @@ div.wizards_panel {
         &.torque_heat { background: image-url('layout/wizard-torque-heat.png') no-repeat;}
 
         &:hover {
-          border-color:$cGray2;
+          border-color: $cGray2;
 
           @include opacity(1);
         }
 
         &.selected {
-          border-color:$cGray2;
+          border-color: $cGray2;
 
           @include opacity(1);
 
@@ -216,24 +216,24 @@ div.wizards_panel {
           &:before, &:after {
             @include size(0);
             content: '';
-            position:absolute;
+            position: absolute;
             z-index:5;
             bottom: 0;
-            left:50%;
-            margin-left:-13px;
-            border-right:10px solid transparent;
-            border-left:10px solid transparent;
+            left: 50%;
+            margin-left: -13px;
+            border-right: 10px solid transparent;
+            border-left: 10px solid transparent;
           }
 
           &:before {
-            z-index:10;
-            bottom:-30px;
-            border-bottom:10px solid white;
+            z-index: 10;
+            bottom: -30px;
+            border-bottom: 10px solid white;
           }
 
           &:after {
-            bottom:-30px;
-            border-bottom:10px solid $cGray4;
+            bottom: -30px;
+            border-bottom: 10px solid $cGray4;
           }
         }
 
@@ -241,7 +241,7 @@ div.wizards_panel {
           display: none;
 
           &:hover {
-            border:1px solid $cGray4;
+            border: 1px solid $cGray4;
           }
         }
       }
@@ -250,24 +250,24 @@ div.wizards_panel {
 
   div.forms {
     ul {
-      width:100%;
-      margin:15px 0 0 0;
+      width: 100%;
+      margin: 15px 0 0 0;
 
       li {
-        display:block;
-        width:100%;
-        padding:13px 0;
-        overflow:hidden;
-        border-bottom:1px solid rgba(#E5E5E5,0.5);
+        display: block;
+        width: 100%;
+        padding: 13px 0;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(#E5E5E5,0.5);
 
         & > span:first-child {
-          margin-top:2px;
-          float:left;
-          color:#AAA;
+          margin-top: 2px;
+          float: left;
+          color: #AAA;
         }
 
         & > span:last-child {
-          float:right;
+          float: right;
         }
 
         .form_combo {
@@ -279,10 +279,10 @@ div.wizards_panel {
         &:last-child {border:none;}
 
         span.field > div {
-          margin-left:5px;
+          margin-left: 5px;
 
           &.form_hidden {
-            display:none;
+            display: none;
             margin:0;
           }
 
@@ -293,27 +293,27 @@ div.wizards_panel {
         // Text between fields like " - to - "
         span.field span.text {
           @include inline-block();
-          width:43px;
-          margin-left:5px;
-          line-height:21px;
-          text-align:center;
-          vertical-align:top;
+          width: 43px;
+          margin-left: 5px;
+          line-height: 21px;
+          text-align: center;
+          vertical-align: top;
         }
       }
     }
 
     &.panel_content {
-      top:212px;
+      top: 212px;
     }
 
     // Color wizard styles
     ul.custom_colors, ul.custom_categories {
       margin:0;
-      border-top:1px solid rgba(#E5E5E5,0.5);
+      border-top: 1px solid rgba(#E5E5E5,0.5);
 
       li.custom_color_item {
         span {
-          max-width:260px;
+          max-width: 260px;
 
           @include text-overflow();
         }
@@ -321,18 +321,18 @@ div.wizards_panel {
     }
 
     div.colors_loader {
-      display:none;
-      padding:15px 0 0 50px;
-      border-top:1px solid rgba(#E5E5E5,0.5);
-      background:image-url("layout/loader.gif") no-repeat 0 15px;
+      display: none;
+      padding: 15px 0 0 50px;
+      border-top: 1px solid rgba(#E5E5E5,0.5);
+      background: image-url("layout/loader.gif") no-repeat 0 15px;
       span {color:$cGray4;}
     }
 
     div.colors_error {
-      display:none;
-      padding:15px;
-      background:rgba(#FECBCB,0.4);
-      color:#666;
+      display: none;
+      padding: 15px;
+      background: rgba(#FECBCB,0.4);
+      color: #666;
 
       @include border-radius($corner_radius);
     }

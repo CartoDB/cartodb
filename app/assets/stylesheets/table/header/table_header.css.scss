@@ -10,20 +10,20 @@
 @import "../../old_common/vars";
   
 header.vis {
-  position:fixed;
+  position: fixed;
   z-index:2;
   top:0;
   left:0;
-  min-width:960px;
-  height:68px;
+  min-width: 960px;
+  height: 68px;
   padding: 11px 0 0 0;
-  overflow:visible;
+  overflow: visible;
   border-bottom: 1px solid rgba(#333, 0.8);
 
   @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
 
   .inner {
-    width:auto;
+    width: auto;
     height: 100%;
   }
 

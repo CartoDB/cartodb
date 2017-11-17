@@ -9,21 +9,21 @@
 @import "../old_common/mixins";
 
 .flash {
-  position:relative;
-  padding:22px 40px;
-  border-bottom:1px solid rgba(#CCC,0.5);
-  background:rgba(#FA9494,0.15);
+  position: relative;
+  padding: 22px 40px;
+  border-bottom: 1px solid rgba(#CCC,0.5);
+  background: rgba(#FA9494,0.15);
 
   &.success {
     background: rgba(green,0.1);
   }
 
   a.close {
-    position:absolute;
-    top:24px;
-    right:40px;
-    width:13px;
-    height:13px;
+    position: absolute;
+    top: 24px;
+    right: 40px;
+    width: 13px;
+    height: 13px;
 
     @include common-sprite(close_grey);
     @include text-indent();

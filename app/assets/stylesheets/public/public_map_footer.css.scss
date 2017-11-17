@@ -12,11 +12,11 @@
   background: #F6F6F6;
   color: #999;
   font-family: $text-fonts;
-  font-size:13px;
+  font-size: 13px;
 
   a {
     color: #2483B2;
-    font-size:13px;
+    font-size: 13px;
     text-decoration: none;
 
     &:hover {
@@ -47,12 +47,12 @@
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
   div.cartodb-footer .inner .embed-left-col  {
     width: 50%;
-    float:left;
+    float: left;
   }
 
   div.cartodb-footer .inner .embed-right-col  {
     width: 50%;
     float: right;
-    text-align:right;
+    text-align: right;
   }
 }

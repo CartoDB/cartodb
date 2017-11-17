@@ -15,24 +15,24 @@
 
 
 div.sync_info {
-  display:block;
-  position:absolute;
+  display: block;
+  position: absolute;
   z-index:1;
   right:0;
   bottom:0;
   left:0;
-  height:auto;
-  padding:0 0 8px 43px;
+  height: auto;
+  padding: 0 0 8px 43px;
 
   &.failure {
-    border-top:1px solid rgba(black, .2);
+    border-top: 1px solid rgba(black, .2);
     background: image-url('layout/sync_error_bkg.png') repeat-x 0 0;
   }
 
   ul {
-    position:relative;
+    position: relative;
     top:0;
-    height:20px;
+    height: 20px;
     margin-top:0;
 
     @include display-flex();
@@ -40,22 +40,22 @@ div.sync_info {
     @include justify-content(flex-start, start);
 
     li {
-      position:relative;
+      position: relative;
       margin:0;
-      padding:0 7px 0 0;
+      padding: 0 7px 0 0;
 
       &.separator {
-        padding:0 7px 0 10px;
+        padding: 0 7px 0 10px;
 
         &:before {
-          content:'';
-          display:block;
-          position:absolute;
-          top:50%;
+          content: '';
+          display: block;
+          position: absolute;
+          top: 50%;
           left:0;
-          width:2px;
-          height:2px;
-          background:#365C82;
+          width: 2px;
+          height: 2px;
+          background: #365C82;
 
           @include border-radius(3px);
         }
@@ -64,25 +64,25 @@ div.sync_info {
   }
 
   div.circle {
-    position:relative;
-    width:10px;
-    height:10px;
+    position: relative;
+    width: 10px;
+    height: 10px;
     margin-top: 5px;
-    vertical-align:top;
+    vertical-align: top;
 
     @include inline-block();
 
     span.point {
-      position:absolute;
+      position: absolute;
       z-index:1;
       top:0;
       left:0;
-      width:8px;
-      height:8px;
+      width: 8px;
+      height: 8px;
       margin:0;
       padding:0;
-      border:1px solid rgba(black,.5);
-      text-shadow:none;
+      border: 1px solid rgba(black,.5);
+      text-shadow: none;
 
       @include border-radius(10px);
       @include background(linear-gradient(#C9FF26,#41B200));
@@ -91,8 +91,8 @@ div.sync_info {
     span.pulse {
       position: absolute;
       z-index:0;
-      top:-2px;
-      left:-2px;
+      top: -2px;
+      left: -2px;
       width: 8px;
       height: 8px;
       border: 3px solid #BBB;
@@ -106,32 +106,32 @@ div.sync_info {
     &.syncing {
       span.point {
         @include background(linear-gradient(#FFFF73,#D9D900));
-        border-color:rgba(black, .75);
+        border-color: rgba(black, .75);
       }
     }
 
     &.failure {
       span.point {
         @include background(linear-gradient(#FFFF4D,#D18400));
-        border-color:rgba(black, .75);
+        border-color: rgba(black, .75);
       }
     }
   }
 
   p {
-    color:white;
-    font-family:$text-fonts;
-    font-size:13px;
-    font-weight:300;
+    color: white;
+    font-family: $text-fonts;
+    font-size: 13px;
+    font-weight: 300;
     letter-spacing:0;
   }
 
   .light {color:rgba(white, .35)}
 
   a {
-    color:white;
-    font-size:13px;
-    text-decoration:underline;
+    color: white;
+    font-size: 13px;
+    text-decoration: underline;
   }
 
 }

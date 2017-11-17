@@ -32,24 +32,24 @@ body.public { /* Public table CSS */
   .pane_map { top: 0; overflow-x: hidden; }
 
   .panes .emptyTableContainer {
-    position:relative;
+    position: relative;
   }
 
   min-width: inherit;
 
   .dialog {
 
-    position:relative;
+    position: relative;
     z-index: 10000;
 
     .block.modal.api {
       .content {
-        position:relative;
+        position: relative;
         padding: 0;
       }
 
       .inner {
-        position:relative;
+        position: relative;
         padding: 28px 40px 0 40px;
       }
 
@@ -84,7 +84,7 @@ body.public { /* Public table CSS */
         margin: 0 0 5px 0;
         color: #666;
         font-family: $text-fonts;
-        font-size:11px;
+        font-size: 11px;
         text-transform: uppercase;
       }
 
@@ -95,7 +95,7 @@ body.public { /* Public table CSS */
         p {
           width: 357px;
           padding: 5px 0;
-          float:left;
+          float: left;
           color: #666;
           font-size: 13px;
           line-height: 120%;
@@ -106,7 +106,7 @@ body.public { /* Public table CSS */
   }
 
   div.separator.bottom {
-    display:none;
+    display: none;
     position: relative;
     width: 100%;
     border-top: 1px solid #E5E5E5;
@@ -131,7 +131,7 @@ body.public { /* Public table CSS */
         line-height: 1;
 
         &:after {
-          display:none;
+          display: none;
         }
       }
 
@@ -142,12 +142,12 @@ body.public { /* Public table CSS */
   }
 
   div.table table tfoot.page_loader {
-    display:none;
+    display: none;
   }
 
   .navigation {
 
-    position:relative;
+    position: relative;
     z-index: 100;
     width: 100%;
 
@@ -169,7 +169,7 @@ body.public { /* Public table CSS */
 
         display: inline-block;
         margin: 0 1px 0 0;
-        list-style:none;
+        list-style: none;
 
         &:last-child { margin-left: $sMargin-group; }
 
@@ -178,7 +178,7 @@ body.public { /* Public table CSS */
 
           }
 
-          display:block;
+          display: block;
           width: 36px;
           height: 36px;
           border: 1px solid #636D72;
@@ -194,7 +194,7 @@ body.public { /* Public table CSS */
         a.selected {
           border-color: #FFF;
           color: #FFF;
-          cursor:default;
+          cursor: default;
         }
 
       }
@@ -212,14 +212,14 @@ body.public { /* Public table CSS */
   }
 
   div.panes {
-    clear:both;
+    clear: both;
     overflow-x: auto;
-    overflow-y:hidden;
+    overflow-y: hidden;
 
     div.shadow { display:none; }
 
     div.table table thead tr th > div > div {
-      position:relative;
+      position: relative;
     }
   }
 

@@ -16,47 +16,6 @@ describe 'UserMigration' do
     ]
   end
 
-  it 'exports and reimports a user without changing his database' do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-
-    user = FactoryGirl.build(:valid_user).save
-    carto_user = Carto::User.find(user.id)
-    user_attributes = carto_user.attributes
-
-    table1 = create_table(user_id: user.id)
-    records.each { |row| table1.insert_row!(row) }
-
-    export = Carto::UserMigrationExport.create(
-      user: carto_user,
-      export_metadata: true
-    )
-    export.run_export
-
-    puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-
-    carto_user.client_applications.each(&:destroy)
-    table1.table_visualization.layers.each(&:destroy)
-    table1.destroy
-    expect { table1.records }.to raise_error
-
-    user.destroy
-
-    ::User.stubs(:find).with(username: user.username).returns(user)
-    user.expects(:database_host=).never
-    user.expects(:database_name=).never
-    
-    import = Carto::UserMigrationImport.create(
-      exported_file: export.exported_file,
-      database_host: user_attributes['database_host'],
-      org_import: false,
-      json_file: export.json_file,
-      import_metadata: true,
-      dry: true
-    )
-    import.run_import
-  end
-
   shared_examples_for 'migrating metadata' do |migrate_metadata|
     it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
@@ -318,7 +277,8 @@ describe 'UserMigration' do
       database_host: user_attributes['database_host'],
       org_import: false,
       json_file: export.json_file,
-      import_metadata: true
+      import_metadata: true,
+      dry: false
     )
     import.stubs(:assert_organization_does_not_exist)
     import.stubs(:assert_user_does_not_exist)
@@ -494,7 +454,8 @@ describe 'UserMigration' do
       database_host: @carto_organization.owner.attributes['database_host'],
       org_import: true,
       json_file: @export.json_file,
-      import_metadata: true
+      import_metadata: true,
+      dry: false
     )
 
     imp.stubs(:assert_organization_does_not_exist)
@@ -508,7 +469,8 @@ describe 'UserMigration' do
       database_host: @user_attributes['database_host'],
       org_import: false,
       json_file: @export.json_file,
-      import_metadata: true
+      import_metadata: true,
+      dry: false
     )
     imp.stubs(:assert_organization_does_not_exist)
     imp.stubs(:assert_user_does_not_exist)

@@ -18,19 +18,17 @@
       #map { flex: 1; margin: 10px; }
       #widgets { width: 300px; margin: 10px 10px 10px 0; }
       .widget { background: white; padding: 10px; margin-bottom: 10px; }
-      .widget h1 { font-size: 1.2em; }
-      .widget-formula .result { font-size: 2em; }
-      button { width: 100%; font-size: 13px; padding: 10px 20px 10px 20px; text-transform: uppercase; color: #FFF; border: none; margin-bottom: 5px; }
-      button#btn1 { background: #F15743; }
-      button#btn2 { background-color: #73C86B;}
+      button { width: 100%; padding: 10px; margin: 2px; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
+      button#btnError { background: #F15743; }
+      button#btnSuccess { background-color: #73C86B;}
     </style>
   </head>
   <body>
     <div id="container">
       <div id="map"></div>
       <div id="widgets">
-        <button id="btn1">Add layer with an invalid Source</button>
-        <button id="btn2">Add layer with a Valid Source</button>
+        <button id="btnError">Add layer with an invalid Source</button>
+        <button id="btnSuccess">Add layer with a Valid Source</button>
         <p id="status"></p>
       </div>
     </div>
@@ -64,15 +62,17 @@
       // 3.3. Adding the layers to the map
       client.getLeafletLayer().addTo(map);
 
-      // When click on btn 1 --> Add a layer with an invalid dataset.
-      document.querySelector('#btn1').addEventListener('click', () => {
+      // 4. Configure buttons behavior
+
+      document.querySelector('#btnError').addEventListener('click', () => {
+        // Add a layer with an invalid dataset
         addLayer(invalidDataset)
           .then(onSuccess)
           .catch(onError);
       });
 
-      // Add a layer with an valid dataset.
-      document.querySelector('#btn2').addEventListener('click', () => {
+      document.querySelector('#btnSuccess').addEventListener('click', () => {
+        // Add a layer with an valid dataset
         addLayer(validDataset)
           .then(onSuccess)
           .catch(onError);

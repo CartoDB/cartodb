@@ -81,7 +81,7 @@
         }`);
       var europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
 
-      // Spanish cities layer
+      // Europe cities layer
       var populatedPlacesSQL = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)'); // WHERE adm0name = .admin
       var populatedPlacesStyle = new carto.style.CartoCSS(`
        #layer {

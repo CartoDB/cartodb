@@ -33,6 +33,11 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  * @param {carto.operation} options.operation - The operation to apply to the data
  * @param {string} options.operationColumn - The column where the operation will be applied
  *
+ * @fires carto.dataview.Category.dataChanged
+ * @fires carto.dataview.Category.limitChanged
+ * @fires carto.dataview.Category.operationChanged
+ * @fires carto.dataview.Category.operationColumnChanged
+ * 
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -282,3 +287,43 @@ Category.prototype._createInternalModel = function (engine) {
 };
 
 module.exports = Category;
+
+/**
+ * Event triggered when the data in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the {@link carto.dataview.CategoryData}
+ * 
+ * @event carto.dataview.Category.dataChanged
+ * @type {carto.dataview.CategoryData}
+ * @api
+ */
+
+/**
+ * Event triggered when the limit in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the new limit.
+ * 
+ * @event carto.dataview.Category.limitChanged
+ * @type {number}
+ * @api
+ */
+
+/**
+ * Event triggered when the operation in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the new operation name.
+ * 
+ * @event carto.dataview.Category.operationChanged
+ * @type {string}
+ * @api
+ */
+
+/**
+ * Event triggered when the operationColumn in a cateogry-dataview changes.
+ *
+ * Contains a single argument with the new operationColumn name.
+ * 
+ * @event carto.dataview.Category.operationColumnChanged
+ * @type {string}
+ * @api
+ */ 

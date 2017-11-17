@@ -18,6 +18,12 @@ function hoursToSeconds (hours) {
  * @param {carto.dataview.timeAggregation} [options.aggregation=auto] - Granularity of time aggregation
  * @param {number} offset - Amount of hours to displace the aggregation from UTC
  * @param {boolean} useLocalTimezone - Indicates to use the user local timezone or not
+ * 
+ * @fires carto.dataview.TimeSeries.dataChanged
+ * @fires carto.dataview.TimeSeries.aggregationChanged
+ * @fires carto.dataview.TimeSeries.localTimezoneChanged
+ * @fires carto.dataview.TimeSeries.offsetChanged
+ * 
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -187,3 +193,43 @@ TimeSeries.prototype._createInternalModel = function (engine) {
 };
 
 module.exports = TimeSeries;
+
+/**
+ * Event triggered when the totals data in a time-series-dataview changes.
+ *
+ * Contains a single argument with the new data.
+ * 
+ * @event carto.dataview.TimeSeries.dataChanged
+ * @type {carto.dataview.TimeSeriesData}
+ * @api
+ */ 
+
+/**
+ * Event triggered when the aggregation in a TimeSeries-dataview changes.
+ *
+ * Contains a single argument with new aggregation.
+ * 
+ * @event carto.dataview.TimeSeries.aggregationChanged
+ * @type {string}
+ * @api
+ */ 
+
+/**
+ * Event triggered when the timezone in a TimeSeries-dataview changes.
+ *
+ * Contains a single boolean argument (???).
+ * 
+ * @event carto.dataview.TimeSeries.localTimezoneChanged
+ * @type {boolean}
+ * @api
+ */ 
+
+/**
+ * Event triggered when the offset in a TimeSeries-dataview changes.
+ *
+ * Contains a single string argument with the new offset
+ * 
+ * @event carto.dataview.TimeSeries.offsetChanged
+ * @type {string}
+ * @api
+ */ 

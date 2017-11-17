@@ -54,6 +54,7 @@
       }`;
     var styleLabels = `
       #layer::labels {
+        marker-fill: red;
         text-name: [name];
         text-face-name: 'DejaVu Sans Book';
         text-size: 15;
@@ -72,6 +73,7 @@
     // Europe cities layer
     var populatedPlacesSQL = new carto.source.SQL(query);
     var populatedPlacesStyle = new carto.style.CartoCSS(style);
+    var populatedPlacesStyleLabels = new carto.style.CartoCSS(styleLabels);
     var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle);
 
     // 3.2 Adding the layer to the client
@@ -84,17 +86,17 @@
 
     document.querySelector('#btnAll').addEventListener('click', () => {
       populatedPlacesSQL.setQuery(query);
-      populatedPlaces.setStyle(new carto.style.CartoCSS(style));
+      populatedPlaces.setStyle(populatedPlacesStyle);
     });
 
     document.querySelector('#btnMostPopulated').addEventListener('click', () => {
       populatedPlacesSQL.setQuery(query + ' ORDER BY pop_max DESC LIMIT 20');
-      populatedPlaces.setStyle(new carto.style.CartoCSS(styleLabels));
+      populatedPlaces.setStyle(populatedPlacesStyleLabels);
     });
 
     document.querySelector('#btnLessPopulated').addEventListener('click', () => {
-      populatedPlacesSQL.setQuery(query + ' ORDER BY pop_max ASC LIMIT 20');
-      populatedPlaces.setStyle(new carto.style.CartoCSS(styleLabels));
+      populatedPlacesSQL.setQuery(query + ' ORDER BY pop_max ASC LIMIT 20')
+      populatedPlaces.setStyle(populatedPlacesStyleLabels);
     });
     </script>
   </body>

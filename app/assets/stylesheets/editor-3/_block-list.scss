@@ -111,7 +111,7 @@
 .BlockList-item--basemap {
   padding: 10px $baseSize * 2;
 
-  & .BlockList-inner {
+  .BlockList-inner {
     display: flex;
     align-items: center;
   }

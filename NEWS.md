@@ -91,6 +91,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizatios and redirection for private endpoints (#13030)
 
 ### Bug fixes / enhancements
+* Change Basemap layer style (#13091)
 * Rename point/polygon count to feature count (#13066)
 * Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix for torque category legends (CartoDB/support#1120)

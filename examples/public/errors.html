@@ -3,114 +3,162 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Basic Carto.js example</title>
+  <title>CARTO.js Guide</title>
+
+  <!-- Include Leaflet 1.2.0 Library -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 
+  <!-- Fonts -->
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
   <!-- Include cartodb.js Library -->
   <script src="../../dist/public/carto.uncompressed.js"></script>
-  <!-- common styles for the examples -->
   <style>
-    html, body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      box-sizing: border-box;
+      height: 100%;
+    }
+
+    body {
+      background: #f2f6f9;
+      height: 100%;
+      font-family: "Open sans", Helvetica, Arial, sans-serif;
+    }
+
+    #container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map {
+      flex: 1;
+      margin: 10px;
+    }
+
+    #widgets {
+      width: 300px;
+      margin: 10px 10px 10px 0;
+    }
+
+    .widget {
+      background: white;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .widget h1 {
+      font-size: 1.2em;
+    }
+
+    .widget-formula .result {
+      font-size: 2em;
+    }
+
+    button {
+      width: 100%;
+      font-size: 13px;
+      padding: 10px 20px 10px 20px;
+      text-transform: uppercase;
+      color: #FFF;
+      border: none;
+      margin-bottom: 5px;
+    }
+
+    button#btn1 {
+      background: #F15743;
+    }
+
+    button#btn2 {
+      background-color: #73C86B;
+    }
   </style>
-  <!-- Syntax highlighting library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/prism.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/themes/prism.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/components/prism-javascript.js"></script>
-
-
 </head>
 
 <body>
-  <div id="map"></div>
-  <aside>
-    <h1>Error handling</h1>
-    <p>This example shows how to handle map related erros.
-      <br> Click the button to add a layer poiting to a inexistent data source and generate a reload-error.
-    </p>
-    <button id="addLayerBtn">Add malformed layer</button>
-    <hr>
-    <p>The following code shows how to handle a .addLayer error.</p>
-    <pre><code class="language-javascript">
-// Create the Client
-var client = new carto.Client({
-  apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-  username: 'cartojs-test'
-});
-
-// Listen to all client errors
-client.on(carto.events.ERROR, function (clientError) {
-  console.error(clientError.message);
-});
-
-// Create a source pointing to a inexistent dataset.
-var populatedPlacesDataset = new carto.source.SQL('SELECT * FROM inexistent_relation');
-
-// Create a style
-var populatedPlacesStyle = new carto.style.CartoCSS(`
-  #layer {
-    marker-width: 10;
-    marker-fill: red;
-  }`);
-
-// Create the layer
-var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
-
-// Add the layer to the map
-client.getLeafletLayer().addTo(map);
-
-// When clicking in the button add the populatedPlacesLayer
-document.querySelector('#addLayerBtn').addEventListener('click', () => {
-  client.addLayer(populatedPlaces)
-    .catch(clientError => { alert(clientError.message) });
-});
-    </code></pre>
-  </aside>
+  <div id="container">
+    <div id="map"></div>
+    <div id="widgets">
+      <button id="btn1">Set Invalid Source</button>
+      <button id="btn2">Set Valid Source</button>
+      <p id="status"></p>
+    </div>
+  </div>
   <script>
-    // Create the Leaflet Map
-    var map = L.map('map').setView([42.431234, -8.643616], 5);
+    // 1. Setting up the Leaflet Map
+    // 1.1 Creating the Leaflet Map
+    var map = L.map('map').setView([58.722598828043395, 18.544921875000004], 4);
 
-    // Add Voyager Basemap
+    // 1.2 Adding basemap and labels layers
+    // Adding Voyager Basemap
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
       maxZoom: 18,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
     }).addTo(map);
 
-    // Create the Client
+    // 2 Defining a carto.Client
     var client = new carto.Client({
       apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
       username: 'cartojs-test'
     });
 
-    // Listen to all client errors
-    client.on(carto.events.ERROR, function (clientError) {
-      console.error(clientError.message);
-    });
+    // 3.0 Define map sources
+    // 3.0.1 Valid source with europe
+    var validDataset = new carto.source.Dataset('ne_adm0_europe');
+    // 3.0.1 This dataset does not exist in the server!
+    var invalidDataset = new carto.source.Dataset('invalid_dataset');
 
-    // Create a source pointing to a inexistent dataset.
-    var populatedPlacesDataset = new carto.source.SQL('SELECT * FROM inexistent_relation');
+    // Create a style and add the valid layer to the client
+    var europeanCountriesStyle = new carto.style.CartoCSS(`#layer { polygon-fill: #0000FF; }`);
 
-    // Create a style
-    var populatedPlacesStyle = new carto.style.CartoCSS(`
-      #layer {
-        marker-width: 10;
-        marker-fill: red;
-      }`);
-
-    // Create the layer
-    var populatedPlaces = new carto.layer.Layer(populatedPlacesDataset, populatedPlacesStyle);
-
-    // Add the layer to the map
+    // 3.3. Adding the layers to the map
     client.getLeafletLayer().addTo(map);
 
-    // When clicking in the button add the populatedPlacesLayer
-    document.querySelector('#addLayerBtn').addEventListener('click', () => {
-      client.addLayer(populatedPlaces)
-        .catch(clientError => { alert(clientError.message) });
+    // When click on btn 1 --> Add a layer with an invalid dataset.
+    document.querySelector('#btn1').addEventListener('click', () => {
+      addLayer(invalidDataset)
+        .then(onSuccess)
+        .catch(onError);
     });
+
+    // Add a layer with an valid dataset.
+    document.querySelector('#btn2').addEventListener('click', () => {
+      addLayer(validDataset)
+        .then(onSuccess)
+        .catch(onError);
+    });
+
+    /**
+     * Helper function used to add a layer to the map specifying the dataset.
+     * Clear the map and add the new layer.
+     */
+    function addLayer(dataset) {
+      var newLayer = new carto.layer.Layer(dataset, europeanCountriesStyle);
+      // Clean the client first, once the client is empty add a new layer.
+      return client.removeLayers(client.getLayers())
+        .then(() => client.addLayer(newLayer));
+    }
+
+    /**
+     * Helper function executed when the layer is added succesffuly
+     */
+    function onSuccess() {
+      document.querySelector('#status').innerText = 'Map Loaded';
+      document.querySelector('#status').style.color = 'green';
+    }
+
+    /**
+     * Helper function executed when there are erros while adding a new layer.
+     */
+    function onError(cartoError) {
+      document.querySelector('#status').innerText = cartoError.message;
+      document.querySelector('#status').style.color = 'red';
+    }
   </script>
 </body>
 

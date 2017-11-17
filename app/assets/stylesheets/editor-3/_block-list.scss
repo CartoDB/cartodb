@@ -108,6 +108,22 @@
   width: 100%;
 }
 
+.BlockList-item--basemap {
+  padding: 10px $baseSize * 2;
+
+  & .BlockList-inner {
+    display: flex;
+    align-items: center;
+  }
+
+  .BlockList-media {
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 2px;
+  }
+}
+
 
 .HorizontalBlockList {
   @include display-flex();

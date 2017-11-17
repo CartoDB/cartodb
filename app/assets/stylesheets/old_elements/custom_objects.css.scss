@@ -492,7 +492,7 @@
   }
 
   &:hover, &:focus {
-    span.radio{
+    span.radio {
       border-color:#333;
 
       &:before {
@@ -505,7 +505,7 @@
     border-color:#333;
     color:#333;
 
-    span.radio{
+    span.radio {
       border-color:#333;
       &:before { display:block; }
     }
@@ -520,7 +520,7 @@
     color:#397DBA;
     text-decoration:none;
 
-    span.radio{
+    span.radio {
       border-color:#397DBA;
       &:before {display:none;}
     }
@@ -579,7 +579,7 @@
   }
 
   &.enabled {
-    span.check{
+    span.check {
       &:before {
         display:block;
       }
@@ -590,7 +590,7 @@
 
     &.light:hover { color: #999; }
 
-    span.check{
+    span.check {
       &:before {
         display:none;
       }

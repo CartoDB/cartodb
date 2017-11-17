@@ -8,7 +8,7 @@
 @import "../variables/sizes";
 
 
-@mixin supElement($size, $fs){
+@mixin supElement($size, $fs) {
   display: inline-block;
   width: $size;
   height: $size;

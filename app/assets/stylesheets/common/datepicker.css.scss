@@ -247,14 +247,14 @@ $sDates-defaultWidth: 434px;
 }
 
 .datepickerYears a,
-.datepickerMonths a{
+.datepickerMonths a {
   width: 44px;
   height: 36px;
   line-height: 36px;
   text-align: center;
 }
 
-tbody.datepickerDays td.datepickerSelected{
+tbody.datepickerDays td.datepickerSelected {
   background: $cHighlight-main;
 }
 
@@ -263,7 +263,7 @@ tbody.datepickerDays td.datepickerNotInMonth.datepickerSelected {
 }
 
 tbody.datepickerYears td.datepickerSelected,
-tbody.datepickerMonths td.datepickerSelected{
+tbody.datepickerMonths td.datepickerSelected {
   background: #17384D;
 }
 
@@ -314,7 +314,7 @@ table.datepickerViewYears tr.datepickerDoW {
 }
 
 td.datepickerDisabled a,
-td.datepickerDisabled.datepickerNotInMonth a{
+td.datepickerDisabled.datepickerNotInMonth a {
   color: #333;
 
   @include opacity(.5);

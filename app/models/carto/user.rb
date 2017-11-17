@@ -27,6 +27,9 @@ class Carto::User < ActiveRecord::Base
   OBS_GENERAL_BLOCK_SIZE = 1000
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
+  STATE_ACTIVE = 'active'.freeze
+  STATE_LOCKED = 'locked'.freeze
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -589,6 +592,14 @@ class Carto::User < ActiveRecord::Base
   # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
+  end
+
+  def active?
+    state == STATE_ACTIVE
+  end
+
+  def locked?
+    state == STATE_LOCKED
   end
 
   private

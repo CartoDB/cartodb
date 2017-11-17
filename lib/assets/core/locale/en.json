@@ -2118,7 +2118,7 @@
         "top-cat": "% in top 10 cat.",
         "trues": "% true",
         "null": "% null",
-        "number-of": "%{geometry} count",
+        "feature-count": "feature count",
         "geometry-fallback": "features"
       },
       "data-toggle": {

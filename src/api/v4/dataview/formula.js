@@ -47,6 +47,7 @@ Formula.prototype = Object.create(Base.prototype);
  * Set the dataview operation.
  *
  * @param  {carto.operation} operation
+ * @fires carto.dataview.Formula.operationChanged
  * @return {carto.dataview.Formula} this
  * @api
  */

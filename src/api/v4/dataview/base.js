@@ -99,6 +99,7 @@ Base.prototype.isEnabled = function () {
  * Set the dataview column.
  *
  * @param  {string} column
+ * @fires carto.dataview.Base.columnChanged
  * @return {carto.dataview.Base} this
  * @api
  */

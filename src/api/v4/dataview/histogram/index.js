@@ -71,6 +71,7 @@ Histogram.prototype.getData = function () {
  * Set number of bins
  *
  * @param {number} bins
+ * @fires carto.dataview.Histogram.dataChanged
  * @return {carto.dataview.Histogram} this
  * @api
  */

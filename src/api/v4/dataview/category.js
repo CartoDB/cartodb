@@ -79,6 +79,7 @@ Category.prototype = Object.create(Base.prototype);
  * Set the categories limit.
  *
  * @param  {number} limit
+ * @fires carto.dataview.Category.limitChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -105,6 +106,7 @@ Category.prototype.getLimit = function () {
  * Set the dataview operation.
  *
  * @param  {carto.operation} operation
+ * @fires carto.dataview.Category.operationChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -131,6 +133,7 @@ Category.prototype.getOperation = function () {
  * Set the dataview operationColumn.
  *
  * @param  {string} operationColumn
+ * @fires carto.dataview.Category.operationColumnChanged
  * @return {carto.dataview.Category} this
  * @api
  */

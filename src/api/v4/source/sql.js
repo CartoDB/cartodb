@@ -27,6 +27,7 @@ SQL.prototype = Object.create(Base.prototype);
  * Store the query internally and if in the internal model when exists.
  *
  * @param {string} query - The sql query that will be the source of the data
+ * @fires carto.source.SQL.queryChangedEvent
  * @api
  */
 SQL.prototype.setQuery = function (query) {

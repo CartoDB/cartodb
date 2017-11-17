@@ -52,6 +52,7 @@ Layer.prototype = Object.create(Base.prototype);
  * Set a new style for this layer.
  *
  * @param {carto.style.CartoCSS} New style
+ * @fires carto.layer.Layer.styleChanged
  * @return {carto.layer.Layer} this
  *
  * @api
@@ -87,6 +88,7 @@ Layer.prototype.getStyle = function () {
  * add a source belonging to a different client.
  *
  * @param {carto.source.Dataset|carto.source.SQL} source New source
+ * @fires carto.layer.Layer.sourceChanged
  * @return {carto.layer.Layer} this
  * @api
  */

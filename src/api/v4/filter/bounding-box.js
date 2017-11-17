@@ -23,6 +23,7 @@ BoundingBox.prototype = Object.create(Base.prototype);
  * Set the bounds.
  *
  * @param  {carto.filter.Bounds} bounds
+ * @fires carto.filter.BoundingBox.boundsChanged
  * @return {carto.filter.BoundingBox} this
  * @api
  */
@@ -36,6 +37,7 @@ BoundingBox.prototype.setBounds = function (bounds) {
 /**
  * Reset the bounds.
  *
+ * @fires carto.filter.BoundingBox.boundsChanged
  * @return {carto.filter.BoundingBox} this
  * @api
  */

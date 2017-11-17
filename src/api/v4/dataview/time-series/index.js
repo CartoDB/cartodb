@@ -73,6 +73,7 @@ TimeSeries.prototype.getData = function () {
  * Set time aggregation.
  *
  * @param {carto.dataview.timeAggregation} aggregation
+ * @fires carto.dataview.TimeSeries.aggregationChanged
  * @return {carto.dataview.TimeSeries} this
  * @api
  */
@@ -96,6 +97,7 @@ TimeSeries.prototype.getAggregation = function () {
  * Set time offset.
  *
  * @param {number} offset
+ * @fires carto.dataview.TimeSeries.offsetChanged
  * @return {carto.dataview.TimeSeries} this
  * @api
  */

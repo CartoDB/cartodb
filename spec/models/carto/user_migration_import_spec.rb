@@ -1,6 +1,21 @@
 require_relative '../../spec_helper_min'
 
 describe Carto::UserMigrationImport do
+  it '#import throws an exception if import_metadata and dry are passed' do
+    import = Carto::UserMigrationImport.create(
+      exported_file: :irrelevant_file,
+      json_file: "irrelevant_json_file",
+      database_host: :database_host,
+      user_id: :irrelevant_user_id,
+      organization_id: :irrelevant_organization_id,
+      import_metadata: true,
+      dry: true
+    )
+    import.run_import.should eq false
+    import.state.should eq 'failure'
+    import.log.entries.should match(/Incompatible options: update_metadata and dry/)
+  end
+
   describe '#import' do
     before :each do
       @import = Carto::UserMigrationImport.create(
@@ -15,7 +30,7 @@ describe Carto::UserMigrationImport do
       setup_mocks
     end
 
-    it 'should update database host for imported user' do
+    it 'updates database host for imported user' do
       should_import_metadata_for_user(@user_mock)
       @import.org_import = false
       should_update_database_host_for_users([@user_mock])
@@ -23,7 +38,7 @@ describe Carto::UserMigrationImport do
       @import.run_import
     end
 
-    it 'should update database host for all users in org' do
+    it 'updates database host for all users in org' do
       users = create_and_add_users_to_organizaton
       should_import_metadata_for_organization(@organization_mock)
       @import.org_import = true

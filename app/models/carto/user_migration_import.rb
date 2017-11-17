@@ -28,6 +28,7 @@ module Carto
     validate :valid_org_import
 
     def run_import
+      raise 'Incompatible options: update_metadata and dry' if import_metadata && dry
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -176,10 +177,6 @@ module Carto
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
       save
-    end
-
-    def import_metadata?
-      super && !dry
     end
   end
 end

@@ -136,7 +136,7 @@ module.exports = Model.extend({
     }
 
     if (this.get('column_type') === 'date') {
-      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, this._getCurrentOffset(), 'totals');
+      parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, 'totals');
       numberOfBins = parsedData.data.length;
     } else {
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
@@ -147,12 +147,16 @@ module.exports = Model.extend({
       parsedData.end = parsedData.data[parsedData.data.length - 1].end;
 
       var limits = helper.calculateLimits(parsedData.data);
-      this._saveStartEnd(this.get('column_type'), parsedData.aggregation, parsedData.start, parsedData.end, limits, data.offset);
+      this._saveStartEnd(this.get('column_type'), parsedData.aggregation, parsedData.start, parsedData.end, limits);
     }
 
     parsedData.bins = numberOfBins;
 
     return parsedData;
+  },
+
+  refresh: function () {
+    this.fetch();
   },
 
   _getCurrentOffset: function () {
@@ -186,7 +190,7 @@ module.exports = Model.extend({
     return result;
   },
 
-  _saveStartEnd: function (columnType, aggregation, start, end, limits, offset) {
+  _saveStartEnd: function (columnType, aggregation, start, end, limits) {
     if (this._startEndCache.saved) {
       return;
     }

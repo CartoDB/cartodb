@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var L = require('leaflet');
+var C = require('../../constants');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var wax = require('wax.cartodb.js');
@@ -46,14 +47,18 @@ var findContainerPoint = function (map, o) {
 var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
-  CartoDBLayerGroupViewBase.call(this, layerModel, leafletMap);
+  CartoDBLayerGroupViewBase.apply(this, arguments);
 
-  this.leafletLayer.on('load', function (e) {
+  this.leafletLayer.on('load', function () {
     self.trigger('load');
   });
 
-  this.leafletLayer.on('loading', function (e) {
+  this.leafletLayer.on('loading', function () {
     self.trigger('loading');
+  });
+
+  this.leafletLayer.on('tileerror', function (layer) {
+    self.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
   });
 };
 

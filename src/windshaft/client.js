@@ -44,14 +44,14 @@ var WindshaftClient = function (settings) {
 };
 
 WindshaftClient.prototype.instantiateMap = function (request) {
+  // TODO: update options, use promises or explicit callbacks function (error, params).
   if (this._requestTracker.canRequestBePerformed(request)) {
     this._performRequest(request, {
       success: function (response) {
+        this._requestTracker.track(request, response);
         if (response.errors) {
-          this._requestTracker.track(request, response);
           request.options.error && request.options.error(response);
         } else {
-          this._requestTracker.track(request, response);
           request.options.success && request.options.success(response);
         }
       }.bind(this),
@@ -68,7 +68,7 @@ WindshaftClient.prototype.instantiateMap = function (request) {
     });
   } else {
     log.error('Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + '):', request.payload, request.params);
-    request.options.error && request.options.error();
+    request.options.error && request.options.error({});
   }
 };
 

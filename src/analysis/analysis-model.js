@@ -1,5 +1,12 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var Model = require('../core/model');
+var util = require('../core/util');
+
+var REQUIRED_OPTS = [
+  'camshaftReference',
+  'engine'
+];
 
 var STATUS = {
   PENDING: 'pending',
@@ -13,17 +20,16 @@ var AnalysisModel = Model.extend({
 
   initialize: function (attrs, opts) {
     opts = opts || {};
-    if (!opts.camshaftReference) {
-      throw new Error('chamshaftReference is required');
-    }
-
-    if (!opts.vis) {
-      throw new Error('vis is required');
-    }
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'AnalysisModel');
 
     this._camshaftReference = opts.camshaftReference;
-    this._vis = opts.vis;
+    this._engine = opts.engine;
+
     this._initBinds();
+
+    // A hash that tracks which models (layers / dataviews) have
+    // this analysis model as their "source"
+    this._referencedBy = {};
   },
 
   url: function () {
@@ -61,18 +67,31 @@ var AnalysisModel = Model.extend({
     this.bind('change:type', function () {
       this.unbind(null, null, this);
       this._initBinds();
-      this._reloadVis();
+      this._reload();
     }, this);
 
     _.each(this.getParamNames(), function (paramName) {
-      this.bind('change:' + paramName, this._reloadVis, this);
+      this.bind('change:' + paramName, this._reload, this);
+    }, this);
+
+    this.bind('change:status', function () {
+      // If the status changed from any other status to "ready"
+      // and this analysis is the "source" of any layer or dataview,
+      // vis has to be reloaded.
+      if (this._hadStatus() && this.isReady() && this.isSourceOfAnyModel()) {
+        this._reload();
+      }
     }, this);
   },
 
-  _reloadVis: function (opts) {
-    opts = opts || {};
-    opts.error = this._onMapReloadError.bind(this);
-    this._vis.reload(opts);
+  _hadStatus: function () {
+    return this.previous('status');
+  },
+
+  _reload: function () {
+    this._engine.reload({
+      error: this._onMapReloadError.bind(this)
+    });
   },
 
   _onMapReloadError: function () {
@@ -106,20 +125,30 @@ var AnalysisModel = Model.extend({
   },
 
   isDone: function () {
-    return this._anyStatus(STATUS.READY, STATUS.FAILED);
-  },
-
-  isFailed: function () {
-    return this._anyStatus(STATUS.FAILED);
+    return this._hasStatus([ STATUS.READY, STATUS.FAILED ]);
   },
 
   isLoading: function () {
-    return this._anyStatus(STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING);
+    return this._hasStatus([ STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING ]);
   },
 
-  _anyStatus: function () {
-    var list = Array.prototype.slice.call(arguments, 0);
-    return list.indexOf(this.get('status')) !== -1;
+  isReady: function () {
+    return this._hasStatus(STATUS.READY);
+  },
+
+  isFailed: function () {
+    return this._hasStatus(STATUS.FAILED);
+  },
+
+  _hasStatus: function (statuses) {
+    if (!_.isArray(statuses)) {
+      statuses = [ statuses ];
+    }
+    return _.contains(statuses, this._getStatus());
+  },
+
+  _getStatus: function () {
+    return this.get('status');
   },
 
   toJSON: function () {
@@ -143,6 +172,31 @@ var AnalysisModel = Model.extend({
   },
 
   /**
+   * Return an Array with the complete node list for this analysis.
+   */
+  getNodes: function () {
+    // Add current node to the list
+    var nodes = [this];
+    // Recursively iterate through the inputs ( source nodes have no inputs )
+    if (this.get('type') !== 'source') {
+      _.forEach(this._getSourceNames(), function (sourceName) {
+        var source = this.get(sourceName);
+        if (source) {
+          nodes = nodes.concat(source.getNodes());
+        }
+      }, this);
+    }
+    return nodes;
+  },
+
+  /**
+   * Return a Collection with the complete node list for this analysis.
+   */
+  getNodesCollection: function () {
+    return new Backbone.Collection(this.getNodes());
+  },
+
+  /**
    * Compare two analysisModels.
    */
   equals: function (analysisModel) {
@@ -151,6 +205,22 @@ var AnalysisModel = Model.extend({
     }
     // Since all analysis are created using the analysisFactory different ids ensure different nodes.
     return this.get('id') === analysisModel.get('id');
+  },
+
+  markAsSourceOf: function (model) {
+    this._referencedBy[model.cid] = true;
+  },
+
+  isSourceOfAnyModel: function () {
+    return Object.keys(this._referencedBy).length > 0;
+  },
+
+  isSourceOf: function (model) {
+    return !!this._referencedBy[model.cid];
+  },
+
+  unmarkAsSourceOf: function (model) {
+    delete this._referencedBy[model.cid];
   }
 }, {
   STATUS: STATUS

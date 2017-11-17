@@ -8,7 +8,7 @@ var StaticLegendModelBase = LegendModelBase.extend({
     });
   },
 
-  _onVisReloading: function () {},
+  _onEngineReloadStarted: function () {},
 
   isAvailable: function () { return true; }
 });

@@ -2,12 +2,19 @@ var _ = require('underscore');
 var Model = require('../core/model');
 var BackboneAbortSync = require('../util/backbone-abort-sync');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
+var AnalysisModel = require('../analysis/analysis-model');
+var util = require('../core/util');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
-var UNFETCHED_STATUS = 'unfeteched';
+var UNFETCHED_STATUS = 'unfetched';
 var FETCHING_STATUS = 'fetching';
 var FETCHED_STATUS = 'fetched';
 var FETCH_ERROR_STATUS = 'error';
+
+var REQUIRED_OPTS = [
+  'map',
+  'engine'
+];
 
 /**
  * Default dataview model
@@ -71,20 +78,18 @@ module.exports = Model.extend({
   initialize: function (attrs, opts) {
     attrs = attrs || {};
     opts = opts || {};
+    util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
 
-    if (!opts.map) throw new Error('map is required');
-    if (!opts.vis) throw new Error('vis is required');
-    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
+    this._map = opts.map;
+    this._engine = opts.engine;
+
     if (!attrs.source) throw new Error('source is a required attr');
+    this._checkSourceAttribute(this.getSource());
+    this.getSource().markAsSourceOf(this);
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
     }
-
-    this.layer = opts.layer;
-    this._map = opts.map;
-    this._vis = opts.vis;
-    this._analysisCollection = opts.analysisCollection;
 
     this.sync = BackboneAbortSync.bind(this);
 
@@ -95,14 +100,9 @@ module.exports = Model.extend({
     }
 
     this._initBinds();
-    this._setupAnalysisStatusEvents();
   },
 
   _initBinds: function () {
-    this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
-    this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
-    this.on('change:source', this._setupAnalysisStatusEvents, this);
-
     this.listenToOnce(this, 'change:url', function () {
       if (this.syncsOnBoundingBoxChanges() && !this._getMapViewBounds()) {
         // wait until map gets bounds from view
@@ -117,6 +117,8 @@ module.exports = Model.extend({
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
+
+    this.getSource().on('change:status', this._onAnalysisStatusChange, this);
   },
 
   _onChangeBinds: function () {
@@ -159,19 +161,6 @@ module.exports = Model.extend({
     });
   },
 
-  _setupAnalysisStatusEvents: function () {
-    this._removeExistingAnalysisBindings();
-    this._analysis = this.getSource();
-    if (this._analysis) {
-      this._analysis.on('change:status', this._onAnalysisStatusChange, this);
-    }
-  },
-
-  _removeExistingAnalysisBindings: function () {
-    if (!this._analysis) return;
-    this._analysis.off('change:status', this._onAnalysisStatusChange, this);
-  },
-
   _onAnalysisStatusChange: function (analysis, status) {
     if (analysis.isLoading()) {
       this._triggerLoading();
@@ -193,35 +182,21 @@ module.exports = Model.extend({
    * @protected
    */
   _onFilterChanged: function (filter) {
-    this._reloadVis();
+    this._reload({
+      sourceId: this.getSourceId()
+    });
   },
 
-  _reloadVis: function (opts) {
-    opts = opts || {};
-    this._vis.reload(
-      _.extend(
-        opts, {
-          sourceId: this.getSourceId()
-        }
-      )
-    );
-  },
-
-  _reloadVisAndForceFetch: function () {
-    this._reloadVis({
+  _reloadAndForceFetch: function () {
+    this._reload({
+      sourceId: this.getSourceId(),
       forceFetch: true
     });
   },
 
-  /**
-   * Enable/disable the dataview depending on the layer visibility.
-   * @private
-   * @param  {LayerModel} model the layer model which visible property has changed.
-   * @param  {Boolean} value New value for visible.
-   * @returns {void}
-   */
-  _onLayerVisibilityChanged: function (model, value) {
-    this.set({enabled: value});
+  _reload: function (opts) {
+    opts = opts || {};
+    this._engine.reload(opts);
   },
 
   _shouldFetchOnURLChange: function (options) {
@@ -235,7 +210,7 @@ module.exports = Model.extend({
 
     return this.isEnabled() &&
       this.syncsOnDataChanges() &&
-        this._sourceAffectsMyOwnSource(sourceId);
+      this._sourceAffectsMyOwnSource(sourceId);
   },
 
   _sourceAffectsMyOwnSource: function (sourceId) {
@@ -256,7 +231,11 @@ module.exports = Model.extend({
   },
 
   update: function (attrs) {
+    if (_.has(attrs, 'source')) {
+      throw new Error('Source of dataviews cannot be updated');
+    }
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
+
     this.set(attrs);
   },
 
@@ -284,10 +263,10 @@ module.exports = Model.extend({
         successCallback && successCallback(arguments);
         this.trigger('loaded', this);
       }.bind(this),
-      error: function (mdl, err) {
-        this.set('status', FETCH_ERROR_STATUS);
-        if (!err || (err && err.statusText !== 'abort')) {
-          this._triggerError(err);
+      error: function (_model, response) {
+        if (!response || (response && response.statusText !== 'abort')) {
+          this.set('status', FETCH_ERROR_STATUS);
+          this._triggerError(response);
         }
       }.bind(this)
     }));
@@ -298,21 +277,16 @@ module.exports = Model.extend({
   },
 
   getSourceType: function () {
-    var sourceAnalysis = this.getSource();
-    return sourceAnalysis && sourceAnalysis.get('type');
-  },
-
-  getLayerName: function () {
-    return this.layer && this.layer.get('layer_name');
-  },
-
-  getSource: function () {
-    var sourceId = this.getSourceId();
-    return sourceId && this._analysisCollection.get(sourceId);
+    return this.getSource().get('type');
   },
 
   getSourceId: function () {
-    return this.has('source') && this.get('source').id;
+    var source = this.getSource();
+    return source && source.id;
+  },
+
+  getSource: function () {
+    return this.get('source');
   },
 
   isFiltered: function () {
@@ -325,8 +299,13 @@ module.exports = Model.extend({
 
   remove: function () {
     this._removeExistingAnalysisBindings();
+    this.getSource().unmarkAsSourceOf(this);
     this.trigger('destroy', this);
     this.stopListening();
+  },
+
+  _removeExistingAnalysisBindings: function () {
+    this.getSource().off('change:status', this._onAnalysisStatusChange, this);
   },
 
   isFetched: function () {
@@ -341,16 +320,26 @@ module.exports = Model.extend({
     return this.get('enabled');
   },
 
+  setUnavailable: function () {
+    return this.set('status', FETCH_ERROR_STATUS);
+  },
+
   syncsOnDataChanges: function () {
     return this.get('sync_on_data_change');
   },
 
   syncsOnBoundingBoxChanges: function () {
     return this.get('sync_on_bbox_change');
+  },
+
+  _checkSourceAttribute: function (source) {
+    if (!(source instanceof AnalysisModel)) {
+      throw new Error('Source must be an instance of AnalysisModel');
+    }
   }
 },
 
-  // Class props
+// Class props
 {
   ATTRS_NAMES: [
     'id',
@@ -359,5 +348,4 @@ module.exports = Model.extend({
     'enabled',
     'source'
   ]
-}
-);
+});

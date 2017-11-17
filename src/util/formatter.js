@@ -1,5 +1,6 @@
 var _ = require('underscore');
-var d3 = require('d3');
+var d3TimeFormat = require('d3-time-format');
+var d3Format = require('d3-format');
 
 var format = {};
 
@@ -22,7 +23,7 @@ format.formatNumber = function (value, unit) {
 
   value = converted;
 
-  var format = d3.format('.2s');
+  var format = d3Format.format('.2s');
 
   var p = 0;
   var absV = Math.abs(value);
@@ -55,7 +56,7 @@ format.formatNumber = function (value, unit) {
 };
 
 format.formatDate = function (value) {
-  return d3.time.format('%Y-%m-%d')(value);
+  return d3TimeFormat.timeFormat('%Y-%m-%d')(value);
 };
 
 format.formatValue = function (value) {

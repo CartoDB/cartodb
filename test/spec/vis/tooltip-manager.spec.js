@@ -1,11 +1,11 @@
 var Backbone = require('backbone');
 var Map = require('../../../src/geo/map');
-var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
 var TooltipManager = require('../../../src/vis/tooltip-manager');
+var MockFactory = require('../../helpers/mockFactory');
 
 var simulateFeatureOverEvent = function (layerView, data) {
   layerView.trigger('featureOver', {
@@ -25,6 +25,8 @@ var simulateFeatureOutEvent = function (layerView, data) {
 };
 
 describe('src/vis/tooltip-manager.js', function () {
+  var engineMock;
+
   beforeEach(function () {
     this.map = new Map(null, { layersFactory: {} });
     this.layerView = new Backbone.View({
@@ -33,14 +35,14 @@ describe('src/vis/tooltip-manager.js', function () {
       })
     });
 
-    this.vis = new VisModel();
-    spyOn(this.vis, 'reload');
+    engineMock = MockFactory.createEngine();
+    spyOn(engineMock, 'reload');
 
     this.tooltipModel = new TooltipModel();
     this.infowindowModel = new InfowindowModel();
 
     this.tooltipManager = new TooltipManager({ // eslint-disable-line
-      visModel: this.vis,
+      engine: engineMock,
       mapModel: this.map,
       tooltipModel: this.tooltipModel,
       infowindowModel: this.infowindowModel
@@ -59,7 +61,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
     var layer2 = new CartoDBLayer({
       tooltip: {
         template: 'template2',
@@ -71,7 +73,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names2'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 
@@ -122,7 +124,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 
@@ -166,7 +168,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 
@@ -198,7 +200,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 
@@ -228,7 +230,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
     var layer2 = new CartoDBLayer({
       tooltip: {
         template: 'template2',
@@ -240,7 +242,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 
@@ -273,7 +275,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 
@@ -299,7 +301,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 
@@ -314,7 +316,7 @@ describe('src/vis/tooltip-manager.js', function () {
   });
 
   it('should NOT show the tooltipView if the layerModel doesn\'t have tooltip data', function () {
-    var layer1 = new CartoDBLayer({}, { vis: this.vis });
+    var layer1 = new CartoDBLayer({}, { engine: engineMock });
     var layer2 = new CartoDBLayer({
       tooltip: {
         template: 'template2',
@@ -326,7 +328,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names2'
       }
-    }, { vis: this.vis });
+    }, { engine: engineMock });
 
     this.tooltipManager.start(this.layerView);
 

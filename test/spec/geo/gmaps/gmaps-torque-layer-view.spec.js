@@ -1,37 +1,39 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
-var VisModel = require('../../../../src/vis/vis');
 var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
+var MockFactory = require('../../../helpers/mockFactory');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 var torque = require('torque.js');
 
 describe('geo/gmaps/gmaps-torque-layer-view', function () {
   beforeEach(function () {
     var container = $('<div>').css('height', '200px');
-    this.vis = new VisModel();
-    var map = new Map(null, {
+    var engineMock = MockFactory.createEngine();
+    this.map = new Map(null, {
       layersFactory: {}
     });
-    var mapView = new GoogleMapsMapView({
+    spyOn(this.map, 'trigger');
+    this.view = new GoogleMapsMapView({
       el: container,
-      mapModel: map,
-      visModel: new Backbone.Model(),
+      mapModel: this.map,
+      engine: new Backbone.Model(),
       layerViewFactory: new GMapsLayerViewFactory(),
-      layerGroupModel: new Backbone.Model()
+      layerGroupModel: new Backbone.Model(),
+      showLimitErrors: false
     });
 
     this.model = new TorqueLayer({
       type: 'torque',
-      source: {},
+      source: MockFactory.createAnalysisModel({ id: 'a0' }),
       cartocss: '#test {}',
       'torque-steps': 100
-    }, { vis: this.vis });
+    }, { engine: engineMock });
     spyOn(torque, 'GMapsTorqueLayer').and.callThrough();
-    map.addLayer(this.model);
-    this.view = mapView._layerViews[this.model.cid];
+    this.map.addLayer(this.model);
+    this.view = this.view._layerViews[this.model.cid];
   });
 
   SharedTestsForTorqueLayer.call(this);
@@ -41,5 +43,26 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
 
     var attrs = torque.GMapsTorqueLayer.calls.argsFor(0)[0];
     expect(attrs.cartocss).toEqual(jasmine.any(String));
+  });
+
+  describe('when GMapsTorqueLayer triggers tileError', function () {
+    it('should trigger error:limit in mapModel if showLimitErrors is true', function () {
+      this.view.showLimitErrors = true;
+      this.view.nativeTorqueLayer.fire('tileError');
+      var calls = this.map.trigger.calls.all();
+      var types = calls.map(function (call) {
+        return call.args[0];
+      });
+      expect(types).toContain('error:limit');
+    });
+
+    it('should not trigger error:limit in mapModel if showLimitErrors is false', function () {
+      this.view.nativeTorqueLayer.fire('tileError');
+      var calls = this.map.trigger.calls.all();
+      var types = calls.map(function (call) {
+        return call.args[0];
+      });
+      expect(types).not.toContain('error:limit');
+    });
   });
 });

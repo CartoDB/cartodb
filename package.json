@@ -1,6 +1,6 @@
 {
   "name": "cartodb.js",
-  "version": "4.0.0-alpha.1.1.2",
+  "version": "4.0.0-alpha.26",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -31,7 +31,9 @@
     "camshaft-reference": "<2.0",
     "carto": "cartodb/carto#master",
     "clip-path-polygon": "0.1.12",
-    "d3": "3.5.17",
+    "d3-array": "1.2.1",
+    "d3-format": "1.2.0",
+    "d3-time-format": "2.1.0",
     "jquery": "2.1.4",
     "leaflet": "1.0.3",
     "moment": "^2.18.1",
@@ -39,7 +41,7 @@
     "mustache": "1.1.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
-    "tangram.cartodb": "~0.5.6",
+    "tangram.cartodb": "~0.5.7",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3"
   },
@@ -48,6 +50,13 @@
     "babelify": "~7.3.0",
     "browserify": "13.0.0",
     "cartoassets": "CartoDB/CartoAssets#master",
+    "eslint": "~4.8.0",
+    "eslint-config-semistandard": "~11.0.0",
+    "eslint-config-standard": "~10.2.1",
+    "eslint-plugin-import": "~2.7.0",
+    "eslint-plugin-node": "~5.2.0",
+    "eslint-plugin-promise": "~3.5.0",
+    "eslint-plugin-standard": "~3.0.1",
     "findup-sync": "0.1.3",
     "grunt": "0.4.5",
     "grunt-aws": "^0.4.0",
@@ -59,10 +68,9 @@
     "grunt-contrib-cssmin": "~0.7.0",
     "grunt-contrib-imagemin": "~1.0.0",
     "grunt-contrib-jasmine": "1.1.0",
-    "grunt-contrib-jshint": "~0.8.0",
     "grunt-contrib-uglify": "0.10.0",
     "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
-    "grunt-eslint": "20.1.0",
+    "grunt-eslint": "~20.1.0",
     "grunt-exorcise": "2.1.0",
     "grunt-fastly": "~0.1.3",
     "grunt-gitinfo": "~0.1.7",
@@ -76,10 +84,8 @@
     "gulp-sketch": "0.0.7",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jsdoc": "~3.5.5",
-    "jshint-stylish": "~0.1.3",
     "jstify": "0.12.0",
     "load-grunt-tasks": "~0.6.0",
-    "semistandard": "11.0.0",
     "semver": "~4.1.0",
     "source-map-support": "CartoDB/node-source-map-support#0.4.6-cdb1",
     "time-grunt": "~0.3.1",
@@ -136,10 +142,11 @@
     "root": "."
   },
   "scripts": {
+    "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "docs": "rm -rf docs/v4; jsdoc --configure config/jsdoc/api-conf.json",
     "docs:all": "rm -rf docs/v4-internal; jsdoc --configure config/jsdoc/all-conf.json",
-    "test": "grunt test"
+    "postversion": "git push origin v4 --follow-tags"
   }
 }

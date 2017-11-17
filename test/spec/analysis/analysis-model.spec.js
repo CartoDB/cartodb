@@ -1,35 +1,52 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var AnalysisModel = require('../../../src/analysis/analysis-model.js');
-var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+var AnalysisService = require('../../../src/analysis/analysis-service.js');
 
-describe('src/analysis/analysis-model.js', function () {
-  beforeEach(function () {
-    this.vis = new Backbone.Model();
-    this.vis.reload = jasmine.createSpy('reload');
-    var fakeCamshaftReference = {
-      getSourceNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'analysis-type-1': ['source1', 'source2']
-        };
-        return map[analysisType];
-      },
-      getParamNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'analysis-type-1': ['attribute1', 'attribute2']
-        };
-
-        return map[analysisType];
-      }
+var fakeCamshaftReference = {
+  getSourceNamesForAnalysisType: function (analysisType) {
+    var map = {
+      'analysis-type-1': ['source1', 'source2'],
+      'trade-area': ['source'],
+      'estimated-population': ['source'],
+      'sql-function': ['source', 'target']
+    };
+    return map[analysisType];
+  },
+  getParamNamesForAnalysisType: function (analysisType) {
+    var map = {
+      'analysis-type-1': ['attribute1', 'attribute2'],
+      'trade-area': ['kind', 'time'],
+      'estimated-population': ['columnName']
     };
 
-    this.analysisModel = new AnalysisModel({
+    return map[analysisType];
+  }
+};
+
+var createFakeEngine = function () {
+  var engine = new Backbone.Model();
+  engine.reload = jasmine.createSpy('reload');
+  return engine;
+};
+
+var createFakeAnalysis = function (attrs, engine) {
+  return new AnalysisModel(attrs, {
+    engine: engine,
+    camshaftReference: fakeCamshaftReference
+  });
+};
+
+describe('src/analysis/analysis-model.js', function () {
+  var engineMock;
+
+  beforeEach(function () {
+    engineMock = createFakeEngine();
+    this.analysisModel = createFakeAnalysis({
       type: 'analysis-type-1',
       attribute1: 'value1',
       attribute2: 'value2'
-    }, {
-      vis: this.vis,
-      camshaftReference: fakeCamshaftReference
-    });
+    }, engineMock);
   });
 
   describe('.url', function () {
@@ -60,21 +77,21 @@ describe('src/analysis/analysis-model.js', function () {
           attribute1: 'newValue1'
         });
 
-        expect(this.vis.reload).toHaveBeenCalled();
-        this.vis.reload.calls.reset();
+        expect(engineMock.reload).toHaveBeenCalled();
+        engineMock.reload.calls.reset();
 
         this.analysisModel.set({
           attribute2: 'newValue2'
         });
 
-        expect(this.vis.reload).toHaveBeenCalled();
-        this.vis.reload.calls.reset();
+        expect(engineMock.reload).toHaveBeenCalled();
+        engineMock.reload.calls.reset();
 
         this.analysisModel.set({
           attribute900: 'something'
         });
 
-        expect(this.vis.reload).not.toHaveBeenCalled();
+        expect(engineMock.reload).not.toHaveBeenCalled();
       });
 
       it('should be marked as failed if request to reload the map fails', function () {
@@ -84,7 +101,7 @@ describe('src/analysis/analysis-model.js', function () {
         });
 
         // Request to the Maps API fails and error callback is invoked...
-        this.vis.reload.calls.argsFor(0)[0].error('something bad just happened');
+        engineMock.reload.calls.argsFor(0)[0].error('something bad just happened');
 
         expect(this.analysisModel.get('status')).toEqual(AnalysisModel.STATUS.FAILED);
       });
@@ -101,15 +118,101 @@ describe('src/analysis/analysis-model.js', function () {
 
       it('should reload the map', function () {
         this.analysisModel.set('type', 'something');
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
       });
 
       it('should keep listening type change again', function () {
         this.analysisModel.set('type', 'something');
-        expect(this.vis.reload).toHaveBeenCalled();
-        this.vis.reload.calls.reset();
+        expect(engineMock.reload).toHaveBeenCalled();
+        engineMock.reload.calls.reset();
         this.analysisModel.set('type', 'something else');
-        expect(this.vis.reload).toHaveBeenCalled();
+        expect(engineMock.reload).toHaveBeenCalled();
+      });
+    });
+
+    describe('on status change', function () {
+      var createAnalysisModelNoStatusNoReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0' }, engine);
+        return analysisModel;
+      };
+
+      var createAnalysisModelNoStatusWithReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0' }, engine);
+        analysisModel.markAsSourceOf(new Backbone.Model());
+        return analysisModel;
+      };
+
+      var createAnalysisModelWithStatusNoReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, engine);
+        return analysisModel;
+      };
+
+      var createAnalysisModelWithStatusWithReferences = function (engine) {
+        var analysisModel = createFakeAnalysis({ id: 'a0', status: 'foo' }, engine);
+        analysisModel.markAsSourceOf(new Backbone.Model());
+        return analysisModel;
+      };
+
+      var testCases = [
+        {
+          testName: 'analysis with no previous status and no references',
+          createAnalysisFn: createAnalysisModelNoStatusNoReferences,
+          expectedVisReloadWhenStatusIn: [] // no relaod is expected
+        },
+        {
+          testName: 'analysis with no previous status and some references',
+          createAnalysisFn: createAnalysisModelNoStatusWithReferences,
+          expectedVisReloadWhenStatusIn: [] // no reload is expected
+        },
+        {
+          testName: 'analysis with previous status and no references',
+          createAnalysisFn: createAnalysisModelWithStatusNoReferences,
+          expectedVisReloadWhenStatusIn: [] // no reload is expected
+        },
+        {
+          testName: 'analysis with previous status and references',
+          createAnalysisFn: createAnalysisModelWithStatusWithReferences,
+          expectedVisReloadWhenStatusIn: [ AnalysisModel.STATUS.READY ]
+        }
+      ];
+
+      _.forEach(testCases, function (testCase) {
+        var testName = testCase.testName;
+        var createAnalysisFn = testCase.createAnalysisFn;
+        var expectedVisReloadWhenStatusIn = testCase.expectedVisReloadWhenStatusIn;
+        var notExpectedVisReloadWhenStatusIn = [];
+
+        describe(testName, function () {
+          var analysisModel;
+          var engineMock;
+
+          beforeEach(function () {
+            engineMock = createFakeEngine();
+            analysisModel = createAnalysisFn(engineMock);
+          });
+
+          _.forEach(AnalysisModel.STATUS, function (status) {
+            if (expectedVisReloadWhenStatusIn.indexOf(status) < 0) {
+              notExpectedVisReloadWhenStatusIn.push(status);
+            }
+          });
+
+          _.each(expectedVisReloadWhenStatusIn, function (status) {
+            it("should reload the engine if analysis is now '" + status + "'", function () {
+              expect(engineMock.reload).not.toHaveBeenCalled();
+              analysisModel.set('status', status);
+              expect(engineMock.reload).toHaveBeenCalled();
+            });
+          }, this);
+
+          _.each(notExpectedVisReloadWhenStatusIn, function (status) {
+            it("should NOT reload the engine if analysis is now '" + status + "'", function () {
+              expect(engineMock.reload).not.toHaveBeenCalled();
+              analysisModel.set('status', status);
+              expect(engineMock.reload).not.toHaveBeenCalled();
+            });
+          }, this);
+        });
       });
     });
   });
@@ -140,12 +243,11 @@ describe('src/analysis/analysis-model.js', function () {
         }
       };
 
-      var analysisFactory = new AnalysisFactory({
-        vis: this.vis,
-        analysisCollection: new Backbone.Collection(),
+      var analysisService = new AnalysisService({
+        engine: engineMock,
         camshaftReference: fakeCamshaftReference
       });
-      var analysisModel = analysisFactory.analyse({
+      var analysisModel = analysisService.analyse({
         id: 'a1',
         type: 'analysis-type-1',
         params: {
@@ -216,12 +318,11 @@ describe('src/analysis/analysis-model.js', function () {
         }
       };
 
-      var analysisFactory = new AnalysisFactory({
-        vis: this.vis,
-        analysisCollection: new Backbone.Collection(),
+      var analysisService = new AnalysisService({
+        engine: engineMock,
         camshaftReference: fakeCamshaftReference
       });
-      var analysisModel = analysisFactory.analyse({
+      var analysisModel = analysisService.analyse({
         id: 'a1',
         type: 'analysis-type-1',
         params: {
@@ -343,6 +444,73 @@ describe('src/analysis/analysis-model.js', function () {
       this.analysisModel.setError('wadus');
 
       expect(this.analysisModel.get('status')).toEqual(AnalysisModel.STATUS.FAILED);
+    });
+  });
+
+  describe('.getNodes', function () {
+    var analysisService;
+    beforeEach(function () {
+      analysisService = new AnalysisService({
+        engine: engineMock,
+        camshaftReference: fakeCamshaftReference
+      });
+    });
+    it('Should return a list of nodes from an analysis', function () {
+      var analysis = analysisService.analyse(
+        {
+          id: 'a2',
+          type: 'estimated-population',
+          params: {
+            columnName: 'estimated_people',
+            source: {
+              id: 'a1',
+              type: 'trade-area',
+              params: {
+                kind: 'walk',
+                time: 300,
+                source: {
+                  id: 'a0',
+                  type: 'source',
+                  params: {
+                    query: 'SELECT * FROM subway_stops'
+                  }
+                }
+              }
+            }
+          }
+        }
+      );
+      var actual = analysis.getNodes();
+      expect(actual.length).toEqual(3);
+    });
+  });
+
+  describe('references tracking', function () {
+    it('should allow keeping track of models that reference this object', function () {
+      var model1 = new Backbone.Model();
+      var model2 = new Backbone.Model();
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(false);
+
+      this.analysisModel.markAsSourceOf(model1);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.markAsSourceOf(model1);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.markAsSourceOf(model2);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.unmarkAsSourceOf(model1);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(true);
+
+      this.analysisModel.unmarkAsSourceOf(model2);
+
+      expect(this.analysisModel.isSourceOfAnyModel()).toBe(false);
     });
   });
 });

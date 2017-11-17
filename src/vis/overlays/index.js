@@ -4,6 +4,7 @@ module.exports = {
   fullscreen: require('./fullscreen'),
   layer_selector: require('./layer_selector'),
   limits: require('./limits'),
+  tiles: require('./tiles'),
   loader: require('./loader'),
   logo: require('./logo'),
   search: require('./search'),

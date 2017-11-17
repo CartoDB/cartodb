@@ -23,8 +23,8 @@ var VERSION = require('../../../package.json').version;
  * @memberof carto
  * @api
  *
+ * @fires CartoError
  * @fires carto.events.SUCCESS
- * @fires carto.events.ERROR
  */
 function Client (settings) {
   _checkSettings(settings);

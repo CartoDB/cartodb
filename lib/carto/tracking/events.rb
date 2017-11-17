@@ -4,6 +4,7 @@ require_dependency 'carto/tracking/formats/internal'
 require_dependency 'carto/tracking/services/segment'
 require_dependency 'carto/tracking/services/hubspot'
 require_dependency 'carto/tracking/validators/visualization'
+require_dependency 'carto/tracking/validators/layer'
 require_dependency 'carto/tracking/validators/user'
 require_dependency 'carto/tracking/validators/widget'
 
@@ -214,10 +215,11 @@ module Carto
         required_properties :user_id, :visualization_id, :widget_id
       end
 
-      class DownloadLayer < Event
+      class DownloadedLayer < Event
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::Layer
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :layer_id, :format,
@@ -242,10 +244,11 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class AddedLayer < Event
+      class CreatedLayer < Event
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::Layer
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :layer_id

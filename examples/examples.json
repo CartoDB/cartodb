@@ -11,11 +11,6 @@
       "file": "public/multilayer.html"
     },
     {
-      "title": "Change source/style",
-      "desc": "",
-      "file": "public/change-source-style.html"
-    },
-    {
       "title": "Formula dataview",
       "desc": "",
       "file": "public/formula-dataview.html"
@@ -29,6 +24,11 @@
       "title": "Histogram Dataview",
       "desc": "",
       "file": "public/histogram-dataview.html"
+    },
+    {
+      "title": "Change source/style",
+      "desc": "",
+      "file": "public/change-source-style.html"
     },
     {
       "title": "Interactive tooltips",

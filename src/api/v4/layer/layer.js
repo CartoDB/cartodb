@@ -53,22 +53,31 @@ Layer.prototype = Object.create(Base.prototype);
  *
  * @param {carto.style.CartoCSS} New style
  * @fires carto.layer.Layer.styleChanged
- * @return {carto.layer.Layer} this
- *
+ * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
+ * {@link CartoError} if something goes bad
  * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
+  var self = this;
   var prevStyle = this._style;
   _checkStyle(style);
   opts = opts || {};
   this._style = style;
-  if (this._internalModel) {
-    this._internalModel.set('cartocss', style.toCartoCSS());
+  if (prevStyle === style) {
+    return;
   }
-  if (prevStyle !== style) {
+  if (this._internalModel) {
+    this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
+    return this._engine.reload()
+      .then(function () {
+        self.trigger('styleChanged', this);
+      })
+      .catch(function () { return Promise.reject(new CartoError('Cannot set style')); });
+  } else {
     this.trigger('styleChanged', this);
   }
-  return this;
+
+  return Promise.resolve();
 };
 
 /**

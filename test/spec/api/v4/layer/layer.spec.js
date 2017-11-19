@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/layer', function () {
+fdescribe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -101,6 +101,24 @@ describe('api/v4/layer', function () {
       });
 
       layer.setStyle(newStyle);
+    });
+
+    it('should fire a styleChanged event when the layer belongs to a client', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var styleChangedSpy = jasmine.createSpy('styleChangedSpy');
+      layer.on('styleChanged', styleChangedSpy);
+
+      client.addLayer(layer)
+        .then(function () {
+          return layer.setStyle(newStyle);
+        })
+        .then(function () {
+          expect(styleChangedSpy).toHaveBeenCalled();
+          done();
+        });
     });
 
     it('should not fire a styleChanged event when setting the same style twice', function () {

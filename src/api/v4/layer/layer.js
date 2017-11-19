@@ -62,7 +62,6 @@ Layer.prototype.setStyle = function (style, opts) {
   var prevStyle = this._style;
   _checkStyle(style);
   opts = opts || {};
-  this._style = style;
   if (prevStyle === style) {
     return;
   }
@@ -70,14 +69,18 @@ Layer.prototype.setStyle = function (style, opts) {
     this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
     return this._engine.reload()
       .then(function () {
+        self._style = style;
         self.trigger('styleChanged', this);
       })
-      .catch(function () { return Promise.reject(new CartoError('Cannot set style')); });
+      .catch(function () {
+        // TODO: better cartoErrors
+        return Promise.reject(new CartoError('Cannot set style'));
+      });
   } else {
+    self._style = style;
     this.trigger('styleChanged', this);
+    return Promise.resolve();
   }
-
-  return Promise.resolve();
 };
 
 /**
@@ -98,24 +101,38 @@ Layer.prototype.getStyle = function () {
  *
  * @param {carto.source.Dataset|carto.source.SQL} source New source
  * @fires carto.layer.Layer.sourceChanged
- * @return {carto.layer.Layer} this
+ * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
+ * {@link CartoError} if something goes bad
  * @api
  */
 Layer.prototype.setSource = function (source) {
+  var self = this;
   var prevSource = this._source;
   _checkSource(source);
+  if (prevSource === source) {
+    return;
+  }
+
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
     if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
       throw new Error('A layer can\'t have a source which belongs to a different client');
     }
-    this._internalModel.set('source', source.$getInternalModel());
-  }
-  this._source = source;
-  if (prevSource !== source) {
+    this._internalModel.set('source', source.$getInternalModel(), { silent: true });
+    return this._engine.reload()
+      .then(function () {
+        self._source = source;
+        self.trigger('sourceChanged', this);
+      })
+      .catch(function () {
+        // TODO: better cartoErrors
+        return Promise.reject(new CartoError('Cannot set source'));
+      });
+  } else {
+    self._source = source;
     this.trigger('sourceChanged', this);
+    return Promise.resolve();
   }
-  return this;
 };
 
 /**

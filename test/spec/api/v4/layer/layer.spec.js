@@ -152,12 +152,22 @@ fdescribe('api/v4/layer', function () {
 
         expect(layer.getSource()).toEqual(newSource);
       });
+
+      it('should fire a sourceChanged event', function (done) {
+        layer.on('sourceChanged', function (l) {
+          expect(l).toBe(layer);
+          expect(l.getSource()).toEqual(newSource);
+          done();
+        });
+
+        layer.setSource(newSource);
+      });
     });
 
     describe('when the layer has been set an engine', function () {
       var engineMock;
       beforeEach(function () {
-        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload') };
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.resolve()) };
         layer.$setEngine(engineMock);
       });
 
@@ -168,6 +178,17 @@ fdescribe('api/v4/layer', function () {
           var actualSource = layer.$getInternalModel().get('source');
           var expectedSource = newSource.$getInternalModel();
           expect(actualSource).toEqual(expectedSource);
+        });
+
+        it('should fire a sourceChanged event', function (done) {
+          var sourceChangedSpy = jasmine.createSpy('sourceChangedSpy');
+          layer.on('sourceChanged', sourceChangedSpy);
+
+          layer.setSource(newSource)
+            .then(function () {
+              expect(sourceChangedSpy).toHaveBeenCalled();
+              done();
+            });
         });
       });
 
@@ -192,16 +213,6 @@ fdescribe('api/v4/layer', function () {
           }).toThrowError('A layer can\'t have a source which belongs to a different client');
         });
       });
-    });
-
-    it('should fire a sourceChanged event', function (done) {
-      layer.on('sourceChanged', function (l) {
-        expect(l).toBe(layer);
-        expect(l.getSource()).toEqual(newSource);
-        done();
-      });
-
-      layer.setSource(newSource);
     });
 
     it('should not fire a sourceChanged event when setting the same source twice', function () {

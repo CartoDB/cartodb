@@ -418,6 +418,56 @@ describe 'UserMigration' do
     end
   end
 
+  it '#run_import does not modify database_host with dry' do
+    user = create_user_with_visualizations
+    carto_user = Carto::User.find(user.id)
+    database_host = carto_user.database_host
+
+    export = Carto::UserMigrationExport.create(
+      user: carto_user,
+      export_metadata: true
+    )
+
+    export.run_export
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: '127.0.0.2',
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: false,
+      dry: true
+    )
+    log = Carto::Log.create(type: 'user_migration_import')
+    import.log = log
+    package = Carto::UserMigrationPackage.for_import(import.id, log)
+    package.download(export.exported_file)
+
+    import_job = Object.new
+    import_job.expects(:run!).once
+    import_job.expects(:terminate_connections).once
+    CartoDB::DataMover::ImportJob.expects(:new)
+      .with(
+        job_uuid: import.id,
+        file: "#{package.data_dir}#{export.json_file[/\// =~ export.json_file..-1]}",
+        data:true,
+        metadata: false,
+        host: '127.0.0.2',
+        rollback: false,
+        into_org_name: nil,
+        mode: :import,
+        logger: log.logger,
+        import_job_logger: log.logger,
+        update_metadata: false
+      ).once.returns(import_job)
+
+    import.run_import
+    import.state.should eq 'complete'
+
+    carto_user.reload
+    carto_user.database_host.should eq database_host
+  end
+
   def drop_database(user)
     conn = user.in_database(as: :cluster_admin)
     user.db_service.drop_database_and_user(conn)

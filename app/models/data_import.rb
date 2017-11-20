@@ -413,12 +413,12 @@ class DataImport < Sequel::Model
     [STATE_COMPLETE, STATE_FAILURE, STATE_STUCK].include?(state)
   end
 
-  def import_metadata
+  def carto_gpk_metadata
     JSON.parse(super) if super
   rescue JSON::ParserError
   end
 
-  def import_metadata=(value)
+  def carto_gpk_metadata=(value)
     raise "Expected type Hash, got #{value.class}" unless value.is_a?(Hash)
 
     super(value.to_json)
@@ -781,7 +781,7 @@ class DataImport < Sequel::Model
       self.error_code = importer.error_code
       self.rejected_layers = importer.rejected_layers.join(',') if !importer.rejected_layers.empty?
       self.runner_warnings = runner.warnings.to_json if !runner.warnings.empty?
-      self.import_metadata = runner.metadata
+      self.carto_gpk_metadata = runner.metadata
 
       # http_response_code is only relevant if a direct download is performed
       if runner && datasource_provider && datasource_provider.providers_download_url?

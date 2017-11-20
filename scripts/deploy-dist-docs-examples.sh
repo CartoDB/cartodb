@@ -48,6 +48,12 @@ git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
 git tag "@${TRAVIS_BRANCH:1}"
 git push origin "@${TRAVIS_BRANCH:1}"
 
+FIX_VER="@4.0.0-alpha"
+git tag -d $FIX_VER
+git push origin :$FIX_VER
+git tag $FIX_VER
+git push origin $FIX_VER
+
 echo "Checking out $TRAVIS_BRANCH"
 git checkout -- . || exit 1
 git checkout origin/$TRAVIS_BRANCH || exit 1

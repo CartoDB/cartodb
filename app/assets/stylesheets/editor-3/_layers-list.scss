@@ -7,6 +7,7 @@
 
 .Editor-ListLayer-item {
   @include transition(opacity 2s ease-in);
+  @include transition(border 0.2s ease-in);
   box-sizing: border-box;
   position: relative;
   width: auto;
@@ -18,8 +19,7 @@
   cursor: pointer;
 
   &:hover {
-    @include transition(border 200ms ease-in);
-    border: 1px solid $cHoverLine;
+    border: 1px solid $cBlueHover;
 
     .Editor-ListLayer-dragIcon {
       opacity: 1;
@@ -239,10 +239,10 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: $cThirdBackground;
+  @include transition(border 200ms ease-in);
 
   &:hover {
-    @include transition(border 200ms ease-in);
-    border: 1px solid $cHoverLine;
+    border: 1px solid $cBlueHover;
 
     .Editor-ListAnalysis-title,
     .Editor-ListAnalysis-itemInfoDataset {

@@ -60,8 +60,8 @@
 }
 
 .edit_text_dialog {
-  position: absolute!important;
-  z-index: 0!important;
+  position: absolute !important;
+  z-index: 0 !important;
   max-width: 500px;
   max-height: 500px;
   padding: 11px;
@@ -73,7 +73,7 @@
 
   a.button {
     margin-top: 9px;
-    padding: 6px 15px!important;
+    padding: 6px 15px !important;
     letter-spacing: 0;
   }
 
@@ -103,7 +103,7 @@
     width: 100%;
     max-width: 500px - 22;
     max-height: 500px - 60;
-    margin: 0!important;
+    margin: 0 !important;
     padding: 10px;
     border: 1px solid #C0C1C2;
     background: #FFF;
@@ -129,7 +129,7 @@
       letter-spacing: -4px;
       word-spacing: -4px;
 
-      .select2-container {width:100px!important;}
+      .select2-container {width:100px !important;}
       
       & > div.column {
         @include inline-block();
@@ -147,7 +147,7 @@
 
         div.form_spinner {
           background: white;
-          &.disabled {border-color:#DDD!important;}
+          &.disabled {border-color:#DDD !important;}
         }
 
         &.day_field {width:46px;}
@@ -175,7 +175,7 @@
     }
 
 
-    // .select2-container {width:100px!important;}
+    // .select2-container {width:100px !important;}
 
     // form > div {
     //   letter-spacing: -4px;
@@ -190,7 +190,7 @@
     //   label {display:block; margin:0 0 5px; font:bold 10px $text-fonts; color:#999999;}
     //   div.form_spinner {
     //     background: white;
-    //     &.disabled {border-color:#DDDDDD!important;}
+    //     &.disabled {border-color:#DDDDDD !important;}
     //   }
 
     //   &:last-child {margin-right:0;}
@@ -221,7 +221,7 @@
 
       a {
         @include inline-block(); width: 65px; font-size:13px; font-weight:normal;
-        span.radio {margin-top:0!important;}
+        span.radio {margin-top:0 !important;}
         &:hover {text-decoration:none;}
       }
     }
@@ -364,7 +364,7 @@
       min-width: 215px;
       max-width: 400px;
       min-height: 24px;
-      max-height: 300px!important;
+      max-height: 300px !important;
       margin: 0 3px 0 0;
       padding: 4px 4px 1px 4px;
       border: 1px solid #000;

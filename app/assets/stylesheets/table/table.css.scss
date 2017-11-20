@@ -309,7 +309,7 @@ div.table {
 
           // Column options
           div.dropdown {
-            width: 147px!important;
+            width: 147px !important;
           }
         }
       }
@@ -752,8 +752,8 @@ div.order_selector {
 // Hello hacks for Firefox
 @-moz-document url-prefix() {
   table { border-collapse: inherit; }
-  thead div.sqlview { z-index:1!important; }
-  thead tr th div { z-index:2!important; }
-  thead div.shadow { z-index:1!important }
+  thead div.sqlview { z-index:1 !important; }
+  thead tr th div { z-index:2 !important; }
+  thead div.shadow { z-index:1 !important }
   tbody tr td { border-spacing:1px; border-bottom:1px solid #ECECEC; }
 }

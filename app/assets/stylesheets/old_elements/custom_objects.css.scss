@@ -37,7 +37,7 @@
   // Overriding default dropdown before&after values
   &:after,
   &.border:after,
-  &:before { display: none!important }
+  &:before { display: none !important }
 
   &.vertical_top {
     &:before {left:7px;}
@@ -286,7 +286,7 @@
 
 .form_spinner {
   position: relative;
-  width: auto!important;
+  width: auto !important;
   min-width: 20px;
   height: 15px;
   margin:0;
@@ -319,12 +319,12 @@
     }
 
     &:hover .input {
-      border: 1px solid #7E7E7E!important;
+      border: 1px solid #7E7E7E !important;
     }
 
     .input {
       position: relative;
-      width: auto!important;
+      width: auto !important;
       min-width: 20px;
       height: 15px;
       margin:0;
@@ -425,10 +425,10 @@
 
   // Disabled state
   &.disabled {
-    background: #F4F4F4!important;
+    background: #F4F4F4 !important;
 
     a {
-      background: #F4F4F4!important;
+      background: #F4F4F4 !important;
 
       @include opacity(0.5);
       &:hover {cursor:default;}
@@ -675,12 +675,12 @@
     }
   }
 
-  &:hover {cursor:pointer!important;}
+  &:hover {cursor:pointer !important;}
 
   // Working
   &.working {
     @include opacity(0.5);
-    &:hover {cursor:default!important;}
+    &:hover {cursor:default !important;}
   }
 
   // Small type

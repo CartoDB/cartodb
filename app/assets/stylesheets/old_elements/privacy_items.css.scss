@@ -47,7 +47,7 @@
   @mixin privacy-disabled($color) {
     @include opacity(0.5);
     background-color: rgba($color, .7);
-    cursor: default!important;
+    cursor: default !important;
   }
 
   &.public {

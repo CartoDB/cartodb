@@ -287,7 +287,7 @@ div.wizards_panel {
           }
 
           // Removed left space for first combo
-          &:first-child { margin-left:0!important }
+          &:first-child { margin-left:0 !important }
         }
 
         // Text between fields like " - to - "

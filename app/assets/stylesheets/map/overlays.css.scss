@@ -123,7 +123,7 @@
     border-color: rgba(#000, .5);
 
     &.editable .text { 
-      color: #000!important;
+      color: #000 !important;
     }
 
     .hint {
@@ -305,7 +305,7 @@
 .overlay {
 
   display: none;
-  position: absolute!important; // !important required to work on IE10.
+  position: absolute !important; // !important required to work on IE10.
 
   z-index: 4;
 
@@ -405,13 +405,13 @@
 
     &.error .content .text {
       position: relative;
-      width: 200px!Important;
-      height: 200px!Important;
+      width: 200px !important;
+      height: 200px !important;
       background: rgba(#333, .5) image-url('layout/image_not_found.png') no-repeat 50% 50%;
     }
 
     &.error .content {
-      img { display: none!important; }
+      img { display: none !important; }
     }
 
     &.mobile.editable {
@@ -481,11 +481,11 @@
       padding: 5px 9px;
 
       border: 1px dashed #CCC;
-      cursor: text!important;
+      cursor: text !important;
 
       .content {
         padding: 10px 10px 3px 10px;
-        line-height: normal!important;
+        line-height: normal !important;
       }
 
       @include simple-transition(padding, 100ms, ease-in);
@@ -494,10 +494,10 @@
 
   &.draggable {
 
-    cursor: move!important;
+    cursor: move !important;
 
     .edit, .close { @include opacity(0); }
-    .text { cursor: move!important; }
+    .text { cursor: move !important; }
 
   }
 

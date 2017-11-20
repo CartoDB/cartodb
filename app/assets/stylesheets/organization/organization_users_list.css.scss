@@ -71,7 +71,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include flex-direction(row);
   @include align-items(flex-end);
   padding: $sMargin-element 0;
-  text-decoration: none!important;
+  text-decoration: none !important;
 }
 
 .OrganizationList-userInfo {

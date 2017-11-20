@@ -74,11 +74,11 @@
   }
 
   .panel_content {
-    top: 120px!important;
+    top: 120px !important;
     div.wrapper { top: 31px; }
   }
 
-  .doc_info { right:26px!important; }
+  .doc_info { right:26px !important; }
 
   .header {
     position: relative;
@@ -288,7 +288,7 @@
       }
 
       &.ui-sortable-helper {
-        margin-left: -15px!important;
+        margin-left: -15px !important;
         padding: 15px 15px 15px 20px;
         border: 1px solid #999;
         background-color: white;

@@ -22,7 +22,7 @@ div.dropdown {
 
   &:before {
     content: ' ';
-    display: block!important;
+    display: block !important;
     position: absolute;
     z-index: 10;
     width:0;
@@ -88,7 +88,7 @@ div.dropdown {
 
     &:after {
       content: ' ';
-      display: block!important;
+      display: block !important;
       position: absolute;
       z-index:1;
       width:0;
@@ -147,11 +147,11 @@ div.dropdown {
   }
 
   &.short {
-    width: 164px!important;
+    width: 164px !important;
   }
 
   &.tiny {
-    width: 105px!important;
+    width: 105px !important;
   }
 
   ul {

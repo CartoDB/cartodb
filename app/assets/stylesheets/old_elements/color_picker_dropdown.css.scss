@@ -42,7 +42,7 @@ div.dropdown.color_picker {
 
       .picker-wrapper,
       .slider-wrapper {
-        display: block!important;
+        display: block !important;
       }
     }
   }
@@ -273,8 +273,8 @@ div.dropdown.color_picker {
       width: 50px;
       height: 21px;
       margin: 0 0 0 3px;
-      padding: 0!important;
-      font-size: 12px!important;
+      padding: 0 !important;
+      font-size: 12px !important;
       line-height: 21px;
       vertical-align: top;
     }
@@ -282,6 +282,6 @@ div.dropdown.color_picker {
 
   // Basemap tail
   &.basemap:before {
-    left: -5px!important;
+    left: -5px !important;
   }
 }

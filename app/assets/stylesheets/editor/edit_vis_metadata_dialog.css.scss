@@ -26,7 +26,7 @@ $width: 620px;
   &:before {
     @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
     top: 157px;
-    background-color: transparent!important;
+    background-color: transparent !important;
   }
 
   &:after {

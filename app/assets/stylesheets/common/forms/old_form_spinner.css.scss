@@ -103,10 +103,10 @@
 
   // Disabled state
   &.disabled {
-    background: #F4F4F4!important;
+    background: #F4F4F4 !important;
 
     a {
-      background: #F4F4F4!important;
+      background: #F4F4F4 !important;
 
       @include opacity(0.5);
       &:hover {cursor:default;}

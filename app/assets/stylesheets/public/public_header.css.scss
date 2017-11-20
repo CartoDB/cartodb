@@ -150,8 +150,8 @@
   only screen and (                min-resolution: 192dpi),
   only screen and (                min-resolution: 2dppx) {
   .cartodb-public-header .logo {
-    @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat!important);
-    background-size: 128px 35px!important;
+    @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat !important);
+    background-size: 128px 35px !important;
   }
 }
 
@@ -169,7 +169,7 @@
       width: 96px;
       height: 27px;
       margin: 19px 0 0;
-      background-size: 96px 27px!important;
+      background-size: 96px 27px !important;
     }
 
     .options a { display:none }

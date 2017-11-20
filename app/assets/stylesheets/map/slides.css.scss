@@ -77,8 +77,8 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
 
     &.ui-sortable-helper {
-      width: 104px!Important;
-      height: 63px!Important;
+      width: 104px !important;
+      height: 63px !important;
       margin-left: 20px;
       cursor: move;
     }
@@ -243,7 +243,7 @@
       text-align: left;
 
       a { padding: 0; }
-      a.radiobutton span.radio { margin: 1px 7px 0 0!Important; }
+      a.radiobutton span.radio { margin: 1px 7px 0 0 !important; }
 
       &.seconds {
         .form { text-align: center; }

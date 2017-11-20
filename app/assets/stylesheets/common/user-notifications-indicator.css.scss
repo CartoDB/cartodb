@@ -11,7 +11,7 @@ $selectedColor: white;
 .UserNotifications {
   position: relative;
   color: $idleColor;
-  text-decoration: none!important;
+  text-decoration: none !important;
 
   @include display-flex();
 }

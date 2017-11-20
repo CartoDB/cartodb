@@ -107,6 +107,7 @@ ion for time-series (#12670)
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
+* Supporting text-placement for labels (CartoDB/support#13015)
 * Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)

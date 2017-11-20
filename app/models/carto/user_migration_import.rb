@@ -29,7 +29,7 @@ module Carto
     validate :valid_dry_settings
 
     def run_import
-      raise 'Incompatible options: update_metadata and dry' if import_metadata && dry
+      raise 'Incompatible options: import_metadata and dry' if import_metadata && dry
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)

@@ -26,9 +26,7 @@ module Carto
       )
     end
 
-    def self.build_data_layer(user, table_name)
-      geometry_type = user_table.geometry_type
-
+    def self.build_data_layer(user, table_name, geometry_type)
       data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'].deep_dup)
       layer_options = data_layer.options
       layer_options['table_name'] = table_name

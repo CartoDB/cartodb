@@ -66,10 +66,11 @@ module CartoDB
       def run_command_with_log(cmd, file)
         return_code = nil
         log_message = ''
+        logger.debug("Writing command output '#{cmd}' to #{file.path}")
         Open3.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
           stdout_and_stderr.each do |line|
             message = line.strip + "\n"
-            log_message = log_message + message
+            log_message += message
             file.write(message)
           end
           return_code = wait_thr.value

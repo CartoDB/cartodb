@@ -1,6 +1,6 @@
 {
   "name": "cartodb.js",
-  "version": "4.0.0-alpha.23",
+  "version": "4.0.0-alpha.25",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -40,7 +40,7 @@
     "mustache": "1.1.0",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
-    "tangram.cartodb": "~0.5.6",
+    "tangram.cartodb": "~0.5.7",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3"
   },

@@ -26,10 +26,10 @@ module Carto
     validates :exported_file, presence: true
     validates :json_file, presence: true
     validate :valid_org_import
-    validate :valid_dry_settings
+    validate :valid_dry_settings?
 
     def run_import
-      raise 'Incompatible options: import_metadata and dry' if import_metadata && dry
+      raise errors.full_messages.join(', ') unless valid_dry_settings?
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -66,10 +66,12 @@ module Carto
       end
     end
 
-    def valid_dry_settings
+    def valid_dry_settings?
       if import_metadata && dry
         errors.add(:dry, 'dry cannot be true while import_metadata is true')
+        return false
       end
+      true
     end
 
     def import(service, package)

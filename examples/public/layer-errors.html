@@ -18,26 +18,27 @@
       #map { flex: 1; margin: 10px; }
       #widgets { width: 300px; margin: 10px 10px 10px 0; }
       button { width: 100%; padding: 10px; margin: 2px; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
-      button#btn1 { margin-top: 30px; background: #162945; }
+      button#btn1 { margin: 30px auto; background: #162945; }
       textarea{ margin-top: 30px; width: 100%}
+      p#errors{margin-top: 30px; color:red;}
     </style>
   </head>
   <body>
     <div id="container">
       <div id="map"></div>
       <div id="widgets">
-        <h2> Layer Errors </h2>
-        <br>
-        <p>This map shows a layer with populated cities. You can set a custom css to the layer using the textbox from below.<br>
-        Notice how we listen to layer errors to change the message.
-        </p>
-        <textarea id="cartocss" rows="5">
+        <textarea id="cartocss" rows="3">
 #layer { 
     marker-fill: red;
 }
         </textarea>
         <button id="btn1"> Update Layer style</button>
-
+        <p>This map shows a layer with populated cities. 
+          <br>
+          You can set a custom css to the layer.
+          <br>
+          If the css is valid the layer will be updated, otherwise an error will be printed below.
+        </p>
         <p id="errors"></p>
       </div>
     </div>
@@ -74,10 +75,10 @@
       // 4.0 Get a leaflet layer from the client and add it to the map.
       client.getLeafletLayer().addTo(map);
 
-      // 5.0 Listen to all layer errors 
+      // 5.0 Listen to all layer errors and print an error.
       layer.on('error', function(cartoError){
         document.querySelector('#errors').innerText = cartoError.message;
-        document.querySelector('#errors').style.color = 'red';
+        document.querySelector('#cartocss').style.background = '#E57373';
       })
 
       document.querySelector('#btn1').addEventListener('click', () => {

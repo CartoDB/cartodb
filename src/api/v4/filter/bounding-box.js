@@ -3,7 +3,7 @@ var Base = require('./base');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
- * Bounding box filter.
+ * Generic bounding box filter.
  *
  * @fires carto.filter.BoundingBox.boundsChanged
  * 

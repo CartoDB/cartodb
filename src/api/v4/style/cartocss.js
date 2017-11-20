@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Base = require('./base');
 
 /**
+ * A CartoCSS/TurboCarto style that can be applied to a {@link carto.layer.Layer}.
  * @param {string} cartocss CartoCSS
  * @example
  * var style = new carto.style.CartoCSS(`
@@ -27,7 +28,7 @@ CartoCSS.prototype.toCartoCSS = function () {
 };
 
 /**
- * Return the TurboCarto style for this CartoCSS object.
+ * Get the current CartoCSS/TurboCarto style as a string.
  * 
  * @return {string} - The TurboCarto style for this CartoCSS object
  * @api

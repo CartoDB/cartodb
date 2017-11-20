@@ -8,8 +8,16 @@ var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
 var CartoError = require('../error');
 
 /**
- * Base dataview object.
+ * Base class for dataview objects.
  *
+ * Dataviews are a way to extract data from a CARTO account in predefined ways
+ * (eg: a list of categories, the result of a formula operation, etc.). See
+ * carto.dataview.Base subclasses to learn about each way of getting data.
+ *
+ * All dataviews point to a data source (dataset, sql query) that might change
+ * due to different reasons (eg: SQL query changed). Dataview objects will trigger
+ * events to notify subscribers when new data is available.
+ * 
  * @constructor
  * @abstract
  * @memberof carto.dataview

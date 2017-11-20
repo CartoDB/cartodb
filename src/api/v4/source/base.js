@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 var CartoError = require('../error');
 
 /**
- * Base source object.
+ * Base data source object.
  *
  * @constructor
  * @abstract

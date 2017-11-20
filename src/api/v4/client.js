@@ -9,16 +9,25 @@ var Leaflet = require('./leaflet');
 var VERSION = require('../../../package.json').version;
 
 /**
- * This is the main object in a Carto.js application.
+ * This is the entry point for a Carto.js application.
  *
- * The carto client keeps both layer and dataview lists internaly.
- * Every time some layer/dataview changes the client will trigger a carto-reload cycle.
+ * A CARTO client allows managing layers and dataviews. It also takes care
+ * of the communication between a Carto.js application and the services in CARTO.
+ * To create a new client you need a CARTO account, where you will be able to get
+ * your API key and username.
  *
  * @param {object} settings
- * @param {string} settings.apiKey - Api key used to be autenticate in the windshaft server
- * @param {string} settings.username - Name of the user registered in the windshaft server
- * @param {string} settings.serverUrl - Url of the windshaft server
+ * @param {string} settings.apiKey - API key used to authenticate against CARTO
+ * @param {string} settings.username - Name of the user
+ * @param {string} [settings.serverUrl] - URL of the windshaft server
  *
+ * @example
+ *
+ * var client = new carto.Client({
+ *   apiKey: 'YOUR_API_KEY_HERE',
+ *   username: 'YOUR_USERNAME_HERE'
+ * });
+ * 
  * @constructor
  * @memberof carto
  * @api
@@ -59,9 +68,9 @@ Client.prototype.addLayer = function (layer, opts) {
 };
 
 /**
- * Add a layer array to the client.
+ * Add multiple layers to the client.
  *
- * @param {carto.layer.Base[]} - The layer array to be added
+ * @param {carto.layer.Base[]} - An array with the layers to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
@@ -98,9 +107,9 @@ Client.prototype.removeLayer = function (layer, opts) {
 };
 
 /**
- * Remove a layer from the client
+ * Remove multiple layer from the client
  *
- * @param {carto.layer.Base[]} - The layer array to be removed
+ * @param {carto.layer.Base[]} - An array with the layers to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  * 
@@ -146,9 +155,9 @@ Client.prototype.addDataview = function (dataview, opts) {
 };
 
 /**
- * Add a dataview array to the client.
+ * Add multipe dataviews to the client.
  *
- * @param {carto.dataview.Base[]} - The dataview array to be added
+ * @param {carto.dataview.Base[]} - An array with the dataviews to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
@@ -201,7 +210,8 @@ Client.prototype.getDataviews = function () {
 };
 
 /**
- * Return the a leaflet layer for the given client.
+ * Return a Leaflet layer that groups all the layers that have been
+ * added to this client.
  * 
  * @api
  */

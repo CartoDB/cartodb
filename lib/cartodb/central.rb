@@ -32,6 +32,10 @@ module Cartodb
       URI.join(host, 'login').to_s
     end
 
+    def update_payment_url(username)
+      URI.join(host, '/account/', "#{username}/", 'update_payment')
+    end
+
     def build_request(path, body, method, timeout = 200)
       http_client = Carto::Http::Client.get('central', log_requests: true)
       http_client.request(

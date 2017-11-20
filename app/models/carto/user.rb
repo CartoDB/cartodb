@@ -30,6 +30,8 @@ class Carto::User < ActiveRecord::Base
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  LOCKED_USER_DELETION_PERIOD = 80.days
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -429,6 +431,11 @@ class Carto::User < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    (((updated_at + LOCKED_USER_DELETION_PERIOD) - Time.now) / 1.day).to_i
   end
 
   def viewable_by?(viewer)

@@ -126,6 +126,16 @@ class Admin::UsersController < Admin::AdminController
     render 'account'
   end
 
+  def lockout
+    if current_user.has_feature_flag?('no_free_tier')
+      @expiration_days = @user.remaining_days_deletion
+      @payments_url = Cartodb::Central.new.update_payment_url(@user.username)
+      render locals = { breadcrumb: false }
+    else
+      render_404
+    end
+  end
+
   private
 
   def initialize_google_plus_config
@@ -151,4 +161,5 @@ class Admin::UsersController < Admin::AdminController
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
   end
+
 end

@@ -126,6 +126,8 @@ class User < Sequel::Model
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  LOCKED_USER_DELETION_PERIOD = 80.days
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -810,6 +812,11 @@ class User < Sequel::Model
     else
       nil
     end
+  end
+
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    (((updated_at + LOCKED_USER_DELETION_PERIOD) - Time.now) / 1.day).to_i
   end
 
   def remove_logo?

@@ -72,9 +72,11 @@ Layer.prototype.setStyle = function (style, opts) {
         self._style = style;
         self.trigger('styleChanged', this);
       })
-      .catch(function () {
+      .catch(function (err) {
+        var error = new CartoError(err);
         // TODO: better cartoErrors
-        return Promise.reject(new CartoError('Cannot set style'));
+        self.trigger('error', new CartoError(error));
+        return Promise.reject(error);
       });
   } else {
     self._style = style;

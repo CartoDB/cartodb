@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CARTO.js Source error example</title>
+    <!-- Include Leaflet 1.2.0 Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <!-- Include cartodb.js Library -->
+    <script src="../../dist/public/carto.uncompressed.js"></script>
+    <style>
+      * { margin: 0; padding: 0; }
+      html { box-sizing: border-box; height: 100%; }
+      body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
+      #container { display: flex; width: 100%; height: 100%; }
+      #map { flex: 1; margin: 10px; }
+      #widgets { width: 300px; margin: 10px 10px 10px 0; }
+      button { width: 100%; padding: 10px; margin: 2px; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
+      button#btn1 { margin-top: 30px; background: #162945; }
+      textarea{ margin-top: 30px; width: 100%}
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="map"></div>
+      <div id="widgets">
+        <h2> Layer Errors </h2>
+        <br>
+        <p>This map shows a layer with populated cities. You can set a custom css to the layer using the textbox from below.<br>
+        Notice how we listen to layer errors to change the message.
+        </p>
+        <textarea id="cartocss" rows="5">
+#layer { 
+    marker-fill: red;
+}
+        </textarea>
+        <button id="btn1"> Update Layer style</button>
+
+        <p id="errors"></p>
+      </div>
+    </div>
+    <script>
+      // 1. Setting up the Leaflet Map
+      // 1.1 Creating the Leaflet Map
+      var map = L.map('map').setView([30, 0], 3);
+
+      // 1.2 Adding basemap and labels layers
+      // Adding Voyager Basemap
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      }).addTo(map);
+
+      // 2 Defining a carto.Client
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+
+      // 3.0 Define map sources
+      var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+
+      // 3.1 Create a style and add the valid layer to the client
+      var style = new carto.style.CartoCSS(`#layer { marker-fill: #162945; }`);
+
+      // 3.2 Create the layer
+      var layer = new carto.layer.Layer(populatedPlacesDataset, style);
+
+      // 3.3. Adding the layers to the client
+      client.addLayer(layer);
+
+      // 4.0 Get a leaflet layer from the client and add it to the map.
+      client.getLeafletLayer().addTo(map);
+
+      // 5.0 Listen to all layer errors 
+      layer.on('error', function(cartoError){
+        document.querySelector('#errors').innerText = cartoError.message;
+        document.querySelector('#errors').style.color = 'red';
+      })
+
+      document.querySelector('#btn1').addEventListener('click', () => {
+        const style = new carto.style.CartoCSS(document.querySelector('#cartocss').value);
+        layer.setStyle(style)
+        .catch(cartoError => console.error(cartoError.message)); // // 5.1 Layer errors are also exposed through rejected promises
+      });
+    </script>
+  </body>
+</html>

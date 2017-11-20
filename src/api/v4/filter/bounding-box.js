@@ -3,8 +3,10 @@ var Base = require('./base');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
- * Bounding box filter
+ * Bounding box filter.
  *
+ * @fires carto.filter.BoundingBox.boundsChanged
+ * 
  * @constructor
  * @extends carto.filter.Base
  * @memberof carto.filter
@@ -18,9 +20,10 @@ function BoundingBox () {
 BoundingBox.prototype = Object.create(Base.prototype);
 
 /**
- * Set the bounds
+ * Set the bounds.
  *
  * @param  {carto.filter.Bounds} bounds
+ * @fires carto.filter.BoundingBox.boundsChanged
  * @return {carto.filter.BoundingBox} this
  * @api
  */
@@ -32,8 +35,9 @@ BoundingBox.prototype.setBounds = function (bounds) {
 };
 
 /**
- * Reset the bounds
+ * Reset the bounds.
  *
+ * @fires carto.filter.BoundingBox.boundsChanged
  * @return {carto.filter.BoundingBox} this
  * @api
  */
@@ -42,7 +46,7 @@ BoundingBox.prototype.resetBounds = function () {
 };
 
 /**
- * Return the current bounds
+ * Return the current bounds.
  *
  * @return {carto.filter.Bounds} Current bounds
  * @api
@@ -50,10 +54,10 @@ BoundingBox.prototype.resetBounds = function () {
 BoundingBox.prototype.getBounds = function () {
   /**
    * @typedef {object} carto.filter.Bounds
-   * @property {number} west
-   * @property {number} south
-   * @property {number} east
-   * @property {number} north
+   * @property {number} west - West coordinate
+   * @property {number} south - South coordinate
+   * @property {number} east - East coordinate
+   * @property {number} north - North coordinate
    * @api
    */
   return this._internalModel.getBounds();
@@ -78,3 +82,13 @@ BoundingBox.prototype.$getInternalModel = function () {
 };
 
 module.exports = BoundingBox;
+
+/**
+ * Event triggered when bounds of a bounding-box-filter changes.
+ *
+ * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
+ * 
+ * @event carto.filter.BoundingBox.boundsChanged
+ * @type {carto.filter.Bounds}
+ * @api
+ */ 

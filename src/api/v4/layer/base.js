@@ -2,7 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 
 /**
- * Base layer object
+ * Base layer object.
  *
  * @constructor
  * @abstract

@@ -12,6 +12,9 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Trigger error when interactivity request fails (#13093)
+* Add interactivity error infobox (#13027)
+* Add limits for torque (#13085)
 * Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
@@ -90,9 +93,13 @@ ion for time-series (#12670)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 
 ### Bug fixes / enhancements
+* Improve the discoverability of the table view switch (#13050)
+* Change Basemap layer style (#13091)
+* Rename point/polygon count to feature count (#13066)
 * Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix for torque category legends (CartoDB/support#1120)
 * Upgrade cartodb extension to 0.20.0 (#13065)
+* Remove back arrow and add a tooltip to editor logo (#13067)
 * Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)

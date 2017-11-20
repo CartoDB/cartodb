@@ -257,7 +257,7 @@ Layer.prototype._createInternalModel = function (engine) {
   }, { engine: engine });
 
   internalModel.on('change:error', function (model, value) {
-    if (_isStyleError(value)) {
+    if (value && _isStyleError(value)) {
       this._style.$setError(new CartoError(value));
     }
   }, this);

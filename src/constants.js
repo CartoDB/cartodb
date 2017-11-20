@@ -3,6 +3,7 @@ module.exports = {
     ATTRIBUTION: 'attribution',
     HEADER: 'header',
     LIMITS: 'limits',
+    TILES: 'tiles',
     LOADER: 'loader',
     LOGO: 'logo',
     SEARCH: 'search',

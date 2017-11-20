@@ -33,6 +33,13 @@ var TorqueLayerViewBase = {
       });
     }, this);
 
+    this.nativeTorqueLayer.on('tileError', function (error) {
+      if (this.showLimitErrors) {
+        // TODO: Replace type with a new name
+        this.mapModel.trigger('error:limit', _.extend(error, { type: 'limit' }));
+      }
+    }, this);
+
     this.nativeTorqueLayer.on('change:steps', function (changes) {
       this._setModelAttrs({ steps: changes.steps });
     }, this);

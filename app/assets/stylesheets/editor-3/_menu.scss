@@ -20,22 +20,27 @@
 }
 
 .EditorMenu-navigationItem {
-  @include transition(background, 300ms, ease-in);
+  transition: all 0.2s ease-in;
   width: $baseSize * 4;
   height: $baseSize * 4;
   margin-bottom: $baseSize;
   border-radius: 4px;
-}
-.EditorMenu-navigationItem.is-selected,
-.EditorMenu-navigationItem.is-selected:hover,
-.EditorMenu-navigationItem.is-selected:active {
-  background: rgba($cMainBg, 0.32);
-}
-.EditorMenu-navigationItem:hover {
-  background: rgba($cMainBg, 0.16);
-}
-.EditorMenu-navigationItem:active {
-  background: rgba($cMainBg, 0.48);
+  border: 2px solid transparent;
+
+  &.is-selected,
+  &.is-selected:hover,
+  &.is-selected:active {
+    background: rgba($cMainBg, 0.32);
+    border: 2px solid transparent;
+  }
+
+  &:hover {
+    border: 2px solid rgba($cMainBg, 0.32);
+  }
+
+  &:active {
+    background: rgba($cMainBg, 0.48);
+  }
 }
 
 .EditorMenu-navigationLink {
@@ -57,7 +62,7 @@
   margin: 0 auto 48px;
 
   .point {
-    @include transition(all 250ms ease-out);
+    transition: all 250ms ease-out;
     @include css3-prefix(transform-origin, 50%);
   }
 }

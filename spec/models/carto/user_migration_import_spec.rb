@@ -26,7 +26,9 @@ describe Carto::UserMigrationImport do
       import_metadata: true,
       dry: true
     )
-    expect { import.save! }.to(raise_error(ActiveRecord::RecordInvalid, /dry cannot be true while import_metadata is true/))
+    expect { import.save! }.to(
+      raise_error(ActiveRecord::RecordInvalid, /dry cannot be true while import_metadata is true/)
+    )
   end
 
   describe '#import' do

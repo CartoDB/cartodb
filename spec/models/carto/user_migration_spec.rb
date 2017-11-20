@@ -450,7 +450,7 @@ describe 'UserMigration' do
       .with(
         job_uuid: import.id,
         file: "#{package.data_dir}#{export.json_file[/\// =~ export.json_file..-1]}",
-        data:true,
+        data: true,
         metadata: false,
         host: '127.0.0.2',
         rollback: false,

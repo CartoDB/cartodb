@@ -12,6 +12,14 @@ class AuthenticatedClient extends PublicClient {
     };
     return this.put(['me'], opts, callback);
   }
+
+  deleteUser (payload, callback) {
+    var opts = {
+      data: JSON.stringify(payload),
+      dataType: 'json'
+    };
+    return this.delete(['me'], opts, callback);
+  }
 }
 
 module.exports = exports = AuthenticatedClient;

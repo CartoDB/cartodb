@@ -17,7 +17,10 @@
       #container { display:flex; width:100%; height:100%; }
       #map { flex:1; margin:10px; }
       #widgets { width:300px; margin:10px 10px 10px 0; }
-      button { width: 100%; padding: 10px; margin: 2px; background: #AAA; color: #FFF; border: none; font-weight: bold; text-transform: uppercase;}
+      button { width: 100%; padding: 10px; margin: 2px; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
+      button#btnAll { background: #162945; }
+      button#btnMostPopulated { background-color: #73C86B; }
+      button#btnLessPopulated { background-color: #F15743; }
     </style>
   </head>
   <body>
@@ -32,7 +35,7 @@
     <script>
     // 1. Setting up the Leaflet Map
     // 1.1 Creating the Leaflet Map
-    var map = L.map('map').setView([58.722598828043395, 18.544921875000004], 4);
+    var map = L.map('map').setView([30, 0], 3);
 
     // 1.2 Adding basemap and labels layers
     // Adding Voyager Basemap
@@ -47,34 +50,33 @@
       username: 'cartojs-test'
     });
 
-    var query = 'SELECT * FROM ne_10m_populated_places_simple';
-    var style = `
-      #layer {
-        marker-fill: red;
-      }`;
-    var styleLabels = `
-      #layer::labels {
-        marker-fill: red;
-        text-name: [name];
-        text-face-name: 'DejaVu Sans Book';
-        text-size: 15;
-        text-label-position-tolerance: 10;
-        text-fill: #000;
-        text-halo-fill: #FFF;
-        text-halo-radius: 1;
-        text-dy: -10;
-        text-allow-overlap: false;
-        text-placement: point;
-        text-placement-type: simple;
-      }`;
 
     // 3. Displaying countries and cities on the map
     // 3.1 Defining the layer
     // Europe cities layer
+    var query = 'SELECT * FROM ne_10m_populated_places_simple';
     var populatedPlacesSQL = new carto.source.SQL(query);
-    var populatedPlacesStyle = new carto.style.CartoCSS(style);
-    var populatedPlacesStyleLabels = new carto.style.CartoCSS(styleLabels);
-    var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle);
+    var allPopulatedPlacesStyle = new carto.style.CartoCSS(`
+      #layer {
+        marker-fill: #162945;
+      }`);
+    var mostPopulatedPlacesStyleLabels = new carto.style.CartoCSS(`
+      #layer::labels {
+        marker-fill: #73C86B;
+        text-name: [name];
+        text-face-name: 'DejaVu Sans Book';
+        text-size: 15;
+        text-dy: -10;
+      }`);
+    var lessPopulatedPlacesStyleLabels = new carto.style.CartoCSS(`
+      #layer::labels {
+        marker-fill: #F15743;
+        text-name: [name];
+        text-face-name: 'DejaVu Sans Book';
+        text-size: 15;
+        text-dy: -10;
+      }`);
+    var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, allPopulatedPlacesStyle);
 
     // 3.2 Adding the layer to the client
     client.addLayer(populatedPlaces);
@@ -86,17 +88,17 @@
 
     document.querySelector('#btnAll').addEventListener('click', () => {
       populatedPlacesSQL.setQuery(query);
-      populatedPlaces.setStyle(populatedPlacesStyle);
+      populatedPlaces.setStyle(allPopulatedPlacesStyle);
     });
 
     document.querySelector('#btnMostPopulated').addEventListener('click', () => {
       populatedPlacesSQL.setQuery(query + ' ORDER BY pop_max DESC LIMIT 20');
-      populatedPlaces.setStyle(populatedPlacesStyleLabels);
+      populatedPlaces.setStyle(mostPopulatedPlacesStyleLabels);
     });
 
     document.querySelector('#btnLessPopulated').addEventListener('click', () => {
       populatedPlacesSQL.setQuery(query + ' ORDER BY pop_max ASC LIMIT 20')
-      populatedPlaces.setStyle(populatedPlacesStyleLabels);
+      populatedPlaces.setStyle(lessPopulatedPlacesStyleLabels);
     });
     </script>
   </body>

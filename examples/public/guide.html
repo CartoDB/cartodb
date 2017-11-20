@@ -106,7 +106,7 @@
 
       // 4. Setting up tooltips
       // 4.1 Showing the tooltip when user mouses over a city
-      var popup = L.popup();
+      var popup = L.popup({ closeButton: false });
       populatedPlaces.on('featureOver', function (featureEvent) {
         popup.setLatLng(featureEvent.latLng);
         popup.setContent(featureEvent.data.name);

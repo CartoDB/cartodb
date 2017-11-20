@@ -21,12 +21,12 @@
       "file": "public/category-dataview.html"
     },
     {
-      "title": "Histogram Dataview",
+      "title": "Histogram dataview",
       "desc": "Create widgets with the histogram dataview",
       "file": "public/histogram-dataview.html"
     },
     {
-      "title": "Time Series Dataview",
+      "title": "Time Series dataview",
       "desc": "Create widgets with the time series dataview",
       "file": "public/time-series-dataview.html"
     },

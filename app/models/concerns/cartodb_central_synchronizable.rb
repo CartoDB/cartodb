@@ -112,7 +112,7 @@ module Concerns
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo,
-         :user_render_timeout, :database_render_timeout]
+         :user_render_timeout, :database_render_timeout, :state]
       end
     end
 

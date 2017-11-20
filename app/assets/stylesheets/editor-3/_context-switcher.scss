@@ -34,6 +34,13 @@
   margin-left: 8px;
 }
 
+.Editor-contextSwitcher.Editor-contextSwitcher--view {
+  height: 32px;
+  margin-top: -1px;
+  padding-left: 12px;
+  background: #FFF;
+}
+
 .Editor-contextSwitchers--table .Editor-contextSwitcher--geom {
   display: none;
 }

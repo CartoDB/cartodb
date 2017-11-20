@@ -26,7 +26,7 @@ module Carto
       :salesforce_datasource_enabled, :builder_enabled, :geocoder_provider, :isolines_provider, :routing_provider,
       :github_user_id, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
       :no_map_logo, :org_admin, :last_name, :user_render_timeout, :database_render_timeout, :frontend_version,
-      :asset_host
+      :asset_host, :state
     ].freeze
 
     def compatible_version?(version)

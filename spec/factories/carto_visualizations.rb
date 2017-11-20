@@ -25,6 +25,8 @@ module Carto
         visualization_attributes: {}
       )
 
+        carto_user = Carto::User.find(carto_user.id) unless carto_user.is_a? Carto::User
+
         table_visualization = table.visualization || create_table_visualization(carto_user, table)
         visualization = FactoryGirl.create(:carto_visualization, { user: carto_user, map: map }
                                    .merge(visualization_attributes))

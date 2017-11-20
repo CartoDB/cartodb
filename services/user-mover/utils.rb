@@ -77,6 +77,9 @@ module CartoDB
         end
         logger.debug(log_message)
         throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
+      ensure
+        file.close
+        file.unlink
       end
 
       def default_logger

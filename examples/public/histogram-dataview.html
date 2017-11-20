@@ -11,71 +11,41 @@
 
   <!-- Include cartodb.js Library -->
   <script src="../../dist/public/carto.uncompressed.js"></script>
+  <script src="./histogram.min.js"></script>
   <style>
-    html, body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-    #widget {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 20px;
-      font-size: 2em;
-      background-color: rgba(255, 255, 255, 0.8);
-      z-index: 1000;
-    }
+    * { margin:0; padding:0; }
+    html { box-sizing:border-box; height:100%; }
+    body { background:#f2f6f9; height:100%; font-family:"Open sans", Helvetica, Arial, sans-serif; }
+    #container { display:flex; width:100%; height:100%; }
+    #map { flex:1; margin:10px; }
+    #widgets { width:300px; margin:10px 10px 10px 0; }
+    .widget { background:white; padding:10px; margin-bottom:10px; }
+    .widget h1 { font-size:1.2em; }
+    .widget-formula .result { font-size:2em; }
   </style>
 </head>
 
 <body>
-  <div id="widget"></div>
-  <div id="map"></div>
+  <div id="container">
+    <div id="map"></div>
+    <div id="widgets">
+      <div id="widget" class="widget">
+      </div>
+      <p>Hover over the bins to get more info about the prices of the listings.</p>
+      <p>Zoom / pan the map to see the histogram change.</p>
+    </div>
+  </div>
+
   <script>
-    function createHistogram (options) {
-      var data = options.data || [];
-      var status = options.status || '';
-
-      var id = 'histogram';
-      var mainDiv = document.querySelector('#' + id);
-      if (mainDiv !== null) {
-        mainDiv.remove();
-      }
-      mainDiv = document.createElement('div');
-      mainDiv.id = id;
-      mainDiv.style.position = 'absolute';
-      mainDiv.style.bottom = 0;
-      mainDiv.style.left = 0;
-      mainDiv.style.height = '128px';
-      mainDiv.style.width = '100%';
-      mainDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-      mainDiv.style.zIndex = 999;
-      var body = document.querySelector('body');
-      body.appendChild(mainDiv);
-
-      var width = mainDiv.clientWidth;
-      var divWidth = (width - (32 * 2 + (data.length - 1) * 2)) / data.length;
-      var max = Number.MIN_VALUE;
-
-      if (status === 'loading') {
-        var p = document.createElement('p');
-        p.innerText = 'LOADING...';
-        mainDiv.appendChild(p);
-      } else {
-        data.forEach(function (bin, index) {
-          var div = document.createElement('div');
-          div.style.position = 'absolute';
-          div.style.bottom = 0;
-          div.style.left = (index * divWidth + 32 + index * 2) + 'px';
-          div.style.height = (bin.normalized * 128) + 'px';
-          div.style.width = '' + divWidth + 'px';
-          div.style.backgroundColor = '#FF0000';
-          div.style.zIndex = 1100;
-          mainDiv.appendChild(div);
-        });
-      }
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var div = document.getElementById('widget');
+      window.widget = new Histogram({
+        target: div
+      });
+    });
 
     // Create the Leaflet Map
-    var map = L.map('map').setView([42.431234, -8.643616], 5);
+    var map = L.map('map').setView([40.4169, -3.7035], 11);
 
     // Add Voyager Basemap
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
@@ -89,16 +59,8 @@
       username: 'cartojs-test'
     });
 
-    client.on(carto.events.SUCCESS, function () {
-      console.log('Client reloaded', i++)
-    });
-
-    client.on(carto.events.ERROR, function () {
-      console.error('Client Error!', i++)
-    });
-
     // Create a source
-    var source0 = new carto.source.SQL('SELECT * FROM twitter_chiquito_calzada_chiquigif');
+    var source0 = new carto.source.SQL('SELECT * FROM airbnb_listings WHERE price < 150');
 
     // Create a style
     var style = new carto.style.CartoCSS(`
@@ -118,21 +80,13 @@
     client.getLeafletLayer().addTo(map);
 
     // Dataviews
-    var histogram = new carto.dataview.Histogram(source0, 'postedtime');
+    var histogram = new carto.dataview.Histogram(source0, 'price');
 
     histogram.on('dataChanged', function (newData) {
-      console.log('Data changed', newData);
-      createHistogram({ data: histogram.getData().result });
+      widget && widget.set({ bins: newData.bins })
     });
 
     histogram.on('statusChanged', function (newStatus, error) {
-      console.log('Status changed', newStatus, error);
-      if (newStatus === carto.dataview.status.LOADING) {
-      createHistogram({ status: newStatus });
-      }
-      if (newStatus === carto.dataview.status.LOADED) {
-      console.log('loaded');
-      }
     });
 
     // Add Bounding box filter

@@ -25,7 +25,7 @@
 }
 .BlockList-item:hover {
   @include transition(border 200ms ease-in);
-  border: 1px solid $cHoverLine;
+  border: 1px solid $cBlueHover;
 
   .BlockList-dragIcon {
     opacity: 1;

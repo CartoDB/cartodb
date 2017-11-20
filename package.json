@@ -31,6 +31,7 @@
     "codemirror": "5.14.2",
     "html-webpack-plugin": "^2.30.1",
     "jquery": "2.1.4",
+    "leaflet": "1.2.0",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
     "node-polyglot": "1.0.0",

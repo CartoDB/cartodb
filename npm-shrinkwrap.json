@@ -350,7 +350,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.25",
       "from": "cartodb/cartodb.js#public-api",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#c4263560b0b4e526b077df2e9da26a8042169515"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#241cbb7407d9b2dfe3d0c22590add7616bea4a4b"
     },
     "center-align": {
       "version": "0.1.3",
@@ -1257,6 +1257,11 @@
       "version": "1.0.0",
       "from": "lcid@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/lcid/-/lcid-1.0.0.tgz"
+    },
+    "leaflet": {
+      "version": "1.2.0",
+      "from": "leaflet@>=1.2.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.2.0.tgz"
     },
     "lexical-scope": {
       "version": "1.2.0",

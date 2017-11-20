@@ -18,6 +18,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'cartocolor',
   'd3',
   'jquery',
+  'leaflet',
   'perfect-scrollbar',
   'torque.js',
   'turbo-carto'

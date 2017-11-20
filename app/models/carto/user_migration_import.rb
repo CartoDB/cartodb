@@ -26,6 +26,7 @@ module Carto
     validates :exported_file, presence: true
     validates :json_file, presence: true
     validate :valid_org_import
+    validate :valid_dry_settings
 
     def run_import
       raise 'Incompatible options: update_metadata and dry' if import_metadata && dry
@@ -62,6 +63,12 @@ module Carto
         errors.add(:user_id, "user_id can't be present") if user_id.present?
       else
         errors.add(:organization_id, "organization_id can't be present") if organization_id.present?
+      end
+    end
+
+    def valid_dry_settings
+      if import_metadata && dry
+        errors.add(:dry, 'dry cannot be true while import_metadata is true')
       end
     end
 

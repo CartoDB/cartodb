@@ -160,9 +160,9 @@
       "resolved": "https://registry.npmjs.org/big.js/-/big.js-3.2.0.tgz"
     },
     "binary-extensions": {
-      "version": "1.10.0",
+      "version": "1.11.0",
       "from": "binary-extensions@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.10.0.tgz"
+      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.11.0.tgz"
     },
     "bluebird": {
       "version": "3.5.1",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.23",
+      "version": "4.0.0-alpha.25",
       "from": "cartodb/cartodb.js#public-api",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#54ee3b435f4728b2d2cc55f8888fcaccbc661297"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#c4263560b0b4e526b077df2e9da26a8042169515"
     },
     "center-align": {
       "version": "0.1.3",
@@ -1258,11 +1258,6 @@
       "from": "lcid@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/lcid/-/lcid-1.0.0.tgz"
     },
-    "leaflet": {
-      "version": "1.0.3",
-      "from": "leaflet@1.0.3",
-      "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.0.3.tgz"
-    },
     "lexical-scope": {
       "version": "1.2.0",
       "from": "lexical-scope@>=1.2.0 <2.0.0",
@@ -2167,7 +2162,7 @@
     },
     "tangram.cartodb": {
       "version": "0.5.7",
-      "from": "tangram.cartodb@>=0.5.6 <0.6.0",
+      "from": "tangram.cartodb@>=0.5.7 <0.6.0",
       "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.7.tgz"
     },
     "tapable": {
@@ -2258,9 +2253,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.9",
+      "version": "3.1.10",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.9.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.10.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

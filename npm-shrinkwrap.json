@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.13",
-      "from": "cartodb/deep-insights.js#v0.4.13",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#206b9f50171c0123d6ee3277bb658896a4c20c45",
+      "version": "0.4.14",
+      "from": "cartodb/deep-insights.js#v0.4.14",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#3793314f69137bc261792c9a3a7f6265d22af70f",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.26",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.26",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#dbd5d419e2e4fbf72466aeb7f11596563590a1be"
+      "version": "4.0.0-alpha.27",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.27",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#addee471bcc864cc42168434d8639cf224095cc6"
     },
     "center-align": {
       "version": "0.1.3",

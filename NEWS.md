@@ -13,6 +13,7 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Account static view (#12749)
+* Trigger error when interactivity request fails (#13093)
 * Add interactivity error infobox (#13027)
 * Add limits for torque (#13085)
 * Add limits for vector tiles (#13026)
@@ -92,9 +93,13 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizatios and redirection for private endpoints (#13030)
 
 ### Bug fixes / enhancements
+* Improve the discoverability of the table view switch (#13050)
+* Change Basemap layer style (#13091)
+* Rename point/polygon count to feature count (#13066)
 * Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix for torque category legends (CartoDB/support#1120)
 * Upgrade cartodb extension to 0.20.0 (#13065)
+* Remove back arrow and add a tooltip to editor logo (#13067)
 * Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)

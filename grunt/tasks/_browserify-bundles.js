@@ -30,7 +30,10 @@ module.exports = {
   },
 
   'carto-public': {
-    src: 'src/api/v4/index.js',
+    src: [
+      'src/api/v4/index.js',
+      'node_modules/camshaft-reference/versions/0.59.4/reference.json'
+    ],
     dest: '<%= config.dist %>/public/carto.uncompressed.js',
     options: {
       external: [ 'leaflet' ]

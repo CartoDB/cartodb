@@ -141,7 +141,9 @@ module.exports = DataviewModelBase.extend({
 
   parse: function (data) {
     var aggregation = data.aggregation || (this._totals && this._totals.get('aggregation'));
-    var numberOfBins = data.bins_count;
+    var numberOfBins = _.isFinite(data.bins_count)
+      ? data.bins_count
+      : this.get('bins');
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
 

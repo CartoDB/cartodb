@@ -54,7 +54,7 @@
     client.addLayer(spanishCities);
 
     // Setup interactivity
-    var popup = L.popup()
+    var popup = L.popup({ closeButton: false })
       .setLatLng({ lat: 0, lng: 0 });
 
     spanishCities.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {

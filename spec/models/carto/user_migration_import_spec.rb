@@ -16,6 +16,19 @@ describe Carto::UserMigrationImport do
     import.log.entries.should match(/Incompatible options: update_metadata and dry/)
   end
 
+  it 'fails saving a migration with dry and import_metadata' do
+    import = Carto::UserMigrationImport.create(
+      exported_file: :irrelevant_file,
+      json_file: "irrelevant_json_file",
+      database_host: :database_host,
+      user_id: :irrelevant_user_id,
+      organization_id: :irrelevant_organization_id,
+      import_metadata: true,
+      dry: true
+    )
+    expect { import.save! }.to(raise_error(ActiveRecord::RecordInvalid, /dry cannot be true while import_metadata is true/))
+  end
+
   describe '#import' do
     before :each do
       @import = Carto::UserMigrationImport.create(

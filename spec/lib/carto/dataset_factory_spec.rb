@@ -17,6 +17,13 @@ describe Carto::DatasetFactory do
       },
       publishing: {
         privacy: 'private'
+      },
+      data: {
+        type: 'sync',
+        config: {
+          url: 'http://spatialkeydocs.s3.amazonaws.com/FL_insurance_sample.csv.zip',
+          refresh_interval_s: 900
+        }
       }
     }
   end

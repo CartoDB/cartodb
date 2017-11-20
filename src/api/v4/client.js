@@ -83,7 +83,7 @@ Client.prototype.addLayers = function (layers, opts) {
 /**
  * Remove a layer from the client
  *
- * @param {carto.layer.Base} - The layer array to be removed
+ * @param {carto.layer.Base} - The layer to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  * 
@@ -94,10 +94,25 @@ Client.prototype.addLayers = function (layers, opts) {
  * @api
  */
 Client.prototype.removeLayer = function (layer, opts) {
-  _checkLayer(layer);
+  return this.removeLayers([layer], opts);
+};
+
+/**
+ * Remove a layer from the client
+ *
+ * @param {carto.layer.Base[]} - The layer array to be removed
+ * @param {object} opts
+ * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
+ * 
+ * @fires CartoError
+ * @fires carto.events.SUCCESS
+ *
+ * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
+ * @api
+ */
+Client.prototype.removeLayers = function (layers, opts) {
   opts = opts || {};
-  this._layers.remove(layer);
-  this._engine.removeLayer(layer.$getInternalModel());
+  layers.forEach(this._removeLayer, this);
   if (opts.reload === false) {
     return Promise.resolve();
   }
@@ -218,6 +233,15 @@ Client.prototype._addLayer = function (layer, engine) {
   this._layers.add(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
+};
+
+/**
+ * Helper used to remove a layer from the client.
+ */
+Client.prototype._removeLayer = function (layer) {
+  _checkLayer(layer);
+  this._layers.remove(layer);
+  this._engine.removeLayer(layer.$getInternalModel());
 };
 
 /**

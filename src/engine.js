@@ -107,11 +107,7 @@ Engine.prototype.on = function (event, callback, context) {
  * @example
  * // Remove the the `displayMap` listener function so it wont be executed anymore when the engine fires the `load` event.
  * engine.off(Engine.Events.RELOAD_SUCCESS, onReload);
-<<<<<<< HEAD
  *
-=======
- * @api
->>>>>>> Remove @example whitespaces
  */
 Engine.prototype.off = function (event, callback, context) {
   this._eventEmmitter.off(event, callback, context);

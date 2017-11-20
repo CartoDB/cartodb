@@ -16,6 +16,6 @@
   ],
   "opts": {
     "recurse": true,
-    "destination": "./docs/v4"
+    "destination": "./docs/public"
   }
 }

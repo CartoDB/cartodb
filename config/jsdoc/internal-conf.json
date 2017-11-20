@@ -6,7 +6,8 @@
   },
   "templates": {
     "default": {
-      "outputSourceFiles": false
+      "outputSourceFiles": false,
+      "useLongnameInNav": true
     }
   },
   "plugins": [
@@ -14,6 +15,6 @@
   ],
   "opts": {
     "recurse": true,
-    "destination": "./docs/v4-internal"
+    "destination": "./docs/internal"
   }
 }

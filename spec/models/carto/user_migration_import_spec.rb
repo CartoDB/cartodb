@@ -13,7 +13,7 @@ describe Carto::UserMigrationImport do
     )
     import.run_import.should eq false
     import.state.should eq 'failure'
-    import.log.entries.should match(/Incompatible options: import_metadata and dry/)
+    import.log.entries.should match(/Dry dry cannot be true while import_metadata is true/)
   end
 
   it 'fails saving a migration with dry and import_metadata' do
@@ -90,7 +90,6 @@ describe Carto::UserMigrationImport do
       CartoDB::DataMover::ImportJob.stubs(:new).returns @export_job_mock
       @user_migration_package_mock.stubs(:cleanup)
       @import.expects(:save!).once.returns @import
-
     end
 
     def expected_job_arguments

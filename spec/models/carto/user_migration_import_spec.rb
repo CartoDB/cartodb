@@ -33,12 +33,18 @@ describe Carto::UserMigrationImport do
 
   describe '#import' do
     before :each do
+      @org = FactoryGirl.create(:organization)
+      @org.whitelisted_email_domains = []
+      @org.save
+      @user = FactoryGirl.create(:valid_user)
+      @user.save
+      @user = Carto::User.find(@user.id)
       @import = Carto::UserMigrationImport.create(
         exported_file: :irrelevant_file,
         json_file: "irrelevant_json_file",
         database_host: :database_host,
-        user_id: :irrelevant_user_id,
-        organization_id: :irrelevant_organization_id,
+        user_id: @user.id,
+        organization_id: @org.id,
         import_metadata: true,
         dry: false
       )
@@ -46,9 +52,10 @@ describe Carto::UserMigrationImport do
     end
 
     it 'updates database host for imported user' do
-      should_import_metadata_for_user(@user_mock)
+      should_import_metadata_for_user(@user)
       @import.org_import = false
-      should_update_database_host_for_users([@user_mock])
+      @import.organization_id = nil
+      should_update_database_host_for_users([@user])
 
       @import.run_import
     end
@@ -56,7 +63,9 @@ describe Carto::UserMigrationImport do
     it 'updates database host for all users in org' do
       users = create_and_add_users_to_organizaton
       should_import_metadata_for_organization(@organization_mock)
+      @import.stubs(:update_attributes)
       @import.org_import = true
+      @import.user_id = nil
       should_update_database_host_for_users(users)
 
       @import.run_import

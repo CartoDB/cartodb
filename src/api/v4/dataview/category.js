@@ -292,7 +292,7 @@ Category.prototype._createInternalModel = function (engine) {
 module.exports = Category;
 
 /**
- * Event triggered when the data in a cateogry-dataview changes.
+ * Event triggered when the data in a category-dataview changes.
  *
  * Contains a single argument with the {@link carto.dataview.CategoryData}
  *
@@ -302,7 +302,7 @@ module.exports = Category;
  */
 
 /**
- * Event triggered when the limit in a cateogry-dataview changes.
+ * Event triggered when the limit in a category-dataview changes.
  *
  * Contains a single argument with the new limit.
  *
@@ -312,7 +312,7 @@ module.exports = Category;
  */
 
 /**
- * Event triggered when the operation in a cateogry-dataview changes.
+ * Event triggered when the operation in a category-dataview changes.
  *
  * Contains a single argument with the new operation name.
  *
@@ -322,7 +322,7 @@ module.exports = Category;
  */
 
 /**
- * Event triggered when the operationColumn in a cateogry-dataview changes.
+ * Event triggered when the operationColumn in a category-dataview changes.
  *
  * Contains a single argument with the new operationColumn name.
  *

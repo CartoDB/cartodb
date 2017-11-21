@@ -127,10 +127,10 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def lockout
-    if current_user.has_feature_flag?('no_free_tier')
+    if current_user.locked?
       @expiration_days = @user.remaining_days_deletion
-      @payments_url = Cartodb::Central.new.update_payment_url(@user.username)
-      render locals = { breadcrumb: false }
+      @payments_url = @user.update_payment_url(request.protocol)
+      render locals: { breadcrumb: false }
     else
       render_404
     end

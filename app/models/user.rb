@@ -126,7 +126,8 @@ class User < Sequel::Model
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
-  LOCKED_USER_DELETION_PERIOD = 80.days
+  #TODO Remove, get the data from Central
+  LOCKED_USER_DELETION_PERIOD = 90.days
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false

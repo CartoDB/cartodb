@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-fdescribe('api/v4/layer', function () {
+describe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -245,7 +245,7 @@ fdescribe('api/v4/layer', function () {
       expect(sourceChangedSpy).not.toHaveBeenCalled();
     });
 
-    fit('should fire a cartoError when the source is invalid', function (done) {
+    it('should fire a cartoError when the source is invalid', function (done) {
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
         username: 'cartojs-test'

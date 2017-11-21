@@ -16,23 +16,30 @@
       body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
       #container { display: flex; width: 100%; height: 100%; }
       #map { flex: 1; margin: 10px; }
-      #widgets { width: 300px; margin: 10px 10px 10px 0; }
-      button { width: 100%; padding: 10px; margin: 2px; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
-      button#btn1 { margin: 30px auto; background: #162945; }
-      textarea{ margin-top: 30px; width: 100%}
-      p#errors{margin-top: 30px; color:red;}
+      #widgets { position: relative; width: 300px; margin: 10px 10px 10px 0; }
+      button { background: #162945; width: 100%; padding: 10px; margin: 2px; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
+      button#btn1 { margin: 15px 0 5px 0px; }
+      textarea{ width: 100% }
+      p#errors{ margin-top: 30px; color:red; }
+      p.popup {bottom: -100px; left:0; right:0; position: absolute; background:red; color:white; padding: 5px; border-radius: 3px; text-align: center; transition: bottom .35s}
     </style>
   </head>
   <body>
     <div id="container">
       <div id="map"></div>
       <div id="widgets">
+        <p>Style</p>
         <textarea id="cartocss" rows="3">
 #layer { 
     marker-fill: red;
 }
         </textarea>
         <button id="btn1"> Update Layer style</button>
+        <p>Dataset</p>
+        <textarea id="dataset" rows="3">
+ne_10m_populated_places_simple
+        </textarea>
+        <button id="btn2"> Update Layer source</button>
         <p>This map shows a layer with populated cities. 
           <br>
           You can set a custom css to the layer.
@@ -40,6 +47,7 @@
           If the css is valid the layer will be updated, otherwise an error will be printed below.
         </p>
         <p id="errors"></p>
+        <p class="popup">Map has some crazy errors</p>
       </div>
     </div>
     <script>
@@ -75,17 +83,34 @@
       // 4.0 Get a leaflet layer from the client and add it to the map.
       client.getLeafletLayer().addTo(map);
 
+      client.on(carto.events.SUCCESS, () => {
+        document.querySelector('#dataset').style.background = 'white';
+        document.querySelector('#cartocss').style.background = 'white';
+      });
+
       // 5.0 Listen to all layer errors and print an error.
-      layer.on('error', function(cartoError){
-        document.querySelector('#errors').innerText = cartoError.message;
-        document.querySelector('#cartocss').style.background = '#E57373';
-      })
+      layer.on('error', (cartoError) => openPopup(cartoError.message));
 
       document.querySelector('#btn1').addEventListener('click', () => {
         const style = new carto.style.CartoCSS(document.querySelector('#cartocss').value);
         layer.setStyle(style)
-        .catch(cartoError => console.error(cartoError.message)); // // 5.1 Layer errors are also exposed through rejected promises
+          .then(() => document.querySelector('#cartocss').style.background = 'white') 
+          .catch(() => document.querySelector('#cartocss').style.background = '#E57373'); 
       });
+
+      document.querySelector('#btn2').addEventListener('click', () => {
+        const newSource = new carto.source.Dataset(document.querySelector('#dataset').value);
+        layer.setSource(newSource)
+          .then(cartoError => document.querySelector('#dataset').style.background = 'white')
+          .catch(cartoError => document.querySelector('#dataset').style.background = '#E57373'); 
+      });
+
+      function openPopup(message) {
+        let popup = document.querySelector('.popup')
+        popup.innerText = message;
+        popup.style.bottom = 0;
+        setTimeout( () => popup.style.bottom = '-100px', 3000);
+      }
     </script>
   </body>
 </html>

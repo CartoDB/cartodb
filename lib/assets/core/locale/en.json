@@ -3,6 +3,11 @@
   "back-to-dashboard": "Back to the dashboard",
   "edit-map": "Edit map",
   "map-settings": "Map settings",
+  "more-options": "More options",
+  "change-privacy": "Change map privacy",
+  "sql-applied": "SQL query applied",
+  "data-source": "Data source",
+  "edit-analysis": "Edit analysis",
   "user": {
     "you": "You"
   },
@@ -2503,7 +2508,10 @@
       "custom-sql": "layers with custom SQL applied",
       "aggregated": "layers with aggregated styles",
       "sync": "read only layers",
-      "disabled": "Feature editing is disabled for %{disabledLayerType}. To edit data, export this layer and import it as a new layer."
+      "disabled": "Feature editing is disabled for %{disabledLayerType}. To edit data, export this layer and import it as a new layer.",
+      "add-point": "Add point",
+      "add-line": "Add line",
+      "add-polygon": "Add polygon"
     }
   },
   "notifications": {

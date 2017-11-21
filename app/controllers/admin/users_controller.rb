@@ -10,7 +10,7 @@ class Admin::UsersController < Admin::AdminController
   include AvatarHelper
   include OrganizationNotificationsHelper
 
-  ssl_required  :account, :profile, :account_update, :profile_update, :delete
+  ssl_required  :account, :profile, :account_update, :profile_update, :delete, :lockout
 
   before_filter :invalidate_browser_cache
   before_filter :login_required

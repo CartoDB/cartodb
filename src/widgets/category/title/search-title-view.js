@@ -90,16 +90,21 @@ module.exports = cdb.core.View.extend({
       target: '.js-actions',
       container: this.$el
     });
-
     this.addView(dropdown);
 
     var colorsTooltip = new TooltipView({
       context: this.$el,
       target: '.js-colors'
     });
-
     $('body').append(colorsTooltip.render().el);
     this.addView(colorsTooltip);
+
+    var actionsTooltip = new TooltipView({
+      context: this.$el,
+      target: '.js-actions'
+    });
+    $('body').append(actionsTooltip.render().el);
+    this.addView(actionsTooltip);
   },
 
   _isAutoStyleButtonVisible: function () {

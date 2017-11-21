@@ -14,10 +14,10 @@ function hoursToSeconds (hours) {
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data
- * @param {object} options
+ * @param {object} [options]
  * @param {carto.dataview.timeAggregation} [options.aggregation=auto] - Granularity of time aggregation
- * @param {number} options.offset - Amount of hours to displace the aggregation from UTC
- * @param {boolean} options.useLocalTimezone - Indicates to use the user local timezone or not
+ * @param {number} [options.offset] - Amount of hours to displace the aggregation from UTC
+ * @param {boolean} [options.useLocalTimezone] - Indicates to use the user local timezone or not
  *
  * @fires carto.dataview.TimeSeries.dataChanged
  * @fires carto.dataview.TimeSeries.aggregationChanged

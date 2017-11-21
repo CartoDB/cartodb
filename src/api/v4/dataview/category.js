@@ -5,39 +5,39 @@ var CategoryDataviewModel = require('../../../dataviews/category-dataview-model'
 var CategoryFilter = require('../../../windshaft/filters/category');
 
 /**
- * 
+ *
  * A category dataview is used to aggregate data performing a operation.
- * 
+ *
  * This is similar to a group by SQL operation, for example:
- * 
+ *
  * ```sql
  * SELECT country, AVG(population) GROUP BY country
  * ```
  * The following code is the carto.js equivalent:
- * 
+ *
  * ```javascript
  * var categoryDataview = new carto.dataview.Category(citiesSource, 'country', {
  *     operation: carto.operation.AVG, // Compute the average
  *     operationColumn: 'population' // The name of the column where the operation will be applied.
  *  });
  * ```
- * 
+ *
  * Like all dataviews is an async object so you must wait for the data to be availiable.
- * 
+ *
  * The data format for the category-dataview is described in {@link carto.dataview.CategoryItem}
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The name of the column used to create categories
- * @param {object} options
+ * @param {object} [options]
  * @param {number} [options.limit=6] - The maximum number of categories in the response
- * @param {carto.operation} options.operation - The operation to apply to the data
- * @param {string} options.operationColumn - The column where the operation will be applied
+ * @param {carto.operation} [options.operation] - The operation to apply to the data
+ * @param {string} [options.operationColumn] - The column where the operation will be applied
  *
  * @fires carto.dataview.Category.dataChanged
  * @fires carto.dataview.Category.limitChanged
  * @fires carto.dataview.Category.operationChanged
  * @fires carto.dataview.Category.operationColumnChanged
- * 
+ *
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -49,7 +49,7 @@ var CategoryFilter = require('../../../windshaft/filters/category');
  *     operation: carto.operation.AVG, // Compute the average
  *     operationColumn: 'population' // The name of the column where the operation will be applied.
  *  });
- * 
+ *
  * // This will give data like this: { Spain: 1234, France: 3456 ...} To view the actual format see: "CategoryItem".
  * @example
  * // You can listen to multiple events emmited by the category-dataview.
@@ -295,7 +295,7 @@ module.exports = Category;
  * Event triggered when the data in a cateogry-dataview changes.
  *
  * Contains a single argument with the {@link carto.dataview.CategoryData}
- * 
+ *
  * @event carto.dataview.Category.dataChanged
  * @type {carto.dataview.CategoryData}
  * @api
@@ -305,7 +305,7 @@ module.exports = Category;
  * Event triggered when the limit in a cateogry-dataview changes.
  *
  * Contains a single argument with the new limit.
- * 
+ *
  * @event carto.dataview.Category.limitChanged
  * @type {number}
  * @api
@@ -315,7 +315,7 @@ module.exports = Category;
  * Event triggered when the operation in a cateogry-dataview changes.
  *
  * Contains a single argument with the new operation name.
- * 
+ *
  * @event carto.dataview.Category.operationChanged
  * @type {string}
  * @api
@@ -325,8 +325,8 @@ module.exports = Category;
  * Event triggered when the operationColumn in a cateogry-dataview changes.
  *
  * Contains a single argument with the new operationColumn name.
- * 
+ *
  * @event carto.dataview.Category.operationColumnChanged
  * @type {string}
  * @api
- */ 
+ */

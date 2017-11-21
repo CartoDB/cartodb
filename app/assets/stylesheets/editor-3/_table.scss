@@ -284,7 +284,6 @@ $tableBorderColor: $cSecondaryLine;
   position: fixed;
   right: calc(50% - 280px);
   bottom: 33px;
-  padding: 1px;
   border-radius: $halfBaseSize;
   background: $cWhite;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
@@ -310,17 +309,40 @@ $tableBorderColor: $cSecondaryLine;
   justify-content: center;
   width: $baseSize * 4;
   height: $halfBaseSize * 7;
+  position: relative;
+
+  &:hover {
+    background: rgba($cBlue, 0.08);
+  }
 
   .CDB-IconFont {
     width: 100%;
   }
 
   &--prev {
-    border-right: 1px solid $cThirdBackground;
+    border-radius: 4px 0 0 4px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0px;
+      height: calc(100% - 4px);
+      width: 1px;
+      background: #F9F9F9;
+    }
   }
 
   &--next {
-    border-left: 1px solid $cThirdBackground;
+    border-radius: 0 4px 4px 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      height: calc(100% - 4px);
+      width: 1px;
+      background: $cThirdBackground;
+    }
   }
 }
 

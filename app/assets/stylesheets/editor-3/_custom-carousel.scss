@@ -45,7 +45,7 @@
     margin-right: 0;
   }
   &:hover {
-    border: 1px solid $cMainLine;
+    border: 2px solid $cBlueHover;
     cursor: pointer;
   }
 }
@@ -55,7 +55,7 @@
   height: $baseSize * 5;
 }
 .Carousel-item.is-selected {
-  border: 2px solid $cBlue;
+  border: 2px solid #000;
 }
 .Carousel-shadow {
   @include transition(opacity, 400ms);

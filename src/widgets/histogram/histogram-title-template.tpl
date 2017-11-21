@@ -5,7 +5,7 @@
       <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle js-sizes
         <%- isAutoStyle ? 'is-selected' : '' %>
         <%- isAutoStyle ? 'js-cancelAutoStyle' : 'js-autoStyle' %>
-        " data-tooltip="<%- isAutoStyle ? 'Remove auto style' : 'Apply Auto Style' %>">
+        " data-tooltip="<%- isAutoStyle ? 'Remove Auto style' : 'Apply Auto Style' %>">
         <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
       </button>
     <% } %>

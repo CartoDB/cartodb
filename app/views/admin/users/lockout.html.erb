@@ -9,7 +9,11 @@
       <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Your trial period has expired.</p>
       <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Please add a payment method to continue using CARTO.</p>
       <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">CARTO has Community Programs for qualified applicants.<br/>Learn more about our Grants and Ambassador programs.</p>
-      <p class="OnBoarding-welcomeContentText u-bSpace OnBoarding-welcomeContentMargin">Your account will be deleted in <%= pluralize(@expiration_days, "day") %> if you do not add a payment method or <a class="u-whiteTextColor" href="#">qualify for a Community Program</a>.</p>
+      <% if @expiration_days %>
+        <p class="OnBoarding-welcomeContentText u-bSpace OnBoarding-welcomeContentMargin">Your account will be deleted in <%= pluralize(@expiration_days, "day") %> if you do not add a payment method or <a class="u-whiteTextColor" href="#">qualify for a Community Program</a>.</p>
+      <% else %>
+        <p class="OnBoarding-welcomeContentText u-bSpace OnBoarding-welcomeContentMargin">Your account will be deleted in few days if you do not add a payment method or <a class="u-whiteTextColor" href="#">qualify for a Community Program</a>.</p>
+      <% end %>
       <a class="CDB-Button CDB-Button--primary u-bSpace u-iBlock" href="<%= @payments_url %>">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">ADD PAYMENT METHOD</span>
       </a>

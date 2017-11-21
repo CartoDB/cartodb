@@ -817,7 +817,12 @@ class User < Sequel::Model
 
   def remaining_days_deletion
     return nil unless state == STATE_LOCKED
-    (((updated_at + LOCKED_USER_DELETION_PERIOD) - Time.now) / 1.day).to_i
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      (deletion_date.to_date - Date.today).to_i
+    rescue CartoDB::CentralCommunicationFailure
+      return nil
+    end
   end
 
   def remove_logo?

@@ -80,7 +80,8 @@ class DataImport < Sequel::Model
     'privacy',
     'http_response_code',
     'rejected_layers',
-    'runner_warnings'
+    'runner_warnings',
+    'carto_gpkg_metadata'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values

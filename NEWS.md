@@ -91,6 +91,7 @@ ion for time-series (#12670)
 * Updates Dataservices API client default version to `0.21.0` (#12942)
 * Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
 * User accounts in locked state returns 404 for resources like maps or visualizatios and redirection for private endpoints (#13030)
+* Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 
 ### Bug fixes / enhancements
 * Improve the discoverability of the table view switch (#13050)
@@ -108,6 +109,7 @@ ion for time-series (#12670)
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
+* Supporting text-placement for labels (CartoDB/support#13015)
 * Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)

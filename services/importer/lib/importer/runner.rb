@@ -194,7 +194,7 @@ module CartoDB
         # the source_file's basename (i.e. hello.carto.gpkg -> basename: hello.carto)
         if File.extname(source_file.name) == '.carto'
           @importer_stats.timing('extract .carto.geopkg metadata') do
-            @metadata = GpkgCartoMetadataUtil
+            @metadata = Carto::GpkgCartoMetadataUtil
                         .new(geopkg_file: source_file.fullpath)
                         .metadata
           end

@@ -172,12 +172,15 @@ fdescribe('api/v4/layer', function () {
       });
 
       describe('and the source has no engine', function () {
-        it('should normally add the source', function () {
-          layer.setSource(newSource);
-
-          var actualSource = layer.$getInternalModel().get('source');
-          var expectedSource = newSource.$getInternalModel();
-          expect(actualSource).toEqual(expectedSource);
+        it('should normally add the source', function (done) {
+          layer.setSource(newSource)
+            .then(function () {
+              var actualSource = layer.$getInternalModel().get('source');
+              var expectedSource = newSource.$getInternalModel();
+              expect(actualSource).toBeDefined();
+              expect(actualSource).toEqual(expectedSource);
+              done();
+            });
         });
 
         it('should fire a sourceChanged event', function (done) {

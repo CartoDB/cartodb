@@ -114,12 +114,23 @@ Layer.prototype.setSource = function (source) {
   if (prevSource === source) {
     return;
   }
-
+  // If layer is not instantiated just store the new status
+  if (!this._internalModel) {
+    self._source = source;
+    this.trigger('sourceChanged', this);
+    return Promise.resolve();
+  }
+  // If layer has been instantiated 
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
     if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
       throw new Error('A layer can\'t have a source which belongs to a different client');
     }
+    // If source has no engine use the layer engine.
+    if (!source.$getEngine()) {
+      source.$setEngine(this._engine);
+    }
+    // Update the internalModel and return a promise
     this._internalModel.set('source', source.$getInternalModel(), { silent: true });
     return this._engine.reload()
       .then(function () {
@@ -130,10 +141,6 @@ Layer.prototype.setSource = function (source) {
         // TODO: better cartoErrors
         return Promise.reject(new CartoError('Cannot set source'));
       });
-  } else {
-    self._source = source;
-    this.trigger('sourceChanged', this);
-    return Promise.resolve();
   }
 };
 

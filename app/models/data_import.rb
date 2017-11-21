@@ -418,10 +418,11 @@ class DataImport < Sequel::Model
   rescue JSON::ParserError
   end
 
+  # Nil values are allowed
   def carto_gpkg_metadata=(value)
-    raise "Expected type Hash, got #{value.class}" unless value.is_a?(Hash)
+    raise "Expected type Hash, got #{value.class}" if value && !value.is_a?(Hash)
 
-    super(value.to_json)
+    super(value ? value.to_json : nil)
   end
 
   private

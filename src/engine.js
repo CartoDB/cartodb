@@ -34,8 +34,7 @@ var WindshaftError = require('./windshaft/error');
  * @param {string} params.serverUrl - Url of the windshaft server.
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
  * @param {boolean} params.statTag - Token used to get map view statistics.
- * @class
- * @api
+ * @constructor
  */
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');
@@ -84,21 +83,16 @@ Engine.prototype.getLayerGroup = function () {
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function to be executed when the event is fired.
  * @param {function} [context] - The context value for this when the callback is invoked.
- *
  * @example
- *
  * // Define a callback to be executed once the map is reloaded.
  * function onReload(event) {
  *  console.log(event); // "reload-success"
  * }
- *
  * // Attach the callback to the RELOAD_SUCCESS event.
  * engine.on(Engine.Events.RELOAD_SUCCESS, onReload);
- *
  * // Call the reload method and wait.
  * engine.reload();
  *
- * @api
  */
 Engine.prototype.on = function (event, callback, context) {
   this._eventEmmitter.on(event, callback, context);
@@ -110,13 +104,10 @@ Engine.prototype.on = function (event, callback, context) {
  * @param {string} event - The name of the event that triggers the callback execution.
  * @param {function} callback - A function callback to be removed when the event is fired.
  * @param {function} [context] - The context value for this when the callback is invoked.
- *
  * @example
- *
  * // Remove the the `displayMap` listener function so it wont be executed anymore when the engine fires the `load` event.
  * engine.off(Engine.Events.RELOAD_SUCCESS, onReload);
  *
- * @api
  */
 Engine.prototype.off = function (event, callback, context) {
   this._eventEmmitter.off(event, callback, context);
@@ -137,20 +128,32 @@ Engine.prototype.off = function (event, callback, context) {
  * @fires Engine#Engine:RELOAD_SUCCESS
  * @fires Engine#Engine:RELOAD_ERROR
  *
- * @api
  */
 Engine.prototype.reload = function (options) {
-  options = this._buildOptions(options);
-  try {
-    var params = this._buildParams(options.includeFilters);
-    var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
-    var request = new Request(payload, params, options);
+  return new Promise(function (resolve, reject) {
+    options = this._buildOptions(options);
+    var oldSuccess = options.success;
+    var oldError = options.error;
+    options.success = function (serverResponse) {
+      oldSuccess(serverResponse);
+      resolve();
+    };
+    options.error = function (serverResponse) {
+      oldError(serverResponse);
+      reject(serverResponse);
+    };
+    try {
+      var params = this._buildParams(options.includeFilters);
+      var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+      var request = new Request(payload, params, options);
 
-    this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
-    this._windshaftClient.instantiateMap(request);
-  } catch (error) {
-    this._manageClientError(error, options);
-  }
+      this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+      this._windshaftClient.instantiateMap(request);
+    } catch (error) {
+      this._manageClientError(error, options);
+      reject(error);
+    }
+  }.bind(this));
 };
 
 /**
@@ -160,7 +163,6 @@ Engine.prototype.reload = function (options) {
  * @param {layer} layer - A new layer to be added to the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.addLayer = function (layer) {
   this._layersCollection.add(layer);
@@ -173,7 +175,6 @@ Engine.prototype.addLayer = function (layer) {
  * @param {layer} layer - A new layer to be removed from the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.removeLayer = function (layer) {
   this._layersCollection.remove(layer);
@@ -186,7 +187,6 @@ Engine.prototype.removeLayer = function (layer) {
  * @param {Dataview} dataview - A new dataview to be added to the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.addDataview = function (dataview) {
   this._dataviewsCollection.add(dataview);
@@ -199,7 +199,6 @@ Engine.prototype.addDataview = function (dataview) {
  * @param {Dataview} dataview - The Dataview to be removed to the engine.
  *
  * @public
- * @api
  */
 Engine.prototype.removeDataview = function (dataview) {
   this._dataviewsCollection.remove(dataview);
@@ -307,7 +306,6 @@ Engine.prototype._manageClientError = function (error, options) {
  *
  * @readonly
  * @enum {string}
- * @api
  */
 Engine.Events = {
   /**
@@ -331,7 +329,6 @@ module.exports = Engine;
  *
  * @event Engine#Engine:RELOAD_STARTED
  * @type {string}
- * @api
  */
 
 /**
@@ -339,7 +336,6 @@ module.exports = Engine;
   *
   * @event Engine#Engine:RELOAD_SUCCESS
   * @type {string}
-  * @api
   */
 
 /**
@@ -347,5 +343,4 @@ module.exports = Engine;
   *
   * @event Engine#Engine:RELOAD_ERROR
   * @type {string}
-  * @api
   */

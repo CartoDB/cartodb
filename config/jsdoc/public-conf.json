@@ -1,0 +1,21 @@
+{
+  "source": {
+    "include": [
+      "src"
+    ]
+  },
+  "templates": {
+    "default": {
+      "outputSourceFiles": false,
+      "useLongnameInNav": true
+    }
+  },
+  "plugins": [
+    "plugins/api",
+    "plugins/markdown"
+  ],
+  "opts": {
+    "recurse": true,
+    "destination": "./docs/public"
+  }
+}

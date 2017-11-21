@@ -3,46 +3,45 @@ CARTO.js [v4](http://cartodb.github.io/cartodb.js/)
 
 This library allows to embed visualizations created with CARTO in your map or website in a simple way.
 
-# TODO:
+## Quick start
 
-## ~Quick start
+  1. Add Leaflet and CARTO.js to your site:
 
-  1. Add cartodb.js and css to your site:
+  ```html
+  <!-- Include Leaflet Library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 
-    ```html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
-
-    <!-- use these cartodb.css links if you are using https -->
-    <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" /-->
-
-    <!-- use this cartodb.js link if you are using https -->
-    <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script -->
-    ```
-
+  <!-- Include CARTO.js Library -->
+  <script src="https://cdn.rawgit.com/CartoDB/cartodb.js/@4.0.0-alpha/carto.js"></script>
+  ```
 
   2. Create the map and add the layer
 
-    ```javascript
-    var map = L.map('map').setView([0, 0], 3);
+  ```javascript
+  var map = L.map('map').setView([0, 0], 3);
 
-    // set a base layer
-    L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
-      attribution: 'stamen http://maps.stamen.com/'
-    }).addTo(map);
+  // Set a base layer
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+      attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+  }).addTo(map);
 
-    // add the cartodb layer
-    var layerUrl = 'http://documentation.carto.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
-    cartodb.createLayer(map, layerUrl).addTo(map);
-    ```
+  // Define a client
+  var client = new carto.Client({
+    apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+    username: 'cartojs-test'
+  });
 
-### Usage with Bower
+  // Define a layer
+  var source = new carto.source.Dataset('ne_adm0_europe');
+  var style = new carto.style.CartoCSS('#layer {polygon-fill: #162945;}');
+  var layer = new carto.layer.Layer(source, style);
 
-You can install **cartodb.js** with [bower](http://bower.io/) by running
+  // Add the layer to the map
+  client.addLayer(layer);
+  client.getLeafletLayer().addTo(map);
+  ```
 
-```sh
-bower install cartodb.js
-```
 
 ## ~Documentation
 You can find the documentation online [here](http://docs.carto.com/cartodb-platform/cartodb-js.html) and the [source](https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md) inside this repository.
@@ -61,9 +60,8 @@ You can find the documentation online [here](http://docs.carto.com/cartodb-platf
 Build CartoDB.js library:
 
 - Install [node.js](http://nodejs.org/download/), from 0.10 version
-- Install grunt & bower: `npm install -g grunt-cli bower`
+- Install grunt: `npm install -g grunt-cli`
 - Install node dependencies: `npm install`
-- Install bower dependencies: `bower install`
 - Install [ruby](https://www.ruby-lang.org/en/installation/) and [bundler](https://github.com/bundler/bundler)
 - Install ruby dependencies: `bundle install` (necessary for compass gem)
 - Start the server: `grunt build`

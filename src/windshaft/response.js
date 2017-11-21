@@ -18,13 +18,11 @@ function Response (windshaftSettings, serverResponse) {
 
 /**
  * Return the indexes of the layers for a certain type.
- * 
  * @example
  * // layers = [ carto, carto, tiled, plain, tiled, torque];
  * getLayerIndexesByType('mapnik') // [0, 1]
  * getLayerIndexesByType('tiled') // [2, 4]
  * getLayerIndexesByType('torque') // [5]
- * 
  * @param {string} Type - The type of the layers: mapnik, torque, plain, tiled.
  */
 Response.prototype.getLayerIndexesByType = function getLayerIndexesByType (layerType) {

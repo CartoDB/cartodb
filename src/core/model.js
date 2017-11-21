@@ -43,7 +43,7 @@ var Model = Backbone.Model.extend({
   * @method retrigger
   * @param ev {String} event who triggers the action
   * @param obj {Object} object where the event happens
-  * @param obj {Object} [optional] name of the retriggered event;
+  * @param obj {Object} [optional] name of the retriggered event
   * @todo [xabel]: This method is repeated here and in the base view definition. There's should be a way to make it unique
   */
   retrigger: function (ev, obj, retrigEvent) {

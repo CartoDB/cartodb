@@ -11,9 +11,11 @@ var Dataview = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var MapModel = require('../../../src/geo/map');
 var MockFactory = require('../../helpers/mockFactory');
+var BoundingBoxFilter = require('../../../src/windshaft/filters/bounding-box');
+var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 
 describe('src//model-updater', function () {
-  var mapModel;
+  var boundingBoxFilter;
   var engineMock;
   var serverResponse;
   var windshaftSettings;
@@ -42,17 +44,19 @@ describe('src//model-updater', function () {
     spyOn(serverResponse, 'getSupportedSubdomains').and.returnValue(['']);
 
     this.layersCollection = new LayersCollection();
-    this.mapModel = new MapModel(null, {
-      layersFactory: {},
-      layersCollection: this.layersCollection
-    });
 
     this.layerGroupModel = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
     });
     this.dataviewsCollection = new Backbone.Collection();
 
-    mapModel = new MapModel(null, { layersFactory: {}, layersCollection: this.LayersCollection });
+    var mapModel = new MapModel({
+      bounds: [[40.2813, -3.90592], [40.5611, -3.47532]]
+    }, {
+      layersFactory: {},
+      layersCollection: this.LayersCollection
+    });
+    boundingBoxFilter = new BoundingBoxFilter(new MapModelBoundingBoxAdapter(mapModel));
 
     this.modelUpdater = new ModelUpdater({
       layerGroupModel: this.layerGroupModel,
@@ -479,14 +483,14 @@ describe('src//model-updater', function () {
           id: 'a1',
           source: new AnalysisModel({}, { engine: engineMock, camshaftReference: camshaftReferenceMock })
         }, {
-          map: mapModel,
+          bboxFilter: boundingBoxFilter,
           engine: engineMock
         });
         var dataview2 = new Dataview({
           id: 'a2',
           source: new AnalysisModel({}, { engine: engineMock, camshaftReference: camshaftReferenceMock })
         }, {
-          map: mapModel,
+          bboxFilter: boundingBoxFilter,
           engine: engineMock
         });
         this.dataviewsCollection.reset([dataview1, dataview2]);
@@ -531,7 +535,7 @@ describe('src//model-updater', function () {
         var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
         var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
         var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: engineMock });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { bboxFilter: boundingBoxFilter, engine: engineMock });
 
         spyOn(analysis1, 'setOk');
         spyOn(analysis2, 'setOk');
@@ -557,7 +561,7 @@ describe('src//model-updater', function () {
         var analysis1 = new AnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
         var analysis2 = new AnalysisModel({ id: 'a2', type: 'source', query: 'SELECT * FROM table' }, { engine: engineMock, camshaftReference: camshaftReferenceMock });
         var layer = new CartoDBLayer({ source: analysis1 }, { engine: engineMock });
-        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { map: mapModel, engine: engineMock });
+        var dataview = new Dataview({ id: 'a1', source: analysis2 }, { bboxFilter: boundingBoxFilter, engine: engineMock });
 
         spyOn(serverResponse, 'getAnalysisNodeMetadata').and.callFake(function (analysisId) {
           return { error_message: 'fake_error_message', status: 'failed', query: 'query_' + analysisId, url: { http: 'url_' + analysisId } };

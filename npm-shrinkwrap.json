@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.81",
+  "version": "4.10.8-1.13095",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -160,9 +160,9 @@
       "resolved": "https://registry.npmjs.org/big.js/-/big.js-3.2.0.tgz"
     },
     "binary-extensions": {
-      "version": "1.10.0",
+      "version": "1.11.0",
       "from": "binary-extensions@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.10.0.tgz"
+      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.11.0.tgz"
     },
     "bluebird": {
       "version": "3.5.1",
@@ -331,10 +331,15 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.14",
-      "from": "cartodb/deep-insights.js#v0.4.14",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3793314f69137bc261792c9a3a7f6265d22af70f",
+      "version": "0.4.15",
+      "from": "cartodb/deep-insights.js#13095-tooltips",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#bbe8b7ece534b3186cde2b8d0b778f3dbca9649a",
       "dependencies": {
+        "cartodb.js": {
+          "version": "4.0.0-alpha.28",
+          "from": "cartodb/cartodb.js#v4.0.0-alpha.28",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#cdbc4d8bd9f21d0d9019b8603ba1a1530d148629"
+        },
         "node-polyglot": {
           "version": "2.2.2",
           "from": "node-polyglot@>=2.2.2 <3.0.0",
@@ -2258,9 +2263,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.9",
+      "version": "3.1.10",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.9.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.10.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

@@ -24,7 +24,7 @@
     "camshaft-reference": "0.33.4",
     "carto": "cartodb/carto#master",
     "cartocolor": "4.0.0",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#v0.4.14",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#13095-tooltips",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "CartoDB/cartodb.js#v4.0.0-alpha.27",
     "clipboard": "1.6.1",

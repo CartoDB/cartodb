@@ -48,7 +48,7 @@
     background: #FFB927;
 
     &:hover {
-      background: darken(#FFB927, 8%)
+      background: darken(#FFB927, 8%);
     }
   }
 
@@ -56,7 +56,7 @@
     background: $cAlert;
 
     &:hover {
-      background: darken($cAlert, 8%)
+      background: darken($cAlert, 8%);
     }
   }
 
@@ -64,7 +64,7 @@
     background: $cPassword;
 
     &:hover {
-      background: darken($cPassword, 8%)
+      background: darken($cPassword, 8%);
     }
   }
 
@@ -72,7 +72,7 @@
     background: $cError;
 
     &:hover {
-      background: darken($cError, 8%)
+      background: darken($cError, 8%);
     }
   }
 
@@ -80,7 +80,7 @@
     background: $cBlue;
 
     &:hover {
-      background: darken($cBlue, 8%)
+      background: darken($cBlue, 8%);
     }
   }
 
@@ -88,7 +88,7 @@
     background: $cPublic;
 
     &:hover {
-      background: darken($cPublic, 8%)
+      background: darken($cPublic, 8%);
     }
   }
 }

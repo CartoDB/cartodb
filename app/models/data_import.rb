@@ -320,6 +320,22 @@ class DataImport < Sequel::Model
     log.store
     save
 
+    # TODO: Find better location for synchronization creation
+    data_type = carto_gpkg_metadata.try(:[], 'data').try(:[], 'type')
+    if data_type == 'sync'
+      member_attributes = {
+        name: table_names.first,
+        user_id: user_id,
+        state: CartoDB::Synchronization::Member::STATE_CREATED,
+        url: carto_gpkg_metadata.try(:[], 'data').try(:[], 'config').try(:[], 'url'),
+        interval: carto_gpkg_metadata.try(:[], 'data')
+                                     .try(:[], 'config')
+                                     .try(:[], 'refresh_interval_s') || 300
+      }
+
+      CartoDB::Synchronization::Member.new(member_attributes).enqueue
+    end
+
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
                                                                              user: current_user,

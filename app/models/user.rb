@@ -819,8 +819,10 @@ class User < Sequel::Model
     return nil unless state == STATE_LOCKED
     begin
       deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      return nil unless deletion_date
       (deletion_date.to_date - Date.today).to_i
-    rescue CartoDB::CentralCommunicationFailure
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Something went wrong calculating the number of remaining days for account deletion')
       return nil
     end
   end

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.32-12740.14",
+  "version": "4.10.32-12740.15",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -153,7 +153,7 @@
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "carto-node": "webpack --config webpack/carto-node/webpack.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
-    "start:static": "npm carto-node && webpack --progress --watch --config webpack/webpack.dev.config.js",
+    "start:static": "npm run carto-node && webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }

@@ -129,6 +129,24 @@ fdescribe('api/v4/layer', function () {
 
       expect(styleChangedSpy).not.toHaveBeenCalled();
     });
+
+    it('should fire a cartoError when the style is invalid', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var styleChangedSpy = jasmine.createSpy('styleChangedSpy');
+      layer.on('error', styleChangedSpy);
+      client.addLayer(layer)
+        .then(function () {
+          var malformedStyle = new carto.style.CartoCSS('#layer { invalid-rule: foo}');
+          return layer.setStyle(malformedStyle);
+        })
+        .catch(function () {
+          expect(styleChangedSpy).toHaveBeenCalled();
+          done();
+        });
+    });
   });
 
   describe('.setSource', function () {
@@ -225,6 +243,24 @@ fdescribe('api/v4/layer', function () {
       layer.setSource(source);
 
       expect(sourceChangedSpy).not.toHaveBeenCalled();
+    });
+
+    fit('should fire a cartoError when the source is invalid', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var sourceChangedSoy = jasmine.createSpy('sourceChangedSoy');
+      layer.on('error', sourceChangedSoy);
+      client.addLayer(layer)
+        .then(function () {
+          var invalidDataset = new carto.source.Dataset('invalid_dataset');
+          return layer.setSource(invalidDataset);
+        })
+        .catch(function () {
+          expect(sourceChangedSoy).toHaveBeenCalled();
+          done();
+        });
     });
   });
 

@@ -74,7 +74,6 @@ Layer.prototype.setStyle = function (style, opts) {
       })
       .catch(function (err) {
         var error = new CartoError(err);
-        // TODO: better cartoErrors
         self.trigger('error', new CartoError(error));
         return Promise.reject(error);
       });
@@ -137,9 +136,10 @@ Layer.prototype.setSource = function (source) {
         self._source = source;
         self.trigger('sourceChanged', this);
       })
-      .catch(function () {
-        // TODO: better cartoErrors
-        return Promise.reject(new CartoError('Cannot set source'));
+      .catch(function (err) {
+        var error = new CartoError(err);
+        self.trigger('error', error);
+        return Promise.reject(error);
       });
   }
 };

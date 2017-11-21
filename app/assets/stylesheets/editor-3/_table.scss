@@ -327,12 +327,12 @@ $tableBorderColor: $cSecondaryLine;
     border-bottom-left-radius: 4px;
 
     &::after {
-      content: '';
       position: absolute;
       right: 0;
-      height: calc(100% - 4px);
       width: 1px;
+      height: calc(100% - 4px);
       background: #F9F9F9;
+      content: '';
     }
   }
 

@@ -4,8 +4,8 @@
 @import 'vars';
 
 .EditorMenu {
-  flex: 0 0 72px;
   position: relative;
+  flex: 0 0 72px;
   width: 72px;
   min-height: 450px;
   box-sizing: border-box;
@@ -15,23 +15,23 @@
 
 .EditorMenu-navigation {
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
 }
 
 .EditorMenu-navigationItem {
-  transition: all 0.2s ease-in;
   width: $baseSize * 4;
   height: $baseSize * 4;
   margin-bottom: $baseSize;
+  transition: all 0.2s ease-in;
   border-radius: 4px;
   border: 2px solid transparent;
 
   &.is-selected,
   &.is-selected:hover,
   &.is-selected:active {
-    background: rgba($cMainBg, 0.32);
     border: 2px solid transparent;
+    background: rgba($cMainBg, 0.32);
   }
 
   &:hover {
@@ -55,22 +55,22 @@
 
 .EditorMenu-logo {
   display: flex;
-  align-items: center;
   flex-direction: center;
+  align-items: center;
   width: 32px;
   height: 32px;
   margin: 0 auto 48px;
 
   .point {
-    transition: all 250ms ease-out;
     transform-origin: 50%;
+    transition: all 250ms ease-out;
   }
 }
 .EditorMenu-feedback {
-  transform: translateX(-50%);
   position: absolute;
   bottom: 20px;
   left: 50%;
+  transform: translateX(-50%);
 }
 .Editor-feedbackModal {
   position: absolute;

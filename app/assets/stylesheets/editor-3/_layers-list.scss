@@ -95,8 +95,6 @@
     border: 1px solid rgba($cBlue, 0.48);
     box-shadow: 0 8px 16px rgba(#000, 0.16);
     cursor: move;
-    cursor: -webkit-grabbing;
-    cursor: -moz-grabbing;
     opacity: 0.8;
     z-index: 1000;
   }
@@ -126,15 +124,13 @@
 .Editor-ListLayer .ui-sortable-helper,
 .Editor-newLayerContainer .Editor-ListLayer-item {
   cursor: move;
-  cursor: -webkit-grabbing;
-  cursor: -moz-grabbing;
 }
 
 .Editor-ListLayer-dragIcon {
-  transition: opacity 200ms ease-in;
   position: absolute;
   top: 28px;
   left: -20px;
+  transition: opacity 200ms ease-in;
   opacity: 0;
 }
 .Editor-ListLayer-media {
@@ -182,7 +178,7 @@
     opacity: 0.24;
   }
 
-  &:before {
+  &::before {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -195,8 +191,8 @@
 
 .Editor-ListAnalysis-item {
   display: flex;
-  align-items: center;
   position: relative;
+  align-items: center;
   margin-bottom: 8px;
   background: #FFF;
 
@@ -274,8 +270,8 @@
 
 .Editor-ListAnalysis-itemInfo {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   width: 40px;
   min-width: 40px;
   height: 32px;

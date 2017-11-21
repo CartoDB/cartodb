@@ -147,7 +147,7 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-row:hover,
 .Table-row.is-highlighted {
-  background: rgba($cHighlight, 0.16);
+  background: rgba($cBlue, 0.08);
 }
 .Table-cellItem {
   position: relative;
@@ -157,7 +157,6 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-cellItem:hover,
 .Table-cellItem.is-highlighted {
-  background: rgba($cHighlight, 0.32);
   cursor: pointer;
 
   .Table-cellItemOptions {
@@ -167,12 +166,12 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-cellItem:hover::after,
 .Table-cellItem.is-highlighted::after {
+  border: 1px solid $cBlueHover;
   position: absolute;
   top: -1px;
   right: -1px;
   bottom: -1px;
   left: -1px;
-  border: 1px solid rgba($cHighlight, 0.8);
   pointer-events: none;
   content: '';
 }

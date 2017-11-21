@@ -7,41 +7,40 @@ This library allows to embed visualizations created with CARTO in your map or we
 
   1. Add Leaflet and CARTO.js to your site:
 
-    ```html
-    <!-- Include Leaflet Library -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  ```html
+  <!-- Include Leaflet Library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 
-    <!-- Include CARTO.js Library -->
-    <script src="https://cdn.rawgit.com/CartoDB/cartodb.js/@4.0.0-alpha/carto.js"></script>
-    ```
+  <!-- Include CARTO.js Library -->
+  <script src="https://cdn.rawgit.com/CartoDB/cartodb.js/@4.0.0-alpha/carto.js"></script>
+  ```
 
   2. Create the map and add the layer
 
-    ```javascript
-    var map = L.map('map').setView([0, 0], 3);
+  ```javascript
+  var map = L.map('map').setView([0, 0], 3);
 
-    // Set a base layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
-        attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
-    })
-    .addTo(map);
+  // Set a base layer
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+      attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+  }).addTo(map);
 
-    // Define a client
-    var client = new carto.Client({
-      apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-      username: 'cartojs-test'
-    });
+  // Define a client
+  var client = new carto.Client({
+    apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+    username: 'cartojs-test'
+  });
 
-    // Define a layer
-    var source = new carto.source.Dataset('ne_adm0_europe');
-    var style = new carto.style.CartoCSS('#layer {polygon-fill: #162945;}');
-    var layer = new carto.layer.Layer(source, style);
+  // Define a layer
+  var source = new carto.source.Dataset('ne_adm0_europe');
+  var style = new carto.style.CartoCSS('#layer {polygon-fill: #162945;}');
+  var layer = new carto.layer.Layer(source, style);
 
-    // Add the layer to the map
-    client.addLayer(layer);
-    client.getLeafletLayer().addTo(map);
-    ```
+  // Add the layer to the map
+  client.addLayer(layer);
+  client.getLeafletLayer().addTo(map);
+  ```
 
 
 ## ~Documentation

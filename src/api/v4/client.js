@@ -22,12 +22,11 @@ var VERSION = require('../../../package.json').version;
  * @param {string} [settings.serverUrl] - URL of the windshaft server
  *
  * @example
- *
  * var client = new carto.Client({
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE'
  * });
- * 
+ *
  * @constructor
  * @memberof carto
  * @api
@@ -56,7 +55,7 @@ _.extend(Client.prototype, Backbone.Events);
  * @param {carto.layer.Base} - The layer to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
@@ -95,7 +94,7 @@ Client.prototype.addLayers = function (layers, opts) {
  * @param {carto.layer.Base} - The layer to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
@@ -112,7 +111,7 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @param {carto.layer.Base[]} - An array with the layers to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
@@ -146,7 +145,7 @@ Client.prototype.getLayers = function () {
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
- * 
+ *
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
@@ -163,7 +162,7 @@ Client.prototype.addDataview = function (dataview, opts) {
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
- * 
+ *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
@@ -185,7 +184,7 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
- * 
+ *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
@@ -212,7 +211,7 @@ Client.prototype.getDataviews = function () {
 /**
  * Return a Leaflet layer that groups all the layers that have been
  * added to this client.
- * 
+ *
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
@@ -265,8 +264,8 @@ Client.prototype._addDataview = function (dataview, engine) {
 };
 
 /**
- * Client exposes Event.SUCCESS and RELOAD_ERROR to the api users, 
- * those events are wrappers using _engine internaly. 
+ * Client exposes Event.SUCCESS and RELOAD_ERROR to the api users,
+ * those events are wrappers using _engine internaly.
  */
 Client.prototype._bindEngine = function (engine) {
   engine.on(Engine.Events.RELOAD_SUCCESS, function () {

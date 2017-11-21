@@ -381,6 +381,7 @@ module.exports = function (grunt) {
   ]);
 
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
+  registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
 
   grunt.registerTask('build', [
     'npm-static',
@@ -388,7 +389,8 @@ module.exports = function (grunt) {
     'copy:js',
     'exorcise',
     'uglify',
-    'npm-build'
+    'npm-build',
+    'npm-build-static'
   ]);
 
   /**

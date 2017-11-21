@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CARTO.js Piechart Dataview example</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="../../dist/public/carto.uncompressed.js"></script>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <style>
+      * { margin:0; padding:0; }
+      html { box-sizing:border-box; height:100%; }
+      body { background:#f2f6f9; height:100%; font-family:"Open sans", Helvetica, Arial, sans-serif; }
+      #container { display:flex; width:100%; height:100%; }
+      #map { flex:1; margin:10px; }
+      #widgets { width:300px; margin:10px 10px 10px 0; }
+      .widget { background:white; padding:10px; margin-bottom:10px; }
+      .widget h1 { font-size:1.2em; }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="map"></div>
+      <div id="widgets">
+        <div id="widget" class="widget">
+        </div>
+        <p>This map shows suffer score.</p>
+      </div>
+    </div>
+    <script>
+      var width = 800,
+          height = 250,
+          radius = Math.min(width, height) / 2;
+
+      var color = d3.scaleOrdinal()
+          .range(["#98abc5", "#8a89a6", "#7b6888"]);
+
+      var arc = d3.arc()
+          .outerRadius(radius - 10)
+          .innerRadius(radius - 70);
+
+      var pie = d3.pie()
+          .sort(null)
+          .value(function(d) {
+            console.log(d);
+              return d.totalCrimes;
+          });
+
+
+      var svg = d3.select("#widget").append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .append("g")
+          .attr("id", "pieChart")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+      var path = svg.selectAll("path")
+          .data(pie([]))
+          .enter()
+          .append("path");
+
+      path.transition()
+          .duration(500)
+          .attr("fill", function(d, i) {
+              return color(d.data.crimeType);
+          })
+          .attr("d", arc)
+          .each(function(d) {
+              this._current = d;
+          }); // store the initial angles
+
+
+      function change(data) {
+          path.data(pie(data));
+          path.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
+
+      }
+
+      // Store the displayed angles in _current.
+      // Then, interpolate from _current to the new angles.
+      // During the transition, _current is updated in-place by d3.interpolate.
+
+      function arcTween(a) {
+          var i = d3.interpolate(this._current, a);
+          this._current = i(0);
+          return function(t) {
+              return arc(i(t));
+          };
+      }
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // var div = document.getElementById('widget');
+        // window.widget = new Histogram({
+        //   target: div
+        // });
+        // widget.set({ item: 'ele '});
+      });
+
+      var map = L.map('map').setView([40.4169, -3.7035], 11);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      }).addTo(map);
+
+      var client = new carto.Client({
+        apiKey: 'b94a78224cc8411b852475071ba6a57889246601',
+        username: 'matallo'
+      });
+
+      // var source = new carto.source.SQL('SELECT * FROM hackarto_track_track_points WHERE price < 150');
+      var source = new carto.source.SQL('SELECT * FROM matallo.morning_ride_track_points');
+      var style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 10;
+          marker-fill: red;
+        }`
+      );
+      var layer = new carto.layer.Layer(source, style);
+
+      client.addLayer(layer);
+
+      client.getLeafletLayer().addTo(map);
+
+      var histogram = new carto.dataview.Histogram(source, 'ele');
+
+      histogram.on('dataChanged', function (newData) {
+        // var newArray = [];
+
+        // newData.bins.reduce(function(a, b) {
+        //   newArray.push(b.freq);
+        // });
+
+        change && change(newData.bins);
+      });
+
+      histogram.on('statusChanged', function (newStatus, error) {
+        console.log(newStatus)
+      });
+
+      client.addDataview(histogram);
+
+      var boundingBoxFilter = new carto.filter.BoundingBoxLeaflet(map);
+
+      histogram.addFilter(boundingBoxFilter);
+    </script>
+  </body>
+</html>

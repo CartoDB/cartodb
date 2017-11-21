@@ -350,14 +350,14 @@ module.exports = function (grunt) {
 
   registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
-  registerCmdTask('npm-static', {cmd: 'npm', args: ['run', 'build:static']});
+  registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
 
   /**
    * `grunt dev`
    */
 
   grunt.registerTask('dev', [
-    'npm-static',
+    'npm-carto-node',
     'pre',
     'npm-start'
   ]);
@@ -384,7 +384,7 @@ module.exports = function (grunt) {
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
 
   grunt.registerTask('build', [
-    'npm-static',
+    'npm-carto-node',
     'pre',
     'copy:js',
     'exorcise',
@@ -420,7 +420,7 @@ module.exports = function (grunt) {
    * `grunt test`
    */
   grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
-    'npm-static',
+    'npm-carto-node',
     'connect:test',
     'beforeDefault',
     'js_editor',

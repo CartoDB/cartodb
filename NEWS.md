@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add tooltip on Builder actions (#13102)
 * Trigger error when interactivity request fails (#13093)
 * Add interactivity error infobox (#13027)
 * Add limits for torque (#13085)

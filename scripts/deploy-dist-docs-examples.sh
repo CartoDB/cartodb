@@ -67,12 +67,6 @@ git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
 git tag "@${TRAVIS_BRANCH:1}"
 git push "$ORIGIN_URL_WITH_CREDENTIALS" "@${TRAVIS_BRANCH:1}"
 
-FIX_VER="@4.0.0-alpha"
-git tag -d $FIX_VER
-git push "$ORIGIN_URL_WITH_CREDENTIALS" :$FIX_VER
-git tag $FIX_VER
-git push "$ORIGIN_URL_WITH_CREDENTIALS" $FIX_VER
-
 echo "Dist deployed successfully."
 
 echo "Starting docs/examples deployment"

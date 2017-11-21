@@ -126,6 +126,9 @@ class User < Sequel::Model
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  #TODO Remove, get the data from Central
+  LOCKED_USER_DELETION_PERIOD = 90.days
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -809,6 +812,16 @@ class User < Sequel::Model
       upgraded_at + TRIAL_DURATION_DAYS.days
     else
       nil
+    end
+  end
+
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      (deletion_date.to_date - Date.today).to_i
+    rescue CartoDB::CentralCommunicationFailure
+      return nil
     end
   end
 

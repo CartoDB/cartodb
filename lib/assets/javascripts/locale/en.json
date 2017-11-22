@@ -27,9 +27,9 @@
         "confirm": "Are you sure?",
         "delete_all": "Delete my account and all my data",
         "your_url": "Your URL",
+        "email_google": "Your account is linked to your Google account.",
         "errors": {
           "email_not_valid": "Email not valid",
-          "email_google": "Your account is linked to your Google account.",
           "change_email": "You can change the email if you set a password."
         }
       }

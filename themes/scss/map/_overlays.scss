@@ -24,6 +24,7 @@ $buttonColor: #636D72;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   z-index: 20000;
 }
+
 .CDB-Zoom {
   order: 1;
   margin-right: 8px;
@@ -51,13 +52,16 @@ $buttonColor: #636D72;
 
   &:last-child {
     border-left: 1px solid #EEE;
-    border-radius: 0 4px 4px 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
   }
 
   &:first-child {
-    border-radius: 4px 0 0 4px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
   }
 }
+
 .CDB-Zoom-action--out::before {
   position: absolute;
   top: 50%;
@@ -68,6 +72,7 @@ $buttonColor: #636D72;
   background: $buttonColor;
   content: '';
 }
+
 .CDB-Zoom-action--in {
   &::before {
     position: absolute;
@@ -79,6 +84,7 @@ $buttonColor: #636D72;
     background: $buttonColor;
     content: '';
   }
+
   &::after {
     position: absolute;
     top: 11px;
@@ -107,13 +113,13 @@ $buttonColor: #636D72;
   margin-right: 8px;
 
   .CDB-Shape-magnify {
-    &:before {
+    &::before {
       top: 11px;
       left: 10px;
       border-color: #636D72;
     }
 
-    &:after {
+    &::after {
       right: 13px;
       bottom: 10px;
       background: #636D72;

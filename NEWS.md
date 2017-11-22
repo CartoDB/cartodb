@@ -92,6 +92,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizatios and redirection for private endpoints (#13030)
 
 ### Bug fixes / enhancements
+* Add hover to UI Elements (#13074)
 * Improve the discoverability of the table view switch (#13050)
 * Change Basemap layer style (#13091)
 * Rename point/polygon count to feature count (#13066)

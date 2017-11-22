@@ -33,8 +33,8 @@
 
 .Modal-actions {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   width: 80%;
   max-width: 640px;
   margin: $baseSize * 4 auto 0;
@@ -56,8 +56,8 @@
 
 .ModalBlockList-item-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .ModalBlockList-item-headerTitle {
@@ -75,6 +75,7 @@
 
 .ModalBlockList-item {
   display: flex;
+  position: relative;
   flex-direction: column;
   width: 304px;
   min-width: 304px;
@@ -82,25 +83,24 @@
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
-  box-sizing: border-box;
   cursor: pointer;
-  position: relative;
+  box-sizing: border-box;
 
   &:hover {
     transition: border 200ms ease-in;
 
     &::after {
-      content: '';
       position: absolute;
-      width: calc(100% - 2px);
-      height: calc(100% - 2px);
-      left: -1px;
       top: -1px;
       right: -1px;
       bottom: -1px;
-      z-index: 10000;
-      border-radius: 4px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
       border: 2px solid $cBlueHover;
+      border-radius: 4px;
+      content: '';
+      z-index: 10000;
     }
   }
 
@@ -116,17 +116,17 @@
 
   &.is-selected {
     &::after {
-      content: '';
       position: absolute;
-      width: calc(100% - 2px);
-      height: calc(100% - 2px);
-      left: -1px;
       top: -1px;
       right: -1px;
       bottom: -1px;
-      z-index: 10000;
-      border-radius: 4px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
       border: 2px solid $cMainText;
+      border-radius: 4px;
+      content: '';
+      z-index: 10000;
     }
   }
 
@@ -162,8 +162,8 @@
 /* Add Layer Modal */
 .ModalDataset-itemInfo {
   display: flex;
-  align-items: center;
   flex: 1;
+  align-items: center;
   justify-content: space-between;
   width: 100%;
   max-width: 850px;
@@ -229,9 +229,9 @@
 
 .Publish-modalBody {
   display: flex;
+  position: relative;
   flex: 1;
   flex-direction: column;
-  position: relative;
   padding-bottom: 100px;
   overflow: hidden;
 }
@@ -261,8 +261,8 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .Publish-optionsList {

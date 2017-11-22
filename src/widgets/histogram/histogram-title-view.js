@@ -57,6 +57,13 @@ module.exports = cdb.core.View.extend({
     });
     $('body').append(sizesTooltip.render().el);
     this.addView(sizesTooltip);
+
+    var actionsTooltip = new TooltipView({
+      context: this.$el,
+      target: '.js-actions'
+    });
+    $('body').append(actionsTooltip.render().el);
+    this.addView(actionsTooltip);
   },
 
   _isAutoStyleButtonVisible: function () {

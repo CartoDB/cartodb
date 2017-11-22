@@ -20,7 +20,7 @@
     <% if (showClearButton) { %>
       <button class="CDB-Text CDB-Size-small is-semibold u-upperCase u-actionTextColor CDB-Widget-filterButton js-clear">Clear</button>
     <% } %>
-    <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace">
+    <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace" data-tooltip="More options">
       <div class="CDB-Shape-threePoints is-blue is-small">
         <div class="CDB-Shape-threePointsItem"></div>
         <div class="CDB-Shape-threePointsItem"></div>

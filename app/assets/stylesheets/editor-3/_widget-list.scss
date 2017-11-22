@@ -19,9 +19,18 @@
   margin: 0 4px 8px;
   box-sizing: border-box;
   padding: $baseSize * 2;
-  border: 1px solid transparent;
+  transition: border 200ms ease-in;
+  border: 2px solid transparent;
   border-radius: $baseSize / 2;
   background: $cWhite;
+
+  &:hover {
+    border: 2px solid $cBlueHover;
+  }
+
+  &.is-selected {
+    border: 2px solid $cBlackHover;
+  }
 }
 .WidgetList-inner {
   @include flex(1);

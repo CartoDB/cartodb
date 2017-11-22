@@ -87,7 +87,7 @@
     "leaflet": "1.0.3",
     "load-grunt-tasks": "~0.6.0",
     "npm-watch": "^0.3.0",
-    "semver": "~4.1.0",
+    "semver": "~4.3.0",
     "source-map-support": "CartoDB/node-source-map-support#0.4.6-cdb1",
     "time-grunt": "~0.3.1",
     "watchify": "3.4.0"

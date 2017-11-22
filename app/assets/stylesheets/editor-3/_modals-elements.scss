@@ -74,6 +74,7 @@
   border-top-right-radius: $halfBaseSize;
   background: $cMainText;
   overflow: hidden;
+  max-width: 100%;
 }
 .Analysis-animation.is-rounded {
   border-radius: $halfBaseSize;

@@ -85,7 +85,7 @@
   background: $cWhite;
   box-sizing: border-box;
   cursor: pointer;
-  overflow: hidden;
+  position: relative;
 }
 .DatasetsList .ModalBlockList-item {
   @include flex-direction(row);
@@ -99,7 +99,20 @@
 
 .ModalBlockList-item:hover {
   @include transition(border, 200ms, ease-in);
-  border: 1px solid $cHoverLine;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    left: -1px;
+    top: -1px;
+    right: -1px;
+    bottom: -1px;
+    z-index: 10000;
+    border-radius: 4px;
+    border: 2px solid $cBlueHover;
+  }
 }
 
 .ModalBlockList-item--full {
@@ -110,7 +123,19 @@
 }
 
 .ModalBlockList-item.is-selected {
-  border: 1px solid rgba($cBlue, 0.48);
+  &::after {
+    content: '';
+    position: absolute;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    left: -1px;
+    top: -1px;
+    right: -1px;
+    bottom: -1px;
+    z-index: 10000;
+    border-radius: 4px;
+    border: 2px solid $cMainText;
+  }
 }
 .ModalBlockList-item.is-disabled {
   border: 1px solid transparent;

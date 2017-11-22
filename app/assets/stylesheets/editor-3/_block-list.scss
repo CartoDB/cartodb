@@ -156,9 +156,9 @@
   margin-right: 8px;
   border: 1px solid $cSecondaryLine;
   border-radius: 4px;
-  box-sizing: border-box;
   background: $cThirdBackground;
   color: $cAltText;
+  box-sizing: border-box;
 
   &.is-add {
     background: $cBlue;

@@ -10,7 +10,8 @@
   </head>
   <body>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
-      <%= render 'admin/shared/private_header' %>
+      <% breadcrumb = local_assigns.fetch(:breadcrumb, true) %>
+      <%= render 'admin/shared/private_header', :breadcrumb => breadcrumb %>
 
       <% if current_user.notification.present? %>
         <div class="CDB-Text FlashMessage">
@@ -19,6 +20,8 @@
           </div>
         </div>
       <% end %>
+
+      <%= render 'admin/shared/trial_notification' %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>
     <% end %>

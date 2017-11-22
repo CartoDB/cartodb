@@ -30,6 +30,9 @@ class Carto::User < ActiveRecord::Base
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  # TODO Remove and get the data from central
+  LOCKED_USER_DELETION_PERIOD = 90.days
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -431,6 +434,18 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      return nil unless deletion_date
+      (deletion_date.to_date - Date.today).to_i
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Something went wrong calculating the number of remaining days for account deletion')
+      return nil
+    end
+  end
+
   def viewable_by?(viewer)
     id == viewer.id || organization.try(:admin?, viewer)
   end
@@ -592,6 +607,10 @@ class Carto::User < ActiveRecord::Base
   # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
+  end
+
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
   end
 
   def active?

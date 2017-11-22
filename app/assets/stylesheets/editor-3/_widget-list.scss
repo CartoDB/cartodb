@@ -1,9 +1,8 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .WidgetList {
-  @include display-flex;
+  display: flex;
   flex-wrap: wrap;
 }
 
@@ -11,8 +10,8 @@
   margin-right: 16px;
 }
 .WidgetList-item {
-  @include display-flex;
-  @include align-items(baseline);
+  display: flex;
+  align-items: baseline;
   flex: 0 0 304px;
   width: 304px;
   max-width: 304px;
@@ -33,12 +32,12 @@
   }
 }
 .WidgetList-inner {
-  @include flex(1);
+  flex: 1;
   min-width: 0;
 }
 .WidgetPlaceHolder {
-  @include display-flex();
-  @include flex(1);
+  display: flex;
+  flex: 1;
   margin-right: 24px;
 }
 .WidgetPlaceHolder-media {
@@ -49,7 +48,7 @@
   background: $cThirdBackground;
 }
 .WidgetPlaceHolder-txt {
-  @include flex(1);
+  flex: 1;
 }
 .WidgetPlaceHolder-title {
   height: 16px;

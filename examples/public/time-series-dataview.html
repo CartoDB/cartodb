@@ -84,6 +84,17 @@
 
       // 4.2 Listening to data changes on the dataview
       timeSeries.on('dataChanged', function (newData) {
+        // Translate EPOCH timestamps to year
+        if (newData && newData.bins.length > 0) {
+          newData.bins.forEach(function (bin) {
+            var newStart = new Date(0);
+            newStart.setUTCSeconds(bin.start);
+            var newEnd = new Date(0);
+            newEnd.setUTCSeconds(bin.end);
+            bin.start = newStart.getFullYear();
+            bin.end = newEnd.getFullYear();
+          });
+        }
         widget && widget.set({ bins: newData.bins })
       });
 

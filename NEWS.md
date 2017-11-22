@@ -289,6 +289,7 @@ ion for time-series (#12670)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
 * Treat all time series dataview timestamps as UTC (#13070)
+* Disable size tab in legend when it's not possible to add one (#12728)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

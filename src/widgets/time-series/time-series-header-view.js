@@ -1,9 +1,11 @@
 var cdb = require('cartodb.js');
 var d3 = require('d3');
+var $ = require('jquery');
 var template = require('./time-series-header.tpl');
 var formatter = require('../../formatter');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
+var TooltipView = require('../widget-tooltip-view');
 
 /**
  * View to reset render range.
@@ -53,8 +55,19 @@ module.exports = cdb.core.View.extend({
     );
 
     this._animateValue();
+    this._initViews();
 
     return this;
+  },
+
+  _initViews: function () {
+    var actionsTooltip = new TooltipView({
+      context: this.$el,
+      target: '.js-actions'
+    });
+
+    $('body').append(actionsTooltip.render().el);
+    this.addView(actionsTooltip);
   },
 
   _createFormatter: function () {

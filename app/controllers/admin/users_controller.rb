@@ -10,7 +10,7 @@ class Admin::UsersController < Admin::AdminController
   include AvatarHelper
   include OrganizationNotificationsHelper
 
-  ssl_required  :account, :profile, :account_update, :profile_update, :delete
+  ssl_required  :account, :profile, :account_update, :profile_update, :delete, :lockout
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
@@ -128,6 +128,16 @@ class Admin::UsersController < Admin::AdminController
     render 'account'
   end
 
+  def lockout
+    if current_user.locked?
+      @expiration_days = @user.remaining_days_deletion
+      @payments_url = @user.update_payment_url(request.protocol)
+      render locals: { breadcrumb: false }
+    else
+      render_404
+    end
+  end
+
   private
 
   def initialize_google_plus_config
@@ -153,4 +163,5 @@ class Admin::UsersController < Admin::AdminController
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
   end
+
 end

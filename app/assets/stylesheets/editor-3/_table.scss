@@ -22,16 +22,16 @@ $tableBorderColor: $cSecondaryLine;
 
 .Table {
   display: flex;
-  flex-direction: column;
   position: absolute;
   top: $baseSize * 2;
   right: $baseSize * 2;
   bottom: $baseSize * 2;
   left: $baseSize * 2;
+  flex-direction: column;
   background: $cWhite;
+  z-index: 2;
   overflow-x: auto;
   overflow-y: hidden;
-  z-index: 2;
 
   &::before {
     position: absolute;

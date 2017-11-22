@@ -6,17 +6,17 @@
 @import 'cdb-variables/colors';
 
 .Editor-ListLayer-item {
-  transition: opacity 2s ease-in,
-              border 0.2s ease-in;
-  box-sizing: border-box;
   position: relative;
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
+  transition: opacity 2s ease-in,
+              border 0.2s ease-in;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
   cursor: pointer;
+  box-sizing: border-box;
 
   &:hover {
     border: 1px solid $cBlueHover;
@@ -45,11 +45,7 @@
     background: $cWhite;
     cursor: default;
 
-    &:first-child {
-      margin-top: 1px;
-    }
-
-    &:before {
+    &::before {
       position: absolute;
       top: -20px;
       right: -25px;
@@ -61,6 +57,10 @@
       background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
       content: '';
       z-index: -1;
+    }
+
+    &:first-child {
+      margin-top: 1px;
     }
 
     &:hover {

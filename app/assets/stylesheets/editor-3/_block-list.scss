@@ -8,18 +8,18 @@
 
 .BlockList-item {
   display: flex;
-  transition: border 200ms ease-in,
-              box-shadow 300ms ease-in;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
+  transition: border 200ms ease-in,
+              box-shadow 300ms ease-in;
   border: 1px solid $cSecondaryLine;
   border-radius: $baseSize / 2;
   background: $cWhite;
   cursor: pointer;
 
   &.is-space {
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
   }
 
   &.is-dashed {
@@ -64,8 +64,8 @@
     }
 
     .BlockList-titleText {
-      cursor: default;
       text-decoration: none;
+      cursor: default;
     }
   }
 }
@@ -87,26 +87,26 @@
 }
 
 .BlockList-dragIcon {
-  transition: opacity 200ms ease-in;
   position: relative;
   top: 12px;
   left: -36px;
+  transition: opacity 200ms ease-in;
   opacity: 0;
 }
 
 .BlockList-media {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
-  position: relative;
   width: 40px;
   min-width: 40px;
   height: 40px;
   border-radius: $baseSize / 2;
-  box-sizing: border-box;
   overflow: hidden;
+  box-sizing: border-box;
 
-  &:after {
+  &::after {
     position: absolute;
     top: 0;
     right: 0;
@@ -147,16 +147,16 @@
 }
 .HorizontalBlockList-item {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
-  position: relative;
-  box-sizing: border-box;
   width: 40px;
   min-width: 40px;
   height: 40px;
   margin-right: 8px;
   border: 1px solid $cSecondaryLine;
   border-radius: 4px;
+  box-sizing: border-box;
   background: $cThirdBackground;
   color: $cAltText;
 
@@ -181,7 +181,7 @@
     margin-right: 0;
   }
 
-  &:before {
+  &::before {
     position: absolute;
     top: 50%;
     left: -9px;

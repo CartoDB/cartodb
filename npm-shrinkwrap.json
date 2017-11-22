@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.8-4.13095-di.2",
+  "version": "4.10.84",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.15",
-      "from": "cartodb/deep-insights.js#13095-tooltips",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3d80183643025c121b396dd870b3631bd8892d0d",
+      "version": "0.4.16",
+      "from": "cartodb/deep-insights.js#v0.4.16",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#15df470dadeb8e3d3605cf6965a35c7e0da4b0dc",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

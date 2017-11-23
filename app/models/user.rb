@@ -123,6 +123,12 @@ class User < Sequel::Model
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
+  STATE_ACTIVE = 'active'.freeze
+  STATE_LOCKED = 'locked'.freeze
+
+  #TODO Remove, get the data from Central
+  LOCKED_USER_DELETION_PERIOD = 90.days
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -806,6 +812,18 @@ class User < Sequel::Model
       upgraded_at + TRIAL_DURATION_DAYS.days
     else
       nil
+    end
+  end
+
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      return nil unless deletion_date
+      (deletion_date.to_date - Date.today).to_i
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Something went wrong calculating the number of remaining days for account deletion')
+      return nil
     end
   end
 
@@ -1504,6 +1522,10 @@ class User < Sequel::Model
     account_url(request_protocol) + '/plan'
   end
 
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
+  end
+
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')
@@ -1662,6 +1684,14 @@ class User < Sequel::Model
 
   def relevant_frontend_version
     frontend_version || CartoDB::Application.frontend_version
+  end
+
+  def active?
+    state == STATE_ACTIVE
+  end
+
+  def locked?
+    state == STATE_LOCKED
   end
 
   private

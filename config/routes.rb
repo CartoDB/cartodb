@@ -111,6 +111,9 @@ CartoDB::Application.routes.draw do
     put    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account_update', as: :account_update_user
     delete '(/user/:user_domain)(/u/:user_domain)/account/:id' => 'users#delete', as: :delete_user
 
+    # Lockout
+    get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
+
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page

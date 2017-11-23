@@ -263,6 +263,7 @@ describe Carto::UserMetadataExportService do
         salt: "kkkkkkkkk",
         database_name: "cartodb_test_user_5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0_db",
         username: "user00000001",
+        state: 'active',
         admin: nil,
         enabled: true,
         invite_token: nil,

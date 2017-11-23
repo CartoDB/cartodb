@@ -56,36 +56,9 @@
   height: 32px;
   margin: 0 auto 48px;
 
-  .arrow {
-    @include opacity(0);
-    @include transition(all 250ms ease-out 100ms);
-    @include transform(translateX(30px) translateY(15px));
-    @include css3-prefix(transform-origin, left center);
-  }
   .point {
     @include transition(all 250ms ease-out);
     @include css3-prefix(transform-origin, 50%);
-  }
-  .imago:hover .point {
-    @include transform(scale(2.73));
-  }
-  .imago:hover .arrow {
-    @include opacity(1);
-    @include transform(translateX(10px) translateY(15px));
-  }
-
-  .imago .arrowTop,
-  .imago .arrowBottom {
-    @include transition(all 100ms ease-out 300ms);
-    @include transform(rotate(0deg));
-    @include css3-prefix(ltransform-origin, left center);
-  }
-
-  .imago:hover .arrowTop {
-    @include transform(rotate(45deg));
-  }
-  .imago:hover .arrowBottom {
-    @include transform(rotate(-45deg));
   }
 }
 .EditorMenu-feedback {

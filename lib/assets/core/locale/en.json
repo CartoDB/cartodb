@@ -2332,7 +2332,8 @@
         "regions": "region",
         "animation": "point",
         "stroke": {
-          "size": "Change the %{type} stroke size"
+          "size": "Change the %{type} stroke size",
+          "color": "Change the %{type} stroke color"
         }
       },
       "components": {

@@ -19,15 +19,15 @@ var LeafletLayer = L.TileLayer.extend({
   },
 
   addTo: function (map) {
-    if (this._internalView) return;
-
-    this._internalView = new LeafletCartoLayerGroupView(this._engine._cartoLayerGroup, {
-      nativeMap: map,
-      nativeLayer: this
-    });
-    this._internalView.on('featureClick', this._onFeatureClick, this);
-    this._internalView.on('featureOver', this._onFeatureOver, this);
-    this._internalView.on('featureOut', this._onFeatureOut, this);
+    if (!this._internalView) {
+      this._internalView = new LeafletCartoLayerGroupView(this._engine._cartoLayerGroup, {
+        nativeMap: map,
+        nativeLayer: this
+      });
+      this._internalView.on('featureClick', this._onFeatureClick, this);
+      this._internalView.on('featureOver', this._onFeatureOver, this);
+      this._internalView.on('featureOut', this._onFeatureOut, this);
+    }
 
     return L.TileLayer.prototype.addTo.call(this, map);
   },

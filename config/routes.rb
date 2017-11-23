@@ -29,8 +29,6 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
-  get '(/user/:user_domain)/upgrade_trial' => 'signup#upgrade_trial', as: :upgrade_trial
-
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
   get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
@@ -112,6 +110,9 @@ CartoDB::Application.routes.draw do
     delete '(/user/:user_domain)(/u/:user_domain)/account' => 'users#delete',        as: :account_delete_user
     put    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account_update', as: :account_update_user
     delete '(/user/:user_domain)(/u/:user_domain)/account/:id' => 'users#delete', as: :delete_user
+
+    # Lockout
+    get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
 
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search

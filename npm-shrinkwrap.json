@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.12867-10",
+  "version": "4.10.89-10",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -169,6 +169,11 @@
       "from": "bluebird@>=3.4.7 <4.0.0",
       "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
     },
+    "bluebird": {
+      "version": "3.5.1",
+      "from": "bluebird@>=3.4.7 <4.0.0",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
+    },
     "bn.js": {
       "version": "4.11.8",
       "from": "bn.js@>=4.1.1 <5.0.0",
@@ -331,9 +336,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.14",
-      "from": "cartodb/deep-insights.js#v0.4.14",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3793314f69137bc261792c9a3a7f6265d22af70f",
+      "version": "0.4.17",
+      "from": "cartodb/deep-insights.js#v0.4.17",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#460a9fcf576bb6d03ba2ea9e6feaa153e0cbf714",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -539,9 +544,9 @@
       "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz"
     },
     "d3-time": {
-      "version": "1.0.7",
+      "version": "1.0.8",
       "from": "d3-time@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-1.0.7.tgz"
+      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-1.0.8.tgz"
     },
     "d3-time-format": {
       "version": "2.1.0",
@@ -2258,9 +2263,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.9",
+      "version": "3.1.10",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.9.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.10.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.12867-12",
+  "version": "4.10.89-10",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "camshaft-reference": "0.33.4",
     "carto": "cartodb/carto#master",
     "cartocolor": "4.0.0",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#v0.4.15",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#v0.4.17",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "CartoDB/cartodb.js#v4.0.0-alpha.28",
     "clipboard": "1.6.1",
@@ -151,10 +151,11 @@
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --config webpack.prod.config.js",
-    "build:static": "NODE_ENV=production webpack -p --config webpack/webpack.dev.config.js",
+    "build:static": "webpack --progress --config webpack/webpack.dev.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
+    "carto-node": "webpack --config webpack/carto-node/webpack.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
-    "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
+    "start:static": "npm run carto-node && webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }

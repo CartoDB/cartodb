@@ -8,6 +8,8 @@
   "sql-applied": "SQL query applied",
   "data-source": "Data source",
   "edit-analysis": "Edit analysis",
+  "add-analysis": "Add new analysis",
+  "back-layers": "Back to the LAYERS pane",
   "user": {
     "you": "You"
   },
@@ -1290,7 +1292,9 @@
     },
     "undo-redo": {
       "clear": "CLEAR",
-      "apply": "APPLY"
+      "apply": "APPLY",
+      "undo": "Undo",
+      "redo": "Redo"
     },
     "table": {
       "columns": {
@@ -2130,7 +2134,8 @@
       },
       "data-toggle": {
         "values": "VALUES",
-        "cartocss": "SQL"
+        "cartocss": "SQL",
+        "tooltip": "Switch to SQL view"
       },
       "code-mirror": {
         "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
@@ -2261,6 +2266,15 @@
         "heatmap": "pixel",
         "animation": "animated"
       },
+      "tooltips": {
+        "none": "-",
+        "simple": "By Points",
+        "hexabins": "By Hexbins",
+        "squares": "By Squares",
+        "regions": "By Adm. Regions",
+        "heatmap": "By Pixel",
+        "animation": "Animated"
+      },
       "style-form": {
         "type": {
           "title-label": "Aggregation"
@@ -2288,7 +2302,8 @@
       },
       "style-toggle": {
         "values": "VALUES",
-        "cartocss": "CARTOCSS"
+        "cartocss": "CARTOCSS",
+        "tooltip": "Switch to CartoCSS view"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -2306,6 +2321,18 @@
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will use the default style.",
           "continue": "CONTINUE",
           "cancel": "CANCEL"
+        }
+      },
+      "tooltips": {
+        "line": "line",
+        "polygon": "polygon",
+        "simple": "point",
+        "square": "square",
+        "hexabins": "hexabin",
+        "regions": "region",
+        "animation": "point",
+        "stroke": {
+          "size": "Change the %{type} stroke size"
         }
       },
       "components": {

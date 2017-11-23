@@ -103,7 +103,7 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     if @visualization.is_privacy_private? && @visualization.has_read_permission?(current_user)
-        @auth_tokens = current_user.get_auth_tokens
+      @auth_tokens = current_user.get_auth_tokens
     end
 
     respond_to { |format| format.html }

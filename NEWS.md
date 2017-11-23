@@ -97,6 +97,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fix incorrect "back to dashboard" link in dataset view (#13111)
 * Improve the discoverability of the table view switch (#13050)
 * Change Basemap layer style (#13091)
 * Rename point/polygon count to feature count (#13066)
@@ -127,6 +128,7 @@ ion for time-series (#12670)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
+* Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)

@@ -212,6 +212,8 @@ Client.prototype.getDataviews = function () {
  * Return a Leaflet layer that groups all the layers that have been
  * added to this client.
  *
+ * @returns {L.TileLayer} A Leaflet layer that groups all the layers:
+ * {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer}
  * @api
  */
 Client.prototype.getLeafletLayer = function () {

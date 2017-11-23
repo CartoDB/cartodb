@@ -127,6 +127,7 @@ ion for time-series (#12670)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
+* Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)

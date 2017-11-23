@@ -7,7 +7,6 @@ var Profiler = require('../../core/profiler');
 
 var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, opts) {
   opts = opts || {};
-  var self = this;
   LeafletLayerView.apply(this, arguments);
   var metric = Profiler.metric('tangram.rendering');
 
@@ -19,13 +18,13 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, opts) {
 
   this.tangram.onLoaded(function () {
     if (metric) {
-      self.trigger('load');
+      this.trigger('load');
       metric.end();
       metric = void 0;
 
-      log.info('Rendered Geometries Count: ', self.tangram.getTotalGeometries());
+      log.info('Rendered Geometries Count: ', this.tangram.getTotalGeometries());
     }
-  });
+  }.bind(this));
 
   this.layerGroupModel = layerGroupModel;
 };

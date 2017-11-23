@@ -11,7 +11,9 @@ describe('leaflet-layer-view', function () {
     spyOn(this.layerModel, 'bind');
     spyOn(this.layerModel, 'unbind');
     this.leafletMap = jasmine.createSpyObj('leafletMap', ['removeLayer']);
-    this.layerView = new LeafletLayerView(this.layerModel, this.leafletMap);
+    this.layerView = new LeafletLayerView(this.layerModel, {
+      nativeMap: this.leafletMap
+    });
     this.leafletLayer = this.layerView.leafletLayer;
   });
 

@@ -25,7 +25,7 @@ LeafletTorqueLayer.prototype = _.extend(
         instanciateCallback: function () {
           var cartocss = this.model.get('cartocss') || this.model.get('tile_style');
           return '_cdbct_' + util.uniqueCallbackName(cartocss + query);
-        }
+        }.bind(this)
       });
 
       return new L.TorqueLayer(attrs);

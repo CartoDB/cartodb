@@ -11,8 +11,8 @@ var GOOGLE_MAP_TYPE_IDS = {
   'terrain': google.maps.MapTypeId.TERRAIN
 };
 
-var GMapsBaseLayerView = function (layerModel, gmapsMap) {
-  GMapsLayerView.call(this, layerModel, gmapsMap);
+var GMapsBaseLayerView = function (layerModel, opts) {
+  GMapsLayerView.apply(this, arguments);
 };
 
 _.extend(

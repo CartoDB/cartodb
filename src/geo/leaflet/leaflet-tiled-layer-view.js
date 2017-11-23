@@ -15,17 +15,17 @@ var generateLeafletLayerOptions = function (layerModel) {
 };
 
 var LeafletTiledLayerView = function (layerModel, opts) {
-  var self = this;
   LeafletLayerView.apply(this, arguments);
 
   this.leafletLayer.on('load', function (e) {
-    self.trigger('load');
-  });
+    this.trigger('load');
+  }.bind(this));
 
   this.leafletLayer.on('loading', function (e) {
-    self.trigger('loading');
-  });
+    this.trigger('loading');
+  }.bind(this));
 
+  var self = this;
   this.leafletLayer.onAdd = function (map) {
     L.TileLayer.prototype.onAdd.apply(this, arguments);
     self._onAdd();

@@ -45,21 +45,20 @@ var findContainerPoint = function (map, o) {
 };
 
 var LeafletCartoDBLayerGroupView = function (layerModel, opts) {
-  var self = this;
   LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.apply(this, arguments);
 
   this.leafletLayer.on('load', function () {
-    self.trigger('load');
-  });
+    this.trigger('load');
+  }.bind(this));
 
   this.leafletLayer.on('loading', function () {
-    self.trigger('loading');
-  });
+    this.trigger('loading');
+  }.bind(this));
 
   this.leafletLayer.on('tileerror', function (layer) {
-    self.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
-  });
+    this.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
+  }.bind(this));
 };
 
 LeafletCartoDBLayerGroupView.prototype = _.extend(

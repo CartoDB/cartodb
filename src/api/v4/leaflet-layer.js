@@ -1,6 +1,6 @@
 var L = require('leaflet');
-var Layer = require('/layer');
-var LeafletCartoLayerGroupView = require('../../../geo/leaflet/leaflet-cartodb-layer-group-view');
+var Layer = require('./layer');
+var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
 
 var LeafletLayer = L.TileLayer.extend({
   initialize: function (layers, engine) {

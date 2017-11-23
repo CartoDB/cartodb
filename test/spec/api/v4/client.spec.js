@@ -1,5 +1,5 @@
 var carto = require('../../../../src/api/v4');
-var LeafletLayerGroup = require('../../../../src/api/v4/leaflet/layer-group');
+var LeafletLayer = require('../../../../src/api/v4/leaflet-layer');
 
 describe('api/v4/client', function () {
   var client;
@@ -193,7 +193,7 @@ describe('api/v4/client', function () {
     });
 
     it('should return an object', function () {
-      expect(leafletLayer instanceof LeafletLayerGroup).toBe(true);
+      expect(leafletLayer instanceof LeafletLayer).toBe(true);
     });
 
     it('should return the same object', function () {

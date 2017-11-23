@@ -11,17 +11,16 @@ LeafletPlainLayerView.prototype = _.extend(
   LeafletLayerView.prototype,
   {
     _createLeafletLayer: function () {
-      var self = this;
       var leafletLayer = new L.Layer();
 
       leafletLayer.onAdd = function () {
-        self._redraw();
-      };
+        this._redraw();
+      }.bind(this);
 
       leafletLayer.onRemove = function () {
-        var div = self.leafletMap.getContainer();
+        var div = this.leafletMap.getContainer();
         div.style.background = 'none';
-      };
+      }.bind(this);
 
       leafletLayer.setZIndex = function () {};
 

@@ -97,6 +97,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fixes image export in editor (#13089)
+* Fix incorrect "back to dashboard" link in dataset view (#13111)
 * Improve the discoverability of the table view switch (#13050)
 * Change Basemap layer style (#13091)
 * Rename point/polygon count to feature count (#13066)

@@ -2224,6 +2224,22 @@
           "show": "ENABLE"
         }
       },
+      "tooltips": {
+        "style": {
+          "none": "No Legend applied",
+          "bubble": "Bubble Legend",
+          "category": "Category Legend",
+          "torque": "Torque Legend",
+          "choropleth": "Choropleth Legend",
+          "custom_choropleth": "Custom Choropleth Legend",
+          "custom": "Custom Legend"
+        },
+        "item": {
+          "fill": "Change item color",
+          "title": "Change text item",
+          "remove": "Remove item"
+        }
+      },
       "types": {
         "none": "none",
         "category": "category",

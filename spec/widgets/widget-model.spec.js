@@ -4,6 +4,46 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 
 describe('widgets/widget-model', function () {
+
+  describe('dataview enabled', function () {
+    var dataviewModel;
+    var layerModel;
+    var model;
+
+    beforeEach(function () {
+      var vis = specHelper.createDefaultVis();
+      var source = vis.analysis.findNodeById('a0');
+
+      // Use a category dataview as example
+      dataviewModel = vis.dataviews.createCategoryModel({
+        column: 'col',
+        source: source
+      });
+
+      layerModel = new Backbone.Model({
+        id: 'first-layer',
+        type: 'torque',
+        visible: false
+      });
+
+      model = new WidgetModel(null, {
+        dataviewModel: dataviewModel,
+        layerModel: layerModel
+      });
+    });
+
+    it('should be enabled always although layer is not visible', function () {
+      expect(dataviewModel.get('enabled')).toBeTruthy();
+    });
+
+    it('should not change enable attribute although layer visibility changes', function () {
+      layerModel.set('visible', true);
+      expect(dataviewModel.get('enabled')).toBeTruthy();
+      layerModel.set('visible', false);
+      expect(dataviewModel.get('enabled')).toBeTruthy();
+    });
+  });
+
   describe('when autostyle options is enabled', function () {
     var dataviewModel;
     var layerModel;

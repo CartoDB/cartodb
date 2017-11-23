@@ -2331,6 +2331,10 @@
         "hexabins": "hexabin",
         "regions": "region",
         "animation": "point",
+        "fill": {
+          "size": "Change the %{type} size",
+          "color": "Change the %{type} color"
+        },
         "stroke": {
           "size": "Change the %{type} stroke size",
           "color": "Change the %{type} stroke color"

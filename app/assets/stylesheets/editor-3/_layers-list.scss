@@ -5,6 +5,10 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
+@mixin regularBorder() {
+  border: 1px solid $cSecondaryLine;
+}
+
 .Editor-ListLayer-item {
   @include transition(opacity 2s ease-in);
   box-sizing: border-box;
@@ -12,7 +16,7 @@
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
-  border: 1px solid $cSecondaryLine;
+  @include regularBorder();
   border-radius: $halfBaseSize;
   background: #FFF;
   cursor: pointer;
@@ -34,6 +38,15 @@
     }
   }
 }
+
+.Editor-ListLayer-item--fetching {
+  cursor: default;
+  &:hover {
+    transition: none;
+    @include regularBorder();
+  }
+}
+
 .Editor-ListLayer-item.is-empty {
   background: rgba($cHighlightYellow, 0.64);
 }
@@ -136,6 +149,9 @@
   height: 40px;
   border-radius: $baseSize / 2;
 }
+.Editor-ListLayer-media--placeholder {
+  background: $cThirdBackground;
+}
 .Editor-ListLayer-media.is-hidden {
   opacity: 0.24;
 }
@@ -145,6 +161,11 @@
 }
 .Editor-ListLayer-info.is-hidden {
   opacity: 0.24;
+}
+.Editor-ListLayer-info--placeholder {
+  width: 120px;
+  height: 8px;
+  background: $cThirdBackground;
 }
 
 .Editor-ListLayer-title {
@@ -156,6 +177,12 @@
   @include flex(1 0 auto);
   width: 0;
   padding-right: $baseSize * 2;
+}
+
+.Editor-ListLayer-titleText--placeholder {
+  width: 142px;
+  height: 19px;
+  background: $cThirdBackground;
 }
 
 .Editor-ListAnalysis {
@@ -239,7 +266,7 @@
 
 .Editor-ListAnalysis-layer {
   padding-right: $baseSize;
-  border: 1px solid $cSecondaryLine;
+  @include regularBorder();
   border-radius: $halfBaseSize;
   background: $cThirdBackground;
 
@@ -251,6 +278,16 @@
     .Editor-ListAnalysis-itemInfoDataset {
       text-decoration: underline;
     }
+  }
+}
+
+.Editor-ListAnalysis-layer--placeholder {
+  background-color: #FFF;
+  height: 32px;
+
+  &:hover {
+    transition: none;
+    @include regularBorder();
   }
 }
 
@@ -272,12 +309,24 @@
   @include flex(10);
 }
 
+.Editor-ListAnalysis-itemInfoDataset--placeholder {
+  width: 140px;
+  height: 8px;
+  background: $cThirdBackground;
+}
+
 .Editor-ListAnalysis-itemInfoIcon {
   line-height: 18px;
 
   + .Editor-ListAnalysis-itemInfoIcon {
     margin-left: 5px;
   }
+}
+
+.Editor-ListAnalysis-itemInfoIcon--placeholder {
+  width: 20px;
+  height: 8px;
+  background: $cThirdBackground;
 }
 
 .Editor-ListAnalysis-title {

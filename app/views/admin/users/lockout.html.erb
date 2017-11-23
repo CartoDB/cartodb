@@ -6,15 +6,17 @@
   <div class="OnBoarding-welcomeContent">
     <div class="CDB-Text OnBoarding-welcomeContentInner">
       <p class="OnBoarding-welcomeContentTitle OnBoarding-welcomeContentMargin">Welcome back,<br/><%= @user.username %>!</p>
-      <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Your trial period has expired.</p>
-      <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Please add a payment method to continue using CARTO.</p>
-      <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">CARTO has Community Programs for qualified applicants.<br/>Learn more about our Grants and Ambassador programs.</p>
+      <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">You've reached the end of your CARTO trial period.</p>
+      <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">By upgrading, you'll be able to continue using CARTO. Our Professional plan is a great fit for occasional use, and our Enterprise plans offer access to the Data Observatory, private sharing, custom connectors, and business-strength data services.</p>
       <% if @expiration_days %>
-        <p class="OnBoarding-welcomeContentText u-bSpace OnBoarding-welcomeContentMargin">Your account will be deleted in <%= pluralize(@expiration_days, "day") %> if you do not add a payment method or <a class="u-whiteTextColor" href="https://carto.com/community/">qualify for a Community Program</a>.</p>
+        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Your account and data will be preserved for <%= pluralize(@expiration_days, "day") %>, so that upon upgrade you will regain access to the data and maps.<br/>If you're a student or an ambassador, remember you can also qualify for our <a class="u-whiteTextColor" href="https://carto.com/community/">Community Program</a>.</p>
       <% else %>
-        <p class="OnBoarding-welcomeContentText u-bSpace OnBoarding-welcomeContentMargin">Your account will be deleted in few days if you do not add a payment method or <a class="u-whiteTextColor" href="https://carto.com/community/">qualify for a Community Program</a>.</p>
+        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.<br/>If you're a student or an ambassador, remember you can also qualify for our <a class="u-whiteTextColor" href="https://carto.com/community/">Community Program</a>.</p>
       <% end %>
-      <a class="CDB-Button CDB-Button--primary u-bSpace u-iBlock" href="<%= @payments_url %>">
+      <a class="CDB-Button CDB-Button--secondary CDB-Button--white u-bSpace u-iBlock" href="mailto:sales@carto.com">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">CONTACT SALES</span>
+      </a>
+      <a class="CDB-Button CDB-Button--primary u-bSpace u-iBlock u-lSpace" href="<%= @payments_url %>">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">ADD PAYMENT METHOD</span>
       </a>
     </div>

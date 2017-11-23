@@ -129,7 +129,7 @@ class Admin::UsersController < Admin::AdminController
   def lockout
     if current_user.locked?
       @expiration_days = @user.remaining_days_deletion
-      @payments_url = @user.update_payment_url(request.protocol)
+      @payments_url = @user.plan_url(request.protocol)
       render locals: { breadcrumb: false }
     else
       render_404

@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Account static view (#12749)
 * Force UTF-8 encoding in the Compass task
 * Trigger error when interactivity request fails (#13093)
 * Add interactivity error infobox (#13027)

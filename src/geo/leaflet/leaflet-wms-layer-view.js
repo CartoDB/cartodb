@@ -16,7 +16,7 @@ var generateLeafletLayerOptions = function (layerModel) {
   };
 };
 
-var LeafletWMSLayerView = function (layerModel, leafletMap) {
+var LeafletWMSLayerView = function (layerModel, opts) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
 
@@ -33,8 +33,8 @@ LeafletWMSLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    _createLeafletLayer: function (layerModel) {
-      return new L.TileLayer.WMS(layerModel.get('urlTemplate'), generateLeafletLayerOptions(layerModel));
+    _createLeafletLayer: function () {
+      return new L.TileLayer.WMS(this.model.get('urlTemplate'), generateLeafletLayerOptions(this.model));
     },
 
     _modelUpdated: function () {

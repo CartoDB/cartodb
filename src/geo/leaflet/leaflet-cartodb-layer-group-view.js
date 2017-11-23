@@ -44,7 +44,7 @@ var findContainerPoint = function (map, o) {
   return point;
 };
 
-var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap) {
+var LeafletCartoDBLayerGroupView = function (layerModel, opts) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.apply(this, arguments);
@@ -69,7 +69,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
   {
     interactionClass: wax.leaf.interaction,
 
-    _createLeafletLayer: function (layerModel) {
+    _createLeafletLayer: function () {
       return new L.TileLayer(null, {
         opacity: 0.99,
         maxZoom: 30

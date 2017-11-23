@@ -14,7 +14,7 @@ var generateLeafletLayerOptions = function (layerModel) {
   };
 };
 
-var LeafletTiledLayerView = function (layerModel, leafletMap) {
+var LeafletTiledLayerView = function (layerModel, opts) {
   var self = this;
   LeafletLayerView.apply(this, arguments);
 
@@ -36,8 +36,8 @@ LeafletTiledLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    _createLeafletLayer: function (layerModel) {
-      return new L.TileLayer(layerModel.get('urlTemplate'), generateLeafletLayerOptions(layerModel));
+    _createLeafletLayer: function () {
+      return new L.TileLayer(this.model.get('urlTemplate'), generateLeafletLayerOptions(this.model));
     },
 
     _onAdd: function () {

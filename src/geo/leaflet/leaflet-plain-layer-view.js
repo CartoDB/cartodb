@@ -2,7 +2,7 @@ var _ = require('underscore');
 var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 
-var LeafletPlainLayerView = function (layerModel, leafletMap) {
+var LeafletPlainLayerView = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
 };
 
@@ -10,7 +10,7 @@ LeafletPlainLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    _createLeafletLayer: function (layerModel) {
+    _createLeafletLayer: function () {
       var self = this;
       var leafletLayer = new L.Layer();
 

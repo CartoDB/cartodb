@@ -5,7 +5,7 @@ var LeafletLayerView = require('./leaflet-layer-view');
 var TorqueLayerViewBase = require('../torque-layer-view-base');
 var util = require('cdb.core.util');
 
-var LeafletTorqueLayer = function (layerModel, leafletMap, mapModel, showLimitErrors) {
+var LeafletTorqueLayer = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
   this.setNativeTorqueLayer(this.leafletLayer);
 };
@@ -15,15 +15,15 @@ LeafletTorqueLayer.prototype = _.extend(
   LeafletLayerView.prototype,
   TorqueLayerViewBase,
   {
-    _createLeafletLayer: function (layerModel) {
-      var query = this._getQuery(layerModel);
-      var attrs = this._initialAttrs(layerModel);
+    _createLeafletLayer: function () {
+      var query = this._getQuery(this.model);
+      var attrs = this._initialAttrs(this.model);
 
       _.extend(attrs, {
-        dynamic_cdn: layerModel.get('dynamic_cdn'),
+        dynamic_cdn: this.model.get('dynamic_cdn'),
         showLimitErrors: this.showLimitErrors,
         instanciateCallback: function () {
-          var cartocss = layerModel.get('cartocss') || layerModel.get('tile_style');
+          var cartocss = this.model.get('cartocss') || this.model.get('tile_style');
           return '_cdbct_' + util.uniqueCallbackName(cartocss + query);
         }
       });

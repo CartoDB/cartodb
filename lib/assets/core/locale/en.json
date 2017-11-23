@@ -2324,6 +2324,7 @@
         }
       },
       "tooltips": {
+        "blending": "Layer Color and Alpha Blending Modes",
         "line": "line",
         "polygon": "polygon",
         "simple": "point",

@@ -6,6 +6,8 @@ function LayerGroup (layers, engine) {
   this._engine = engine;
   this._leafletMap = undefined;
   this._internalLayerGroupView = undefined;
+
+  this._hoveredLayers = [];
 }
 
 LayerGroup.prototype.addTo = function (map) {
@@ -42,14 +44,20 @@ LayerGroup.prototype._onFeatureClick = function (internalEvent) {
 
 LayerGroup.prototype._onFeatureOver = function (internalEvent) {
   var layer = this._layers.findById(internalEvent.layer.id);
-  if (layer && (layer.hasFeatureClickColumns() || layer.hasFeatureOverColumns())) {
+  if (isInteractive(layer)) {
+    this._hoveredLayers[internalEvent.layerIndex] = true;
     this._leafletMap.getContainer().style.cursor = 'pointer';
   }
   this._triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, internalEvent);
 };
 
 LayerGroup.prototype._onFeatureOut = function (internalEvent) {
-  this._leafletMap.getContainer().style.cursor = 'auto';
+  this._hoveredLayers[internalEvent.layerIndex] = false;
+  if (anyLayerHovered(this._hoveredLayers)) {
+    this._leafletMap.getContainer().style.cursor = 'pointer';
+  } else {
+    this._leafletMap.getContainer().style.cursor = 'auto';
+  }
   this._triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent);
 };
 
@@ -83,5 +91,24 @@ LayerGroup.prototype._triggerLayerFeatureEvent = function (eventName, internalEv
     layer.trigger(eventName, event);
   }
 };
+
+function anyLayerHovered (map) {
+  for (var i = 0; i < map.length; i++) {
+    if (map[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** 
+ * Check if a layer is interactive
+ */
+function isInteractive (layer) {
+  if (!layer) {
+    return false;
+  }
+  return layer.hasFeatureClickColumns() || layer.hasFeatureOverColumns();
+}
 
 module.exports = LayerGroup;

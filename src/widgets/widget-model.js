@@ -36,13 +36,7 @@ module.exports = cdb.core.Model.extend({
     this._autoStyleEnabledWhenCreated = opts.autoStyleEnabled === undefined ? true : opts.autoStyleEnabled;
 
     this.activeAutoStyler();
-    this._initBinds();
-    this._onLayerVisibilityChanged(this.layerModel, this.layerModel.get('visible'));
-  },
-
-  _initBinds: function () {
-    this.bind('change:style', this.activeAutoStyler, this);
-    this.listenTo(this.layerModel, 'change:visible', this._onLayerVisibilityChanged);
+    this.listenTo(this, 'change:style', this.activeAutoStyler);
   },
 
   activeAutoStyler: function () {
@@ -238,9 +232,5 @@ module.exports = cdb.core.Model.extend({
         type === HISTOGRAM_TYPE) {
       this.trigger('forceResize');
     }
-  },
-
-  _onLayerVisibilityChanged: function (model, visible) {
-    this.dataviewModel.set({ enabled: visible });
   }
 });

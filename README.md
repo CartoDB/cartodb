@@ -3,7 +3,7 @@ Deep-Insights.js [![Build Status](http://travis-ci.org/CartoDB/deep-insights.js.
 
 ## Intro
 
-Depth Insights.js allows to create powerful dashboards using CartoDB
+Depth Insights.js allows to create powerful dashboards using CARTO
 
 ## Quickstart
 

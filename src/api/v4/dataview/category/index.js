@@ -1,8 +1,9 @@
 var _ = require('underscore');
-var Base = require('./base');
-var constants = require('../constants');
-var CategoryDataviewModel = require('../../../dataviews/category-dataview-model');
-var CategoryFilter = require('../../../windshaft/filters/category');
+var Base = require('../base');
+var constants = require('../../constants');
+var CategoryDataviewModel = require('../../../../dataviews/category-dataview-model');
+var CategoryFilter = require('../../../../windshaft/filters/category');
+var parseCategoryData = require('./parse-data.js');
 
 /**
  *
@@ -164,39 +165,14 @@ Category.prototype.getOperationColumn = function () {
  */
 Category.prototype.getData = function () {
   if (this._internalModel) {
-    /**
-     * @typedef {object} carto.dataview.CategoryItem
-     * @property {boolean} group - Category is a group
-     * @property {string} name - Category name
-     * @property {number} value - Category value
-     * @api
-     */
-    /**
-     * @typedef {object} carto.dataview.CategoryData
-     * @property {number} count - The total number of categories
-     * @property {number} max - Maximum category value
-     * @property {number} min - Minimum category value
-     * @property {number} nulls - Number of null categories
-     * @property {string} operation - Operation used
-     * @property {carto.dataview.CategoryItem[]} categories
-     * @api
-     */
-    var data = this._internalModel.get('data');
-    var categories = _.map(data, function (item) {
-      return {
-        group: item.agg,
-        name: item.name,
-        value: item.value
-      };
-    });
-    return {
-      count: this._internalModel.get('count'),
-      max: this._internalModel.get('max'),
-      min: this._internalModel.get('min'),
-      nulls: this._internalModel.get('nulls'),
-      operation: this._operation,
-      categories: categories
-    };
+    return parseCategoryData(
+      this._internalModel.get('data'),
+      this._internalModel.get('count'),
+      this._internalModel.get('max'),
+      this._internalModel.get('min'),
+      this._internalModel.get('nulls'),
+      this._operation
+    );
   }
   return null;
 };

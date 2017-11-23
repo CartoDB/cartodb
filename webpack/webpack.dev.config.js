@@ -4,7 +4,6 @@ const webpackFiles = require('../lib/build/files/webpack_files');
 const Package = require('./../package.json');
 
 const VERSION = Package.version;
-const MODULES_EXTENSION_REGEX = /\.js.babel$/;
 
 module.exports = {
   entry: './lib/assets/javascripts/cartodb/static.js',

@@ -2266,22 +2266,22 @@
         "heatmap": "pixel",
         "animation": "animated"
       },
-      "tooltips": {
-        "none": "-",
-        "simple": "By Points",
-        "hexabins": "By Hexbins",
-        "squares": "By Squares",
-        "regions": "By Adm. Regions",
-        "heatmap": "By Pixel",
-        "animation": "Animated"
-      },
       "style-form": {
         "type": {
           "title-label": "Aggregation"
         },
         "aggregation": {
           "title-label": "Aggregation Options",
-          "desc": "Configure how the aggregation works"
+          "desc": "Configure how the aggregation works",
+          "tooltips": {
+            "none": "-",
+            "simple": "By Points",
+            "hexabins": "By Hexbins",
+            "squares": "By Squares",
+            "regions": "By Adm. Regions",
+            "heatmap": "By Pixel",
+            "animation": "Animated"
+          }
         },
         "properties": {
           "title-label-point": "Style",
@@ -2328,7 +2328,7 @@
         "line": "line",
         "polygon": "polygon",
         "simple": "point",
-        "square": "square",
+        "squares": "square",
         "hexabins": "hexabin",
         "regions": "region",
         "animation": "point",
@@ -2375,10 +2375,14 @@
           }
         },
         "aggregation-fill": "Color",
-        "aggregation-value": "Operation",
+        "aggregation-value": {
+          "label": "Operation",
+          "help": "Change the operation"
+        },
         "aggregation-size": {
           "label": "Size",
-          "help": "In pixels"
+          "label-help": "In pixels",
+          "help": "Change the square size"
         },
         "aggregation-dataset": "Admin. level",
         "labels-enabled": {

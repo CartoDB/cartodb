@@ -4,11 +4,9 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 
 describe('widgets/widget-model', function () {
-
   describe('dataview enabled', function () {
     var dataviewModel;
     var layerModel;
-    var model;
 
     beforeEach(function () {
       var vis = specHelper.createDefaultVis();
@@ -26,7 +24,7 @@ describe('widgets/widget-model', function () {
         visible: false
       });
 
-      model = new WidgetModel(null, {
+      this.model = new WidgetModel(null, {
         dataviewModel: dataviewModel,
         layerModel: layerModel
       });

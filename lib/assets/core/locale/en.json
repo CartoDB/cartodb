@@ -1607,11 +1607,7 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers (%{count}/%{maxCount})",
-        "georeference": {
-          "title": "Layer not georeferenced",
-          "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
-        }
+        "title-label": "Layers (%{count}/%{maxCount})"
       },
       "elements": {
         "title-label": "Elements"

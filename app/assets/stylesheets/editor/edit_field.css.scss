@@ -111,7 +111,10 @@
   background: $cStructure-grayBkg;
 }
 
-@mixin edit-type-field($t, $c, $mod: true) {
+@mixin edit-type-field($t,$c,$mod:true) {
+  // Is it a modifier or a normal class?
+  $class_: '';
+
   @if ($mod) {
     $class_: '.EditField-select .select2-container .select2-choice';
   }
@@ -119,8 +122,6 @@
   @else {
     $class_: '.EditField-select.#{$t} .select2-container .select2-choice';
   }
-  // Is it a modifier or a normal class?
-  $class_: '';
 
   #{$class_},
   #{$class_}:hover {

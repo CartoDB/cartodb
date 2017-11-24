@@ -13,26 +13,24 @@
 // Navigation block
 div.vis_navigation {
   position: absolute;
-
+  $width: 300px;
   z-index: 100;
   top: 4px;
   left: 50%;
   width: $width;
   margin-left: -$width/2;
-  padding:0;
+  padding: 0;
   text-align: center;
-  $width: 300px;
 
   nav {
     position: relative;
 
-    z-index:1;
-    margin:0;
+    z-index: 1;
+    margin: 0;
     padding: 1px;
     border: 2px solid #FFF;
 
     @include inline-block();
-
     @include border-radius(30px);
 
     a.tab {
@@ -44,7 +42,6 @@ div.vis_navigation {
       text-transform: uppercase;
 
       @include inline-block();
-
       @include border-radius(30px);
 
       &:hover, &:focus, &:active {}

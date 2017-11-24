@@ -15,7 +15,7 @@
 
 div.map {
   @include box-sizing(border-box);
-  @include position(00 0, 0, 0); // 1px to cause header opacity black border needs to be present
+  @include position(0, 0, 0, 0); // 1px to cause header opacity black border needs to be present
   @include size(100%);
   z-index: 1;
   background: #333 image-url('layout/noise.png') repeat 0 0;
@@ -154,7 +154,7 @@ div.map {
   }
 
   div.map_toolbar {
-    @include position(0, false, false, 00;
+    @include position(0, false, false, 0);
     @include size(100%, 66px);
     @include box-shadow(rgba(black, 0.15) 0 3px 3px 0);
     @include clearfix();
@@ -229,7 +229,7 @@ div.map {
 
       &.full_screen .thumb {
         @include map-sprite(full_screen);
-        @include border-radius(00;
+        @include border-radius(0);
         border: none;
       }
 

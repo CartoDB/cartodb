@@ -2060,6 +2060,13 @@
           "infowindow_color": "Color",
           "infowindow_header_with_image": "Image"
         },
+        "tooltips": {
+          "none": "No Pop-Up applied",
+          "infowindow_light": "Pop-Up Light",
+          "infowindow_dark": "Pop-Up Dark",
+          "infowindow_color": "Pop-Up with header color",
+          "infowindow_header_with_image": "Pop-Up with header image"
+        },
         "items": {
           "title-label": "Show items",
           "description": "Add items"

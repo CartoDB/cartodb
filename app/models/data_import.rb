@@ -511,6 +511,11 @@ class DataImport < Sequel::Model
     save
 
     taken_names = Carto::Db::UserSchema.new(current_user).table_names
+
+    if taken_names.include? name and collision_strategy ==  Carto::DataImportConstants::COLLISION_STRATEGY_SKIP
+      raise CartoDB::Importer2::InvalidNameError, "There's already a table with that name: #{name}"
+    end
+
     table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)
     # current_user.db_services.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|

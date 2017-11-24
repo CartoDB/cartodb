@@ -80,6 +80,14 @@ describe('api/v4/dataview/base', function () {
     });
   });
 
+  describe('.getSource', function () {
+    it('should return the source object', function () {
+      var source = new carto.source.Dataset('table_name');
+      base._source = source;
+      expect(base.getSource()).toBe(source);
+    });
+  });
+
   describe('.setColumn', function () {
     it('should set the column name as string', function () {
       var column = 'column-test';

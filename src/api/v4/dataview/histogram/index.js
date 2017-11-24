@@ -62,7 +62,11 @@ Histogram.prototype.DEFAULTS = {
  */
 Histogram.prototype.getData = function () {
   if (this._internalModel) {
-    return parseHistogramData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'));
+    return parseHistogramData(
+      this._internalModel.get('data'),
+      this._internalModel.get('nulls'),
+      this._internalModel.get('totalAmount')
+    );
   }
   return null;
 };

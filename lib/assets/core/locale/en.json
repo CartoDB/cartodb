@@ -2348,6 +2348,7 @@
         "hexabins": "hexabin",
         "regions": "region",
         "animation": "point",
+        "heatmap": "heatmap",
         "fill": {
           "size": "Change the %{type} size",
           "color": "Change the %{type} color"
@@ -2398,9 +2399,12 @@
         "aggregation-size": {
           "label": "Size",
           "label-help": "In pixels",
-          "help": "Change the square size"
+          "help": "Change the %{type} size"
         },
-        "aggregation-dataset": "Admin. level",
+        "aggregation-dataset": {
+          "label": "Admin. level",
+          "help": "Change the Adm. level"
+        },
         "labels-enabled": {
           "label": "labels",
           "not-with-animated": "Not available with animations"
@@ -2442,7 +2446,8 @@
           "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
-          "error": "There was an error fetching node schema..."
+          "error": "There was an error fetching node schema...",
+          "help": "Change the column"
         },
         "animated-overlap": {
           "label": "overlap",
@@ -2451,10 +2456,22 @@
             "false": "None"
           }
         },
-        "animated-trails": "trails",
-        "animated-resolution": "resolution",
-        "animated-steps": "steps",
-        "animated-duration": "duration"
+        "animated-trails": {
+          "label": "trails",
+          "help": "Change the trails"
+        },
+        "animated-resolution": {
+          "label": "resolution",
+          "help": "Change the resolution"
+        },
+        "animated-steps": {
+          "label": "steps",
+          "help": "Change the steps"
+        },
+        "animated-duration": {
+          "label": "duration",
+          "help": "Change the duration"
+        }
       }
     },
     "widgets": {

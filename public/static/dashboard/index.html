@@ -9724,10 +9724,6 @@ function redirectToLogin () {
       return redirectToLogin();
     }
 
-    if (!data.user_data) {
-      return redirectToLogin();
-    }
-
     var spinnerEl = document.querySelector('.spinner');
     spinnerEl.parentNode.classList.add('is-hidden');
 

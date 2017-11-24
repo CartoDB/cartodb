@@ -32,6 +32,10 @@ _.extend(LeafletLayerView.prototype, {
 
   remove: function () {
     this.leafletMap.removeLayer(this.leafletLayer);
+    this.notifyRemove();
+  },
+
+  notifyRemove: function () {
     this.trigger('remove', this);
     this.model.unbind(null, null, this);
     this.unbind();

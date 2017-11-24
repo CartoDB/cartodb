@@ -37,7 +37,7 @@ var LeafletLayer = L.TileLayer.extend({
       this._internalView.off('featureClick');
       this._internalView.off('featureOver');
       this._internalView.off('featureOut');
-      // this._internalView.remove();
+      this._internalView.notifyRemove();
     }
     this._internalView = null;
 

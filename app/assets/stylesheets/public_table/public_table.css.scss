@@ -101,7 +101,7 @@ a {
 // Hello media queries
 
 @media only screen and (max-width: 710px) {
-  .inner .embed-left-col  { width: 100%; margin: 0; float: none; }
+  .inner .embed-left-col { width: 100%; margin: 0; float: none; }
   .inner .embed-left-col .content { max-width: none; margin-left: 0; padding-right: 0; border-right: none; }
   .inner .embed-right-col {  width: 100%; float: none; }
 }
@@ -115,7 +115,7 @@ a {
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
-  .inner .embed-left-col  { width: 100%; margin: 0; float: none; }
+  .inner .embed-left-col { width: 100%; margin: 0; float: none; }
   .inner .embed-left-col .content { max-width: none; margin-left: 0; padding-right: 0; border-right: none; }
   .inner .embed-right-col {  width: 100%; float: none; }
 }

@@ -86,7 +86,7 @@
     clear: both;
     overflow: hidden;
 
-    h3  {
+    h3 {
       padding: 0;
       float: left;
       border:0;
@@ -113,7 +113,7 @@
 
     .menu {
       li:first-child { margin-left: 23px; }
-      &:after  { content:' '; position:absolute; top:0; bottom:0; left:34px; width:1px; height:100%; background:rgba($cGray4,0.50); }
+      &:after { content:' '; position:absolute; top:0; bottom:0; left:34px; width:1px; height:100%; background:rgba($cGray4,0.50); }
       &:before { content:' '; position:absolute; top:0; bottom:0; left:36px; width:1px; height:100%; background:rgba(#509DD7,0.25); }
     }
   }

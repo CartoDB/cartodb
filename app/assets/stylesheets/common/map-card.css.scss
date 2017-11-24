@@ -493,7 +493,7 @@ $sEditButtonSize: 50px;
   }
 }
 
-@media only screen and (min-width: 321px) and (max-width: 760px)  {
+@media only screen and (min-width: 321px) and (max-width: 760px) {
   .MapCard-contentFooter.MapCard-contentFooter--lefty {
     @include justify-content(flex-start);
   }

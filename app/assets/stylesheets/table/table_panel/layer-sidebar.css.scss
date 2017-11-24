@@ -111,13 +111,13 @@
 
       @include opacity(0.75);
 
-      &.sql_mod        { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-      &.filters_mod    { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
-      &.cartocss_mod   { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
+      &.sql_mod { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
+      &.filters_mod { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
+      &.cartocss_mod { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
       &.infowindow_mod { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
-      &.legends_mod    { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-663px);}
+      &.legends_mod { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-663px);}
 
-      &.wizards_mod    {
+      &.wizards_mod {
         @include table-sprite(table_icons, $offset-x: 21px, $offset-y:-370px);
         &.selected:before, &.selected:after { border-right-color: #575757; }
         &.selected:after {right:-1px;}

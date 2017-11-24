@@ -258,8 +258,8 @@ div.dropdown.basemap {
 
 
 
-      &.add .thumb          { @include map-sprite(plus); }
-      &.pattern .thumb      { @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px); }
+      &.add .thumb { @include map-sprite(plus); }
+      &.pattern .thumb { @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px); }
 
       span.color {
         display: block;

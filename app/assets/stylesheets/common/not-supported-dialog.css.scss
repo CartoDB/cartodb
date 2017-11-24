@@ -67,6 +67,6 @@
   line-height: 0;
   text-indent: -9999px;
 }
-.NotSupportedDialog-itemLink--Safari  { @include background(image-url('layout/safari.png') no-repeat center center) }
-.NotSupportedDialog-itemLink--Chrome  { @include background(image-url('layout/chrome.png') no-repeat center center) }
+.NotSupportedDialog-itemLink--Safari { @include background(image-url('layout/safari.png') no-repeat center center) }
+.NotSupportedDialog-itemLink--Chrome { @include background(image-url('layout/chrome.png') no-repeat center center) }
 .NotSupportedDialog-itemLink--Firefox { @include background(image-url('layout/firefox.png') no-repeat center center) }

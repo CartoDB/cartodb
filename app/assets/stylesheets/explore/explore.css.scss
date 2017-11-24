@@ -28,7 +28,7 @@
   padding: 15px 0;
 }
 
-@media only screen and (min-width: 900px)  {
+@media only screen and (min-width: 900px) {
   .Explore-content.Feed-content .FeedItem .MapCard,
   .Explore-content.Feed-content .FeedItem .DatasetCard {
     @include flex(0 0 860px);
@@ -45,7 +45,7 @@
   }
 }
 
-@media only screen and (min-width: 545px) and (max-width: 899px)  {
+@media only screen and (min-width: 545px) and (max-width: 899px) {
   .Explore-inner {
     width: 100%;
   }

@@ -41,7 +41,7 @@
 
     .jspContainer { /*overflow: hidden;*/ position: relative; }
     .jspPane { position: absolute; }
-    .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; z-index: 20; top: 0; right: 7px; width: 5px; height: 100%; background: none; }
+    .jspVerticalBar { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; z-index: 20; top: 0; right: 7px; width: 5px; height: 100%; background: none; }
     .jspVerticalBar * { margin: 0; padding: 0; }
     .jspCap { display: none; }
     .jspTrack { position: relative; background: none; }

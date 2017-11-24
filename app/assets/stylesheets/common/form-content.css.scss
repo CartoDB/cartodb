@@ -248,9 +248,9 @@ $sLabel-width: 140px;
 .Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
 
 .Form-input::-webkit-input-placeholder { color: #AAA; font-style: italic }
-.Form-input:-moz-placeholder           { color: #AAA; font-style: italic }
-.Form-input::-moz-placeholder          { color: #AAA; font-style: italic }
-.Form-input:-ms-input-placeholder      { color: #AAA; font-style: italic }
+.Form-input:-moz-placeholder { color: #AAA; font-style: italic }
+.Form-input::-moz-placeholder { color: #AAA; font-style: italic }
+.Form-input:-ms-input-placeholder { color: #AAA; font-style: italic }
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }

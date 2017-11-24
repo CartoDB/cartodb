@@ -73,7 +73,7 @@
   line-height:0;
   text-indent: -9999px;
 
-  &.safari  { @include background(image-url('layout/safari.png')); }
-  &.chrome  { @include background(image-url('layout/chrome.png')); }
+  &.safari { @include background(image-url('layout/safari.png')); }
+  &.chrome { @include background(image-url('layout/chrome.png')); }
   &.firefox { @include background(image-url('layout/firefox.png')); }
 }

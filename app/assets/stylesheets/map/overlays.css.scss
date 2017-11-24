@@ -99,8 +99,8 @@
 }
 
 .overlay-properties ul li .btn {
-  &.btn-copy:after      { @include map-sprite(overlay_duplicate); }
-  &.btn-delete:after    { @include map-sprite(overlay_delete);  }
+  &.btn-copy:after { @include map-sprite(overlay_duplicate); }
+  &.btn-delete:after { @include map-sprite(overlay_delete);  }
   &.btn-zIndexInc:after { @include map-sprite(overlay_push_to_front);  }
   &.btn-zIndexDec:after { @include map-sprite(overlay_push_to_back);  }
 }
@@ -296,7 +296,7 @@
     }
 
     strong { font-weight: bold;  }
-    em     { font-style: italic; }
+    em { font-style: italic; }
 
   }
 

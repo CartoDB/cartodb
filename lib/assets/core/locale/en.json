@@ -2051,7 +2051,10 @@
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
-          "window-size": "Window size",
+          "size": {
+            "label": "Window size",
+            "help": "Change Pop-Up width"
+          },
           "header-color": "Header color",
           "none": "None",
           "custom": "Custom",
@@ -2069,7 +2072,8 @@
         },
         "items": {
           "title-label": "Show items",
-          "description": "Add items"
+          "description": "Add items",
+          "help": "Change text field"
         }
       },
       "tooltip": {
@@ -2171,7 +2175,8 @@
       "apply": "APPLY",
       "html-toggle": {
         "values": "VALUES",
-        "html": "HTML"
+        "html": "HTML",
+        "tooltip": "Switch to HTML view"
       },
       "code-mirror": {
         "save": "CMD + S to apply your html.",
@@ -2205,7 +2210,8 @@
       "no-geometry-data": "There's no geometry in your data to add a legend.",
       "data-toggle": {
         "values": "VALUES",
-        "html": "HTML"
+        "html": "HTML",
+        "tooltip": "Switch to HTML view"
       },
       "code-mirror": {
         "save": "CMD + S to apply your html.",
@@ -2263,7 +2269,10 @@
           "subtitle": "Add items"
         },
         "add": "Add item",
-        "title": "Title",
+        "title": {
+          "label": "Title",
+          "help": "Change legend title"
+        },
         "fill": "Fill",
         "by-size": "By Size",
         "by-color": "By Color",

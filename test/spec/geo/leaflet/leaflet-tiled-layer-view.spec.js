@@ -14,7 +14,9 @@ describe('leaflet-tiled-layer-view', function () {
       tms: false
     });
     this.leafletMap = jasmine.createSpy('leafletMap');
-    this.layerView = new LeafletTiledLayerView(this.layerModel, this.leafletMap);
+    this.layerView = new LeafletTiledLayerView(this.layerModel, {
+      nativeMap: this.leafletMap
+    });
   });
 
   it('should have options set correctly', function () {

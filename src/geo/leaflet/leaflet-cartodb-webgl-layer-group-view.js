@@ -5,8 +5,8 @@ var TC = require('tangram.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
 var Profiler = require('../../core/profiler');
 
-var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap, showLimitErrors) {
-  var self = this;
+var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, opts) {
+  opts = opts || {};
   LeafletLayerView.apply(this, arguments);
   var metric = Profiler.metric('tangram.rendering');
 
@@ -14,17 +14,17 @@ var LeafletCartoDBWebglLayerGroupView = function (layerGroupModel, leafletMap, s
 
   this.trigger('loading');
 
-  this.tangram = new TC(leafletMap, this.initConfig.bind(this, layerGroupModel), showLimitErrors);
+  this.tangram = new TC(opts.nativeMap, this.initConfig.bind(this, layerGroupModel), opts.showLimitErrors);
 
   this.tangram.onLoaded(function () {
     if (metric) {
-      self.trigger('load');
+      this.trigger('load');
       metric.end();
       metric = void 0;
 
-      log.info('Rendered Geometries Count: ', self.tangram.getTotalGeometries());
+      log.info('Rendered Geometries Count: ', this.tangram.getTotalGeometries());
     }
-  });
+  }.bind(this));
 
   this.layerGroupModel = layerGroupModel;
 };

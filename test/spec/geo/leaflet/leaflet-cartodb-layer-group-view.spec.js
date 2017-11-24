@@ -26,7 +26,9 @@ var createLayerGroupView = function (layerGroupModel, container) {
     zoom: 3
   });
 
-  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, leafletMap);
+  var layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModel, {
+    nativeMap: leafletMap
+  });
   layerGroupView.leafletLayer.addTo(leafletMap);
   return layerGroupView;
 };

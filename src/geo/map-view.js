@@ -249,7 +249,11 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap(), this.map, this._showLimitErrors);
+    return this._getLayerViewFactory().createLayerView(layerModel, {
+      nativeMap: this.getNativeMap(),
+      mapModel: this.map,
+      showLimitErrors: this._showLimitErrors
+    });
   },
 
   _removeLayers: function () {

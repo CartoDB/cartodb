@@ -14,18 +14,18 @@ var generateLeafletLayerOptions = function (layerModel) {
   };
 };
 
-var LeafletTiledLayerView = function (layerModel, leafletMap) {
-  var self = this;
+var LeafletTiledLayerView = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
 
   this.leafletLayer.on('load', function (e) {
-    self.trigger('load');
-  });
+    this.trigger('load');
+  }.bind(this));
 
   this.leafletLayer.on('loading', function (e) {
-    self.trigger('loading');
-  });
+    this.trigger('loading');
+  }.bind(this));
 
+  var self = this;
   this.leafletLayer.onAdd = function (map) {
     L.TileLayer.prototype.onAdd.apply(this, arguments);
     self._onAdd();
@@ -36,8 +36,8 @@ LeafletTiledLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    _createLeafletLayer: function (layerModel) {
-      return new L.TileLayer(layerModel.get('urlTemplate'), generateLeafletLayerOptions(layerModel));
+    _createLeafletLayer: function () {
+      return new L.TileLayer(this.model.get('urlTemplate'), generateLeafletLayerOptions(this.model));
     },
 
     _onAdd: function () {

@@ -2,9 +2,9 @@
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 
-var GMapsPlainLayerView = function (layerModel, gmapsMap) {
+var GMapsPlainLayerView = function (layerModel, opts) {
   this.color = layerModel.get('color');
-  GMapsLayerView.call(this, layerModel, gmapsMap);
+  GMapsLayerView.apply(this, arguments);
 };
 
 _.extend(

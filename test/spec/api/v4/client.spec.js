@@ -1,3 +1,4 @@
+var L = require('leaflet');
 var carto = require('../../../../src/api/v4');
 var LeafletLayer = require('../../../../src/api/v4/leaflet-layer');
 
@@ -198,6 +199,14 @@ describe('api/v4/client', function () {
 
     it('should return the same object', function () {
       expect(leafletLayer === client.getLeafletLayer()).toBe(true);
+    });
+
+    it('should return a L.TileLayer', function () {
+      expect(leafletLayer instanceof L.TileLayer).toBe(true);
+    });
+
+    it('should have the OpenStreetMap / Carto attribution', function () {
+      expect(leafletLayer.getAttribution()).toBe('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>');
     });
   });
 });

@@ -8,8 +8,8 @@
     <div class="StatsList-header u-flex u-justifySpace u-alignCenter u-bSpace--m">
       <label class="u-ellipsis CDB-Text CDB-Size-medium" for="<%- id %>"><%- _t('editor.data.stats.add-widget') %></label>
       <% if (isSelected) { %>
-      <button class="StatsList-style CDB-Text CDB-Size-small js-style u-actionTextColor">
-        <div class="StatsList-arrow CDB-Shape-Arrow is-blue u-iBlock  u-rSpace--m"></div> <%- _t('editor.data.stats.edit') %>
+      <button class="StatsList-style CDB-Text CDB-Size-small js-style u-actionTextColor js-help">
+        <div class="StatsList-arrow CDB-Shape-Arrow is-blue u-iBlock u-rSpace--m"></div> <%- _t('editor.data.stats.edit') %>
       </button>
       <% } %>
     </div>

@@ -2002,6 +2002,9 @@
         "spatial-markov-trend-desc": "select a column for each time period",
         "spatial-markov-trend-time-columns": "Input columns",
         "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
+        "sampling-form-model": {
+          "help": "% of data to show"
+        },
         "state": "State",
         "target": "Target",
         "target-layer": "Target layer",
@@ -2141,7 +2144,8 @@
         "trues": "% true",
         "null": "% null",
         "feature-count": "feature count",
-        "geometry-fallback": "features"
+        "geometry-fallback": "features",
+        "help": "Edit widget"
       },
       "data-toggle": {
         "values": "VALUES",

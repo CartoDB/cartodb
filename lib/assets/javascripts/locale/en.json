@@ -8,6 +8,9 @@
       "error": "Invalid password"
     }
   },
+  "forbidden_map": {
+    "title": "Embed error"
+  },
   "helpers": {
     "static_header_meta_tags": {
       "map_created_by": "Map created by %{author} - CARTO"

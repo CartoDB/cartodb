@@ -98,7 +98,6 @@ AnalysisService.prototype._onAnalysisRemoved = function (analysis) {
 /**
  * Return all the analysis nodes without duplicates.
  * The analyses are obtained from the layers and dataviews collections.
- *
  * @example
  * We have the following analyses:  (a0->a1->a2), (b0->a2)
  * This method will give us: (a0->a1->a2), (a1->a2), (a2), (b0->a2)
@@ -117,7 +116,6 @@ AnalysisService.getUniqueAnalysisNodes = function (layersCollection, dataviewsCo
 
 /**
  * Return a list with all the analyses contained in the given collections.
- *
  * @example
  * We have the following analyses:  (a0->a1->a2), (b0->a2)
  * This method will give us: (a0->a1->a2), (b0->a2)

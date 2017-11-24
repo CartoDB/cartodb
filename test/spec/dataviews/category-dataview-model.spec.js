@@ -2,7 +2,9 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var WindshaftFiltersBoundingBox = require('../../../src/windshaft/filters/bounding-box');
 var AnalysisService = require('../../../src/analysis/analysis-service');
+var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 var MockFactory = require('../../helpers/mockFactory');
 
 describe('dataviews/category-dataview-model', function () {
@@ -25,15 +27,12 @@ describe('dataviews/category-dataview-model', function () {
     var analysisService = new AnalysisService({ engine: engineMock });
     this.source = analysisService.analyse(analysisDefinition);
 
-    this.layer = new Backbone.Model();
-
     this.model = new CategoryDataviewModel({
       source: this.source
     }, {
-      map: this.map,
       engine: engineMock,
-      layer: this.layer,
-      filter: new WindshaftFiltersCategory()
+      filter: new WindshaftFiltersCategory(),
+      bboxFilter: new WindshaftFiltersBoundingBox(new MapModelBoundingBoxAdapter(this.map))
     });
   });
 
@@ -73,17 +72,21 @@ describe('dataviews/category-dataview-model', function () {
   });
 
   describe('.url', function () {
-    it('should include the bbox and own_filter parameters', function () {
+    it('should include the bbox,own_filter and categories parameters', function () {
       expect(this.model.set('url', 'http://example.com'));
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0&categories=6');
 
       this.model.set('filterEnabled', true);
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1&categories=6');
 
       this.model.set('filterEnabled', false);
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0&categories=6');
+
+      this.model.set('categories', 1);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0&categories=1');
     });
   });
 
@@ -166,6 +169,8 @@ describe('dataviews/category-dataview-model', function () {
     beforeEach(function () {
       // Disable debounce
       spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+      this.model._bboxFilter._stopBinds();
+      this.model._bboxFilter._initBinds();
 
       this.model.fetch = function (opts) {
         opts && opts.success();

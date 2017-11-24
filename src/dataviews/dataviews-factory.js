@@ -6,6 +6,8 @@ var RangeFilter = require('../windshaft/filters/range');
 var CategoryDataviewModel = require('./category-dataview-model');
 var FormulaDataviewModel = require('./formula-dataview-model');
 var HistogramDataviewModel = require('./histogram-dataview-model');
+var BBoxFilter = require('../windshaft/filters/bounding-box');
+var MapModelBoundingBoxAdapter = require('../geo/adapters/map-model-bounding-box-adapter');
 
 var REQUIRED_OPTS = [
   'map',
@@ -22,9 +24,11 @@ module.exports = Model.extend({
   initialize: function (attrs, opts) {
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewsFactory');
 
-    this._map = opts.map;
     this._engine = opts.engine;
     this._dataviewsCollection = opts.dataviewsCollection;
+
+    var mapAdapter = new MapModelBoundingBoxAdapter(opts.map);
+    this._bboxFilter = new BBoxFilter(mapAdapter);
   },
 
   createCategoryModel: function (attrs) {
@@ -37,9 +41,9 @@ module.exports = Model.extend({
 
     return this._newModel(
       new CategoryDataviewModel(attrs, {
-        map: this._map,
         engine: this._engine,
-        filter: categoryFilter
+        filter: categoryFilter,
+        bboxFilter: this._bboxFilter
       })
     );
   },
@@ -47,12 +51,14 @@ module.exports = Model.extend({
   createFormulaModel: function (attrs) {
     _checkProperties(attrs, ['source', 'column', 'operation']);
     attrs = this._generateAttrsForDataview(attrs, FormulaDataviewModel.ATTRS_NAMES);
-    return this._newModel(
+    var dataview = this._newModel(
       new FormulaDataviewModel(attrs, {
-        map: this._map,
-        engine: this._engine
+        engine: this._engine,
+        bboxFilter: this._bboxFilter
       })
     );
+
+    return dataview;
   },
 
   createHistogramModel: function (attrs) {
@@ -63,9 +69,9 @@ module.exports = Model.extend({
 
     return this._newModel(
       new HistogramDataviewModel(attrs, {
-        map: this._map,
         engine: this._engine,
-        filter: rangeFilter
+        filter: rangeFilter,
+        bboxFilter: this._bboxFilter
       })
     );
   },

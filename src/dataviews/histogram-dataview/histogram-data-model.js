@@ -3,8 +3,6 @@ var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var Model = require('../../core/model');
 var helper = require('../helpers/histogram-helper');
 
-var DEFAULT_MAX_BUCKETS = 367;
-
 /**
  *  This model is used for getting the total amount of data
  *  from the histogram widget (without any filter).
@@ -71,23 +69,23 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.on('change:url', function () {
-      this.fetch();
+      this.refresh();
     }, this);
 
     this.on('change:aggregation change:offset', function () {
       if (this.get('column_type') === 'date' && this.get('aggregation')) {
-        this.fetch();
+        this.refresh();
       }
     }, this);
 
     this.on('change:bins', function () {
       if (this.get('column_type') === 'number') {
-        this.fetch();
+        this.refresh();
       }
     }, this);
 
     this.on('change:localTimezone', function () {
-      this.fetch();
+      this.refresh();
     }, this);
 
     this.on('change:column', function () {
@@ -128,12 +126,6 @@ module.exports = Model.extend({
     _.each(data.bins, function (bin) {
       parsedData.data[bin.bin] = bin;
     });
-
-    if (numberOfBins > DEFAULT_MAX_BUCKETS) {
-      parsedData.error = 'Max bins limit reached';
-      parsedData.bins = numberOfBins;
-      return parsedData;
-    }
 
     if (this.get('column_type') === 'date') {
       parsedData.data = helper.fillTimestampBuckets(parsedData.data, start, aggregation, numberOfBins, 'totals');

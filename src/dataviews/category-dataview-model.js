@@ -17,6 +17,7 @@ module.exports = DataviewModelBase.extend({
     {
       type: 'category',
       filterEnabled: false,
+      categories: 6,
       allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults
@@ -24,7 +25,8 @@ module.exports = DataviewModelBase.extend({
 
   _getDataviewSpecificURLParams: function () {
     var params = [
-      'own_filter=' + (this.get('filterEnabled') ? 1 : 0)
+      'own_filter=' + (this.get('filterEnabled') ? 1 : 0),
+      'categories=' + this.get('categories')
     ];
     return params;
   },
@@ -50,6 +52,7 @@ module.exports = DataviewModelBase.extend({
     });
 
     this.on('change:column change:aggregation change:aggregation_column', this._reloadAndForceFetch, this);
+    this.on('change:categories', this.refresh, this);
 
     this.bind('change:url', function () {
       this._searchModel.set({
@@ -271,6 +274,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   // Backbone toJson function override
+  // This function is used to serialize the server request
   toJSON: function () {
     return {
       type: 'aggregation',
@@ -292,7 +296,8 @@ module.exports = DataviewModelBase.extend({
     'column',
     'aggregation',
     'aggregation_column',
-    'acceptedCategories'
+    'acceptedCategories',
+    'categories'
   ])
 }
 );

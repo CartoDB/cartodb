@@ -1,74 +1,25 @@
-CARTO.js [v4](http://cartodb.github.io/cartodb.js/)
-===========
+# Carto.js v4
 
-This library allows to embed visualizations created with CARTO in your map or website in a simple way.
+Carto.js is a JavaScript library to create custom location intelligence applications that leverage the power of [CARTO](https://carto.com/). It is the library that powers [Builder](https://carto.com/builder/) and it is part of the [Engine](https://carto.com/pricing/engine/) ecosystem.
 
-# TODO:
+## Getting Started
 
-## ~Quick start
+The best way to get started is to navigate through the Carto.js documentation site:
+ 
+- [Guide](https://cartodb.github.io/full-reference-api/) will give you a good overview of the library.
+- [Examples](https://cartodb.github.io/full-reference-api/examples/) will demo some specific features.
+- [API Reference](https://cartodb.github.io/full-reference-api/docs/) will help you use a particular class or method.
+- [Frequently asked questions](https://cartodb.github.io/full-reference-api/faqs/) might answer some of your questions.
 
-  1. Add cartodb.js and css to your site:
+## Versioning
 
-    ```html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/CartoDB/cartodb.js/tags). 
 
-    <!-- use these cartodb.css links if you are using https -->
-    <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" /-->
+## Submitting Contributions
 
-    <!-- use this cartodb.js link if you are using https -->
-    <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script -->
-    ```
+You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://carto.com/contributions/)
 
+## License
 
-  2. Create the map and add the layer
+This project is licensed under the BSD 3-clause "New" or "Revised" License - see the [LICENSE.txt](LICENSE.txt) file for details.
 
-    ```javascript
-    var map = L.map('map').setView([0, 0], 3);
-
-    // set a base layer
-    L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
-      attribution: 'stamen http://maps.stamen.com/'
-    }).addTo(map);
-
-    // add the cartodb layer
-    var layerUrl = 'http://documentation.carto.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
-    cartodb.createLayer(map, layerUrl).addTo(map);
-    ```
-
-### Usage with Bower
-
-You can install **cartodb.js** with [bower](http://bower.io/) by running
-
-```sh
-bower install cartodb.js
-```
-
-## ~Documentation
-You can find the documentation online [here](http://docs.carto.com/cartodb-platform/cartodb-js.html) and the [source](https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md) inside this repository.
-
-## ~Examples
-
-- [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps_force_basemap.html)
-- [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
-- [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
-- [A visualization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
-- [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
-- [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
-
-
-## ~How to build
-Build CartoDB.js library:
-
-- Install [node.js](http://nodejs.org/download/), from 0.10 version
-- Install grunt & bower: `npm install -g grunt-cli bower`
-- Install node dependencies: `npm install`
-- Install bower dependencies: `bower install`
-- Install [ruby](https://www.ruby-lang.org/en/installation/) and [bundler](https://github.com/bundler/bundler)
-- Install ruby dependencies: `bundle install` (necessary for compass gem)
-- Start the server: `grunt build`
-- Happy mapping!
-
-## ~Submitting Contributions
-
-You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://carto.com/contributing)

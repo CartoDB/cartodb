@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var d3 = require('d3');
+var $ = require('jquery');
 var cdb = require('cartodb.js');
 var formatter = require('../../formatter');
 var template = require('./template.tpl');
@@ -9,6 +10,7 @@ var AnimateValues = require('../animate-values.js');
 var layerColors = require('../../util/layer-colors');
 var analyses = require('../../data/analyses');
 var escapeHTML = require('../../util/escape-html');
+var TooltipView = require('../widget-tooltip-view');
 
 /**
  * Default widget content view:
@@ -118,7 +120,13 @@ module.exports = cdb.core.View.extend({
       target: '.js-actions',
       container: this.$('.js-header')
     });
-
     this.addView(dropdown);
+
+    var actionsTooltip = new TooltipView({
+      context: this.$el,
+      target: '.js-actions'
+    });
+    $('body').append(actionsTooltip.render().el);
+    this.addView(actionsTooltip);
   }
 });

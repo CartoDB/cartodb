@@ -1,6 +1,6 @@
 {
   "name": "cartodb-deep-insights.js",
-  "version": "0.4.13",
+  "version": "0.4.17",
   "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",
@@ -73,6 +73,7 @@
     "grunt-gh-pages": "1.0.0",
     "grunt-sass": "2.0.0",
     "jstify": "0.13.0",
+    "leaflet": "1.2.0",
     "load-grunt-tasks": "3.3.0",
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",

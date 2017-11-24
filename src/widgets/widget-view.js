@@ -12,6 +12,8 @@ var PLACEHOLDER_TEMPLATES = {
   histogram: require('./histogram/placeholder.tpl')
 };
 
+var MAX_BUCKETS = 367;
+
 /**
  * Default widget view
  * The model is a expected to be widget model
@@ -28,12 +30,9 @@ module.exports = cdb.core.View.extend({
     var dataviewModel = this.model.dataviewModel;
 
     this.listenTo(this.model, 'destroy', this.clean);
-    this.listenTo(dataviewModel, 'error', this._onError);
+    this.listenTo(this.model, 'error', this._onError);
+    this.listenTo(dataviewModel, 'statusError', this._onError);
     this.listenTo(dataviewModel, 'sync change:data', this._onDataChanged);
-
-    if (dataviewModel && dataviewModel._totals) {
-      this.listenTo(dataviewModel._totals, 'error', this._onError);
-    }
   },
 
   render: function () {
@@ -60,6 +59,15 @@ module.exports = cdb.core.View.extend({
       return this.errorModel.set({
         model: model,
         error: errorEnhancer({ type: 'no_data_available' }),
+        placeholder: this._getPlaceholder()
+      });
+    }
+
+    if (this._dataHasTooManyBins()) {
+      this.options.contentView.$el.addClass('is-hidden');
+      return this.errorModel.set({
+        model: model,
+        error: errorEnhancer({ type: 'too_many_bins' }),
         placeholder: this._getPlaceholder()
       });
     }
@@ -99,13 +107,28 @@ module.exports = cdb.core.View.extend({
     return !data || (_.isArray(data) && _.isEmpty(data));
   },
 
+  _dataHasTooManyBins: function () {
+    if (this._isHistogram()) {
+      var data = this.model.dataviewModel.getUnfilteredData && this.model.dataviewModel.getUnfilteredData();
+      return !_.isEmpty(data) && _.size(data) > MAX_BUCKETS;
+    }
+    return false;
+  },
+
   _isHistogram: function () {
     return this.model.dataviewModel.get('type') === 'histogram';
   },
 
   _extractError: function (response) {
+    // XmlHttpRequest error?
     var errors = getValue(response, 'responseJSON.errors_with_context', []);
-    return errors[0] || {};
+    if (errors.length > 0) {
+      return errors[0];
+    } else if (response && response.message) {
+      response.type = response.type || 'generic';
+      return response;
+    }
+    return {};
   },
 
   _getPlaceholder: function () {

@@ -95,7 +95,7 @@ describe('widgets-service', function () {
       it('should take them into account', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(false);
         expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(false);
-        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(false);
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });
 

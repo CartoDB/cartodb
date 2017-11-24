@@ -7,7 +7,7 @@ module.exports = {
     options: {
       require: vendorDependencies.map(function(vendor) {
         return [require.resolve(vendor), { expose: vendor }];
-      }),
+      }).concat('camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json'),
       plugin: [
         ['browserify-resolutions', vendorDependencies]
       ]

@@ -9,17 +9,17 @@
 @import "../old_common/mixins";
 
 .extra_options {
+  @include clearfix();
   width: 100%;
-  margin: 30px 0 0 0;
-  padding: 13px 0 0 0;
+  margin: 30px 0 0;
+  padding: 13px 0 0;
   float: left;
   clear: both;
-
   border-top: 1px solid #E5E5E5;
 
-  @include clearfix();
-
-  &.disabled { display:none }
+  &.disabled {
+    display: none;
+  }
 
   .row_count {
     @include inline-block();
@@ -41,7 +41,7 @@
       font-size: 15px;
       vertical-align: middle;
 
-      &:after {
+      &::after {
         content: '·';
         position: relative;
         margin-right: 9px;
@@ -54,12 +54,16 @@
       color: #858585;
       font-size: 15px;
       vertical-align: middle;
-      img { margin: 0 5px 0 0; vertical-align: middle; }
+
+      img {
+        margin: 0 5px 0 0;
+        vertical-align: middle;
+      }
     }
 
-    a { 
+    a {
       @include inline-block();
-      margin:0;
+      margin: 0;
       padding: 0 11px;
       font-family: 'Arial';
       font-size: 11px;
@@ -77,7 +81,6 @@
   .generating {
     display: block;
   }
-
 }
 
 .extra_options .user-options {
@@ -90,19 +93,18 @@
   padding: 0 9px 0 28px;
   font-family: 'Arial';
   font-size: 11px;
-  letter-spacing:0;
+  letter-spacing: 0;
   line-height: 27px;
   text-shadow: none;
   text-transform: uppercase;
 
   i.clone-icon {
+    @include background(image-url('layout/clone-icon.png') no-repeat 0 0);
     position: absolute;
     top: 7px;
     left: 10px;
     width: 14px;
     height: 13px;
-
-    @include background(image-url('layout/clone-icon.png') no-repeat 0 0);
   }
 }
 
@@ -113,26 +115,31 @@
   padding: 0 9px;
   font-family: 'Arial';
   font-size: 11px;
-  letter-spacing:0;
+  letter-spacing: 0;
   line-height: 27px;
   text-shadow: none;
   text-transform: uppercase;
 }
-.extra_options .button.grey.oneclick { display: inline-block }
+
+.extra_options .button.grey.oneclick {
+  display: inline-block;
+}
 
 @media only screen and (max-width: 710px) {
   body.public-map .extra_options,
   body.public .extra_options {
     .download_options {
       display: block !important;
-      margin: 10px 0 20px 0 !important;
+      margin: 10px 0 20px !important;
 
-      .download { display: none !important; }
+      .download {
+        display: none !important;
+      }
     }
 
     .user-options {
       width: 100%;
-      margin-top:0;
+      margin-top: 0;
       float: left !important;
     }
   }
@@ -143,11 +150,15 @@
   body.public .extra_options {
     .download_options {
       display: block !important;
-      margin: 10px 0 20px 0 !important;
+      margin: 10px 0 20px !important;
 
-      .download { display: none !important; }
+      .download {
+        display: none !important;
+      }
     }
 
-    .user-options { margin-top:28px }
+    .user-options {
+      margin-top: 28px;
+    }
   }
 }

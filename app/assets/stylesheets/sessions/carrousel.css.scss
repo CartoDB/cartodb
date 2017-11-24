@@ -8,8 +8,8 @@
   bottom: 0;
   left: 0;
   padding: 50px 0 10px;
-  background: linear-gradient(to bottom, rgba(#000, 0) 0%,rgba(#000, .6) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#99000000',GradientType=0 );
+  background: linear-gradient(to bottom, rgba(#000, 0) 0%, rgba(#000, 0.6) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000', endColorstr='#99000000', GradientType=0);
 }
 
 .Carrousel-navItem {
@@ -41,7 +41,7 @@
 .Carrousel-slide {
   position: absolute;
   z-index: 1;
-  top: 0 ;
+  top: 0;
   right: 0;
   bottom: 0;
   left: 0;
@@ -51,8 +51,8 @@
   background-color: #F7F7F7;
 
   &.is-active {
-    -webkit-animation: slideIn .8s ease .3s;
-    animation: slideIn .8s ease .3s;
+    -webkit-animation: slideIn 0.8s ease 0.3s;
+    animation: slideIn 0.8s ease 0.3s;
     -webkit-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
   }
@@ -60,7 +60,7 @@
   &.is-disabled {
     picture,
     img {
-      opacity: .6;
+      opacity: 0.6;
     }
   }
 }
@@ -77,8 +77,8 @@
       transform: scale(0);
       -webkit-animation-name: fadeIn;
       animation-name: fadeIn;
-      animation-duration: .3s;
-      -webkit-animation-duration: .3s;
+      -webkit-animation-duration: 0.3s;
+      animation-duration: 0.3s;
       opacity: 0;
       background-repeat: no-repeat;
       -webkit-animation-fill-mode: forwards;
@@ -107,15 +107,15 @@
 .Carrousel-card--01 {
   top: 160px;
   left: 26px;
-  -webkit-animation-delay: .8s;
-  animation-delay: .8s;
+  -webkit-animation-delay: 0.8s;
+  animation-delay: 0.8s;
 }
 
 .Carrousel-card--02 {
   top: 160px;
   left: 156px;
-  -webkit-animation-delay: .9s;
-  animation-delay: .9s;
+  -webkit-animation-delay: 0.9s;
+  animation-delay: 0.9s;
 }
 
 .Carrousel-card--03 {
@@ -169,8 +169,8 @@
   position: absolute;
   left: 20px;
   width: 100%;
-  -webkit-transition: all .8s ease-out;
-  transition: all .8s ease-out;
+  -webkit-transition: all 0.8s ease-out;
+  transition: all 0.8s ease-out;
   opacity: 0;
   color: rgba(white, 0.5);
   font-size: 16px;
@@ -210,10 +210,10 @@
   right: 0;
   bottom: 0;
   left: 0;
-  -webkit-transition: all .4s ease-out 1s;
-  transition: all .4s ease-out 1s;
+  -webkit-transition: all 0.4s ease-out 1s;
+  transition: all 0.4s ease-out 1s;
   opacity: 0;
-  background-color: rgba(#000, .5);
+  background-color: rgba(#000, 0.5);
   background-repeat: no-repeat;
   background-position: center 0;
 }
@@ -229,8 +229,8 @@
     .Carrousel-point {
       -webkit-animation-name: fadeIn;
       animation-name: fadeIn;
-      -webkit-animation-duration: .3s;
-      animation-duration: .3s;
+      -webkit-animation-duration: 0.3s;
+      animation-duration: 0.3s;
       -webkit-animation-fill-mode: forwards;
       animation-fill-mode: forwards;
     }
@@ -248,8 +248,8 @@
   bottom: 0;
   width: 211px;
   height: 330px;
-  -webkit-transition: all .3s ease-out 1.5s;
-  transition: all .3s ease-out 1.5s;
+  -webkit-transition: all 0.3s ease-out 1.5s;
+  transition: all 0.3s ease-out 1.5s;
   background: image-url("layout/signup/slide-03-editor.png") no-repeat;
 }
 
@@ -359,11 +359,10 @@
   background-image: image-url("layout/signup/slide-04-share.png");
 }
 
-
 @-webkit-keyframes slideIn {
   0% {
     -webkit-transform: translateX(-100%);
-    opacity: 0
+    opacity: 0;
   }
 
   100% {
@@ -387,7 +386,7 @@
 @-webkit-keyframes fadeIn {
   0% {
     -webkit-transform: scale(0);
-    opacity: 0
+    opacity: 0;
   }
 
   100% {
@@ -431,12 +430,12 @@
 @-webkit-keyframes slideOut {
   0% {
     -webkit-transform: translateX(0);
-    opacity: 1
+    opacity: 1;
   }
 
   100% {
     -webkit-transform: translateX(-100%);
-    opacity: 0
+    opacity: 0;
   }
 }
 

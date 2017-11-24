@@ -1,6 +1,5 @@
 @import '../variables/sizes';
 
-
 // PublicMap Footer
 // --------------------------------------------------
 
@@ -54,12 +53,11 @@ hr,
 }
 
 .Footer-social {
-  color: #636D72;
-  line-height: 40px;
-
   @media (max-width: $sMedia-tablet) {
     margin-top: 20px;
   }
+  color: #636D72;
+  line-height: 40px;
 }
 
 .FooterIcon--facebook,
@@ -75,7 +73,7 @@ hr,
 
 .FooterIcon {
   display: inline-block;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: GRAYscale;
   font-style: normal;
   font-weight: 400;
   line-height: 1;

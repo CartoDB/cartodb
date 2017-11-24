@@ -31,7 +31,10 @@
   border-radius: $sCard-borderRadius;
   background-color: $cCard-selectedFill;
 }
-.List-row.List-row.is-disabled { opacity: 0.4 }
+
+.List-row.List-row.is-disabled {
+  opacity: 0.4;
+}
 
 .List-row:last-child > .List-rowItem {
   // to have same height as the other items, w/o the visible border
@@ -60,6 +63,15 @@
   margin-right: 0;
   margin-left: 0;
 }
-.List-rowItem.List-rowItem--withoutBottomBorder { border-bottom: 0 }
-.List-rowItem.List-rowItem--withoutBottomPadding { padding-bottom: 0 }
-.List-row.is-selected > .List-rowItem { border-bottom: 1px solid transparent }
+
+.List-rowItem.List-rowItem--withoutBottomBorder {
+  border-bottom: 0;
+}
+
+.List-rowItem.List-rowItem--withoutBottomPadding {
+  padding-bottom: 0;
+}
+
+.List-row.is-selected > .List-rowItem {
+  border-bottom: 1px solid transparent;
+}

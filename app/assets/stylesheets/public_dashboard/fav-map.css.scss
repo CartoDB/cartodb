@@ -18,7 +18,7 @@ $heightTall: 450px;
   background: #333 image-url('layout/noise.png') repeat 0 0;
 }
 
-.FavMap:before {
+.FavMap::before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.1));
   @include transition(all, 100ms, ease-in-out);
   content: '';
@@ -30,7 +30,7 @@ $heightTall: 450px;
   height: 0;
 }
 
-.FavMap:not(.is-pre-loading):not(.is-loading):before {
+.FavMap:not(.is-pre-loading):not(.is-loading)::before {
   height: 20px;
 }
 
@@ -51,13 +51,13 @@ $heightTall: 450px;
   height: $heightTall / 2;
 }
 
-.FavMap.FavMap--highShadow:before {
+.FavMap.FavMap--highShadow::before {
   @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.5));
   height: 180px;
   pointer-events: none;
 }
 
-.FavMap.FavMap--highShadow:not(.is-pre-loading):not(.is-loading):before {
+.FavMap.FavMap--highShadow:not(.is-pre-loading):not(.is-loading)::before {
   height: 150px;
 }
 

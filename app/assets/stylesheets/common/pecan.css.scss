@@ -12,6 +12,7 @@
 }
 
 .PecanMap-MapsList {
+  @include transition(margin, 150ms);
   display: block;
   position: relative;
   width: 5000px;
@@ -20,14 +21,11 @@
   padding: 0;
   clear: both;
   overflow: hidden;
-
-  @include transition(margin, 150ms);
 }
 
 .PecanMap-MapsList.is--centered {
-  margin: auto;
-
   @include transition(none);
+  margin: auto;
 }
 
 .MapCard-content--small {
@@ -45,7 +43,10 @@
   color: #666;
   font-weight: normal;
 }
-.PecanMap-MapsList .DefaultTitle a:hover { color: #666 }
+
+.PecanMap-MapsList .DefaultTitle a:hover {
+  color: #666;
+}
 
 .PecanMap-navigation {
   position: absolute;
@@ -58,15 +59,20 @@
 }
 
 .PecanMap-navigationButton {
+  @include transition(opacity, 150ms);
   position: absolute;
   top: 90px;
   padding: 0;
   line-height: 40px !important;
-
-  @include transition(opacity, 150ms);
 }
-.PecanMap-navigationButton--prev { left: -80px }
-.PecanMap-navigationButton--next { right: -80px }
+
+.PecanMap-navigationButton--prev {
+  left: -80px;
+}
+
+.PecanMap-navigationButton--next {
+  right: -80px;
+}
 
 .PencaMap-navigationButton.is-disabled:hover {
   border-color: #CCC;
@@ -83,6 +89,7 @@
 }
 
 .Pecan-TorqueWirzardIcon {
+  @include background(image-url('layout/pecan_torque_wizard.png') center center);
   position: absolute;
   z-index: 10;
   top: 49px;
@@ -90,8 +97,6 @@
   width: 84px;
   height: 84px;
   margin-left: -42px;
-
-  @include background(image-url('layout/pecan_torque_wizard.png') center center);
 }
 
 .PecanCard-footer {
@@ -105,14 +110,14 @@
   color: #999;
   font-size: 11px;
   font-style: italic;
-  line-height:0;
+  line-height: 0;
 }
 
 .CategoryList {
   margin: 0;
   padding: 0;
   float: left;
-  line-height:0;
+  line-height: 0;
 }
 
 .CategoryList .CategoryList-item {

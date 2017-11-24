@@ -20,13 +20,16 @@
 
 .MapsList-footer {
   // To match the MapsList size above, with its margin+padding
-  width: $sLayout-width + $sMargin-element + 2*$sMargin-elementInline;
+  width: $sLayout-width + $sMargin-element + 2 * $sMargin-elementInline;
 }
 
 .MapsList--centerItems {
   @include justify-content(center, center);
 }
-.MapsList.is-hidden { display: none }
+
+.MapsList.is-hidden {
+  display: none;
+}
 
 .MapsList.is-bottom {
   margin-bottom: 120px;
@@ -35,7 +38,7 @@
 .MapsList-item {
   position: relative;
   width: 300px;
-  margin: 20px 10px 0 10px;
+  margin: 20px 10px 0;
 }
 
 .MapsList-item--wRightMargins {
@@ -84,10 +87,9 @@
 
 @media only screen and (max-width: 984px) {
   .MapsList {
+    @include justify-content(center);
     width: 640px;
     padding: 0;
-
-    @include justify-content(center);
   }
 
   .MapsList .MapsList-item.MapsList-item--fake {
@@ -101,10 +103,9 @@
 
 @media only screen and (max-width: 663px) {
   .MapsList {
+    @include justify-content(center);
     width: 100%;
     padding: 0;
-
-    @include justify-content(center);
   }
 
   .MapsList .MapsList-item.MapsList-item--fake {

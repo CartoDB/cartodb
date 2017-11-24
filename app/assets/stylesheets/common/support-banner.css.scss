@@ -12,17 +12,19 @@
 }
 
 .SupportBanner-inner {
-  position: relative;
-
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  position: relative;
 }
 
 .SupportBanner-link {
   display: block;
 }
-.SupportBanner-info { width: 640px }
+
+.SupportBanner-info {
+  width: 640px;
+}
 
 .SupportBanner-infoDescription {
   margin-top: 4px;
@@ -31,5 +33,8 @@
 .SupportBanner-infoDescriptionLink {
   color: $cTypography-secondary;
   text-decoration: underline;
-  &:hover { color: $cTypography-paragraphs }
+
+  &:hover {
+    color: $cTypography-paragraphs;
+  }
 }

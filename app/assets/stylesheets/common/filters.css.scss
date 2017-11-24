@@ -30,11 +30,11 @@
 // Moved with scroll behaviour
 .Filters.is-fixed {
   position: fixed;
-  background: white;
+  background: WHITE;
 }
 
 .Filters.with-long-separator {
-  &:before {
+  &::before {
     content: '';
     position: absolute;
     z-index: 0;
@@ -44,7 +44,10 @@
     height: 1px;
     background-color: $cStructure-softLine;
   }
-  .Filters-separator { display: none }
+
+  .Filters-separator {
+    display: none;
+  }
 }
 
 .Filters > .u-inner {
@@ -56,10 +59,9 @@
 }
 
 .Filters-inner {
+  @include transition(margin, 150ms);
   display: block;
   padding: 0;
-
-  @include transition(margin,150ms);
 }
 
 .Filters-inner.show-second-row {
@@ -72,9 +74,9 @@
 
 .Filters-separator {
   position: absolute;
-  z-index:0;
+  z-index: 0;
   top: 74px;
-  left:0;
+  left: 0;
   width: 100%;
   height: 1px;
   background-color: $cStructure-softLine;
@@ -86,7 +88,10 @@
   @include align-items(center, center);
   height: 73px;
 }
-.Filters-row--centered { @include justify-content(center) }
+
+.Filters-row--centered {
+  @include justify-content(center);
+}
 
 .Filters-group {
   @include display-flex();
@@ -136,7 +141,7 @@
   color: #1181FB;
 }
 
-.Filters-searchLink:after {
+.Filters-searchLink::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -152,18 +157,19 @@
   margin-right: 5px;
   margin-left: 1px;
   vertical-align: middle;
-
 }
-a.Filters-searchLink:hover { color: #333 }
+
+a.Filters-searchLink:hover {
+  color: #333;
+}
 
 .Filters-searchForm {
-  position: relative;
-  width: 100%;
-  height: 80px;
-
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  position: relative;
+  width: 100%;
+  height: 80px;
 }
 
 .Filters-searchInput {
@@ -186,7 +192,10 @@ a.Filters-searchLink:hover { color: #333 }
 .Filters-cleanSearch.Filters-cleanSearch--short {
   right: -10px;
 }
-a.Filters-cleanSearch { line-height:32px }
+
+a.Filters-cleanSearch {
+  line-height: 32px;
+}
 // We can't group this style :(
 .Filters-searchInput::-webkit-input-placeholder {
   color: #DDD;
@@ -224,7 +233,7 @@ a.Filters-cleanSearch { line-height:32px }
   height: 16px;
   color: $cTypography-linkSelected;
 
-  &:before {
+  &::before {
     content: '';
     position: absolute;
     right: 0;
@@ -263,20 +272,32 @@ a.Filters-cleanSearch { line-height:32px }
   color: #CCC;
   font-size: 19px;
   line-height: 19px;
-  &:hover { color: #666 }
+
+  &:hover {
+    color: #666;
+  }
 }
 
 .Filters-orderLink.is-selected {
   color: #666;
-  &:hover { cursor: default }
+
+  &:hover {
+    cursor: default;
+  }
 }
-.Filters-orderLink--graph { line-height: 26px }
+
+.Filters-orderLink--graph {
+  line-height: 26px;
+}
 
 .Filters-orderLink--size {
   font-size: 17px;
   line-height: 17px;
 }
-.Filters-actionButton { margin-right: 10px }
+
+.Filters-actionButton {
+  margin-right: 10px;
+}
 
 .Filters-actionsList {
   @include display-flex();
@@ -325,7 +346,10 @@ a.Filters-cleanSearch { line-height:32px }
 
 .Filters-link:hover {
   text-decoration: none;
-  .Filters-progressSize { color: $cTypography-paragraphs }
+
+  .Filters-progressSize {
+    color: $cTypography-paragraphs;
+  }
 }
 
 @media only screen and (max-width: 959px) {
@@ -348,7 +372,8 @@ a.Filters-cleanSearch { line-height:32px }
   top: 157px + 81px;
 }
 
-.Filters--navListing:after {
+.Filters--navListing::after {
+  @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
   content: '';
   position: absolute;
   z-index: 2;
@@ -358,11 +383,17 @@ a.Filters-cleanSearch { line-height:32px }
   height: 18px;
   margin-left: -510px;
   background-color: transparent !important;
-
-  @include background-gradient(rgba(#F9F9F9,1), rgba(#F9F9F9,0));
 }
-.Filters--navListing .Filters-separator { background-color: $cStructure-mainLine }
-.Filters--navListing .Filters-searchInput { margin-top: -2px } /* hacking line-height between search and input */
+
+.Filters--navListing .Filters-separator {
+  background-color: $cStructure-mainLine;
+}
+
+.Filters--navListing .Filters-searchInput {
+  margin-top: -2px;
+}
+
+/* hacking line-height between search and input */
 .Filters--navListing .Button--create {
   height: 34px;
   margin-top: 48px;
@@ -373,7 +404,10 @@ a.Filters-cleanSearch { line-height:32px }
   background: none;
   color: $cTypography-link;
 }
-.Filters--navListing.no-shadow:after { display: none }
+
+.Filters--navListing.no-shadow::after {
+  display: none;
+}
 
 .Filters--static {
   position: relative;

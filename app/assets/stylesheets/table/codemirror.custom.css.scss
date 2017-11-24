@@ -1,4 +1,3 @@
-
 @import "compass/css3/inline-block";
 @import "compass/css3/border-radius";
 @import "compass/css3/box-shadow";
@@ -6,15 +5,29 @@
 
 /** customization of codemirror styles */
 .cm-s-default .cm-color {
-  color: black;
-
   @include border-radius(2px);
-  &:hover { cursor:pointer }
+  color: BLACK;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
-.cm-s-default .cm-variable {color: #666;}
-.cm-s-default .cm-keyword {color: #F90;}
-.cm-s-default .cm-atom {color: #F90;}
-.cm-s-default .cm-invalidchar {color: #F00;}
+
+.cm-s-default .cm-variable {
+  color: #666;
+}
+
+.cm-s-default .cm-keyword {
+  color: #F90;
+}
+
+.cm-s-default .cm-atom {
+  color: #F90;
+}
+
+.cm-s-default .cm-invalidchar {
+  color: #F00;
+}
 
 .CodeMirror-lines * {
   color: #666;
@@ -23,11 +36,11 @@
 .CodeMirror {
   display: block;
   position: absolute;
-  z-index:1;
-  top:0;
-  right:0;
+  z-index: 1;
+  top: 0;
+  right: 0;
   bottom: 80px;
-  left:0;
+  left: 0;
   height: auto;
   padding: 8px 0;
   background: none;
@@ -44,7 +57,6 @@
   padding-left: 25px;
 }
 
-
 /** line number bar background */
 .CodeMirror-gutters {
   border: none;
@@ -57,16 +69,14 @@
 
 .CodeMirror-gutter-elt {
   //background-color: white;
-  padding: 0 .2em .4em .4em;
+  padding: 0 0.2em 0.4em 0.4em;
 }
-
-.CodeMirror-code > div {
-}
-
 
 /** codemirror hints */
 
 .CodeMirror-hints {
+  @include border-radius(3px);
+  @include box-shadow(none);
   display: block;
   position: absolute;
   z-index: 1000 !important;
@@ -76,31 +86,32 @@
   max-width: 240px;
   height: auto;
   max-height: 120px;
-  padding:0;
+  padding: 0;
   overflow-y: auto;
   border: 1px solid #999;
-  background: white;
-
-  @include border-radius(3px);
-  @include box-shadow(none);
+  background: WHITE;
 
   .CodeMirror-hint {
     display: block;
-    display: block;
     position: relative;
-    margin:0;
+    margin: 0;
     padding: 0 10px;
-    border-top: 1px solid rgba(#CCC,0.35);
+    border-top: 1px solid rgba(#CCC, 0.35);
     color: #2483B4;
     font-family: $text-fonts;
     line-height: 35px;
 
-    &:first-child {border-top:0;
+    &:first-child {
+      @include border-top-radius(2px);
+      border-top: 0;
+    }
 
-      @include border-top-radius(2px)}
-    &:last-child {@include border-bottom-radius(2px)}
+    &:last-child {
+      @include border-bottom-radius(2px);
+    }
 
-    span.value, span.text {
+    span.value,
+    span.text {
       display: block;
       overflow: hidden;
       font-size: 13px;
@@ -113,19 +124,19 @@
     }
 
     span.type {
+      @include border-radius(2px);
       position: absolute;
-      z-index:1;
-      top: 8px; right:8px;
+      z-index: 1;
+      top: 8px;
+      right: 8px;
       width: 20px;
       background: #CCC;
-      color: white;
+      color: WHITE;
       font-size: 11px;
       font-weight: bold;
       line-height: 19px;
       text-align: center;
       text-transform: uppercase;
-
-      @include border-radius(2px);
     }
   }
 

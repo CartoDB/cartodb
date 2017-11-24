@@ -45,9 +45,14 @@
   background: #F5F5F5;
   box-shadow: inset 0 0 1px 0 rgba(black, 0.25);
 }
-.OrganizationUser-quotaLegendIcon--assigned { background: #1181FB }
-.OrganizationUser-quotaLegendIcon--used { background: #71CEFB }
-.OrganizationUser-quotaLegendIcon--total {}
+
+.OrganizationUser-quotaLegendIcon--assigned {
+  background: #1181FB;
+}
+
+.OrganizationUser-quotaLegendIcon--used {
+  background: #71CEFB;
+}
 
 .OrganizationUser-quotaInfo {
   display: inline-block;
@@ -84,10 +89,6 @@
   border-bottom: 1px solid $cStructure-softLine;
   color: $cTypography-headers;
   font-size: $sFontSize-large;
-}
-
-.UserQuotaDropdown-quota {
-
 }
 
 .UserQuotaDropdown-info {

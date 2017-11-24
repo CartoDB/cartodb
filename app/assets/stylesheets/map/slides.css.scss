@@ -11,12 +11,7 @@
 @import "../old_elements/elements-sprite";
 
 .slides_panel {
-  &.active {
-    left: 0;
-  }
-
   @include simple-transition(left, 100ms);
-
   $width: 140px;
   position: absolute;
   z-index: 1;
@@ -26,6 +21,10 @@
   width: $width;
   background: #333 image-url('layout/noise.png') repeat 0 0;
 
+  &.active {
+    left: 0;
+  }
+
   .scrollpane {
     position: absolute;
     top: 0;
@@ -34,47 +33,96 @@
     height: 100%;
     padding-top: 20px;
 
-    /*overflow: hidden;*/
     outline: none;
 
-    &:hover .jspVerticalBar { @include opacity(1); }
+    &:hover .jspVerticalBar {
+      @include opacity(1);
+    }
 
-    .jspContainer { /*overflow: hidden;*/ position: relative; }
-    .jspPane { position: absolute; }
-    .jspVerticalBar { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; z-index: 20; top: 0; right: 7px; width: 5px; height: 100%; background: none; }
-    .jspVerticalBar * { margin: 0; padding: 0; }
-    .jspCap { display: none; }
-    .jspTrack { position: relative; background: none; }
+    .jspContainer {
+      position: relative;
+    }
 
-    .jspDrag { position: relative; top: 0; left: 0; background: rgba(#BBB, .5); cursor: pointer;
+    .jspPane {
+      position: absolute;
+    }
 
-      @include border-radius(5px); }
-    .jspArrow { display: block; background: none; text-indent: -20000px; cursor: pointer; }
-    .jspVerticalBar .jspArrow { height: 10px; }
-    .jspVerticalBar .jspArrow:focus { outline: none; }
-    .jspCorner { height: 100%; float: left; background: #EEEEF4; }
+    .jspVerticalBar {
+      @include simple-transition(opacity, 150ms);
+      @include opacity(0);
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      right: 7px;
+      width: 5px;
+      height: 100%;
+      background: none;
+    }
+
+    .jspVerticalBar * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .jspCap {
+      display: none;
+    }
+
+    .jspTrack {
+      position: relative;
+      background: none;
+    }
+
+    .jspDrag {
+      @include border-radius(5px);
+      position: relative;
+      top: 0;
+      left: 0;
+      background: rgba(#BBB, 0.5);
+      cursor: pointer;
+    }
+
+    .jspArrow {
+      display: block;
+      background: none;
+      text-indent: -20000px;
+      cursor: pointer;
+    }
+
+    .jspVerticalBar .jspArrow {
+      height: 10px;
+    }
+
+    .jspVerticalBar .jspArrow:focus {
+      outline: none;
+    }
+
+    .jspCorner {
+      height: 100%;
+      float: left;
+      background: #EEEEF4;
+    }
   }
 
   .slide_view {
-
+    @include box-sizing(border-box);
+    @include border-radius(2px);
     display: block;
     position: relative;
     width: 104px;
     height: 63px;
-    margin: 0 auto 29px auto;
+    margin: 0 auto 29px;
     padding: 11px;
-
     background: #EEE;
     background: -moz-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#EEE), color-stop(100%,#E5E5E5));
-    background: -webkit-linear-gradient(top, #EEE 0%,#E5E5E5 100%);
-    background: -o-linear-gradient(top, #EEE 0%,#E5E5E5 100%);
-    background: -ms-linear-gradient(top, #EEE 0%,#E5E5E5 100%);
-    background: linear-gradient(to bottom, #EEE 0%,#E5E5E5 100%);
-
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #EEE), color-stop(100%, #E5E5E5));
+    background: -webkit-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: -o-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: -ms-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: linear-gradient(to bottom, #EEE 0%, #E5E5E5 100%);
     text-align: center;
     text-decoration: none;
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEE', endColorstr='#E5E5E5', GradientType=0);
 
     &.ui-sortable-helper {
       width: 104px !important;
@@ -84,7 +132,7 @@
     }
 
     &.fake {
-      margin: 0 auto 15px auto;
+      margin: 0 auto 15px;
       cursor: default;
       pointer-events: none;
     }
@@ -94,19 +142,28 @@
       display: none;
     }
 
-    &.fake:hover .count { 
-      background: rgba(#000, .1);
+    &.fake:hover .count {
+      background: rgba(#000, 0.1);
     }
 
-    &.active:hover .count { background: #AAC6DF; }
+    &.active:hover .count {
+      background: #AAC6DF;
+    }
 
-    &:hover .count { background: #BBB; }
-    &:hover .close { @include opacity(1); }
+    &:hover .count {
+      background: #BBB;
+    }
 
-    &.active { 
-      .count { background: #BECFDE; }
+    &:hover .close {
+      @include opacity(1);
+    }
 
-      &:before {
+    &.active {
+      .count {
+        background: #BECFDE;
+      }
+
+      &::before {
         content: '';
         position: absolute;
         top: -3px;
@@ -118,22 +175,25 @@
     }
 
     &.add {
-
-      margin-bottom: 70px;
-      background: rgba(#E8E8E8, .1);
-
       @include simple-transition(background, 150ms);
+      margin-bottom: 70px;
+      background: rgba(#E8E8E8, 0.1);
 
-      &.loading .count .spinner { display: block; }
-      &.loading .count .icon { display: none; }
+      &.loading .count .spinner {
+        display: block;
+      }
+
+      &.loading .count .icon {
+        display: none;
+      }
 
       &:hover {
-        background: rgba(#E8E8E8, .08);
+        background: rgba(#E8E8E8, 0.08);
       }
 
       .count {
         padding: 0;
-        background: rgba(#000, .1);
+        background: rgba(#000, 0.1);
       }
 
       .count .spinner {
@@ -148,43 +208,37 @@
         background: image-url('layout/tail-spin.svg') no-repeat 50% 50%;
         background-size: 30px;
       }
-
-
     }
 
     .close {
-
+      @include box-shadow(1px 1px 5px rgba(#000, 0.5));
+      @include opacity(0);
+      @include simple-transition(opacity, 0.1s, ease-in-out);
+      @include border-radius(90px);
       position: absolute;
       top: -12px;
       right: -11px;
       width: 17px;
-
       height: 16px;
       padding: 3px;
       border: 1px solid #FFF;
       background: #333;
-
       color: #FFF;
       font-family: "helvetica neue", "helvetica", arial;
       font-size: 10px;
-
       line-height: 16px;
       text-align: center;
       text-transform: uppercase;
-
       cursor: pointer;
 
-      @include box-shadow(1px 1px 5px rgba(#000, .5));
-
-      @include opacity(0);
-      @include simple-transition(opacity, .10s, ease-in-out);
-      @include border-radius(90px);
-
-      &:hover { text-decoration:none; }
-
+      &:hover {
+        text-decoration: none;
+      }
     }
 
     .info {
+      @include border-radius(2px);
+      @include box-sizing(border-box);
       position: relative;
       top: 14px;
       height: 16px;
@@ -193,24 +247,20 @@
       background: #333;
       color: #9CA0A3;
       font-size: 9px;
-
       line-height: 80%;
       text-align: center;
       text-decoration: none;
-
       text-transform: uppercase;
-
-      @include border-radius(2px);
-      @include box-sizing(border-box);
 
       &:hover {
         color: #666;
       }
-
     }
 
     .count {
       @include box-sizing(border-box);
+      @include border-radius(200px);
+      @include simple-transition(background, 150ms);
       width: 43px;
       height: 43px;
       margin: auto;
@@ -222,38 +272,38 @@
       line-height: normal;
       text-align: center;
       vertical-align: middle;
-
-      @include border-radius(200px);
-
-      @include simple-transition(background, 150ms);
-
     }
-
-    @include box-sizing(border-box);
-    @include border-radius(2px);
   }
 
   .dropdown.slide_transition_dropdown {
-
     width: 150px;
 
     ul li {
-
       padding: 10px;
       text-align: left;
 
-      a { padding: 0; }
-      a.radiobutton span.radio { margin: 1px 7px 0 0 !important; }
+      a {
+        padding: 0;
+      }
+
+      a.radiobutton span.radio {
+        margin: 1px 7px 0 0 !important;
+      }
 
       &.seconds {
-        .form { text-align: center; }
-        a.radiobutton { margin: 0 3px 0 0; }
+        .form {
+          text-align: center;
+        }
 
-        a.radiobutton, .form {
+        a.radiobutton {
+          margin: 0 3px 0 0;
+        }
+
+        a.radiobutton,
+        .form {
           @include inline-block();
         }
       }
     }
   }
-
 }

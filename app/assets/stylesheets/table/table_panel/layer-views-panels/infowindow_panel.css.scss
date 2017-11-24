@@ -17,27 +17,26 @@
 @import "../../../old_common/mixins";
 @import "../../../old_common/form-elements";
 
-
 .infowindow_panel {
 
   // TYPES MENU
   ul.types {
     position: relative;
-    z-index:2;
+    z-index: 2;
     padding: 10px 0 0 8px;
     background: image-url('layout/linen.png') repeat 0 0;
 
     @include border-top-left-radius(3px);
-      
-    &:after {
+
+    &::after {
       content: '';
       position: absolute;
-      z-index:1;
-      bottom:0;
-      left:0;
+      z-index: 1;
+      bottom: 0;
+      left: 0;
       width: 100%;
       height: 1px;
-      background: rgba(black,.10);
+      background: rgba(black, 0.1);
     }
 
     li {
@@ -58,12 +57,12 @@
           text-decoration: none;
           cursor: default;
 
-          &:before {
+          &::before {
             content: '';
             position: absolute;
-            z-index:2;
-            bottom:0;
-            left:0;
+            z-index: 2;
+            bottom: 0;
+            left: 0;
             width: 100%;
             height: 1px;
             background: white;
@@ -78,18 +77,18 @@
     div.wrapper { top: 31px; }
   }
 
-  .doc_info { right:26px !important; }
+  .doc_info { right: 26px !important; }
 
   .header {
     position: relative;
-    padding: 21px 30px 19px 30px;
+    padding: 21px 30px 19px;
     clear: both;
     overflow: hidden;
 
     h3 {
       padding: 0;
       float: left;
-      border:0;
+      border: 0;
     }
 
     .controls {
@@ -99,12 +98,12 @@
         color: #CCC;
         line-height: 18px;
       }
-      &.margin { margin-right:20px }
+      &.margin { margin-right: 20px; }
     }
   }
 
   // No content block
-  .no_content { display:none }
+  .no_content { display: none; }
 
   &.editing_html {
     .header h3 {
@@ -113,12 +112,32 @@
 
     .menu {
       li:first-child { margin-left: 23px; }
-      &:after { content:' '; position:absolute; top:0; bottom:0; left:34px; width:1px; height:100%; background:rgba($cGray4,0.50); }
-      &:before { content:' '; position:absolute; top:0; bottom:0; left:36px; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+
+      &::after {
+        content: ' ';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 34px;
+        width: 1px;
+        height: 100%;
+        background: rgba($cGray4, 0.5);
+      }
+
+      &::before {
+        content: ' ';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 36px;
+        width: 1px;
+        height: 100%;
+        background: rgba(#509DD7, 0.25);
+      }
     }
   }
 
-  .help-tip { top:143px }
+  .help-tip { top: 143px; }
 
   // Tab menus => on click submenu, on hover submenu, etc...
   .menu {
@@ -128,8 +147,8 @@
     top: 112px;
     width: 100%;
     padding: 9px 23px 3px 30px;
-    border-top: 1px solid rgba(#DDD, .5);
-    border-bottom: 1px solid rgba(#DDD, .5);
+    border-top: 1px solid rgba(#DDD, 0.5);
+    border-bottom: 1px solid rgba(#DDD, 0.5);
     background: #F6F6F6;
 
     @include box-sizing(border-box);
@@ -156,42 +175,64 @@
 
         a { display: block; }
 
-        &.editor { float: left }
+        &.editor { float: left; }
 
         &.title_editor,
-        &.html_editor { float: right }
+        &.html_editor { float: right; }
 
         &.html_editor {
           position: relative;
           margin-right: 2px;
         }
 
-        &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
-        &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
-        &.html_editor  a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
+        &.editor a {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0);
+        }
 
-        &.editor       a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
-        &.title_editor a.selected { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
-        &.html_editor  a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
+        &.title_editor a {
+          @include size(20px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0);
+        }
+
+        &.html_editor a {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px);
+        }
+
+        &.editor a.selected {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px);
+        }
+
+        &.title_editor a.selected {
+          @include size(20px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px);
+        }
+
+        &.html_editor a.selected {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px);
+        }
       }
-
     }
   }
 
   .all {
     padding: 15px 0;
     overflow: auto;
-    span.label {margin-right:12px;}
+    span.label { margin-right: 12px; }
   }
 
   .titlePane .fields li {
     position: relative;
-    & > span:hover {cursor: default; }
+    & > span:hover { cursor: default; }
   }
 
   // When custom html template is applied, blocked block should show up
   // and overflow should be hidden
-  .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
+  .titlePane.disabled .wrapper,
+  .fieldPane.disabled .wrapper {
     overflow: hidden;
   }
 
@@ -199,12 +240,12 @@
     display: none;
     position: absolute;
     z-index: 10;
-    top:0;
-    right:0;
-    bottom:0;
-    left:0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     padding: 20px 40px;
-    background: rgba(white,0.9);
+    background: rgba(white, 0.9);
     line-height: normal;
 
     text-align: center;
@@ -217,28 +258,26 @@
       height: 110px;
 
       @include inline-block();
-
       @include table-sprite(block_icon);
     }
 
     p {
-      margin: 30px 0 3px 0;
+      margin: 30px 0 3px;
       color: #999;
       line-height: normal;
     }
 
     a {
       @include inline-block();
-      margin: 20px 0 0 0;
+      margin: 20px 0 0;
     }
-
   }
 
   .fields {
     li {
       padding: 13px 0;
       overflow: hidden;
-      border-bottom: 1px solid rgba(#999,0.25);
+      border-bottom: 1px solid rgba(#999, 0.25);
       color: $cGray4;
       font-size: 15px;
 
@@ -247,14 +286,14 @@
         max-width: 50%;
         line-height: 16px;
         vertical-align: middle;
-        &:hover {cursor:all-scroll;}
+        &:hover { cursor: all-scroll; }
       }
 
       .form_combo {
         width: auto;
         float: right;
 
-        .select2-container {width:143px;}
+        .select2-container { width: 143px; }
       }
 
       .form_combo ~ span {
@@ -264,7 +303,7 @@
       .edit_in_place.input {
         @include position(7px, 0, false, false);
         @include default-input();
-        z-index:2;
+        z-index: 2;
 
         input {
           padding: 6px;
@@ -274,7 +313,7 @@
 
       .switches {
         float: right;
-        a.switch {margin-left:8px;}
+        a.switch { margin-left: 8px; }
       }
 
       span.title {
@@ -295,11 +334,9 @@
         cursor: all-scroll;
 
         @include box-shadow(rgba(0,0,0,0.1) 0 0 5px 2px);
-
         @include table-sprite(drag_points, $offset-y:23px, $offset-x:10px);
-
         @include border-radius(3px);
-        & > span {color:#999;}
+        & > span { color: #999; }
       }
 
       &.enabled {

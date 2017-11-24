@@ -1,4 +1,4 @@
-  
+
 /**
    * Autocomplete UI plugin css
    */
@@ -8,6 +8,7 @@
 @import "../old_common/vars";
 
 ul.ui-autocomplete {
+  @include border-radius(3px);
   display: block;
   position: absolute;
   z-index: 1000 !important;
@@ -18,13 +19,11 @@ ul.ui-autocomplete {
   max-height: 120px;
   overflow-y: auto;
   border: 1px solid #999;
-  background: white;
-
-  @include border-radius(3px);
+  background: WHITE;
 
   li {
     display: block;
-    border-top: 1px solid rgba(#CCC,0.35);
+    border-top: 1px solid rgba(#CCC, 0.35);
 
     a {
       display: block;
@@ -36,21 +35,37 @@ ul.ui-autocomplete {
       white-space: nowrap;
     }
 
-    &:first-child {@include border-top-radius(3px)}
-    &:last-child {@include border-bottom-radius(3px)}
+    &:first-child {
+      @include border-top-radius(3px);
+    }
+
+    &:last-child {
+      @include border-bottom-radius(3px);
+    }
 
     &:hover {
       background: #F7F7F7;
-      a {color:#333; text-decoration:none}
+
+      a {
+        color: #333;
+        text-decoration: none;
+      }
     }
 
     &.disabled {
-      background: white;
-      a {@include opacity(0.4); color:$link-color; text-decoration:none}
+      background: WHITE;
+
+      a {
+        @include opacity(0.4);
+        color: $link-color;
+        text-decoration: none;
+      }
     }
 
-    & a.ui-active-hover, & a#ui-active-menuitem {
-      color:#333; text-decoration:none
+    & a.ui-active-hover,
+    & a#ui-active-menuitem {
+      color: #333;
+      text-decoration: none;
     }
   }
 }

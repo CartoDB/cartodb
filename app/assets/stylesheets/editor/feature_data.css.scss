@@ -5,18 +5,20 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-.FeatureData {
-
-}
-
 .FeatureData .Dialog-header {
   height: 245px;
   min-height: 245px;
   padding-top: 30px;
   padding-bottom: 0;
 }
-.FeatureData .Dialog-headerTitle { font-size: 16px }
-.FeatureData .Dialog-headerText { font-size: 14px }
+
+.FeatureData .Dialog-headerTitle {
+  font-size: 16px;
+}
+
+.FeatureData .Dialog-headerText {
+  font-size: 14px;
+}
 
 .FeatureData-mapWrapper {
   position: relative;
@@ -33,6 +35,7 @@
 }
 
 .FeatureData-mapMamufas {
+  @include css3-prefix(box-sizing, content-box);
   content: '';
   position: absolute;
   z-index: 2;
@@ -45,18 +48,18 @@
   border-right: 0;
   border-left: 0;
   background: transparent;
-
-  @include css3-prefix(box-sizing, content-box);
 }
 
 .FeatureData-mapContainer .leaflet-control-attribution,
-.FeatureData-mapContainer .cartodb-gmaps-attribution { display: none }
+.FeatureData-mapContainer .cartodb-gmaps-attribution {
+  display: none;
+}
 
 .FeatureData .Dialog-expandedSubContent {
   position: relative;
 
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     content: '';
     position: fixed;
     z-index: 5;
@@ -66,17 +69,15 @@
     margin-left: -310px;
   }
 
-  &:before {
+  &::before {
+    @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
     top: 275px;
     background-color: transparent !important;
-
-    @include background-gradient(rgba(#F9F9F9,1),rgba(#F9F9F9,0));
   }
 
-  &:after {
+  &::after {
+    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     bottom: 97px;
-
-    @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
   }
 }
 
@@ -102,6 +103,11 @@
   @include align-items(center, center);
   background: #F9F9F9;
 }
-.FeatureData-formFooter .Button { margin: 0 }
 
-.FeatureData-loader { display: none }
+.FeatureData-formFooter .Button {
+  margin: 0;
+}
+
+.FeatureData-loader {
+  display: none;
+}

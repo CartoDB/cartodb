@@ -19,38 +19,39 @@ div.dropdown.canvas_setup_dropdown {
   li {
     float: left;
     border: none;
-    background: #F2F2F2; 
+    background: #F2F2F2;
 
     @include border-radius(5px);
 
-    &:first-child { 
+    &:first-child {
       margin-right: 1px;
 
       @include border-radius(5px 0 0 5px);
     }
 
-    &:last-child { 
+    &:last-child {
       @include border-radius(0 5px 5px 0);
     }
 
     &:hover {
       a { background: image-url('layout/computer.png') no-repeat 50% 16px; }
-      strong { @include opacity(.7); }
+      strong { @include opacity(0.7); }
     }
 
     &.active {
 
-      background: #F2F2F2; 
+      background: #F2F2F2;
 
-      strong { color: #397DB8;
-
-        @include opacity(1); }
+      strong {
+        @include opacity(1);
+        color: #397DB8;
+      }
 
       &.desktop a { background: image-url('layout/computer.png') no-repeat 50% 16px; }
-      &.mobile  a { background: image-url('layout/mobile.png') no-repeat 50% 16px; }
+      &.mobile a { background: image-url('layout/mobile.png') no-repeat 50% 16px; }
     }
 
-    a { 
+    a {
       display: block;
       position: relative;
       width: 86px;
@@ -61,14 +62,14 @@ div.dropdown.canvas_setup_dropdown {
       display: block;
       position: absolute;
       bottom: 16px;
-      left:0;
+      left: 0;
       width: 100%;
       color: #444;
       font-size: 10px;
       text-align: center;
       text-transform: uppercase;
 
-      @include opacity(.5);
+      @include opacity(0.5);
     }
 
     &.desktop a {
@@ -79,6 +80,4 @@ div.dropdown.canvas_setup_dropdown {
       background: image-url('layout/mobile_disabled.png') no-repeat 50% 16px;
     }
   }
-
-
 } // canvas_setup_dropdown

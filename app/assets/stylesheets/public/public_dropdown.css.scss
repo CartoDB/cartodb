@@ -8,7 +8,7 @@
 div.dropdown {
   z-index: 1000;
   -webkit-transform: translate3d(0, 0, 10px) translateZ(10px);
-  
+
   a {
     color: #2483B4;
     font-family: $text-fonts;
@@ -16,9 +16,8 @@ div.dropdown {
     text-decoration: none;
 
     &:hover {
-      color: black;
+      color: BLACK;
       text-decoration: underline;
     }
   }
-
 }

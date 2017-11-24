@@ -6,12 +6,10 @@
 @import "../variables/mixins";
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
-
-
 $fieldBgColor: transparent;
 $fieldBorderColor: #DFE8EC;
 
-.EditableField {  
+.EditableField {
   .EditableField-button {
     margin-right: 0;
 
@@ -28,12 +26,11 @@ $fieldBorderColor: #DFE8EC;
     border: none;
     outline: none;
     background: none;
-
     background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
     background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
     background: -ms-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
     background: -o-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
-    background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0;
+    background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0; /* stylelint-disable-line */
     background-size: 100% $baseSize * 2;
   }
 }

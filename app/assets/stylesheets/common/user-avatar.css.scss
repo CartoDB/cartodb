@@ -18,7 +18,7 @@
   margin-left: $sMargin-min;
 }
 
-.UserAvatar.is-error:before {
+.UserAvatar.is-error::before {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
@@ -118,6 +118,6 @@
   line-height: 26px;
 }
 
-.UserAvatar-moreItems:before {
+.UserAvatar-moreItems::before {
   content: '...';
 }

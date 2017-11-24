@@ -6,5 +6,8 @@
   font-size: $sFontSize-normal;
   font-style: italic;
   line-height: $sLineHeight-normal;
-  &:hover { text-decoration: none }
+
+  &:hover {
+    text-decoration: none;
+  }
 }

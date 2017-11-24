@@ -13,27 +13,26 @@
 @import "../../old_common/mixins";
 @import "../../old_common/vars";
 
-
 div.sync_info {
   display: block;
   position: absolute;
-  z-index:1;
-  right:0;
-  bottom:0;
-  left:0;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
   height: auto;
   padding: 0 0 8px 43px;
 
   &.failure {
-    border-top: 1px solid rgba(black, .2);
+    border-top: 1px solid rgba(black, 0.2);
     background: image-url('layout/sync_error_bkg.png') repeat-x 0 0;
   }
 
   ul {
     position: relative;
-    top:0;
+    top: 0;
     height: 20px;
-    margin-top:0;
+    margin-top: 0;
 
     @include display-flex();
     @include align-items(center, center);
@@ -41,18 +40,18 @@ div.sync_info {
 
     li {
       position: relative;
-      margin:0;
+      margin: 0;
       padding: 0 7px 0 0;
 
       &.separator {
         padding: 0 7px 0 10px;
 
-        &:before {
+        &::before {
           content: '';
           display: block;
           position: absolute;
           top: 50%;
-          left:0;
+          left: 0;
           width: 2px;
           height: 2px;
           background: #365C82;
@@ -74,14 +73,14 @@ div.sync_info {
 
     span.point {
       position: absolute;
-      z-index:1;
-      top:0;
-      left:0;
+      z-index: 1;
+      top: 0;
+      left: 0;
       width: 8px;
       height: 8px;
-      margin:0;
-      padding:0;
-      border: 1px solid rgba(black,.5);
+      margin: 0;
+      padding: 0;
+      border: 1px solid rgba(black, 0.5);
       text-shadow: none;
 
       @include border-radius(10px);
@@ -90,30 +89,29 @@ div.sync_info {
 
     span.pulse {
       position: absolute;
-      z-index:0;
+      z-index: 0;
       top: -2px;
       left: -2px;
       width: 8px;
       height: 8px;
       border: 3px solid #BBB;
-      opacity: 0.0;
+      opacity: 0;
 
       @include animation(pulsate 1.5s ease-out infinite);
-
       @include border-radius(20px);
     }
 
     &.syncing {
       span.point {
         @include background(linear-gradient(#FFFF73,#D9D900));
-        border-color: rgba(black, .75);
+        border-color: rgba(black, 0.75);
       }
     }
 
     &.failure {
       span.point {
         @include background(linear-gradient(#FFFF4D,#D18400));
-        border-color: rgba(black, .75);
+        border-color: rgba(black, 0.75);
       }
     }
   }
@@ -123,25 +121,31 @@ div.sync_info {
     font-family: $text-fonts;
     font-size: 13px;
     font-weight: 300;
-    letter-spacing:0;
+    letter-spacing: 0;
   }
 
-  .light {color:rgba(white, .35)}
+  .light { color: rgba(white, 0.35); }
 
   a {
     color: white;
     font-size: 13px;
     text-decoration: underline;
   }
-
 }
-
-
-
 
 // Animation function
 @include keyframes(pulsate) {
-  0% {@include transform(scale(0.1, 0.1)); opacity: 0.0;}
-  50% {opacity: 1.0;}
-  100% {@include transform(scale(1.4, 1.4)); opacity: 0.0;}
+  0% {
+    @include transform(scale(0.1, 0.1));
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    @include transform(scale(1.4, 1.4));
+    opacity: 0;
+  }
 }

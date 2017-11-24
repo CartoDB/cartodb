@@ -15,7 +15,8 @@ html {
   line-height: 1;
 }
 
-body.public { /* Public table CSS */
+body.public {
+  min-width: inherit; /* Public table CSS */
 
   .pane_table {
     @include reset-table-cell();
@@ -29,16 +30,16 @@ body.public { /* Public table CSS */
     }
   }
 
-  .pane_map { top: 0; overflow-x: hidden; }
+  .pane_map {
+    top: 0;
+    overflow-x: hidden;
+  }
 
   .panes .emptyTableContainer {
     position: relative;
   }
 
-  min-width: inherit;
-
   .dialog {
-
     position: relative;
     z-index: 10000;
 
@@ -50,16 +51,15 @@ body.public { /* Public table CSS */
 
       .inner {
         position: relative;
-        padding: 28px 40px 0 40px;
+        padding: 28px 40px 0;
       }
 
       .shadow {
+        @extend .white-gradient-shadow-bottom;
         position: absolute;
         bottom: 0;
         width: 100%;
         height: 60px;
-
-        @extend .white-gradient-shadow-bottom;
       }
 
       code {
@@ -77,11 +77,10 @@ body.public { /* Public table CSS */
           color: #999;
           font-size: 13px;
         }
-
       }
 
       h4 {
-        margin: 0 0 5px 0;
+        margin: 0 0 5px;
         color: #666;
         font-family: $text-fonts;
         font-size: 11px;
@@ -89,7 +88,6 @@ body.public { /* Public table CSS */
       }
 
       .foot {
-
         padding: 38px;
 
         p {
@@ -99,7 +97,10 @@ body.public { /* Public table CSS */
           color: #666;
           font-size: 13px;
           line-height: 120%;
-          a { text-decoration: underline; }
+
+          a {
+            text-decoration: underline;
+          }
         }
       }
     }
@@ -130,7 +131,7 @@ body.public { /* Public table CSS */
       label.interactuable .coloptions {
         line-height: 1;
 
-        &:after {
+        &::after {
           display: none;
         }
       }
@@ -146,38 +147,30 @@ body.public { /* Public table CSS */
   }
 
   .navigation {
-
+    @include opacity(0);
     position: relative;
     z-index: 100;
     width: 100%;
-
     margin: auto;
     clear: both;
     overflow: hidden;
     text-align: center;
 
-    @include opacity(0);
-
     ul {
-
+      @include clearfix();
       max-width: 1024px;
       margin: auto;
 
-      @include clearfix();
-
       li {
-
         display: inline-block;
         margin: 0 1px 0 0;
         list-style: none;
 
-        &:last-child { margin-left: $sMargin-group; }
+        &:last-child {
+          margin-left: $sMargin-group;
+        }
 
         a {
-          &:hover {
-
-          }
-
           display: block;
           width: 36px;
           height: 36px;
@@ -196,12 +189,11 @@ body.public { /* Public table CSS */
           color: #FFF;
           cursor: default;
         }
-
       }
     }
   }
 
-  div.table table thead tr th>div p.auto {
+  div.table table thead tr th > div p.auto {
     @include opacity(0);
   }
 
@@ -216,7 +208,9 @@ body.public { /* Public table CSS */
     overflow-x: auto;
     overflow-y: hidden;
 
-    div.shadow { display:none; }
+    div.shadow {
+      display: none;
+    }
 
     div.table table thead tr th > div > div {
       position: relative;
@@ -238,7 +232,7 @@ body.public { /* Public table CSS */
       right: 35px;
       padding: 3px 5px;
       border-radius: 3px;
-      background-color: rgba(#000, .5);
+      background-color: rgba(#000, 0.5);
     }
 
     .Checkbox-label {

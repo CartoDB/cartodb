@@ -23,7 +23,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-ul { list-style: none }
+ul {
+  list-style: none;
+}
 
 a {
   color: #1181FB;
@@ -34,7 +36,9 @@ a {
   }
 }
 
-i { font-style: normal }
+i {
+  font-style: normal;
+}
 
 button {
   border: 0;

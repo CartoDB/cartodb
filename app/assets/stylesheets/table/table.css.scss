@@ -8,23 +8,48 @@
 @import "../old_elements/progress-bar";
 
 @-webkit-keyframes highlight-fade {
-  0% { background: none; }
-  20% { background: #ECFCE5; }
-  80% { background: #ECFCE5; }
-  100% { background: none; }
+  0% {
+    background: none;
+  }
+
+  20% {
+    background: #ECFCE5;
+  }
+
+  80% {
+    background: #ECFCE5;
+  }
+
+  100% {
+    background: none;
+  }
 }
 
 @keyframes highlight-fade {
-  0% { background: none; }
-  20% { background: #ECFCE5; }
-  80% { background: #ECFCE5; }
-  100% { background: none; }
+  0% {
+    background: none;
+  }
+
+  20% {
+    background: #ECFCE5;
+  }
+
+  80% {
+    background: #ECFCE5;
+  }
+
+  100% {
+    background: none;
+  }
 }
 
 // Table/vis options menu
 .dropdown.table-options {
   @include progress-bar(4px, 4px, true, 3px);
-  div.progress-bar { margin-top: 10px }
+
+  div.progress-bar {
+    margin-top: 10px;
+  }
 }
 
 div.panes {
@@ -35,17 +60,18 @@ div.panes {
   left: 0;
 
   // When table/layer is synced
-  &.synced { top: 102px; }
+  &.synced {
+    top: 102px;
+  }
 
   .emptyTableContainer {
+    @include transform-style("linear");
+    @include transition-property("text-indent");
+    @include transition-duration(300ms);
     display: inline-block;
     position: fixed;
     width: 100%;
     text-align: center;
-
-    @include transform-style("linear");
-    @include transition-property("text-indent");
-    @include transition-duration(300ms);
 
     .emptynessInfo {
       display: inline-block;
@@ -74,7 +100,7 @@ div.panes {
         font-family: $title-fonts;
         font-size: 17px;
         font-weight: bold;
-        text-indent:0;
+        text-indent: 0;
       }
 
       p {
@@ -82,9 +108,11 @@ div.panes {
         margin: 1em auto;
         color: #999;
         font-size: 15px;
-        text-indent:0;
+        text-indent: 0;
 
-        a { text-decoration: underline; }
+        a {
+          text-decoration: underline;
+        }
       }
     }
   }
@@ -95,7 +123,7 @@ div.table {
     position: relative;
     z-index: 1;
     width: 100%;
-    background: white;
+    background: WHITE;
 
     // Table head
     thead {
@@ -113,9 +141,13 @@ div.table {
         height: 37px;
 
         p {
+          @include transform-style("linear");
+          @include transition-property("text-indent");
+          @include transition-duration(300ms);
+          @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
           display: inline;
           position: fixed;
-          z-index:2;
+          z-index: 2;
           left: 50%;
           width: 100%;
           margin: 12px 0 0 -50%;
@@ -127,12 +159,7 @@ div.table {
           font-family: $text-fonts;
           font-size: 13px;
           text-align: center;
-          text-indent:0;
-
-          @include transform-style("linear");
-          @include transition-property("text-indent");
-          @include transition-duration(300ms);
-          @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
+          text-indent: 0;
         }
       }
 
@@ -154,6 +181,7 @@ div.table {
             height: 66px;
 
             & > div {
+              @include inline-block();
               position: fixed;
               z-index: 1;
               width: inherit;
@@ -163,9 +191,7 @@ div.table {
               border-bottom: 1px solid #CCC;
               background: image-url('layout/thead_bkg.jpg') repeat 0 0;
 
-              @include inline-block();
-
-              &:after {
+              &::after {
                 content: ' ';
                 position: absolute;
                 z-index: 0;
@@ -173,11 +199,13 @@ div.table {
                 left: 0;
                 width: 1px;
                 height: 42px;
-                background: rgba(#D9D9D9,0.5);
+                background: rgba(#D9D9D9, 0.5);
               }
             }
 
             label {
+              // Default and then replace it
+              @include default-input();
               display: block;
               padding: 0 5px;
 
@@ -192,13 +220,13 @@ div.table {
               }
 
               &.interactuable {
-                div, a {
+                div,
+                a {
                   @include inline-block();
                   margin: 6px 0 5px 5px;
                   color: #7C7C7C;
 
-
-                  &:after {
+                  &::after {
                     @include inline-block();
                     content: '';
                     position: relative;
@@ -212,7 +240,7 @@ div.table {
                     color: #565656;
                     text-decoration: none;
 
-                    &:after {
+                    &::after {
                       border-top-color: #565656;
                     }
                   }
@@ -234,8 +262,8 @@ div.table {
                   margin: 0 0 0 3px;
                   padding: 1px 2px;
                   border: 1px solid #C17400;
-                  background: orange;
-                  color: white;
+                  background: ORANGE;
+                  color: WHITE;
                   text-decoration: uppercase;
 
                   &:hover {
@@ -243,15 +271,13 @@ div.table {
                   }
                 }
               }
-              // Default and then replace it
-              @include default-input();
 
               input {
                 @include border-radius(3px);
                 margin: 0;
                 padding: 3px 4px;
                 border: 1px solid #CCC;
-                background: white;
+                background: WHITE;
                 color: #333;
                 font: bold 13px $text-fonts;
               }
@@ -275,7 +301,7 @@ div.table {
                   color: #666;
                   text-decoration: none;
 
-                  &.own:after {
+                  &.own::after {
                     content: ' ';
                     position: absolute;
                     right: 0;
@@ -317,14 +343,13 @@ div.table {
       // Shadow
       div.shadow {
         position: fixed;
-        z-index:0;
+        z-index: 0;
         top: 144px;
-        right:0;
-        left:0;
+        right: 0;
+        left: 0;
         width: 100%;
         height: 10px;
         background: image-url('layout/thead_shadow.png') repeat 0 0;
-
         pointer-events: none;
       }
 
@@ -344,9 +369,8 @@ div.table {
       width: 100%;
       border: none;
 
-      tr.empty_table {}
-
-      tr.placeholder, tr.placeholder td {
+      tr.placeholder,
+      tr.placeholder td {
         height: 40px;
         border: 1px solid #ECECEC;
         cursor: pointer;
@@ -358,12 +382,11 @@ div.table {
           text-align: center;
           vertical-align: middle;
         }
-
       }
 
       tr.placeholder.decoration {
         height: 15px;
-        border-bottom:0;
+        border-bottom: 0;
 
         &:hover {
           border-color: #ECECEC;
@@ -377,8 +400,8 @@ div.table {
 
       tr.placeholder.decoration td {
         height: 15px;
-        border-top:0;
-        border-bottom:0;
+        border-top: 0;
+        border-bottom: 0;
 
         &:hover {
           border-top: 0;
@@ -388,12 +411,11 @@ div.table {
         }
       }
 
-
       tr {
         width: 100%;
         border-top: 1px solid #ECECEC;
         // z-index:0;
-        background: white;
+        background: WHITE;
 
         td {
           vertical-align: top;
@@ -446,52 +468,47 @@ div.table {
               height: 100%;
               overflow: visible;
 
-              &:before {
+              &::before {
+                @include border-radius(3px);
+                @include background(linear-gradient(#FAFAFA, #E8E8E8));
                 content: '';
                 display: none;
                 position: absolute;
-                z-index:0;
+                z-index: 0;
                 top: 15px;
                 left: 10px;
                 width: 12px;
                 height: 12px;
-                padding:0;
+                padding: 0;
                 border: 1px solid #999;
                 background: #FAFAFA;
-
-                @include border-radius(3px);
-
-                @include background(linear-gradient(#FAFAFA,#E8E8E8));
               }
 
-              &:after {
+              &::after {
+                @include opacity(1);
                 content: '';
                 display: none;
                 position: absolute;
-                z-index:0;
+                z-index: 0;
                 top: 21px;
                 left: 15px;
-                width:0;
-                height:0;
+                width: 0;
+                height: 0;
                 border-top: 3px solid #666;
                 border-right: 2px solid transparent;
                 border-left: 2px solid transparent;
                 line-height: 16px;
-
-                @include opacity(1);
               }
 
-              &:hover:before {
+              &:hover::before {
+                @include background(linear-gradient(#FAFAFA, #E3D3E3));
                 background: #E8E8E8;
                 cursor: pointer;
-
-                @include background(linear-gradient(#FAFAFA,#E3D3E3));
               }
 
-              &:active:before {
+              &:active::before {
+                @include background(linear-gradient(#E3D3E3, #FAFAFA));
                 background: #E3D3E3;
-
-                @include background(linear-gradient(#E3D3E3,#FAFAFA));
               }
             }
           }
@@ -513,9 +530,12 @@ div.table {
           border-color: #CCC;
           background: #E8F9EC;
 
-          & + tr {border-top-color:#CCC;}
+          & + tr {
+            border-top-color: #CCC;
+          }
 
-          div.row_header:before, div.row_header:after {
+          div.row_header::before,
+          div.row_header::after {
             display: block !important;
           }
         }
@@ -525,7 +545,7 @@ div.table {
     // Sync table
     &.synced {
       tbody tr td div.cell {
-        color: rgba(#666,.5);
+        color: rgba(#666, 0.5);
       }
 
       div.shadow {
@@ -547,39 +567,48 @@ div.table {
 
       &.sql_loader {
         div.float_info {
+          @include inline-block();
+          @include transform-style("linear");
+          @include transition-property("margin");
+          @include transition-duration(300ms);
           position: fixed;
           top: 50%;
           left: 50%;
           width: 240px;
           height: 36px;
           margin: -100px 0 0 -120px;
-          padding:0;
+          padding: 0;
           vertical-align: top;
 
-          @include inline-block();
+          img {
+            margin-left: 101px;
+          }
 
-          @include transform-style("linear");
-          @include transition-property("margin");
-          @include transition-duration(300ms);
-
-          img {margin-left:101px;}
-          h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
+          h5 {
+            display: block;
+            margin: 15px 0 0;
+            color: #7B7B7B;
+            font-size: 15px;
+            line-height: normal;
+            text-align: center;
+          }
         }
       }
 
       &.page_loader {
         z-index: -1;
         border: 1px solid #ECECEC;
-        border-right:0;
-        border-left:0;
-        background: white;
+        border-right: 0;
+        border-left: 0;
+        background: WHITE;
 
         th {
           padding: 70px 0;
         }
 
-
-        div.float_info, div.float_action {
+        div.float_info,
+        div.float_action {
+          @include inline-block();
           position: fixed;
           z-index: -10;
           left: 50%;
@@ -590,15 +619,22 @@ div.table {
           background: image-url('layout/loading_page_static.png') no-repeat 0 0;
           vertical-align: top;
 
-          @include inline-block();
+          h5 {
+            display: block;
+            color: #7B7B7B;
+            font-size: 15px;
+            line-height: normal;
+          }
 
-          h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
-          p {display:block; font-size:13px;}
+          p {
+            display: block;
+            font-size: 13px;
+          }
         }
 
         div.float_action {
           display: none;
-          background: white;
+          background: WHITE;
         }
 
         &.up {
@@ -606,20 +642,28 @@ div.table {
             padding: 20px 0;
           }
 
-          div.float_info, div.float_action {
+          div.float_info,
+          div.float_action {
             top: 285px;
           }
         }
 
         &.down {
-          div.float_info, div.float_action {
+          div.float_info,
+          div.float_action {
             bottom: 65px;
           }
         }
 
         &.active {
-          div.float_info {display:none;}
-          div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
+          div.float_info {
+            display: none;
+          }
+
+          div.float_action {
+            @include inline-block();
+            background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;
+          }
         }
       }
 
@@ -628,10 +672,10 @@ div.table {
       }
     } // tfoot
 
-
     &.displaced {
       // Last column of the table
-      tbody tr td:last-child, thead tr th:last-child {
+      tbody tr td:last-child,
+      thead tr th:last-child {
         padding-right: 600px;
         border-right: none;
       }
@@ -649,19 +693,33 @@ div.table {
       // When there is no results, move the block
       tfoot div.emptyTableContainer {
         text-indent: -600px;
-        p, h4 {text-indent:0;}
+
+        p,
+        h4 {
+          text-indent: 0;
+        }
       }
 
       &.narrow {
-        tbody tr td:last-child, thead tr th:last-child {padding-right:450px;}
-        div.sqlview p {text-indent:-450px;}
-        tfoot.sql_loader div.float_info {margin-left:-380px;}
-        tfoot div.emptyTableContainer {text-indent:-450px;}
-      }
+        tbody tr td:last-child,
+        thead tr th:last-child {
+          padding-right: 450px;
+        }
 
+        div.sqlview p {
+          text-indent: -450px;
+        }
+
+        tfoot.sql_loader div.float_info {
+          margin-left: -380px;
+        }
+
+        tfoot div.emptyTableContainer {
+          text-indent: -450px;
+        }
+      }
     } // table.displaced
   } // table
-
 
   /* PAGINATION ZONE - CAUTION */
 
@@ -670,12 +728,13 @@ div.table {
 
   // Let's add some bottom spacing to show always when it's neccessary the pagination loader
   &.page_down {
-    padding-bottom:30px; // More space due to the thead height
+    padding-bottom: 30px; // More space due to the thead height
   }
 
   &.page_up {
-    padding-top:180px; // More space due to the thead height
-    padding-bottom:0;
+    padding-top: 180px; // More space due to the thead height
+    padding-bottom: 0;
+
     thead tr th div > div {
       margin-top: -180px;
     }
@@ -691,19 +750,17 @@ div.table {
 
   // public view
   &.public {
-    th:last-child, tr td:last-child {
-      padding-right:0;
+    th:last-child,
+    tr td:last-child {
+      padding-right: 0;
     }
   }
-
 } // div.table
-
-
 
 div.order_selector {
   position: absolute;
   top: -3px;
-  right:0;
+  right: 0;
 
   a.asc {
     @include border-left-radius(2px);
@@ -715,12 +772,13 @@ div.order_selector {
     margin-right: 10px;
   }
 
-  a.asc, a.desc {
+  a.asc,
+  a.desc {
     @include inline-block();
     position: relative;
     margin-top: 13px;
-    padding:0;
-    padding: (21px - 9px)/2 8px;
+    padding: 0;
+    padding: (21px - 9px) / 2 8px;
     background-color: $button-bkg-color;
     color: #397DB9;
     font-size: 9px;
@@ -748,12 +806,26 @@ div.order_selector {
   background: image-url('layout/clock.png') no-repeat 0 0 transparent;
 }
 
-
 // Hello hacks for Firefox
 @-moz-document url-prefix() {
-  table { border-collapse: inherit; }
-  thead div.sqlview { z-index:1 !important; }
-  thead tr th div { z-index:2 !important; }
-  thead div.shadow { z-index:1 !important }
-  tbody tr td { border-spacing:1px; border-bottom:1px solid #ECECEC; }
+  table {
+    border-collapse: inherit;
+  }
+
+  thead div.sqlview {
+    z-index: 1 !important;
+  }
+
+  thead tr th div {
+    z-index: 2 !important;
+  }
+
+  thead div.shadow {
+    z-index: 1 !important;
+  }
+
+  tbody tr td {
+    border-spacing: 1px;
+    border-bottom: 1px solid #ECECEC;
+  }
 }

@@ -1,6 +1,7 @@
 @import "../variables/mixins";
 
 .AssetItem {
+  @include inline-block();
   position: relative;
   width: 58px;
   height: 58px;
@@ -10,12 +11,13 @@
   border-radius: 3px;
   background: image-url("layout/loader_transparent.gif") no-repeat center;
 
-  @include inline-block();
-
-  &:nth-child(12n) { margin-right: 0; }
+  &:nth-child(12n) {
+    margin-right: 0;
+  }
 }
 
 .AssetItem .image {
+  @include inline-block();
   position: absolute;
   width: 60px;
   max-width: 60px;
@@ -26,14 +28,11 @@
   background-position: center;
   line-height: 60px;
   text-align: center;
-
-  @include inline-block();
 }
 
 .AssetItem:hover .delete {
-  display: block;
-
   @include opacity(1);
+  display: block;
 }
 
 .AssetItem.AssetItem-User.is-selected .image {
@@ -53,8 +52,10 @@
 }
 
 .AssetItem .delete {
+  @include transition(opacity, 100ms);
+  @include opacity(0);
   position: absolute;
-  z-index:2;
+  z-index: 2;
   right: 0;
   bottom: 0;
   width: 14px;
@@ -64,26 +65,22 @@
   border-bottom-right-radius: 2px;
   background: #333;
   background: rgba(black, 0.5);
-  text-indent:0;
-
-  @include transition(opacity, 100ms);
-
-  @include opacity(0);
+  text-indent: 0;
 }
 
-.AssetItem .delete:before {
+.AssetItem .delete::before {
   content: ' ';
   position: absolute;
   top: 4px;
   left: 4px;
-  width:0;
-  height:0;
+  width: 0;
+  height: 0;
   border-top: 3px solid white;
   border-right: 3px solid transparent;
   border-left: 3px solid transparent;
 }
 
-.AssetItem.destroying:hover a.delete { 
+.AssetItem.destroying:hover a.delete {
   display: none;
 }
 

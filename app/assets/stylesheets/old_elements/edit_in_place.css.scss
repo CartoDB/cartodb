@@ -1,13 +1,12 @@
 
 /*
    *  Edit in place element styles.
-   * 
-   *  - Edit value 
+   *
+   *  - Edit value
    */
 
 @import "compass/css3/inline-block";
 @import "compass/css3/transform";
-
 
 /*
     <div class="input edit_in_place">
@@ -18,43 +17,42 @@
     </div>
   */
 
-
 .edit_in_place {
   .value {
+    @include transform(skew(-25deg));
     position: relative;
     z-index: 100;
     margin: 4px 5px 0 0;
-    padding: 0 5px 3px 5px;
-    background: rgba(#FFDC73, .3);
+    padding: 0 5px 3px;
+    background: rgba(#FFDC73, 0.3);
     color: #666;
     font-size: 15px;
 
-    @include transform(skew(-25deg));
-
     &:hover {
-      background: rgba(#FFDC73, .5);
+      background: rgba(#FFDC73, 0.5);
     }
 
     span {
       @include inline-block();
+      @include transform(skew(25deg));
       max-width: 150px;
       padding: 1px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-
-      @include transform(skew(25deg));
     }
 
-    &.empty { font-style: italic; }
+    &.empty {
+      font-style: italic;
+    }
   }
 
   &.disabled .value {
-    background: rgba(gray, .1);
+    background: rgba(gray, 0.1);
     color: #AAA;
 
     &:hover {
-      background: rgba(gray, .1);
+      background: rgba(gray, 0.1);
     }
   }
 

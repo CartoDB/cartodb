@@ -4,12 +4,10 @@
 .Browser {
   width: 560px;
   height: 430px;
-  margin: 20px 0; 
+  margin: 20px 0;
   border-radius: 4px;
   background: #F2F2F2;
-  box-shadow:
-    0 2px 4px 0 rgba(#000, .3),
-    0 2px 10px 6px rgba(#000, .05);
+  box-shadow: 0 2px 4px 0 rgba(#000, 0.3), 0 2px 10px 6px rgba(#000, 0.05);
 }
 
 .Browser--oneclick {
@@ -42,8 +40,8 @@
   padding: 10px;
   background: #DDD;
 
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     content: "";
     position: absolute;
     top: -24px;
@@ -53,16 +51,16 @@
     background: #DDD;
   }
 
-  &:after {
+  &::after {
     left: 110px;
-    -webkit-transform: matrix(1, 0, .45, 1, -32, 7.133);
-    transform: matrix(1, 0, .45, 1, -32, 7.133);
+    -webkit-transform: matrix(1, 0, 0.45, 1, -32, 7.133);
+    transform: matrix(1, 0, 0.45, 1, -32, 7.133);
   }
 
-  &:before {
+  &::before {
     left: 90px;
-    -webkit-transform: matrix(1, 0, .45, 1, -32, 7.133);
-    transform: matrix(1, 0, -.45, 1, -32, 7.133);
+    -webkit-transform: matrix(1, 0, 0.45, 1, -32, 7.133);
+    transform: matrix(1, 0, -0.45, 1, -32, 7.133);
   }
 }
 
@@ -70,7 +68,7 @@
   height: 17px;
   border-radius: 12px;
   background: #FFF;
-  box-shadow: inset 0 0 0 1px rgba(#000, .11);
+  box-shadow: inset 0 0 0 1px rgba(#000, 0.11);
 }
 
 .Browser-media {
@@ -82,7 +80,7 @@
   background: #FFF;
 }
 
-.Progress { 
+.Progress {
   position: absolute;
   z-index: 3;
   top: 0;

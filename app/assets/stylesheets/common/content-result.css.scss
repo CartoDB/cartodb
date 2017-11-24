@@ -33,12 +33,12 @@
   height: 232px;
   min-height: 0;
   margin: 0 auto;
-  padding: 28px 0 0 0;
+  padding: 28px 0 0;
   overflow: hidden;
   border-bottom: 1px solid $cStructure-softLine;
 
-  &:after,
-  &:before {
+  &::after,
+  &::before {
     content: '';
     position: absolute;
     z-index: 0;
@@ -58,7 +58,10 @@
     background-position: center;
     background-size: 100%;
   }
-  .NoDatasets-illustration--secondary { @include background(image-url('layout/connect-dataset.png') center center no-repeat) }
+
+  .NoDatasets-illustration--secondary {
+    @include background(image-url('layout/connect-dataset.png') center center no-repeat);
+  }
 }
 
 .ContentResult-smallLoader {
@@ -72,7 +75,8 @@
   overflow: hidden;
   background: transparent;
 
-  &:before {
+  &::before {
+    @include animation(pulsate 1.5s linear infinite);
     content: '';
     display: block;
     position: absolute;
@@ -80,8 +84,6 @@
     width: 600px;
     height: 2px;
     background: rgba(black, 0.55);
-
-    @include animation(pulsate 1.5s linear infinite);
   }
 }
 
@@ -113,7 +115,7 @@
 
 .ContentResult-title {
   display: block;
-  margin: 15px 0 10px 0;
+  margin: 15px 0 10px;
   color: $cTypography-paragraphs;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-normal;
@@ -137,7 +139,15 @@
 }
 
 @include keyframes(pulsate) {
-  0% {right:100%;}
-  50% {right:0%}
-  100% {right:-100%}
+  0% {
+    right: 100%;
+  }
+
+  50% {
+    right: 0%;
+  }
+
+  100% {
+    right: -100%;
+  }
 }

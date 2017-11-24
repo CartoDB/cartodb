@@ -23,7 +23,6 @@
 //     <div class="MapCard-contentFooter CDB-Size-medium u-altTextColor">
 //      ...
 //
-
 $sBorderCompensation: 2px;
 $opacityTransition: 250ms;
 $sEditButtonSize: 50px;
@@ -37,7 +36,7 @@ $sEditButtonSize: 50px;
   background-color: $cStructure-mainBkg;
 }
 
-.MapCard.MapCard--borderless .MapCard-header:after {
+.MapCard.MapCard--borderless .MapCard-header::after {
   display: none;
 }
 
@@ -190,8 +189,8 @@ $sEditButtonSize: 50px;
   background: $cStructure-mainBkg;
 }
 
-.MapCard-header--fake:after,
-.MapCard.MapCard--squared .MapCard-header.MapCard-header--fake:after {
+.MapCard-header--fake::after,
+.MapCard.MapCard--squared .MapCard-header.MapCard-header--fake::after {
   right: $sMargin-element;
   left: $sMargin-element;
 }
@@ -205,7 +204,7 @@ $sEditButtonSize: 50px;
   background: transparent;
   color: #EEE;
   font-size: 20px;
-  line-height: 48px  !important; // Overwritten by icon font style
+  line-height: 48px !important; // Overwritten by icon font style
   text-align: center;
 }
 
@@ -230,7 +229,7 @@ $sEditButtonSize: 50px;
 
 .MapCard-headerFakeIcon.CDB-IconFont-mountain {
   font-size: 28px;
-  line-height: 40px !important
+  line-height: 40px !important;
 }
 
 .MapCard-headerFakeIcon.CDB-IconFont-rectangles {
@@ -249,7 +248,8 @@ $sEditButtonSize: 50px;
   background: transparent;
 }
 
-.MapCard-header .MapCard-loader:before {
+.MapCard-header .MapCard-loader::before {
+  @include animation(pulsate 1.5s linear infinite);
   content: '';
   display: block;
   position: absolute;
@@ -257,8 +257,6 @@ $sEditButtonSize: 50px;
   width: 600px;
   height: 2px;
   background: rgba(#000, 0.25);
-
-  @include animation(pulsate 1.5s linear infinite);
 }
 
 .MapCard-preview {
@@ -276,6 +274,7 @@ $sEditButtonSize: 50px;
 }
 
 .MapCard-error {
+  @include background(image-url('layout/map-card-error.png') no-repeat center 0);
   display: none;
   position: absolute;
   top: 50%;
@@ -285,8 +284,6 @@ $sEditButtonSize: 50px;
   margin-top: -30px;
   margin-left: -30px;
   border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
-
-  @include background(image-url('layout/map-card-error.png') no-repeat center 0);
 }
 
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
@@ -299,7 +296,7 @@ $sEditButtonSize: 50px;
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-  height: 185px; /* We should try avoid fix heights. For review*/
+  height: 185px; /* We should try avoid fix heights. For review */
   padding: $baseSize * 2;
   border-radius: $halfBaseSize;
 }
@@ -308,10 +305,20 @@ $sEditButtonSize: 50px;
   height: auto;
   min-height: 44px;
 }
-.MapCard-contentBody { width: 100% }
-.MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
+
+.MapCard-contentBody {
+  width: 100%;
+}
+
+.MapCard-itemTitlePermission {
+  background-color: $cStructure-mainBkg;
+}
 
 .MapCard-editButton {
+  @include opacity(0);
+  @include css3-prefix(box-sizing, border-box);
+  @include transition(opacity, $opacityTransition);
+  @include transition(top, 200ms, ease-in);
   position: absolute;
   top: 0;
   right: 18px;
@@ -324,11 +331,6 @@ $sEditButtonSize: 50px;
   line-height: $sEditButtonSize;
   text-align: center;
   text-decoration: none;
-
-  @include opacity(0);
-  @include css3-prefix(box-sizing, border-box);
-  @include transition(opacity, $opacityTransition);
-  @include transition(top, 200ms, ease-in);
 
   &:hover {
     background: #046DDF;
@@ -345,7 +347,7 @@ $sEditButtonSize: 50px;
 
 .MapCard:hover .MapCard-editButton {
   @include opacity(1);
-  top: -$sEditButtonSize/2;
+  top: -$sEditButtonSize / 2;
 }
 
 .MapCard-contentBodyRow--flex {
@@ -396,7 +398,10 @@ $sEditButtonSize: 50px;
 .MapCard-contentFooterIcon,
 .MapCard-contentFooterIcon .CDB-IconFont {
   color: #979EA1;
-  &:before { color: #CBCED0; }
+
+  &::before {
+    color: #CBCED0;
+  }
 }
 
 .MapCard-contentFooterDetails {
@@ -442,16 +447,15 @@ $sEditButtonSize: 50px;
 }
 
 .MapCard-fake {
+  @include background(image-url('layout/map-placeholder.png') no-repeat center center);
+  @include opacity(0);
+  @include transition(opacity, $opacityTransition);
   position: absolute;
   z-index: 0;
   top: 0;
   left: 0;
   width: 300px;
   height: 352px;
-
-  @include background(image-url('layout/map-placeholder.png') no-repeat center center);
-  @include opacity(0);
-  @include transition(opacity, $opacityTransition);
 }
 
 .MapsList.is-loading .MapCard,
@@ -460,9 +464,18 @@ $sEditButtonSize: 50px;
   border: 1px solid transparent;
   background-color: transparent;
   pointer-events: none;
-  .MapCard-header { @include opacity(0) }
-  .MapCard-content { @include opacity(0) }
-  .MapCard-fake { @include opacity(1) }
+
+  .MapCard-header {
+    @include opacity(0);
+  }
+
+  .MapCard-content {
+    @include opacity(0);
+  }
+
+  .MapCard-fake {
+    @include opacity(1);
+  }
 }
 
 .MapsList.is-loading .MapCard:hover,
@@ -471,14 +484,25 @@ $sEditButtonSize: 50px;
   border: 1px solid transparent;
   background-color: transparent;
   cursor: default;
-  .MapCard-header { cursor: default }
+
+  .MapCard-header {
+    cursor: default;
+  }
 }
 
 // Animation function
 @include keyframes(pulsate) {
-  0% {right: 100%;}
-  50% {right: 0%}
-  100% {right: -100%}
+  0% {
+    right: 100%;
+  }
+
+  50% {
+    right: 0%;
+  }
+
+  100% {
+    right: -100%;
+  }
 }
 
 @media (min-width: $sMedia-tablet) {
@@ -505,11 +529,11 @@ $sEditButtonSize: 50px;
   }
 
   .MapCard-contentFooter.MapCard-contentFooter--lefty > *:not(:last-child) {
-    margin-right: 10px !Important;
+    margin-right: 10px !important;
   }
 
   .MapCard-contentFooter .LikesIndicator-label {
-    display: none !Important;
+    display: none !important;
   }
 
   .MapCardIcon-label {

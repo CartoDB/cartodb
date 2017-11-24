@@ -6,10 +6,8 @@
 @import '../variables/sizes';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
-
-
 $cHeader-light: rgba(#61AEEC, 1);
-$cHeader-dark:  rgba(#3A91D7, 1);
+$cHeader-dark: rgba(#3A91D7, 1);
 
 .Header {
   @include display-flex();
@@ -57,7 +55,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 
 .Header-navigationLink {
-  transition: all .15s;
+  transition: all 0.15s;
   color: #FFF;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-bold;
@@ -68,7 +66,10 @@ $cHeader-dark:  rgba(#3A91D7, 1);
     text-decoration: none;
   }
 }
-.Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
+
+.Header-navigationBreadcrumbItem:first-child {
+  padding-left: 0;
+}
 
 .Header-navigationBreadcrumbLink {
   color: $cWhite;
@@ -97,14 +98,13 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   font-weight: $sFontWeight-bold;
   text-transform: none;
 }
-.Header-settingsItem--avatar {}
 
 .Header-settingsLink {
-  transition: all .2s;
+  transition: all 0.2s;
   color: #FFF;
 
   &:hover {
-    color: rgba(#FFF, .6);
+    color: rgba(#FFF, 0.6);
     text-decoration: none;
   }
 }
@@ -124,7 +124,9 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 
 @media (min-width: $sMedia-mobile) {
-  .Header-logoText { margin-left: $sMargin-elementInline }
+  .Header-logoText {
+    margin-left: $sMargin-elementInline;
+  }
 }
 
 @media only screen and (max-width: 360px) {
@@ -139,22 +141,22 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   }
 
   .Header-settingsItem--avatar {
-    height: $height/2;
+    height: $height / 2;
   }
 
   .Header .Header-settingsList .UserAvatar-img--medium {
-    width: $height/2;
-    height: $height/2;
+    width: $height / 2;
+    height: $height / 2;
   }
 
   .Header .Header-settingsList .Button {
-    height: $height/2;
+    height: $height / 2;
     padding: 0 20px;
   }
 
   .Header .Logo--avatar {
-    width: $height/2;
-    height: $height/2;
+    width: $height / 2;
+    height: $height / 2;
     line-height: 45px;
   }
 

@@ -117,8 +117,8 @@ div.legends_panel {
 
     .menu {
       li:first-child { margin-left: 23px; }
-      &:after { content:' '; position:absolute; top:0; bottom:0; left:34px; width:1px; height:100%; background:rgba($cGray4,0.50); }
-      &:before { content:' '; position:absolute; top:0; bottom:0; left:36px; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      &::after { content:' '; position:absolute; top:0; bottom:0; left:34px; width:1px; height:100%; background:rgba($cGray4,0.50); }
+      &::before { content:' '; position:absolute; top:0; bottom:0; left:36px; width:1px; height:100%; background:rgba(#509DD7,0.25); }
     }
   }
 
@@ -133,8 +133,8 @@ div.legends_panel {
     top: 59px;
     width: 100%;
     padding: 9px 23px 3px 30px;
-    border-top: 1px solid rgba(#DDD, .5);
-    border-bottom: 1px solid rgba(#DDD, .5);
+    border-top: 1px solid rgba(#DDD, 0.5);
+    border-bottom: 1px solid rgba(#DDD, 0.5);
     background: #F6F6F6;
 
     @include box-sizing(border-box);
@@ -169,7 +169,7 @@ div.legends_panel {
 
         &.html_editor { margin-right: 2px; }
 
-        /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
+        /*&.html_editor::before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, 0.5); }*/
         &.html_editor { position:relative; }
 
         &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }

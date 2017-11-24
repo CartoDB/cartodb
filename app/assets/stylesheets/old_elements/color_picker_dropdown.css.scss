@@ -4,7 +4,6 @@
    *
    */
 
-
 @import "compass/css3/inline-block";
 @import "compass/css3/images";
 @import "compass/css3/opacity";
@@ -12,8 +11,6 @@
 @import "../old_common/mixins";
 @import "../old_common/vars";
 @import "../old_elements/elements-sprite";
-
-
 
 // Related color dropdown
 div.dropdown.color_picker {
@@ -23,9 +20,12 @@ div.dropdown.color_picker {
   // Places
   div.top,
   div.content,
-  div.bottom { display:block }
+  div.bottom {
+    display: block;
+  }
 
   div.top {
+    @include border-top-radius(3px);
     position: relative;
     padding: 8px;
     overflow: visible;
@@ -33,12 +33,12 @@ div.dropdown.color_picker {
     background: #EEE;
     text-align: center;
 
-    @include border-top-radius(3px);
-
     &.advanced {
       height: 100px;
 
-      .advanced { display:none }
+      .advanced {
+        display: none;
+      }
 
       .picker-wrapper,
       .slider-wrapper {
@@ -53,8 +53,9 @@ div.dropdown.color_picker {
     overflow: auto;
   }
 
-  div.bottom { padding-top:0 }
-
+  div.bottom {
+    padding-top: 0;
+  }
 
   // Picker
   .picker-wrapper,
@@ -71,41 +72,37 @@ div.dropdown.color_picker {
 
   .picker {
     @include inline-block();
+    @include border-left-radius(2px);
     width: 164px;
     height: 100px;
     cursor: crosshair;
 
-    @include border-left-radius(2px);
-
-    &:before {
+    &::before {
+      @include position(0, 0, 0, 0);
       content: '';
       position: absolute;
-      border: 1px solid rgba(white,0.4);
-
-      @include position(0,0,0,0);
+      border: 1px solid rgba(white, 0.4);
     }
   }
 
   .picker-indicator {
+    @include border-radius(10px);
     position: absolute;
-    z-index:1;
+    z-index: 1;
     width: 6px;
     height: 6px;
     border: 1px solid black;
 
-    @include border-radius(10px);
-
-    &:before {
+    &::before {
+      @include border-radius(10px);
       content: '';
       position: absolute;
-      z-index:0;
+      z-index: 0;
       top: -2px;
       left: -2px;
       width: 8px;
       height: 8px;
       border: 1px solid white;
-
-      @include border-radius(10px);
     }
   }
 
@@ -118,11 +115,10 @@ div.dropdown.color_picker {
 
   .slider {
     @include inline-block();
+    @include border-right-radius(2px);
     width: 13px;
     height: 100px;
     cursor: crosshair;
-
-    @include border-right-radius(2px);
   }
 
   .slider-indicator {
@@ -131,7 +127,7 @@ div.dropdown.color_picker {
     width: 15px;
     height: 1px;
     border: 1px solid white;
-    background: black;
+    background: BLACK;
   }
 
   // Advanced link
@@ -148,37 +144,36 @@ div.dropdown.color_picker {
   }
 
   ul.default-colors {
+    @include border-radius(2px);
     display: block;
     width: 100%;
-    margin:0;
+    margin: 0;
     letter-spacing: -4px;
-
-    @include border-radius(2px);
 
     li {
       @include inline-block();
       width: 12px;
       height: 20px;
-      margin:0;
-      padding:0;
+      margin: 0;
+      padding: 0;
       border: none;
-      letter-spacing:0;
+      letter-spacing: 0;
       vertical-align: top;
 
       a {
         position: relative;
         width: 12px;
         height: 20px;
-        margin:0;
-        padding:0;
+        margin: 0;
+        padding: 0;
 
         &:hover {
-          z-index:2;
+          z-index: 2;
 
-          &:before {
+          &::before {
             content: ' ';
             position: absolute;
-            z-index:2;
+            z-index: 2;
             top: -1px;
             right: -1px;
             bottom: -1px;
@@ -188,17 +183,26 @@ div.dropdown.color_picker {
         }
       }
 
-      &:first-child a { @include border-top-left-radius(2px) }
-      &:nth-child(16) a { @include border-bottom-left-radius(2px) }
+      &:first-child a {
+        @include border-top-left-radius(2px);
+      }
+
+      &:nth-child(16) a {
+        @include border-bottom-left-radius(2px);
+      }
 
       &:nth-child(15) a {
         @include border-top-right-radius(2px);
 
-        &: before { border-color:#ABABAB;
-
-          @include border-top-right-radius(2px); }
+        &::before {
+          @include border-top-right-radius(2px);
+          border-color: #ABABAB;
+        }
       }
-      &:last-child a { @include border-bottom-right-radius(2px) }
+
+      &:last-child a {
+        @include border-bottom-right-radius(2px);
+      }
     }
 
     // Extra colors list
@@ -206,65 +210,65 @@ div.dropdown.color_picker {
       margin-top: 1px;
 
       li {
-        &:first-child a { @include border-left-radius(2px) }
-        &:last-child a { @include border-right-radius(2px) }
+        &:first-child a {
+          @include border-left-radius(2px);
+        }
+
+        &:last-child a {
+          @include border-right-radius(2px);
+        }
       }
     }
   }
-
-
 
   .form_input_color {
     width: 67px;
     letter-spacing: -4px;
 
     span.color {
+      @include inline-block();
+      @include border-left-radius(3px);
       position: relative;
       width: 12px;
       height: 21px;
-      letter-spacing:0;
+      letter-spacing: 0;
       vertical-align: top;
 
-      @include inline-block();
-
-      @include border-left-radius(3px);
-
-      &:before {
+      &::before {
+        @include border-left-radius(3px);
         content: ' ';
         position: absolute;
-        top:0;
-        left:0;
+        top: 0;
+        left: 0;
         width: 10px;
         height: 19px;
-        border: 1px solid rgba(0,0,0,0.2);
+        border: 1px solid  rgba(0, 0, 0, 0.2);
         background: none;
-
-        @include border-left-radius(3px);
       }
     }
 
     input.text {
       @include inline-block();
+      @include border-right-radius(3px);
       width: 48px;
       height: 13px;
       padding: 3px;
-      border: 1px solid rgba(0,0,0,0.2);
-      border-left:0;
+      border: 1px solid  rgba(0, 0, 0, 0.2);
+      border-left: 0;
       color: #666;
       font: normal 11px $text-fonts;
-      letter-spacing:0;
+      letter-spacing: 0;
       line-height: 13px;
       vertical-align: top;
 
-      @include border-right-radius(3px);
-
       &:focus {
-        border-color: rgba(0,0,0,0.4);
+        border-color: rgba(0, 0, 0, 0.4);
         outline: none;
       }
 
-      &.error,&.error:focus {
-        border-color: rgba(#F84F40,0.8);
+      &.error,
+      &.error:focus {
+        border-color: rgba(#F84F40, 0.8);
       }
     }
 
@@ -281,7 +285,7 @@ div.dropdown.color_picker {
   }
 
   // Basemap tail
-  &.basemap:before {
+  &.basemap::before {
     left: -5px !important;
   }
 }

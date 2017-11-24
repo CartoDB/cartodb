@@ -29,7 +29,7 @@ div.dropdown.map_options_dropdown {
       font-size: 13px;
       cursor: default;
 
-      &:before {
+      &::before {
         content: '';
         position: absolute;
         top: 14px;
@@ -37,32 +37,32 @@ div.dropdown.map_options_dropdown {
         height: 10px;
       }
 
-      &.title:before {
+      &.title::before {
         top: 12px;
         width: 10px; height: 11px;
 
         @include map-sprite(map_options_title);
       }
 
-      &.description:before {
+      &.description::before {
         width: 11px; height: 11px;
 
         @include map-sprite(map_options_description);
       }
 
-      &.search:before {
+      &.search::before {
         width: 11px; height: 11px;
 
         @include map-sprite(map_options_search);
       }
 
-      &.fullscreen:before {
+      &.fullscreen::before {
         width: 11px; height: 12px;
 
         @include map-sprite(map_options_fullscreen);
       }
 
-      &.share:before {
+      &.share::before {
         top: 12px;
         left: -3px;
         width: 13px; height: 13px;
@@ -70,14 +70,14 @@ div.dropdown.map_options_dropdown {
         @include map-sprite(map_options_share);
       }
 
-      &.zoom:before {
+      &.zoom::before {
         top: 11px;
         width: 9px; height: 14px;
 
         @include map-sprite(map_options_zoom);
       }
 
-      &.scrollwheel:before {
+      &.scrollwheel::before {
         top: 10px;
         left: 2px;
         width: 11px; height: 16px;
@@ -85,19 +85,19 @@ div.dropdown.map_options_dropdown {
         @include map-sprite(map_options_scrollwheel);
       }
 
-      &.layer_selector:before {
+      &.layer_selector::before {
         width: 9px; height: 10px;
 
         @include map-sprite(map_options_layer_selector);
       }
 
-      &.logo:before {
+      &.logo::before {
         width: 9px; height: 10px;
 
         @include map-sprite(map_options_logo);
       }
 
-      &.legends:before {
+      &.legends::before {
         width: 9px; height: 10px;
 
         @include map-sprite(map_options_legends);
@@ -105,7 +105,7 @@ div.dropdown.map_options_dropdown {
 
       &:first-child { 
         padding-top: 0;
-        &:before { top: 2px; }
+        &::before { top: 2px; }
       }
 
       &:last-child {

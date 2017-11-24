@@ -33,7 +33,7 @@
 .u-txt-right { text-align: right; }
 .u-tupper { text-transform: uppercase; }
 
-.u-valign:before {
+.u-valign::before {
   content: "";
   display: inline-block;
   height: 100%;

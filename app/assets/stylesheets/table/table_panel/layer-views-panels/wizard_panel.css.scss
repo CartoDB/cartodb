@@ -28,39 +28,38 @@ div.wizards_panel {
   div.wizard_wrap {
     position: absolute;
     top: 60px;
-    right:0;
-    left:0;
+    right: 0;
+    left: 0;
     height: 149px;
     overflow: hidden;
 
     background: image-url('layout/linen.png');
 
-    &.left_shadow:before {
+    &.left_shadow::before {
       content: '';
       position: absolute;
-      z-index:1;
-      top:0;
-      bottom:0;
-      left:0;
+      z-index: 1;
+      top: 0;
+      bottom: 0;
+      left: 0;
       width: 30px;
       pointer-events: none;
 
-      @include background(linear-gradient(left, rgba(#333, .7), rgba(#333,0)));
+      @include background(linear-gradient(left, rgba(#333, 0.7), rgba(#333,0)));
     }
 
-    &:after {
+    &::after {
       content: '';
       position: absolute;
-      z-index:1;
-      top:0;
-      right:0;
-      bottom:0;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      bottom: 0;
       width: 30px;
       pointer-events: none;
 
-      @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, .7)));
+      @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, 0.7)));
     }
-
   }
 
   div.wizard_arrows {
@@ -117,15 +116,14 @@ div.wizards_panel {
     letter-spacing: -4px;
 
     @include position(0, 0, false, 0);
-
     @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
     li {
       position: relative;
       margin: 0 12px 0 0;
-      padding:0;
-      letter-spacing:0;
-      word-space: 0;
+      padding: 0;
+      letter-spacing: 0;
+      word-space: 0; /* stylelint-disable-line */
 
       @include inline-block();
 
@@ -135,7 +133,6 @@ div.wizards_panel {
         margin: 30px 0;
 
         @include size(92px, 90px);
-
         @include box-shadow(0 0 3px 4px rgba(black, 0.15));
         @include border-radius(3px);
 
@@ -160,13 +157,17 @@ div.wizards_panel {
         }
 
         @include simple-transition(opacity, 200ms);
-        @include opacity(.7);
+        @include opacity(0.7);
 
         // Wizard icons
         &.simple {
           background: image-url('layout/wizard-simple.png') no-repeat;
-          &.polygon, &.polygon-polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat;}
-          &.line, &.line-line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat; }
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-simple-polyline.png') no-repeat; }
         }
 
         &.intensity {
@@ -175,28 +176,40 @@ div.wizards_panel {
 
         &.choropleth {
           background: image-url('layout/wizard-choropleth.png') no-repeat;
-          &.line, &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
-          &.polygon, &.polygon-polygon { background: image-url('layout/wizard-choropleth-polygon.png') no-repeat;}
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat; }
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-choropleth-polygon.png') no-repeat; }
         }
 
         &.color {
           background: image-url('layout/wizard-color.png') no-repeat;
-          &.polygon, &.polygon-polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
-          &.line, &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat; }
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat; }
         }
 
         &.category {
           background: image-url('layout/wizard-category.png') no-repeat;
-          &.polygon, &.polygon-polygon { background: image-url('layout/wizard-category-polygon.png') no-repeat;}
-          &.line, &.line-line { background: image-url('layout/wizard-category-polyline.png') no-repeat;}
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-category-polygon.png') no-repeat; }
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-category-polyline.png') no-repeat; }
         }
 
-        &.bubble { background: image-url('layout/wizard-bubble.png') no-repeat;}
-        &.cluster { background: image-url('layout/wizard-cluster.png') no-repeat;}
-        &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
-        &.torque { background: image-url('layout/wizard-torque.png') no-repeat;}
-        &.torque_cat { background: image-url('layout/wizard-torque-cat.png') no-repeat;}
-        &.torque_heat { background: image-url('layout/wizard-torque-heat.png') no-repeat;}
+        &.bubble { background: image-url('layout/wizard-bubble.png') no-repeat; }
+        &.cluster { background: image-url('layout/wizard-cluster.png') no-repeat; }
+        &.density { background: image-url('layout/wizard-density-hex.png') no-repeat; }
+        &.torque { background: image-url('layout/wizard-torque.png') no-repeat; }
+        &.torque_cat { background: image-url('layout/wizard-torque-cat.png') no-repeat; }
+        &.torque_heat { background: image-url('layout/wizard-torque-heat.png') no-repeat; }
 
         &:hover {
           border-color: $cGray2;
@@ -213,11 +226,12 @@ div.wizards_panel {
             color: #333;
           }
 
-          &:before, &:after {
+          &::before,
+          &::after {
             @include size(0);
             content: '';
             position: absolute;
-            z-index:5;
+            z-index: 5;
             bottom: 0;
             left: 50%;
             margin-left: -13px;
@@ -225,13 +239,13 @@ div.wizards_panel {
             border-left: 10px solid transparent;
           }
 
-          &:before {
+          &::before {
             z-index: 10;
             bottom: -30px;
             border-bottom: 10px solid white;
           }
 
-          &:after {
+          &::after {
             bottom: -30px;
             border-bottom: 10px solid $cGray4;
           }
@@ -251,14 +265,14 @@ div.wizards_panel {
   div.forms {
     ul {
       width: 100%;
-      margin: 15px 0 0 0;
+      margin: 15px 0 0;
 
       li {
         display: block;
         width: 100%;
         padding: 13px 0;
         overflow: hidden;
-        border-bottom: 1px solid rgba(#E5E5E5,0.5);
+        border-bottom: 1px solid rgba(#E5E5E5, 0.5);
 
         & > span:first-child {
           margin-top: 2px;
@@ -274,20 +288,20 @@ div.wizards_panel {
           @include inline-block();
         }
 
-        &.label_text { border:none; }
-        &.label_text.border { border-bottom: 1px solid rgba(#E5E5E5,0.5); }
-        &:last-child {border:none;}
+        &.label_text { border: none; }
+        &.label_text.border { border-bottom: 1px solid rgba(#E5E5E5, 0.5); }
+        &:last-child { border: none; }
 
         span.field > div {
           margin-left: 5px;
 
           &.form_hidden {
             display: none;
-            margin:0;
+            margin: 0;
           }
 
           // Removed left space for first combo
-          &:first-child { margin-left:0 !important }
+          &:first-child { margin-left: 0 !important; }
         }
 
         // Text between fields like " - to - "
@@ -307,9 +321,10 @@ div.wizards_panel {
     }
 
     // Color wizard styles
-    ul.custom_colors, ul.custom_categories {
-      margin:0;
-      border-top: 1px solid rgba(#E5E5E5,0.5);
+    ul.custom_colors,
+    ul.custom_categories {
+      margin: 0;
+      border-top: 1px solid rgba(#E5E5E5, 0.5);
 
       li.custom_color_item {
         span {
@@ -323,25 +338,25 @@ div.wizards_panel {
     div.colors_loader {
       display: none;
       padding: 15px 0 0 50px;
-      border-top: 1px solid rgba(#E5E5E5,0.5);
+      border-top: 1px solid rgba(#E5E5E5, 0.5);
       background: image-url("layout/loader.gif") no-repeat 0 15px;
-      span {color:$cGray4;}
+      span { color: $cGray4; }
     }
 
     div.colors_error {
       display: none;
       padding: 15px;
-      background: rgba(#FECBCB,0.4);
+      background: rgba(#FECBCB, 0.4);
       color: #666;
 
       @include border-radius($corner_radius);
     }
   }
 }
-  
+
 /* Temporary hack for a Chrome v45 bug */
 
 /* https://github.com/CartoDB/cartodb/issues/5368 */
-.select2-result-label td.color { 
+.select2-result-label td.color {
   width: 10%;
 }

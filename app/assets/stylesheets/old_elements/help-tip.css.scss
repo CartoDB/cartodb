@@ -1,7 +1,7 @@
 
 /**
    *  Styles for help tip situtated in the top of a module.
-   *  Ex: infowindow html editor, sql panel, cartocss panel,... 
+   *  Ex: infowindow html editor, sql panel, cartocss panel,...
    */
 
 @import "compass/css3/images";
@@ -11,6 +11,7 @@
 @import "../table/table-sprite";
 
 .help-tip {
+  @include box-sizing(border-box);
   display: none;
   position: absolute;
   z-index: 10;
@@ -18,18 +19,18 @@
   left: 0;
   width: 100%;
   padding: 10px;
-  border-bottom: 1px solid rgba(#DDD, .5);
+  border-bottom: 1px solid rgba(#DDD, 0.5);
   background: #F5F8FF;
   color: #999;
   font-size: 13px;
   font-style: italic;
 
-  @include box-sizing(border-box);
-
-  p { padding: 0 25px 0 44px; }
+  p {
+    padding: 0 25px 0 44px;
+  }
 
   .close {
-
+    @include background(sprite($common-sprites, close_grey, $offset-x: 0, $offset-y: 0) no-repeat);
     display: block;
     position: absolute;
     top: 12px;
@@ -38,18 +39,20 @@
     height: 13px;
     vertical-align: middle;
 
-    @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+    &:hover {
+      @include background(sprite($common-sprites, close_grey, $offset-x: 0, $offset-y: -13px) no-repeat);
+    }
 
-    &:hover { @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat); }
-    &:active { @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat); }
+    &:active {
+      @include background(sprite($common-sprites, close_grey, $offset-x: 0, $offset-y: -26px) no-repeat);
+    }
   }
 
-  &:before {
-    content: '';
-    z-index: 11;
-
+  &::before {
     @include size(10px, 6px);
     @include position(-6px, 29px, false, false);
     @include background(sprite($table-sprites, infowindow_panel_purple_tip) no-repeat);
+    content: '';
+    z-index: 11;
   }
 }

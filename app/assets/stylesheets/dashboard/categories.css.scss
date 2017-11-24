@@ -4,7 +4,6 @@
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
-
 $iconStandardColor: $cTypography-help;
 $iconSelectedColor: #4A90E2;
 
@@ -28,7 +27,10 @@ $iconSelectedColor: #4A90E2;
 
   &:hover {
     color: $cTypography-paragraphs;
-    &:after { border-top-color: $cTypography-paragraphs }
+
+    &::after {
+      border-top-color: $cTypography-paragraphs;
+    }
   }
 }
 
@@ -52,7 +54,10 @@ $iconSelectedColor: #4A90E2;
 
   &:hover {
     border-color: $iconSelectedColor;
-    .Categories-optionIcon { color: $iconSelectedColor }
+
+    .Categories-optionIcon {
+      color: $iconSelectedColor;
+    }
   }
 }
 
@@ -64,7 +69,10 @@ $iconSelectedColor: #4A90E2;
 
 .Categories-option.is-selected {
   border-color: $iconSelectedColor;
-  &:hover { cursor: default }
+
+  &:hover {
+    cursor: default;
+  }
 }
 
 .Categories-option.is-selected .Categories-optionIcon {

@@ -19,7 +19,6 @@
     font-weight: normal;
   }
 
-
   // Custom basemap icon
 
   & > .thumb {
@@ -34,27 +33,23 @@
     @include inline-block();
     @include size(22px);
     @include border-radius(2px);
+    @include box-shadow(0 0 1px rgba(#000, 0.9));
 
-    @include box-shadow(0 0 1px rgba(#000, .9));
-
-    &:before {
+    &::before {
       content: ' ';
-      border: 1px solid rgba(0, 0,0, 0.15);
+      border: 1px solid rgba(0, 0, 0, 0.15);
 
       @include position(0, 0, 0, 0);
       @include border-radius(2px);
     }
-
   } // thumb
 
   .info { @include inline-block(); }
-
 }
 
 div.dropdown.basemap {
 
   border: 1px solid #999;
-
 
   div.custom {
     display: inline;
@@ -71,9 +66,9 @@ div.dropdown.basemap {
   div.custom > ul {
     width: auto;
     margin: 0 10px;
-    padding: 10px 10px;
+    padding: 10px;
 
-    border-bottom: 1px solid rgba(204,204,204,0.35);
+    border-bottom: 1px solid rgba(204, 204, 204, 0.35);
 
     @include box-sizing(border-box);
 
@@ -83,7 +78,6 @@ div.dropdown.basemap {
         margin: 5px 4px 0 0;
         color: #CCC;
       }
-
     }
 
     li {
@@ -100,8 +94,7 @@ div.dropdown.basemap {
     flex-wrap: wrap;
     width: 238px;
   }
-  .thumbs.gmaps > li { margin: 3px 10px 3px 0 }
-
+  .thumbs.gmaps > li { margin: 3px 10px 3px 0; }
 
   .custom ul li {
 
@@ -117,7 +110,6 @@ div.dropdown.basemap {
       }
 
       a { line-height: 24px; }
-
     }
 
     &.selected .name { color: #7B7B7B; }
@@ -127,10 +119,11 @@ div.dropdown.basemap {
     &:hover { background: none; }
 
     &.add_basemap > a {
-      small, &:hover small {
+      small,
+      &:hover small {
         color: #397DB8;
 
-        @include opacity(.5);
+        @include opacity(0.5);
       }
     }
 
@@ -185,9 +178,9 @@ div.dropdown.basemap {
         @include border-radius(2px);
         @include text-indent();
 
-        &:before {
+        &::before {
           content: '';
-          border: 1px solid rgba(0,0,0, 0.15);
+          border: 1px solid rgba(0, 0, 0, 0.15);
 
           @include position(0,0,0,0);
           @include border-radius(2px);
@@ -195,23 +188,21 @@ div.dropdown.basemap {
 
         .remove_layer {
 
-          z-index:2;
+          z-index: 2;
 
           padding: 0;
 
           background: rgba(black, 0.5);
-          text-indent:0;
+          text-indent: 0;
 
           @include size(14px, 10px);
           @include position(false, 0, 0, false);
           @include simple-transition(opacity, 100ms);
-
           @include border-top-left-radius(2px);
           @include border-bottom-right-radius(2px);
-
           @include opacity(0);
 
-          &:before {
+          &::before {
             content: ' ';
             border-top: 3px solid white;
             border-right: 3px solid transparent;
@@ -220,18 +211,16 @@ div.dropdown.basemap {
 
             @include position(4px, false, false, 4px);
             @include size(0);
-
           }
         }
 
         &:hover {
           cursor: pointer;
-          &:before { border: 1px solid rgba(0,0,0, 0.5); }
+          &::before { border: 1px solid rgba(0, 0, 0, 0.5); }
         }
-
       }
 
-      a .thumb { background-size:auto; }
+      a .thumb { background-size: auto; }
 
       // Google thumbs
 
@@ -256,8 +245,6 @@ div.dropdown.basemap {
       @include google-thumbnail(light_green);
       @include google-thumbnail(mostly_grayscale);
 
-
-
       &.add .thumb { @include map-sprite(plus); }
       &.pattern .thumb { @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px); }
 
@@ -267,11 +254,11 @@ div.dropdown.basemap {
         width: 100%;
         height: 14px;
         padding: 15px 0;
-        color: rgba(#999,0.8);
+        color: rgba(#999, 0.8);
         font: bold 9px $text-fonts;
         text-align: center;
-        text-indent:0;
-        text-shadow: 0 0 1px rgba(#FFF,0.5);
+        text-indent: 0;
+        text-shadow: 0 0 1px rgba(#FFF, 0.5);
         text-transform: uppercase;
       }
 
@@ -279,11 +266,11 @@ div.dropdown.basemap {
         @include position(false, 2px, 2px, false);
         @include size(10px);
         @include border-radius(10px);
-        z-index:2;
+        z-index: 2;
         background: white;
-        text-indent:0;
+        text-indent: 0;
 
-        &:before {
+        &::before {
           content: ' ';
           border-top: 3px solid #397DBA;
           border-right: 2px solid transparent;

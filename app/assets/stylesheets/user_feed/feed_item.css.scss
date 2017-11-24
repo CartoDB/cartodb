@@ -35,7 +35,7 @@
   width: $avatarSize;
   height: $avatarSize;
 
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     z-index: 1000;
@@ -57,7 +57,7 @@
     margin: 20px;
     border-radius: 8px;
 
-    &:after {
+    &::after {
       box-shadow: 1px 1px 1px rgba(#000, 0.2);
     }
   }
@@ -74,7 +74,7 @@
     border-radius: 8px;
     box-shadow: 1px 1px 1px rgba(#000, 0.2);
 
-    &:after {
+    &::after {
       box-shadow: 1px 1px 1px rgba(#000, 0.2);
     }
   }

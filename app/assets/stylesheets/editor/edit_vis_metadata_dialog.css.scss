@@ -12,8 +12,8 @@ $width: 620px;
 .EditVisMetadata .Dialog-expandedSubContent {
   position: relative;
 
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     content: '';
     position: fixed;
     z-index: 5;
@@ -23,13 +23,13 @@ $width: 620px;
     margin-left: -310px;
   }
 
-  &:before {
+  &::before {
     @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
     top: 157px;
     background-color: transparent !important;
   }
 
-  &:after {
+  &::after {
     @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     bottom: 97px;
   }

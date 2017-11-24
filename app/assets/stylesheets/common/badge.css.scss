@@ -3,7 +3,6 @@
 @import "../variables/sizes";
 @import 'cdb-variables/colors';
 
-
 .Badge {
   display: block;
   position: absolute;
@@ -25,6 +24,15 @@
     right: auto;
   }
 }
-.Badge--negative { background-color: $cError }
-.Badge--positive { background-color: $cHighlight-positive }
-.Badge--alert { background-color: $cAlert }
+
+.Badge--negative {
+  background-color: $cError;
+}
+
+.Badge--positive {
+  background-color: $cHighlight-positive;
+}
+
+.Badge--alert {
+  background-color: $cAlert;
+}

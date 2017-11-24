@@ -4,7 +4,6 @@
    * - Login, 404, 500, 403, 422, 500, html5, no_javascript,...
    */
 
-
 @import "compass/css3/box-shadow";
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
@@ -17,7 +16,6 @@
 @import "../old_common/common-sprite";
 @import "../front/front-sprite";
 
-
 // Styles for static pages like 404, 500, HTML5,...
 
 html {
@@ -26,19 +24,16 @@ html {
 }
 
 body {
-  min-width: 600px;
-
   @include background(image-url("layout/grey-carto.jpg") repeat 0 0);
+  min-width: 600px;
 
   /* SECTIONS */
   section {
+    @include border-radius(3px);
     position: relative;
     width: 960px;
     margin: 0 auto;
-    background: white;
-
-    @include border-radius(3px);
-
+    background: WHITE;
 
     /* skeleton of a section */
     div.header {
@@ -57,13 +52,23 @@ body {
       padding: 40px;
 
       /* content options */
-      &.overflow {overflow:hidden}
-      &.no_padding {width:960px; padding:0;}
-      &.less_padding { padding-top:25px; padding-bottom:25px;overflow:hidden}
+      &.overflow {
+        overflow: hidden;
+      }
+
+      &.no_padding {
+        width: 960px;
+        padding: 0;
+      }
+
+      &.less_padding {
+        padding-top: 25px;
+        padding-bottom: 25px;
+        overflow: hidden;
+      }
     }
 
-
-    /* sessions flat section*/
+    /* sessions flat section */
     &.sessions {
       position: relative;
       width: 392px;
@@ -72,50 +77,58 @@ body {
 
     /* add shadow to the section */
     &.shadow {
-      @include box-shadow(rgba(0,0,0,0.10) 0 0 3px 3px);
-      border:1px solid #E7E7E7\9; // IE
-      &.top {@include box-shadow(rgba(0,0,0,0.06) 0 -1px 3px 3px);}
-      &.bottom {@include box-shadow(rgba(0,0,0,0.06) 0 1px 3px 3px);}
+      @include box-shadow(rgba(0, 0, 0, 0.1) 0 0 3px 3px);
+      border: 1px solid #E7E7E7\9; // IE
+      &.top {
+        @include box-shadow(rgba(0, 0, 0, 0.06) 0 -1px 3px 3px);
+      }
+
+      &.bottom {
+        @include box-shadow(rgba(0, 0, 0, 0.06) 0 1px 3px 3px);
+      }
     }
 
     /* border radius only in the top */
     &.top {
-      @include border-bottom-radius(00;
-      border-bottom:none\9; // IE
+      @include border-bottom-radius(0);
+      border-bottom: none\9; // IE
     }
 
     /* border radius only in the bottom */
     &.bottom {
-      @include border-top-radius(00;
-      border-top:none\9; // IE
+      @include border-top-radius(0);
+      border-top: none\9; // IE
     }
 
     /* grey top line */
-    &.border {border-top:1px solid rgba(0,0,0,0.15)}
+    &.border {
+      border-top: 1px solid  rgba(0, 0, 0, 0.15);
+    }
 
-    div.med {width:62%;}
+    div.med {
+      width: 62%;
+    }
   }
-
-
 
   /* SESSIONS FORM */
   section.sessions {
     div.browsers {
       margin: 30px 0 0 100px;
-      font-size:0;
+      font-size: 0;
       letter-spacing: -4px;
 
       a {
         @include inline-block();
         margin: 0 35px 0 0;
-        padding:0;
-        letter-spacing:0;
+        padding: 0;
+        letter-spacing: 0;
         vertical-align: middle;
 
-        img {margin:0 !important}
+        img {
+          margin: 0 !important;
+        }
       }
     }
-
 
     form {
       div.field {
@@ -135,28 +148,33 @@ body {
         }
       }
 
-      p {@include inline-block();}
+      p {
+        @include inline-block();
+      }
 
       label {
+        @include user-select(none);
         position: absolute;
-        z-index:0;
-        top:0;
+        z-index: 0;
+        top: 0;
         left: 16px;
         color: #CCC;
         font: normal 15px $text-fonts;
         font-style: italic;
 
-        @include user-select(none);
-        &:hover {cursor:text}
+        &:hover {
+          cursor: text;
+        }
       }
 
       input[type="text"],
       input[type="password"],
       input[type="email"] {
+        @include border-radius(3px);
         z-index: 10;
         width: 280px;
         height: auto;
-        margin:0;
+        margin: 0;
         padding: 11px 15px;
         border: 1px solid #CCC;
         background: none;
@@ -164,13 +182,10 @@ body {
         font: normal 15px $text-fonts;
         line-height: normal;
 
-        @include border-radius(3px);
-
         &:focus {
+          @include box-shadow(rgba(0, 0, 0, 0.1) 0 0 2px 2px);
           border-color: #999;
           outline: none;
-
-          @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
         }
 
         &.error {
@@ -187,10 +202,9 @@ body {
 
       /* Errors */
       div.field_with_errors {
+        @include inline-block();
         width: auto;
         vertical-align: top;
-
-        @include inline-block();
 
         input[type="text"],
         input[type="password"],
@@ -207,16 +221,18 @@ body {
       }
 
       div.field_error {
+        @include text-indent();
+        @include common-sprite(field_error);
         position: absolute;
-        z-index:5;
+        z-index: 5;
         top: 7px;
         right: 7px;
         width: 26px;
         height: 27px;
 
-        @include text-indent();
-        @include common-sprite(field_error);
-        &:hover {cursor:pointer}
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
 
@@ -224,7 +240,9 @@ body {
     &.longer {
       width: 562px;
 
-      img.alone {margin:50px 0 0 125px}
+      img.alone {
+        margin: 50px 0 0 125px;
+      }
     }
   }
 
@@ -235,9 +253,11 @@ body {
     height: 18px;
     padding: 38px 0 40px;
     border-top: 1px solid #E5E5E5;
-    background: white;
+    background: WHITE;
 
-    div.wrap {overflow:visible;}
+    div.wrap {
+      overflow: visible;
+    }
 
     span.cartodb {
       position: absolute;
@@ -248,46 +268,53 @@ body {
       height: 105px;
     }
 
-    div.left {height:19px; p {vertical-align:middle}}
+    div.left {
+      height: 19px;
+
+      p {
+        vertical-align: middle;
+      }
+    }
 
     &.short {
       width: 124px;
       min-width: 124px;
       height: 42px;
       margin: 0 auto 30px;
-      padding:0;
+      padding: 0;
       border: none;
       background: none;
 
-      a.cartodb {display: block; width:124px; height:42px;
-
-        @include text-indent(); @include front-sprite(cartodb_opacity);}
+      a.cartodb {
+        @include text-indent();
+        @include front-sprite(cartodb_opacity);
+        display: block;
+        width: 124px;
+        height: 42px;
+      }
     }
   }
 
-
   /* NEW VERSION */
   &.new_version {
+    @include background(linear-gradient(#519FD9, #1E5496));
     position: relative;
     width: 100%;
     height: 100%;
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
     background-color: #377CB9; // IE
-    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#519FD9', endColorstr='#1E5496');// For IE7-8-9
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#519FD9', endColorstr='#1E5496');
 
-    @include background(linear-gradient(#519FD9,#1E5496));
-      
     div.bkg {
+      @include background(image-url("layout/relief.png") repeat 0 0);
       position: absolute;
-      top:0;
-      right:0;
-      bottom:0;
-      left:0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-
-      @include background(image-url("layout/relief.png") repeat 0 0);
     }
 
     header {
@@ -300,30 +327,41 @@ body {
       background: none;
       box-shadow: none;
 
-      &:before {
+      &::before {
         display: none;
         background: none;
       }
 
       h1 {
-        margin:0;
+        margin: 0;
 
-        a {display: block; width:124px; height:42px;
-
-          @include text-indent(); @include front-sprite(cartodb_dark);}
-      } 
+        a {
+          @include text-indent();
+          @include front-sprite(cartodb_dark);
+          display: block;
+          width: 124px;
+          height: 42px;
+        }
+      }
     }
 
     section {
       width: 505px;
-      margin-top:0;
+      margin-top: 0;
       background: image-url('layout/cartodb20.png') no-repeat right 0 white; // IE
 
       .content {
         padding-right: 190px;
-        h2 {font-size:34px; line-height:36px;}
-        p {line-height:19px;}
+
+        h2 {
+          font-size: 34px;
+          line-height: 36px;
+        }
+
+        p {
+          line-height: 19px;
+        }
       }
-    }
+    }// For IE7-8-9
   }
 }

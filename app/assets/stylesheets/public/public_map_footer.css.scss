@@ -25,10 +25,10 @@
     }
   }
 
-  .embed-left-col .content { border-right: none }
+  .embed-left-col .content {
+    border-right: none;
+  }
 }
-
-
 
 // Hello media queries
 
@@ -41,7 +41,6 @@
   div.cartodb-footer .inner .embed-right-col {
     text-align: center;
   }
-
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {

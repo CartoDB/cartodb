@@ -3,7 +3,6 @@
 // --------------------------------------------------
 
 @import '../variables/mixins';
-
 $size: 36px;
 
 .Logo {
@@ -66,12 +65,17 @@ $size: 36px;
   height: 24px;
   border-radius: 24px;
 }
-.Logo-sub--google { @include background(image-url('layout/google-platform-logo.png') no-repeat center center #FFFFFF) }
+
+.Logo-sub--google {
+  @include background(image-url('layout/google-platform-logo.png') no-repeat center center #FFFFFF);
+}
 
 .Logo.is-loading {
-  .Logo--avatar { border-radius: $size + 1; }
+  .Logo--avatar {
+    border-radius: $size + 1;
+  }
 
-  &:after {
+  &::after {
     @include animation(spin 0.7s linear infinite);
     @include opacity(1);
   }

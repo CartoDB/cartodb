@@ -30,7 +30,7 @@
 .SideMenu-separator {
   display: block;
   position: relative;
-  z-index:0;
+  z-index: 0;
   width: 100%;
   height: 1px;
   background-color: $cStructure-darkGrey;
@@ -46,8 +46,13 @@
   position: relative;
   line-height: 35px;
 
-  &:first-child { margin-left: 0 }
-  &:last-child { margin-right: 0 }
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
 }
 
 .SideMenu-typeLink {
@@ -107,6 +112,5 @@
   @include flex-direction(column);
   @include justify-content(center);
   margin-left: 15px;
-
   color: $cTypography-paragraphs;
 }

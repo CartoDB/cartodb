@@ -35,21 +35,22 @@
 }
 
 .Checkbox-input.is-checked {
-  &:before, &:after {
+  &::before,
+  &::after {
     content: '';
     position: absolute;
     height: 2px;
     background: #0090D7;
   }
 
-  &:before {
+  &::before {
     left: 2px;
     width: 4px;
 
     @include transform(rotate(55deg));
   }
 
-  &:after {
+  &::after {
     top: 5px;
     left: 3px;
     width: 8px;
@@ -70,7 +71,7 @@
     border-color: $cStructure-mainLine;
     cursor: default;
   }
-  &:focus { border-color: $cStructure-mainLine }
+  &:focus { border-color: $cStructure-mainLine; }
 }
 
 .Checkbox.is-disabled .Checkbox-label {

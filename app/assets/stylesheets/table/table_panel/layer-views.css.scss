@@ -115,8 +115,8 @@ $corner_radius: 6px;
   // Draw lines separating editor lines number
   // and show the white gradient
   div.editor {
-    &:after,
-    &:before {
+    &::after,
+    &::before {
       content: ' ';
       position: absolute;
       top: 0;
@@ -126,11 +126,11 @@ $corner_radius: 6px;
       height: 100%;
     }
 
-    &:after {
+    &::after {
       background: rgba($cGray4, 0.5);
     }
 
-    &:before {
+    &::before {
       left: 36px;
       background: rgba(#509DD7, 0.25);
     }

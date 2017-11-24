@@ -54,7 +54,7 @@
   text-align: right;
 }
 
-.u-valign:before {
+.u-valign::before {
   content: "";
   display: inline-block;
   height: 100%;

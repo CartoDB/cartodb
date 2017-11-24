@@ -16,7 +16,7 @@
   margin-top: -107px;
   margin-left: -178px;
   padding: 0;
-  background-color: white;
+  background-color: WHITE;
   color: $cTypography-paragraphs;
   text-align: center;
 }
@@ -56,7 +56,9 @@
   float: left;
   border-right: 1px solid $cStructure-mainLine;
 
-  &.is-last { border: none }
+  &.is-last {
+    border: none;
+  }
 }
 
 .NotSupportedDialog-itemLink {
@@ -67,6 +69,15 @@
   line-height: 0;
   text-indent: -9999px;
 }
-.NotSupportedDialog-itemLink--Safari { @include background(image-url('layout/safari.png') no-repeat center center) }
-.NotSupportedDialog-itemLink--Chrome { @include background(image-url('layout/chrome.png') no-repeat center center) }
-.NotSupportedDialog-itemLink--Firefox { @include background(image-url('layout/firefox.png') no-repeat center center) }
+
+.NotSupportedDialog-itemLink--Safari {
+  @include background(image-url('layout/safari.png') no-repeat center center);
+}
+
+.NotSupportedDialog-itemLink--Chrome {
+  @include background(image-url('layout/chrome.png') no-repeat center center);
+}
+
+.NotSupportedDialog-itemLink--Firefox {
+  @include background(image-url('layout/firefox.png') no-repeat center center);
+}

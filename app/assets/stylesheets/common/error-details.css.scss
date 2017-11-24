@@ -2,17 +2,21 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-
 // Error details dialog styles
 $width: 620px;
-.ErrorDetails {}
 
 .ErrorDetails-header .Dialog-headerIcon {
   margin-bottom: 15px;
   line-height: 40px;
 }
-.ErrorDetails-header .Dialog-headerTitle { color: $cHighlight-negative }
-.ErrorDetails-header .Dialog-headerText { font-size: 14px }
+
+.ErrorDetails-header .Dialog-headerTitle {
+  color: $cHighlight-negative;
+}
+
+.ErrorDetails-header .Dialog-headerText {
+  font-size: 14px;
+}
 
 .ErrorDetails-body {
   width: $width;
@@ -20,7 +24,7 @@ $width: 620px;
 }
 
 .ErrorDetails-body--no-line {
-  padding:0;
+  padding: 0;
   border-top: none;
 }
 
@@ -31,7 +35,10 @@ $width: 620px;
   padding: 20px 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
-.ErrorDetails-item:first-child { padding-top: 0 }
+
+.ErrorDetails-item:first-child {
+  padding-top: 0;
+}
 
 .ErrorDetails-item:last-child {
   padding-bottom: 0;
@@ -78,14 +85,20 @@ $width: 620px;
 .ErrorDetails-itemText {
   width: $width - 120;
 }
-.ErrorDetails-itemTextStrong { color: $cTypography-headers }
+
+.ErrorDetails-itemTextStrong {
+  color: $cTypography-headers;
+}
 
 .ErrorDetails-footer {
   width: $width;
   margin: 0 auto;
   text-align: center;
 }
-.ErrorDetails-footer--no-line { border-top: none }
+
+.ErrorDetails-footer--no-line {
+  border-top: none;
+}
 
 .ErrorDetails-footerButton {
   display: inline-block;

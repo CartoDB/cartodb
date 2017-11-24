@@ -1,13 +1,12 @@
-
 @import "compass/css3/box-sizing";
 @import "../old_common/vars";
 @import "../old_common/form-elements";
 
 .floating.edit_name_dialog.markdown {
-
   height: 62px;
 
   .input_field {
+    @include border-radius(4px);
     position: absolute;
     top: 5px;
     right: 65px;
@@ -23,53 +22,56 @@
     font-size: 15px;
     line-height: normal;
 
-    @include border-radius(4px);
-
     .hint {
-      margin: 7px 0 0 0;
+      margin: 7px 0 0;
       padding: 4px 3px 0 0;
       border-top: 1px solid #CCC;
       color: #CCC;
       font-size: 12px;
       text-align: right;
 
-      strong { margin-right: 3px; }
-      em { margin-right: 3px; font-style: italic; }
+      strong {
+        margin-right: 3px;
+      }
 
+      em {
+        margin-right: 3px;
+        font-style: italic;
+      }
     }
 
     input {
       @include box-sizing(border-box);
+      @include border-radius(0);
       position: relative;
-      top: 0; right: 0; bottom: 0; left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       width: 100%;
       margin: 0;
       padding: 0;
       border: none;
       background: none;
-
-      @include border-radius(0);
     }
-
   }
 
-  input, textarea {
+  input,
+  textarea {
     height: 19px;
   }
-
 }
 
 .edit_text_dialog {
+  @include box-shadow(rgba(black, 0.17) 0 0 6px 1px);
+  @include border-radius(4px);
+  @include background(linear-gradient(#FEFEFE, #F4F4F4));
   position: absolute !important;
   z-index: 0 !important;
   max-width: 500px;
   max-height: 500px;
   padding: 11px;
   border: 1px solid #B7B7B7;
-
-  @include box-shadow(rgba(black, 0.17) 0 0 6px 1px);
-  @include border-radius(4px);
-  @include background(linear-gradient(#FEFEFE, #F4F4F4));
 
   a.button {
     margin-top: 9px;
@@ -97,7 +99,10 @@
     text-transform: lowercase;
   }
 
-  input, textarea {
+  input,
+  textarea {
+    @include border-radius(4px);
+    @include box-sizing(border-box);
     display: block;
     position: relative;
     width: 100%;
@@ -111,15 +116,11 @@
     font-family: $text-fonts;
     font-size: 15px;
 
-    @include border-radius(4px);
-    @include box-sizing(border-box);
-
     &:focus {
       border-color: #999;
       outline: none;
     }
   }
-
 
   // Edit date dialog
   div.field.date {
@@ -129,8 +130,10 @@
       letter-spacing: -4px;
       word-spacing: -4px;
 
-      .select2-container {width:100px !important;}
-      
+      .select2-container {
+        width: 100px !important;
+      }
+
       & > div.column {
         @include inline-block();
         margin-right: 4px;
@@ -140,24 +143,34 @@
         label {
           display: block;
           margin: 0 0 3px;
-          padding:0;
+          padding: 0;
           color: #DDD;
           font: normal 12px $text-fonts;
         }
 
         div.form_spinner {
-          background: white;
-          &.disabled {border-color:#DDD !important;}
+          background: WHITE;
+
+          &.disabled {
+            border-color: #DDD !important;
+          }
         }
 
-        &.day_field {width:46px;}
-        &.month_field {width:101px;}
-        &.year_field {width:54px;}
+        &.day_field {
+          width: 46px;
+        }
+
+        &.month_field {
+          width: 101px;
+        }
+
+        &.year_field {
+          width: 54px;
+        }
 
         &.time_field {
-          width: 66px;
-
           @include default-input();
+          width: 66px;
 
           input {
             width: 59px;
@@ -165,15 +178,22 @@
             border-color: #9E9E9E;
             font-size: 13px;
             // Actions
-            &.error {border-color:rgba(red,0.5);}
-            &[readonly] { border-color:#DDD;background:#F4F4F4;}
+            &.error {
+              border-color: rgba(red, 0.5);
+            }
+
+            &[readonly] {
+              border-color: #DDD;
+              background: #F4F4F4;
+            }
           }
         }
 
-        &:last-child {margin-right:0;}
-      }      
+        &:last-child {
+          margin-right: 0;
+        }
+      }
     }
-
 
     // .select2-container {width:100px !important;}
 
@@ -211,31 +231,43 @@
   // Edit boolean dialog
   div.field.boolean {
     nav {
+      @include border-radius(4px);
       display: block;
       min-width: 205px;
       padding: 10px 5px 12px 20px;
       border: 1px solid #CCC;
-      background: white;
-
-      @include border-radius(4px);
+      background: WHITE;
 
       a {
-        @include inline-block(); width: 65px; font-size:13px; font-weight:normal;
-        span.radio {margin-top:0 !important;}
-        &:hover {text-decoration:none;}
+        @include inline-block();
+        width: 65px;
+        font-size: 13px;
+        font-weight: normal;
+
+        span.radio {
+          margin-top: 0 !important;
+        }
+
+        &:hover {
+          text-decoration: none;
+        }
       }
     }
   }
 
-
   // Edit number dialog
   div.field.number {
-    input.error {border-color:rgba(red,0.5);}
+    input.error {
+      border-color: rgba(red, 0.5);
+    }
   }
 
   // Edit geometry dialog
   div.field.geometry {
-    textarea.error, input.error {border-color:rgba(red,0.5);}
+    textarea.error,
+    input.error {
+      border-color: rgba(red, 0.5);
+    }
 
     .selector {
       display: none;
@@ -254,7 +286,10 @@
       height: 50px;
       background: image-url("layout/loader_gray.gif") no-repeat center center transparent;
     }
-    div.rest {display:none;}
+
+    div.rest {
+      display: none;
+    }
 
     div.point {
       display: none;
@@ -262,35 +297,42 @@
       width: auto;
       max-width: 322px;
       height: 30px;
-      margin:0;
+      margin: 0;
 
-      & > span, & > p {
-        position: relative;
-        margin:0;
-
+      & > span,
+      & > p {
         @include inline-block();
+        position: relative;
+        margin: 0;
       }
 
       input {
         display: block;
         width: 105px;
         height: 31px;
-        margin:0;
+        margin: 0;
         padding: 5px 5px 5px 36px;
         font-size: 15px;
         line-height: 19px;
         text-align: right;
-        &.error {border-color:rgba(red,0.5);}
+
+        &.error {
+          border-color: rgba(red, 0.5);
+        }
       }
 
-      p {width:17px; font-size:20px; text-align:center;}
+      p {
+        width: 17px;
+        font-size: 20px;
+        text-align: center;
+      }
 
       label {
         position: absolute;
         z-index: 10;
         top: 6px;
         left: 8px;
-        color:#AAA; 
+        color: #AAA;
         font-size: 13px;
         font-style: italic;
         pointer-events: none;
@@ -304,21 +346,20 @@
 }
 
 .floating.edit_name_dialog {
+  @include background(linear-gradient(rgba(black, 0.5), rgba(#212121, 0.5)));
+  @include border-radius(4px);
+  @include box-shadow(rgba(0, 0, 0, 0.12) 0 0 2px 2px);
   min-width: 280px;
   height: 37px;
   padding: 5px;
 
-  @include background(linear-gradient(rgba(black, 0.5), rgba(#212121,0.5)));
-  @include border-radius(4px);
-  @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
-
   .content {
-    float: left;
-
     @include inline-block();
+    float: left;
   }
 
   input {
+    @include border-radius(4px);
     position: absolute;
     top: 5px;
     right: 65px;
@@ -331,28 +372,24 @@
     font-size: 15px;
     line-height: normal;
 
-    @include border-radius(4px);
-
     &:focus {
       outline: none;
     }
   }
 
   a.ok {
+    @include border-radius(4px);
     padding: 9px 15px !important;
     border: 1px solid #000 !important;
     font-size: 15px !important;
     font-weight: bold !important;
-    letter-spacing:0;
-
-    @include border-radius(4px);
+    letter-spacing: 0;
 
     &:active {
+      @include background(linear-gradient(#F9F9F9, #E1E1E1));
+      @include box-shadow(rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset);
       border-color: #ACACAC;
-      background:#D3D3D3; // IE
-
-      @include background(linear-gradient(#F9F9F9,#E1E1E1));
-      @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset);
+      background: #D3D3D3; // IE
     }
   }
 
@@ -360,29 +397,26 @@
     height: auto;
 
     ul {
+      @include inline-block();
+      @include border-radius(4px);
       position: relative;
       min-width: 215px;
       max-width: 400px;
       min-height: 24px;
       max-height: 300px !important;
       margin: 0 3px 0 0;
-      padding: 4px 4px 1px 4px;
+      padding: 4px 4px 1px;
       border: 1px solid #000;
-      background: white;
-
-      @include inline-block();
-
-      @include border-radius(4px);
+      background: WHITE;
 
       li.tagit-choice {
+        @include border-radius(3px);
         margin: 0 3px 3px 0;
-        padding:0;
+        padding: 0;
         border: 1px solid #2B5B85;
         background: #4086C3;
         color: #FFF;
         font: normal 11px "Arial";
-
-        @include border-radius(3px);
 
         span.tagit-label {
           @include inline-block();
@@ -392,22 +426,24 @@
         }
 
         a.tagit-close {
+          @include inline-block();
           position: relative;
           width: auto;
           height: 100%;
-          margin:0;
+          margin: 0;
           line-height: 19px;
 
-          @include inline-block();
-
           &:hover {
-            span.text-icon {color:white;}
             text-decoration: none;
+
+            span.text-icon {
+              color: WHITE;
+            }
           }
 
           span.text-icon {
             display: block;
-            margin:0;
+            margin: 0;
             padding: 0 5px 0 7px;
             color: #1F4362;
             line-height: 19px;
@@ -416,19 +452,19 @@
       }
 
       li.tagit-new {
-        margin-top:0;
-        margin-bottom:0;
-        padding:0;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 0;
 
         input {
           @include inline-block();
           position: relative;
-          top:0;
+          top: 0;
           right: auto;
           bottom: auto;
           left: auto;
           margin: 3px 0 3px 5px;
-          padding:0;
+          padding: 0;
           font-size: 13px;
           line-height: 15px;
         }
@@ -436,23 +472,19 @@
     }
 
     a.ok {
+      @include border-radius(4px);
       padding: 6px 15px !important;
       border: 1px solid #000 !important;
       font-size: 15px !important;
       font-weight: bold !important;
-      letter-spacing:0;
-
-      @include border-radius(4px);
+      letter-spacing: 0;
 
       &:active {
+        @include background(linear-gradient(#F9F9F9, #E1E1E1));
+        @include box-shadow(rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset);
         border-color: #ACACAC;
-        background:#D3D3D3; // IE
-
-        @include background(linear-gradient(#F9F9F9,#E1E1E1));
-        @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset);
+        background: #D3D3D3; // IE
       }
     }
   }
 }
-
-

@@ -15,22 +15,22 @@
     background: #F2F2F2;
 
     span {
+      @include background(sprite($common-sprites, wifi_icon, $offset-x: -3px, $offset-y: -16px) no-repeat);
+      @include text-overflow();
       display: block;
       width: 490px;
       padding-left: 20px;
       color: #999;
       font-size: 13px;
       line-height: 14px;
-
-      @include background(sprite($common-sprites, wifi_icon, $offset-x:-3px, $offset-y:-16px) no-repeat);
-      @include text-overflow();
     }
   }
 
   .combo-wrapper {
     margin: 10px 0 0;
 
-    & > p, & > div.interval-combo {
+    & > p,
+    & > div.interval-combo {
       @include inline-block();
       vertical-align: middle;
     }
@@ -41,5 +41,4 @@
       line-height: 21px;
     }
   }
-    
 }

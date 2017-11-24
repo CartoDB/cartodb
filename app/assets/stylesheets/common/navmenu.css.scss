@@ -45,7 +45,7 @@
   color: $cTypography-linkSelected;
   font-weight: bold;
 
-  &:before {
+  &::before {
     content: '';
     position: absolute;
     right: 0;
@@ -67,7 +67,7 @@
   height: 81px;
 }
 
-.Navmenu-list:before {
+.Navmenu-list::before {
   content: '';
   display: inline-block;
   height: 100%;

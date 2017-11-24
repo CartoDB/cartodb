@@ -1,5 +1,3 @@
-
-  
 /**
    *  Editos panel styles.
    *
@@ -14,10 +12,9 @@
 @import "../../../table/table-sprite";
 @import "../../../old_common/mixins";
 
-
-
 // SQL PANEL & CARTO PANEL
-.sql_panel, .csseditor_panel {
+.sql_panel,
+.csseditor_panel {
   @include inline-block();
   width: 100%;
   height: 100%;
@@ -25,10 +22,10 @@
   // Position of the help tip
   .help-tip {
     top: auto;
-    a.close {right:22px}
-    &:before {display:none}
+    a.close { right: 22px; }
+    &::before { display: none; }
   }
 
   // Editor h3 title
-  h3 { padding-left:52px !important }
+  h3 { padding-left: 52px !important; }
 }

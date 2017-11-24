@@ -11,7 +11,7 @@
   padding: $sMargin-group 0;
 }
 
-/*REVIEW IF THIS CLASS IS NECESSARY*/
+/* REVIEW IF THIS CLASS IS NECESSARY */
 .ContentFooter-inner {
   @include display-flex();
   @include justify-content(space-between, justify);

@@ -2,7 +2,6 @@
 @import "../variables/sizes";
 @import "../variables/colors";
 @import "../variables/progress-bar";
-
 $sIcon: 70px;
 $sWidth: 681px;
 
@@ -13,8 +12,14 @@ $sWidth: 681px;
   margin-right: auto;
   margin-left: auto;
 }
-.Georeference-contentItem { margin-top: $sMargin-section }
-.Georeference-geometryIcon { position: relative }
+
+.Georeference-contentItem {
+  margin-top: $sMargin-section;
+}
+
+.Georeference-geometryIcon {
+  position: relative;
+}
 
 .Georeference-geometryIconImg {
   display: block;
@@ -23,7 +28,10 @@ $sWidth: 681px;
   border: 1px solid $cStructure-mainLine;
   border-radius: 50px;
 }
-.Georeference-geometryIconImg.Georeference-geometryIconImg--point { @include background(image-url("layout/georeference_points2.png") repeat center center) }
+
+.Georeference-geometryIconImg.Georeference-geometryIconImg--point {
+  @include background(image-url("layout/georeference_points2.png") repeat center center);
+}
 
 .Georeference-geometryIconFont {
   width: $sIcon;
@@ -62,7 +70,10 @@ $sWidth: 681px;
     left: 58px;
   }
 }
-.Georeference-geometryIconImg.u-disabled .Georeference-geometryIconMarker { background-color: #DDD }
+
+.Georeference-geometryIconImg.u-disabled .Georeference-geometryIconMarker {
+  background-color: #DDD;
+}
 
 .Georeference-preFooter {
   @include display-flex();
@@ -77,23 +88,27 @@ $sWidth: 681px;
 }
 
 .Georeference-estimation {
-  width: 410px; // to keep quota info on 2 lines
-
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center, center);
-  & > *:not(:last-child) { margin-right: $sMargin-elementInline }
+  width: 410px; // to keep quota info on 2 lines
+
+  & > *:not(:last-child) {
+    margin-right: $sMargin-elementInline;
+  }
 }
 
 .Georeference-quota {
-  width: 210px;
-  height: 40px; // to match .Georeference-estimation
-
   @include display-flex();
   @include flex-direction(column);
   @include align-items(flex-end, end);
   @include justify-content(space-between, justify);
-  & > *:not(:last-child) { margin-bottom: 8px }
+  width: 210px;
+  height: 40px; // to match .Georeference-estimation
+
+  & > *:not(:last-child) {
+    margin-bottom: 8px;
+  }
 }
 
 .Georeference-progressBar {
@@ -104,7 +119,7 @@ $sWidth: 681px;
   div.progress-bar {
     // Override the defaults from mixin
     background: #EEE;
-    box-shadow: inset 0 1px 0 0 rgba(0,0,0, 0.05);
+    box-shadow: inset 0 1px 0 0  rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -114,5 +129,8 @@ $sWidth: 681px;
   @include align-items(center, center);
   width: 100%;
   text-align: left;
-  & > *:not(:last-child) { margin-right: $sMargin-elementInline }
+
+  & > *:not(:last-child) {
+    margin-right: $sMargin-elementInline;
+  }
 }

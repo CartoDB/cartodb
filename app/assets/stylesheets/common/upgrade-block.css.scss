@@ -2,7 +2,6 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-
 // Upgrade element
 .UpgradeElement {
   @include display-flex();
@@ -62,5 +61,11 @@
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal;
 }
-.UpgradeElement-trialText { margin-left: 5px }
-.UpgradeElement-button { margin-left: 20px }
+
+.UpgradeElement-trialText {
+  margin-left: 5px;
+}
+
+.UpgradeElement-button {
+  margin-left: 20px;
+}

@@ -7,7 +7,6 @@
 @import "compass/css3/opacity";
 @import "../old_common/vars";
 
-
 .cartodb-body {
   padding: 30px 0;
 }
@@ -19,7 +18,6 @@
   line-height: normal;
 }
 
-
 // Map info
 
 .cartodb-body .inner .map-info {
@@ -28,7 +26,7 @@
 }
 
 .cartodb-body .inner .map-info h2 {
-  margin: 0 0 21px 0;
+  margin: 0 0 21px;
   padding: 0;
   color: #444;
   font-family: $text-fonts;
@@ -39,14 +37,14 @@
 
 .cartodb-body .inner .map-info ul {
   margin: 0;
-  padding: 14px 0 0 0;
+  padding: 14px 0 0;
   border-top: 2px solid #EBEEF0;
   list-style: none;
 }
 
 .cartodb-body .inner .map-info ul li {
-  margin: 0 0 17px 0;
-  padding: 0 0 17px 0;
+  margin: 0 0 17px;
+  padding: 0 0 17px;
   clear: both;
   overflow: hidden;
   border-bottom: 1px solid #E4E4E4;
@@ -54,7 +52,9 @@
   font-size: 15px;
 }
 
-.cartodb-body .inner .map-info ul li.private { color: #CCC }
+.cartodb-body .inner .map-info ul li.private {
+  color: #CCC;
+}
 
 .cartodb-body .inner .map-info ul li a {
   width: 200px;
@@ -72,10 +72,13 @@
 }
 
 .cartodb-body .inner .map-info ul li .disabled {
+  @include opacity(0.5);
   color: #333;
 
-  @include opacity(.5);
-  &:hover { color: #333; text-decoration:none; }
+  &:hover {
+    color: #333;
+    text-decoration: none;
+  }
 }
 
 .cartodb-body .inner .map-info ul li a:hover {
@@ -104,35 +107,30 @@
   cursor: auto;
 }
 
-
-
 // Hello media queries
 
 @media only screen and (max-width: 710px) {
   div.cartodb-map-data .cartodb-body .inner .map-info {
     top: 0;
   }
-
 }
 
 /* iPhone portrait */
-@media only screen
-  and (min-device-width : 320px)
-  and (max-device-width : 480px)
-  and (orientation : portrait) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) {
   div.cartodb-map-data .cartodb-body .inner .map-info {
     top: 0;
   }
 }
 
 /* iPhone landscape */
-@media only screen
-  and (min-device-width : 320px)
-  and (max-device-width : 480px)
-  and (orientation : landscape) {
-  div.cartodb-map-data .cartodb-body .inner .map-info { top: 0 }
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: landscape) {
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
-  div.cartodb-map-data .cartodb-body .inner .map-info { top: 0 }
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
 }

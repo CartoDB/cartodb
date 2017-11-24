@@ -22,7 +22,7 @@ $br: 3px;
   height: $size;
   border-radius: $br;
 
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     top: 0;
@@ -43,7 +43,7 @@ $br: 3px;
   height: 40px;
   border-radius: $br;
 
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     top: 0;

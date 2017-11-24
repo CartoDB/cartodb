@@ -47,7 +47,7 @@ $sHeight: 20px;
   cursor: pointer;
 }
 
-.Toggler label:before {
+.Toggler label::before {
   @include transition(all 150ms ease);
   content: ' ';
   display: block;
@@ -60,7 +60,7 @@ $sHeight: 20px;
   background-color: #FFF;
 }
 
-.Toggler input:checked + label:before {
+.Toggler input:checked + label::before {
   left: 20px;
 }
 
@@ -79,12 +79,12 @@ $color: #BBB;
   box-shadow: none;
 }
 
-.Toggler--grey label:before {
+.Toggler--grey label::before {
   top: 3px;
   background: $color;
 }
 
-.Toggler--grey input:checked + label:before {
+.Toggler--grey input:checked + label::before {
   left: 19px;
 }
 

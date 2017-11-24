@@ -59,11 +59,11 @@
       z-index: 1;
       background: #E5E5E5;
 
-      &:after {
+      &::after {
         display: none;
       }
 
-      &:before {
+      &::before {
         content: '';
         position: absolute;
         top: 0;
@@ -79,7 +79,7 @@
       @include background(image-url("layout/unassigned_bkg.png") repeat-x left 0);
 
       z-index: 0;
-      &:after { display: none; }
+      &::after { display: none; }
     }
 
     // Danger and caution background

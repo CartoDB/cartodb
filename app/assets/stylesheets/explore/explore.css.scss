@@ -36,12 +36,12 @@
   }
 
   .Explore-content.Feed-content .MapCard-preview.is-big {
-    display: block !Important;
+    display: block !important;
   }
 
   .Explore-content.Feed-content .MapCard-preview.is-medium,
   .Explore-content.Feed-content .MapCard-preview.is-small {
-    display: none !Important;
+    display: none !important;
   }
 }
 
@@ -71,11 +71,11 @@
 
   .Explore-content.Feed-content .MapCard-preview.is-big,
   .Explore-content.Feed-content .MapCard-preview.is-small {
-    display: none !Important;
+    display: none !important;
   }
 
   .Explore-content.Feed-content .MapCard-preview.is-medium {
-    display: block !Important;
+    display: block !important;
   }
 
   .FeedItem--card .FeedItem-avatar {
@@ -86,7 +86,6 @@
     display: none;
   }
 }
-
 
 @media only screen and (max-width: 544px) {
   .Explore-inner {
@@ -114,11 +113,11 @@
 
   .Explore-content.Feed-content .MapCard-preview.is-big,
   .Explore-content.Feed-content .MapCard-preview.is-medium {
-    display: none !Important;
+    display: none !important;
   }
 
   .Explore-content.Feed-content .MapCard-preview.is-small {
-    display: block !Important;
+    display: block !important;
   }
 
   .FeedItem--card .FeedItem-avatar,

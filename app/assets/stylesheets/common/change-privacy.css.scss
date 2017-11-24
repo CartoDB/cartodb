@@ -61,7 +61,10 @@
   padding-top: $sMargin-element;
   padding-bottom: $sMargin-element;
 }
-.ChangePrivacy-shareListItem:not(:nth-child(1)) { border-top: 1px solid $cStructure-mainLine }
+
+.ChangePrivacy-shareListItem:not(:nth-child(1)) {
+  border-top: 1px solid $cStructure-mainLine;
+}
 
 .ChangePrivacy-shareListItemInfo {
   @include display-flex();
@@ -91,15 +94,14 @@
   border: 1px solid #F2C000;
   border-radius: 30px;
   background-color: #F6D35C;
-  color: white;
+  color: WHITE;
 }
 
 .ChangePrivacy-shareFooter {
-  box-sizing: border-box;
-  height: 97px;
-  background-color: $cStructure-grayBkg;
-
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+  box-sizing: border-box;
+  height: 97px;
+  background-color: $cStructure-grayBkg;
 }

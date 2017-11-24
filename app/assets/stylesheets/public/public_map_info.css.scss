@@ -9,9 +9,8 @@
 @import "../old_common/vars";
 @import "../old_common/mixins";
 
-
 .cartodb-info {
-  padding: 38px 0 36px 0;
+  padding: 38px 0 36px;
   border-bottom: 1px solid #D1D1D1;
   background: #F6F6F6;
 }
@@ -23,7 +22,7 @@
 // Table or vis details (title, description, ...)
 
 .cartodb-info .inner .details h1 {
-  margin: 0 0 5px 0;
+  margin: 0 0 5px;
   padding: 0;
   color: #444;
   font-family: 'ProximaNova-Semibold', $text-fonts2;
@@ -46,16 +45,23 @@
 }
 
 .embed-left-col.details .content p.description {
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
 
-  strong { font-weight: bold; }
-  em { font-style: italic; }
+  strong {
+    font-weight: bold;
+  }
 
-  a { 
+  em {
+    font-style: italic;
+  }
+
+  a {
     color: #397DB8;
     text-decoration: none;
 
-    &:hover { text-decoration:underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -77,7 +83,7 @@
   padding: 0 9px;
   font-family: 'Arial';
   font-size: 11px;
-  letter-spacing:0;
+  letter-spacing: 0;
   line-height: 27px;
   text-shadow: none;
   text-transform: uppercase;
@@ -89,17 +95,17 @@
   top: -1px;
   width: 14px;
   height: 14px;
-  -webkit-transform: scale(.7);
-  -ms-transform: scale(.7);
-  transform: scale(.7);
+  -webkit-transform: scale(0.7);
+  -ms-transform: scale(0.7);
+  transform: scale(0.7);
   background: image-url("layout/heart.png") no-repeat;
   background-size: 14px 14px;
 }
 
 .user-options .button.grey.like.is-highlighted .icon {
-  -webkit-transform: scale(.7);
-  -ms-transform: scale(.7);
-  transform: scale(.7);
+  -webkit-transform: scale(0.7);
+  -ms-transform: scale(0.7);
+  transform: scale(0.7);
   background: image-url("layout/heart_highlighted.png") no-repeat;
   background-size: 14px 14px;
 }
@@ -117,9 +123,9 @@
 
 @-webkit-keyframes pulse {
   0% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 
   25% {
@@ -129,9 +135,9 @@
   }
 
   50% {
-    -webkit-transform: scale(.5);
-    -ms-transform: scale(.5);
-    transform: scale(.5);
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
   }
 
   75% {
@@ -141,17 +147,17 @@
   }
 
   100% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 }
 
 @keyframes pulse {
   0% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 
   25% {
@@ -161,9 +167,9 @@
   }
 
   50% {
-    -webkit-transform: scale(.5);
-    -ms-transform: scale(.5);
-    transform: scale(.5);
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
   }
 
   75% {
@@ -173,9 +179,9 @@
   }
 
   100% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 }
 
@@ -194,12 +200,11 @@
 
 .cartodb-info .inner .user .avatar {
   @include inline-block();
+  @include border-radius(100px);
   width: 46px;
   height: 46px;
   background: #FFF;
   vertical-align: top;
-
-  @include border-radius(100px);
 }
 
 .cartodb-info .inner .user .content {
@@ -220,13 +225,14 @@
 .cartodb-info .inner .user h4,
 .cartodb-info .inner .user h5,
 .cartodb-info .inner .user .count {
-  margin: 0; padding: 0;
+  margin: 0;
+  padding: 0;
   font-family: 'ProximaNova-Semibold', $text-fonts2;
   font-weight: normal;
 }
 
 .cartodb-info .inner .user h4 {
-  margin: 0 0 6px 0;
+  margin: 0 0 6px;
   color: #444;
   font-size: 17px;
 }
@@ -236,24 +242,19 @@
   font-size: 15px;
 }
 
-
-
 // Hello media queries
 
 /* iPhone portrait */
-@media only screen
-  and (min-device-width : 320px)
-  and (max-device-width : 480px)
-  and (orientation : portrait) {
-
-  .cartodb-map-data .cartodb-info { padding: 20px 0 }
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) {
+  .cartodb-map-data .cartodb-info {
+    padding: 20px 0;
+  }
 
   .cartodb-map-data .cartodb-info .inner .details h1 {
     padding-right: 0;
     font-size: 20px;
   }
 }
-
 
 @media only screen and (max-width: 710px) {
   .cartodb-map-data .cartodb-info .inner .details h1 {
@@ -275,15 +276,10 @@
   .cartodb-info .inner .details {
     margin-bottom: 30px;
   }
-
 }
 
-
 /* iPhone landscape */
-@media only screen
-  and (min-device-width : 320px)
-  and (max-device-width : 480px)
-  and (orientation : landscape) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: landscape) {
   .cartodb-map-data .cartodb-info .inner .details h1 {
     padding-right: 0;
     font-size: 20px;

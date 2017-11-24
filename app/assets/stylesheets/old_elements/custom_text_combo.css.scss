@@ -21,32 +21,33 @@
     width: 22px;
 
     b {
-      @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y:2px);
+      @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y: 2px);
       @include opacity(0.5);
 
-      &:after { display:none }
+      &::after {
+        display: none;
+      }
 
-      &:before {
+      &::before {
         top: 3px;
-        left:0;
+        left: 0;
         width: 1px;
         height: 12px;
-        border:0;
+        border: 0;
         background: #CFCFCF;
       }
     }
   }
 
   .select2-container .select2-choice .combo-option-icon b {
-    @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y:2px);
+    @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y: 2px);
     @include opacity(1);
   }
 
   .select2-container .select2-choice .free-text-icon b {
-    @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y:-19px);
+    @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y: -19px);
     @include opacity(1);
   }
-
 }
 
 // Dropdown list
@@ -61,7 +62,7 @@
   }
 
   .select2-input-free {
-    padding:0;
+    padding: 0;
     border: none;
     outline: none;
     color: #397EB9;
@@ -70,11 +71,12 @@
   }
 
   .select2-icon {
+    @include elements-sprite(custom_text_combo_icons, $offset-x: -4px);
     width: 13px;
     height: 12px;
 
-    @include elements-sprite(custom_text_combo_icons, $offset-x: -4px);
-
-    &.select2-text-icon { @include elements-sprite(custom_text_combo_icons, $offset-x:-4px, $offset-y:-23px) }
+    &.select2-text-icon {
+      @include elements-sprite(custom_text_combo_icons, $offset-x: -4px, $offset-y: -23px);
+    }
   }
 }

@@ -29,17 +29,22 @@ a {
   }
 
   &.tag {
+    @include border-radius(2px);
+    @include box-shadow(rgba(0, 0, 0, 0.12) 0 0 2px 2px);
     padding: 6px 7px;
     border: 1px solid #397DBA;
     background: #E1ECF5;
     color: #397DB9;
-
-    @include border-radius(2px);
-
-    @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
   }
 }
-h2,h3,h4,h5,h6 { color: #333 }
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #333;
+}
 
 h2 {
   font-size: 28px;
@@ -47,61 +52,137 @@ h2 {
   line-height: 34px;
   word-spacing: -1px;
 }
-h3 { font-size: 25px }
-strong { font-weight: bold }
+
+h3 {
+  font-size: 25px;
+}
+
+strong {
+  font-weight: bold;
+}
 
 /*
  *  HELP CLASSES
  *  Some classes to help you in the view
  */
 
-.left { float: left }
-.right { float: right }
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
 
 .inner {
   position: relative;
   width: $w;
   margin: 0 auto;
 }
-.margin40 { margin-top: 40px }
-.margin35 { margin-top: 35px }
-.margin30 { margin-top: 30px }
-.margin25 { margin-top: 25px }
-.margin20 { margin-top: 20px }
-.margin15 { margin-top: 15px }
-.margin10 { margin-top: 10px }
-.margin5 { margin-top: 5px }
-.margin-bottom-10 { margin-bottom: 10px }
+
+.margin40 {
+  margin-top: 40px;
+}
+
+.margin35 {
+  margin-top: 35px;
+}
+
+.margin30 {
+  margin-top: 30px;
+}
+
+.margin25 {
+  margin-top: 25px;
+}
+
+.margin20 {
+  margin-top: 20px;
+}
+
+.margin15 {
+  margin-top: 15px;
+}
+
+.margin10 {
+  margin-top: 10px;
+}
+
+.margin5 {
+  margin-top: 5px;
+}
+
+.margin-bottom-10 {
+  margin-bottom: 10px;
+}
 
 .ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap
+  white-space: nowrap;
 }
-.hide { display: none }
-.overflow { overflow: visible }
+
+.hide {
+  display: none;
+}
+
+.overflow {
+  overflow: visible;
+}
 
 .center {
   width: 100%;
-  text-align: center
+  text-align: center;
 }
 
-.light { color: #999 }
-.lighter { color: #CCC }
-.dark { color: #333 }
-.uppercase { text-transform: uppercase }
-.strong { font-weight: bold }
-.small { font-size: 13px }
-.smaller { font-size: 11px }
-.tiny { font-size: 8px }
-.underline { text-decoration: underline }
-.red { color: #E95850 }
-.italic { font-style: italic }
+.light {
+  color: #999;
+}
+
+.lighter {
+  color: #CCC;
+}
+
+.dark {
+  color: #333;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.small {
+  font-size: 13px;
+}
+
+.smaller {
+  font-size: 11px;
+}
+
+.tiny {
+  font-size: 8px;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.red {
+  color: #E95850;
+}
+
+.italic {
+  font-style: italic;
+}
 
 .separate {
   display: block;
   width: 100%;
   height: 1px;
   margin: 40px 0;
-  background: rgba(#CCC,0.5);
+  background: rgba(#CCC, 0.5);
 }

@@ -14,7 +14,7 @@
   padding-right: $sMargin-elementInline;
   cursor: pointer;
 
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -27,35 +27,35 @@
   }
 
   &:hover {
-    &:after {
+    &::after {
       border-top-color: $cIcons-active;
     }
   }
 }
 
 .Dropdownlink--secondary {
-  &:after {
+  &::after {
     border-top-color: $cTypography-secondary;
   }
 
   &:hover {
     border-top-color: $cTypography-secondary;
 
-    &:after {
+    &::after {
       border-top-color: $cTypography-secondary;
     }
   }
 }
 
 .DropdownLink--white {
-  &:after {
+  &::after {
     border-top-color: white;
   }
 
   &:hover {
     border-top-color: white;
 
-    &:after {
+    &::after {
       border-top-color: white;
     }
   }

@@ -211,7 +211,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $lines;
 
-  &:after {
+  &::after {
     content: ' ';
     display: block;
     position: absolute;

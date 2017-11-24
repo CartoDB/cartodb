@@ -23,7 +23,7 @@ $br: 10px;
   background: white;
 }
 
-.UISlider.ui-slider:before {
+.UISlider.ui-slider::before {
   content: '';
   position: absolute;
   z-index: 1;
@@ -57,8 +57,8 @@ $br: 10px;
 
   &.ui-state-active,
   &.ui-state-focus,
-  &.ui-state-hover { box-shadow: rgba(black, 0.3) 0 0 0 1px }
+  &.ui-state-hover { box-shadow: rgba(black, 0.3) 0 0 0 1px; }
 }
 
-.UISlider.ui-slider-disabled { @include opacity(0.6) }
-.UISlider.ui-slider-disabled .ui-slider-handle { cursor: default }
+.UISlider.ui-slider-disabled { @include opacity(0.6); }
+.UISlider.ui-slider-disabled .ui-slider-handle { cursor: default; }

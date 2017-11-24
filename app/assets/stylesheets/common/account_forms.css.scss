@@ -4,7 +4,6 @@
 
 // Styles for the new account forms
 // --------------------------------------------------
-
 $sLabel-width: 140px;
 
 .FormAccount-Section {
@@ -30,7 +29,7 @@ $sLabel-width: 140px;
 .FormAccount-title {
   display: inline-block;
   width: 100%;
-  margin: 30px 0 28px 0;
+  margin: 30px 0 28px;
 }
 
 .FormAccount-titleHeader {
@@ -55,7 +54,6 @@ $sLabel-width: 140px;
 
 .FormAccount-list {
   padding: 0 0 20px 160px;
-
   list-style-type: disc;
   color: $cTypography-paragraphs;
 }
@@ -100,7 +98,7 @@ $sLabel-width: 140px;
   padding-top: 0;
   padding-bottom: $sMargin-group;
 
-  &:before {
+  &::before {
     content: '';
     margin-right: $sMargin-elementInline;
     padding: 5px 10px;
@@ -109,23 +107,23 @@ $sLabel-width: 140px;
     color: $cTypography-paragraphs;
   }
 
-  &:first-child:before {
+  &:first-child::before {
     content: '1';
   }
 
-  &:nth-child(2):before {
+  &:nth-child(2)::before {
     content: '2';
   }
 
-  &:nth-child(3):before {
+  &:nth-child(3)::before {
     content: '3';
   }
 
-  &:nth-child(4):before {
+  &:nth-child(4)::before {
     content: '4';
   }
 
-  &:nth-child(5):before {
+  &:nth-child(5)::before {
     content: '5';
   }
 }
@@ -135,7 +133,7 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-row.FormAccount-row--step.is-done {
-  &:before {
+  &::before {
     border-color: $cHighlight-stepDone;
     color: $cHighlight-stepDone;
   }
@@ -490,12 +488,11 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-userRole {
-  margin-top: 20px;
-
   @include display-flex();
   @include flex-direction(column);
   @include align-items(baseline, baseline);
   @include justify-content(space-between, justify);
+  margin-top: 20px;
 }
 
 .FormAccount-avatarPreview {

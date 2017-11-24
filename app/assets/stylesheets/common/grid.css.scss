@@ -126,7 +126,6 @@
   max-width: 100%;
 }
 
-
 @media (max-width: $sMedia-desktop) {
   .Grid-cell--col3--tablet {
     @include flex(0 0 25%);

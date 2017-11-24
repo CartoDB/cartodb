@@ -16,11 +16,11 @@
 
   // Sections
   div.content {
-    padding: 22px 40px 40px 40px;
+    padding: 22px 40px 40px;
   }
 
   div.foot {
-    padding: 0 40px 35px 40px !important;
+    padding: 0 40px 35px !important;
     border: none !important;
   }
 
@@ -46,25 +46,24 @@
 
   label {
     display: block;
-    margin: 0 0 7px 0;
+    margin: 0 0 7px;
     padding: 0;
   }
 
   .attribution {
-    margin: 20px 0 0 0;
+    margin: 20px 0 0;
   }
 
   .attribution p {
-    margin: 0 0 10px 0;
+    margin: 0 0 10px;
     line-height: 130%;
   }
 
   .attribution p.highlighted {
+    @include border-radius(2px);
     padding: 10px;
     border: 1px solid #CCC;
     background: #F1F1F1;
-
-    @include border-radius(2px);
   }
 
   .attribution p:last-child {
@@ -84,7 +83,7 @@
     width: 38px;
     height: 16px;
     margin: 14px 10px 0 0;
-    padding:0;
+    padding: 0;
     float: right;
     border: none;
     background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
@@ -97,5 +96,4 @@
   section.modal.confirmation {
     display: none;
   }
-
 }

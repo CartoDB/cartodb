@@ -17,7 +17,7 @@
   height: 213px;
   margin-top: -107px;
   margin-left: -178px;
-  padding:0;
+  padding: 0;
   background-color: #FFF;
   color: #666;
   font-family: $text-fonts2;
@@ -45,22 +45,24 @@
 #not_supported_dialog ul {
   display: block;
   position: absolute;
-  right:0;
-  bottom:0;
-  left:0;
-  margin:0;
-  padding:0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
   border-top: 1px solid #D9D9D9;
   list-style: none;
 }
 
 #not_supported_dialog ul li {
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
   float: left;
   border-right: 1px solid #D9D9D9;
 
-  &.last { border:none }
+  &.last {
+    border: none;
+  }
 }
 
 #not_supported_dialog ul li a {
@@ -69,11 +71,19 @@
   height: 74px;
   background-repeat: no-repeat;
   background-position: center center;
-  font-size:0;
-  line-height:0;
+  font-size: 0;
+  line-height: 0;
   text-indent: -9999px;
 
-  &.safari { @include background(image-url('layout/safari.png')); }
-  &.chrome { @include background(image-url('layout/chrome.png')); }
-  &.firefox { @include background(image-url('layout/firefox.png')); }
+  &.safari {
+    @include background(image-url('layout/safari.png'));
+  }
+
+  &.chrome {
+    @include background(image-url('layout/chrome.png'));
+  }
+
+  &.firefox {
+    @include background(image-url('layout/firefox.png'));
+  }
 }

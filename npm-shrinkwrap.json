@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.81",
+  "version": "4.10.89",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -160,9 +160,9 @@
       "resolved": "https://registry.npmjs.org/big.js/-/big.js-3.2.0.tgz"
     },
     "binary-extensions": {
-      "version": "1.10.0",
+      "version": "1.11.0",
       "from": "binary-extensions@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.10.0.tgz"
+      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.11.0.tgz"
     },
     "bluebird": {
       "version": "3.5.1",
@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.14",
-      "from": "cartodb/deep-insights.js#v0.4.14",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3793314f69137bc261792c9a3a7f6265d22af70f",
+      "version": "0.4.17",
+      "from": "cartodb/deep-insights.js#v0.4.17",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#460a9fcf576bb6d03ba2ea9e6feaa153e0cbf714",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.27",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.27",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#addee471bcc864cc42168434d8639cf224095cc6"
+      "version": "4.0.0-alpha.28",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.28",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#cdbc4d8bd9f21d0d9019b8603ba1a1530d148629"
     },
     "center-align": {
       "version": "0.1.3",
@@ -539,9 +539,9 @@
       "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz"
     },
     "d3-time": {
-      "version": "1.0.7",
+      "version": "1.0.8",
       "from": "d3-time@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-1.0.7.tgz"
+      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-1.0.8.tgz"
     },
     "d3-time-format": {
       "version": "2.1.0",
@@ -1259,9 +1259,9 @@
       "resolved": "https://registry.npmjs.org/lcid/-/lcid-1.0.0.tgz"
     },
     "leaflet": {
-      "version": "1.0.3",
-      "from": "leaflet@1.0.3",
-      "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.0.3.tgz"
+      "version": "1.2.0",
+      "from": "leaflet@1.2.0",
+      "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.2.0.tgz"
     },
     "lexical-scope": {
       "version": "1.2.0",
@@ -2258,9 +2258,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.9",
+      "version": "3.1.10",
       "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.9.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.10.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

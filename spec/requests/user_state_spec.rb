@@ -18,6 +18,7 @@ end
 describe "UserState" do
 
   before(:all) do
+    @feature_flag = FactoryGirl.create(:feature_flag, name: 'no_free_tier', restricted: false)
     @locked_user = FactoryGirl.create(:locked_user)
     @map, @table, @table_visualization, @visualization = create_full_builder_vis(@locked_user)
     @visualization.create_mapcap!
@@ -54,35 +55,35 @@ describe "UserState" do
         get endpoint, {}, @headers
         response.status.should == 302
         follow_redirect!
-        request.path.should == '/upgrade_trial'
+        request.path.should == '/lockout'
         response.status.should == 200
       end
       @user_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         response.status.should == 302
         follow_redirect!
-        request.path.should == '/upgrade_trial'
+        request.path.should == '/lockout'
         response.status.should == 200
       end
       @public_user_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         response.status.should == 302
         follow_redirect!
-        request.path.should == '/upgrade_trial'
+        request.path.should == '/lockout'
         response.status.should == 200
       end
       @tables_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         response.status.should == 302
         follow_redirect!
-        request.path.should == '/upgrade_trial'
+        request.path.should == '/lockout'
         response.status.should == 200
       end
       @viz_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         response.status.should == 302
         follow_redirect!
-        request.path.should == '/upgrade_trial'
+        request.path.should == '/lockout'
         response.status.should == 200
       end
       @private_api_endpoints.each do |endpoint|
@@ -157,31 +158,31 @@ describe "UserState" do
       @dashboard_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         follow_redirects
-        request.path.should_not == '/upgrade_trial'
+        request.path.should_not == '/lockout'
         response.status.should == 200
       end
       @user_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         follow_redirects
-        request.path.should_not == '/upgrade_trial'
+        request.path.should_not == '/lockout'
         response.status.should == 200
       end
       @public_user_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         follow_redirects
-        request.path.should_not == '/upgrade_trial'
+        request.path.should_not == '/lockout'
         response.status.should == 200
       end
       @tables_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         follow_redirects
-        request.path.should_not == '/upgrade_trial'
+        request.path.should_not == '/lockout'
         response.status.should == 200
       end
       @viz_endpoints.each do |endpoint|
         get endpoint, {}, @headers
         follow_redirects
-        request.path.should_not == '/upgrade_trial'
+        request.path.should_not == '/lockout'
         response.status.should == 200
       end
       @private_api_endpoints.each do |endpoint|

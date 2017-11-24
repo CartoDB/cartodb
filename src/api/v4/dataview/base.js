@@ -17,7 +17,7 @@ var CartoError = require('../error-handling/carto-error');
  * All dataviews point to a data source (dataset, sql query) that might change
  * due to different reasons (eg: SQL query changed). Dataview objects will trigger
  * events to notify subscribers when new data is available.
- * 
+ *
  * @constructor
  * @abstract
  * @memberof carto.dataview
@@ -101,6 +101,16 @@ Base.prototype.disable = function () {
  */
 Base.prototype.isEnabled = function () {
   return this._enabled;
+};
+
+/**
+ * Return the current source.
+ *
+ * @return {carto.source.Base} Current source object
+ * @api
+ */
+Base.prototype.getSource = function () {
+  return this._source;
 };
 
 /**

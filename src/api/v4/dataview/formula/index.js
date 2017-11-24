@@ -1,7 +1,8 @@
 var _ = require('underscore');
-var Base = require('./base');
-var constants = require('../constants');
-var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
+var Base = require('../base');
+var constants = require('../../constants');
+var FormulaDataviewModel = require('../../../../dataviews/formula-dataview-model');
+var parseFormulaData = require('./parse-data.js');
 
 /**
  * A formula is a simple numeric operation applied to the column of a data source (dataset or sql query).
@@ -78,18 +79,11 @@ Formula.prototype.getOperation = function () {
  */
 Formula.prototype.getData = function () {
   if (this._internalModel) {
-    /**
-     * @typedef {object} carto.dataview.FormulaData
-     * @property {number} nulls - Number of null categories
-     * @property {string} operation - Operation used
-     * @property {number} result - Result of the operation
-     * @api
-     */
-    return {
-      nulls: this._internalModel.get('nulls'),
-      operation: this._operation,
-      result: this._internalModel.get('data')
-    };
+    return parseFormulaData(
+      this._internalModel.get('nulls'),
+      this._operation,
+      this._internalModel.get('data')
+    );
   }
   return null;
 };

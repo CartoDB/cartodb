@@ -32,7 +32,7 @@ function parseHistogramData (data, nulls, totalAmount) {
    * @api
    */
   return {
-    bins: _createResult(compactData, maxFreq),
+    bins: _createBins(compactData, maxFreq),
     nulls: nulls || 0,
     totalAmount: totalAmount
   };
@@ -41,7 +41,7 @@ function parseHistogramData (data, nulls, totalAmount) {
 /**
  * Transform the histogram raw data into {@link carto.dataview.BinItem}
  */
-function _createResult (data, maxFreq) {
+function _createBins (data, maxFreq) {
   return data.map(function (bin) {
     /**
       * @typedef {object} carto.dataview.BinItem

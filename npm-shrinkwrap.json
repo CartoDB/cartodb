@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.8-3.13095",
+  "version": "4.10.8-9.13095",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.15",
-      "from": "cartodb/deep-insights.js#13095-tooltips",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#bbe8b7ece534b3186cde2b8d0b778f3dbca9649a",
+      "version": "0.4.17",
+      "from": "cartodb/deep-insights.js#v0.4.17",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#460a9fcf576bb6d03ba2ea9e6feaa153e0cbf714",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -539,9 +539,9 @@
       "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz"
     },
     "d3-time": {
-      "version": "1.0.7",
+      "version": "1.0.8",
       "from": "d3-time@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-1.0.7.tgz"
+      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-1.0.8.tgz"
     },
     "d3-time-format": {
       "version": "2.1.0",

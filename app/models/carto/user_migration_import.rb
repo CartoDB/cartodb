@@ -26,8 +26,10 @@ module Carto
     validates :exported_file, presence: true
     validates :json_file, presence: true
     validate :valid_org_import
+    validate :valid_dry_settings
 
     def run_import
+      raise errors.full_messages.join(', ') unless valid?
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -62,6 +64,10 @@ module Carto
       else
         errors.add(:organization_id, "organization_id can't be present") if organization_id.present?
       end
+    end
+
+    def valid_dry_settings
+      errors.add(:dry, 'dry cannot be true while import_metadata is true') if import_metadata && dry
     end
 
     def import(service, package)
@@ -167,14 +173,14 @@ module Carto
         into_org_name: nil,
         mode: :import,
         logger: log.logger,
-        import_job_logger: log.logger
+        import_job_logger: log.logger,
+        update_metadata: !dry
       }
     end
 
     def set_defaults
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
-
       save
     end
   end

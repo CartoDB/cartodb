@@ -1,7 +1,7 @@
 var DataviewBase = require('../../../../../src/api/v4/dataview/base');
 var status = require('../../../../../src/api/v4/constants').status;
 var carto = require('../../../../../src/api/v4/index');
-var CartoError = require('../../../../../src/api/v4/error');
+var CartoError = require('../../../../../src/api/v4/error-handling/carto-error');
 
 function createSourceMock () {
   return new carto.source.Dataset('foo');

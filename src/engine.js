@@ -225,6 +225,9 @@ Engine.prototype._onReloadSuccess = function (serverResponse, options) {
 Engine.prototype._onReloadError = function (serverResponse, options) {
   var windshaftErrors = parseWindshaftErrors(serverResponse);
   var error = _.find(windshaftErrors, function (error) { return error.isGlobalError(); });
+  if (!error && windshaftErrors && windshaftErrors.length > 0) {
+    error = windshaftErrors[0];
+  }
   this._modelUpdater.setErrors(windshaftErrors);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, error);
   options.error && options.error();

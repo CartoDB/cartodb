@@ -1,4 +1,6 @@
+var retrieveFriendlyError = require('./error-list');
 var UNEXPECTED_ERROR = 'unexpected error';
+var GENERIC_ORIGIN = 'generic';
 
 /**
  * Build a cartoError from a generic error.
@@ -9,24 +11,30 @@ var UNEXPECTED_ERROR = 'unexpected error';
  * @api
  */
 function CartoError (error) {
+  this.message = UNEXPECTED_ERROR;
+  this.type = '';
+  this.origin = GENERIC_ORIGIN;
+
   if (_isWindshaftError(error)) {
-    this.message = error.errors[0];
-    return this;
-  }
-  if (error && error.message) {
     this.message = error.message;
-    return this;
+    this.type = error.type;
+    this.origin = error.origin;
   }
   if (error && error.responseText) {
     this.message = _handleAjaxResponse(error);
-    return this;
+    this.origin = 'ajax';
+    this.type = error.statusText;
+  }
+  if (error && error.message) {
+    this.message = error.message;
   }
 
-  this.message = UNEXPECTED_ERROR;
+  return retrieveFriendlyError(this);
 }
 
+// Windshaft should have been parsed already 
 function _isWindshaftError (error) {
-  return error && error.errors_with_context;
+  return error && error.origin === 'windshaft';
 }
 
 function _handleAjaxResponse (error) {

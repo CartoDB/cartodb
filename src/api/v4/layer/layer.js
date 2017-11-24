@@ -2,7 +2,7 @@ var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 var SourceBase = require('../source/base');
 var StyleBase = require('../style/base');
-var CartoError = require('../error');
+var CartoError = require('../error-handling/carto-error');
 /**
  * Represent a layer Object.
  *

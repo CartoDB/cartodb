@@ -5,7 +5,7 @@ var SourceBase = require('../source/base');
 var FilterBase = require('../filter/base');
 var BoundingBoxFilter = require('../filter/bounding-box');
 var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
-var CartoError = require('../error');
+var CartoError = require('../error-handling/carto-error');
 
 /**
  * Base class for dataview objects.

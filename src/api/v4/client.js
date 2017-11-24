@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var CartoError = require('./error');
+var CartoError = require('./error-handling/carto-error');
 var Engine = require('../../engine');
 var Events = require('./events');
 var LayerBase = require('./layer/base');

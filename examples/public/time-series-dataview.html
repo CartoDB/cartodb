@@ -61,7 +61,7 @@
 
       // 3. Displaying on the map
       // 3.1 Defining the layer
-      var source = new carto.source.Dataset('railroad_data');
+      var source = new carto.source.SQL('SELECT * FROM railroad_data');
       var style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 10;
@@ -101,6 +101,10 @@
       // Listen to timeSeries status, currently we are showing a console.log but looks like a good place to display a loader!
       timeSeries.on('statusChanged', function (newStatus, error) {
         console.log(newStatus)
+      });
+
+      timeSeries.on('error', function (error) {
+        console.error(error);
       });
 
       // 4.3 Adding the dataviews to the client

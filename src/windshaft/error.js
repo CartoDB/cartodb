@@ -3,7 +3,8 @@ var WINDSHAFT_ERRORS = require('../constants').WINDSHAFT_ERRORS;
 var WindshaftError = function (error) {
   this._error = error;
 
-  this.type = error.subtype;
+  this.origin = 'windshaft';
+  this.type = error.type || WINDSHAFT_ERRORS.GENERIC;
   this.message = error.message;
   this.context = error.context;
 

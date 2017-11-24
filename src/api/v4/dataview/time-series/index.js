@@ -64,7 +64,12 @@ TimeSeries.prototype.DEFAULTS = {
  */
 TimeSeries.prototype.getData = function () {
   if (this._internalModel) {
-    return parseTimeSeriesData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'), this._internalModel.getCurrentOffset());
+    return parseTimeSeriesData(
+      this._internalModel.get('data'),
+      this._internalModel.get('nulls'),
+      this._internalModel.get('totalAmount'),
+      this._internalModel.getCurrentOffset()
+    );
   }
   return null;
 };

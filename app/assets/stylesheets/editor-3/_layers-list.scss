@@ -11,12 +11,12 @@
 
 .Editor-ListLayer-item {
   @include transition(opacity 2s ease-in);
+  @include regularBorder();
   box-sizing: border-box;
   position: relative;
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
-  @include regularBorder();
   border-radius: $halfBaseSize;
   background: #FFF;
   cursor: pointer;
@@ -42,8 +42,8 @@
 .Editor-ListLayer-item--fetching {
   cursor: default;
   &:hover {
-    transition: none;
     @include regularBorder();
+    transition: none;
   }
 }
 
@@ -265,8 +265,8 @@
 }
 
 .Editor-ListAnalysis-layer {
-  padding-right: $baseSize;
   @include regularBorder();
+  padding-right: $baseSize;
   border-radius: $halfBaseSize;
   background: $cThirdBackground;
 
@@ -282,12 +282,12 @@
 }
 
 .Editor-ListAnalysis-layer--placeholder {
-  background-color: #FFF;
   height: 32px;
+  background-color: #FFF;
 
   &:hover {
-    transition: none;
     @include regularBorder();
+    transition: none;
   }
 }
 

@@ -4,15 +4,15 @@ var constants = require('../constants');
 var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
 
 /**
- * A formula is a simple numeric operation applied to a column in a dataset.
- * 
- * Like all dataviews is an async object so you must wait for the data to be availiable.
+ * A formula is a simple numeric operation applied to the column of a data source (dataset or sql query).
  *
- * @param {carto.source.Base} source - The source where the dataview will fetch the data
- * @param {string} column - The column name to get the data
- * @param {object} options
- * @param {carto.operation} options.operation - The operation to apply to the data
- * 
+ * Like all dataviews, it is an async object so you must wait for the data to be available.
+ *
+ * @param {carto.source.Base} source - The source where the dataview will fetch the data from
+ * @param {string} column - The operation will be performed using this column
+ * @param {object} [options]
+ * @param {carto.operation} [options.operation] - The operation to apply to the data
+ *
  * @fires carto.dataview.Formula.dataChanged
  * @fires carto.dataview.Formula.operationChanged
  *
@@ -26,12 +26,12 @@ var FormulaDataviewModel = require('../../../dataviews/formula-dataview-model');
  *  operation: carto.operation.MAX,
  * });
  * @example
- * // You can listen to multiple events emmited by the formula-dataview.
+ * // You can listen to multiple events emitted by a formula dataview.
  * // Data and status are fired by all dataviews.
  * formulaDataview.on('dataChanged', newData => { });
  * formulaDataview.on('statusChanged', (newData, error) => { });
  * formulaDataview.on('error', cartoError => { });
- * 
+ *
  * // Listen to specific formula-dataview events
  * formulaDataview.on('columnChanged', newData => { });
  * formulaDataview.on('operationChanged', newData => { });
@@ -142,18 +142,18 @@ module.exports = Formula;
  * Event triggered when the data in a formula-dataview changes.
  *
  * Contains a single argument with the new data.
- * 
+ *
  * @event carto.dataview.Formula.dataChanged
  * @type {carto.dataview.FormulaData}
  * @api
- */ 
+ */
 
 /**
  * Event triggered when the operation in a formula-dataview changes.
  *
  * Contains a single argument with new operation.
- * 
+ *
  * @event carto.dataview.Formula.operationChanged
  * @type {carto.operation}
  * @api
- */ 
+ */

@@ -120,7 +120,7 @@ Layer.prototype.getSource = function () {
 };
 
 /**
- * Set new columns for `featureClick` events.
+ * Set new columns for featureClick events.
  *
  * @param {Array<string>} columns An array containing column names
  * @return {carto.layer.Layer} this
@@ -136,9 +136,9 @@ Layer.prototype.setFeatureClickColumns = function (columns) {
 };
 
 /**
- * Return the columns available in `featureClicked` events.
+ * Get the columns available in featureClicked events.
  *
- * @return  {Array<string>} Column names available in `featureClicked` events
+ * @return  {Array<string>} Column names available in featureClicked events
  * @api
  */
 Layer.prototype.getFeatureClickColumns = function (columns) {
@@ -150,7 +150,7 @@ Layer.prototype.hasFeatureClickColumns = function (columns) {
 };
 
 /**
- * Set new columns for `featureOver` events.
+ * Set new columns for featureOver events.
  *
  * @param {Array<string>} columns An array containing column names
  * @return {carto.layer.Layer} this
@@ -166,9 +166,9 @@ Layer.prototype.setFeatureOverColumns = function (columns) {
 };
 
 /**
- * Return the columns available in `featureOver` events.
+ * Get the columns available in featureOver events.
  *
- * @return  {Array<string>} Column names available in `featureOver` events
+ * @return  {Array<string>} Column names available in featureOver events
  * @api
  */
 Layer.prototype.getFeatureOverColumns = function (columns) {

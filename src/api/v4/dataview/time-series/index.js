@@ -14,16 +14,16 @@ function hoursToSeconds (hours) {
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data
- * @param {object} options
+ * @param {object} [options]
  * @param {carto.dataview.timeAggregation} [options.aggregation=auto] - Granularity of time aggregation
- * @param {number} offset - Amount of hours to displace the aggregation from UTC
- * @param {boolean} useLocalTimezone - Indicates to use the user local timezone or not
- * 
+ * @param {number} [options.offset] - Amount of hours to displace the aggregation from UTC
+ * @param {boolean} [options.useLocalTimezone] - Indicates to use the user local timezone or not
+ *
  * @fires carto.dataview.TimeSeries.dataChanged
  * @fires carto.dataview.TimeSeries.aggregationChanged
  * @fires carto.dataview.TimeSeries.localTimezoneChanged
  * @fires carto.dataview.TimeSeries.offsetChanged
- * 
+ *
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -33,7 +33,7 @@ function hoursToSeconds (hours) {
  * var timeSeries = new carto.dataview.TimeSeries(source0, 'last_review', {
  *  offset: 0,
  *  aggregation: 'hour'
- * }); 
+ * });
  * @example
  * // You can listen to multiple events emmited by the time-series-dataview.
  * // Data and status are fired by all dataviews.
@@ -200,38 +200,38 @@ module.exports = TimeSeries;
  * Event triggered when the totals data in a time-series-dataview changes.
  *
  * Contains a single argument with the new data.
- * 
+ *
  * @event carto.dataview.TimeSeries.dataChanged
  * @type {carto.dataview.TimeSeriesData}
  * @api
- */ 
+ */
 
 /**
  * Event triggered when the aggregation in a TimeSeries-dataview changes.
  *
  * Contains a single argument with new aggregation.
- * 
+ *
  * @event carto.dataview.TimeSeries.aggregationChanged
  * @type {string}
  * @api
- */ 
+ */
 
 /**
  * Event triggered when the timezone in a TimeSeries-dataview changes.
  *
  * Contains a single boolean argument (???).
- * 
+ *
  * @event carto.dataview.TimeSeries.localTimezoneChanged
  * @type {boolean}
  * @api
- */ 
+ */
 
 /**
  * Event triggered when the offset in a TimeSeries-dataview changes.
  *
  * Contains a single string argument with the new offset
- * 
+ *
  * @event carto.dataview.TimeSeries.offsetChanged
  * @type {string}
  * @api
- */ 
+ */

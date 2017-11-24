@@ -5,14 +5,14 @@ var parseHistogramData = require('./parse-data.js');
 
 /**
  * An histogram is used to represent the distribution of numerical data.
- * 
+ *
  * See {@link https://en.wikipedia.org/wiki/Histogram}.
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data
- * @param {object} options
+ * @param {object} [options]
  * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
- * 
+ *
  * @fires carto.dataview.Histogram.dataChanged
  * @fires carto.dataview.Histogram.binsChanged
  *
@@ -27,7 +27,7 @@ var parseHistogramData = require('./parse-data.js');
  *  histogram.on('dataChanged', renderData);
  * // Add the histogram to the client
  * client.addDataview(histogram);
- * @example 
+ * @example
  * // Create a cities population histogram with only 4 bins
  * var histogram = new carto.dataview.Histogram(citiesSource, 'population', {bins: 4});
  * // Add a bounding box filter, so the data will change when the map is moved.
@@ -148,18 +148,18 @@ module.exports = Histogram;
  * Event triggered when the data in a histogram-dataview changes.
  *
  * Contains a single argument with the new data.
- * 
+ *
  * @event carto.dataview.Histogram.dataChanged
  * @type {carto.dataview.HistogramData}
  * @api
- */ 
+ */
 
 /**
  * Event triggered when the bins in a histogram-dataview changes.
  *
  * Contains a single argument with new number of bins.
- * 
+ *
  * @event carto.dataview.Histogram.binsChanged
  * @type {number}
  * @api
- */ 
+ */

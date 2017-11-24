@@ -9,15 +9,23 @@ var Leaflet = require('./leaflet');
 var VERSION = require('../../../package.json').version;
 
 /**
- * This is the main object in a Carto.js application.
+ * This is the entry point for a Carto.js application.
  *
- * The carto client keeps both layer and dataview lists internaly.
- * Every time some layer/dataview changes the client will trigger a carto-reload cycle.
+ * A CARTO client allows managing layers and dataviews. It also takes care
+ * of the communication between a Carto.js application and the services in CARTO.
+ * To create a new client you need a CARTO account, where you will be able to get
+ * your API key and username.
  *
  * @param {object} settings
- * @param {string} settings.apiKey - Api key used to be autenticate in the windshaft server
- * @param {string} settings.username - Name of the user registered in the windshaft server
- * @param {string} settings.serverUrl - Url of the windshaft server
+ * @param {string} settings.apiKey - API key used to authenticate against CARTO
+ * @param {string} settings.username - Name of the user
+ * @param {string} [settings.serverUrl] - URL of the windshaft server
+ *
+ * @example
+ * var client = new carto.Client({
+ *   apiKey: 'YOUR_API_KEY_HERE',
+ *   username: 'YOUR_USERNAME_HERE'
+ * });
  *
  * @constructor
  * @memberof carto
@@ -47,7 +55,7 @@ _.extend(Client.prototype, Backbone.Events);
  * @param {carto.layer.Base} - The layer to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
@@ -59,9 +67,9 @@ Client.prototype.addLayer = function (layer, opts) {
 };
 
 /**
- * Add a layer array to the client.
+ * Add multiple layers to the client.
  *
- * @param {carto.layer.Base[]} - The layer array to be added
+ * @param {carto.layer.Base[]} - An array with the layers to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
@@ -86,7 +94,7 @@ Client.prototype.addLayers = function (layers, opts) {
  * @param {carto.layer.Base} - The layer to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
@@ -98,12 +106,12 @@ Client.prototype.removeLayer = function (layer, opts) {
 };
 
 /**
- * Remove a layer from the client
+ * Remove multiple layer from the client
  *
- * @param {carto.layer.Base[]} - The layer array to be removed
+ * @param {carto.layer.Base[]} - An array with the layers to be removed
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
- * 
+ *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
@@ -137,7 +145,7 @@ Client.prototype.getLayers = function () {
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
- * 
+ *
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
@@ -146,15 +154,15 @@ Client.prototype.addDataview = function (dataview, opts) {
 };
 
 /**
- * Add a dataview array to the client.
+ * Add multipe dataviews to the client.
  *
- * @param {carto.dataview.Base[]} - The dataview array to be added
+ * @param {carto.dataview.Base[]} - An array with the dataviews to be added
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
- * 
+ *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
@@ -176,7 +184,7 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
- * 
+ *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
@@ -201,8 +209,9 @@ Client.prototype.getDataviews = function () {
 };
 
 /**
- * Return the a leaflet layer for the given client.
- * 
+ * Return a Leaflet layer that groups all the layers that have been
+ * added to this client.
+ *
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
@@ -255,8 +264,8 @@ Client.prototype._addDataview = function (dataview, engine) {
 };
 
 /**
- * Client exposes Event.SUCCESS and RELOAD_ERROR to the api users, 
- * those events are wrappers using _engine internaly. 
+ * Client exposes Event.SUCCESS and RELOAD_ERROR to the api users,
+ * those events are wrappers using _engine internaly.
  */
 Client.prototype._bindEngine = function (engine) {
   engine.on(Engine.Events.RELOAD_SUCCESS, function () {

@@ -36,6 +36,7 @@ var events = require('./events');
 var operation = require('./constants').operation;
 
 var carto = window.carto = {
+  VERSION: require('../../../package.json').version,
   Client: Client,
   source: source,
   style: style,

@@ -50,7 +50,7 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
       var self = this;
       this.tangram.layer.setSelectionEvents({
         hover: function (e) {
-          if (!e.feature || !e.feature.cartodb_id) {
+          if (!e.feature || !e.feature.properties.cartodb_id) {
             return;
           }
 
@@ -63,7 +63,7 @@ LeafletCartoDBWebglLayerGroupView.prototype = _.extend(
           }
         },
         click: function (e) {
-          if (e.feature && e.feature.cartodb_id) {
+          if (e.feature && e.feature.properties.cartodb_id) {
             self.trigger('featureClick', self._getFeatureObject(e));
           }
         }

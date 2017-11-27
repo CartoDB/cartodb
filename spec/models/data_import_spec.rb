@@ -21,6 +21,29 @@ describe DataImport do
     @user.destroy
   end
 
+  it "raises an 1014 error when strategy is set to skip and there's already a table with that name" do
+    table1 = create_table(user_id: @user.id)
+    table1.insert_row!(name: 1.0)
+    table1.insert_row!(name: 2.0)
+    query = "select * from #{table1.name}"
+    data_import = DataImport.create(
+      user_id: @user.id,
+      table_name: 'target_table',
+      from_query: query
+    )
+    data_import.run_import!
+    data_import.state.should eq 'complete'
+    data_import = DataImport.create(
+      user_id: @user.id,
+      table_name: 'target_table',
+      from_query: query,
+      collision_strategy: 'skip'
+    )
+    expect { data_import.run_import! }.to raise_error(CartoDB::Importer2::InvalidNameError, "There's already a table with that name: target_table")
+    data_import.state.should eq 'failure'
+    data_import.error_code.should eq 1014
+  end
+
   it 'raises an 8004 error when merging tables
   through columns with different types' do
     table1 = create_table(user_id: @user.id)
@@ -53,6 +76,7 @@ describe DataImport do
     Table.any_instance.stubs(:cartodbfy).raises(CartoDB::CartoDBfyInvalidID)
     data_import = DataImport.create(
       user_id: @user.id,
+      data_source: fake_data_path('clubbing.csv'),
       data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     )

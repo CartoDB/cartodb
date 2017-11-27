@@ -163,7 +163,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_user_state
-    return unless (request.path =~ %r{^\/(upgrade_trial|login|logout|unauthenticated)}).nil?
+    return unless (request.path =~ %r{^\/(lockout|login|logout|unauthenticated)}).nil?
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
       user = Carto::User.find_by_username(viewed_username)
@@ -228,7 +228,7 @@ class ApplicationController < ActionController::Base
   def render_locked_user
     respond_to do |format|
       format.html do
-        redirect_to CartoDB.path(self, 'upgrade_trial')
+        redirect_to CartoDB.path(self, 'lockout')
       end
       format.json do
         head 404

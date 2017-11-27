@@ -380,12 +380,8 @@ module Carto
         end
 
         if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
-          if @visualization.is_viewable_by_user?(current_viewer) && @visualization.password_protected?
-            # Careful: This error string is parsed at frontend
-            raise Carto::UnauthorizedError.new('Password invalid')
-          else
-            raise Carto::UnauthorizedError.new('Visualization not viewable')
-          end
+          raise Carto::LoadError.new('Visualization not viewable', 403,
+                                     errors_cause: @visualization.password_protected? ? 'privacy_password' : nil)
         end
       end
 

@@ -1,3 +1,5 @@
+import { style } from '../../../../../../../Library/Caches/typescript/2.6/node_modules/@types/d3';
+
 var carto = require('../../../../../src/api/v4');
 
 describe('api/v4/style/cartocss', function () {
@@ -74,6 +76,75 @@ describe('api/v4/style/cartocss', function () {
       var actual = cartoCSS.getStyle();
 
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('.setStyle', function () {
+    var layer;
+    var source;
+    var newStyle;
+
+    beforeEach(function () {
+      source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      layer = new carto.layer.Layer(source, style);
+      newStyle = '#layer { marker-fill: #FABADA';
+    });
+
+    describe('when no engine is attached', function () {
+      it('should update the internal style', function (done) {
+        expect(layer.getStyle()).toEqual(style);
+        layer.setStyle(newStyle).then(function () {
+          expect(layer.getStyle()).toEqual(style);
+          done();
+        });
+      });
+
+      it('should trigger a styleChanged event', function (done) {
+        var styleChangedSpy = jasmine.createSpy('stylechangedSpy');
+        style.on('styleChanged', styleChangedSpy);
+        layer.setStyle(newStyle)
+          .then(function () {
+            expect(layer.getStyle()).toEqual(style);
+            expect(styleChangedSpy).toHaveBeenCalled();
+            done();
+          });
+      });
+    });
+
+    describe('when an engine is attached', function () {
+      var client;
+
+      beforeAll(function () {
+        client = new carto.Client({
+          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+          username: 'cartojs-test'
+        });
+      });
+
+      it('should update the internal style', function (done) {
+        client.addLayer(layer)
+          .then(function () {
+            return style.setStyle(newStyle);
+          })
+          .then(function () {
+            expect(style.getStyle()).toEqual(newStyle);
+            done();
+          });
+      });
+
+      it('should trigger a styleChanged event?', function (done) {
+        var styleChangedSpy = jasmine.createSpy('stylechangedSpy');
+        style.on('styleChanged', styleChangedSpy);
+
+        client.addLayer(layer)
+          .then(function () {
+            return style.setStyle(newStyle);
+          })
+          .then(function () {
+            expect(styleChangedSpy).toHaveBeenCalled();
+            done();
+          });
+      });
     });
   });
 });

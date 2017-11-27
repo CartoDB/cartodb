@@ -488,6 +488,8 @@ class DataImport < Sequel::Model
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
+    return true unless new_table_name
+
     sanitize_columns(new_table_name)
 
     self.update(table_names: new_table_name, service_name: nil)
@@ -512,8 +514,9 @@ class DataImport < Sequel::Model
 
     taken_names = Carto::Db::UserSchema.new(current_user).table_names
 
-    if taken_names.include? name and collision_strategy ==  Carto::DataImportConstants::COLLISION_STRATEGY_SKIP
-      raise CartoDB::Importer2::InvalidNameError, "There's already a table with that name: #{name}"
+    if taken_names.include?(name) && collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_SKIP
+      log.append("Table with name #{name} already exists. Skipping")
+      return
     end
 
     table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)

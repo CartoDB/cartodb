@@ -31,8 +31,9 @@
 
     // Create the Client
     var client = new carto.Client({
-      apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-      username: 'cartojs-test'
+      apiKey: 'f8428dda3b56a9f421dd408a86a283b0efcd1a6d',
+      username: 'ivan',
+      serverUrl: 'http://ivan.localhost.lan:8181'
     });
 
     // Create a source
@@ -73,13 +74,25 @@
     });
 
     spanishCities.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {
-      console.log('featureOut', featureEvent.latLng, featureEvent.data);
+      //console.log('featureOut', featureEvent.latLng, featureEvent.data);
 
       popup.removeFrom(map);
     });
 
+    spanishCities.on(carto.layer.events.FEATURE_ERROR, function (error) {
+      console.log('featureError', error);
+    });
+
     // Add the layer to the map
-    client.getLeafletLayer().addTo(map);
+    var layerGroup = client.getLeafletLayer();
+    layerGroup.addTo(map);
+    layerGroup.on(carto.layer.events.FEATURE_ERROR, function (error) {
+      console.error(error.message);
+    });
+
+    client.on('error', function (error) {
+      console.error(error);
+    });
 
     // Change columns dynamically
     spanishCities.setFeatureOverColumns(['adm0name', 'name']);

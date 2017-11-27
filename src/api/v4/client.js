@@ -275,6 +275,10 @@ Client.prototype._bindEngine = function (engine) {
   engine.on(Engine.Events.RELOAD_ERROR, function (err) {
     this.trigger(Events.ERROR, new CartoError(err));
   }.bind(this));
+
+  engine.on('error', function (err) {
+    this.trigger(Events.ERROR, new CartoError(err));
+  }.bind(this));
 };
 
 /**

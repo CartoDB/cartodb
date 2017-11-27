@@ -9,8 +9,12 @@ var parseWindshaftErrors = function (response) {
     });
   }
   if (response.errors) {
+    var content = typeof response.errors[0] === 'string'
+      ? { message: response.errors[0] }
+      : response.errors[0];
+
     return [
-      new WindshaftError({ message: response.errors[0] })
+      new WindshaftError(content)
     ];
   }
   return [];

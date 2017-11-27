@@ -62,6 +62,7 @@ function Engine (params) {
     { apiKey: params.apiKey, authToken: params.authToken },
     { layersCollection: this._layersCollection }
   );
+  this._bindCartoLayerGroupError();
 
   this._modelUpdater = new ModelUpdater({
     dataviewsCollection: this._dataviewsCollection,
@@ -230,7 +231,7 @@ Engine.prototype._onReloadError = function (serverResponse, options) {
   }
   this._modelUpdater.setErrors(windshaftErrors);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, error);
-  options.error && options.error();
+  options.error && options.error(error);
 };
 
 /**
@@ -305,6 +306,18 @@ Engine.prototype._manageClientError = function (error, options) {
 };
 
 /**
+ * Listen to errors in cartoLayerGroup
+ */
+Engine.prototype._bindCartoLayerGroupError = function () {
+  this._cartoLayerGroup.on('all', function (change, error) {
+    if (change.lastIndexOf('error:', 0) === 0) {
+      error = new WindshaftError(error);
+      this._eventEmmitter.trigger('error', error);
+    }
+  }, this);
+};
+
+/**
  * Events fired by the engine
  *
  * @readonly
@@ -320,9 +333,13 @@ Engine.Events = {
    */
   RELOAD_SUCCESS: 'reload-success',
   /**
-   * Reload success event, fired every time the reload function fails.
+   * Reload error event, fired every time the reload function fails.
    */
-  RELOAD_ERROR: 'reload-error'
+  RELOAD_ERROR: 'reload-error',
+  /**
+   * Error event, fired every time a tile or limit error happens.
+   */
+  ERROR: 'error'
 };
 
 module.exports = Engine;
@@ -345,5 +362,12 @@ module.exports = Engine;
   * Reload success event, fired every time the reload function fails.
   *
   * @event Engine#Engine:RELOAD_ERROR
+  * @type {string}
+  */
+
+/**
+  * Layer group error event, fired every time an error with layer group happends (tile or limit).
+  *
+  * @event Engine#Engine:ERROR
   * @type {string}
   */

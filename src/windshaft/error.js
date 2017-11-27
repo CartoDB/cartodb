@@ -1,11 +1,20 @@
 var WINDSHAFT_ERRORS = require('../constants').WINDSHAFT_ERRORS;
 
+function truncateMessage (message) {
+  var MAX_SIZE = 256;
+
+  return message && message.length > MAX_SIZE
+    ? message.substring(0, MAX_SIZE)
+    : message;
+}
+
 var WindshaftError = function (error) {
   this._error = error;
 
   this.origin = 'windshaft';
   this.type = error.type || WINDSHAFT_ERRORS.GENERIC;
-  this.message = error.message;
+  this.subtype = error.subtype;
+  this.message = truncateMessage(error.message);
   this.context = error.context;
 
   if (this.isLayerError(error.type)) {

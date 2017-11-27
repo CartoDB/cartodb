@@ -1,5 +1,8 @@
+var Backbone = require('backbone');
+var _ = require('underscore');
 var Layer = require('../layer/');
 var LeafletCartoLayerGroupView = require('../../../geo/leaflet/leaflet-cartodb-layer-group-view');
+var CartoError = require('../error-handling/carto-error');
 
 function LayerGroup (layers, engine) {
   this._layers = layers;
@@ -7,6 +10,8 @@ function LayerGroup (layers, engine) {
   this._leafletMap = undefined;
   this._internalLayerGroupView = undefined;
 }
+
+_.extend(LayerGroup.prototype, Backbone.Events);
 
 LayerGroup.prototype.addTo = function (map) {
   this._internalLayerGroupView = this._internalLayerGroupView ||
@@ -32,6 +37,7 @@ LayerGroup.prototype._createInternalLayerGroupView = function (map) {
   leafletLayerGroupView.on('featureClick', this._onFeatureClick, this);
   leafletLayerGroupView.on('featureOver', this._onFeatureOver, this);
   leafletLayerGroupView.on('featureOut', this._onFeatureOut, this);
+  leafletLayerGroupView.on('featureError', this._onFeatureError, this);
 
   return leafletLayerGroupView;
 };
@@ -51,6 +57,11 @@ LayerGroup.prototype._onFeatureOver = function (internalEvent) {
 LayerGroup.prototype._onFeatureOut = function (internalEvent) {
   this._leafletMap.getContainer().style.cursor = 'auto';
   this._triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent);
+};
+
+LayerGroup.prototype._onFeatureError = function (error) {
+  var cartoError = new CartoError(error);
+  this.trigger(Layer.events.FEATURE_ERROR, cartoError);
 };
 
 LayerGroup.prototype._triggerLayerFeatureEvent = function (eventName, internalEvent) {

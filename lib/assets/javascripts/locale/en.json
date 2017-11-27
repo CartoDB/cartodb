@@ -9,5 +9,41 @@
       "edit": "Edit",
       "visualize": "VISUALIZE"
     }
+  },
+  "account": {
+    "title": "Your account | CARTO",
+    "flash_messages": {
+      "save_changes": {
+        "success": "Your changes have been saved correctly.",
+        "error": "Error updating your account details."
+      }
+    },
+    "views": {
+      "content": {
+        "form_title": "Edit your plan information"
+      },
+      "form": {
+        "username": "Username",
+        "subdomain_info": "Subdomain cannot be changed",
+        "email": "Email",
+        "old_password": "Old password",
+        "new_password": "New password",
+        "confirm_password": "Confirm password",
+        "account_type": "Account type",
+        "billing_plan": "Your billing plan",
+        "view_details": "View details",
+        "connect_external_datasources": "Connect to external data sources",
+        "save_changes": "Save changes",
+        "delete_account": "Delete account",
+        "confirm": "Are you sure?",
+        "delete_all": "Delete my account and all my data",
+        "your_url": "Your URL",
+        "email_google": "Your account is linked to your Google account.",
+        "errors": {
+          "email_not_valid": "Email not valid",
+          "change_email": "You can change the email if you set a password."
+        }
+      }
+    }
   }
 }

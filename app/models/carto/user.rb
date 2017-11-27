@@ -461,6 +461,8 @@ class Carto::User < ActiveRecord::Base
       !organization.try(:auth_saml_enabled?)
   end
 
+  alias_method :should_display_old_password?, :needs_password_confirmation?
+
   def oauth_signin?
     google_sign_in || github_user_id.present?
   end
@@ -535,6 +537,16 @@ class Carto::User < ActiveRecord::Base
     update_column(:dashboard_viewed_at, Time.now)
   end
 
+  # Special url that goes to Central if active (for old dashboard only)
+  def account_url(request_protocol)
+    request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username if CartoDB.account_host
+  end
+
+  # Special url that goes to Central if active
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
+  end
+
   def relevant_frontend_version
     frontend_version || CartoDB::Application.frontend_version
   end
@@ -592,10 +604,6 @@ class Carto::User < ActiveRecord::Base
     end
 
     array
-  end
-
-  def should_display_old_password?
-    needs_password_confirmation?
   end
 
   def account_url(request_protocol)

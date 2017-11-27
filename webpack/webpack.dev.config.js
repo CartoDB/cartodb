@@ -21,20 +21,5 @@ module.exports = {
       template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/static/index.jst.ejs'),
       config: webpackFiles[entryName]
     });
-  }),
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: [
-          path.resolve(__dirname, '../lib/assets/core/javascripts/carto-node')
-        ],
-        options: {
-          presets: ['es2015'],
-          plugins: ['transform-object-assign']
-        }
-      }
-    ]
-  }
+  })
 };

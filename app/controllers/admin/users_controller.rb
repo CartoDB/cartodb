@@ -36,6 +36,8 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
+    return render(file: "public/static/account/index.html", layout: false) if current_user.has_feature_flag?('static_account')
+
     respond_to do |format|
       format.html { render 'account' }
     end
@@ -129,7 +131,7 @@ class Admin::UsersController < Admin::AdminController
   def lockout
     if current_user.locked?
       @expiration_days = @user.remaining_days_deletion
-      @payments_url = @user.update_payment_url(request.protocol)
+      @payments_url = @user.plan_url(request.protocol)
       render locals: { breadcrumb: false }
     else
       render_404

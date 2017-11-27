@@ -1,6 +1,7 @@
 var L = require('leaflet');
 var _ = require('underscore');
 var Layer = require('./layer');
+var constants = require('./constants');
 var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
 
 /**
@@ -20,7 +21,8 @@ var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-laye
 var LeafletLayer = L.TileLayer.extend({
   options: {
     opacity: 0.99,
-    maxZoom: 30
+    maxZoom: 30,
+    attribution: constants.ATTRIBUTION
   },
 
   initialize: function (layers, engine) {
@@ -29,10 +31,6 @@ var LeafletLayer = L.TileLayer.extend({
     this._internalView = null;
 
     this._hoveredLayers = [];
-  },
-
-  getAttribution: function () {
-    return '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>';
   },
 
   addTo: function (map) {

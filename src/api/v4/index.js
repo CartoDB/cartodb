@@ -13,7 +13,6 @@
  * - **layer** : Layer description
  * - **dataview** : Dataview description
  * - **filter** : Filter description
- *
  * - **events** : The events exposed.
  * - **operation** : The operations exposed.
  */
@@ -29,10 +28,11 @@ var layer = require('./layer');
 var dataview = require('./dataview');
 var filter = require('./filter');
 var events = require('./events');
-var operation = require('./constants').operation;
+var constants = require('./constants');
 
 var carto = window.carto = {
   VERSION: require('../../../package.json').version,
+  ATTRIBUTION: constants.ATTRIBUTION,
   Client: Client,
   source: source,
   style: style,
@@ -40,7 +40,7 @@ var carto = window.carto = {
   dataview: dataview,
   filter: filter,
   events: events,
-  operation: operation
+  operation: constants.operation
 };
 
 module.exports = carto;

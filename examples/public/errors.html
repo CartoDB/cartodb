@@ -41,7 +41,7 @@
       // Adding Voyager Basemap
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+        attribution: carto.ATTRIBUTION
       }).addTo(map);
 
       // 2 Defining a carto.Client

@@ -140,6 +140,16 @@ describe('src/api/v4/leaflet-layer', function () {
 
           expect(map.getContainer().style.cursor).toEqual('pointer');
         });
+
+        it("should set the mouse cursor to 'pointer' if layer has overed features after a featureOut", function () {
+          leafletLayer._hoveredLayers = ['L100'];
+
+          expect(map.getContainer().style.cursor).toEqual('');
+
+          leafletLayer._internalView.trigger('featureOut', internalEventMock);
+
+          expect(map.getContainer().style.cursor).toEqual('pointer');
+        });
       });
 
       describe('when mousing over NO features', function () {

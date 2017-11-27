@@ -1383,6 +1383,17 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
+      it 'doesn\'t return a specific error for private visualizations' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @visualization.save!
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+          response.status.should eq 403
+          response.body[:errors].should eq "Visualization not viewable"
+          response.body[:errors_cause].should be_nil
+        end
+      end
+
       it 'returns a visualization with optional information if requested' do
         url = api_v1_visualizations_show_url(
           id: @visualization.id,

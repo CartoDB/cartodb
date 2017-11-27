@@ -1,10 +1,10 @@
 var L = require('leaflet');
-var carto = require('../../../../../src/api/v4');
+var carto = require('../../../../src/api/v4');
 
-describe('src/api/v4/leaflet/layer-group', function () {
+describe('src/api/v4/leaflet-layer', function () {
   var client;
   var layer;
-  var layerGroup;
+  var leafletLayer;
   var map;
   var mapContainer;
 
@@ -18,7 +18,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
       username: 'cartojs-test'
     });
     map = L.map('map').setView([42.431234, -8.643616], 5);
-    layerGroup = client.getLeafletLayer();
+    leafletLayer = client.getLeafletLayer();
   });
 
   afterEach(function () {
@@ -29,7 +29,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
     it('should add a leaflet layer to the map', function () {
       expect(countLeafletLayers(map)).toEqual(0);
 
-      layerGroup.addTo(map);
+      leafletLayer.addTo(map);
 
       expect(countLeafletLayers(map)).toEqual(1);
     });
@@ -39,11 +39,11 @@ describe('src/api/v4/leaflet/layer-group', function () {
     it('should remove the leaflet layer from the map', function () {
       expect(countLeafletLayers(map)).toEqual(0);
 
-      layerGroup.addTo(map);
+      leafletLayer.addTo(map);
 
       expect(countLeafletLayers(map)).toEqual(1);
 
-      layerGroup.removeFrom(map);
+      leafletLayer.removeFrom(map);
 
       expect(countLeafletLayers(map)).toEqual(0);
     });
@@ -56,7 +56,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
     beforeEach(function () {
       spy = jasmine.createSpy('spy');
 
-      layerGroup.addTo(map);
+      leafletLayer.addTo(map);
 
       var source = new carto.source.SQL('foo');
       var style = new carto.style.CartoCSS('bar');
@@ -81,7 +81,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
         latLng: { lat: 10, lng: 20 }
       };
 
-      layerGroup._internalLayerGroupView.trigger('featureClick', internalEventMock);
+      leafletLayer._internalView.trigger('featureClick', internalEventMock);
 
       expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
     });
@@ -94,7 +94,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
         latLng: { lat: 10, lng: 20 }
       };
 
-      layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
+      leafletLayer._internalView.trigger('featureOver', internalEventMock);
 
       expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
     });
@@ -106,7 +106,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
         data: { name: 'foo' },
         latLng: { lat: 10, lng: 20 }
       };
-      layerGroup._internalLayerGroupView.trigger('featureOut', internalEventMock);
+      leafletLayer._internalView.trigger('featureOut', internalEventMock);
 
       expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
     });
@@ -116,7 +116,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
         it("should NOT set the mouse cursor to 'pointer' if layer doesn't have featureOverColumns or featureClickColumns", function () {
           expect(map.getContainer().style.cursor).toEqual('');
 
-          layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
+          leafletLayer._internalView.trigger('featureOver', internalEventMock);
 
           expect(map.getContainer().style.cursor).toEqual('');
         });
@@ -126,7 +126,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
 
           expect(map.getContainer().style.cursor).toEqual('');
 
-          layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
+          leafletLayer._internalView.trigger('featureOver', internalEventMock);
 
           expect(map.getContainer().style.cursor).toEqual('pointer');
         });
@@ -136,7 +136,17 @@ describe('src/api/v4/leaflet/layer-group', function () {
 
           expect(map.getContainer().style.cursor).toEqual('');
 
-          layerGroup._internalLayerGroupView.trigger('featureOver', internalEventMock);
+          leafletLayer._internalView.trigger('featureOver', internalEventMock);
+
+          expect(map.getContainer().style.cursor).toEqual('pointer');
+        });
+
+        it("should set the mouse cursor to 'pointer' if layer has overed features after a featureOut", function () {
+          leafletLayer._hoveredLayers = ['L100'];
+
+          expect(map.getContainer().style.cursor).toEqual('');
+
+          leafletLayer._internalView.trigger('featureOut', internalEventMock);
 
           expect(map.getContainer().style.cursor).toEqual('pointer');
         });
@@ -146,7 +156,7 @@ describe('src/api/v4/leaflet/layer-group', function () {
         it("should set the mouse cursor to 'auto'", function () {
           expect(map.getContainer().style.cursor).toEqual('');
 
-          layerGroup._internalLayerGroupView.trigger('featureOut', internalEventMock);
+          leafletLayer._internalView.trigger('featureOut', internalEventMock);
 
           expect(map.getContainer().style.cursor).toEqual('auto');
         });

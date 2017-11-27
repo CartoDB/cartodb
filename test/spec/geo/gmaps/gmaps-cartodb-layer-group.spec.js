@@ -16,7 +16,9 @@ var createLayerGroupView = function (layerGroupModel, container) {
     tilt: 0
   });
 
-  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, gmapsMap);
+  var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, {
+    nativeMap: gmapsMap
+  });
   gmapsMap.overlayMapTypes.setAt(1, layerGroupView.gmapsLayer);
   return layerGroupView;
 };

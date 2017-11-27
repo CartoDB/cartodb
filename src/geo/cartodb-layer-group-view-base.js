@@ -1,6 +1,7 @@
-function CartoDBLayerGroupViewBase (layerGroupModel, nativeMap) {
+function CartoDBLayerGroupViewBase (layerGroupModel, opts) {
+  opts = opts || {};
   this.interaction = [];
-  this.nativeMap = nativeMap;
+  this.nativeMap = opts.nativeMap;
 
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));

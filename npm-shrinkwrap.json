@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.89-10",
+  "version": "4.10.90.12867",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -321,9 +321,9 @@
       "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.33.4",
-      "from": "camshaft-reference@0.33.4",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.4.tgz"
+      "version": "0.34.0",
+      "from": "camshaft-reference@0.34.0",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.34.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -336,9 +336,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.17",
-      "from": "cartodb/deep-insights.js#v0.4.17",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#460a9fcf576bb6d03ba2ea9e6feaa153e0cbf714",
+      "version": "0.4.18",
+      "from": "cartodb/deep-insights.js#v0.4.18",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#90da451ad3827c34a26c76d3b9503bce6b0bdb42",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -353,9 +353,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.27",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.27",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#addee471bcc864cc42168434d8639cf224095cc6"
+      "version": "4.0.0-alpha.29",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.29",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f299989864d3f07d744f0c82802f3c27e32b5561"
     },
     "center-align": {
       "version": "0.1.3",
@@ -437,9 +437,9 @@
       "resolved": "https://registry.npmjs.org/combine-source-map/-/combine-source-map-0.7.2.tgz"
     },
     "commander": {
-      "version": "2.11.0",
-      "from": "commander@>=2.11.0 <2.12.0",
-      "resolved": "https://registry.npmjs.org/commander/-/commander-2.11.0.tgz"
+      "version": "2.12.1",
+      "from": "commander@>=2.12.0 <2.13.0",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.12.1.tgz"
     },
     "concat-map": {
       "version": "0.0.1",
@@ -601,9 +601,16 @@
       "resolved": "https://registry.npmjs.org/des.js/-/des.js-1.0.0.tgz"
     },
     "detective": {
-      "version": "4.5.0",
+      "version": "4.6.0",
       "from": "detective@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/detective/-/detective-4.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/detective/-/detective-4.6.0.tgz",
+      "dependencies": {
+        "acorn": {
+          "version": "5.2.1",
+          "from": "acorn@>=5.2.1 <6.0.0",
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.2.1.tgz"
+        }
+      }
     },
     "diffie-hellman": {
       "version": "5.0.2",
@@ -700,9 +707,9 @@
       "resolved": "https://registry.npmjs.org/error-ex/-/error-ex-1.3.1.tgz"
     },
     "es-abstract": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "from": "es-abstract@>=1.5.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/es-abstract/-/es-abstract-1.9.0.tgz"
+      "resolved": "https://registry.npmjs.org/es-abstract/-/es-abstract-1.10.0.tgz"
     },
     "es-to-primitive": {
       "version": "1.1.1",
@@ -966,9 +973,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.5.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.6",
+      "version": "3.5.7",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.6.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.7.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",
@@ -2263,9 +2270,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.1.10",
-      "from": "uglify-js@>=3.1.0 <3.2.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.1.10.tgz",
+      "version": "3.2.0",
+      "from": "uglify-js@>=3.2.0 <3.3.0",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.2.0.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

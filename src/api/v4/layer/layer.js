@@ -63,7 +63,7 @@ Layer.prototype.setStyle = function (style, opts) {
   _checkStyle(style);
   opts = opts || {};
   if (prevStyle === style) {
-    return;
+    return Promise.resolve();
   }
   if (this._internalModel) {
     this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
@@ -111,7 +111,7 @@ Layer.prototype.setSource = function (source) {
   var prevSource = this._source;
   _checkSource(source);
   if (prevSource === source) {
-    return;
+    return Promise.resolve();
   }
   // If layer is not instantiated just store the new status
   if (!this._internalModel) {

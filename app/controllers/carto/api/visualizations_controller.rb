@@ -379,7 +379,7 @@ module Carto
         end
 
         if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
-          raise Carto::LoadError.new('Visualization not viewable', 403)
+          raise Carto::LoadError.new('Visualization not viewable', 403, errors_cause: 'privacy_password')
         end
       end
 

@@ -408,7 +408,7 @@ module CartoDB
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
             unless @user.database_schema == SCHEMA_PUBLIC
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
-              drop_analysis_cache
+              drop_analysis_cache(@user)
               drop_all_functions_from_schema(@user.database_schema)
 
               cascade_drop = force_destroy ? 'CASCADE' : ''
@@ -835,14 +835,16 @@ module CartoDB
         end
       end
 
-      def drop_analysis_cache
-        list_sql = "SELECT DISTINCT unnest(cache_tables) FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
-        delete_sql = "DELETE FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
-        @user.in_database(as: :superuser) do |database|
-          database.fetch(list_sql).map(:unnest).each do |cache_table_name|
-            database.run("DROP TABLE #{cache_table_name}")
+      def drop_analysis_cache(user)
+        cache_tables_sql = "SELECT tablename FROM pg_tables WHERE schemaname = '#{user.database_schema}' and tableowner = '#{user.database_username}' and tablename ilike 'analysis_%'"
+        delete_analysis_metadata_sql = "DELETE FROM cdb_analysis_catalog WHERE username = '#{user.username}'"
+        user.in_database(as: :superuser) do |database|
+          database.transaction do
+            database.fetch(cache_tables_sql).map(:tablename).each do |cache_table_name|
+              database.run(%{DROP TABLE "#{user.database_schema}"."#{cache_table_name}"})
+            end
+            database.run(delete_analysis_metadata_sql)
           end
-          database.run(delete_sql)
         end
       end
 

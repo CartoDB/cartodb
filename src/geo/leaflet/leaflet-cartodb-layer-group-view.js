@@ -69,10 +69,14 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     interactionClass: wax.leaf.interaction,
 
     _createLeafletLayer: function () {
-      return new L.TileLayer(null, {
+      var tileLayer = new L.TileLayer(null, {
         opacity: 0.99,
         maxZoom: 30
       });
+      tileLayer._setUrl = function (url, noDraw) {
+        return L.TileLayer.prototype.setUrl.call(this, url, noDraw);
+      };
+      return tileLayer;
     },
 
     _reload: function () {
@@ -87,7 +91,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
         L.Util.setOptions(this.leafletLayer, {subdomains: subdomains});
       }
 
-      this.leafletLayer.setUrl(tileURLTemplate);
+      this.leafletLayer._setUrl(tileURLTemplate);
 
       this._reloadInteraction();
     },

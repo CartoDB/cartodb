@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>CARTO.js Histogram Dataview example</title>
+    <title>CARTO.js Time Series Dataview example</title>
     <!-- Include Leaflet 1.2.0 Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
-    <!-- Include CARTO.js Library -->
-    <script src="../../dist/public/carto.uncompressed.js"></script>
+    <!-- Include cartodb.js Library -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
     <style>
       * { margin:0; padding:0; }
       html { box-sizing:border-box; height:100%; }
@@ -25,12 +25,12 @@
     <div id="container">
       <div id="map"></div>
       <div id="widgets">
-        <div id="widget" class="widget">
-        </div>
-        <p>This map shows per night rental prices in Madrid.</p>
-        <p>The code shows how to create an histogram-dataview showing this data. Notice how the data gets updated while you move the map.</p>
-        <p>Hover over the bins to get more info about the prices of the listings.</p>
-        <p>Zoom / pan the map to see the histogram change.</p>
+        <div id="widget" class="widget"></div>
+        <p>This map shows train accidents in the United States between the years 2010 and early 2014</p>
+        <p>The code shows how to create a time series widget. This widget shows temporal-data aggregated
+          by a custom amount of time, in this case the data is aggregated by year.</p>
+        <p>Hover over the bins to see the total amount per year.</p>
+        <p>Zoom / pan the map to see the widget change.</p>
       </div>
     </div>
     <script>
@@ -39,12 +39,12 @@
         window.widget = new Histogram({
           target: div
         });
-        widget.set({ item: 'apartments '});
+        widget.set({ item: 'accidents '});
       });
 
       // 1. Setting up the Leaflet Map
-      // 1.1 Creating the Leaflet Map
-      var map = L.map('map').setView([40.4169, -3.7035], 11);
+      // 1.1 Creating the Leaflet Map centered in the united states.
+      var map = L.map('map').setView([42, -100], 5);
 
       // 1.2 Adding basemap and labels layers
       // Adding Voyager Basemap
@@ -61,7 +61,7 @@
 
       // 3. Displaying on the map
       // 3.1 Defining the layer
-      var source = new carto.source.SQL('SELECT * FROM airbnb_listings WHERE price < 150');
+      var source = new carto.source.Dataset('railroad_data');
       var style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 10;
@@ -76,29 +76,42 @@
       // 3.3. Adding the layers to the map
       client.getLeafletLayer().addTo(map);
 
-      // 4 Creating a histogram widget
-      // 4.1 Defining a histogram dataview
-      var histogram = new carto.dataview.Histogram(source, 'price');
+      // 4 Creating a TimeSeries widget
+      // 4.1 Defining a TimeSeries dataview, the second parameter is the column we want to aggregate.
+      var timeSeries = new carto.dataview.TimeSeries(source, 'date', {
+        aggregation: carto.dataview.timeAggregation.YEAR, // Aggregate the data by year
+      });
 
       // 4.2 Listening to data changes on the dataview
-      histogram.on('dataChanged', function (newData) {
+      timeSeries.on('dataChanged', function (newData) {
+        // Translate EPOCH timestamps to year
+        if (newData && newData.bins.length > 0) {
+          newData.bins.forEach(function (bin) {
+            var newStart = new Date(0);
+            newStart.setUTCSeconds(bin.start);
+            var newEnd = new Date(0);
+            newEnd.setUTCSeconds(bin.end);
+            bin.start = newStart.getFullYear();
+            bin.end = newEnd.getFullYear();
+          });
+        }
         widget && widget.set({ bins: newData.bins })
       });
 
-      // Listen to histogram status, currently we are showing a console.log but looks like a good place to display a loader!
-      histogram.on('statusChanged', function (newStatus, error) {
+      // Listen to timeSeries status, currently we are showing a console.log but looks like a good place to display a loader!
+      timeSeries.on('statusChanged', function (newStatus, error) {
         console.log(newStatus)
       });
 
       // 4.3 Adding the dataviews to the client
-      client.addDataview(histogram);
+      client.addDataview(timeSeries);
 
       // 5 Adding the bounding box filter
       // 5.1 Defining the bounding box filter for the map
       var boundingBoxFilter = new carto.filter.BoundingBoxLeaflet(map);
 
       // 5.2 Apply the bounding box filter to the dataview
-      histogram.addFilter(boundingBoxFilter);
+      timeSeries.addFilter(boundingBoxFilter);
     </script>
     <!-- Include an external utility to draw histograms -->
     <script>
@@ -136,7 +149,7 @@
       if(a)for(var l=0;l<a.length;l+=1){var u=a[l]
       u.__calling||(u.__calling=!0,u.call(t,o,h),u.__calling=!1)}}}var k={updateGraphicSize:function(){var t=this.refs.graphic,i=t.getClientRects()
       if(i&&i.length>0)var e=i[0].width,n=i[0].height,r=i[0].x,s=i[0].y
-      this.set({width:e,height:n,graphicX:r,graphicY:s})},hoverRect:function(t,i){function e(t){return t%1>0?t.toFixed(1):t}var n=this.get("bins")[t],r=e(n.start)+" - "+e(n.end)+"€: "+n.freq+" "+this.get("item"),s=this.refs.tooltip,o=this.refs.tooltipBg,h=i.clientX-this.get("graphicX")-48,a=i.clientY-this.get("graphicY")-32
+      this.set({width:e,height:n,graphicX:r,graphicY:s})},hoverRect:function(t,i){function e(t){return t%1>0?t.toFixed(1):t}var n=this.get("bins")[t],r=e(n.start)+" - "+e(n.end)+": "+n.freq+" "+this.get("item"),s=this.refs.tooltip,o=this.refs.tooltipBg,h=i.clientX-this.get("graphicX")-48,a=i.clientY-this.get("graphicY")-32
       s.setAttributeNS(null,"visibility","visible"),s.setAttributeNS(null,"x",h+8),s.setAttributeNS(null,"y",a+16),s.firstChild.data=r,o.setAttributeNS(null,"visibility","visible")
       var l=s.getComputedTextLength()
       o.setAttributeNS(null,"x",h),o.setAttributeNS(null,"y",a),o.setAttributeNS(null,"width",l+16)},hoverOutRect:function(t){this.hoverOutDebounced.call(this)}}

@@ -2,12 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>CARTO.js Multi layer example</title>
+    <title>CARTO.js Single layer example</title>
     <!-- Include Leaflet 1.2.0 Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <!-- Include CARTO.js Library -->
-    <script src="../../dist/public/carto.uncompressed.js"></script>
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
     <style>
       html, body { margin: 0; padding: 0; }
       #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
@@ -56,25 +56,8 @@
         }`);
       var europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
 
-      // Europe cities layer
-      var populatedPlacesSQL = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)'); // WHERE adm0name = .admin
-      var populatedPlacesStyle = new carto.style.CartoCSS(`
-       #layer {
-         marker-width: 7;
-         marker-fill: #FF583E;
-         marker-fill-opacity: 0.9;
-         marker-line-color: #FFFFFF;
-         marker-line-width: 0.5;
-         marker-line-opacity: 1;
-         marker-type: ellipse;
-         marker-allow-overlap: false;
-       }`);
-      var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle, {
-        featureOverColumns: ['name']
-      });
-
       // 3.2 Adding the layers to the client
-      client.addLayers([ europeanCountries, populatedPlaces ]);
+      client.addLayer(europeanCountries);
 
       // 3.3. Adding the layers to the map
       client.getLeafletLayer().addTo(map);

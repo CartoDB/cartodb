@@ -92,7 +92,7 @@ echo "Add version in index.html"
 sed -i "s|%VERSION|$TRAVIS_BRANCH|g" index.html
 
 echo "Use CDN carto.js in the v4 examples"
-OLD="../../dist/public/carto.uncompressed.js"
+OLD="../../../dist/public/carto.uncompressed.js"
 CDN="https://cdn.rawgit.com/CartoDB/cartodb.js/@${TRAVIS_BRANCH:1}/carto.js"
 sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/*
 

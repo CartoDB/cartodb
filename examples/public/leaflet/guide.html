@@ -2,14 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>CARTO.js Formula Dataview example</title>
+    <title>CARTO.js Guide</title>
+
     <!-- Include Leaflet 1.2.0 Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
     <!-- Include CARTO.js Library -->
-    <script src="../../dist/public/carto.uncompressed.js"></script>
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
     <style>
       * { margin:0; padding:0; }
       html { box-sizing:border-box; height:100%; }
@@ -26,24 +28,22 @@
     <div id="container">
       <div id="map"></div>
       <div id="widgets">
+        <div id="countriesWidget" class="widget">
+          <h1>European countries</h1>
+          <select class="js-countries" onchange="onCountrySelected">
+            <option value="">All</option>
+          </select>
+        </div>
         <div id="avgPopulationWidget" class="widget widget-formula">
           <h1>Average population</h1>
           <p><span class="js-average-population result">xxx</span> inhabitants</p>
-        </div>
-        <div id="totalPopulationWidget" class="widget widget-formula">
-          <h1>Total population</h1>
-          <p><span class="js-total-population result">xxx</span> inhabitants</p>
-        </div>
-        <div class="widget">
-          <input id="filterCheckbox" type="checkbox" onclick="applyBoundingBox(this);">
-          <label for="filterCheckbox"><b>Apply Bounding Box Filter</b></label>
         </div>
       </div>
     </div>
     <script>
       // 1. Setting up the Leaflet Map
       // 1.1 Creating the Leaflet Map
-      var map = L.map('map').setView([58.722598828043395, 18.544921875000004], 4);
+      var map = L.map('map').setView([50, 15], 4);
 
       // 1.2 Adding basemap and labels layers
       // Adding Voyager Basemap
@@ -94,7 +94,9 @@
          marker-type: ellipse;
          marker-allow-overlap: false;
        }`);
-      var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle);
+      var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle, {
+        featureOverColumns: ['name']
+      });
 
       // 3.2 Adding the layers to the client
       client.addLayers([ europeanCountries, populatedPlaces ]);
@@ -102,21 +104,29 @@
       // 3.3. Adding the layers to the map
       client.getLeafletLayer().addTo(map);
 
-      // 4 Creating a formula widgets
-      // 4.1 Defining a formula dataviews
+      // 4. Setting up tooltips
+      // 4.1 Showing the tooltip when user mouses over a city
+      var popup = L.popup({ closeButton: false });
+      populatedPlaces.on('featureOver', function (featureEvent) {
+        popup.setLatLng(featureEvent.latLng);
+        popup.setContent(featureEvent.data.name);
+        popup.openOn(map);
+      });
+
+      // 4.2 Hiding the tooltip
+      populatedPlaces.on('featureOut', function (featureEvent) {
+        popup.removeFrom(map);
+      });
+
+      // 5 Creating a formula widget
+      // 5.1 Defining a formula dataview
       var averagePopulation = new carto.dataview.Formula(populatedPlacesSQL, 'pop_max', {
         operation: carto.operation.AVG
       });
-      var totalPopulation = new carto.dataview.Formula(populatedPlacesSQL, 'pop_max', {
-        operation: carto.operation.SUM
-      });
 
-      // 4.2 Listening to data changes on the dataviews
+      // 5.2 Listening to data changes on the dataview
       averagePopulation.on('dataChanged', function (newData) {
         refreshAveragePopulationWidget(newData.result);
-      });
-      totalPopulation.on('dataChanged', function (newData) {
-        refreshTotalPopulationWidget(newData.result);
       });
 
       var refreshAveragePopulationWidget = function (avgPopulation) {
@@ -125,30 +135,75 @@
         $averagePopulation.innerText = Math.floor(avgPopulation);
       };
 
-      var refreshTotalPopulationWidget = function (totalPopulation) {
-        var $widget = document.querySelector('#totalPopulationWidget');
-        var $totalPopulation = $widget.querySelector('.js-total-population');
-        $totalPopulation.innerText = totalPopulation;
+      // 5.3 Adding the dataview to the client
+      client.addDataview(averagePopulation);
+
+
+      // 6 Creating a country selector widget
+      // 6.1 Defining a category dataview
+      var countriesDataview = new carto.dataview.Category(europeanCountriesDataset, 'admin', {
+        limit: 100
+      });
+
+      // 6.2 Listening to data changes on the dataview
+      countriesDataview.on('dataChanged', function (newData) {
+        var countryNames = newData.categories.map(function (category) { return category.name; }).sort();
+        refreshCountriesWidget(countryNames);
+      });
+
+      var refreshCountriesWidget = function (adminNames) {
+        var $widget = document.querySelector('#countriesWidget');
+        var $countries = $widget.querySelector('.js-countries');
+
+        $countries.onchange = function (event) {
+          var admin = event.target.value;
+          highlightCountry(admin);
+          filterPopulatedPlacesByCountry(admin);
+        };
+
+        // Fill in the list of countries
+        adminNames.forEach(function (admin) {
+          var option = document.createElement('option');
+          option.innerHTML = admin;
+          option.value = admin;
+          $countries.appendChild(option);
+        });
       };
 
-      // 4.3 Adding the dataviews to the client
-      client.addDataview(averagePopulation);
-      client.addDataview(totalPopulation);
-
-      // 5 Adding the bounding box filter
-      // 5.1 Defining the bounding box filter for the map
-      var boundingBoxFilter = new carto.filter.BoundingBoxLeaflet(map);
-
-      // 5.2 Apply the bounding box filter to the dataviews
-      var applyBoundingBox = function (event) {
-        if (event.checked) {
-          averagePopulation.addFilter(boundingBoxFilter);
-          totalPopulation.addFilter(boundingBoxFilter);
-        } else {
-          averagePopulation.removeFilter(boundingBoxFilter);
-          totalPopulation.removeFilter(boundingBoxFilter);
+      var highlightCountry = function (admin) {
+        var cartoCSS = `
+          #layer {
+            polygon-fill: #162945;
+            polygon-opacity: 0.5;
+            ::outline {
+              line-color: #FFFFFF;
+              line-width: 1;
+              line-opacity: 0.5;
+            }
+          }
+        `;
+        if (admin) {
+          cartoCSS = `
+            ${cartoCSS}
+            #layer[admin!='${admin}'] {
+              polygon-fill: #CDCDCD;
+            }
+          `;
         }
-      }
+        var europeanCountriesStyle = new carto.style.CartoCSS(cartoCSS);
+        europeanCountries.setStyle(europeanCountriesStyle);
+      };
+
+      var filterPopulatedPlacesByCountry = function (admin) {
+        var query = 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)';
+        if (admin) {
+          query = `SELECT * FROM ne_10m_populated_places_simple WHERE adm0name='${admin}'`;
+        }
+        populatedPlacesSQL.setQuery(query);
+      };
+
+      // 6.3 Adding the dataview to the client
+      client.addDataview(countriesDataview);
     </script>
   </body>
 </html>

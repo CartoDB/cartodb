@@ -35,7 +35,7 @@ describe('api/v4/source/sql', function () {
     });
   });
 
-  describe('.setQuery', function () {
+  fdescribe('.setQuery', function () {
     it('should set the query', function () {
       sqlQuery.setQuery('SELECT foo FROM bar');
       expect(sqlQuery.getQuery()).toEqual('SELECT foo FROM bar');
@@ -69,16 +69,63 @@ describe('api/v4/source/sql', function () {
       });
       var style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
       var layer = new carto.layer.Layer(sqlQuery, style);
+      var queryChangedSpy = jasmine.createSpy('queryChangedSpy');
+      var newQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
 
-      client.addLayer(layer).then(function () {
-        var expectedQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
+      sqlQuery.on('queryChanged', queryChangedSpy);
 
-        sqlQuery.on('queryChanged', function (newQuery) {
-          expect(newQuery).toEqual(expectedQuery);
+      client.addLayer(layer)
+        .then(function () {
+          return sqlQuery.setQuery(newQuery);
+        })
+        .then(function () {
+          expect(queryChangedSpy).toHaveBeenCalledWith(newQuery);
           done();
         });
-        sqlQuery.setQuery(expectedQuery);
+    });
+
+    it('should return a resolved promise when there is no internal model', function (done) {
+      var newQuery = 'SELECT * FROM ne_10m_populated_places_simple';
+      sqlQuery.setQuery(newQuery)
+        .then(function () {
+          expect(sqlQuery.getQuery()).toEqual(newQuery);
+          done();
+        });
+    });
+
+    it('should return a resolved promise when there is an internal model', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
       });
+      var style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      var layer = new carto.layer.Layer(sqlQuery, style);
+      var newQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
+      client.addLayer(layer)
+        .then(function () {
+          return sqlQuery.setQuery(newQuery);
+        })
+        .then(function () {
+          expect(sqlQuery.getQuery()).toEqual(newQuery);
+          done();
+        });
+    });
+
+    it('should return a rejected promise when there is an internal model (and a reload error)', function () {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      var layer = new carto.layer.Layer(sqlQuery, style);
+      var newQuery = 'SELECT * FROM invalid_dataset';
+      client.addLayer(layer)
+        .then(function () {
+          return sqlQuery.setQuery(newQuery);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
     });
   });
 

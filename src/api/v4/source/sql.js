@@ -24,21 +24,27 @@ function SQL (query) {
 SQL.prototype = Object.create(Base.prototype);
 
 /**
- * Store the query internally and if in the internal model when exists.
- *
+ * Update the query. This method is asyncronous and returns a promise which is resolved when the style
+ * is changed succesfully. It also fires a queryChangedEvent.
+ * 
  * @param {string} query - The sql query that will be the source of the data
  * @fires carto.source.SQL.queryChangedEvent
+ * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
 SQL.prototype.setQuery = function (query) {
+  var self = this;
   _checkQuery(query);
   this._query = query;
-  if (this._internalModel) {
-    this._internalModel.set('query', query);
-  } else {
+  if (!this._internalModel) {
     this._triggerQueryChanged(this, query);
+    return Promise.resolve();
   }
-  return this;
+  this._internalModel.set('query', query, { silent: true });
+
+  return this._internalModel._engine.reload().then(function () {
+    self._triggerQueryChanged(this, query);
+  });
 };
 
 /**

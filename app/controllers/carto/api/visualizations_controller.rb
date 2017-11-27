@@ -62,6 +62,7 @@ module Carto
           show_likes: params[:show_likes] == 'true',
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
+          show_auth_tokens: params[:show_auth_tokens] == 'true',
           password: params[:password]
         )
 

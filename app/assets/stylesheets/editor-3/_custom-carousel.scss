@@ -79,15 +79,14 @@
 }
 
 .Carousel-shadow--left {
-  background-image: linear-gradient(left, #FFF, rgba(#FFF, 0));
-  // Overriding default background color
   left: 0;
   background-color: rgba(#FFF, 0) !important;
+  background-image: linear-gradient(left, #FFF, rgba(#FFF, 0));
 }
 
 .Carousel-shadow--right {
-  background-image: linear-gradient(left, rgba(#FFF, 0), #FFF);
   right: 0;
+  background-image: linear-gradient(left, rgba(#FFF, 0), #FFF);
 }
 
 .Carousel-list.ps-container > .ps-scrollbar-x-rail {

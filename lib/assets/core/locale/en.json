@@ -2,13 +2,13 @@
   "feedback": "Give us feedback!",
   "back-to-dashboard": "Back to the dashboard",
   "edit-map": "Edit map",
-  "map-settings": "Map settings",
+  "map-settings": "Map options",
   "more-options": "More options",
   "change-privacy": "Change map privacy",
   "sql-applied": "SQL query applied",
   "data-source": "Data source",
   "edit-analysis": "Edit analysis",
-  "add-analysis": "Add new analysis",
+  "add-analysis": "Add new analysis node",
   "back-layers": "Back to the LAYERS pane",
   "user": {
     "you": "You"
@@ -1681,7 +1681,7 @@
       },
       "layer": {
         "animated": "Animated",
-        "heatmap": "Pixel",
+        "heatmap": "Heatmap",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
@@ -1732,7 +1732,7 @@
         "hover": "Hover"
       },
       "analysis-form": {
-        "admin-region": "Admin. Region",
+        "admin-region": "Administrative Regions",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
         "aggregate-by-help": "Will calculate aggregate values for each centroid",
@@ -1840,8 +1840,8 @@
         "georeference": {
           "postal-code-help": "Select a column with postal codes",
           "admin-region-help": "Select a column with region names",
-          "admin-region-extended-help": "Specify an admin. region or select a column with region names",
-          "admin-region": "Admin. Regions",
+          "admin-region-extended-help": "Specify an administrative region or select a column with region names",
+          "admin-region": "Administrative Regions",
           "city-help": "Select a column with city names",
           "city-extended-help": "Specify a city or select a column with city names",
           "city": "Cities",
@@ -2298,8 +2298,8 @@
         "simple": "points",
         "hexabins": "hexbins",
         "squares": "squares",
-        "regions": "Adm. Regions",
-        "heatmap": "pixel",
+        "regions": "Administrative Regions",
+        "heatmap": "heatmap",
         "animation": "animated"
       },
       "style-form": {
@@ -2314,8 +2314,8 @@
             "simple": "By Points",
             "hexabins": "By Hexbins",
             "squares": "By Squares",
-            "regions": "By Adm. Regions",
-            "heatmap": "By Pixel",
+            "regions": "By Administrative Regions",
+            "heatmap": "Heatmap",
             "animation": "Animated"
           }
         },
@@ -2365,7 +2365,7 @@
         "polygon": "polygon",
         "simple": "point",
         "squares": "square",
-        "hexabins": "hexabin",
+        "hexabins": "hexbin",
         "regions": "region",
         "animation": "point",
         "heatmap": "heatmap",
@@ -2422,8 +2422,8 @@
           "help": "Change the %{type} size"
         },
         "aggregation-dataset": {
-          "label": "Admin. level",
-          "help": "Change the Adm. level"
+          "label": "Adm. level",
+          "help": "Groups points by polygon boundaries based on world admininstrative levels"
         },
         "labels-enabled": {
           "label": "labels",
@@ -2467,7 +2467,7 @@
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema...",
-          "help": "Change the column"
+          "help": "The column from your dataset that drives the animation"
         },
         "animated-overlap": {
           "label": "overlap",
@@ -2478,19 +2478,19 @@
         },
         "animated-trails": {
           "label": "trails",
-          "help": "Change the trails"
+          "help": "Specifies how a pixel is rendered in the frames"
         },
         "animated-resolution": {
           "label": "resolution",
-          "help": "Change the resolution"
+          "help": "Defines the width and height of each Torque cell, in pixels"
         },
         "animated-steps": {
           "label": "steps",
-          "help": "Change the steps"
+          "help": "The number of animation steps/frames in your animation"
         },
         "animated-duration": {
           "label": "duration",
-          "help": "Change the duration"
+          "help": "The length of time for your animation, in seconds."
         }
       }
     },

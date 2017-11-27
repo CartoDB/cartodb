@@ -61,6 +61,14 @@ var LeafletLayer = L.TileLayer.extend({
     return L.TileLayer.prototype.removeFrom.call(this, map);
   },
 
+  setUrl: function () {
+    throw new Error('This function is not accessible.');
+  },
+
+  _setUrl: function (url, noDraw) {
+    return L.TileLayer.prototype.setUrl.call(this, url, noDraw);
+  },
+
   _onFeatureClick: function (internalEvent) {
     this._triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, internalEvent);
   },

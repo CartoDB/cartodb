@@ -1,4 +1,5 @@
 var L = require('leaflet');
+var _ = require('underscore');
 var Layer = require('./layer');
 var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
 
@@ -66,7 +67,7 @@ var LeafletLayer = L.TileLayer.extend({
 
   _onFeatureOver: function (internalEvent) {
     var layer = this._layers.findById(internalEvent.layer.id);
-    if (isInteractive(layer)) {
+    if (layer.isInteractive()) {
       this._hoveredLayers[internalEvent.layerIndex] = true;
       this._map.getContainer().style.cursor = 'pointer';
     }
@@ -75,7 +76,7 @@ var LeafletLayer = L.TileLayer.extend({
 
   _onFeatureOut: function (internalEvent) {
     this._hoveredLayers[internalEvent.layerIndex] = false;
-    if (anyLayerHovered(this._hoveredLayers)) {
+    if (_.any(this._hoveredLayers)) {
       this._map.getContainer().style.cursor = 'pointer';
     } else {
       this._map.getContainer().style.cursor = 'auto';
@@ -114,24 +115,5 @@ var LeafletLayer = L.TileLayer.extend({
     }
   }
 });
-
-function anyLayerHovered (map) {
-  for (var i = 0; i < map.length; i++) {
-    if (map[i]) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Check if a layer is interactive
- */
-function isInteractive (layer) {
-  if (!layer) {
-    return false;
-  }
-  return layer.hasFeatureClickColumns() || layer.hasFeatureOverColumns();
-}
 
 module.exports = LeafletLayer;

@@ -55,18 +55,18 @@
       text-decoration: underline;
     }
   }
+}
 
-  &--noAction {
+.BlockList-item--noAction {
+  cursor: default;
+
+  &:hover {
+    border: 1px solid $cSecondaryLine;
+  }
+
+  .BlockList-titleText {
+    text-decoration: none;
     cursor: default;
-
-    &:hover {
-      border: 1px solid $cSecondaryLine;
-    }
-
-    .BlockList-titleText {
-      text-decoration: none;
-      cursor: default;
-    }
   }
 }
 
@@ -112,7 +112,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(#000, 0.08);
     border-radius: $halfBaseSize;
     pointer-events: none;
     content: '';
@@ -174,7 +174,6 @@
 
   &:first-child::before {
     display: none;
-    background: rd;
   }
 
   &:last-child {

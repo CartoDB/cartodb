@@ -264,7 +264,7 @@ describe Carto::Api::OrganizationAssetsController do
     it 'fails if resource unspecified' do
       post_json create_url, {} do |response|
         response.status.should eq 422
-        response.body.should eq(errors: 'Missing resource for asset')
+        response.body[:errors].should eq 'Missing resource for asset'
       end
     end
   end

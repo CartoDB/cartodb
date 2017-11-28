@@ -836,7 +836,10 @@ module CartoDB
       end
 
       def drop_analysis_cache(user)
-        cache_tables_sql = "SELECT tablename FROM pg_tables WHERE schemaname = '#{user.database_schema}' and tableowner = '#{user.database_username}' and tablename ilike 'analysis_%'"
+        # Filtering this query by tableowner should be enough but for security reasons I've added an additional
+        # filter by schema. Also we have add a regexp to matches the current analysis tables name format to avoid
+        # deleting user tables in the process (https://github.com/CartoDB/camshaft/blob/0.59.4/lib/node/node.js#L344-L348)
+        cache_tables_sql = "SELECT tablename FROM pg_tables WHERE schemaname = '#{user.database_schema}' and tableowner = '#{user.database_username}' and tablename ~* '^analysis_[0-9a-z]{10}_[0-9a-z]{40}$';"
         delete_analysis_metadata_sql = "DELETE FROM cdb_analysis_catalog WHERE username = '#{user.username}'"
         user.in_database(as: :superuser) do |database|
           database.transaction do

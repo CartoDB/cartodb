@@ -5,8 +5,6 @@ var Engine = require('../../engine');
 var Events = require('./events');
 var LayerBase = require('./layer/base');
 var Layers = require('./layers');
-var LeafletLayer = require('./native/leaflet-layer');
-// var GoogleMapsMapType = require('./native/google-maps-map-type');
 var VERSION = require('../../../package.json').version;
 
 /**
@@ -218,17 +216,22 @@ Client.prototype.getDataviews = function () {
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
+  var LeafletLayer = require('./native/leaflet-layer');
   this._leafletLayer = this._leafletLayer || new LeafletLayer(this._layers, this._engine);
   return this._leafletLayer;
 };
 
 /**
- * [description]
- * @return {google.maps.ImageMapType} [description]
+ * Return a Google Maps mapType that groups all the layers that have been
+ * added to this client.
+ *
+ * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
+ * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}
  * @api
  */
-Client.prototype.getGoogleMapsMapType = function () {
-  this._gmapsMapType = this._gmapsMapType || null; // || new GoogleMapsMapType();
+Client.prototype.getGoogleMapsMapType = function (map) {
+  var GoogleMapsMapType = require('./native/google-maps-map-type');
+  this._gmapsMapType = this._gmapsMapType || new GoogleMapsMapType(this._layers, this._engine, map);
   return this._gmapsMapType;
 };
 

@@ -8,8 +8,7 @@ var LeafletCartoLayerGroupView = require('../../../geo/leaflet/leaflet-cartodb-l
  * This object is a custom Leaflet layer to enable feature interactivity
  * using an internal LeafletCartoLayerGroupView instance.
  *
- * There are some overwritten functions:
- * - getAttribution: returns always a custom OpenStreetMap / Carto attribution message
+ * There are two overwritten functions:
  * - addTo: when the layer is added to a map it also creates a LeafletCartoLayerGroupView
  *          object called `_internalView` in order to enable the feature events
  * - removeFrom: when the layer is removed from a map it also removes the feature events
@@ -102,6 +101,12 @@ var LeafletLayer = L.TileLayer.extend({
         event.latLng = {
           lat: internalEvent.latlng[0],
           lng: internalEvent.latlng[1]
+        };
+      }
+      if (internalEvent.position) {
+        event.position = {
+          x: internalEvent.position.x,
+          y: internalEvent.position.y
         };
       }
 

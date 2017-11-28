@@ -7,6 +7,7 @@ var GMapsCartoDBLayerGroupView = require('../../../geo/gmaps/gmaps-cartodb-layer
  * This object is a custom Google Maps MapType to enable feature interactivity
  * using an internal GMapsCartoDBLayerGroupView instance.
  *
+ * NOTE: It also contains the feature events handlers. That's why it requires the carto layers array.
  */
 
 function GoogleMapsMapType (layers, engine, map) {
@@ -69,7 +70,10 @@ GoogleMapsMapType.prototype._triggerLayerFeatureEvent = function (eventName, int
       };
     }
     if (internalEvent.position) {
-      event.position = internalEvent.position;
+      event.position = {
+        x: internalEvent.position.x,
+        y: internalEvent.position.y
+      };
     }
 
     layer.trigger(eventName, event);

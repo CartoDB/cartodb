@@ -49,7 +49,7 @@
 
       // 3.3. Adding the layers to the map
       var mapType = client.getGoogleMapsMapType(map);
-      map.overlayMapTypes.insertAt(0, mapType);
+      map.overlayMapTypes.push(mapType);
 
       // map.overlayMapTypes.setAt(0, mapType)
       // map.overlayMapTypes.insertAt(0, mapType)

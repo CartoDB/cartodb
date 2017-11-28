@@ -216,8 +216,10 @@ Client.prototype.getDataviews = function () {
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
-  var LeafletLayer = require('./native/leaflet-layer');
-  this._leafletLayer = this._leafletLayer || new LeafletLayer(this._layers, this._engine);
+  if (!this._leafletLayer) {
+    var LeafletLayer = require('./native/leaflet-layer');
+    this._leafletLayer = new LeafletLayer(this._layers, this._engine);
+  }
   return this._leafletLayer;
 };
 
@@ -225,13 +227,19 @@ Client.prototype.getLeafletLayer = function () {
  * Return a Google Maps mapType that groups all the layers that have been
  * added to this client.
  *
+ * @param {google.maps.Map}
+ *
  * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
  * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}
  * @api
  */
 Client.prototype.getGoogleMapsMapType = function (map) {
-  var GoogleMapsMapType = require('./native/google-maps-map-type');
-  this._gmapsMapType = this._gmapsMapType || new GoogleMapsMapType(this._layers, this._engine, map);
+  // NOTE: the map is required here because of wax.g.connector
+
+  if (!this._gmapsMapType) {
+    var GoogleMapsMapType = require('./native/google-maps-map-type');
+    this._gmapsMapType = new GoogleMapsMapType(this._layers, this._engine, map);
+  }
   return this._gmapsMapType;
 };
 

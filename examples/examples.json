@@ -49,6 +49,16 @@
       "title": "Guide",
       "desc": "Full reference guide example",
       "file": "public/guide.html"
+    },
+    {
+      "title": "Inmutable source/style",
+      "desc": "See how change a layer with inmutable objects.",
+      "file": "public/inmutable-source-style.html"
+    },
+    {
+      "title": "Mutable source/style",
+      "desc": "See how change a layer with mutable objects.",
+      "file": "public/mutable-source-style.html"
     }
   ]
 }

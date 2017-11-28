@@ -102,6 +102,10 @@ class Admin::VisualizationsController < Admin::AdminController
       return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
     end
 
+    if @visualization.is_privacy_private? && @visualization.has_read_permission?(current_user)
+      @auth_tokens = current_user.get_auth_tokens
+    end
+
     respond_to { |format| format.html }
   end
 

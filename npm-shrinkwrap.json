@@ -316,9 +316,9 @@
       "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-1.2.1.tgz"
     },
     "camshaft-reference": {
-      "version": "0.33.4",
-      "from": "camshaft-reference@0.33.4",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.33.4.tgz"
+      "version": "0.34.0",
+      "from": "camshaft-reference@0.34.0",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.34.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb4",
@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.17",
-      "from": "cartodb/deep-insights.js#v0.4.17",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#460a9fcf576bb6d03ba2ea9e6feaa153e0cbf714",
+      "version": "0.4.18",
+      "from": "cartodb/deep-insights.js#v0.4.18",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#90da451ad3827c34a26c76d3b9503bce6b0bdb42",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.28",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.28",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#cdbc4d8bd9f21d0d9019b8603ba1a1530d148629"
+      "version": "4.0.0-alpha.29",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.29",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f299989864d3f07d744f0c82802f3c27e32b5561"
     },
     "center-align": {
       "version": "0.1.3",

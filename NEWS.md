@@ -69,6 +69,7 @@ ion for time-series (#12670)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392)
 * Start using ::outline symbolizer for polygon stroke (#12412)
+* Explicit error on password protected visualization requests (#13123)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Time-series widgets aggregated by time (#12324)
@@ -92,12 +93,13 @@ ion for time-series (#12670)
 * Improve legends error (cartodb.js#1758)
 * Updates Dataservices API client default version to `0.21.0` (#12942)
 * Improve user migrator
-* Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
+* Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fixes image export in editor (#13089)
 * Fix incorrect "back to dashboard" link in dataset view (#13111)
 * Improve the discoverability of the table view switch (#13050)
 * Change Basemap layer style (#13091)
@@ -304,6 +306,7 @@ ion for time-series (#12670)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
+* Optimize bundle size related to camshaft-reference (#13124)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

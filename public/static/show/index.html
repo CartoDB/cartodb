@@ -289,6 +289,22 @@ var PublicClient = function () {
       return _extends({}, obj.headers, additional);
     }
   }, {
+    key: 'paramsToURI',
+    value: function paramsToURI(params) {
+      var DEFAULT_PARAMS = '';
+
+      return this.checkParams(params) ? '?' + Object.keys(params).map(function (key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+      }).join('&') : DEFAULT_PARAMS;
+    }
+  }, {
+    key: 'checkParams',
+    value: function checkParams(params) {
+      var OBJECT_TYPE = '[object Object]';
+
+      return params && Object.prototype.toString.call(params) === OBJECT_TYPE && Object.keys(params).length;
+    }
+  }, {
     key: 'makeRelativeURI',
     value: function makeRelativeURI(parts) {
       return '/' + parts.join('/');

@@ -84,14 +84,14 @@
     });
 
     // Add the layer to the map
-    var layerGroup = client.getLeafletLayer();
-    layerGroup.addTo(map);
-    layerGroup.on(carto.layer.events.FEATURE_ERROR, function (error) {
-      console.error(error.message);
+    var leafletLayer = client.getLeafletLayer();
+    leafletLayer.addTo(map);
+    leafletLayer.on(carto.layer.events.FEATURE_ERROR, function (error) {
+      console.error('LAYER ERROR: ', error);
     });
 
     client.on('error', function (error) {
-      console.error(error);
+      console.error('CLIENT ERROR ', error);
     });
 
     // Change columns dynamically

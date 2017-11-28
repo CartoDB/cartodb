@@ -3,6 +3,7 @@ var _ = require('underscore');
 var Layer = require('./layer');
 var constants = require('./constants');
 var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
+var CartoError = require('./error-handling/carto-error');
 
 /**
  * This object is a custom Leaflet layer to enable feature interactivity
@@ -42,6 +43,7 @@ var LeafletLayer = L.TileLayer.extend({
       this._internalView.on('featureClick', this._onFeatureClick, this);
       this._internalView.on('featureOver', this._onFeatureOver, this);
       this._internalView.on('featureOut', this._onFeatureOut, this);
+      this._internalView.on('featureError', this._onFeatureError, this);
     }
 
     return L.TileLayer.prototype.addTo.call(this, map);
@@ -86,6 +88,11 @@ var LeafletLayer = L.TileLayer.extend({
       this._map.getContainer().style.cursor = 'auto';
     }
     this._triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent);
+  },
+
+  _onFeatureError: function (error) {
+    var cartoError = new CartoError(error);
+    this.fire(Layer.events.FEATURE_ERROR, cartoError);
   },
 
   _triggerLayerFeatureEvent: function (eventName, internalEvent) {

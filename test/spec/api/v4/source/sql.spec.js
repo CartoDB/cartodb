@@ -35,7 +35,7 @@ describe('api/v4/source/sql', function () {
     });
   });
 
-  fdescribe('.setQuery', function () {
+  describe('.setQuery', function () {
     it('should set the query', function () {
       sqlQuery.setQuery('SELECT foo FROM bar');
       expect(sqlQuery.getQuery()).toEqual('SELECT foo FROM bar');

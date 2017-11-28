@@ -1,12 +1,10 @@
-import { style } from '../../../../../../../Library/Caches/typescript/2.6/node_modules/@types/d3';
-
 var carto = require('../../../../../src/api/v4');
 
 describe('api/v4/style/cartocss', function () {
   var cartoCSS;
 
   beforeEach(function () {
-    cartoCSS = new carto.style.CartoCSS('#layer { marker-with:10; }');
+    cartoCSS = new carto.style.CartoCSS('#layer { marker-width:10; }');
   });
 
   describe('constructor', function () {
@@ -72,40 +70,40 @@ describe('api/v4/style/cartocss', function () {
 
   describe('.getStyle', function () {
     it('should return the internal style', function () {
-      var expected = '#layer { marker-with:10; }';
+      var expected = '#layer { marker-width:10; }';
       var actual = cartoCSS.getStyle();
 
       expect(actual).toEqual(expected);
     });
   });
 
-  describe('.setStyle', function () {
+  describe('.setContent', function () {
     var layer;
     var source;
-    var newStyle;
+    var newContent;
 
     beforeEach(function () {
       source = new carto.source.Dataset('ne_10m_populated_places_simple');
-      layer = new carto.layer.Layer(source, style);
-      newStyle = '#layer { marker-fill: #FABADA';
+      layer = new carto.layer.Layer(source, cartoCSS);
+      newContent = '#layer { marker-fill: #FABADA }';
     });
 
     describe('when no engine is attached', function () {
       it('should update the internal style', function (done) {
-        expect(layer.getStyle()).toEqual(style);
-        layer.setStyle(newStyle).then(function () {
-          expect(layer.getStyle()).toEqual(style);
-          done();
-        });
+        cartoCSS.setContent(newContent)
+          .then(function () {
+            expect(cartoCSS.getStyle()).toEqual(newContent);
+            done();
+          });
       });
 
-      it('should trigger a styleChanged event', function (done) {
-        var styleChangedSpy = jasmine.createSpy('stylechangedSpy');
-        style.on('styleChanged', styleChangedSpy);
-        layer.setStyle(newStyle)
+      it('should trigger a contentChanged event', function (done) {
+        var contentChangedSpy = jasmine.createSpy('contentChangedSpy');
+        cartoCSS.on('contentChanged', contentChangedSpy);
+        cartoCSS.setContent(newContent)
           .then(function () {
-            expect(layer.getStyle()).toEqual(style);
-            expect(styleChangedSpy).toHaveBeenCalled();
+            expect(cartoCSS.getStyle()).toEqual(newContent);
+            expect(contentChangedSpy).toHaveBeenCalled();
             done();
           });
       });
@@ -124,26 +122,28 @@ describe('api/v4/style/cartocss', function () {
       it('should update the internal style', function (done) {
         client.addLayer(layer)
           .then(function () {
-            return style.setStyle(newStyle);
+            return cartoCSS.setContent(newContent);
           })
           .then(function () {
-            expect(style.getStyle()).toEqual(newStyle);
+            expect(cartoCSS.getStyle()).toEqual(newContent);
             done();
-          });
+          })
+          .catch(console.warn);
       });
 
-      it('should trigger a styleChanged event?', function (done) {
-        var styleChangedSpy = jasmine.createSpy('stylechangedSpy');
-        style.on('styleChanged', styleChangedSpy);
+      it('should trigger a contentChanged event?', function (done) {
+        var contentChangedSpy = jasmine.createSpy('contentChangedSpy');
+        cartoCSS.on('contentChanged', contentChangedSpy);
 
         client.addLayer(layer)
           .then(function () {
-            return style.setStyle(newStyle);
+            return cartoCSS.setContent(newContent);
           })
           .then(function () {
-            expect(styleChangedSpy).toHaveBeenCalled();
+            expect(contentChangedSpy).toHaveBeenCalled();
             done();
-          });
+          })
+          .catch(console.warn);
       });
     });
   });

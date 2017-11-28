@@ -65,23 +65,31 @@ Layer.prototype.setStyle = function (style, opts) {
   if (prevStyle === style) {
     return Promise.resolve();
   }
-  if (this._internalModel) {
-    this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
-    return this._engine.reload()
-      .then(function () {
-        self._style = style;
-        self.trigger('styleChanged', this);
-      })
-      .catch(function (err) {
-        var error = new CartoError(err);
-        self.trigger('error', new CartoError(error));
-        return Promise.reject(error);
-      });
-  } else {
+  if (!this._internalModel) {
     self._style = style;
     this.trigger('styleChanged', this);
     return Promise.resolve();
   }
+  // If style has an engine and is different from the layer`s engine throw an error
+  if (style.$getEngine() && style.$getEngine() !== this._internalModel._engine) {
+    throw new Error('A layer can\'t have a styles which belongs to a different clients');
+  }
+  // If style has no engine, set the layer engine in the style.
+  if (!style.$getEngine()) {
+    style.$setEngine(this._engine);
+  }
+
+  this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      self._style = style;
+      self.trigger('styleChanged', this);
+    })
+    .catch(function (err) {
+      var error = new CartoError(err);
+      self.trigger('error', new CartoError(error));
+      return Promise.reject(error);
+    });
 };
 
 /**
@@ -120,28 +128,26 @@ Layer.prototype.setSource = function (source) {
     return Promise.resolve();
   }
   // If layer has been instantiated 
-  if (this._internalModel) {
-    // If the source already has an engine and is different from the layer's engine throw an error.
-    if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
-      throw new Error('A layer can\'t have a source which belongs to a different client');
-    }
-    // If source has no engine use the layer engine.
-    if (!source.$getEngine()) {
-      source.$setEngine(this._engine);
-    }
-    // Update the internalModel and return a promise
-    this._internalModel.set('source', source.$getInternalModel(), { silent: true });
-    return this._engine.reload()
-      .then(function () {
-        self._source = source;
-        self.trigger('sourceChanged', this);
-      })
-      .catch(function (err) {
-        var error = new CartoError(err);
-        self.trigger('error', error);
-        return Promise.reject(error);
-      });
+  // If the source already has an engine and is different from the layer's engine throw an error.
+  if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
+    throw new Error('A layer can\'t have a source which belongs to a different clients');
   }
+  // If source has no engine use the layer engine.
+  if (!source.$getEngine()) {
+    source.$setEngine(this._engine);
+  }
+  // Update the internalModel and return a promise
+  this._internalModel.set('source', source.$getInternalModel(), { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      self._source = source;
+      self.trigger('sourceChanged', this);
+    })
+    .catch(function (err) {
+      var error = new CartoError(err);
+      self.trigger('error', error);
+      return Promise.reject(error);
+    });
 };
 
 /**

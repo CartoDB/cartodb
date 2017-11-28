@@ -96,20 +96,53 @@ describe('api/v4/layer', function () {
     });
 
     describe('when the layer has an engine', function () {
-      describe('and the style has no engine', function () {
-        it('should set the engine into the style and update the internal style.');
-      });
-
-      describe('and the style has an engine', function () {
-        it('should update the internal style when the engines are equal');
-        it('should throw an error when the engines are not equal');
-      });
-
-      it('should fire a cartoError when the style is invalid', function (done) {
-        var client = new carto.Client({
+      var client;
+      beforeEach(function () {
+        client = new carto.Client({
           apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
           username: 'cartojs-test'
         });
+      });
+
+      describe('and the style has no engine', function () {
+        it('should set the engine into the style and update the internal style.', function (done) {
+          client.addLayer(layer)
+            .then(function () {
+              return layer.setStyle(newStyle);
+            })
+            .then(function () {
+              expect(layer.getStyle().$getEngine()).toBe(layer._engine);
+              done();
+            });
+        });
+      });
+
+      describe('and the style has an engine', function () {
+        it('should update the internal style when the engines are equal', function (done) {
+          newStyle.$setEngine(client._engine);
+          client.addLayer(layer)
+            .then(function () {
+              return layer.setStyle(newStyle);
+            })
+            .then(function () {
+              expect(layer.getStyle().$getEngine()).toBe(layer._engine);
+              done();
+            });
+        });
+
+        it('should throw an error when the engines are not equal', function (done) {
+          newStyle.$setEngine('fakeEngine');
+          client.addLayer(layer)
+            .then(function () {
+              expect(function () {
+                return layer.setStyle(newStyle);
+              }).toThrowError();
+              done();
+            });
+        });
+      });
+
+      it('should fire a cartoError when the style is invalid', function (done) {
         var styleChangedSpy = jasmine.createSpy('styleChangedSpy');
         layer.on('error', styleChangedSpy);
         client.addLayer(layer)
@@ -124,10 +157,6 @@ describe('api/v4/layer', function () {
       });
 
       it('should fire a styleChanged event when the layer belongs to a client', function (done) {
-        var client = new carto.Client({
-          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-          username: 'cartojs-test'
-        });
         var styleChangedSpy = jasmine.createSpy('styleChangedSpy');
         layer.on('styleChanged', styleChangedSpy);
 
@@ -244,7 +273,7 @@ describe('api/v4/layer', function () {
 
           expect(function () {
             layer.setSource(newSource);
-          }).toThrowError('A layer can\'t have a source which belongs to a different client');
+          }).toThrowError('A layer can\'t have a source which belongs to a different clients');
         });
       });
     });

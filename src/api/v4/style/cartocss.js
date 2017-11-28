@@ -1,6 +1,9 @@
 var _ = require('underscore');
 var Base = require('./base');
 
+// Event constants
+var CONTENT_CHANGED = 'contentChanged';
+
 /**
  * A CartoCSS/TurboCarto style that can be applied to a {@link carto.layer.Layer}.
  * @param {string} cartocss CartoCSS
@@ -23,6 +26,12 @@ function CartoCSS (cartoCSS) {
 
 CartoCSS.prototype = Object.create(Base.prototype);
 
+/**
+ * Get the current CartoCSS/TurboCarto style as a string.
+ * 
+ * @return {string} - The TurboCarto style for this CartoCSS object
+ * @api
+ */
 CartoCSS.prototype.toCartoCSS = function () {
   return this._cartoCSS;
 };
@@ -36,6 +45,31 @@ CartoCSS.prototype.toCartoCSS = function () {
 CartoCSS.prototype.getStyle = function () {
   return this._cartoCSS;
 };
+
+/**
+ * Set the CartoCSS/Turbocarto as a string.
+ * 
+ * @param {string} newContent - A string containing the new cartocss/turbocarto style
+ * @return {Promise<string>} A promise that will be resolved once the cartocss/turbocarto is updated
+ * @fires 
+ * @api
+ */
+CartoCSS.prototype.setContent = function (newContent) {
+  _checkCartoCSS(newContent);
+  if (!this._engine) {
+    return _updateCartoCSS.call(this, newContent);
+  }
+
+  return this._engine.reload().then(function () {
+    return _updateCartoCSS.call(this, newContent);
+  }).bind(this);
+};
+
+function _updateCartoCSS (newContent) {
+  this._cartoCSS = newContent;
+  this.trigger(CONTENT_CHANGED, this._cartoCSS);
+  return Promise.resolve(this._cartoCSS);
+}
 
 function _checkCartoCSS (cartoCSS) {
   if (!cartoCSS) {

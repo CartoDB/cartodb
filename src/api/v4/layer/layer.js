@@ -98,7 +98,11 @@ Layer.prototype.setSource = function (source) {
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
     if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
-      throw new Error('A layer can\'t have a source which belongs to a different client');
+      throw new CartoError({
+        origin: 'validation',
+        type: 'layer',
+        message: 'differentSourceClient'
+      });
     }
     this._internalModel.set('source', source.$getInternalModel());
   }
@@ -295,13 +299,21 @@ function _getInteractivityFields (columns) {
 
 function _checkStyle (style) {
   if (!(style instanceof StyleBase)) {
-    throw new TypeError('The given object is not a valid style. See "carto.style.Base"');
+    throw new CartoError({
+      origin: 'validation',
+      type: 'layer',
+      message: 'nonValidStyle'
+    });
   }
 }
 
 function _checkSource (source) {
   if (!(source instanceof SourceBase)) {
-    throw new TypeError('The given object is not a valid source. See "carto.source.Base"');
+    throw new CartoError({
+      origin: 'validation',
+      type: 'layer',
+      message: 'nonValidSource'
+    });
   }
 }
 

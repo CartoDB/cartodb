@@ -1,6 +1,20 @@
+var _ = require('underscore');
 var retrieveFriendlyError = require('./error-list');
 var UNEXPECTED_ERROR = 'unexpected error';
 var GENERIC_ORIGIN = 'generic';
+
+function track (error) {
+  if (window.trackJs) {
+    try {
+      var message = error
+        ? error.message + ' - code: ' + error.errorCode
+        : JSON.stringify(error);
+      window.trackJs.track(new Error(message));
+    } catch (exc) {
+      // Swallow
+    }
+  }
+}
 
 /**
  * Build a cartoError from a generic error.
@@ -10,31 +24,44 @@ var GENERIC_ORIGIN = 'generic';
  *
  * @api
  */
-function CartoError (error) {
-  this.message = UNEXPECTED_ERROR;
-  this.type = '';
-  this.origin = GENERIC_ORIGIN;
+function CartoError (error, layers) {
+  var cartoError = _.extend({
+    message: UNEXPECTED_ERROR,
+    type: '',
+    origin: GENERIC_ORIGIN
+  }, error);
 
   if (_isWindshaftError(error)) {
-    this.message = error.message;
-    this.type = error.type;
-    this.origin = error.origin;
+    cartoError = transformWindshaftError(error, layers);
   }
   if (error && error.responseText) {
-    this.message = _handleAjaxResponse(error);
-    this.origin = 'ajax';
-    this.type = error.statusText;
-  }
-  if (error && error.message) {
-    this.message = error.message;
+    cartoError.message = _handleAjaxResponse(error);
+    cartoError.origin = 'ajax';
+    cartoError.type = error.statusText;
   }
 
-  return retrieveFriendlyError(this);
+  var friendlyError = retrieveFriendlyError(cartoError);
+  track(friendlyError);
+
+  return friendlyError;
 }
 
 // Windshaft should have been parsed already 
 function _isWindshaftError (error) {
   return error && error.origin === 'windshaft';
+}
+
+function transformWindshaftError (error, layers) {
+  var cartoError = {
+    message: error.message,
+    type: error.type,
+    origin: error.origin
+  };
+  if (error.type === 'layer' && layers) {
+    cartoError.layer = layers.findById(error.layerId);
+  }
+
+  return cartoError;
 }
 
 function _handleAjaxResponse (error) {

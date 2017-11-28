@@ -1,6 +1,7 @@
 /* global google */
 var _ = require('underscore');
 var Layer = require('../layer');
+var triggerLayerFeatureEvent = require('./trigger-layer-feature-event');
 var GMapsCartoDBLayerGroupView = require('../../../geo/gmaps/gmaps-cartodb-layer-group-view');
 
 /**
@@ -31,7 +32,7 @@ GoogleMapsMapType.prototype.getTile = function (coord, zoom, ownerDocument) {
 };
 
 GoogleMapsMapType.prototype._onFeatureClick = function (internalEvent) {
-  this._triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, internalEvent);
+  triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, internalEvent, this._layers);
 };
 
 GoogleMapsMapType.prototype._onFeatureOver = function (internalEvent) {
@@ -40,7 +41,7 @@ GoogleMapsMapType.prototype._onFeatureOver = function (internalEvent) {
     this._hoveredLayers[internalEvent.layerIndex] = true;
     this._map.setOptions({ draggableCursor: 'pointer' });
   }
-  this._triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, internalEvent);
+  triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, internalEvent, this._layers);
 };
 
 GoogleMapsMapType.prototype._onFeatureOut = function (internalEvent) {
@@ -50,34 +51,7 @@ GoogleMapsMapType.prototype._onFeatureOut = function (internalEvent) {
   } else {
     this._map.setOptions({ draggableCursor: 'auto' });
   }
-  this._triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent);
-};
-
-GoogleMapsMapType.prototype._triggerLayerFeatureEvent = function (eventName, internalEvent) {
-  var layer = this._layers.findById(internalEvent.layer.id);
-  if (layer) {
-    var event = {
-      data: undefined,
-      latLng: undefined
-    };
-    if (internalEvent.feature) {
-      event.data = internalEvent.feature;
-    }
-    if (internalEvent.latlng) {
-      event.latLng = {
-        lat: internalEvent.latlng[0],
-        lng: internalEvent.latlng[1]
-      };
-    }
-    if (internalEvent.position) {
-      event.position = {
-        x: internalEvent.position.x,
-        y: internalEvent.position.y
-      };
-    }
-
-    layer.trigger(eventName, event);
-  }
+  triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent, this._layers);
 };
 
 module.exports = GoogleMapsMapType;

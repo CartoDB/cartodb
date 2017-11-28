@@ -123,7 +123,17 @@ module.exports = env => {
             resolve(__dirname, 'node_modules/tangram.cartodb')
           ],
           options: {
-            presets: ['es2015']
+            presets: ['env', {
+              targets: {
+                browsers: [
+                  'Chrome >= 31',
+                  'Safari >= 8',
+                  'Opera >= 31',
+                  'Firefox >= 38',
+                  'Explorer >= 11'
+                ]
+              }
+            }]
           }
         }
       ]

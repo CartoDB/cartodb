@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Base = require('./base');
+var CartoError = require('../error');
 
 // Event constants
 var CONTENT_CHANGED = 'contentChanged';
@@ -66,8 +67,9 @@ CartoCSS.prototype.setContent = function (newContent) {
 
   return this._engine.reload().then(function () {
     return _onContentChanged.call(self, newContent);
+  }).catch(function (windshaftError) {
+    return Promise.reject(new CartoError(windshaftError));
   });
-  // TODO: @ivan return a CartoError
 };
 
 // Once the reload cycle is completed trigger a contentChanged event.

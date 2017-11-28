@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
+var CartoError = require('../error');
 
 /**
  * A SQL Query that can be used as the data source for layers and dataviews.
@@ -44,8 +45,9 @@ SQL.prototype.setQuery = function (query) {
 
   return this._internalModel._engine.reload().then(function () {
     self._triggerQueryChanged(this, query);
+  }).catch(function (windshaftError) {
+    return Promise.reject(new CartoError(windshaftError));
   });
-  // TODO: @ivan return a CartoError here
 };
 
 /**

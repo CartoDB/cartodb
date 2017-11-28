@@ -111,7 +111,7 @@ describe('api/v4/source/sql', function () {
         });
     });
 
-    it('should return a rejected promise when there is an internal model (and a reload error)', function () {
+    it('should return a rejected promise with a CartoError when there is an internal model (and a reload error)', function (done) {
       var client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
         username: 'cartojs-test'
@@ -123,8 +123,9 @@ describe('api/v4/source/sql', function () {
         .then(function () {
           return sqlQuery.setQuery(newQuery);
         })
-        .catch(function (err) {
-          console.log(err);
+        .catch(function (cartoError) {
+          expect(cartoError.message).toMatch(/relation "invalid_dataset" does not exist/);
+          done();
         });
     });
   });

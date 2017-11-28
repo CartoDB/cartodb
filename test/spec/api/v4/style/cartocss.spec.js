@@ -127,8 +127,7 @@ describe('api/v4/style/cartocss', function () {
           .then(function () {
             expect(cartoCSS.getStyle()).toEqual(newContent);
             done();
-          })
-          .catch(console.warn);
+          });
       });
 
       it('should trigger a contentChanged event?', function (done) {
@@ -144,6 +143,18 @@ describe('api/v4/style/cartocss', function () {
             done();
           })
           .catch(console.warn);
+      });
+
+      it('should reject the promise with a CartoError when the reload fails', function (done) {
+        var malformedStyle = '#layer { invalid-property: foo }';
+        client.addLayer(layer)
+          .then(function () {
+            return cartoCSS.setContent(malformedStyle);
+          })
+          .catch(function (cartoError) {
+            expect(cartoError.message).toMatch(/Unrecognized rule: invalid-property/);
+            done();
+          });
       });
     });
   });

@@ -45,6 +45,7 @@ SQL.prototype.setQuery = function (query) {
   return this._internalModel._engine.reload().then(function () {
     self._triggerQueryChanged(this, query);
   });
+  // TODO: @ivan return a CartoError here
 };
 
 /**

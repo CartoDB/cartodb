@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>CARTO.js Source error example</title>
+    <title>CARTO.js Mutable source and style example</title>
     <!-- Include Leaflet 1.2.0 Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
@@ -35,12 +35,15 @@
 }
         </textarea>
         <button id="btn1"> Update Layer style</button>
-        <p>Dataset</p>
+        <p>Query</p>
         <textarea id="dataset" rows="3">
-ne_10m_populated_places_simple
+SELECT * FROM ne_10m_populated_places_simple
         </textarea>
         <button id="btn2"> Update Layer source</button>
-        <p> Try to set invalid/valid sources and styles and see how the errors are handled. </p>
+        <p> This example only uses one style and one layer whose content is changed. </p>
+        <p>
+          Since the style and source objects are the same the wont trigger events, you need to use the promise to handle errors.
+        </p>
         <p id="errors"></p>
         <p class="popup"></p>
       </div>
@@ -64,13 +67,13 @@ ne_10m_populated_places_simple
       });
 
       // 3.0 Define map sources
-      var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var source = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
 
       // 3.1 Create a style and add the valid layer to the client
       var style = new carto.style.CartoCSS(`#layer { marker-fill: #162945; }`);
 
       // 3.2 Create the layer
-      var layer = new carto.layer.Layer(populatedPlacesDataset, style);
+      var layer = new carto.layer.Layer(source, style);
 
       // 3.3. Adding the layers to the client
       client.addLayer(layer);
@@ -83,22 +86,28 @@ ne_10m_populated_places_simple
         document.querySelector('#cartocss').style.background = 'white';
       });
 
-      // 5.0 Listen to all layer errors and print an error.
-      layer.on('error', (cartoError) => openPopup(cartoError.message));
+      // This wont be executed since we are not updating neither the source or style.
+      layer.on('error', cartoError => openPopup(cartoError.message));
 
       document.querySelector('#btn1').addEventListener('click', () => {
         style.setContent(document.querySelector('#cartocss').value)
           .then(() => document.querySelector('#cartocss').style.background = 'white') 
-          .catch(() => document.querySelector('#cartocss').style.background = '#E57373'); 
+          .catch(cartoError => {
+            document.querySelector('#cartocss').style.background = '#E57373';
+            openPopup(cartoError.message);
+          }); 
       });
 
       document.querySelector('#btn2').addEventListener('click', () => {
-        const newSource = new carto.source.Dataset(document.querySelector('#dataset').value);
-        layer.setSource(newSource)
+        source.setQuery(document.querySelector('#dataset').value)
           .then(cartoError => document.querySelector('#dataset').style.background = 'white')
-          .catch(cartoError => document.querySelector('#dataset').style.background = '#E57373'); 
+          .catch(cartoError => {
+            document.querySelector('#dataset').style.background = '#E57373';
+            openPopup(cartoError.message);
+          }); 
       });
 
+      // Utility funciton to display a popup with a message.
       function openPopup(message) {
         let popup = document.querySelector('.popup')
         popup.innerText = message;

@@ -67,6 +67,7 @@ CartoCSS.prototype.setContent = function (newContent) {
   return this._engine.reload().then(function () {
     return _onContentChanged.call(self, newContent);
   });
+  // TODO: @ivan return a CartoError
 };
 
 // Once the reload cycle is completed trigger a contentChanged event.

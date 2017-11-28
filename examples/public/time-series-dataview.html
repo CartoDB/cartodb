@@ -24,7 +24,7 @@
   <body>
     <div id="container">
       <div id="map"></div>
-      <div id="widgets"> 
+      <div id="widgets">
         <div id="widget" class="widget"></div>
         <p>This map shows train accidents in the United States between the years 2010 and early 2014</p>
         <p>The code shows how to create a time series widget. This widget shows temporal-data aggregated
@@ -50,7 +50,7 @@
       // Adding Voyager Basemap
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+        attribution: carto.ATTRIBUTION
       }).addTo(map);
 
       // 2 Defining a carto.Client

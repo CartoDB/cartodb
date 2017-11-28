@@ -21,9 +21,10 @@ function setImageOpacityIE8 (img, opacity) {
   }
 }
 
-var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
+var GMapsCartoDBLayerGroupView = function (layerModel, options) {
   var self = this;
   var hovers = [];
+  var gmapsMap = options.nativeMap;
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 

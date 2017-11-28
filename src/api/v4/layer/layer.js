@@ -145,10 +145,6 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
   return this._featureClickColumns;
 };
 
-Layer.prototype.hasFeatureClickColumns = function (columns) {
-  return this.getFeatureClickColumns().length > 0;
-};
-
 /**
  * Set new columns for featureOver events.
  *
@@ -173,10 +169,6 @@ Layer.prototype.setFeatureOverColumns = function (columns) {
  */
 Layer.prototype.getFeatureOverColumns = function (columns) {
   return this._featureOverColumns;
-};
-
-Layer.prototype.hasFeatureOverColumns = function (columns) {
-  return this.getFeatureOverColumns().length > 0;
 };
 
 /**
@@ -242,6 +234,10 @@ Layer.prototype.isVisible = function () {
  */
 Layer.prototype.isHidden = function () {
   return !this.isVisible();
+};
+
+Layer.prototype.isInteractive = function () {
+  return this.getFeatureClickColumns().length > 0 || this.getFeatureOverColumns().length > 0;
 };
 
 // Private functions.
@@ -328,7 +324,7 @@ function _isStyleError (windshaftError) {
  * Event triggered when the source of the layer changes.
  *
  * Contains a single argument with the Layer where the source has changed.
- * 
+ *
  * @event carto.layer.Layer.sourceChanged
  * @type {carto.layer.Layer}
  * @api
@@ -338,7 +334,7 @@ function _isStyleError (windshaftError) {
  * Event triggered when the style of the layer changes.
  *
  * Contains a single argument with the Layer where the style has changed.
- * 
+ *
  * @event carto.layer.Layer.styleChanged
  * @type {carto.layer.Layer}
  * @api

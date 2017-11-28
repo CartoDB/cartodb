@@ -5,7 +5,7 @@ var Engine = require('../../engine');
 var Events = require('./events');
 var LayerBase = require('./layer/base');
 var Layers = require('./layers');
-var Leaflet = require('./leaflet');
+var LeafletLayer = require('./leaflet-layer');
 var VERSION = require('../../../package.json').version;
 
 /**
@@ -212,10 +212,12 @@ Client.prototype.getDataviews = function () {
  * Return a Leaflet layer that groups all the layers that have been
  * added to this client.
  *
+ * @returns {L.TileLayer} A Leaflet layer that groups all the layers:
+ * {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer}
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
-  this._leafletLayer = this._leafletLayer || new Leaflet.LayerGroup(this._layers, this._engine);
+  this._leafletLayer = this._leafletLayer || new LeafletLayer(this._layers, this._engine);
   return this._leafletLayer;
 };
 

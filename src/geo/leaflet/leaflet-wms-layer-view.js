@@ -16,25 +16,24 @@ var generateLeafletLayerOptions = function (layerModel) {
   };
 };
 
-var LeafletWMSLayerView = function (layerModel, leafletMap) {
-  var self = this;
+var LeafletWMSLayerView = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
 
   this.leafletLayer.on('load', function (e) {
-    self.trigger('load');
-  });
+    this.trigger('load');
+  }.bind(this));
 
   this.leafletLayer.on('loading', function (e) {
-    self.trigger('loading');
-  });
+    this.trigger('loading');
+  }.bind(this));
 };
 
 LeafletWMSLayerView.prototype = _.extend(
   {},
   LeafletLayerView.prototype,
   {
-    _createLeafletLayer: function (layerModel) {
-      return new L.TileLayer.WMS(layerModel.get('urlTemplate'), generateLeafletLayerOptions(layerModel));
+    _createLeafletLayer: function () {
+      return new L.TileLayer.WMS(this.model.get('urlTemplate'), generateLeafletLayerOptions(this.model));
     },
 
     _modelUpdated: function () {

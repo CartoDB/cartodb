@@ -2,6 +2,7 @@ require_relative '../spec_helper'
 require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
+require_relative '../factories/visualization_creation_helpers'
 require 'helpers/unique_names_helper'
 require 'helpers/storage_helper'
 require 'factories/organizations_contexts'
@@ -354,6 +355,37 @@ describe Organization do
       expect {
         organization.reload
       }.to raise_error Sequel::Error
+    end
+    it 'Tests removing a normal member with analysis tables' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
+
+      org_name = unique_name('org')
+      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      owner = create_test_user('orgowner')
+      user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      user_org.promote_user_to_admin
+      organization.reload
+      owner.reload
+
+      member1 = create_test_user('member1', organization)
+      create_random_table(member1, 'analysis_user_table')
+      create_random_table(member1, 'users_table')
+      member1.in_database.run(%{CREATE TABLE #{member1.database_schema}.analysis_4bd65e58e4_246c4acb2c67e4f3330d76c4be7c6deb8e07f344 (id serial)})
+      member1.reload
+
+      organization.reload
+      organization.users.count.should eq 2
+
+      results = member1.in_database(as: :public_user).fetch(%{
+        SELECT has_function_privilege('#{member1.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
+      }).first
+      results.nil?.should eq false
+      results[:has_function_privilege].should eq true
+
+      member1.destroy
+      organization.reload
+      organization.users.count.should eq 1
     end
   end
 

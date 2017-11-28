@@ -30,9 +30,6 @@ class Carto::User < ActiveRecord::Base
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
-  # TODO Remove and get the data from central
-  LOCKED_USER_DELETION_PERIOD = 90.days
-
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \

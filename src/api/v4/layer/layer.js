@@ -5,7 +5,12 @@ var StyleBase = require('../style/base');
 var CartoError = require('../error');
 /**
  * Represent a layer Object.
+ * 
+ * 
+ * /...
  *
+ * The `styleChanged` event is triggered **only** when the style object is changed. Mutations in the style itself are ignored by this event.
+ * 
  * @param {object} source - The source where the layer will fetch the data
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
@@ -310,8 +315,12 @@ Layer.prototype.$setEngine = function (engine) {
   }
   this._engine = engine;
   this._source.$setEngine(engine);
+  this._style.$setEngine(engine);
   if (!this._internalModel) {
     this._internalModel = this._createInternalModel(engine);
+    this._style.on('$changed', function (cartocss) {
+      this._internalModel.set('cartocss', cartocss.toCartoCSS(), { silent: true });
+    }, this);
   }
 };
 

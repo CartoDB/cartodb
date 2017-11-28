@@ -87,8 +87,7 @@ ne_10m_populated_places_simple
       layer.on('error', (cartoError) => openPopup(cartoError.message));
 
       document.querySelector('#btn1').addEventListener('click', () => {
-        const style = new carto.style.CartoCSS(document.querySelector('#cartocss').value);
-        layer.setStyle(style)
+        style.setContent(document.querySelector('#cartocss').value)
           .then(() => document.querySelector('#cartocss').style.background = 'white') 
           .catch(() => document.querySelector('#cartocss').style.background = '#E57373'); 
       });

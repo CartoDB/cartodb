@@ -392,4 +392,22 @@ describe('api/v4/layer', function () {
       layer.toggle();
     });
   });
+
+  it('should update "internalmodel.cartocss" when the style is updated', function (done) {
+    var client = new carto.Client({
+      apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+      username: 'cartojs-test'
+    });
+    var layer = new carto.layer.Layer(source, style);
+    var newStyle = '#layer { marker-fill: #FABADA; }';
+
+    client.addLayer(layer)
+      .then(function () {
+        return style.setContent(newStyle);
+      })
+      .then(function () {
+        expect(layer.$getInternalModel().get('cartocss')).toEqual(newStyle);
+        done();
+      });
+  });
 });

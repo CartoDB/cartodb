@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.9-0.13074",
+  "version": "4.10.8-9.13074.3",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -432,9 +432,9 @@
       "resolved": "https://registry.npmjs.org/combine-source-map/-/combine-source-map-0.7.2.tgz"
     },
     "commander": {
-      "version": "2.12.1",
+      "version": "2.12.2",
       "from": "commander@>=2.12.0 <2.13.0",
-      "resolved": "https://registry.npmjs.org/commander/-/commander-2.12.1.tgz"
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.12.2.tgz"
     },
     "concat-map": {
       "version": "0.0.1",
@@ -1035,9 +1035,9 @@
       "resolved": "https://registry.npmjs.org/insert-module-globals/-/insert-module-globals-7.0.1.tgz"
     },
     "interpret": {
-      "version": "1.0.4",
+      "version": "1.1.0",
       "from": "interpret@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/interpret/-/interpret-1.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/interpret/-/interpret-1.1.0.tgz"
     },
     "invert-kv": {
       "version": "1.0.0",

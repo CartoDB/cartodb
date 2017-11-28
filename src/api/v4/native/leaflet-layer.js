@@ -1,8 +1,8 @@
 var L = require('leaflet');
 var _ = require('underscore');
-var Layer = require('./layer');
-var constants = require('./constants');
-var LeafletCartoLayerGroupView = require('../../geo/leaflet/leaflet-cartodb-layer-group-view');
+var Layer = require('../layer');
+var constants = require('../constants');
+var LeafletCartoLayerGroupView = require('../../../geo/leaflet/leaflet-cartodb-layer-group-view');
 
 /**
  * This object is a custom Leaflet layer to enable feature interactivity

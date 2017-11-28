@@ -1,7 +1,7 @@
 var L = require('leaflet');
-var carto = require('../../../../src/api/v4');
+var carto = require('../../../../../src/api/v4');
 
-describe('src/api/v4/leaflet-layer', function () {
+describe('src/api/v4/native/leaflet-layer', function () {
   var client;
   var layer;
   var leafletLayer;

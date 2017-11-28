@@ -5,7 +5,8 @@ var Engine = require('../../engine');
 var Events = require('./events');
 var LayerBase = require('./layer/base');
 var Layers = require('./layers');
-var LeafletLayer = require('./leaflet-layer');
+var LeafletLayer = require('./native/leaflet-layer');
+// var GoogleMapsMapType = require('./native/google-maps-map-type');
 var VERSION = require('../../../package.json').version;
 
 /**
@@ -219,6 +220,16 @@ Client.prototype.getDataviews = function () {
 Client.prototype.getLeafletLayer = function () {
   this._leafletLayer = this._leafletLayer || new LeafletLayer(this._layers, this._engine);
   return this._leafletLayer;
+};
+
+/**
+ * [description]
+ * @return {google.maps.ImageMapType} [description]
+ * @api
+ */
+Client.prototype.getGoogleMapsMapType = function () {
+  this._gmapsMapType = this._gmapsMapType || null; // || new GoogleMapsMapType();
+  return this._gmapsMapType;
 };
 
 /**

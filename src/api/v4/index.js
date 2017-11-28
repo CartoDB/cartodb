@@ -17,10 +17,6 @@
  * - **operation** : The operations exposed.
  */
 
-if (window.L && window.L.version < '1.0.0') {
-  throw new Error('Leaflet +1.0 is required');
-}
-
 var Client = require('./client');
 var source = require('./source');
 var style = require('./style');

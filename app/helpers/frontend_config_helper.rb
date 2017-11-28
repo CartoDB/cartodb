@@ -72,10 +72,16 @@ module FrontendConfigHelper
       config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
     end
 
+    if CartoDB.account_host.present?
+      config[:account_update_url] = "#{CartoDB.account_host}#{CartoDB.account_path}/#{user.username}/update_payment"
+    end
+
     config
   end
 
   def frontend_config
     frontend_config_hash.to_json
   end
+
+
 end

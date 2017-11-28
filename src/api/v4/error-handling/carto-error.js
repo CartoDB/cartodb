@@ -24,7 +24,8 @@ function track (error) {
  *
  * @api
  */
-function CartoError (error, layers) {
+function CartoError (error, opts) {
+  opts = opts || {};
   var cartoError = _.extend({
     message: UNEXPECTED_ERROR,
     type: '',
@@ -32,7 +33,7 @@ function CartoError (error, layers) {
   }, error);
 
   if (_isWindshaftError(error)) {
-    cartoError = transformWindshaftError(error, layers);
+    cartoError = transformWindshaftError(error, opts.layers, opts.analysis);
   }
   if (error && error.responseText) {
     cartoError.message = _handleAjaxResponse(error);
@@ -51,7 +52,7 @@ function _isWindshaftError (error) {
   return error && error.origin === 'windshaft';
 }
 
-function transformWindshaftError (error, layers) {
+function transformWindshaftError (error, layers, analysis) {
   var cartoError = {
     message: error.message,
     type: error.type,
@@ -59,6 +60,9 @@ function transformWindshaftError (error, layers) {
   };
   if (error.type === 'layer' && layers) {
     cartoError.layer = layers.findById(error.layerId);
+  }
+  if (error.type === 'analysis' && analysis) {
+    cartoError.source = analysis;
   }
 
   return cartoError;

@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 
 /**
  * A SQL Query that can be used as the data source for layers and dataviews.
@@ -77,11 +78,11 @@ SQL.prototype._triggerQueryChanged = function (model, value) {
 
 function _checkQuery (query) {
   if (!query) {
-    throw new TypeError('query is required.');
+    throw new CartoValidationError('source', 'requiredQuery');
   }
 
   if (!_.isString(query)) {
-    throw new Error('query must be a string.');
+    throw new CartoValidationError('source', 'requiredString');
   }
 }
 

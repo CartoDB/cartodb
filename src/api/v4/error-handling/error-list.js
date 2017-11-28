@@ -9,6 +9,10 @@ var ERRORS = {
       'invalid-dataset': {
         messageRegex: /relation (.+) does not exist/,
         friendlyMessage: 'Invalid dataset name used. Dataset $0 does not exist.'
+      },
+      'column-does-not-exist': {
+        messageRegex: /column (.+) does not exist/,
+        friendlyMessage: 'Invalid column name. Column $0 does not exist.'
       }
     },
     generic: {
@@ -66,25 +70,69 @@ var ERRORS = {
         messageRegex: 'differentSourceClient',
         friendlyMessage: "A layer can't have a source which belongs to a different client"
       }
+    },
+    source: {
+      'query-required': {
+        messageRegex: 'requiredQuery',
+        friendlyMessage: 'SQL Source must have a SQL query.'
+      },
+      'query-string': {
+        messageRegex: 'requiredString',
+        friendlyMessage: 'SQL Query must be a string.'
+      },
+      'no-dataset-name': {
+        messageRegex: 'noDatasetName',
+        friendlyMessage: 'Table name is required.'
+      },
+      'dataset-string': {
+        messageRegex: 'requiredDatasetString',
+        friendlyMessage: 'Table name must be a string.'
+      },
+      'dataset-required': {
+        messageRegex: 'requiredDataset',
+        friendlyMessage: 'Table name must be not empty.'
+      }
+    },
+    style: {
+      'required-css': {
+        messageRegex: 'requiredCSS',
+        friendlyMessage: 'CartoCSS is required.'
+      },
+      'css-string': {
+        messageRegex: 'requiredCSSString',
+        friendlyMessage: 'CartoCSS must be a string.'
+      }
     }
   }
 };
 
+function buildErrorCode (error, key) {
+  var fragments = [];
+  fragments.push(error && error.origin);
+  fragments.push(error && error.type);
+  fragments.push(key);
+  fragments = _.compact(fragments);
+
+  return fragments.join(':');
+}
+
 function retrieveFriendlyError (error) {
+  var message = error.message;
+  var errorURL = '';
+  var errorCode = buildErrorCode(error, 'unknown-error');
   var list = ERRORS[error.origin] && ERRORS[error.origin][error.type];
   var entry = null;
+
+  // Get entry from error list
   _.each(_.keys(list), function (key) {
     var found = (_.isString(list[key].messageRegex) && list[key].messageRegex === error.message) ||
       (_.isRegExp(list[key].messageRegex) && list[key].messageRegex.test(error.message));
     if (found && !entry) {
-      entry = _.extend(list[key], { errorCode: error.origin + ':' + error.type + ':' + key });
+      entry = _.extend(list[key], { errorCode: buildErrorCode(error, key) });
     }
   });
 
-  var message = error.message;
-  var errorURL = '';
-  var errorCode = '';
-
+  // Fill error properties from error list entry (if exists)
   if (entry) {
     var friendlyMessage = entry.friendlyMessage || '';
     if (_.isRegExp(entry.messageRegex)) {
@@ -103,13 +151,14 @@ function retrieveFriendlyError (error) {
     errorCode = entry.errorCode;
   }
 
+  // Build friendly error
   var friendlyError = _.chain(error)
     .extend({
       message: message,
       errorURL: errorURL,
       errorCode: errorCode
     })
-    .omit(['origin', 'type'])
+    .omit(['origin'])
     .value();
 
   return friendlyError;

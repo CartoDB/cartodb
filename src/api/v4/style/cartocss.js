@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Base = require('./base');
+var CartoValidationError = require('../error-handling/carto-error');
 
 /**
  * A CartoCSS/TurboCarto style that can be applied to a {@link carto.layer.Layer}.
@@ -39,11 +40,11 @@ CartoCSS.prototype.getStyle = function () {
 
 function _checkCartoCSS (cartoCSS) {
   if (!cartoCSS) {
-    throw new TypeError('cartoCSS is required.');
+    throw new CartoValidationError('style', 'requiredCSS');
   }
 
   if (!_.isString(cartoCSS)) {
-    throw new Error('cartoCSS must be a string.');
+    throw new CartoValidationError('style', 'requiredCSSString');
   }
 }
 

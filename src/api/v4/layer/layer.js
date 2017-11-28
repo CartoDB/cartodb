@@ -3,6 +3,7 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 var SourceBase = require('../source/base');
 var StyleBase = require('../style/base');
 var CartoError = require('../error-handling/carto-error');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 /**
  * Represent a layer Object.
  *
@@ -98,11 +99,7 @@ Layer.prototype.setSource = function (source) {
   if (this._internalModel) {
     // If the source already has an engine and is different from the layer's engine throw an error.
     if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
-      throw new CartoError({
-        origin: 'validation',
-        type: 'layer',
-        message: 'differentSourceClient'
-      });
+      throw new CartoValidationError('layer', 'differentSourceClient');
     }
     this._internalModel.set('source', source.$getInternalModel());
   }
@@ -299,21 +296,13 @@ function _getInteractivityFields (columns) {
 
 function _checkStyle (style) {
   if (!(style instanceof StyleBase)) {
-    throw new CartoError({
-      origin: 'validation',
-      type: 'layer',
-      message: 'nonValidStyle'
-    });
+    throw new CartoValidationError('layer', 'nonValidStyle');
   }
 }
 
 function _checkSource (source) {
   if (!(source instanceof SourceBase)) {
-    throw new CartoError({
-      origin: 'validation',
-      type: 'layer',
-      message: 'nonValidSource'
-    });
+    throw new CartoValidationError('layer', 'nonValidSource');
   }
 }
 

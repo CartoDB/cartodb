@@ -45,7 +45,7 @@ Base.prototype._createInternalModel = function (engine) {
  * Fire a CartoError event from a internalError
  */
 Base.prototype._triggerError = function (model, internalError) {
-  this.trigger('error', new CartoError(internalError));
+  this.trigger('error', new CartoError(internalError, { analysis: this }));
 };
 
 Base.prototype.$setEngine = function (engine) {

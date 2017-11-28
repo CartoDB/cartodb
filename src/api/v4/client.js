@@ -275,7 +275,7 @@ Client.prototype._bindEngine = function (engine) {
   }.bind(this));
 
   engine.on(Engine.Events.RELOAD_ERROR, function (err) {
-    this.trigger(Events.ERROR, new CartoError(err, this._layers));
+    this.trigger(Events.ERROR, new CartoError(err, { layers: this._layers }));
   }.bind(this));
 
   engine.on('error', function (err) {

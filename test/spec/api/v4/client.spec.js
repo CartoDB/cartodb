@@ -1,6 +1,8 @@
+/* global google */
 var L = require('leaflet');
 var carto = require('../../../../src/api/v4');
 var LeafletLayer = require('../../../../src/api/v4/native/leaflet-layer');
+var GoogleMapsMapType = require('../../../../src/api/v4/native/google-maps-map-type');
 
 describe('api/v4/client', function () {
   var client;
@@ -193,7 +195,7 @@ describe('api/v4/client', function () {
       leafletLayer = client.getLeafletLayer();
     });
 
-    it('should return an object', function () {
+    it('should return an instance of LeafletLayer', function () {
       expect(leafletLayer instanceof LeafletLayer).toBe(true);
     });
 
@@ -207,6 +209,33 @@ describe('api/v4/client', function () {
 
     it('should have the OpenStreetMap / Carto attribution', function () {
       expect(leafletLayer.getAttribution()).toBe('&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>');
+    });
+  });
+
+  describe('.getGoogleMapsMapType', function () {
+    var mapType;
+    var element;
+
+    beforeEach(function () {
+      element = document.createElement('div');
+      mapType = client.getGoogleMapsMapType(new google.maps.Map(element));
+    });
+
+    afterEach(function () {
+      element.remove();
+    });
+
+    it('should return an instance of GoogleMapsMapType', function () {
+      expect(mapType instanceof GoogleMapsMapType).toBe(true);
+    });
+
+    it('should return the same object', function () {
+      expect(mapType === client.getGoogleMapsMapType()).toBe(true);
+    });
+
+    it('should return an object with a MapType interface', function () {
+      expect(mapType.tileSize).toBeDefined();
+      expect(mapType.getTile).toBeDefined();
     });
   });
 });

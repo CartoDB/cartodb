@@ -370,7 +370,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.30",
       "from": "cartodb/cartodb.js#fallback-reference",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#afa823a73ae04933695cf8fcda2c1e6bf68c8f35"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f5202b91839fabc5a0cd277f583128d3e1278bf4"
     },
     "center-align": {
       "version": "0.1.3",
@@ -2257,15 +2257,8 @@
     },
     "tangram-cartocss": {
       "version": "0.9.10",
-      "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.10.tgz",
-      "dependencies": {
-        "carto": {
-          "version": "0.15.1-cdb4",
-          "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#4dfe5361b302dda8163cd41ccbf7a9dc6898019a"
-        }
-      }
+      "from": "cartodb/tangram-cartocss#fallback-reference",
+      "resolved": "git://github.com/cartodb/tangram-cartocss.git#c1eb084bc23a1e0eefda834751ca2b9c48b6ede6"
     },
     "tangram-reference": {
       "version": "2.1.0",
@@ -2274,8 +2267,8 @@
     },
     "tangram.cartodb": {
       "version": "0.5.7",
-      "from": "tangram.cartodb@>=0.5.7 <0.6.0",
-      "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.7.tgz"
+      "from": "cartodb/tangram.cartodb#fallback-reference",
+      "resolved": "git://github.com/cartodb/tangram.cartodb.git#ef1673d9fb04e34dd80accde3462d4822ed382ba"
     },
     "tapable": {
       "version": "0.2.8",
@@ -2668,15 +2661,8 @@
     },
     "torque.js": {
       "version": "2.16.3",
-      "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#5d9b02a6da2c3b458fa4d60630a529b45bc5030b",
-      "dependencies": {
-        "carto": {
-          "version": "0.15.1-cdb4",
-          "from": "cartodb/carto#master",
-          "resolved": "git://github.com/cartodb/carto.git#4dfe5361b302dda8163cd41ccbf7a9dc6898019a"
-        }
-      }
+      "from": "cartodb/torque#fallback-reference",
+      "resolved": "git://github.com/cartodb/torque.git#d86582b48a450b295d69130c6119357822bb1821"
     },
     "transformify": {
       "version": "0.1.2",

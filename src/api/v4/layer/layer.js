@@ -71,7 +71,7 @@ Layer.prototype.setStyle = function (style, opts) {
     return Promise.resolve();
   }
   if (!this._internalModel) {
-    self._style = style;
+    this._style = style;
     this.trigger('styleChanged', this);
     return Promise.resolve();
   }
@@ -88,7 +88,7 @@ Layer.prototype.setStyle = function (style, opts) {
   return this._engine.reload()
     .then(function () {
       self._style = style;
-      self.trigger('styleChanged', this);
+      self.trigger('styleChanged', self);
     })
     .catch(function (err) {
       var error = new CartoError(err);
@@ -128,7 +128,7 @@ Layer.prototype.setSource = function (source) {
   }
   // If layer is not instantiated just store the new status
   if (!this._internalModel) {
-    self._source = source;
+    this._source = source;
     this.trigger('sourceChanged', this);
     return Promise.resolve();
   }
@@ -146,7 +146,7 @@ Layer.prototype.setSource = function (source) {
   return this._engine.reload()
     .then(function () {
       self._source = source;
-      self.trigger('sourceChanged', this);
+      self.trigger('sourceChanged', self);
     })
     .catch(function (err) {
       var error = new CartoError(err);

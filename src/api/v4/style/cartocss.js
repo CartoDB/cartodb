@@ -22,7 +22,7 @@ var CONTENT_CHANGED = 'contentChanged';
  */
 function CartoCSS (cartoCSS) {
   _checkContent(cartoCSS);
-  this._cartoCSS = cartoCSS;
+  this._content = cartoCSS;
 }
 
 CartoCSS.prototype = Object.create(Base.prototype);
@@ -34,7 +34,7 @@ CartoCSS.prototype = Object.create(Base.prototype);
  * @api
  */
 CartoCSS.prototype.getContent = function () {
-  return this._cartoCSS;
+  return this._content;
 };
 
 /**
@@ -58,7 +58,7 @@ CartoCSS.prototype.getStyle = function () {
 CartoCSS.prototype.setContent = function (newContent) {
   var self = this;
   _checkContent(newContent);
-  this._cartoCSS = newContent;
+  this._content = newContent;
   // Notify layers that the style has been changed so they can update their internalModels.
   this.trigger('$changed', this);
   if (!this._engine) {
@@ -74,8 +74,8 @@ CartoCSS.prototype.setContent = function (newContent) {
 
 // Once the reload cycle is completed trigger a contentChanged event.
 function _onContentChanged (newContent) {
-  this.trigger(CONTENT_CHANGED, this._cartoCSS);
-  return Promise.resolve(this._cartoCSS);
+  this.trigger(CONTENT_CHANGED, this._content);
+  return Promise.resolve(this._content);
 }
 
 function _checkContent (content) {

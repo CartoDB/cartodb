@@ -56,7 +56,6 @@ CartoCSS.prototype.getStyle = function () {
  * @api
  */
 CartoCSS.prototype.setContent = function (newContent) {
-  var self = this;
   _checkContent(newContent);
   this._content = newContent;
   // Notify layers that the style has been changed so they can update their internalModels.
@@ -65,11 +64,13 @@ CartoCSS.prototype.setContent = function (newContent) {
     return _onContentChanged.call(this, newContent);
   }
 
-  return this._engine.reload().then(function () {
-    return _onContentChanged.call(self, newContent);
-  }).catch(function (windshaftError) {
-    return Promise.reject(new CartoError(windshaftError));
-  });
+  return this._engine.reload()
+    .then(function () {
+      return _onContentChanged.call(this, newContent);
+    }.bind(this))
+    .catch(function (windshaftError) {
+      return Promise.reject(new CartoError(windshaftError));
+    });
 };
 
 // Once the reload cycle is completed trigger a contentChanged event.

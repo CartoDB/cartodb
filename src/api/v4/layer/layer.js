@@ -63,7 +63,6 @@ Layer.prototype = Object.create(Base.prototype);
  * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
-  var self = this;
   var prevStyle = this._style;
   _checkStyle(style);
   opts = opts || {};
@@ -87,14 +86,14 @@ Layer.prototype.setStyle = function (style, opts) {
   this._internalModel.set('cartocss', style.getContent(), { silent: true });
   return this._engine.reload()
     .then(function () {
-      self._style = style;
-      self.trigger('styleChanged', self);
-    })
+      this._style = style;
+      this.trigger('styleChanged', this);
+    }.bind(this))
     .catch(function (err) {
       var error = new CartoError(err);
-      self.trigger('error', new CartoError(error));
+      this.trigger('error', new CartoError(error));
       return Promise.reject(error);
-    });
+    }.bind(this));
 };
 
 /**
@@ -120,7 +119,6 @@ Layer.prototype.getStyle = function () {
  * @api
  */
 Layer.prototype.setSource = function (source) {
-  var self = this;
   var prevSource = this._source;
   _checkSource(source);
   if (prevSource === source) {
@@ -145,14 +143,14 @@ Layer.prototype.setSource = function (source) {
   this._internalModel.set('source', source.$getInternalModel(), { silent: true });
   return this._engine.reload()
     .then(function () {
-      self._source = source;
-      self.trigger('sourceChanged', self);
-    })
+      this._source = source;
+      this.trigger('sourceChanged', this);
+    }.bind(this))
     .catch(function (err) {
       var error = new CartoError(err);
-      self.trigger('error', error);
+      this.trigger('error', error);
       return Promise.reject(error);
-    });
+    }.bind(this));
 };
 
 /**

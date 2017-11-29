@@ -68,7 +68,11 @@ var ERRORS = {
       },
       'source-with-different-client': {
         messageRegex: 'differentSourceClient',
-        friendlyMessage: "A layer can't have a source which belongs to a different client"
+        friendlyMessage: "A layer can't have a source which belongs to a different client."
+      },
+      'style-with-different-client': {
+        messageRegex: 'differentStyleClient',
+        friendlyMessage: "A layer can't have a style which belongs to a different client."
       }
     },
     source: {

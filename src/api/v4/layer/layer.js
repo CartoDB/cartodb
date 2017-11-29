@@ -6,7 +6,12 @@ var CartoError = require('../error-handling/carto-error');
 var CartoValidationError = require('../error-handling/carto-validation-error');
 /**
  * Represent a layer Object.
+ * 
+ * 
+ * /...
  *
+ * The `styleChanged` event is triggered **only** when the style object is changed. Mutations in the style itself are ignored by this event.
+ * 
  * @param {object} source - The source where the layer will fetch the data
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
@@ -54,22 +59,42 @@ Layer.prototype = Object.create(Base.prototype);
  *
  * @param {carto.style.CartoCSS} New style
  * @fires carto.layer.Layer.styleChanged
- * @return {carto.layer.Layer} this
- *
+ * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
+ * {@link CartoError} if something goes bad
  * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
   var prevStyle = this._style;
   _checkStyle(style);
   opts = opts || {};
-  this._style = style;
-  if (this._internalModel) {
-    this._internalModel.set('cartocss', style.toCartoCSS());
+  if (prevStyle === style) {
+    return Promise.resolve();
   }
-  if (prevStyle !== style) {
+  if (!this._internalModel) {
+    this._style = style;
     this.trigger('styleChanged', this);
+    return Promise.resolve();
   }
-  return this;
+  // If style has an engine and is different from the layer`s engine throw an error
+  if (style.$getEngine() && style.$getEngine() !== this._internalModel._engine) {
+    throw new CartoValidationError('layer', 'differentStyleClient');
+  }
+  // If style has no engine, set the layer engine in the style.
+  if (!style.$getEngine()) {
+    style.$setEngine(this._engine);
+  }
+
+  this._internalModel.set('cartocss', style.getContent(), { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      this._style = style;
+      this.trigger('styleChanged', this);
+    }.bind(this))
+    .catch(function (err) {
+      var error = new CartoError(err);
+      this.trigger('error', error);
+      return Promise.reject(error);
+    }.bind(this));
 };
 
 /**
@@ -90,24 +115,43 @@ Layer.prototype.getStyle = function () {
  *
  * @param {carto.source.Dataset|carto.source.SQL} source New source
  * @fires carto.layer.Layer.sourceChanged
- * @return {carto.layer.Layer} this
+ * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
+ * {@link CartoError} if something goes bad
  * @api
  */
 Layer.prototype.setSource = function (source) {
   var prevSource = this._source;
   _checkSource(source);
-  if (this._internalModel) {
-    // If the source already has an engine and is different from the layer's engine throw an error.
-    if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
-      throw new CartoValidationError('layer', 'differentSourceClient');
-    }
-    this._internalModel.set('source', source.$getInternalModel());
+  if (prevSource === source) {
+    return Promise.resolve();
   }
-  this._source = source;
-  if (prevSource !== source) {
+  // If layer is not instantiated just store the new status
+  if (!this._internalModel) {
+    this._source = source;
     this.trigger('sourceChanged', this);
+    return Promise.resolve();
   }
-  return this;
+  // If layer has been instantiated 
+  // If the source already has an engine and is different from the layer's engine throw an error.
+  if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
+    throw new CartoValidationError('layer', 'differentSourceClient');
+  }
+  // If source has no engine use the layer engine.
+  if (!source.$getEngine()) {
+    source.$setEngine(this._engine);
+  }
+  // Update the internalModel and return a promise
+  this._internalModel.set('source', source.$getInternalModel(), { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      this._source = source;
+      this.trigger('sourceChanged', this);
+    }.bind(this))
+    .catch(function (err) {
+      var error = new CartoError(err);
+      this.trigger('error', error);
+      return Promise.reject(error);
+    }.bind(this));
 };
 
 /**
@@ -247,7 +291,7 @@ Layer.prototype._createInternalModel = function (engine) {
   var internalModel = new CartoDBLayer({
     id: this._id,
     source: this._source.$getInternalModel(),
-    cartocss: this._style.toCartoCSS(),
+    cartocss: this._style.getContent(),
     visible: this._visible,
     infowindow: _getInteractivityFields(this._featureClickColumns),
     tooltip: _getInteractivityFields(this._featureOverColumns)
@@ -272,8 +316,12 @@ Layer.prototype.$setEngine = function (engine) {
   }
   this._engine = engine;
   this._source.$setEngine(engine);
+  this._style.$setEngine(engine);
   if (!this._internalModel) {
     this._internalModel = this._createInternalModel(engine);
+    this._style.on('$changed', function (style) {
+      this._internalModel.set('cartocss', style.getContent(), { silent: true });
+    }, this);
   }
 };
 

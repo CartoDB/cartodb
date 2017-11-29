@@ -136,7 +136,7 @@ describe('api/v4/client', function () {
     });
   });
 
-  describe('.addLayers', function () {
+  xdescribe('.addLayers', function () {
     it('should add a layers array', function () { });
     it('should add a layer array triggering ONE reload cycle by default', function () { });
     it('should add a layers array without triggering a reload cycle when opts.reload is false', function () { });

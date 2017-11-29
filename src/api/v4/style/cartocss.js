@@ -21,7 +21,7 @@ var CONTENT_CHANGED = 'contentChanged';
  * @api
  */
 function CartoCSS (cartoCSS) {
-  _checkCartoCSS(cartoCSS);
+  _checkContent(cartoCSS);
   this._cartoCSS = cartoCSS;
 }
 
@@ -57,7 +57,7 @@ CartoCSS.prototype.getStyle = function () {
  */
 CartoCSS.prototype.setContent = function (newContent) {
   var self = this;
-  _checkCartoCSS(newContent);
+  _checkContent(newContent);
   this._cartoCSS = newContent;
   // Notify layers that the style has been changed so they can update their internalModels.
   this.trigger('$changed', this);
@@ -78,12 +78,12 @@ function _onContentChanged (newContent) {
   return Promise.resolve(this._cartoCSS);
 }
 
-function _checkCartoCSS (cartoCSS) {
-  if (!cartoCSS) {
+function _checkContent (content) {
+  if (!content) {
     throw new TypeError('cartoCSS is required.');
   }
 
-  if (!_.isString(cartoCSS)) {
+  if (!_.isString(content)) {
     throw new Error('cartoCSS must be a string.');
   }
 }

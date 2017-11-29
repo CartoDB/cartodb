@@ -4,8 +4,8 @@
 @import 'vars';
 
 .EditorMenu {
-  @include flex(0 0 72px);
   position: relative;
+  flex: 0 0 72px;
   width: 72px;
   min-height: 450px;
   box-sizing: border-box;
@@ -14,28 +14,33 @@
 }
 
 .EditorMenu-navigation {
-  @include display-flex();
-  @include align-items(center);
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .EditorMenu-navigationItem {
-  @include transition(background, 300ms, ease-in);
   width: $baseSize * 4;
   height: $baseSize * 4;
   margin-bottom: $baseSize;
+  transition: all 0.2s ease-in;
   border-radius: 4px;
-}
-.EditorMenu-navigationItem.is-selected,
-.EditorMenu-navigationItem.is-selected:hover,
-.EditorMenu-navigationItem.is-selected:active {
-  background: rgba($cMainBg, 0.32);
-}
-.EditorMenu-navigationItem:hover {
-  background: rgba($cMainBg, 0.16);
-}
-.EditorMenu-navigationItem:active {
-  background: rgba($cMainBg, 0.48);
+  border: 2px solid transparent;
+
+  &.is-selected,
+  &.is-selected:hover,
+  &.is-selected:active {
+    border: 2px solid transparent;
+    background: rgba($cMainBg, 0.32);
+  }
+
+  &:hover {
+    border: 2px solid rgba($cMainBg, 0.32);
+  }
+
+  &:active {
+    background: rgba($cMainBg, 0.48);
+  }
 }
 
 .EditorMenu-navigationLink {
@@ -49,23 +54,23 @@
 }
 
 .EditorMenu-logo {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  flex-direction: center;
+  align-items: center;
   width: 32px;
   height: 32px;
   margin: 0 auto 48px;
 
   .point {
-    @include transition(all 250ms ease-out);
-    @include css3-prefix(transform-origin, 50%);
+    transform-origin: 50%;
+    transition: all 250ms ease-out;
   }
 }
 .EditorMenu-feedback {
-  @include transform(translateX(-50%));
   position: absolute;
   bottom: 20px;
   left: 50%;
+  transform: translateX(-50%);
 }
 .Editor-feedbackModal {
   position: absolute;
@@ -90,7 +95,7 @@
 /* Responsive views */
 @media (max-width: $sViewport-xl) {
   .EditorMenu {
-    @include flex(0 0 48px);
+    flex: 0 0 48px;
     width: 48px;
   }
   .EditorMenu-logo svg {

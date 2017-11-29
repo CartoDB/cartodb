@@ -2,12 +2,13 @@ require_dependency 'carto/uuidhelper'
 
 module Carto
   class CartoError < StandardError
-    attr_reader :message, :status, :user_message
+    attr_reader :message, :status, :user_message, :errors_cause
 
-    def initialize(message, status, user_message = message)
+    def initialize(message, status, user_message: message, errors_cause: nil)
       @message = message
       @status = status
       @user_message = user_message
+      @errors_cause = errors_cause
     end
 
     def self.with_full_messages(active_record_exception)
@@ -28,8 +29,8 @@ module Carto
   end
 
   class LoadError < CartoError
-    def initialize(message, status = 404)
-      super(message, status)
+    def initialize(message, status = 404, errors_cause: nil)
+      super(message, status, errors_cause: errors_cause)
     end
   end
 
@@ -54,10 +55,11 @@ module Carto
     def rescue_from_carto_error(error)
       message = error.message
       status = error.status
+      errors_cause = error.errors_cause
 
       respond_to do |format|
         format.html { render text: message, status: status }
-        format.json { render json: { errors: message }, status: status }
+        format.json { render json: { errors: message, errors_cause: errors_cause }, status: status }
       end
     end
 

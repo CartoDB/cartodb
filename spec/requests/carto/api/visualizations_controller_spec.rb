@@ -1371,6 +1371,29 @@ describe Carto::Api::VisualizationsController do
         response['likes'].should eq nil
       end
 
+      it 'returns a specific error for password-protected visualizations' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+        @visualization.password = 'wadus'
+        @visualization.save!
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+          response.status.should eq 403
+          response.body[:errors].should eq "Visualization not viewable"
+          response.body[:errors_cause].should eq "privacy_password"
+        end
+      end
+
+      it 'doesn\'t return a specific error for private visualizations' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @visualization.save!
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+          response.status.should eq 403
+          response.body[:errors].should eq "Visualization not viewable"
+          response.body[:errors_cause].should be_nil
+        end
+      end
+
       it 'returns a visualization with optional information if requested' do
         url = api_v1_visualizations_show_url(
           id: @visualization.id,
@@ -1479,6 +1502,7 @@ describe Carto::Api::VisualizationsController do
 
           get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
             response.status.should eq 403
+            expect(response.body[:errors]).to eq('Visualization not viewable')
           end
         end
 
@@ -1493,6 +1517,19 @@ describe Carto::Api::VisualizationsController do
 
             get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
               response.status.should eq 403
+              expect(response.body[:errors]).to eq('Visualization not viewable')
+            end
+          end
+
+          it 'returns 403 for unpublished and password protected visualizations' do
+            @visualization.published?.should eq false
+            @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+            @visualization.password = 'wadus'
+            @visualization.save!
+
+            get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+              response.status.should eq 403
+              expect(response.body[:errors]).to eq('Visualization not viewable')
             end
           end
 
@@ -1559,10 +1596,12 @@ describe Carto::Api::VisualizationsController do
 
               get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 403
+                expect(response.body[:errors]).to eq('Password invalid')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password * 2) do |response|
                 response.status.should eq 403
+                expect(response.body[:errors]).to eq('Password invalid')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password) do |response|

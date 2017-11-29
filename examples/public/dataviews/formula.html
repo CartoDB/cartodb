@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Formula widget | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- FIXME: include Leaflet because of Wax -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <style>
+      body { margin: 0; padding: 0; }
+      #widget { position: absolute; height: 100%; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <pre id="widget"></pre>
+    <script>
+      var client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      var source = new carto.source.Dataset(`
+        ne_10m_populated_places_simple
+      `);
+      var formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
+        operation: carto.operation.AVG
+      });
+
+      formulaDataview.on('dataChanged', function (data) {
+        document.getElementById('widget').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      client.addDataview(formulaDataview);
+    </script>
+  </body>
+</html>

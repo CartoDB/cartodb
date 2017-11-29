@@ -273,7 +273,7 @@ describe('api/v4/layer', function () {
 
           expect(function () {
             layer.setSource(newSource);
-          }).toThrowError('A layer can\'t have a source which belongs to a different clients');
+          }).toThrowError('A layer can\'t have a source which belongs to a different client');
         });
       });
     });

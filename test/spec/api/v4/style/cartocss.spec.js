@@ -68,10 +68,10 @@ describe('api/v4/style/cartocss', function () {
     });
   });
 
-  describe('.getStyle', function () {
+  describe('.getContent', function () {
     it('should return the internal style', function () {
       var expected = '#layer { marker-width:10; }';
-      var actual = cartoCSS.getStyle();
+      var actual = cartoCSS.getContent();
 
       expect(actual).toEqual(expected);
     });
@@ -92,7 +92,7 @@ describe('api/v4/style/cartocss', function () {
       it('should update the internal style', function (done) {
         cartoCSS.setContent(newContent)
           .then(function () {
-            expect(cartoCSS.getStyle()).toEqual(newContent);
+            expect(cartoCSS.getContent()).toEqual(newContent);
             done();
           });
       });
@@ -102,7 +102,7 @@ describe('api/v4/style/cartocss', function () {
         cartoCSS.on('contentChanged', contentChangedSpy);
         cartoCSS.setContent(newContent)
           .then(function () {
-            expect(cartoCSS.getStyle()).toEqual(newContent);
+            expect(cartoCSS.getContent()).toEqual(newContent);
             expect(contentChangedSpy).toHaveBeenCalled();
             done();
           });
@@ -125,7 +125,7 @@ describe('api/v4/style/cartocss', function () {
             return cartoCSS.setContent(newContent);
           })
           .then(function () {
-            expect(cartoCSS.getStyle()).toEqual(newContent);
+            expect(cartoCSS.getContent()).toEqual(newContent);
             done();
           });
       });

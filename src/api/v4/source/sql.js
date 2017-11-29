@@ -34,7 +34,6 @@ SQL.prototype = Object.create(Base.prototype);
  * @api
  */
 SQL.prototype.setQuery = function (query) {
-  var self = this;
   _checkQuery(query);
   this._query = query;
   if (!this._internalModel) {
@@ -43,11 +42,13 @@ SQL.prototype.setQuery = function (query) {
   }
   this._internalModel.set('query', query, { silent: true });
 
-  return this._internalModel._engine.reload().then(function () {
-    self._triggerQueryChanged(this, query);
-  }).catch(function (windshaftError) {
-    return Promise.reject(new CartoError(windshaftError));
-  });
+  return this._internalModel._engine.reload()
+    .then(function () {
+      this._triggerQueryChanged(this, query);
+    }.bind(this))
+    .catch(function (windshaftError) {
+      return Promise.reject(new CartoError(windshaftError));
+    });
 };
 
 /**

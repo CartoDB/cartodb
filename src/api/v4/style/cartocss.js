@@ -7,7 +7,7 @@ var CONTENT_CHANGED = 'contentChanged';
 
 /**
  * A CartoCSS/TurboCarto style that can be applied to a {@link carto.layer.Layer}.
- * @param {string} content A CartoCSS string 
+ * @param {string} content - A CartoCSS string 
  * @example
  * var style = new carto.style.CartoCSS(`
  *   #layer {
@@ -35,16 +35,6 @@ CartoCSS.prototype = Object.create(Base.prototype);
  */
 CartoCSS.prototype.getContent = function () {
   return this._content;
-};
-
-/**
- * Get the current CartoCSS/TurboCarto style as a string.
- * 
- * @return {string} - The TurboCarto style for this CartoCSS object
- * @api
- */
-CartoCSS.prototype.getStyle = function () {
-  return this.getContent();
 };
 
 /**

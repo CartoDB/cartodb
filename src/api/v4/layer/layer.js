@@ -76,7 +76,7 @@ Layer.prototype.setStyle = function (style, opts) {
   }
   // If style has an engine and is different from the layer`s engine throw an error
   if (style.$getEngine() && style.$getEngine() !== this._internalModel._engine) {
-    throw new Error('A layer can\'t have a styles which belongs to a different clients');
+    throw new Error('A layer can\'t have a style which belongs to a different client');
   }
   // If style has no engine, set the layer engine in the style.
   if (!style.$getEngine()) {
@@ -91,7 +91,7 @@ Layer.prototype.setStyle = function (style, opts) {
     }.bind(this))
     .catch(function (err) {
       var error = new CartoError(err);
-      this.trigger('error', new CartoError(error));
+      this.trigger('error', error);
       return Promise.reject(error);
     }.bind(this));
 };
@@ -133,7 +133,7 @@ Layer.prototype.setSource = function (source) {
   // If layer has been instantiated 
   // If the source already has an engine and is different from the layer's engine throw an error.
   if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
-    throw new Error('A layer can\'t have a source which belongs to a different clients');
+    throw new Error('A layer can\'t have a source which belongs to a different client');
   }
   // If source has no engine use the layer engine.
   if (!source.$getEngine()) {
@@ -316,8 +316,8 @@ Layer.prototype.$setEngine = function (engine) {
   this._style.$setEngine(engine);
   if (!this._internalModel) {
     this._internalModel = this._createInternalModel(engine);
-    this._style.on('$changed', function (cartocss) {
-      this._internalModel.set('cartocss', cartocss.getContent(), { silent: true });
+    this._style.on('$changed', function (style) {
+      this._internalModel.set('cartocss', style.getContent(), { silent: true });
     }, this);
   }
 };

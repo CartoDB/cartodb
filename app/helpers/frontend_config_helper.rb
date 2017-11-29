@@ -82,6 +82,4 @@ module FrontendConfigHelper
   def frontend_config
     frontend_config_hash.to_json
   end
-
-
 end

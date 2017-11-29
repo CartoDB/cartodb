@@ -14,7 +14,7 @@
       body { margin: 0; padding: 0; }
       #map { position: absolute; height: 100%; width: 100%; }
       #controls { position: absolute; padding: 0 20px 20px; background: white; }
-      .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
+      .column-right { display: flex; flex-direction: column; right: 0; }
       #data { margin-top: 20px; font-size: 1.2em; }
       #data span { font-size: 2em; }
     </style>
@@ -54,7 +54,7 @@
         }
       `);
       var layer = new carto.layer.Layer(source, style, {
-        featureClickColumns: ['name', 'pop_max']
+        featureOverColumns: ['name', 'pop_max']
       });
 
       client.addLayer(layer);

@@ -14,7 +14,8 @@
       #map { position: absolute; height: 100%; width: 100%; }
       #controls { position: absolute; padding: 0 20px 20px; background: white; }
       .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
-      #data { margin-top: 20px; font-size: 1.2em; }
+      button { padding: 10px; margin-top: 20px; }
+      #data { margin-top: 30px; font-size: 1.2em; }
       #data span { font-size: 2em; }
     </style>
   </head>
@@ -22,6 +23,8 @@
     <div id="map"></div>
     <div id="controls" class="column-right">
       <h3>Move the mouse over the markers</h3>
+      <button onclick="setMaxPopulation()">Show max population</button>
+      <button onclick="setMinPopulation()">Show min population</button>
       <div id="data"></div>
     </div>
     <script>
@@ -56,13 +59,26 @@
       layer.on(carto.layer.events.FEATURE_OVER, function (featureEvent) {
         var data = '';
         data += '<b>' + featureEvent.data.name.toUpperCase() + '</b>';
-        data += '<p><span>' + featureEvent.data.pop_max + '</span> inhabitants</p>';
+        if (featureEvent.data.pop_max) {
+          data += '<p><span>' + featureEvent.data.pop_max + '</span> max inhabitants</p>';
+        }
+        if (featureEvent.data.pop_min) {
+          data += '<p><span>' + featureEvent.data.pop_min + '</span> min inhabitants</p>';
+        }
         document.getElementById('data').innerHTML = data;
       });
 
       layer.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {
         document.getElementById('data').innerHTML = '';
       });
+
+      function setMaxPopulation() {
+        layer.setFeatureOverColumns(['name', 'pop_max']);
+      }
+
+      function setMinPopulation() {
+        layer.setFeatureOverColumns(['name', 'pop_min']);
+      }
     </script>
   </body>
 </html>

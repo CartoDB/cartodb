@@ -7,7 +7,7 @@ var CONTENT_CHANGED = 'contentChanged';
 
 /**
  * A CartoCSS/TurboCarto style that can be applied to a {@link carto.layer.Layer}.
- * @param {string} cartocss CartoCSS
+ * @param {string} content A CartoCSS string 
  * @example
  * var style = new carto.style.CartoCSS(`
  *   #layer {
@@ -20,9 +20,9 @@ var CONTENT_CHANGED = 'contentChanged';
  * @memberof carto.style
  * @api
  */
-function CartoCSS (cartoCSS) {
-  _checkContent(cartoCSS);
-  this._content = cartoCSS;
+function CartoCSS (content) {
+  _checkContent(content);
+  this._content = content;
 }
 
 CartoCSS.prototype = Object.create(Base.prototype);

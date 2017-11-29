@@ -211,7 +211,7 @@ Category.prototype._onOperationColumnChanged = function () {
 
 Category.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Category dataview options are not defined.');
+    throw this._getValidationError('categoryOptionsRequired');
   }
   this._checkLimit(options.limit);
   this._checkOperation(options.operation);
@@ -220,31 +220,31 @@ Category.prototype._checkOptions = function (options) {
 
 Category.prototype._checkLimit = function (limit) {
   if (_.isUndefined(limit)) {
-    throw new TypeError('Limit for category dataview is required.');
+    throw this._getValidationError('categoryLimitRequired');
   }
   if (!_.isNumber(limit)) {
-    throw new TypeError('Limit for category dataview must be a number.');
+    throw this._getValidationError('categoryLimitNumber');
   }
   if (limit <= 0) {
-    throw new TypeError('Limit for category dataview must be greater than 0.');
+    throw this._getValidationError('categoryLimitPositive');
   }
 };
 
 Category.prototype._checkOperation = function (operation) {
   if (_.isUndefined(operation) || !constants.isValidOperation(operation)) {
-    throw new TypeError('Operation for category dataview is not valid. Use carto.operation');
+    throw this._getValidationError('categoryInvalidOperation');
   }
 };
 
 Category.prototype._checkOperationColumn = function (operationColumn) {
   if (_.isUndefined(operationColumn)) {
-    throw new TypeError('Operation column for category dataview is required.');
+    throw this._getValidationError('categoryOperationRequired');
   }
   if (!_.isString(operationColumn)) {
-    throw new TypeError('Operation column for category dataview must be a string.');
+    throw this._getValidationError('categoryOperationString');
   }
   if (_.isEmpty(operationColumn)) {
-    throw new TypeError('Operation column for category dataview must be not empty.');
+    throw this._getValidationError('categoryOperationEmpty');
   }
 };
 

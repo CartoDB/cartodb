@@ -44,6 +44,9 @@ function CartoError (error, opts) {
   var friendlyError = retrieveFriendlyError(cartoError);
   track(friendlyError);
 
+  friendlyError.name = 'CartoError';
+  friendlyError.stack = (new Error()).stack;
+
   return friendlyError;
 }
 

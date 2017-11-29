@@ -111,13 +111,13 @@ Histogram.prototype.getDistributionType = function () {
 
 Histogram.prototype._validateBins = function (bins) {
   if (!_.isFinite(bins) || bins < 1 || Math.floor(bins) !== bins) {
-    throw new TypeError('Bins must be a positive integer value.');
+    throw this._getValidationError('histogramInvalidBins');
   }
 };
 
 Histogram.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Options object to create a histogram dataview is required.');
+    throw this._getValidationError('histogramOptionsRequired');
   }
   this._validateBins(options.bins);
 };

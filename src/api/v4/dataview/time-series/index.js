@@ -153,7 +153,7 @@ TimeSeries.prototype.isUsingLocalTimezone = function () {
 
 TimeSeries.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Options object to create a histogram dataview is required.');
+    throw this._getValidationError('timeSeriesOptionsRequired');
   }
   this._validateAggregation(options.aggregation);
   this._validateOffset(options.offset);
@@ -162,19 +162,19 @@ TimeSeries.prototype._checkOptions = function (options) {
 
 TimeSeries.prototype._validateAggregation = function (aggregation) {
   if (!isValidTimeAggregation(aggregation)) {
-    throw new TypeError('Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
+    throw this._getValidationError('timeSeriesInvalidAggregation');
   }
 };
 
 TimeSeries.prototype._validateOffset = function (offset) {
   if (!_.isFinite(offset) || Math.floor(offset) !== offset || offset < -12 || offset > 14) {
-    throw new TypeError('Offset must an integer value between -12 and 14.');
+    throw this._getValidationError('timeSeriesInvalidOffset');
   }
 };
 
 TimeSeries.prototype._validateLocalTimezone = function (localTimezone) {
   if (!_.isBoolean(localTimezone)) {
-    throw new TypeError('LocalTimezone must be a boolean value.');
+    throw this._getValidationError('timeSeriesInvalidUselocaltimezone');
   }
 };
 

@@ -7,6 +7,11 @@ var LayerBase = require('./layer/base');
 var Layers = require('./layers');
 var LeafletLayer = require('./leaflet-layer');
 var VERSION = require('../../../package.json').version;
+var CartoValidationError = require('error-handling/carto-validation-error');
+
+function getValidationError (code) {
+  return new CartoValidationError('client', code);
+}
 
 /**
  * This is the entry point for a Carto.js application.
@@ -289,7 +294,7 @@ Client.prototype._bindEngine = function (engine) {
  */
 function _checkLayer (object) {
   if (!(object instanceof LayerBase)) {
-    throw new TypeError('The given object is not a layer');
+    throw getValidationError('badLayerType');
   }
 }
 
@@ -303,29 +308,29 @@ function _checkSettings (settings) {
 
 function _checkApiKey (apiKey) {
   if (!apiKey) {
-    throw new TypeError('apiKey property is required.');
+    throw getValidationError('apiKeyRequired');
   }
   if (!_.isString(apiKey)) {
-    throw new TypeError('apiKey property must be a string.');
+    throw getValidationError('apiKeyString');
   }
 }
 
 function _checkUsername (username) {
   if (!username) {
-    throw new TypeError('username property is required.');
+    throw getValidationError('usernameRequired');
   }
   if (!_.isString(username)) {
-    throw new TypeError('username property must be a string.');
+    throw getValidationError('usernameString');
   }
 }
 
 function _checkServerUrl (serverUrl, username) {
   var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
   if (!serverUrl.match(urlregex)) {
-    throw new TypeError('serverUrl is not a valid URL.');
+    throw getValidationError('nonValidServerURL');
   }
   if (serverUrl.indexOf(username) < 0) {
-    throw new TypeError('serverUrl doesn\'t match the username.');
+    throw getValidationError('serverURLDoesntMatchUsername');
   }
 }
 

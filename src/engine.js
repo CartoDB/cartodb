@@ -140,8 +140,8 @@ Engine.prototype.reload = function (options) {
       resolve();
     };
     options.error = function (serverResponse) {
-      oldError(serverResponse);
-      reject(serverResponse);
+      var parsedError = oldError(serverResponse);
+      reject(parsedError);
     };
     try {
       var params = this._buildParams(options.includeFilters);
@@ -232,6 +232,8 @@ Engine.prototype._onReloadError = function (serverResponse, options) {
   this._modelUpdater.setErrors(windshaftErrors);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, error);
   options.error && options.error(error);
+
+  return error;
 };
 
 /**
@@ -246,7 +248,7 @@ Engine.prototype._buildOptions = function (options) {
       this._onReloadSuccess(serverResponse, options);
     }.bind(this),
     error: function (serverResponse) {
-      this._onReloadError(serverResponse, options);
+      return this._onReloadError(serverResponse, options);
     }.bind(this)
   }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
 };

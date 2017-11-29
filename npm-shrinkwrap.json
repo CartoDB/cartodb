@@ -160,9 +160,14 @@
       "resolved": "https://registry.npmjs.org/big.js/-/big.js-3.2.0.tgz"
     },
     "binary-extensions": {
-      "version": "1.11.0",
+      "version": "1.10.0",
       "from": "binary-extensions@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.11.0.tgz"
+      "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.10.0.tgz"
+    },
+    "bluebird": {
+      "version": "3.5.1",
+      "from": "bluebird@>=3.4.7 <4.0.0",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
     },
     "bluebird": {
       "version": "3.5.1",
@@ -1266,9 +1271,9 @@
       "resolved": "https://registry.npmjs.org/lcid/-/lcid-1.0.0.tgz"
     },
     "leaflet": {
-      "version": "1.2.0",
-      "from": "leaflet@1.2.0",
-      "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.2.0.tgz"
+      "version": "1.0.3",
+      "from": "leaflet@1.0.3",
+      "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.0.3.tgz"
     },
     "lexical-scope": {
       "version": "1.2.0",

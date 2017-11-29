@@ -99,6 +99,9 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Add hover to UI Elements (#13074)
+
+* By value color input filters columns of type date (#7873)
 * Fixes image export in editor (#13089)
 * Fix incorrect "back to dashboard" link in dataset view (#13111)
 * Improve the discoverability of the table view switch (#13050)
@@ -108,6 +111,7 @@ ion for time-series (#12670)
 * Fix for torque category legends (CartoDB/support#1120)
 * Upgrade cartodb extension to 0.20.0 (#13065)
 * Remove back arrow and add a tooltip to editor logo (#13067)
++ Track user events (#13051)
 * Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
@@ -299,6 +303,7 @@ ion for time-series (#12670)
 * Fix histogram zoom (#12945)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
+* Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
 * Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals

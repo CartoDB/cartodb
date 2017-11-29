@@ -39,7 +39,7 @@
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
     "tangram": "cartodb/tangram#master",
-    "torque.js": "CartoDB/torque#master",
+    "torque.js": "CartoDB/torque#fallback-reference",
     "underscore": "1.8.3",
     "webpack": "2.3.2"
   },

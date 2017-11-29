@@ -33,7 +33,7 @@ CartoCSS.prototype = Object.create(Base.prototype);
  * @return {string} - The TurboCarto style for this CartoCSS object
  * @api
  */
-CartoCSS.prototype.toCartoCSS = function () {
+CartoCSS.prototype.getContent = function () {
   return this._cartoCSS;
 };
 
@@ -44,7 +44,7 @@ CartoCSS.prototype.toCartoCSS = function () {
  * @api
  */
 CartoCSS.prototype.getStyle = function () {
-  return this._cartoCSS;
+  return this.getContent();
 };
 
 /**

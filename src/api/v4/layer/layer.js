@@ -84,7 +84,7 @@ Layer.prototype.setStyle = function (style, opts) {
     style.$setEngine(this._engine);
   }
 
-  this._internalModel.set('cartocss', style.toCartoCSS(), { silent: true });
+  this._internalModel.set('cartocss', style.getContent(), { silent: true });
   return this._engine.reload()
     .then(function () {
       self._style = style;
@@ -292,7 +292,7 @@ Layer.prototype._createInternalModel = function (engine) {
   var internalModel = new CartoDBLayer({
     id: this._id,
     source: this._source.$getInternalModel(),
-    cartocss: this._style.toCartoCSS(),
+    cartocss: this._style.getContent(),
     visible: this._visible,
     infowindow: _getInteractivityFields(this._featureClickColumns),
     tooltip: _getInteractivityFields(this._featureOverColumns)
@@ -319,7 +319,7 @@ Layer.prototype.$setEngine = function (engine) {
   if (!this._internalModel) {
     this._internalModel = this._createInternalModel(engine);
     this._style.on('$changed', function (cartocss) {
-      this._internalModel.set('cartocss', cartocss.toCartoCSS(), { silent: true });
+      this._internalModel.set('cartocss', cartocss.getContent(), { silent: true });
     }, this);
   }
 };

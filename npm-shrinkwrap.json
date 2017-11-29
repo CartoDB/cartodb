@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.8-9.13074.3",
+  "version": "4.10.91",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -331,9 +331,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.18",
-      "from": "cartodb/deep-insights.js#13074-hover-elements",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#e9b938dd477139863fcfa42715638b4099379997",
+      "version": "0.4.19",
+      "from": "cartodb/deep-insights.js#v0.4.19",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#3ca3b648bd7d1ddb8530721c1c9de0ee0b6dd0b7",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -348,9 +348,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-alpha.29",
-      "from": "cartodb/cartodb.js#13074-hover-elements",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#08fe7dc5ce2542930f3e5e1fae5b47a25fba89bb"
+      "version": "4.0.0-alpha.30",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.30",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#63fa4b274d245113654ca58c3b537282678cb930"
     },
     "center-align": {
       "version": "0.1.3",

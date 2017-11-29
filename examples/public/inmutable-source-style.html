@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CARTO.js Source error example</title>
+    <!-- Include Leaflet 1.2.0 Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <!-- Include cartodb.js Library -->
+    <script src="../../dist/public/carto.uncompressed.js"></script>
+    <style>
+      * { margin: 0; padding: 0; }
+      html { box-sizing: border-box; height: 100%; }
+      body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
+      #container { display: flex; width: 100%; height: 100%; }
+      #map { flex: 1; margin: 10px; }
+      #widgets { position: relative; width: 300px; margin: 10px 10px 10px 0; }
+      button { background: #162945; width: 100%; padding: 10px; margin: 2px; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
+      button#btn1 { margin: 15px 0 5px 0px; }
+      textarea{ width: 100% }
+      p#errors{ margin-top: 30px; color:red; }
+      p.popup {bottom: -100px; left:0; right:0; position: absolute; background:red; color:white; padding: 5px; border-radius: 3px; text-align: center; transition: bottom .35s}
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="map"></div>
+      <div id="widgets">
+        <p>Style</p>
+        <textarea id="cartocss" rows="3">
+#layer { 
+    marker-fill: red;
+}
+        </textarea>
+        <button id="btn1"> Update Layer style</button>
+        <p>Query</p>
+        <textarea id="dataset" rows="3">
+SELECT * FROM ne_10m_populated_places_simple
+        </textarea>
+        <button id="btn2"> Update Layer source</button>
+        <p> This example generates a new style/source every time you click the button. </p>
+        <p> You can handle errors with the global layer error handler or using the returned promise.</p>
+        <p id="errors"></p>
+        <p class="popup"></p>
+      </div>
+    </div>
+    <script>
+      // 1. Setting up the Leaflet Map
+      // 1.1 Creating the Leaflet Map
+      var map = L.map('map').setView([30, 0], 3);
+
+      // 1.2 Adding basemap and labels layers
+      // Adding Voyager Basemap
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+      }).addTo(map);
+
+      // 2 Defining a carto.Client
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+
+      // 3.0 Define map sources
+      var populatedPlacesDataset = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
+
+      // 3.1 Create a style and add the valid layer to the client
+      var style = new carto.style.CartoCSS(`#layer { marker-fill: #162945; }`);
+
+      // 3.2 Create the layer
+      var layer = new carto.layer.Layer(populatedPlacesDataset, style);
+
+      // 3.3. Adding the layers to the client
+      client.addLayer(layer);
+
+      // 4.0 Get a leaflet layer from the client and add it to the map.
+      client.getLeafletLayer().addTo(map);
+
+      client.on(carto.events.SUCCESS, () => {
+        document.querySelector('#dataset').style.background = 'white';
+        document.querySelector('#cartocss').style.background = 'white';
+      });
+
+      // 5.0 Listen to all layer errors and print an error.
+      layer.on('error', (cartoError) => openPopup(cartoError.message));
+
+      document.querySelector('#btn1').addEventListener('click', () => {
+        const newStyle = new carto.style.CartoCSS(document.querySelector('#cartocss').value);
+        layer.setStyle(newStyle)
+          .then(() => document.querySelector('#cartocss').style.background = 'white') 
+          .catch(() => document.querySelector('#cartocss').style.background = '#E57373'); 
+      });
+
+      document.querySelector('#btn2').addEventListener('click', () => {
+        const newSource = new carto.source.SQL(document.querySelector('#dataset').value);
+        layer.setSource(newSource)
+          .then(cartoError => document.querySelector('#dataset').style.background = 'white')
+          .catch(cartoError => document.querySelector('#dataset').style.background = '#E57373'); 
+      });
+
+      function openPopup(message) {
+        let popup = document.querySelector('.popup')
+        popup.innerText = message;
+        popup.style.bottom = 0;
+        setTimeout( () => popup.style.bottom = '-100px', 3000);
+      }
+    </script>
+  </body>
+</html>

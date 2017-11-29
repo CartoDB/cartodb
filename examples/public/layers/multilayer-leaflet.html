@@ -49,6 +49,10 @@
         #layer {
           polygon-fill: #FF583E;
           polygon-opacity: 0.2;
+          ::outline {
+            line-color: #FFFFFF;
+            line-opacity: 0.8;
+          }
         }
       `);
       var europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);

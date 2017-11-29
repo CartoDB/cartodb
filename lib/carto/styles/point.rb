@@ -24,22 +24,23 @@ module Carto::Styles
       color = fill[:color][:fixed]
       opacity = fill[:color][:opacity]
 
-      ["marker-width: #{width};",
-       "marker-fill: #{color};",
-       "marker-fill-opacity: #{opacity};"]
+      ["dot-width: #{width};",
+       "dot-fill: #{color};",
+       "dot-opacity: #{opacity};"]
     end
 
-    def parse_stroke(stroke)
-      width = stroke[:size][:fixed]
+    def parse_stroke(stroke, fill)
+      width = (stroke[:size][:fixed] + fill[:size][:fixed])
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      ["marker-line-color: #{color};",
-       "marker-line-width: #{width};",
-       "marker-line-opacity: #{opacity};",
-       "marker-placement: point;",
-       "marker-type: ellipse;",
-       "marker-allow-overlap: true;"]
+      [
+        "::outline" => [
+          "dot-fill: #{color};",
+          "dot-width: #{width};",
+          "dot-opacity: #{opacity};"
+        ]
+      ]
     end
   end
 end

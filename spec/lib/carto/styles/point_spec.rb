@@ -8,15 +8,14 @@ module Carto
       describe '#default' do
         let(:production_default_point_cartocss) do
           "#layer {\n"\
-          "  marker-width: 7;\n"\
-          "  marker-fill: #EE4D5A;\n"\
-          "  marker-fill-opacity: 0.9;\n"\
-          "  marker-line-color: #FFFFFF;\n"\
-          "  marker-line-width: 1;\n"\
-          "  marker-line-opacity: 1;\n"\
-          "  marker-placement: point;\n"\
-          "  marker-type: ellipse;\n"\
-          "  marker-allow-overlap: true;\n"\
+          "  ::outline {\n"\
+          "    dot-fill: #FFFFFF;\n"\
+          "    dot-width: 8;\n"\
+          "    dot-opacity: 1;\n"\
+          "  }\n"\
+          "  dot-width: 7;\n"\
+          "  dot-fill: #EE4D5A;\n"\
+          "  dot-opacity: 0.9;\n"\
           "}"
         end
 

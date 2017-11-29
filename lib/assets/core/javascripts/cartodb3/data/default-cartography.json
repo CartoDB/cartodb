@@ -2,15 +2,6 @@
   "simple": {
 
     "point": {
-      "fill": {
-        "size": {
-          "fixed": 7
-        },
-        "color": {
-          "fixed": "#EE4D5A",
-          "opacity": 0.9
-        }
-      },
       "stroke": {
         "size": {
           "fixed": 1
@@ -18,6 +9,15 @@
         "color": {
           "fixed": "#FFFFFF",
           "opacity": 1
+        }
+      },
+      "fill": {
+        "size": {
+          "fixed": 7
+        },
+        "color": {
+          "fixed": "#EE4D5A",
+          "opacity": 0.9
         }
       }
     },

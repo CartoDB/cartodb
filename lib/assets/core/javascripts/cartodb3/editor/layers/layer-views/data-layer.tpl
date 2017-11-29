@@ -87,9 +87,10 @@
   </div>
 </div>
 <% // Show this for regular layers or ghost nodes %>
-<% if (hasGeom || brokenLayer) { %>
+<% if (hasGeom || brokenLayer || !needsGeocoding) { %>
   <ul class="Editor-ListAnalysis js-analyses <%- isVisible ? '' : 'is-hidden' %>  <%- isCollapsed ? 'is-collapsed' : '' %>"></ul>
-<% } else { %>
+<% } %>
+<% if (needsGeocoding) { %>
   <div class="u-tSpace--m">
     <span class="CDB-Text CDB-Size-medium u-secondaryTextColor">
       <%- _t('editor.layers.layer.geocode-text') %>

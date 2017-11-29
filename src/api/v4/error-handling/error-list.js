@@ -262,7 +262,7 @@ function retrieveFriendlyError (error) {
   if (entry) {
     var friendlyMessage = entry.friendlyMessage || '';
     if (_.isRegExp(entry.messageRegex)) {
-      var match = error.message.match(entry.messageRegex);
+      var match = error.message && error.message.match(entry.messageRegex);
       if (match && match.length > 1) {
         friendlyMessage = friendlyMessage.replace('$0', match[1]);
       }

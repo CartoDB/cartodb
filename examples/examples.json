@@ -1,7 +1,7 @@
 {
   "publish": [
     {
-      "category": "Basic",
+      "category": "Basics",
       "samples": [
         {
           "title": "Add a layer",
@@ -90,7 +90,7 @@
           "file": "public/dataviews/time-series.html"
         },
         {
-          "title": "Bounding box filter",
+          "title": "Bounding Box filter",
           "desc": "Apply a bounding box filter to the widgets",
           "file": {
             "leaflet": "public/filters/bounding-box-leaflet.html",
@@ -99,6 +99,24 @@
         }
       ]
     },
+    {
+      "category": "Error handling",
+      "samples": [
+        {
+          "title": "Errors in layers",
+          "desc": "Manage the errors in the layers",
+          "file": {
+            "leaflet": "public/layers/error-handling-leaflet.html",
+            "gmaps": "public/layers/error-handling-gmaps.html"
+          }
+        },
+        {
+          "title": "Errors in dataviews",
+          "desc": "Manage the errors in the dataviews",
+          "file": "public/dataviews/error-handling.html"
+        }
+      ]
+    }
     {
       "category": "Misc",
       "samples": [
@@ -119,11 +137,11 @@
           }
         },
         {
-          "title": "Error management",
-          "desc": "Detect errors in your layers and dataviews",
+          "title": "Most/less populated places",
+          "desc": "Filter the 20 most/less populated places in the world",
           "file": {
-            "leaflet": "public/misc/error-management-leaflet.html",
-            "gmaps": "public/misc/error-management-gmaps.html"
+            "leaflet": "public/misc/populated-places-leaflet.html",
+            "gmaps": "public/misc/populated-places-gmaps.html"
           }
         }
       ]

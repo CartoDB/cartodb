@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Feature click | Carto</title>
+    <title>Feature over/out | Carto</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -21,7 +21,7 @@
   <body>
     <div id="map"></div>
     <div id="controls" class="column-right">
-      <h3>Click on the markers</h3>
+      <h3>Move the mouse over the markers</h3>
       <div id="data"></div>
     </div>
     <script>
@@ -41,7 +41,7 @@
       `);
       var style = new carto.style.CartoCSS(`
         #layer {
-          marker-width: 16;
+          marker-width: 20;
           marker-fill: #FF583E;
           marker-line-color: #FFFFFF;
         }
@@ -53,11 +53,15 @@
       client.addLayer(layer);
       client.getLeafletLayer().addTo(map);
 
-      layer.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {
+      layer.on(carto.layer.events.FEATURE_OVER, function (featureEvent) {
         var data = '';
         data += '<b>' + featureEvent.data.name.toUpperCase() + '</b>';
         data += '<p><span>' + featureEvent.data.pop_max + '</span> inhabitants</p>';
         document.getElementById('data').innerHTML = data;
+      });
+
+      layer.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {
+        document.getElementById('data').innerHTML = '';
       });
     </script>
   </body>

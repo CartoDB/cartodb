@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.92",
+  "version": "4.10.94",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -163,11 +163,6 @@
       "version": "1.10.0",
       "from": "binary-extensions@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.10.0.tgz"
-    },
-    "bluebird": {
-      "version": "3.5.1",
-      "from": "bluebird@>=3.4.7 <4.0.0",
-      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
     },
     "bluebird": {
       "version": "3.5.1",

@@ -812,6 +812,18 @@ class User < Sequel::Model
     end
   end
 
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      return nil unless deletion_date
+      (deletion_date.to_date - Date.today).to_i
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Something went wrong calculating the number of remaining days for account deletion')
+      return nil
+    end
+  end
+
   def remove_logo?
     has_organization? ? organization.no_map_logo : no_map_logo
   end
@@ -1505,6 +1517,10 @@ class User < Sequel::Model
   # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
+  end
+
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
   end
 
   # Special url that goes to Central if active

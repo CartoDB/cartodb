@@ -1,5 +1,6 @@
 # coding: utf-8
 require 'open3'
+require 'tempfile'
 
 module CartoDB
   module DataMover
@@ -59,11 +60,22 @@ module CartoDB
 
       def run_command(cmd)
         logger.debug "Running command: \"#{cmd}\""
+        Tempfile.open('datamover') { |f| run_command_with_log(cmd, f) }
+      end
+
+      def run_command_with_log(cmd, file)
         return_code = nil
+        log_message = ''
+        logger.debug("Writing command output '#{cmd}' to #{file.path}")
         Open3.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
-          stdout_and_stderr.each { |line| logger.debug line.strip }
+          stdout_and_stderr.each do |line|
+            message = line.strip + "\n"
+            log_message += message
+            file.write(message)
+          end
           return_code = wait_thr.value
         end
+        logger.debug(log_message)
         throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
       end
 

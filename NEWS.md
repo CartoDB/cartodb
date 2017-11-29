@@ -13,6 +13,8 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Improve geocoding onboarding (#13046)
+* Account static view (#12749)
+* Force UTF-8 encoding in the Compass task
 * Trigger error when interactivity request fails (#13093)
 * Add interactivity error infobox (#13027)
 * Add limits for torque (#13085)
@@ -67,6 +69,7 @@ ion for time-series (#12670)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392)
 * Start using ::outline symbolizer for polygon stroke (#12412)
+* Explicit error on password protected visualization requests (#13123)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Time-series widgets aggregated by time (#12324)
@@ -89,10 +92,18 @@ ion for time-series (#12670)
 * Remove data-observatory-multiple-measures feature flag (#304)
 * Improve legends error (cartodb.js#1758)
 * Updates Dataservices API client default version to `0.21.0` (#12942)
-* Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
-* User accounts in locked state returns 404 for resources like maps or visualizatios and redirection for private endpoints (#13030)
+* Improve user migrator
+* Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
+* Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
+* User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
+* Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Add hover to UI Elements (#13074)
+
+* By value color input filters columns of type date (#7873)
+* Fixes image export in editor (#13089)
+* Fix incorrect "back to dashboard" link in dataset view (#13111)
 * Improve the discoverability of the table view switch (#13050)
 * Change Basemap layer style (#13091)
 * Rename point/polygon count to feature count (#13066)
@@ -108,6 +119,7 @@ ion for time-series (#12670)
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
+* Supporting text-placement for labels (CartoDB/support#13015)
 * Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
 * Improve SQL limit platforms notification (#12597)
@@ -122,6 +134,7 @@ ion for time-series (#12670)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
+* Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
@@ -289,6 +302,7 @@ ion for time-series (#12670)
 * Fix histogram zoom (#12945)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
+* Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
 * Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals
@@ -296,6 +310,7 @@ ion for time-series (#12670)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
+* Optimize bundle size related to camshaft-reference (#13124)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

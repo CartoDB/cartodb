@@ -7,7 +7,7 @@ var LayerBase = require('./layer/base');
 var Layers = require('./layers');
 var LeafletLayer = require('./leaflet-layer');
 var VERSION = require('../../../package.json').version;
-var CartoValidationError = require('error-handling/carto-validation-error');
+var CartoValidationError = require('./error-handling/carto-validation-error');
 
 function getValidationError (code) {
   return new CartoValidationError('client', code);

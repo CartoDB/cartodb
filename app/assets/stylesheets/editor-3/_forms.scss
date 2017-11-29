@@ -93,6 +93,12 @@
 }
 .Editor-formSelect {
   @include flex(1);
+
+  &.is-active {
+    .CDB-InputText {
+      border: 1px solid $cBlackHover;
+    }
+  }
 }
 
 .Editor-formHelp {

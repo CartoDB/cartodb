@@ -11,6 +11,29 @@
   color: $cAltText;
   box-sizing: border-box;
   line-height: 14px;
+
+  &.is-disabled {
+    opacity: 0.3;
+  }
+
+  &.is-pointed {
+    user-select: none;
+    cursor: pointer;
+  }
+
+  &--big {
+    height: 24px;
+    padding: 0 8px;
+    line-height: 22px;
+  }
+
+  &--outline {
+    background-color: transparent;
+  }
+
+  &--Builder {
+    color: $cMainText;
+  }
 }
 
 .Tag-fill {
@@ -19,54 +42,65 @@
   border-radius: $halfBaseSize;
   background-color: $cThirdBackground;
   color: $cWhite;
-}
-.Tag-fill--yellow {
-  background: #FFB927;
-}
-.Tag-fill--orange {
-  background: $cAlert;
-}
-.Tag-fill--orange-dark {
-  background: $cPassword;
-}
-.Tag-fill--red {
-  background: $cError;
-}
-.Tag-fill--blue {
-  background: $cBlue;
-}
-.Tag-fill--green {
-  background: $cPublic;
+  transition: background 0.1s ease-in;
+
+  &--yellow {
+    background: #FFB927;
+
+    &:hover {
+      background: darken(#FFB927, 8%);
+    }
+  }
+
+  &--orange {
+    background: $cAlert;
+
+    &:hover {
+      background: darken($cAlert, 8%);
+    }
+  }
+
+  &--orange-dark {
+    background: $cPassword;
+
+    &:hover {
+      background: darken($cPassword, 8%);
+    }
+  }
+
+  &--red {
+    background: $cError;
+
+    &:hover {
+      background: darken($cError, 8%);
+    }
+  }
+
+  &--blue {
+    background: $cBlue;
+
+    &:hover {
+      background: darken($cBlue, 8%);
+    }
+  }
+
+  &--green {
+    background: $cPublic;
+
+    &:hover {
+      background: darken($cPublic, 8%);
+    }
+  }
 }
 
-.Tag--big {
-  height: 24px;
-  padding: 0 8px;
-  line-height: 22px;
-}
+.Tag-outline {
+  &--dark {
+    border: 1px solid $cSecondaryDark;
+    color: $cSecondaryDark;
+  }
 
-.Tag--outline {
-  background-color: transparent;
-}
-
-.Tag-outline--dark {
-  border: 1px solid $cSecondaryDark;
-  color: $cSecondaryDark;
-}
-.Tag-outline--grey {
-  border: 1px solid $cAltText;
-  color: $cAltText;
-}
-
-.Tag--Builder {
-  color: $cMainText;
-}
-
-.Tag.is-disabled {
-  opacity: 0.3;
-}
-
-.Tag.is-pointed {
-  user-select: none;
-  cursor: pointer;
+  &--grey {
+    border: 1px solid $cAltText;
+    color: $cAltText;
+  }
 }

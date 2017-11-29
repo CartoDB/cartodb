@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Multilayer | Carto</title>
+    <title>Change source | Carto</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -13,14 +13,22 @@
     <style>
       body { margin: 0; padding: 0; }
       #map { position: absolute; height: 100%; width: 100%; }
+      #controls { position: absolute; padding: 0 20px 20px; background: white; }
+      .column-right { display: flex; flex-direction: column; right: 0; }
+      button { padding: 10px; margin-top: 20px; }
     </style>
   </head>
   <body>
     <div id="map"></div>
+    <div id="controls" class="column-right">
+      <button onclick="setAllCities()">All cities</button>
+      <button onclick="setEuropeCities()">Europe cities</button>
+      <button onclick="setSpainCities()">Spain cities</button>
+    </div>
     <script>
       var map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 40, lng: 0},
-        zoom: 5
+        center: {lat: 30, lng: 0},
+        zoom: 3
       });
       map.set('styles', [{
         elementType: 'labels',
@@ -35,37 +43,44 @@
         username: 'cartojs-test'
       });
 
-      var spainCitiesSource = new carto.source.SQL(`
+      var source = new carto.source.SQL(`
         SELECT *
           FROM ne_10m_populated_places_simple
-          WHERE adm0name = \'Spain\'
       `);
-      var spainCitiesStyle = new carto.style.CartoCSS(`
+      var style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 8;
           marker-fill: #FF583E;
           marker-line-color: #FFFFFF;
         }
       `);
-      var spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
+      var layer = new carto.layer.Layer(source, style);
 
-      var europeCountriesSource = new carto.source.Dataset(`
-        ne_adm0_europe
-      `);
-      var europeCountriesStyle = new carto.style.CartoCSS(`
-        #layer {
-          polygon-fill: #FF583E;
-          polygon-opacity: 0.2;
-          ::outline {
-            line-color: #FFFFFF;
-            line-opacity: 0.8;
-          }
-        }
-      `);
-      var europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);
-
-      client.addLayers([europeCountriesLayer, spainCitiesLayer]);
+      client.addLayer(layer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      function setAllCities() {
+        source.setQuery(`
+          SELECT *
+            FROM ne_10m_populated_places_simple
+        `);
+      }
+
+      function setEuropeCities() {
+        source.setQuery(`
+          SELECT *
+            FROM ne_10m_populated_places_simple
+            WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+        `);
+      }
+
+      function setSpainCities() {
+        source.setQuery(`
+          SELECT *
+            FROM ne_10m_populated_places_simple
+            WHERE adm0name = \'Spain\'
+        `);
+      }
     </script>
   </body>
 </html>

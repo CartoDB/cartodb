@@ -25,29 +25,29 @@
       <button onclick="setSpainCities()">Spain cities</button>
     </div>
     <script>
-      var map = L.map('map').setView([30, 0], 3);
+      const map = L.map('map').setView([30, 0], 3);
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18
       }).addTo(map);
 
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.SQL(`
+      const source = new carto.source.SQL(`
         SELECT *
           FROM ne_10m_populated_places_simple
       `);
-      var style = new carto.style.CartoCSS(`
+      const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 8;
           marker-fill: #FF583E;
           marker-line-color: #FFFFFF;
         }
       `);
-      var layer = new carto.layer.Layer(source, style);
+      const layer = new carto.layer.Layer(source, style);
 
       client.addLayer(layer);
       client.getLeafletLayer().addTo(map);

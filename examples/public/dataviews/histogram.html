@@ -16,15 +16,15 @@
   <body>
     <pre id="widget"></pre>
     <script>
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.SQL(`
+      const source = new carto.source.SQL(`
         SELECT * FROM airbnb_listings WHERE price < 150
       `);
-      var histogramDataview = new carto.dataview.Histogram(source, 'price', {
+      const histogramDataview = new carto.dataview.Histogram(source, 'price', {
         bins: 5
       });
 

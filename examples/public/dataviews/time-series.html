@@ -16,15 +16,15 @@
   <body>
     <pre id="widget"></pre>
     <script>
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.Dataset(`
+      const source = new carto.source.Dataset(`
         railroad_data
       `);
-      var timeseriesDataview = new carto.dataview.TimeSeries(source, 'date', {
+      const timeseriesDataview = new carto.dataview.TimeSeries(source, 'date', {
         aggregation: carto.dataview.timeAggregation.YEAR,
         offset: 1
       });

@@ -42,7 +42,7 @@
     <script>
       // 1. Setting up the Leaflet Map
       // 1.1 Creating the Leaflet Map
-      var map = L.map('map').setView([50, 15], 4);
+      const map = L.map('map').setView([50, 15], 4);
 
       // 1.2 Adding basemap and labels layers
       // Adding Voyager Basemap
@@ -57,7 +57,7 @@
       }).addTo(map);
 
       // 2 Defining a carto.Client
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
@@ -65,10 +65,10 @@
       // 3. Displaying countries and cities on the map
       // 3.1 Defining the layers
       // European Countries layer
-      var europeanCountriesDataset = new carto.source.Dataset(`
+      const europeanCountriesDataset = new carto.source.Dataset(`
         ne_adm0_europe
       `);
-      var europeanCountriesStyle = new carto.style.CartoCSS(`
+      const europeanCountriesStyle = new carto.style.CartoCSS(`
         #layer {
         polygon-fill: #162945;
           polygon-opacity: 0.5;
@@ -79,15 +79,15 @@
           }
         }
       `);
-      var europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
+      const europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
 
       // Europe cities layer
-      var populatedPlacesSQL = new carto.source.SQL(`
+      const populatedPlacesSQL = new carto.source.SQL(`
         SELECT *
           FROM ne_10m_populated_places_simple
           WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
       `);
-      var populatedPlacesStyle = new carto.style.CartoCSS(`
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
         #layer {
           marker-width: 8;
           marker-fill: #FF583E;
@@ -99,7 +99,7 @@
           marker-allow-overlap: false;
         }
       `);
-      var populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle, {
+      const populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle, {
         featureOverColumns: ['name']
       });
 
@@ -111,7 +111,7 @@
 
       // 4. Setting up tooltips
       // 4.1 Showing the tooltip when user mouses over a city
-      var popup = L.popup({ closeButton: false });
+      const popup = L.popup({ closeButton: false });
       populatedPlaces.on('featureOver', function (featureEvent) {
         popup.setLatLng(featureEvent.latLng);
         if (!popup.isOpen()) {
@@ -127,18 +127,18 @@
 
       // 5 Creating a formula widget
       // 5.1 Defining a formula dataview
-      var averagePopulation = new carto.dataview.Formula(populatedPlacesSQL, 'pop_max', {
+      const averagePopulation = new carto.dataview.Formula(populatedPlacesSQL, 'pop_max', {
         operation: carto.operation.AVG
       });
 
       // 5.2 Listening to data changes on the dataview
-      averagePopulation.on('dataChanged', function (newData) {
-        refreshAveragePopulationWidget(newData.result);
+      averagePopulation.on('dataChanged', function (data) {
+        refreshAveragePopulationWidget(data.result);
       });
 
-      var refreshAveragePopulationWidget = function (avgPopulation) {
-        var widgetDom = document.querySelector('#avgPopulationWidget');
-        var averagePopulationDom = widgetDom.querySelector('.js-average-population');
+      const refreshAveragePopulationWidget = function (avgPopulation) {
+        const widgetDom = document.querySelector('#avgPopulationWidget');
+        const averagePopulationDom = widgetDom.querySelector('.js-average-population');
         averagePopulationDom.innerText = Math.floor(avgPopulation);
       };
 
@@ -147,39 +147,39 @@
 
       // 6 Creating a country selector widget
       // 6.1 Defining a category dataview
-      var countriesDataview = new carto.dataview.Category(europeanCountriesDataset, 'admin', {
+      const countriesDataview = new carto.dataview.Category(europeanCountriesDataset, 'admin', {
         limit: 100
       });
 
       // 6.2 Listening to data changes on the dataview
-      countriesDataview.on('dataChanged', function (newData) {
-        var countryNames = newData.categories.map(function (category) {
+      countriesDataview.on('dataChanged', function (data) {
+        const countryNames = data.categories.map(function (category) {
           return category.name;
         }).sort();
         refreshCountriesWidget(countryNames);
       });
 
-      var refreshCountriesWidget = function (adminNames) {
-        var widgetDom = document.querySelector('#countriesWidget');
-        var countriesDom = widgetDom.querySelector('.js-countries');
+      const refreshCountriesWidget = function (adminNames) {
+        const widgetDom = document.querySelector('#countriesWidget');
+        const countriesDom = widgetDom.querySelector('.js-countries');
 
         countriesDom.onchange = function (event) {
-          var admin = event.target.value;
+          const admin = event.target.value;
           highlightCountry(admin);
           filterPopulatedPlacesByCountry(admin);
         };
 
         // Fill in the list of countries
         adminNames.forEach(function (admin) {
-          var option = document.createElement('option');
+          const option = document.createElement('option');
           option.innerHTML = admin;
           option.value = admin;
           countriesDom.appendChild(option);
         });
       };
 
-      var highlightCountry = function (admin) {
-        var cartoCSS = `
+      const highlightCountry = function (admin) {
+        let cartoCSS = `
           #layer {
             polygon-fill: #162945;
             polygon-opacity: 0.5;
@@ -201,8 +201,8 @@
         europeanCountriesStyle.setContent(cartoCSS);
       };
 
-      var filterPopulatedPlacesByCountry = function (admin) {
-        var query = `
+      const filterPopulatedPlacesByCountry = function (admin) {
+        let query = `
           SELECT *
             FROM ne_10m_populated_places_simple
             WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)

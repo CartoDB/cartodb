@@ -16,15 +16,15 @@
   <body>
     <pre id="widget"></pre>
     <script>
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.Dataset(`
+      const source = new carto.source.Dataset(`
         ne_10m_populated_places_simple
       `);
-      var categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+      const categoryDataview = new carto.dataview.Category(source, 'adm0name', {
         limit: 10,
         operation: carto.operation.SUM,
         operationColumn: 'pop_max'

@@ -26,7 +26,7 @@
       <button onclick="setSpainCities()">Spain cities</button>
     </div>
     <script>
-      var map = new google.maps.Map(document.getElementById('map'), {
+      const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
         zoom: 3
       });
@@ -38,23 +38,23 @@
         stylers: [{ visibility: 'off' }]
       }]);
 
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.SQL(`
+      const source = new carto.source.SQL(`
         SELECT *
           FROM ne_10m_populated_places_simple
       `);
-      var style = new carto.style.CartoCSS(`
+      const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 8;
           marker-fill: #FF583E;
           marker-line-color: #FFFFFF;
         }
       `);
-      var layer = new carto.layer.Layer(source, style);
+      const layer = new carto.layer.Layer(source, style);
 
       client.addLayer(layer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));

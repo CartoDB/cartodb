@@ -26,7 +26,7 @@
       <div id="data"></div>
     </div>
     <script>
-      var map = new google.maps.Map(document.getElementById('map'), {
+      const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
         zoom: 3
       });
@@ -38,22 +38,22 @@
         stylers: [{ visibility: 'off' }]
       }]);
 
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.Dataset(`
+      const source = new carto.source.Dataset(`
         ne_10m_populated_places_simple
       `);
-      var style = new carto.style.CartoCSS(`
+      const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 16;
           marker-fill: #FF583E;
           marker-line-color: #FFFFFF;
         }
       `);
-      var layer = new carto.layer.Layer(source, style, {
+      const layer = new carto.layer.Layer(source, style, {
         featureClickColumns: ['name', 'pop_max']
       });
 
@@ -61,7 +61,7 @@
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
       layer.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {
-        var data = '';
+        let data = '';
         data += '<b>' + featureEvent.data.name.toUpperCase() + '</b>';
         data += '<p><span>' + featureEvent.data.pop_max + '</span> inhabitants</p>';
         document.getElementById('data').innerHTML = data;

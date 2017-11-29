@@ -17,35 +17,35 @@
   <body>
     <div id="map"></div>
     <script>
-      var map = L.map('map').setView([40, 0], 5);
+      const map = L.map('map').setView([40, 0], 5);
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18
       }).addTo(map);
 
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var spainCitiesSource = new carto.source.SQL(`
+      const spainCitiesSource = new carto.source.SQL(`
         SELECT *
           FROM ne_10m_populated_places_simple
           WHERE adm0name = \'Spain\'
       `);
-      var spainCitiesStyle = new carto.style.CartoCSS(`
+      const spainCitiesStyle = new carto.style.CartoCSS(`
         #layer {
           marker-width: 8;
           marker-fill: #FF583E;
           marker-line-color: #FFFFFF;
         }
       `);
-      var spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
+      const spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
 
-      var europeCountriesSource = new carto.source.Dataset(`
+      const europeCountriesSource = new carto.source.Dataset(`
         ne_adm0_europe
       `);
-      var europeCountriesStyle = new carto.style.CartoCSS(`
+      const europeCountriesStyle = new carto.style.CartoCSS(`
         #layer {
           polygon-fill: #FF583E;
           polygon-opacity: 0.2;
@@ -55,7 +55,7 @@
           }
         }
       `);
-      var europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);
+      const europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);
 
       client.addLayers([europeCountriesLayer, spainCitiesLayer]);
       client.getLeafletLayer().addTo(map);

@@ -16,15 +16,15 @@
   <body>
     <pre id="widget"></pre>
     <script>
-      var client = new carto.Client({
+      const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.Dataset(`
+      const source = new carto.source.Dataset(`
         ne_10m_populated_places_simple
       `);
-      var formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
+      const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
         operation: carto.operation.AVG
       });
 

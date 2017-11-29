@@ -1,17 +1,16 @@
 var L = require('leaflet');
-var carto = require('../../../../src/api/v4');
+var carto = require('../../../../../src/api/v4');
 
-describe('src/api/v4/leaflet-layer', function () {
+describe('src/api/v4/native/leaflet-layer', function () {
   var client;
   var layer;
   var leafletLayer;
   var map;
-  var mapContainer;
 
   beforeEach(function () {
-    mapContainer = document.createElement('div');
-    mapContainer.id = 'map';
-    document.body.appendChild(mapContainer);
+    var element = document.createElement('div');
+    element.id = 'map';
+    document.body.appendChild(element);
 
     client = new carto.Client({
       apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',

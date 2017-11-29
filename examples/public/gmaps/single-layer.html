@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <title>CARTO.js Single layer example</title>
-    <!-- Include Leaflet 1.2.0 Library -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <!-- Include Google Maps Library -->
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
     <!-- Include CARTO.js Library -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script> <!-- Because of WAX -->
     <script src="../../../dist/public/carto.uncompressed.js"></script>
     <style>
       html, body { margin: 0; padding: 0; }
@@ -16,23 +16,11 @@
   <body>
     <div id="map"></div>
     <script>
-      // 1. Setting up the Leaflet Map
-      // 1.1 Creating the Leaflet Map
-      var map = L.map('map').setView([58.722598828043395, 18.544921875000004], 4);
-
-      // 1.2 Adding basemap and labels layers
-      // Adding Voyager Basemap
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: carto.ATTRIBUTION
-      }).addTo(map);
-
-      // Adding Voyager Labels
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        zIndex: 100,
-        attribution: carto.ATTRIBUTION
-      }).addTo(map);
+      // 1. Setting up the Google Maps map
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 4,
+        center: {lat: 58.722598828043395, lng: 18.544921875000004}
+      });
 
       // 2 Defining a carto.Client
       var client = new carto.Client({
@@ -60,8 +48,15 @@
       client.addLayer(europeanCountries);
 
       // 3.3. Adding the layers to the map
-      var leafletLayer = client.getLeafletLayer();
-      leafletLayer.addTo(map);
+      var mapType = client.getGoogleMapsMapType(map);
+      map.overlayMapTypes.push(mapType);
+
+      // map.overlayMapTypes.setAt(0, mapType)
+      // map.overlayMapTypes.insertAt(0, mapType)
+      // map.overlayMapTypes.removeAt(0)
+      // map.overlayMapTypes.push(mapType)
+      // map.overlayMapTypes.pop()
+      // map.overlayMapTypes.clear()
     </script>
   </body>
 </html>

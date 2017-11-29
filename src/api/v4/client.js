@@ -5,7 +5,6 @@ var Engine = require('../../engine');
 var Events = require('./events');
 var LayerBase = require('./layer/base');
 var Layers = require('./layers');
-var LeafletLayer = require('./leaflet-layer');
 var VERSION = require('../../../package.json').version;
 
 /**
@@ -217,8 +216,35 @@ Client.prototype.getDataviews = function () {
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
-  this._leafletLayer = this._leafletLayer || new LeafletLayer(this._layers, this._engine);
+  // Check if Leaflet is loaded
+  _isLeafletLoaded();
+  if (!this._leafletLayer) {
+    var LeafletLayer = require('./native/leaflet-layer');
+    this._leafletLayer = new LeafletLayer(this._layers, this._engine);
+  }
   return this._leafletLayer;
+};
+
+/**
+ * Return a Google Maps mapType that groups all the layers that have been
+ * added to this client.
+ *
+ * @param {google.maps.Map}
+ *
+ * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
+ * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}
+ * @api
+ */
+Client.prototype.getGoogleMapsMapType = function (map) {
+  // NOTE: the map is required here because of wax.g.connector
+
+  // Check if Google Maps is loaded
+  _isGoogleMapsLoaded();
+  if (!this._gmapsMapType) {
+    var GoogleMapsMapType = require('./native/google-maps-map-type');
+    this._gmapsMapType = new GoogleMapsMapType(this._layers, this._engine, map);
+  }
+  return this._gmapsMapType;
 };
 
 /**
@@ -322,6 +348,27 @@ function _checkServerUrl (serverUrl, username) {
   }
   if (serverUrl.indexOf(username) < 0) {
     throw new TypeError('serverUrl doesn\'t match the username.');
+  }
+}
+
+function _isLeafletLoaded () {
+  if (!window.L) {
+    throw new Error('Leaflet is required');
+  }
+  if (window.L.version < '1.0.0') {
+    throw new Error('Leaflet +1.0 is required');
+  }
+}
+
+function _isGoogleMapsLoaded () {
+  if (!window.google) {
+    throw new Error('Google Maps is required');
+  }
+  if (!window.google.maps) {
+    throw new Error('Google Maps is required');
+  }
+  if (window.google.maps.version < '3.0.0') {
+    throw new Error('Google Maps +3.0 is required');
   }
 }
 

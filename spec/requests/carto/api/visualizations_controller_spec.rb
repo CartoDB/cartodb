@@ -1504,6 +1504,7 @@ describe Carto::Api::VisualizationsController do
 
           get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
             response.status.should eq 403
+            expect(response.body[:errors]).to eq('Visualization not viewable')
           end
         end
 
@@ -1518,6 +1519,19 @@ describe Carto::Api::VisualizationsController do
 
             get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
               response.status.should eq 403
+              expect(response.body[:errors]).to eq('Visualization not viewable')
+            end
+          end
+
+          it 'returns 403 for unpublished and password protected visualizations' do
+            @visualization.published?.should eq false
+            @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+            @visualization.password = 'wadus'
+            @visualization.save!
+
+            get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+              response.status.should eq 403
+              expect(response.body[:errors]).to eq('Visualization not viewable')
             end
           end
 
@@ -1584,10 +1598,12 @@ describe Carto::Api::VisualizationsController do
 
               get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 403
+                expect(response.body[:errors]).to eq('Password invalid')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password * 2) do |response|
                 response.status.should eq 403
+                expect(response.body[:errors]).to eq('Password invalid')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password) do |response|

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Change source | Carto</title>
+    <title>Change style | Carto</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -20,9 +20,9 @@
   <body>
     <div id="map"></div>
     <div id="controls" class="column-right">
-      <button onclick="setAllCities()">All cities</button>
-      <button onclick="setEuropeCities()">Europe cities</button>
-      <button onclick="setSpainCities()">Spain cities</button>
+      <button onclick="setRed()" style="color: red;">Red</button>
+      <button onclick="setGreen()" style="color: green;">Green</button>
+      <button onclick="setBlue()" style="color: blue;">Blue</button>
     </div>
     <script>
       var map = L.map('map').setView([30, 0], 3);
@@ -36,14 +36,13 @@
         username: 'cartojs-test'
       });
 
-      var source = new carto.source.SQL(`
-        SELECT *
-          FROM ne_10m_populated_places_simple
+      var source = new carto.source.Dataset(`
+        ne_10m_populated_places_simple
       `);
       var style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 8;
-          marker-fill: #FF583E;
+          marker-fill: red;
           marker-line-color: #FFFFFF;
         }
       `);
@@ -52,26 +51,33 @@
       client.addLayer(layer);
       client.getLeafletLayer().addTo(map);
 
-      function setAllCities() {
-        source.setQuery(`
-          SELECT *
-            FROM ne_10m_populated_places_simple
+      function setRed() {
+        style.setContent(`
+          #layer {
+            marker-width: 8;
+            marker-fill: red;
+            marker-line-color: #FFFFFF;
+          }
         `);
       }
 
-      function setEuropeCities() {
-        source.setQuery(`
-          SELECT *
-            FROM ne_10m_populated_places_simple
-            WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+      function setGreen() {
+        style.setContent(`
+          #layer {
+            marker-width: 10;
+            marker-fill: green;
+            marker-line-color: #FFFFFF;
+          }
         `);
       }
 
-      function setSpainCities() {
-        source.setQuery(`
-          SELECT *
-            FROM ne_10m_populated_places_simple
-            WHERE adm0name = \'Spain\'
+      function setBlue() {
+        style.setContent(`
+          #layer {
+            marker-width: 12;
+            marker-fill: blue;
+            marker-line-color: #FFFFFF;
+          }
         `);
       }
     </script>

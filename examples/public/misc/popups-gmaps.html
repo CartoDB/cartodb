@@ -44,21 +44,21 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.Dataset(`
+      const populatedPlacesSource = new carto.source.Dataset(`
         ne_10m_populated_places_simple
       `);
-      const style = new carto.style.CartoCSS(`
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
         #layer {
           marker-width: 20;
           marker-fill: #FF583E;
           marker-line-color: #FFFFFF;
         }
       `);
-      const layer = new carto.layer.Layer(source, style, {
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle, {
         featureOverColumns: ['name', 'pop_max', 'pop_min']
       });
 
-      client.addLayer(layer);
+      client.addLayer(populatedPlacesLayer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
       const infowindow = new google.maps.InfoWindow();

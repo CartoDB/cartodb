@@ -98,8 +98,8 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fix organization templates generation (#13150)
 * Add hover to UI Elements (#13074)
-
 * By value color input filters columns of type date (#7873)
 * Fixes image export in editor (#13089)
 * Fix incorrect "back to dashboard" link in dataset view (#13111)

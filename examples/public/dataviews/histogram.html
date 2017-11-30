@@ -10,11 +10,20 @@
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <style>
       body { margin: 0; padding: 0; }
-      #widget { position: absolute; height: 100%; width: 100%; }
+      #widget { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      h2 { margin-top: 50px; }
+      button { margin: 50px; padding: 10px; }
     </style>
   </head>
   <body>
-    <pre id="widget"></pre>
+    <div id="widget">
+      <h2>Column</h2>
+      <input id="column" type="text" value="price"></input>
+      <h2>Bins</h2>
+      <input id="bins" type="number" value="5"></input>
+      <button onclick="applyDataviewChanges()"><b>Apply</b></button>
+      <pre id="data"></pre>
+    </div>
     <script>
       const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
@@ -29,10 +38,21 @@
       });
 
       histogramDataview.on('dataChanged', function (data) {
-        document.getElementById('widget').innerHTML = JSON.stringify(data, null, 4);
+        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      histogramDataview.on('error', function (error) {
+        alert(error.message);
       });
 
       client.addDataview(histogramDataview);
+
+      function applyDataviewChanges() {
+        var column = document.getElementById('column').value;
+        var bins = document.getElementById('bins').value;
+        histogramDataview.setColumn(column);
+        histogramDataview.setBins(parseInt(bins));
+      }
     </script>
   </body>
 </html>

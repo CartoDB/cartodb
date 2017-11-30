@@ -10,11 +10,30 @@
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <style>
       body { margin: 0; padding: 0; }
-      #widget { position: absolute; height: 100%; width: 100%; }
+      #widget { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      h2 { margin-top: 50px; }
+      button { margin: 50px; padding: 10px; }
     </style>
   </head>
   <body>
-    <pre id="widget"></pre>
+    <div id="widget">
+      <h2>Column</h2>
+      <input id="column" type="text" value="adm0name"></input>
+      <h2>Limit</h2>
+      <input id="limit" type="number" value="10"></input>
+      <h2>Operation</h2>
+      <select id="operation">
+        <option value="sum">SUM</option>
+        <option value="count">COUNT</option>
+        <option value="avg">AVG</option>
+        <option value="max">MAX</option>
+        <option value="min">MIN</option>
+      </select>
+      <h2>Operation column</h2>
+      <input id="operationColumn" type="text" value="pop_max"></input>
+      <button onclick="applyDataviewChanges()"><b>Apply</b></button>
+      <pre id="data"></pre>
+    </div>
     <script>
       const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
@@ -31,10 +50,25 @@
       });
 
       categoryDataview.on('dataChanged', function (data) {
-        document.getElementById('widget').innerHTML = JSON.stringify(data, null, 4);
+        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      categoryDataview.on('error', function (error) {
+        alert(error.message);
       });
 
       client.addDataview(categoryDataview);
+
+      function applyDataviewChanges() {
+        var column = document.getElementById('column').value;
+        var limit = document.getElementById('limit').value;
+        var operation = document.getElementById('operation').value;
+        var operationColumn = document.getElementById('operationColumn').value;
+        categoryDataview.setColumn(column);
+        categoryDataview.setLimit(parseInt(limit));
+        categoryDataview.setOperation(operation);
+        categoryDataview.setOperationColumn(operationColumn);
+      }
     </script>
   </body>
 </html>

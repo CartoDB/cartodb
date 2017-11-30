@@ -99,6 +99,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix organization templates generation (#13150)
+* Fix dataset export modal (CartoDB/support#1168)
 * Add hover to UI Elements (#13074)
 * By value color input filters columns of type date (#7873)
 * Fixes image export in editor (#13089)

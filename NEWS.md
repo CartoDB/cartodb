@@ -98,6 +98,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Disable "Your datasets" tab and add tooltip if user doesn't have any datasets (#13104)
 * Add hover to UI Elements (#13074)
 
 * By value color input filters columns of type date (#7873)

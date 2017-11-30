@@ -1049,7 +1049,7 @@
           "create-empty-map": "Create empty map",
           "create-empty-dataset": "Create empty dataset",
           "create-empty-addLayer": "Add an empty layer",
-          "dataset-pluralize": "Dataset |||| Datasets"
+          "your-datasets": "Your datasets"
         },
         "create-loading-title": "Creating an empty dataset…",
         "adding-new-layer": "Adding new layer…",

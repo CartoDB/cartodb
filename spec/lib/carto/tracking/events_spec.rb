@@ -1248,6 +1248,239 @@ module Carto
             check_hash_has_keys(format.to_segment, current_prod_properties)
           end
         end
+
+        describe DownloadedLayer do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a layer_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a format' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a source' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        table_name: 'test',
+                                        visible: true)
+            end
+
+            it 'requires a table_name' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        visible: true)
+            end
+
+            it 'requires a visible' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test')
+            end
+          end
+        end
+
+        describe DraggedNode do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id, visualization_id: @visualization.id)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id, user_id: @user.id)
+            end
+          end
+        end
+
+        describe CreatedLayer do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        visualization_id: @visualization.id)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        user_id: @user.id)
+            end
+
+            it 'requires a layer_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id)
+            end
+          end
+        end
+
+        describe ChangedDefaultGeometry do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id, visualization_id: @visualization.id)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id, user_id: @user.id)
+            end
+          end
+        end
+
+        describe AggregatedGeometries do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        type: 'hexabins',
+                                        previous_type: 'simple')
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        type: 'hexabins',
+                                        previous_type: 'simple')
+            end
+
+            it 'requires a type' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        previous_type: 'simple')
+            end
+            it 'requires a previous_type' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        type: 'hexabins')
+            end
+          end
+        end
+
+        describe UsedAdvancedMode do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id, visualization_id: @visualization.id, type: 'sql')
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id, user_id: @user.id, type: 'cartocss')
+            end
+
+            it 'requires a type' do
+              @event = @event_class.new(@user.id, user_id: @user.id)
+            end
+          end
+        end
       end
     end
   end

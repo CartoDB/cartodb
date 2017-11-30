@@ -51,30 +51,7 @@ module CartoDB
                         status:       nil,
                         trace:        nil
                        }
-      end
 
-      def run!
-        if @pack_config['organization']
-          process_org
-        else
-          process_user
-        end
-      end
-
-      def rollback!
-        close_all_database_connections
-        if @pack_config['organization']
-          rollback_org
-        else
-          rollback_user
-        end
-      end
-
-      def organization_import?
-        @pack_config['organization'] != nil
-      end
-
-      def process_user
         @target_username = @pack_config['user']['username']
         @target_userid = @pack_config['user']['id']
         @import_log[:id] = @pack_config['user']['username']
@@ -103,7 +80,30 @@ module CartoDB
             @target_is_owner = false
           end
         end
+      end
 
+      def run!
+        if @pack_config['organization']
+          process_org
+        else
+          process_user
+        end
+      end
+
+      def rollback!
+        close_all_database_connections
+        if @pack_config['organization']
+          rollback_org
+        else
+          rollback_user
+        end
+      end
+
+      def organization_import?
+        @pack_config['organization'] != nil
+      end
+
+      def process_user
         if @options[:mode] == :import
           import_user
         elsif @options[:mode] == :rollback
@@ -352,6 +352,10 @@ module CartoDB
         tables.each do |row|
           metadata_pg_conn.query('UPDATE user_tables SET table_id=$1 where user_id = $2 and name=$3', [row['oid'], user_id, row['relname']])
         end
+      end
+
+      def db_exists?
+        superuser_pg_conn.query("select 1 from pg_database where datname = '#{@target_dbname}'").count > 0
       end
 
       def check_user_exists_postgres

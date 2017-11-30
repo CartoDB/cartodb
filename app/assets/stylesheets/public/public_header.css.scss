@@ -141,7 +141,7 @@
 
 /* Hello media queries */
 
-@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
   .cartodb-public-header .logo {
     @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat !important);
     background-size: 128px 35px !important;

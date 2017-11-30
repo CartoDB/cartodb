@@ -169,11 +169,6 @@
       "from": "bluebird@>=3.4.7 <4.0.0",
       "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
     },
-    "bluebird": {
-      "version": "3.5.1",
-      "from": "bluebird@>=3.4.7 <4.0.0",
-      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
-    },
     "bn.js": {
       "version": "4.11.8",
       "from": "bn.js@>=4.1.1 <5.0.0",

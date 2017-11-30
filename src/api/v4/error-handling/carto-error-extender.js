@@ -57,7 +57,7 @@ function _getListedError (cartoError, errorList) {
  * Replace $0 with the proper paramter in the listedError regex to build a friendly message
  */
 function _replaceRegex (cartoError, listedError) {
-  if (listedError.friendlyMessage) {
+  if (!listedError.friendlyMessage) {
     return cartoError.message;
   }
   var match = cartoError.message && cartoError.message.match(listedError.messageRegex);

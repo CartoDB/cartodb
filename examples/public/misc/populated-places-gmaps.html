@@ -57,7 +57,7 @@
       client.addLayer(populatedPlacesLayer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      function setAll () {
+      function setAll() {
         populatedPlacesSource.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple
@@ -69,7 +69,7 @@
         `);
       }
 
-      function setMostPopulated (limit) {
+      function setMostPopulated(limit) {
         populatedPlacesSource.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple
@@ -86,7 +86,7 @@
         `);
       }
 
-      function setLessPopulated (limit) {
+      function setLessPopulated(limit) {
         populatedPlacesSource.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple

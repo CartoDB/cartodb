@@ -80,7 +80,7 @@
       const europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
 
       // Europe cities layer
-      const populatedPlacesSQL = new carto.source.SQL(`
+      const populatedPlacesSource = new carto.source.SQL(`
         SELECT *
           FROM ne_10m_populated_places_simple
           WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
@@ -97,7 +97,7 @@
           marker-allow-overlap: false;
         }
       `);
-      const populatedPlaces = new carto.layer.Layer(populatedPlacesSQL, populatedPlacesStyle, {
+      const populatedPlaces = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle, {
         featureOverColumns: ['name']
       });
 
@@ -125,7 +125,7 @@
 
       // 5 Creating a formula widget
       // 5.1 Defining a formula dataview
-      const averagePopulation = new carto.dataview.Formula(populatedPlacesSQL, 'pop_max', {
+      const averagePopulation = new carto.dataview.Formula(populatedPlacesSource, 'pop_max', {
         operation: carto.operation.AVG
       });
 
@@ -134,11 +134,11 @@
         refreshAveragePopulationWidget(data.result);
       });
 
-      let refreshAveragePopulationWidget = function (avgPopulation) {
-        let widgetDom = document.querySelector('#avgPopulationWidget');
-        let averagePopulationDom = widgetDom.querySelector('.js-average-population');
+      function refreshAveragePopulationWidget(avgPopulation) {
+        const widgetDom = document.querySelector('#avgPopulationWidget');
+        const averagePopulationDom = widgetDom.querySelector('.js-average-population');
         averagePopulationDom.innerText = Math.floor(avgPopulation);
-      };
+      }
 
       // 5.3 Adding the dataview to the client
       client.addDataview(averagePopulation);
@@ -157,7 +157,7 @@
         refreshCountriesWidget(countryNames);
       });
 
-      const refreshCountriesWidget = function (adminNames) {
+      function refreshCountriesWidget(adminNames) {
         const widgetDom = document.querySelector('#countriesWidget');
         const countriesDom = widgetDom.querySelector('.js-countries');
 
@@ -174,9 +174,9 @@
           option.value = admin;
           countriesDom.appendChild(option);
         });
-      };
+      }
 
-      const highlightCountry = function (admin) {
+      function highlightCountry(admin) {
         let cartoCSS = `
           #layer {
             polygon-fill: #162945;
@@ -197,9 +197,9 @@
           `;
         }
         europeanCountriesStyle.setContent(cartoCSS);
-      };
+      }
 
-      const filterPopulatedPlacesByCountry = function (admin) {
+      function filterPopulatedPlacesByCountry(admin) {
         let query = `
           SELECT *
             FROM ne_10m_populated_places_simple
@@ -212,8 +212,8 @@
               WHERE adm0name='${admin}'
           `;
         }
-        populatedPlacesSQL.setQuery(query);
-      };
+        populatedPlacesSource.setQuery(query);
+      }
 
       // 6.3 Adding the dataview to the client
       client.addDataview(countriesDataview);

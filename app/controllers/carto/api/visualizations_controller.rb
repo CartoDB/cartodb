@@ -28,7 +28,7 @@ module Carto
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :is_liked, :add_like,
                                                              :remove_like, :notify_watching, :list_watching,
-                                                             :static_map]
+                                                             :static_map, :show]
 
       # :update and :destroy are correctly handled by permission check on the model
       before_filter :ensure_user_can_create, only: [:create]
@@ -51,6 +51,7 @@ module Carto
       before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
+      rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
 
       def show

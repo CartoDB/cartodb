@@ -4,6 +4,7 @@ require_dependency 'carto/tracking/formats/internal'
 require_dependency 'carto/tracking/services/segment'
 require_dependency 'carto/tracking/services/hubspot'
 require_dependency 'carto/tracking/validators/visualization'
+require_dependency 'carto/tracking/validators/layer'
 require_dependency 'carto/tracking/validators/user'
 require_dependency 'carto/tracking/validators/widget'
 
@@ -212,6 +213,72 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :widget_id
+      end
+
+      class DownloadedLayer < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::Layer
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :layer_id, :format,
+                            :source, :visible, :table_name
+      end
+
+      class StyledByValue < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :attribute, :attribute_type
+      end
+
+      class DraggedNode < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
+
+      class CreatedLayer < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::Layer
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :layer_id
+      end
+
+      class ChangedDefaultGeometry < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
+
+      class AggregatedGeometries < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :previus_type, :type
+      end
+
+      class UsedAdvancedMode < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :type
       end
     end
   end

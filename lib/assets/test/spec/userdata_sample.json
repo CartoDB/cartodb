@@ -1,0 +1,224 @@
+{
+  "user_data": {
+    "id": "user1",
+    "email": "user@gmail.com",
+    "name": "User",
+    "last_name": "Name",
+    "username": "username",
+    "account_type": "[DEDICATED]",
+    "account_type_display_name": "[DEDICATED]",
+    "disqus_shortname": "userdisqus",
+    "table_quota": null,
+    "table_count": 2,
+    "viewer": false,
+    "org_admin": false,
+    "public_visualization_count": 2,
+    "owned_visualization_count": 2,
+    "all_visualization_count": 2,
+    "visualization_count": 4,
+    "failed_import_count": 0,
+    "success_import_count": 2,
+    "import_count": 2,
+    "last_visualization_created_at": "2017-10-10T11:01:17+02:00",
+    "quota_in_bytes": 1073741824,
+    "db_size_in_bytes": 62337024,
+    "db_size_in_megabytes": 59.45,
+    "remaining_table_quota": null,
+    "remaining_byte_quota": 1011404800.0,
+    "api_calls": [15.0, 26.0],
+    "api_calls_quota": 10000,
+    "api_calls_block_price": null,
+    "geocoding": {
+      "quota": 0,
+      "block_price": null,
+      "monthly_use": 0,
+      "hard_limit": false
+    },
+    "here_isolines": {
+      "quota": 0,
+      "block_price": null,
+      "monthly_use": 0,
+      "hard_limit": true
+    },
+    "mapzen_routing": {
+      "quota": null,
+      "block_price": null,
+      "monthly_use": 0,
+      "hard_limit": true
+    },
+    "geocoder_provider": null,
+    "isolines_provider": null,
+    "routing_provider": null,
+    "obs_snapshot": {
+      "quota": 0,
+      "block_price": null,
+      "monthly_use": 0,
+      "hard_limit": true
+    },
+    "obs_general": {
+      "quota": 0,
+      "block_price": null,
+      "monthly_use": 0,
+      "hard_limit": true
+    },
+    "twitter": {
+      "enabled": null,
+      "quota": 0,
+      "block_price": null,
+      "block_size": null,
+      "monthly_use": 0,
+      "hard_limit": true
+    },
+    "salesforce": {
+      "enabled": false
+    },
+    "mailchimp": {
+      "enabled": false
+    },
+    "billing_period": "2017-09-26",
+    "api_key": "api1",
+    "layers": [],
+    "trial_ends_at": null,
+    "upgraded_at": null,
+    "show_trial_reminder": false,
+    "show_upgraded_message": false,
+    "show_builder_activated_message": false,
+    "actions": {
+      "private_tables": true,
+      "private_maps": false,
+      "remove_logo": false,
+      "sync_tables": true,
+      "google_maps_geocoder_enabled": false,
+      "google_maps_enabled": false,
+      "engine_enabled": true,
+      "builder_enabled": false,
+      "mobile_sdk_enabled": false
+    },
+    "limits": {
+      "concurrent_syncs": 3,
+      "concurrent_imports": 3,
+      "import_file_size": 1572864000,
+      "import_table_rows": 5000000,
+      "max_layers": 8
+    },
+    "notification": null,
+    "avatar_url": "/assets/unversioned/images/avatars/avatar_planet_green.png",
+    "feature_flags": ["new_dashboard", "new_public_dashboard", "new_public_dashboard_global", "static_public_map"],
+    "base_url": "http://user.localhost.lan:3000",
+    "needs_password_confirmation": true,
+    "groups": []
+  },
+  "default_fallback_basemap": {
+    "default": true,
+    "url": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+    "subdomains": "abcd",
+    "minZoom": "0",
+    "maxZoom": "18",
+    "name": "Positron",
+    "className": "positron_rainbow_labels",
+    "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/attributions\">CARTO</a>",
+    "labels": {
+      "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+    }
+  },
+  "config": {
+    "app_assets_base_url": "http://user.localhost.lan:3000/assets",
+    "maps_api_template": "http://{user}.localhost.lan:8181",
+    "sql_api_template": "http://{user}.localhost.lan:8080",
+    "user_name": "user",
+    "cartodb_com_hosted": false,
+    "account_host": "localhost.lan:3000",
+    "trackjs_customer": null,
+    "trackjs_enabled": null,
+    "trackjs_app_key": null,
+    "google_analytics_ua": null,
+    "google_analytics_domain": null,
+    "hubspot_enabled": true,
+    "intercom_app_id": null,
+    "dropbox_api_key": null,
+    "gdrive_api_key": null,
+    "gdrive_app_id": null,
+    "oauth_dropbox": null,
+    "oauth_box": null,
+    "oauth_gdrive": null,
+    "oauth_instagram": null,
+    "oauth_mailchimp": null,
+    "arcgis_enabled": null,
+    "salesforce_enabled": null,
+    "datasource_search_twitter": "http://fake.url.nil",
+    "max_asset_file_size": 5242880,
+    "watcher_ttl": 60,
+    "upgrade_url": "http://localhost.lan:3000/account/user/upgrade",
+    "licenses": [{
+      "id": "mit",
+      "name": "MIT"
+    }, {
+      "id": "apache",
+      "name": "Apache license"
+    }, {
+      "id": "gplv3",
+      "name": "GPLv3 license"
+    }, {
+      "id": "gplv2",
+      "name": "GPLv2 license"
+    }, {
+      "id": "pddl",
+      "name": "Public Domain Dedication and License"
+    }, {
+      "id": "cc_0",
+      "name": "CC0: CC Public domain"
+    }, {
+      "id": "cc_by",
+      "name": "CC BY: Attribution alone"
+    }, {
+      "id": "cc_by_nc",
+      "name": "CC BY-NC: Attribution + Noncommercial"
+    }, {
+      "id": "cc_by_sa",
+      "name": "CC BY-SA: Attribution + ShareAlike"
+    }, {
+      "id": "cc_by_nd",
+      "name": "CC BY-ND: Attribution + NoDerivatives"
+    }, {
+      "id": "cc_by_nc_sa",
+      "name": "CC BY-NC-SA: Attribution + Noncommercial + ShareAlike"
+    }, {
+      "id": "cc_by_nc_nd",
+      "name": "CC BY-NC-ND: Attribution + Noncommercial + NoDerivatives"
+    }, {
+      "id": "public_domain",
+      "name": "Public domain"
+    }, {
+      "id": "open_government",
+      "name": "Open Government License"
+    }],
+    "data_library_enabled": false,
+    "hubspot_token": "62515",
+    "hubspot_ids": "{\"import_failed\":\"\",\"geocoding_failed\":\"\",\"import_success\":\"\",\"geocoding_success\":\"\",\"published_visualization\":\"\",\"visited_dashboard\":\"\",\"connect_dataset\":\"\",\"create_map\":\"\",\"export_table\":\"\",\"export_map\":\"\",\"export_public_map\":\"\",\"select_wms\":\"\",\"color_basemap\":\"\",\"pattern_basemap\":\"\",\"geocoding\":\"\",\"visual_merge\":\"\",\"common_data\":\"\",\"cartocss_manually\":\"\",\"wizard\":\"\",\"filter\":\"\",\"query\":\"\",\"applied_sql\":\"\",\"applied_cartocss\":\"\",\"modified_style_form\":\"\",\"completed_connection\":\"\",\"failed_connection\":\"\",\"created_analysis\":\"\",\"modified_analysis\":\"\",\"published_map\":\"\",\"exported_map\":\"\"}",
+    "statsd_host": "",
+    "statsd_port": null,
+    "error_track_url": "https://viz2.carto.com/api/v1/sql",
+    "error_track_percent_users": 10,
+    "dataservices_enabled": {
+      "geocoder_internal": false,
+      "hires_geocoder": false,
+      "isolines": false,
+      "routing": false,
+      "data_observatory": false
+    }
+  },
+  "dashboard_notifications": {},
+  "is_just_logged_in": false,
+  "is_first_time_viewing_dashboard": false,
+  "can_change_email": true,
+  "auth_username_password_enabled": null,
+  "should_display_old_password": true,
+  "can_change_password": true,
+  "plan_name": "[DEDICATED]",
+  "plan_url": "http://localhost.lan:3000/account/user/plan",
+  "can_be_deleted": true,
+  "cant_be_deleted_reason": null,
+  "services": [],
+  "user_frontend_version": "4.10.12867-2",
+  "asset_host": null
+}

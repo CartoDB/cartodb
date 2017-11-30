@@ -1,37 +1,49 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .WidgetList {
-  @include display-flex;
+  display: flex;
   flex-wrap: wrap;
 }
 
 .WidgetList-option {
   margin-right: 16px;
 }
+
 .WidgetList-item {
-  @include display-flex;
-  @include align-items(baseline);
+  display: flex;
   flex: 0 0 304px;
+  align-items: baseline;
   width: 304px;
   max-width: 304px;
   margin: 0 4px 8px;
-  box-sizing: border-box;
   padding: $baseSize * 2;
-  border: 1px solid transparent;
+  transition: border 200ms ease-in;
+  border: 2px solid transparent;
   border-radius: $baseSize / 2;
   background: $cWhite;
+  box-sizing: border-box;
+
+  &:hover {
+    border: 2px solid $cBlueHover;
+  }
+
+  &.is-selected {
+    border: 2px solid $cBlackHover;
+  }
 }
+
 .WidgetList-inner {
-  @include flex(1);
+  flex: 1;
   min-width: 0;
 }
+
 .WidgetPlaceHolder {
-  @include display-flex();
-  @include flex(1);
+  display: flex;
+  flex: 1;
   margin-right: 24px;
 }
+
 .WidgetPlaceHolder-media {
   width: 32px;
   height: 32px;
@@ -39,15 +51,18 @@
   border-radius: 2px;
   background: $cThirdBackground;
 }
+
 .WidgetPlaceHolder-txt {
-  @include flex(1);
+  flex: 1;
 }
+
 .WidgetPlaceHolder-title {
   height: 16px;
   margin-bottom: 8px;
   border-radius: 2px;
   background: $cThirdBackground;
 }
+
 .WidgetPlaceHolder-text {
   height: 8px;
   border-radius: 2px;
@@ -65,6 +80,7 @@
   background: $cSecondaryBackground;
   box-sizing: border-box;
 }
+
 .Widget-categoryFakeText {
   width: 100px;
   height: 4px;
@@ -72,32 +88,38 @@
   border-radius: 10px;
   background: #F2F6F9;
 }
+
 .Widget-histogramFakeContainer {
   margin-bottom: 12px;
   padding-top: 1px;
+
+  .Widget-categoryFakeText {
+    margin-bottom: 9px;
+  }
 }
-.Widget-histogramFakeContainer .Widget-categoryFakeText {
-  margin-bottom: 9px;
-}
+
 .Widget-histogramFake {
   position: relative;
   height: 20px;
   border-top: 1px solid $cSecondaryLine;
   border-bottom: 1px solid $cSecondaryLine;
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: $cSecondaryLine;
+    content: '';
+  }
 }
-.Widget-histogramFake::before {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  left: 0;
-  height: 1px;
-  background: $cSecondaryLine;
-  content: '';
-}
+
 .Widget-formulaFakeContainer {
   margin-bottom: 12px;
   padding-top: 1px;
 }
+
 .Widget-formulaFake {
   position: relative;
   width: 96px;

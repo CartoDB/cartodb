@@ -15,15 +15,15 @@
       #map { position: absolute; height: 100%; width: 100%; }
       #controls { position: absolute; padding: 0 20px 20px; background: white; }
       .column-right { display: flex; flex-direction: column; right: 0; }
-      #data { margin-top: 20px; font-size: 1.2em; }
-      #data span { font-size: 2em; }
+      #content { margin-top: 20px; font-size: 1.2em; }
+      #content span { font-size: 2em; }
     </style>
   </head>
   <body>
     <div id="map"></div>
     <div id="controls" class="column-right">
       <h3>Click on the markers</h3>
-      <div id="data"></div>
+      <div id="content"></div>
     </div>
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
@@ -61,10 +61,10 @@
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
       layer.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {
-        let data = '';
-        data += '<b>' + featureEvent.data.name.toUpperCase() + '</b>';
-        data += '<p><span>' + featureEvent.data.pop_max + '</span> inhabitants</p>';
-        document.getElementById('data').innerHTML = data;
+        let content = '';
+        content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
+        content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
+        document.getElementById('data').innerHTML = content;
       });
     </script>
   </body>

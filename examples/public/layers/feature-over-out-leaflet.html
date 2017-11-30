@@ -14,15 +14,15 @@
       #map { position: absolute; height: 100%; width: 100%; }
       #controls { position: absolute; padding: 0 20px 20px; background: white; }
       .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
-      #data { margin-top: 20px; font-size: 1.2em; }
-      #data span { font-size: 2em; }
+      #content { margin-top: 20px; font-size: 1.2em; }
+      #content span { font-size: 2em; }
     </style>
   </head>
   <body>
     <div id="map"></div>
     <div id="controls" class="column-right">
       <h3>Move the mouse over the markers</h3>
-      <div id="data"></div>
+      <div id="content"></div>
     </div>
     <script>
       const map = L.map('map').setView([30, 0], 3);
@@ -54,10 +54,10 @@
       client.getLeafletLayer().addTo(map);
 
       layer.on(carto.layer.events.FEATURE_OVER, function (featureEvent) {
-        let data = '';
-        data += '<b>' + featureEvent.data.name.toUpperCase() + '</b>';
-        data += '<p><span>' + featureEvent.data.pop_max + '</span> inhabitants</p>';
-        document.getElementById('data').innerHTML = data;
+        let content = '';
+        content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
+        content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
+        document.getElementById('data').innerHTML = content;
       });
 
       layer.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {

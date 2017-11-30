@@ -15,8 +15,8 @@
       #controls { position: absolute; padding: 0 20px 20px; background: white; }
       .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
       button { padding: 10px; margin-top: 20px; }
-      #data { margin-top: 30px; font-size: 1.2em; }
-      #data span { font-size: 2em; }
+      #content { margin-top: 30px; font-size: 1.2em; }
+      #content span { font-size: 2em; }
     </style>
   </head>
   <body>
@@ -25,7 +25,7 @@
       <h3>Click on the markers</h3>
       <button onclick="setMoreData()">More data</button>
       <button onclick="setLessData()">Less data</button>
-      <div id="data"></div>
+      <div id="content"></div>
     </div>
     <script>
       const map = L.map('map').setView([30, 0], 3);
@@ -57,17 +57,17 @@
       client.getLeafletLayer().addTo(map);
 
       layer.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {
-        let data = '';
+        let content = '';
         if (featureEvent.data.name) {
-          data += '<b>' + featureEvent.data.name.toUpperCase() + '</b>';
+          content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
         }
         if (featureEvent.data.pop_max) {
-          data += '<p><span>' + featureEvent.data.pop_max + '</span> max inhabitants</p>';
+          content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
         }
         if (featureEvent.data.pop_min) {
-          data += '<p><span>' + featureEvent.data.pop_min + '</span> min inhabitants</p>';
+          content += `<p><span>${featureEvent.data.pop_min}</span> min inhabitants</p>`;
         }
-        document.getElementById('data').innerHTML = data;
+        document.getElementById('data').innerHTML = content;
       });
 
       function setMoreData() {

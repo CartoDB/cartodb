@@ -12,6 +12,12 @@ var isEveryBucketValid = function (rule) {
 };
 
 var generateColors = function (buckets) {
+  if (buckets.length === 1) {
+    var bucket = buckets[0];
+    var labelStart = bucket.filter.start;
+    var labelEnd = bucket.filter.end;
+    return [{ value: bucket.value, label: labelStart.toString() }, { value: bucket.value, label: labelEnd.toString() }];
+  }
   return _.map(buckets, function (bucket, i) {
     var label = '';
     if (i === 0) {

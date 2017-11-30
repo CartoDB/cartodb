@@ -99,8 +99,9 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Disable "Your datasets" tab and add tooltip if user doesn't have any datasets (#13104)
+* Fix organization templates generation (#13150)
+* Fix dataset export modal (CartoDB/support#1168)
 * Add hover to UI Elements (#13074)
-
 * By value color input filters columns of type date (#7873)
 * Fixes image export in editor (#13089)
 * Fix incorrect "back to dashboard" link in dataset view (#13111)
@@ -134,6 +135,9 @@ ion for time-series (#12670)
 * Clean permissions ACL on group deletion (CartoDB/support/issues/1057)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
+* User destroy order should be Central, local (#CartoDB/cartodb-central/issues/1929)
+* Delete all external sources within one transaction (#13129).
+* NoMethodError: undefined method `has_feature_flag?' for nil:NilClass at visualizations controller (#13145).
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version

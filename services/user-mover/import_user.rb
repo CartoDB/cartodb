@@ -52,32 +52,20 @@ module CartoDB
                         trace:        nil
                        }
 
-        @target_username = @pack_config['user']['username']
-        @target_userid = @pack_config['user']['id']
-        @import_log[:id] = @pack_config['user']['username']
-        @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
-
-        if @options[:target_org] == nil
-          @target_dbname = user_database(@target_userid)
-          @target_dbuser = database_username(@target_userid)
-          @target_schema = @pack_config['user']['database_schema']
-          @target_org_id = nil
+        if @pack_config['organization']
+          @target_dbname = @pack_config['users'][0]['database_name']
         else
-          organization_data = get_org_info(@options[:target_org])
-          @target_dbuser = database_username(@target_userid)
-          @target_schema = @pack_config['user']['database_schema']
-          @target_org_id = organization_data['id']
-
-          if @pack_config['user']['id'] == organization_data['owner_id']
-            # If the user being imported into an org is the owner of the org, we make the import as it were a single-user
+          @target_userid = @pack_config['user']['id']
+          if @options[:target_org] == nil
             @target_dbname = user_database(@target_userid)
-            @target_is_owner = true
           else
-            # We fill the missing configuration data for the owner
-            organization_owner_data = get_user_info(organization_data['owner_id'])
-            @target_dbhost = @options[:host] || organization_owner_data['database_host']
-            @target_dbname = organization_owner_data['database_name']
-            @target_is_owner = false
+            organization_data = get_org_info(@options[:target_org])
+            if @pack_config['user']['id'] == organization_data['owner_id']
+              @target_dbname = user_database(@target_userid)
+            else
+              organization_owner_data = get_user_info(organization_data['owner_id'])
+              @target_dbname = organization_owner_data['database_name']
+            end
           end
         end
       end
@@ -104,6 +92,32 @@ module CartoDB
       end
 
       def process_user
+        @target_username = @pack_config['user']['username']
+        @target_userid = @pack_config['user']['id']
+        @import_log[:id] = @pack_config['user']['username']
+        @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
+
+        if @options[:target_org] == nil
+          @target_dbuser = database_username(@target_userid)
+          @target_schema = @pack_config['user']['database_schema']
+          @target_org_id = nil
+        else
+          organization_data = get_org_info(@options[:target_org])
+          @target_dbuser = database_username(@target_userid)
+          @target_schema = @pack_config['user']['database_schema']
+          @target_org_id = organization_data['id']
+
+          if @pack_config['user']['id'] == organization_data['owner_id']
+            # If the user being imported into an org is the owner of the org, we make the import as it were a single-user
+            @target_is_owner = true
+          else
+            # We fill the missing configuration data for the owner
+            organization_owner_data = get_user_info(organization_data['owner_id'])
+            @target_dbhost = @options[:host] || organization_owner_data['database_host']
+            @target_is_owner = false
+          end
+        end
+
         if @options[:mode] == :import
           import_user
         elsif @options[:mode] == :rollback

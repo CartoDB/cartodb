@@ -57,11 +57,11 @@
         let content = '';
         content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
         content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
-        document.getElementById('data').innerHTML = content;
+        document.getElementById('content').innerHTML = content;
       });
 
       layer.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {
-        document.getElementById('data').innerHTML = '';
+        document.getElementById('content').innerHTML = '';
       });
     </script>
   </body>

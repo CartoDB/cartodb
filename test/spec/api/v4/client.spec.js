@@ -132,7 +132,7 @@ describe('api/v4/client', function () {
     it('should return a significative error when layer parameter is not a valid layer', function () {
       expect(function () {
         client.addLayer([]);
-      }).toThrowError('The given object is not a layer');
+      }).toThrowError('The given object is not a layer.');
     });
   });
 
@@ -162,7 +162,7 @@ describe('api/v4/client', function () {
     it('should throw a descriptive error when the parameter is invalid', function () {
       expect(function () {
         client.removeLayer({});
-      }).toThrowError('The given object is not a layer');
+      }).toThrowError('The given object is not a layer.');
     });
 
     it('¿should throw a descriptive error when layer is not in the client?', function () {

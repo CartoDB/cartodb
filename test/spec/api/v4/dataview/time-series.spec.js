@@ -144,7 +144,7 @@ describe('api/v4/dataview/time-series', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'LocalTimezone must be a boolean value.');
+      expect(test).toThrowError(TypeError, 'useLocalTimezone must be a boolean value.');
     });
   });
 
@@ -297,7 +297,7 @@ describe('api/v4/dataview/time-series', function () {
         dataview.useLocalTimezone('Compton');
       };
 
-      expect(test).toThrowError(TypeError, 'LocalTimezone must be a boolean value.');
+      expect(test).toThrowError(TypeError, 'useLocalTimezone must be a boolean value.');
     });
 
     it('should set localTimezone to internal model as well', function () {

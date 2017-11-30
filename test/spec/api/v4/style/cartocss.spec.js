@@ -15,19 +15,19 @@ describe('api/v4/style/cartocss', function () {
     it('should throw an error if cartoCSS is not provided', function () {
       expect(function () {
         new carto.style.CartoCSS(); // eslint-disable-line
-      }).toThrowError('cartoCSS is required.');
+      }).toThrowError('CartoCSS is required.');
     });
 
     it('should throw an error if cartoCSS is empty', function () {
       expect(function () {
         new carto.style.CartoCSS(''); // eslint-disable-line
-      }).toThrowError('cartoCSS is required.');
+      }).toThrowError('CartoCSS is required.');
     });
 
     it('should throw an error if cartoCSS is not a valid string', function () {
       expect(function () {
-        new carto.style.CartoCSS(3333); // eslint-disable-line
-      }).toThrowError('cartoCSS must be a string.');
+        new carto.style.CartoCSS(true); // eslint-disable-line
+      }).toThrowError('CartoCSS must be a string.');
     });
   });
 
@@ -41,7 +41,7 @@ describe('api/v4/style/cartocss', function () {
       var invalidCartoCSS = new carto.style.CartoCSS('#layer { invalid-property: 10; }');
 
       invalidCartoCSS.on('error', function (cartoError) {
-        expect(cartoError.message).toMatch(/Unrecognized rule: invalid-property/);
+        expect(cartoError.message).toMatch(/Unrecognized rule "invalid-property"/);
         done();
       });
       var layer = new carto.layer.Layer(source, invalidCartoCSS);
@@ -152,7 +152,7 @@ describe('api/v4/style/cartocss', function () {
             return cartoCSS.setContent(malformedStyle);
           })
           .catch(function (cartoError) {
-            expect(cartoError.message).toMatch(/Unrecognized rule: invalid-property/);
+            expect(cartoError.message).toMatch(/Unrecognized rule "invalid-property"/);
             done();
           });
       });

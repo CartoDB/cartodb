@@ -19,8 +19,8 @@
     "function-name-case": [ "lower", {
       "ignoreFunctions": ["/^DXImageTransform.Microsoft.*$/"]
     }],
-    "media-feature-name-no-unknown": null,
     "declaration-empty-line-before": null,
-    "declaration-colon-space-after": "always"
+    "block-no-empty": true,
+    "shorthand-property-no-redundant-values": true,
   }
 }

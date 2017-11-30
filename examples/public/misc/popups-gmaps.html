@@ -86,15 +86,15 @@
       }
 
       function setPopupsClick() {
-        layer.off(carto.layer.events.FEATURE_OVER);
-        layer.off(carto.layer.events.FEATURE_OUT);
-        layer.on(carto.layer.events.FEATURE_CLICKED, openPopup);
+        populatedPlacesLayer.off(carto.layer.events.FEATURE_OVER);
+        populatedPlacesLayer.off(carto.layer.events.FEATURE_OUT);
+        populatedPlacesLayer.on(carto.layer.events.FEATURE_CLICKED, openPopup);
       }
 
       function setPopupsHover() {
-        layer.off(carto.layer.events.FEATURE_CLICKED);
-        layer.on(carto.layer.events.FEATURE_OVER, openPopup);
-        layer.on(carto.layer.events.FEATURE_OUT, closePopup);
+        populatedPlacesLayer.off(carto.layer.events.FEATURE_CLICKED);
+        populatedPlacesLayer.on(carto.layer.events.FEATURE_OVER, openPopup);
+        populatedPlacesLayer.on(carto.layer.events.FEATURE_OUT, closePopup);
       }
     </script>
   </body>

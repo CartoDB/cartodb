@@ -4,7 +4,7 @@ var ERROR_LIST = require('./error-list');
 /**
  * Get two parameters to enrich a CartoError.
  * - friendlyMessage: A easy to understand error description.
- * - errorCode: A unique errror code
+ * - errorCode: Am unique error code
  * 
  * @param {CartoError} cartoError
  * 
@@ -57,6 +57,9 @@ function _getListedError (cartoError, errorList) {
  * Replace $0 with the proper paramter in the listedError regex to build a friendly message
  */
 function _replaceRegex (cartoError, listedError) {
+  if (listedError.friendlyMessage) {
+    return cartoError.message;
+  }
   var match = cartoError.message && cartoError.message.match(listedError.messageRegex);
   if (match && match.length > 1) {
     return listedError.friendlyMessage.replace('$0', match[1]);

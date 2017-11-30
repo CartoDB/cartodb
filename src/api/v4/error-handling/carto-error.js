@@ -1,20 +1,8 @@
-var _ = require('underscore');
-var retrieveFriendlyError = require('./error-list');
+var errorExtender = require('./carto-error-extender');
+var errorTracker = require('./error-tracker');
+
 var UNEXPECTED_ERROR = 'unexpected error';
 var GENERIC_ORIGIN = 'generic';
-
-function track (error) {
-  if (window.trackJs) {
-    try {
-      var message = error
-        ? error.message + ' - code: ' + error.errorCode
-        : JSON.stringify(error);
-      window.trackJs.track(new Error(message));
-    } catch (exc) {
-      // Swallow
-    }
-  }
-}
 
 /**
  * Build a cartoError from a generic error.
@@ -26,28 +14,30 @@ function track (error) {
  */
 function CartoError (error, opts) {
   opts = opts || {};
-  var cartoError = _.extend({
-    message: UNEXPECTED_ERROR,
-    type: '',
-    origin: GENERIC_ORIGIN
-  }, error);
+  var cartoError = Object.create(TypeError.prototype);
+  cartoError.message = error.message || UNEXPECTED_ERROR;
+  cartoError.name = 'CartoError';
+  cartoError.origin = error.origin || GENERIC_ORIGIN;
+  cartoError.originalError = error;
+  cartoError.stack = (new Error()).stack;
+  cartoError.type = error.type || '';
 
   if (_isWindshaftError(error)) {
-    cartoError = transformWindshaftError(error, opts.layers, opts.analysis);
-  }
-  if (error && error.responseText) {
-    cartoError.message = _handleAjaxResponse(error);
-    cartoError.origin = 'ajax';
-    cartoError.type = error.statusText;
+    cartoError = _transformWindshaftError(error, opts.layers, opts.analysis);
   }
 
-  var friendlyError = retrieveFriendlyError(cartoError);
-  track(friendlyError);
+  if (_isAjaxError(error)) {
+    cartoError = _transformAjaxError(error);
+  }
 
-  friendlyError.name = 'CartoError';
-  friendlyError.stack = (new Error()).stack;
+  // Add extra fields
+  var extraFields = errorExtender.getExtraFields(cartoError);
+  cartoError.message = extraFields.friendlyMessage;
+  cartoError.errorCode = extraFields.errorCode;
 
-  return friendlyError;
+  errorTracker.track(cartoError);
+
+  return cartoError;
 }
 
 // Windshaft should have been parsed already 
@@ -55,12 +45,16 @@ function _isWindshaftError (error) {
   return error && error.origin === 'windshaft';
 }
 
-function transformWindshaftError (error, layers, analysis) {
-  var cartoError = {
-    message: error.message,
-    type: error.type,
-    origin: error.origin
-  };
+function _isAjaxError (error) {
+  return error && error.responseText;
+}
+
+function _transformWindshaftError (error, layers, analysis) {
+  var cartoError = Object.create(Error.prototype);
+  cartoError.message = error.message;
+  cartoError.origin = error.origin;
+  cartoError.type = error.type;
+
   if (error.type === 'layer' && layers) {
     cartoError.layer = layers.findById(error.layerId);
   }
@@ -69,6 +63,14 @@ function transformWindshaftError (error, layers, analysis) {
   }
 
   return cartoError;
+}
+
+function _transformAjaxError (error) {
+  error.message = _handleAjaxResponse(error);
+  error.origin = 'ajax';
+  error.type = error.statusText;
+
+  return error;
 }
 
 function _handleAjaxResponse (error) {
@@ -110,8 +112,12 @@ module.exports = CartoError;
  * client.on(carto.events.ERROR, function (clientError) {
  *  console.error(clientError.message);
  * });
- * @event CartoError
- * @type {object}
- * @property {string} message - A short error description.
+ * @typedef CartoError
+ * @property {string} message - A short error description
+ * @property {string} name - The name of the error "CartoError"
+ * @property {string} origin - Where the error was originated: 'windshaft' | 'ajax' | 'validation'
+ * @property {object} originalError - An object containing the internal/original error
+ * @property {object} stack - Error stack trace
+ * @property {string} type - Error type
  * @api
  */

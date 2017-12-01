@@ -19,19 +19,19 @@ describe('api/v4/source/sql', function () {
     it('should throw an error if query is not provided', function () {
       expect(function () {
         new carto.source.SQL(); // eslint-disable-line
-      }).toThrowError('query is required.');
+      }).toThrowError('SQL Source must have a SQL query.');
     });
 
     it('should throw an error if query is empty', function () {
       expect(function () {
         new carto.source.SQL(''); // eslint-disable-line
-      }).toThrowError('query is required.');
+      }).toThrowError('SQL Source must have a SQL query.');
     });
 
     it('should throw an error if query is not a valid string', function () {
       expect(function () {
         new carto.source.SQL(3333); // eslint-disable-line
-      }).toThrowError('query must be a string.');
+      }).toThrowError('SQL Query must be a string.');
     });
   });
 
@@ -44,13 +44,13 @@ describe('api/v4/source/sql', function () {
     it('should throw an error if query is empty', function () {
       expect(function () {
         sqlQuery.setQuery('');
-      }).toThrowError('query is required.');
+      }).toThrowError('SQL Source must have a SQL query.');
     });
 
     it('should throw an error if query is not a valid string', function () {
       expect(function () {
         sqlQuery.setQuery(333);
-      }).toThrowError('query must be a string.');
+      }).toThrowError('SQL Query must be a string.');
     });
 
     it('should trigger an queryChanged event when there is no internal model', function (done) {
@@ -124,7 +124,7 @@ describe('api/v4/source/sql', function () {
           return sqlQuery.setQuery(newQuery);
         })
         .catch(function (cartoError) {
-          expect(cartoError.message).toMatch(/relation "invalid_dataset" does not exist/);
+          expect(cartoError.message).toMatch(/Invalid dataset name used. Dataset "invalid_dataset" does not exist./);
           done();
         });
     });

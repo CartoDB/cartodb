@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Base = require('./base');
-var CartoValidationError = require('../error-handling/carto-error');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 var CartoError = require('../error-handling/carto-error');
 
 // Event constants
@@ -43,7 +43,6 @@ CartoCSS.prototype.getContent = function () {
  * 
  * @param {string} newContent - A string containing the new cartocss/turbocarto style
  * @return {Promise<string>} A promise that will be resolved once the cartocss/turbocarto is updated
- * @fires 
  * @api
  */
 CartoCSS.prototype.setContent = function (newContent) {

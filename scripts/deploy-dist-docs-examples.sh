@@ -85,7 +85,9 @@ mv $TMP_DOCS_DIR/public $DOCS_DIR/v4 || exit 1
 rm -rf $DOCS_DIR/v4-internal || exit 1
 mv $TMP_DOCS_DIR/internal $DOCS_DIR/v4-internal || exit 1
 rm -rf $EXAMPLES_DIR/v4 || exit 1
-mv $TMP_EXAMPLES_DIR $EXAMPLES_DIR/v4 || exit 1
+mkdir $EXAMPLES_DIR/v4 || exit 1
+mv $TMP_EXAMPLES_DIR/public $EXAMPLES_DIR/v4/public || exit 1
+mv $TMP_EXAMPLES_DIR/index.html $EXAMPLES_DIR/v4/index.html || exit 1
 mv $TMP_DOCS_DIR/index.html index.html || exit 1
 
 echo "Add version in index.html"
@@ -94,9 +96,9 @@ sed -i "s|%VERSION|$TRAVIS_BRANCH|g" index.html
 echo "Use CDN carto.js in the v4 examples"
 CDN="https://cdn.rawgit.com/CartoDB/cartodb.js/@${TRAVIS_BRANCH:1}/carto.js"
 OLD="../../../dist/public/carto.uncompressed.js"
-sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/*
-OLD="../../dist/public/carto.uncompressed.js"
-sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/*
+sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/public/**/*.html
+OLD="../dist/public/carto.uncompressed.js"
+sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/index.html
 
 echo "Pushing new content to $ORIGIN_URL"
 git config user.name "Cartofante" || exit 1

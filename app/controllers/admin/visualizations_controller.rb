@@ -228,7 +228,9 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
 
-    return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
+    if @viewed_user && @viewed_user.has_feature_flag?('static_public_map')
+      return render(file: "public/static/public_map/index.html", layout: false)
+    end
 
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
 

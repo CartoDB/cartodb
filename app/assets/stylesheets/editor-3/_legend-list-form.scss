@@ -38,12 +38,12 @@
 }
 
 .ListItem-deleteButton {
+  visibility: hidden;
   position: absolute;
   top: -1px;
   right: 0;
   padding: 8px;
   opacity: 0;
-  visibility: hidden;
 
   .ListItem:not(:first-child):hover & {
     @include opacity(1);

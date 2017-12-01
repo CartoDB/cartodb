@@ -29,10 +29,12 @@
 .Infowindow-listFieldItem:hover .Infowindow-listFieldsOrder {
   @include opacity(1);
 }
+
 .Infowindow-listFieldItem:hover .Infowindow-listFieldsOrder {
   top: 9px;
   left: -19px;
 }
+
 .Infowindow-listFieldItem.ui-sortable-helper .Infowindow-listFieldsOrder {
   top: 22px;
   left: -20px;
@@ -41,19 +43,17 @@
 .CDB-infowindow.Infowindow-none {
   background: $cHighlightYellow;
 }
+
 .Infowindow-none .CDB-hook::before {
   border-top: 16px solid $cHighlightYellow;
 }
+
 .Infowindow-none .CDB-infowindow-subtitle {
   margin-bottom: 8px;
   color: $cMainBg;
   font-weight: 600;
 }
+
 .Infowindow-none .CDB-infowindow-title {
   font-weight: 400;
 }
-
-
-
-
-

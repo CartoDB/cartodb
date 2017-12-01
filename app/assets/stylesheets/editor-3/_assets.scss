@@ -5,19 +5,23 @@
 .AssetsList-recent {
   overflow: hidden;
 }
+
 .AssetsList-recentInner {
   @include display-flex;
   width: 1000px;
 }
+
 .AssetsList {
   @include display-flex;
   position: relative;
 }
+
 .AssetListItem.Carousel-item {
   width: 40px;
   min-width: 40px;
   height: 40px;
 }
+
 .AssetsList-inner {
   display: block;
   position: relative;
@@ -63,20 +67,21 @@
   @include display-flex();
   @include align-items(center);
   @include justify-content(center);
+  box-sizing: border-box;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;
   margin-bottom: 16px;
   margin-left: 16px;
+  overflow: hidden;
   border: 1px solid $cSecondaryLine;
   border-radius: 4px;
   background: $cThirdBackground;
-  box-sizing: border-box;
-  overflow: hidden;
 
   &:last-child {
     margin-right: 0;
   }
+
   &:hover {
     border: 1px solid $cMainLine;
     cursor: pointer;

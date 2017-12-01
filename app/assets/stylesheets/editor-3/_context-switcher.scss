@@ -6,11 +6,11 @@
 @import 'vars';
 
 .Editor-contextSwitchers {
+  display: flex;
   position: absolute;
+  z-index: 11;
   right: 16px;
   bottom: 16px;
-  z-index: 11;
-  display: flex;
 }
 
 .Editor-contextSwitchers--table {
@@ -27,11 +27,11 @@
 }
 
 .Editor-contextSwitcher {
+  margin-left: 8px;
+  overflow: hidden;
   border-radius: 4px;
   background: $cBlue;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
-  overflow: hidden;
-  margin-left: 8px;
 }
 
 .Editor-contextSwitcher.Editor-contextSwitcher--view {
@@ -54,12 +54,15 @@
   text-align: center;
   cursor: pointer;
 }
+
 .Editor-contextSwitcherItem {
   border-right: 1px solid rgba(0, 0, 0, 0.08);
+
   &:last-child {
     border-right: 0;
   }
 }
+
 .Editor-contextSwitcherItem.is-disabled {
   opacity: 0.24;
 
@@ -67,9 +70,11 @@
     cursor: default;
   }
 }
+
 .Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
   fill: rgba(0, 0, 0, 0.16);
 }
+
 .Editor-contextSwitcherMedia {
   fill: $cWhite;
 }

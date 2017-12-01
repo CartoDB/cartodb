@@ -7,8 +7,8 @@
 
 .Editor-ListLayer-item {
   @include transition(opacity 2s ease-in);
-  box-sizing: border-box;
   position: relative;
+  box-sizing: border-box;
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
@@ -34,9 +34,11 @@
     }
   }
 }
+
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;
 }
+
 .Editor-ListLayer-item.is-animated {
   position: relative;
   margin-top: 30px;
@@ -44,12 +46,16 @@
   background: $cWhite;
   cursor: default;
 }
+
 .Editor-ListLayer-item.is-animated:hover {
   border: 1px solid $cSecondaryLine;
   cursor: default;
 }
+
 .Editor-ListLayer-item.is-animated::before {
+  content: '';
   position: absolute;
+  z-index: -1;
   top: -20px;
   right: -25px;
   bottom: -20px;
@@ -58,8 +64,6 @@
   border-bottom: 1px solid $cMainLine;
   background: $cThirdBackground;
   background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
-  content: '';
-  z-index: -1;
 }
 // First layer?, no margin top
 .Editor-ListLayer-item.is-animated:first-child {
@@ -82,15 +86,19 @@
   border-color: $cSecondaryBackground;
   background: $cSecondaryBackground;
 }
+
 .Editor-ListLayer-item.last-child {
   margin-bottom: 0;
 }
+
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
+
 .Editor-ListLayer-item.is-unavailable {
   @include opacity(0.6);
 }
+
 .Editor-ListLayer-item.is-errored {
   border-color: rgba($cError, 0.7);
 
@@ -98,26 +106,30 @@
     fill: $cError;
   }
 }
+
 .Editor-ListLayer-item.ui-sortable-helper {
   // scss-lint:disable ImportantRule
   left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...
   min-width: 290px;
 }
+
 .Editor-ListLayer .ui-sortable-helper,
 .Editor-newLayerContainer .Editor-ListLayer-item {
   cursor: move;
   cursor: -webkit-grabbing;
   cursor: -moz-grabbing;
 }
+
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
+  z-index: 1000;
   border: 1px solid rgba($cBlue, 0.48);
+  opacity: 0.8;
   box-shadow: 0 8px 16px rgba(#000, 0.16);
   cursor: move;
   cursor: -webkit-grabbing;
   cursor: -moz-grabbing;
-  opacity: 0.8;
-  z-index: 1000;
 }
+
 .Editor-ListLayer-dragIcon {
   @include transition(opacity 200ms ease-in);
   position: absolute;
@@ -125,6 +137,7 @@
   left: -20px;
   opacity: 0;
 }
+
 .Editor-ListLayer-media {
   @include display-flex();
   @include align-items(center);
@@ -133,6 +146,7 @@
   height: 40px;
   border-radius: $baseSize / 2;
 }
+
 .Editor-ListLayer-media.is-hidden {
   opacity: 0.24;
 }
@@ -140,6 +154,7 @@
 .Editor-ListLayer-media--basemap {
   border: 1px solid $cMainLine;
 }
+
 .Editor-ListLayer-info.is-hidden {
   opacity: 0.24;
 }
@@ -159,22 +174,24 @@
   position: relative;
   margin-top: 16px;
 }
+
 .Editor-ListAnalysis:empty,
 .Editor-ListAnalysis.is-collapsed {
   display: none;
 }
+
 .Editor-ListAnalysis.is-hidden {
   opacity: 0.24;
 }
 
 .Editor-ListAnalysis::before {
+  content: '';
   position: absolute;
   top: 0;
   bottom: 0;
   left: 20px;
   width: 1px;
   background: $cMainLine;
-  content: '';
 }
 
 .Editor-ListAnalysis-item {
@@ -186,6 +203,7 @@
 }
 
 .Editor-ListAnalysis-itemError {
+  content: ' ';
   display: block;
   position: absolute;
   top: -5px;
@@ -195,29 +213,32 @@
   border: 2px solid $cWhite;
   border-radius: 50px;
   background-color: $cError;
-  content: ' ';
 }
 
 .Editor-ListAnalysis-item:last-child {
   margin-bottom: 0;
 }
+
 .Editor-ListAnalysis-item.is-analysis {
   display: block;
   margin-right: 0;
 }
+
 .Editor-ListAnalysis-item.ui-draggable-dragging {
-   // scss-lint:disable VendorPrefix
+  z-index: 1000;
+  // scss-lint:disable VendorPrefix
   width: 100%;
   cursor: move;
   cursor: -webkit-grabbing;
   cursor: -moz-grabbing;
-  z-index: 1000;
 }
+
 .Editor-ListAnalysis-inner {
   @include display-flex();
   width: calc(100% + 12px);
   margin: 0 -4px;
 }
+
 .Editor-ListAnalysis-inner .Editor-ListAnalysis-item {
   @include flex(1);
   max-width: calc(100% - 14px);
@@ -230,6 +251,7 @@
   margin: 0 $halfBaseSize;
   background: $cWhite;
 }
+
 .Editor-ListAnalysis-item .Editor-ListAnalysis-innerItem {
   max-width: calc(50% - 8px);
 }
@@ -310,18 +332,18 @@
 }
 
 .Editor-dropArea.is-active {
-  background: $cSecondaryBackground;
   opacity: 1;
+  background: $cSecondaryBackground;
 }
 
 .Editor-layerInfo {
   position: relative;
+  z-index: -1;
   margin-top: -10px;
   margin-bottom: 8px;
   padding: 8px;
-  border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
   background: rgba($cMainBg, 0.88);
   text-align: center;
-  z-index: -1;
 }

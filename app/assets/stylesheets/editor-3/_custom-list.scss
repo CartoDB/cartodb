@@ -9,102 +9,125 @@
 .CustomList-inner {
   display: none;
   position: absolute;
+  z-index: 100;
   top: 36px;
   right: 0;
   min-width: 246px;
   max-width: 272px;
-  z-index: 100;
 }
+
 .CustomList-inner {
   top: 0;
   right: auto;
   left: 0;
 }
+
 .CustomList--small {
   width: 215px;
 }
+
 .CustomList--inputs {
   padding: 10px;
   white-space: nowrap;
 }
+
 .CustomList.is-visible {
   display: block;
 }
+
 .CustomList.is-up {
   bottom: 36px;
 }
+
 .CustomList-listWrapper {
   position: relative;
 }
+
 .CustomList-list {
   position: relative;
   width: 100%;
   max-height: 168px;
   overflow: hidden;
 }
+
 .CustomList-list.is-customized .CustomList-item--add {
   display: none;
 }
+
 .CustomList--full {
   width: 100%;
 }
+
 .CustomList-message {
   padding: 16px;
   text-align: center;
 }
+
 .CustomList-messageText {
   max-width: 100%;
-  white-space: normal;
   overflow: auto;
   word-break: break-word;
+  white-space: normal;
 }
+
 .CustomList-item.is-highlighted,
 .CustomList-item:hover {
   background: rgba($cHighlight, 0.16);
   cursor: pointer;
 }
+
 .CustomList-item.is-disabled {
   &:hover {
     background: inherit;
     cursor: default;
   }
 }
+
 .CustomList-item--invert {
   @include display-flex();
 }
+
 /* TODO move to cartoassets and change to border-top and :first-child */
 .CDB-ListDecoration-item {
   min-height: 41px;
 }
+
 .CDB-ListDecoration-itemDisplay--flex {
   @include display-flex();
   @include justify-content(space-between);
 }
+
 .CDB-ListDecoration-itemPadding--vertical {
   min-height: auto;
 }
-.CDB-ListDecoration-item:last-type-of {
+
+.CDB-ListDecoration-item:last-of-type {
   border-bottom: 0;
 }
+
 .CDB-ListDecoration-item .CDB-NavMenu-item:last-child {
   margin-right: 0;
 }
+
 .CDB-ListDecoration-secondaryContainer {
   @include display-flex();
   @include flex-direction(row);
   @include justify-content(space-between);
   @include align-items(center);
 }
+
 .CDB-ListDecoration-rampNav-item {
   @include display-flex();
   @include align-items(center);
   height: 40px;
   padding: 0;
 }
+
 .CDB-ListDecoration-rampImg {
   @include display-flex();
   @include align-items(center);
 }
+
 .CDB-ListDecoration-rampItemBar {
   width: 20px;
 }

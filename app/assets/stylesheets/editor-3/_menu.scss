@@ -6,9 +6,9 @@
 .EditorMenu {
   @include flex(0 0 72px);
   position: relative;
+  box-sizing: border-box;
   width: 72px;
   min-height: 450px;
-  box-sizing: border-box;
   padding: 20px 0 $baseSize * 2;
   background: $cBlue;
 }
@@ -26,14 +26,17 @@
   margin-bottom: $baseSize;
   border-radius: 4px;
 }
+
 .EditorMenu-navigationItem.is-selected,
 .EditorMenu-navigationItem.is-selected:hover,
 .EditorMenu-navigationItem.is-selected:active {
   background: rgba($cMainBg, 0.32);
 }
+
 .EditorMenu-navigationItem:hover {
   background: rgba($cMainBg, 0.16);
 }
+
 .EditorMenu-navigationItem:active {
   background: rgba($cMainBg, 0.48);
 }
@@ -43,6 +46,7 @@
   width: 100%;
   height: 100%;
 }
+
 .EditorMenu-navigationIcon {
   color: $cWhite;
   font-size: $sFontSize-large;
@@ -61,12 +65,14 @@
     @include css3-prefix(transform-origin, 50%);
   }
 }
+
 .EditorMenu-feedback {
   @include transform(translateX(-50%));
   position: absolute;
   bottom: 20px;
   left: 50%;
 }
+
 .Editor-feedbackModal {
   position: absolute;
   top: 65px;
@@ -74,6 +80,7 @@
   bottom: 0;
   left: 0;
 }
+
 .EditorMenu-avatar {
   position: absolute;
   bottom: $baseSize * 2;
@@ -81,11 +88,11 @@
   width: 40px;
   height: 40px;
 }
+
 .EditorMenu-avatarImage {
   width: 100%;
   border-radius: $baseSize / 2;
 }
-
 
 /* Responsive views */
 @media (max-width: $sViewport-xl) {
@@ -93,14 +100,17 @@
     @include flex(0 0 48px);
     width: 48px;
   }
+
   .EditorMenu-logo svg {
     width: 24px;
     height: 24px;
   }
+
   .EditorMenu-navigationIcon {
     margin: 4px;
     font-size: $sFontSize-medium;
   }
+
   .EditorMenu-navigationItem {
     width: $baseSize * 3;
     height: $baseSize * 3;

@@ -5,6 +5,7 @@
 .BlockList {
   margin-bottom: $baseSize;
 }
+
 .BlockList-item {
   @include display-flex();
   @include transition(border 200ms ease-in);
@@ -16,13 +17,16 @@
   background: $cWhite;
   cursor: pointer;
 }
+
 .BlockList-item.is-space {
   @include justify-content(space-between);
   @include align-items(center);
 }
+
 .BlockList-item.is-dashed {
   border-style: dashed;
 }
+
 .BlockList-item:hover {
   @include transition(border 200ms ease-in);
   border: 1px solid $cHoverLine;
@@ -35,14 +39,16 @@
     text-decoration: underline;
   }
 }
+
 .BlockList-item.BlockList-item--noAction {
   cursor: default;
 
   .BlockList-titleText {
-    cursor: default;
     text-decoration: none;
+    cursor: default;
   }
 }
+
 .BlockList-item.BlockList-item--noAction:hover {
   border: 1px solid $cSecondaryLine;
 }
@@ -51,28 +57,35 @@
   border: 1px dashed $cSecondaryLine;
   cursor: default;
 }
+
 .BlockList-item.ui-sortable-helper {
   box-shadow: 0 8px 16px  rgba(#000, 0.16);
 }
+
 .BlockList-item.ui-sortable-helper:hover {
   border: 1px solid $cSecondaryLine;
 }
+
 .BlockList-item:last-child {
   margin-bottom: 0;
 }
+
 .BlockList-inner {
   @include flex(1);
 }
+
 .BlockList-title {
   @include display-flex();
   margin-bottom: 2px;
 }
+
 .BlockList-titleText {
   @include flex(1);
   width: 0;
   padding-right: $baseSize * 2;
   cursor: pointer;
 }
+
 .BlockList-dragIcon {
   @include transition(opacity 200ms ease-in);
   position: relative;
@@ -80,19 +93,22 @@
   left: -36px;
   opacity: 0;
 }
+
 .BlockList-media {
   @include display-flex();
   @include align-items(center);
   @include justify-content(center);
   position: relative;
+  box-sizing: border-box;
   width: 40px;
   min-width: 40px;
   height: 40px;
-  border-radius: $baseSize / 2;
-  box-sizing: border-box;
   overflow: hidden;
+  border-radius: $baseSize / 2;
 }
+
 .BlockList-media::after {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -101,7 +117,6 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: $halfBaseSize;
   pointer-events: none;
-  content: '';
 }
 
 .BlockList-mediaImg {
@@ -124,13 +139,14 @@
   }
 }
 
-
 .HorizontalBlockList {
   @include display-flex();
+
   /* remove when add new scroll */
   max-width: 264px;
   overflow: visible; /* for class with .has-error to be visible */
 }
+
 .HorizontalBlockList-item {
   @include display-flex();
   @include align-items(center);
@@ -146,31 +162,38 @@
   background: $cThirdBackground;
   color: $cAltText;
 }
+
 .HorizontalBlockList-item:last-child {
   margin-right: 0;
 }
+
 .HorizontalBlockList-item::before {
+  content: '';
   position: absolute;
   top: 50%;
   left: -9px;
   width: 8px;
   height: 1px;
   background: $cMainLine;
-  content: '';
 }
+
 .HorizontalBlockList-item:first-child::before {
   display: none;
   background: rd;
 }
+
 .HorizontalBlockList-item.is-add {
   background: $cBlue;
+
   &:hover {
     background: darken($cBlue, 8%);
   }
 }
+
 .HorizontalBlockList-item.is-selected {
   color: $cWhite;
 }
+
 .HorizontalBlockList-item-actionBlock {
   @include display-flex();
   @include align-items(center);

@@ -10,6 +10,7 @@
   height: 64px;
   margin-bottom: 21px;
 }
+
 .Editor-HeaderInfoEditorShape {
   line-height: 44px;
 }
@@ -41,16 +42,20 @@
   @include flex(1);
   max-width: calc(100% - 32px);
 }
+
 .Editor-HeaderInfo-inner--wide {
   max-width: 100%;
 }
+
 .Editor-HeaderInfo-back {
   margin-top: 7px;
 }
+
 .Editor-HeaderInfo-title {
   @include display-flex();
   @include align-items(center);
 }
+
 .Editor-HeaderInfo-titleText {
   @include flex(1 0 auto);
   display: block;
@@ -62,36 +67,43 @@
     min-width: 40px;
   }
 }
+
 .Editor-HeaderInfo-details {
   @include display-flex();
   @include align-items(center);
   @include flex(999);
 }
+
 .Editor-HeaderInfo-actions {
   @include display-flex();
   @include align-items(center);
 }
+
 .Editor-HeaderInfo-actionsItem {
   margin-left: 4px;
 }
+
 .Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
 }
+
 .Editor-HeaderInfo-subtitle {
   @include display-flex();
 }
+
 .Editor-HeaderInfo-link {
   font-weight: $sFontWeight-semibold;
 }
 
 .Editor-HeaderPad {
+  box-sizing: border-box;
   width: $baseSize * 3;
   min-width: $baseSize * 3;
   height: $baseSize * 3;
-  box-sizing: border-box;
 }
 
 .Editor-HeaderNumeration {
+  box-sizing: border-box;
   width: $baseSize * 3;
   min-width: $baseSize * 3;
   height: $baseSize * 3;
@@ -102,7 +114,6 @@
   font-size: $sFontSize-small;
   line-height: 23px;
   text-align: center;
-  box-sizing: border-box;
 }
 
 .Editor-headerLayerName {
@@ -113,6 +124,7 @@
   .Editor-HeaderInfo-titleText {
     color: $cWhite;
   }
+
   .CDB-IconFont-arrowPrev {
     color: $cWhite;
   }

@@ -12,11 +12,11 @@
     @include flex-direction(column);
     @include flex(1);
     position: relative;
+    min-height: 0;
     margin-right: -24px;
     margin-left: -24px;
     padding-right: 24px;
     padding-left: 24px;
-    min-height: 0;
   }
 
   .ScrollView-content {
@@ -37,7 +37,6 @@
 }
 
 .ScrollView--horizontal {
-
   &,
   & .ScrollView-wrapper {
     margin: 0;
@@ -62,8 +61,8 @@
   @include opacity(0);
   display: block;
   position: absolute;
-  pointer-events: none;
   z-index: 100;
+  pointer-events: none;
 }
 
 .ScrollView-shadow--top,

@@ -2,8 +2,7 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-
-/* WIP*/
+/* WIP */
 .Dialog.is-white {
   background: $cWhite;
 }
@@ -11,6 +10,7 @@
 .Filters-typeItem {
   @include display-flex(); /* todo when create new layout */
 }
+
 .DatasetsList-itemMeta {
   @include align-items(baseline); /* todo when create new layout */
 }
@@ -64,6 +64,7 @@
 .ModalBlockList-item-headerTitle {
   @include flex(1);
 }
+
 .ModalBlockList-item-headerSubTitle {
   width: 100px; /* fix naming depending the rest of designs */
 }
@@ -77,21 +78,21 @@
 .ModalBlockList-item {
   @include display-flex();
   @include flex-direction(column);
+  box-sizing: border-box;
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
+  overflow: hidden;
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
-  box-sizing: border-box;
   cursor: pointer;
-  overflow: hidden;
 }
+
 .DatasetsList .ModalBlockList-item {
   @include flex-direction(row);
   padding: 12px;
 }
-
 
 .ModalBlockList-itemInput {
   margin-right: $baseSize * 2;
@@ -112,11 +113,13 @@
 .ModalBlockList-item.is-selected {
   border: 1px solid rgba($cBlue, 0.48);
 }
+
 .ModalBlockList-item.is-disabled {
   border: 1px solid transparent;
   background: transparent;
   cursor: auto;
 }
+
 .ModalBlockList-item.is-disabled .ModalBlockList-item-headerTitle {
   @include opacity(0.5);
 }
@@ -128,7 +131,6 @@
   border-radius: 2px;
   background: rgba($cBlue, 0.08);
 }
-
 
 .Form-row {
   @include align-items(center);
@@ -145,9 +147,9 @@
 }
 
 .ModalDataset-itemInfoTitle {
+  box-sizing: border-box;
   max-width: 50%;
   padding-right: 24px;
-  box-sizing: border-box;
 }
 
 .Carousel-Navigation.is-disabled {
@@ -225,11 +227,11 @@
 .Publish-modalMenu,
 .Publish-modalShadow {
   position: relative;
+  z-index: 1;
   // In orden to change border by shadow, uncomment this
   // min-height: 5px; // to be able to show the shadow if no content inside.
   // box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid $cMainLine;
-  z-index: 1;
 }
 
 .Publish-modalShare {

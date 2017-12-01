@@ -10,14 +10,10 @@
 .Inline-editor-input {
   display: none;
   position: absolute;
+  z-index: 1;
   top: 0;
   left: 0;
   padding: 10px 8px;
-  z-index: 1;
-}
-
-.Inline-editor-text {
-
 }
 
 .Inline-editor-text.is-hidden {

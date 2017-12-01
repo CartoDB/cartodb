@@ -16,19 +16,19 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
-
 .Mosaic-list {
   @include display-flex();
   @include flex-wrap(wrap);
 }
+
 .Mosaic-item {
   position: relative;
+  box-sizing: border-box;
   width: 40px;
   height: 40px;
   margin-right: 8px;
   margin-bottom: 8px;
   border-radius: $halfBaseSize;
-  box-sizing: border-box;
   cursor: pointer;
 
   &:hover {
@@ -42,7 +42,9 @@
     }
   }
 }
+
 .Mosaic-item::before {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -51,11 +53,12 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: $halfBaseSize;
   pointer-events: none;
-  content: '';
 }
+
 .Mosaic-item--dashed::before {
   border: 1px dashed rgba(0, 0, 0, 0.08);
 }
+
 .Mosaic-item.is-selected::before {
   top: -1px;
   right: -1px;
@@ -63,24 +66,29 @@
   left: -1px;
   border: 2px solid $cBlue;
 }
+
 .Mosaic-image {
   display: block;
   width: 100%;
   height: 100%;
 }
+
 .Mosaic-inner {
-  border-radius: $halfBaseSize;
   overflow: hidden;
+  border-radius: $halfBaseSize;
   pointer-events: none;
 }
+
 .Mosaic-button {
   width: 40px;
   color: #1785FB;
   line-height: 40px;
 }
+
 .Mosaic-remove {
   @include transition(opacity, 100ms);
   position: absolute;
+  z-index: 2;
   right: 4px;
   bottom: 4px;
   width: 0;
@@ -90,10 +98,8 @@
   padding-left: 4px;
   border-top-left-radius: 2px;
   border-bottom-right-radius: 2px;
+  opacity: 0;
   background: rgba(#000, 0.5);
   text-indent: 0;
-  opacity: 0;
-  z-index: 2;
   pointer-events: auto;
 }
-

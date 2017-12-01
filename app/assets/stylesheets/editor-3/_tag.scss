@@ -4,12 +4,12 @@
 
 .Tag {
   display: inline-block;
+  box-sizing: border-box;
   height: 16px;
   padding: 0 4px;
   border-radius: $halfBaseSize / 2;
   background-color: $cThirdBackground;
   color: $cAltText;
-  box-sizing: border-box;
   line-height: 14px;
 }
 
@@ -20,21 +20,27 @@
   background-color: $cThirdBackground;
   color: $cWhite;
 }
+
 .Tag-fill--yellow {
   background: #FFB927;
 }
+
 .Tag-fill--orange {
   background: $cAlert;
 }
+
 .Tag-fill--orange-dark {
   background: $cPassword;
 }
+
 .Tag-fill--red {
   background: $cError;
 }
+
 .Tag-fill--blue {
   background: $cBlue;
 }
+
 .Tag-fill--green {
   background: $cPublic;
 }
@@ -53,6 +59,7 @@
   border: 1px solid $cSecondaryDark;
   color: $cSecondaryDark;
 }
+
 .Tag-outline--grey {
   border: 1px solid $cAltText;
   color: $cAltText;
@@ -67,6 +74,6 @@
 }
 
 .Tag.is-pointed {
-  user-select: none;
   cursor: pointer;
+  user-select: none;
 }

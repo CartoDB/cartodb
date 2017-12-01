@@ -5,14 +5,16 @@
   @include align-items(center);
   @include flex(0 0 auto);
   position: relative;
+  box-sizing: border-box;
   margin-right: -24px;
   margin-left: -24px;
   padding: 24px;
-  box-sizing: border-box;
 }
+
 .Options-bar--right {
   @include justify-content(flex-end);
 }
+
 .Options-bar.is-dark {
   color: $cWhite;
 }

@@ -61,7 +61,7 @@ describe Carto::SamlService do
       it 'returns the user with matching email' do
         user = create_test_saml_user
         response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => user.email)
+        response_mock.stubs(:attributes).returns(saml_config['email_attribute'] => user.email)
 
         service.get_user_email(saml_response_param_mock).should eq user.email
 

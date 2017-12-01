@@ -69,18 +69,14 @@
         operation: carto.operation.SUM,
         operationColumn: 'pop_max'
       });
-      categoryDataview.on('dataChanged', function (newData) {
-        renderWidgetCategory(newData);
-      });
+      categoryDataview.on('dataChanged', renderWidgetCategory);
 
       client.addDataview(categoryDataview);
 
       const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
         operation: carto.operation.COUNT,
       });
-      formulaDataview.on('dataChanged', function (newData) {
-        renderWidgetFormula(newData);
-      });
+      formulaDataview.on('dataChanged', renderWidgetFormula);
 
       client.addDataview(formulaDataview);
 
@@ -90,16 +86,15 @@
       formulaDataview.addFilter(bboxFilter);
 
       function renderWidgetCategory(data) {
-        var content = '';
-        for (var category of data.categories) {
-          content += `<b>${category.name}</b>
-          <p><span>${parseInt(category.value)}</span> inhabitants</p>`;
+        let content = '';
+        for (let category of data.categories) {
+          content += `<b>${category.name}</b><p><span>${parseInt(category.value)}</span> inhabitants</p>`;
         }
         document.getElementById('widgetCategory').innerHTML = content;
-      }
+      };
 
       function renderWidgetFormula(data) {
-        var content = `<span>${data.result}</span> cities`;
+        let content = `<span>${data.result}</span> cities`;
         document.getElementById('widgetFormula').innerHTML = content;
       }
     </script>

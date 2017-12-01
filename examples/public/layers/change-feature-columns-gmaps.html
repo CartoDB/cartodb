@@ -63,7 +63,7 @@
       client.addLayer(layer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      layer.on(carto.layer.events.FEATURE_CLICKED, function (featureEvent) {
+      layer.on(carto.layer.events.FEATURE_CLICKED, featureEvent => {
         let content = '';
         if (featureEvent.data.name) {
           content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;

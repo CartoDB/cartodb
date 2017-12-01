@@ -22,18 +22,18 @@
         categories.forEach(function (category) {
           const $category = $(`<h2>${category.title}</h2>`);
           const $samples = $(`<ul></ul>`);
-          category.samples.forEach(function (sample) {
-            let link = ''
-            if (typeof sample.file === 'string') {
-              link = `(<a href="${sample.file}">Link</a>)`;
-            } else {
-              link = `(<a href="${sample.file.leaflet}">Leaflet</a> | <a href="${sample.file.gmaps}">Google Maps</a>)`;
-            }
-            const $sample = $(`<li>
-              <h3>${sample.title} <span style="font-size:0.8em;">${link}</span></h3>
-            </li>`);
-            $samples.append($sample);
-          });
+          if (category.samples) {
+            category.samples.forEach(function (sample) {
+              let link = ''
+              if (typeof sample.file === 'string') {
+                link = `(<a href="${sample.file}">Link</a>)`;
+              } else {
+                link = `(<a href="${sample.file.leaflet}">Leaflet</a> | <a href="${sample.file.gmaps}">Google Maps</a>)`;
+              }
+              const $sample = $(`<li><h3>${sample.title} <span style="font-size:0.8em;">${link}</span></h3></li>`);
+              $samples.append($sample);
+            });
+          }
           $container.append($category);
           $container.append($samples);
         });

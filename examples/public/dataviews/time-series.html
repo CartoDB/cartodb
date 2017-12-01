@@ -49,16 +49,20 @@
         offset: 1
       });
 
-      timeseriesDataview.on('dataChanged', function (data) {
+      timeseriesDataview.on('dataChanged', data => {
         document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      timeseriesDataview.on('error', error => {
+        alert(error.message);
       });
 
       client.addDataview(timeseriesDataview);
 
       function applyDataviewChanges() {
-        var column = document.getElementById('column').value;
-        var aggregation = document.getElementById('aggregation').value;
-        var offset = document.getElementById('offset').value;
+        const column = document.getElementById('column').value;
+        const aggregation = document.getElementById('aggregation').value;
+        const offset = document.getElementById('offset').value;
         timeseriesDataview.setColumn(column);
         timeseriesDataview.setAggregation(aggregation);
         timeseriesDataview.setOffset(parseInt(offset));

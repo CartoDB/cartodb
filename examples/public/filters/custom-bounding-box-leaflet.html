@@ -65,18 +65,14 @@
         operation: carto.operation.SUM,
         operationColumn: 'pop_max'
       });
-      categoryDataview.on('dataChanged', function (newData) {
-        renderWidgetCategory(newData);
-      });
+      categoryDataview.on('dataChanged', renderWidgetCategory);
 
       client.addDataview(categoryDataview);
 
       const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
         operation: carto.operation.COUNT,
       });
-      formulaDataview.on('dataChanged', function (newData) {
-        renderWidgetFormula(newData);
-      });
+      formulaDataview.on('dataChanged', renderWidgetFormula);
 
       client.addDataview(formulaDataview);
 
@@ -86,8 +82,8 @@
       formulaDataview.addFilter(bboxFilter);
 
       // Setup drawing rectangles to configure custom bounding boxes
-      var rectangle = null;
-      var drawnItems = L.featureGroup().addTo(map);
+      let rectangle = null;
+      const drawnItems = L.featureGroup().addTo(map);
       map.addControl(new L.Control.Draw({
         draw: {
           polyline: false,
@@ -98,17 +94,17 @@
         }
       }));
 
-      var el = document.getElementsByClassName('leaflet-draw-draw-rectangle');
-      el[0].addEventListener('click', function () {
+      const el = document.getElementsByClassName('leaflet-draw-draw-rectangle');
+      el[0].addEventListener('click', () => {
         drawnItems.removeLayer(rectangle);
         bboxFilter.resetBounds();
       });
 
-      map.on(L.Draw.Event.CREATED, function (event) {
+      map.on(L.Draw.Event.CREATED, event => {
           rectangle = event.layer;
           drawnItems.addLayer(rectangle);
-          var latLngs = rectangle.getLatLngs();
-          var bounds = {
+          const latLngs = rectangle.getLatLngs();
+          const bounds = {
             west: latLngs[0][1].lng,
             south: latLngs[0][3].lat,
             east: latLngs[0][3].lng,
@@ -118,8 +114,8 @@
       });
 
       function renderWidgetCategory(data) {
-        var content = '';
-        for (var category of data.categories) {
+        let content = '';
+        for (let category of data.categories) {
           content += `<b>${category.name}</b>
           <p><span>${parseInt(category.value)}</span> inhabitants</p>`;
         }
@@ -127,7 +123,7 @@
       }
 
       function renderWidgetFormula(data) {
-        var content = `<span>${data.result}</span> cities`;
+        let content = `<span>${data.result}</span> cities`;
         document.getElementById('widgetFormula').innerHTML = content;
       }
     </script>

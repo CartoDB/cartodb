@@ -43,19 +43,19 @@
         operation: carto.operation.COUNT
       });
 
-      formulaDataview.on('dataChanged', function (data) {
+      formulaDataview.on('dataChanged', data => {
         document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
       });
 
-      formulaDataview.on('error', function (error) {
+      formulaDataview.on('error', error => {
         alert(error.message);
       });
 
       client.addDataview(formulaDataview);
 
       function applyDataviewChanges() {
-        var column = document.getElementById('column').value;
-        var operation = document.getElementById('operation').value;
+        const column = document.getElementById('column').value;
+        const operation = document.getElementById('operation').value;
         formulaDataview.setColumn(column);
         formulaDataview.setOperation(operation);
       }

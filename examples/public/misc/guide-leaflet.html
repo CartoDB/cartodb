@@ -112,7 +112,7 @@
       // 4. Setting up tooltips
       // 4.1 Showing the tooltip when user mouses over a city
       const popup = L.popup({ closeButton: false });
-      populatedPlaces.on('featureOver', function (featureEvent) {
+      populatedPlaces.on(carto.layer.events.FEATURE_OVER, featureEvent => {
         popup.setLatLng(featureEvent.latLng);
         if (!popup.isOpen()) {
           popup.setContent(featureEvent.data.name);
@@ -121,7 +121,7 @@
       });
 
       // 4.2 Hiding the tooltip
-      populatedPlaces.on('featureOut', function (featureEvent) {
+      populatedPlaces.on(carto.layer.events.FEATURE_OUT, featureEvent => {
         popup.removeFrom(map);
       });
 
@@ -132,7 +132,7 @@
       });
 
       // 5.2 Listening to data changes on the dataview
-      averagePopulation.on('dataChanged', function (data) {
+      averagePopulation.on('dataChanged', data => {
         refreshAveragePopulationWidget(data.result);
       });
 
@@ -152,10 +152,8 @@
       });
 
       // 6.2 Listening to data changes on the dataview
-      countriesDataview.on('dataChanged', function (data) {
-        const countryNames = data.categories.map(function (category) {
-          return category.name;
-        }).sort();
+      countriesDataview.on('dataChanged', data => {
+        const countryNames = data.categories.map(category => category.name).sort();
         refreshCountriesWidget(countryNames);
       });
 
@@ -163,14 +161,14 @@
         const widgetDom = document.querySelector('#countriesWidget');
         const countriesDom = widgetDom.querySelector('.js-countries');
 
-        countriesDom.onchange = function (event) {
+        countriesDom.onchange = event => {
           const admin = event.target.value;
           highlightCountry(admin);
           filterPopulatedPlacesByCountry(admin);
         };
 
         // Fill in the list of countries
-        adminNames.forEach(function (admin) {
+        adminNames.forEach(admin => {
           const option = document.createElement('option');
           option.innerHTML = admin;
           option.value = admin;

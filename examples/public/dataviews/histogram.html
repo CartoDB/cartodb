@@ -37,19 +37,19 @@
         bins: 5
       });
 
-      histogramDataview.on('dataChanged', function (data) {
+      histogramDataview.on('dataChanged', data => {
         document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
       });
 
-      histogramDataview.on('error', function (error) {
+      histogramDataview.on('error', error => {
         alert(error.message);
       });
 
       client.addDataview(histogramDataview);
 
       function applyDataviewChanges() {
-        var column = document.getElementById('column').value;
-        var bins = document.getElementById('bins').value;
+        const column = document.getElementById('column').value;
+        const bins = document.getElementById('bins').value;
         histogramDataview.setColumn(column);
         histogramDataview.setBins(parseInt(bins));
       }

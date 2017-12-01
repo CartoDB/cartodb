@@ -53,14 +53,14 @@
       client.addLayer(layer);
       client.getLeafletLayer().addTo(map);
 
-      layer.on(carto.layer.events.FEATURE_OVER, function (featureEvent) {
+      layer.on(carto.layer.events.FEATURE_OVER, featureEvent => {
         let content = '';
         content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
         content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
         document.getElementById('content').innerHTML = content;
       });
 
-      layer.on(carto.layer.events.FEATURE_OUT, function (featureEvent) {
+      layer.on(carto.layer.events.FEATURE_OUT, featureEvent => {
         document.getElementById('content').innerHTML = '';
       });
     </script>

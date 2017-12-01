@@ -49,21 +49,21 @@
         operationColumn: 'pop_max'
       });
 
-      categoryDataview.on('dataChanged', function (data) {
+      categoryDataview.on('dataChanged', data => {
         document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
       });
 
-      categoryDataview.on('error', function (error) {
+      categoryDataview.on('error', error => {
         alert(error.message);
       });
 
       client.addDataview(categoryDataview);
 
       function applyDataviewChanges() {
-        var column = document.getElementById('column').value;
-        var limit = document.getElementById('limit').value;
-        var operation = document.getElementById('operation').value;
-        var operationColumn = document.getElementById('operationColumn').value;
+        const column = document.getElementById('column').value;
+        const limit = document.getElementById('limit').value;
+        const operation = document.getElementById('operation').value;
+        const operationColumn = document.getElementById('operationColumn').value;
         categoryDataview.setColumn(column);
         categoryDataview.setLimit(parseInt(limit));
         categoryDataview.setOperation(operation);

@@ -99,15 +99,13 @@
       {
         "title": "Custom Bounding Box filter",
         "desc": "Apply a custom bounding box filter to the widgets",
-        "file": {
-          "leaflet": "public/filters/custom-bounding-box-leaflet.html"
-        }
+        "file": "public/filters/custom-bounding-box-leaflet.html"
       }
     ]
   },
   {
     "title": "Error handling",
-    "samples": [
+    "xsamples": [
       {
         "title": "Errors in layers",
         "desc": "Manage the errors in the layers",

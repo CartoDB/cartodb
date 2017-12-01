@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit SQL & CartoCSS | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <style>
+      * { margin: 0; padding: 0; }
+      html { box-sizing: border-box; height: 100%; }
+      body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
+      #container { display: flex; width: 100%; height: 100%; }
+      #map { flex: 1; margin: 10px; }
+      #controls { position: relative; width: 300px; margin: 20px; }
+      h3 { margin-bottom: 20px; }
+      button { background: #162945; width: 100%; padding: 10px; margin: 20px 0; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
+      textarea { height: 100px; width: 100%; resize: none; }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="map"></div>
+      <div id="controls">
+        <h3>SQL</h3>
+        <textarea id="sql" rows="3">
+SELECT *
+  FROM ne_10m_populated_places_simple
+</textarea>
+        <button onclick="updateSource()"> Update Layer source</button>
+        <h3>CartoCSS</h3>
+        <textarea id="cartocss" rows="3">
+#layer {
+  marker-fill: red;
+}
+</textarea>
+        <button onclick="updateStyle()"> Update Layer style</button>
+        <p> This example only uses one style and one layer whose content is changed. </p>
+        <p>
+          Since the style and source objects are the same the wont trigger events, you need to use the promise to handle errors.
+        </p>
+        <p class="popup"></p>
+      </div>
+    </div>
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      const populatedPlacesSource = new carto.source.SQL(getValue('#sql'));
+      const populatedPlacesStyle = new carto.style.CartoCSS(getValue('#cartocss'));
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
+
+      client.addLayer(populatedPlacesLayer);
+      client.getLeafletLayer().addTo(map);
+
+      function updateSource() {
+        reset('#sql');
+        populatedPlacesSource.setQuery(getValue('#sql'))
+          .catch(cartoError => {
+            error('#sql', cartoError);
+          });
+      }
+
+      function updateStyle() {
+        reset('#cartocss')
+        populatedPlacesStyle.setContent(getValue('#cartocss'))
+          .catch(cartoError => {
+            error('#cartocss', cartoError);
+          });
+      }
+
+      function getValue(id) {
+        return document.querySelector(id).value
+      }
+
+      function reset(id) {
+        document.querySelector(id).style.background = 'white';
+      }
+
+      function error(id, cartoError) {
+        document.querySelector(id).style.background = '#E57373';
+        setTimeout(() => {
+          alert(cartoError.message);
+        }, 10);
+      }
+    </script>
+  </body>
+</html>

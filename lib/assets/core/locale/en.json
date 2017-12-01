@@ -2083,7 +2083,7 @@
         }
       },
       "georeference": {
-        "manually-add": "Please georeference or manually add data to visualize.",
+        "no-geometry": "There's no geometry in your data, please georeference it.",
         "georeference-button": "Georeference",
         "visualize": "Layer doesn't have geometry"
       },

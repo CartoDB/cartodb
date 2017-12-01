@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add trial notification in static views (#13079)
 * Account static view (#12749)
 * Force UTF-8 encoding in the Compass task
 * Trigger error when interactivity request fails (#13093)
@@ -307,6 +308,7 @@ ion for time-series (#12670)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
+* Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals

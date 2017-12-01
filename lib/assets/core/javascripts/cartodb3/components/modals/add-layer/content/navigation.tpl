@@ -31,11 +31,13 @@
           </li>
         <% } %>
       <% } %>
-      <li class="Filters-typeItem js-filter-type">
-        <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-library <%- listingType === 'datasets' && library ? 'is-selected' : '' %>">
-          <%- _t('components.modals.add-layer.navigation.data-library') %>
-        </button>
-      </li>
+      <% if (hasDataLibrary) { %>
+        <li class="Filters-typeItem js-filter-type">
+          <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-library <%- listingType === 'datasets' && library ? 'is-selected' : '' %>">
+            <%- _t('components.modals.add-layer.navigation.data-library') %>
+          </button>
+        </li>
+      <% } %>
     </ul>
   </div>
 

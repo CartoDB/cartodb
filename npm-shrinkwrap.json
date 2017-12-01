@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.97",
+  "version": "4.10.98",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -131,7 +131,7 @@
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
-      "from": "git://github.com/cartodb/backbone-model-file-upload.git#c2232a6d017f0e2b4d09f975c794c2f931bbda10",
+      "from": "cartodb/backbone-model-file-upload#1.0.2",
       "resolved": "git://github.com/cartodb/backbone-model-file-upload.git#c2232a6d017f0e2b4d09f975c794c2f931bbda10"
     },
     "backbone-poller": {
@@ -141,7 +141,7 @@
     },
     "backbone-undo": {
       "version": "0.2.5",
-      "from": "git://github.com/cartodb/Backbone.Undo.js.git#c10e9977d22ecea1fabe894be650c78ac548911f",
+      "from": "cartodb/Backbone.Undo.js#c10e997",
       "resolved": "git://github.com/cartodb/Backbone.Undo.js.git#c10e9977d22ecea1fabe894be650c78ac548911f"
     },
     "balanced-match": {
@@ -322,7 +322,7 @@
     },
     "carto": {
       "version": "0.15.1-cdb4",
-      "from": "git://github.com/cartodb/carto.git#4dfe5361b302dda8163cd41ccbf7a9dc6898019a",
+      "from": "cartodb/carto#master",
       "resolved": "git://github.com/cartodb/carto.git#4dfe5361b302dda8163cd41ccbf7a9dc6898019a"
     },
     "cartocolor": {
@@ -332,7 +332,7 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.4.20",
-      "from": "git://github.com/cartodb/deep-insights.js.git#946aff57fc1933d63c223ce81f69fe5fd6a77959",
+      "from": "cartodb/deep-insights.js#v0.4.20",
       "resolved": "git://github.com/cartodb/deep-insights.js.git#946aff57fc1933d63c223ce81f69fe5fd6a77959",
       "dependencies": {
         "node-polyglot": {
@@ -349,7 +349,7 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.31",
-      "from": "git://github.com/cartodb/cartodb.js.git#8abacc595a048b51ab24a8e6b77d6ec6b12f49ce",
+      "from": "cartodb/cartodb.js#v4.0.0-alpha.31",
       "resolved": "git://github.com/cartodb/cartodb.js.git#8abacc595a048b51ab24a8e6b77d6ec6b12f49ce"
     },
     "center-align": {
@@ -1178,7 +1178,7 @@
     },
     "js-yaml": {
       "version": "3.5.3",
-      "from": "git://github.com/tangrams/js-yaml.git#1637976c6f593bed33ed088aedb6d01390a947c0",
+      "from": "tangrams/js-yaml#read-only",
       "resolved": "git://github.com/tangrams/js-yaml.git#1637976c6f593bed33ed088aedb6d01390a947c0",
       "dependencies": {
         "esprima": {
@@ -1220,7 +1220,7 @@
     },
     "jszip": {
       "version": "3.0.0",
-      "from": "git://github.com/tangrams/jszip.git#856ff081cd4a03884fa04a60f3a1998ca51d7b3c",
+      "from": "tangrams/jszip#read-only",
       "resolved": "git://github.com/tangrams/jszip.git#856ff081cd4a03884fa04a60f3a1998ca51d7b3c",
       "dependencies": {
         "es6-promise": {
@@ -1610,7 +1610,7 @@
     },
     "perfect-scrollbar": {
       "version": "0.6.16",
-      "from": "git://github.com/CartoDB/perfect-scrollbar.git#7e39eb3d689f6849f18943cf271fd96fc59dbdc0",
+      "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
       "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#7e39eb3d689f6849f18943cf271fd96fc59dbdc0"
     },
     "pify": {
@@ -2159,7 +2159,7 @@
     },
     "tangram": {
       "version": "0.13.3",
-      "from": "git://github.com/cartodb/tangram.git#62fc926251185d0ccf8b78f58d466f409b9ef475",
+      "from": "cartodb/tangram#master",
       "resolved": "git://github.com/cartodb/tangram.git#62fc926251185d0ccf8b78f58d466f409b9ef475"
     },
     "tangram-cartocss": {
@@ -2219,7 +2219,7 @@
     },
     "topojson-client": {
       "version": "2.1.0",
-      "from": "git://github.com/tangrams/topojson-client.git#1068f4f2e03ddf8236499bbc896cec98d7a342b7",
+      "from": "tangrams/topojson-client#read-only",
       "resolved": "git://github.com/tangrams/topojson-client.git#1068f4f2e03ddf8236499bbc896cec98d7a342b7"
     },
     "toposort": {
@@ -2229,7 +2229,7 @@
     },
     "torque.js": {
       "version": "2.16.3",
-      "from": "git://github.com/cartodb/torque.git#5d9b02a6da2c3b458fa4d60630a529b45bc5030b",
+      "from": "cartodb/torque#master",
       "resolved": "git://github.com/cartodb/torque.git#5d9b02a6da2c3b458fa4d60630a529b45bc5030b"
     },
     "transformify": {

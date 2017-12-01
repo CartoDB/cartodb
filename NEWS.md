@@ -100,6 +100,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Add hover state to nav tabs (#13158)
+* Change how redirection works after a successful import (CartoDB/support#1128)
 * Fix organization templates generation (#13150)
 * Fix dataset export modal (CartoDB/support#1168)
 * Add hover to UI Elements (#13074)

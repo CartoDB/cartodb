@@ -1,13 +1,5 @@
 var WINDSHAFT_ERRORS = require('../constants').WINDSHAFT_ERRORS;
 
-function truncateMessage (message) {
-  var MAX_SIZE = 256;
-
-  return message && message.length > MAX_SIZE
-    ? message.substring(0, MAX_SIZE)
-    : message;
-}
-
 var WindshaftError = function (error) {
   this._error = error;
 
@@ -43,3 +35,13 @@ WindshaftError.prototype.isAnalysisError = function (errorType) {
 };
 
 module.exports = WindshaftError;
+
+// Helper functions
+
+function truncateMessage (message) {
+  var MAX_SIZE = 256;
+
+  return message && message.length > MAX_SIZE
+    ? message.substring(0, MAX_SIZE)
+    : message;
+}

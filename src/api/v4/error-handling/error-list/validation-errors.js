@@ -31,21 +31,21 @@ module.exports = {
       friendlyMessage: 'Table name is required.'
     },
     'dataset-string': {
-      messageRegex: /requiredDatasetString/,
+      messageRegex: /requiredDatasetString$/,
       friendlyMessage: 'Table name must be a string.'
     },
     'dataset-required': {
-      messageRegex: /requiredDataset/,
+      messageRegex: /requiredDataset$/,
       friendlyMessage: 'Table name must be not empty.'
     }
   },
   style: {
     'required-css': {
-      messageRegex: /requiredCSS/,
+      messageRegex: /requiredCSS$/,
       friendlyMessage: 'CartoCSS is required.'
     },
     'css-string': {
-      messageRegex: /requiredCSSString/,
+      messageRegex: /requiredCSSString$/,
       friendlyMessage: 'CartoCSS must be a string.'
     }
   },

@@ -1596,12 +1596,12 @@ describe Carto::Api::VisualizationsController do
 
               get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 403
-                expect(response.body[:errors]).to eq('Password invalid')
+                expect(response.body[:errors]).to eq('Visualization not viewable')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password * 2) do |response|
                 response.status.should eq 403
-                expect(response.body[:errors]).to eq('Password invalid')
+                expect(response.body[:errors]).to eq('Visualization not viewable')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password) do |response|

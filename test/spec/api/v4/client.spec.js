@@ -1,6 +1,8 @@
 var L = require('leaflet');
 var carto = require('../../../../src/api/v4');
 var LeafletLayer = require('../../../../src/api/v4/leaflet-layer');
+var Engine = require('../../../../src/engine');
+var Events = require('../../../../src/api/v4/events');
 
 describe('api/v4/client', function () {
   var client;
@@ -207,6 +209,20 @@ describe('api/v4/client', function () {
 
     it('should have the OpenStreetMap / Carto attribution', function () {
       expect(leafletLayer.getAttribution()).toBe('&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>');
+    });
+  });
+
+  describe('engine bindings', function () {
+    it('should capture engine LAYER_ERROR and trigger own error', function () {
+      var capturedError;
+      client.on(Events.ERROR, function (error) {
+        capturedError = error;
+      });
+
+      client._engine._eventEmmitter.trigger(Engine.Events.LAYER_ERROR);
+
+      expect(capturedError).toBeDefined();
+      expect(capturedError.name).toEqual('CartoError');
     });
   });
 });

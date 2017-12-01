@@ -314,7 +314,7 @@ Engine.prototype._bindCartoLayerGroupError = function () {
   this._cartoLayerGroup.on('all', function (change, error) {
     if (change.lastIndexOf('error:', 0) === 0) {
       error = new WindshaftError(error);
-      this._eventEmmitter.trigger('error', error);
+      this._eventEmmitter.trigger(Engine.Events.LAYER_ERROR, error);
     }
   }, this);
 };
@@ -341,7 +341,7 @@ Engine.Events = {
   /**
    * Error event, fired every time a tile or limit error happens.
    */
-  ERROR: 'error'
+  LAYER_ERROR: 'layer-error'
 };
 
 module.exports = Engine;
@@ -370,6 +370,6 @@ module.exports = Engine;
 /**
   * Layer group error event, fired every time an error with layer group happends (tile or limit).
   *
-  * @event Engine#Engine:ERROR
+  * @event Engine#Engine:LAYER_ERROR
   * @type {string}
   */

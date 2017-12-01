@@ -283,7 +283,7 @@ Client.prototype._bindEngine = function (engine) {
     this.trigger(Events.ERROR, new CartoError(err, { layers: this._layers }));
   }.bind(this));
 
-  engine.on('error', function (err) {
+  engine.on(Engine.Events.LAYER_ERROR, function (err) {
     this.trigger(Events.ERROR, new CartoError(err));
   }.bind(this));
 };

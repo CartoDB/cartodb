@@ -73,7 +73,7 @@ describe('api/v4/dataview/histogram', function () {
         new carto.dataview.Histogram(); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Source property is required.');
+      expect(test).toThrowError(Error, 'Source property is required.');
     });
 
     it('column must be provided', function () {
@@ -81,7 +81,7 @@ describe('api/v4/dataview/histogram', function () {
         new carto.dataview.Histogram(source); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Column property is required.');
+      expect(test).toThrowError(Error, 'Column property is required.');
     });
 
     it('options set to default if not provided', function () {
@@ -107,7 +107,7 @@ describe('api/v4/dataview/histogram', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
+      expect(test).toThrowError(Error, 'Bins must be a positive integer value.');
     });
   });
 
@@ -197,7 +197,7 @@ describe('api/v4/dataview/histogram', function () {
         dataview.setBins(-1);
       };
 
-      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
+      expect(test).toThrowError(Error, 'Bins must be a positive integer value.');
     });
 
     it('should throw error if called with a float number', function () {
@@ -205,7 +205,7 @@ describe('api/v4/dataview/histogram', function () {
         dataview.setBins(15.7);
       };
 
-      expect(test).toThrowError(TypeError, 'Bins must be a positive integer value.');
+      expect(test).toThrowError(Error, 'Bins must be a positive integer value.');
     });
 
     it('should set bins to internal model as well', function () {

@@ -228,4 +228,14 @@ describe('api/v4/dataview/base', function () {
       expect(dataviewError.name).toEqual('CartoError');
     });
   });
+
+  describe('add bbox filter', function () {
+    it('should check if it is a proper object', function () {
+      function test () {
+        base.addFilter('invalid_filter');
+      }
+
+      expect(test).toThrowError('Filter property is required.');
+    });
+  });
 });

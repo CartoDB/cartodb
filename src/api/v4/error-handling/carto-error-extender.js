@@ -48,7 +48,7 @@ function _getListedError (cartoError, errorList) {
 
   // When cartoError not found return generic values
   return {
-    friendlyMessage: cartoError.message,
+    friendlyMessage: cartoError.message || '',
     errorCode: _buildErrorCode(cartoError, 'unknown-error')
   };
 }

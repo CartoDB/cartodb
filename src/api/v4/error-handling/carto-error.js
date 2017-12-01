@@ -14,13 +14,10 @@ var GENERIC_ORIGIN = 'generic';
  */
 function CartoError (error, opts) {
   opts = opts || {};
-  var cartoError = Object.create(TypeError.prototype);
-  cartoError.message = error.message || UNEXPECTED_ERROR;
-  cartoError.name = 'CartoError';
-  cartoError.origin = error.origin || GENERIC_ORIGIN;
-  cartoError.originalError = error;
-  cartoError.stack = (new Error()).stack;
-  cartoError.type = error.type || '';
+  var cartoError = Object.create(Error.prototype);
+  cartoError.message = (error && error.message) || UNEXPECTED_ERROR;
+  cartoError.origin = (error && error.origin) || GENERIC_ORIGIN;
+  cartoError.type = (error && error.type) || '';
 
   if (_isWindshaftError(error)) {
     cartoError = _transformWindshaftError(error, opts.layers, opts.analysis);
@@ -34,6 +31,11 @@ function CartoError (error, opts) {
   var extraFields = errorExtender.getExtraFields(cartoError);
   cartoError.message = extraFields.friendlyMessage;
   cartoError.errorCode = extraFields.errorCode;
+
+  // Final properties
+  cartoError.name = 'CartoError';
+  cartoError.stack = (new Error()).stack;
+  cartoError.originalError = error;
 
   errorTracker.track(cartoError);
 
@@ -66,11 +68,12 @@ function _transformWindshaftError (error, layers, analysis) {
 }
 
 function _transformAjaxError (error) {
-  error.message = _handleAjaxResponse(error);
-  error.origin = 'ajax';
-  error.type = error.statusText;
+  var cartoError = Object.create(Error.prototype);
+  cartoError.message = _handleAjaxResponse(error);
+  cartoError.origin = 'ajax';
+  cartoError.type = error.statusText;
 
-  return error;
+  return cartoError;
 }
 
 function _handleAjaxResponse (error) {

@@ -26,6 +26,10 @@ describe Carto::SamlService do
     it 'is enabled if there is configuration' do
       service.enabled?.should be_true
     end
+
+    it 'email_attribute not the default if defined' do
+      service.send(:email_attribute).should eq 'username'
+    end
   end
 
   describe 'Integration logic' do

@@ -310,6 +310,7 @@ ion for time-series (#12670)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
 * Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Treat all time series dataview timestamps as UTC (#13070)
+* Disable size tab in legend when it's not possible to add one (#12728)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

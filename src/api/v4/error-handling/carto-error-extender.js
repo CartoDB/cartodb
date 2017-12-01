@@ -82,4 +82,4 @@ function _buildErrorCode (cartoError, key) {
   return fragments.join(':');
 }
 
-module.exports = { getExtraFields };
+module.exports = { getExtraFields: getExtraFields };

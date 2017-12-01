@@ -34,8 +34,6 @@ WindshaftError.prototype.isAnalysisError = function (errorType) {
   return errorType === WINDSHAFT_ERRORS.ANALYSIS;
 };
 
-module.exports = WindshaftError;
-
 // Helper functions
 
 function truncateMessage (message) {
@@ -45,3 +43,5 @@ function truncateMessage (message) {
     ? message.substring(0, MAX_SIZE)
     : message;
 }
+
+module.exports = WindshaftError;

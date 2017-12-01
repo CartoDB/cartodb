@@ -302,10 +302,12 @@ Base.prototype._onStatusError = function (model, error) {
 Base.prototype._changeProperty = function (key, value, internalKey) {
   var prevValue = this['_' + key];
   this['_' + key] = value;
+  if (prevValue === value) {
+    return;
+  }
+  this._triggerChange(key, value);
   if (this._internalModel) {
     this._internalModel.set(internalKey || key, value);
-  } else if (prevValue !== value) {
-    this._triggerChange(key, value);
   }
 };
 

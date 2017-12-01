@@ -54,10 +54,7 @@ Formula.prototype = Object.create(Base.prototype);
  */
 Formula.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
-  this._operation = operation;
-  if (this._internalModel) {
-    this._internalModel.set('operation', operation);
-  }
+  this._changeProperty('operation', operation);
   return this;
 };
 
@@ -92,16 +89,7 @@ Formula.prototype.DEFAULTS = {
   operation: constants.operation.COUNT
 };
 
-Formula.prototype._listenToInternalModelSpecificEvents = function () {
-  this.listenTo(this._internalModel, 'change:operation', this._onOperationChanged);
-};
-
-Formula.prototype._onOperationChanged = function () {
-  if (this._internalModel) {
-    this._operation = this._internalModel.get('operation');
-  }
-  this.trigger('operationChanged', this._operation);
-};
+Formula.prototype._listenToInternalModelSpecificEvents = function () {};
 
 Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {

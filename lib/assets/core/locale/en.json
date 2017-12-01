@@ -1843,7 +1843,7 @@
           "ip-address-column": "IP Address",
           "ip-address-help": "Select a column with IP addresses",
           "ip-address": "IP Addresses",
-          "long-lat": "Longitude and Latitude",
+          "long-lat": "Latitude and Longitude",
           "postal-code": "Postal Codes",
           "select-a-country": "Select a country column",
           "select-admin": "Select a region column",

@@ -309,6 +309,7 @@ ion for time-series (#12670)
 * Fix email validator failing with empty emails (#13078)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
 * Fix for legends when there is only one element in the ramp (cartodb.js#1938)
+* Fix SAML configuration bug that doesn't let access some properties properly (#13161)
 * Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals

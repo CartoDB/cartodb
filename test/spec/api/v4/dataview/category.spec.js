@@ -47,24 +47,30 @@ function createEngineMock () {
   return engine;
 }
 
-describe('api/v4/dataview/category', function () {
+fdescribe('api/v4/dataview/category', function () {
   var source = createSourceMock();
 
   describe('initialization', function () {
     it('source must be provided', function () {
-      var test = function () {
-        new carto.dataview.Category(); // eslint-disable-line no-new
-      };
+      var error;
+      try { new carto.dataview.Category(); } catch (err) { error = err; } // eslint-disable-line no-new
 
-      expect(test).toThrowError(TypeError, 'Source property is required.');
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Source property is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:source-required'
+      }));
     });
 
     it('column must be provided', function () {
-      var test = function () {
-        new carto.dataview.Category(source); // eslint-disable-line no-new
-      };
+      var error;
+      try { new carto.dataview.Category(source); } catch (err) { error = err; } // eslint-disable-line no-new
 
-      expect(test).toThrowError(TypeError, 'Column property is required.');
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Column property is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:column-required'
+      }));
     });
 
     it('options set to default if not provided', function () {
@@ -90,13 +96,20 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('throw error if no correct operation is provided', function () {
+      var error;
       var test = function () {
         new carto.dataview.Category(source, 'population', { // eslint-disable-line no-new
           operation: 'exponential'
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for category dataview is not valid. Use carto.operation');
+      try { test(); } catch (err) { error = err; }
+
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Operation for category dataview is not valid. Use carto.operation',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-invalid-operation'
+      }));
     });
   });
 
@@ -107,10 +120,30 @@ describe('api/v4/dataview/category', function () {
       dataview = new carto.dataview.Category(source, 'population');
     });
 
-    it('checks if operation is valid', function () {
-      expect(function () { dataview.setLimit(); }).toThrowError(TypeError, 'Limit for category dataview is required.');
-      expect(function () { dataview.setLimit('12'); }).toThrowError(TypeError, 'Limit for category dataview must be a number.');
-      expect(function () { dataview.setLimit(0); }).toThrowError(TypeError, 'Limit for category dataview must be greater than 0.');
+    it('checks if limit is valid', function () {
+      var requiredError;
+      var numberError;
+      var positiveError;
+
+      try { dataview.setLimit(); } catch (err) { requiredError = err; }
+      try { dataview.setLimit('12'); } catch (err) { numberError = err; }
+      try { dataview.setLimit(0); } catch (err) { positiveError = err; }
+
+      expect(requiredError).toEqual(jasmine.objectContaining({
+        message: 'Limit for category dataview is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-limit-required'
+      }));
+      expect(numberError).toEqual(jasmine.objectContaining({
+        message: 'Limit for category dataview must be a number.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-limit-number'
+      }));
+      expect(positiveError).toEqual(jasmine.objectContaining({
+        message: 'Limit for category dataview must be greater than 0.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-limit-positive'
+      }));
     });
 
     it('if limit is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
@@ -140,11 +173,18 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('checks if operation is valid', function () {
+      var error;
       var test = function () {
         dataview.setOperation('swordfish');
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for category dataview is not valid. Use carto.operation');
+      try { test(); } catch (err) { error = err; }
+
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Operation for category dataview is not valid. Use carto.operation',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-invalid-operation'
+      }));
     });
 
     it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
@@ -174,9 +214,29 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('checks if operation is valid', function () {
-      expect(function () { dataview.setOperationColumn(); }).toThrowError(TypeError, 'Operation column for category dataview is required.');
-      expect(function () { dataview.setOperationColumn(12); }).toThrowError(TypeError, 'Operation column for category dataview must be a string.');
-      expect(function () { dataview.setOperationColumn(''); }).toThrowError(TypeError, 'Operation column for category dataview must be not empty.');
+      var requiredError;
+      var numberError;
+      var emptyError;
+
+      try { dataview.setOperationColumn(); } catch (err) { requiredError = err; }
+      try { dataview.setOperationColumn(12); } catch (err) { numberError = err; }
+      try { dataview.setOperationColumn(''); } catch (err) { emptyError = err; }
+
+      expect(requiredError).toEqual(jasmine.objectContaining({
+        message: 'Operation column for category dataview is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-operation-required'
+      }));
+      expect(numberError).toEqual(jasmine.objectContaining({
+        message: 'Operation column for category dataview must be a string.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-operation-string'
+      }));
+      expect(emptyError).toEqual(jasmine.objectContaining({
+        message: 'Operation column for category dataview must be not empty.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-operation-empty'
+      }));
     });
 
     it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {

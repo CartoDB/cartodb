@@ -2,7 +2,7 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-.CDB-ListDecoration-item .ColorBar:hover {
+.CDB-ListDecoration-item .ColorBar {
   position: relative;
 
   &::after {
@@ -11,8 +11,21 @@
     bottom: -14px - 2 * $baseSize;
     left: 0;
     height: 2px;
-    background: $cBlueHover;
+    transition: background-color 0.2s ease-in;
+    background: transparent;
     content: '';
+  }
+
+  &:hover {
+    &::after {
+      background: $cBlueHover;
+    }
+  }
+
+  &.is-selected {
+    &::after {
+      background: $cMainBg;
+    }
   }
 }
 

@@ -1,13 +1,13 @@
 var Base = require('./base');
-var LeafletBoundingBoxAdapter = require('../../../geo/adapters/leaflet-bounding-box-adapter');
+var GoogleMapsBoundingBoxAdapter = require('../../../geo/adapters/gmaps-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
- * Bounding box filter for Leaflet maps.
+ * Bounding box filter for Google Maps maps.
  *
  * @param {L.Map} map - The map view
  *
- * @fires carto.filter.BoundingBoxLeaflet.boundsChanged
+ * @fires carto.filter.BoundingBoxGoogleMaps.boundsChanged
  *
  * @constructor
  * @extends carto.filter.Base
@@ -15,17 +15,17 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * @api
  *
  */
-function BoundingBoxLeaflet (map) {
-  // Adapt the Leaflet map to offer unique:
+function BoundingBoxGoogleMaps (map) {
+  // Adapt the Google Maps map to offer unique:
   // - getBounds() function
   // - 'boundsChanged' event
-  var mapAdapter = new LeafletBoundingBoxAdapter(map);
+  var mapAdapter = new GoogleMapsBoundingBoxAdapter(map);
   // Use the adapter for the internal BoundingBoxFilter model
   this._internalModel = new BoundingBoxFilterModel(mapAdapter);
   this.listenTo(this._internalModel, 'boundsChanged', this._onBoundsChanged);
 }
 
-BoundingBoxLeaflet.prototype = Object.create(Base.prototype);
+BoundingBoxGoogleMaps.prototype = Object.create(Base.prototype);
 
 /**
  * Return the current bounds.
@@ -33,26 +33,26 @@ BoundingBoxLeaflet.prototype = Object.create(Base.prototype);
  * @return {carto.filter.Bounds} Current bounds
  * @api
  */
-BoundingBoxLeaflet.prototype.getBounds = function () {
+BoundingBoxGoogleMaps.prototype.getBounds = function () {
   return this._internalModel.getBounds();
 };
 
-BoundingBoxLeaflet.prototype._onBoundsChanged = function (bounds) {
+BoundingBoxGoogleMaps.prototype._onBoundsChanged = function (bounds) {
   this.trigger('boundsChanged', bounds);
 };
 
-BoundingBoxLeaflet.prototype.$getInternalModel = function () {
+BoundingBoxGoogleMaps.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
 
-module.exports = BoundingBoxLeaflet;
+module.exports = BoundingBoxGoogleMaps;
 
 /**
- * Event triggered when bounds of a bounding box filter for Leaflet changes.
+ * Event triggered when bounds of a bounding box filter for Google Maps changes.
  *
  * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
  *
- * @event carto.filter.BoundingBoxLeaflet.boundsChanged
+ * @event carto.filter.BoundingBoxGoogleMaps.boundsChanged
  * @type {carto.filter.Bounds}
  * @api
  */

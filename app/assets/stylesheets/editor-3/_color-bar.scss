@@ -41,8 +41,9 @@
 }
 
 .ColorsBar {
-  @include display-flex();
-  @include flex(1);
+  display: flex;
+  flex: 1;
+  padding: 13px 8px;
 }
 
 .ColorBar {

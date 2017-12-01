@@ -6,11 +6,11 @@ describe Carto::SamlService do
     Carto::SamlService.new(@organization)
   end
 
-  before(:all) do
+  before(:each) do
     @organization = FactoryGirl.create(:saml_organization)
   end
 
-  after(:all) do
+  after(:each) do
     @organization.delete
   end
 
@@ -27,8 +27,12 @@ describe Carto::SamlService do
       service.enabled?.should be_true
     end
 
-    it 'email_attribute not the default if defined' do
-      service.send(:email_attribute).should eq 'username'
+    it 'email_attribute doesnt return the default value if its defined' do
+      saml_config = @organization.auth_saml_configuration
+      saml_config['email_attribute'] = 'defined_username'
+      service.send(:email_attribute).should eq 'defined_username'
+      saml_config['email_attribute'] = nil
+      service.send(:email_attribute).should eq 'name_id'
     end
   end
 

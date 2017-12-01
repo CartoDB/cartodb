@@ -82,7 +82,6 @@
     "gulp-install": "0.2.0",
     "gulp-sketch": "0.0.7",
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
-    "jasmine-expect": "3.8.1",
     "jsdoc": "~3.5.5",
     "jstify": "0.12.0",
     "leaflet": "1.0.3",

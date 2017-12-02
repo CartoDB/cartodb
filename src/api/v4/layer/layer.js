@@ -4,6 +4,8 @@ var SourceBase = require('../source/base');
 var StyleBase = require('../style/base');
 var CartoError = require('../error-handling/carto-error');
 var CartoValidationError = require('../error-handling/carto-validation-error');
+var EVENTS = require('../events');
+
 /**
  * Represent a layer Object.
  * 
@@ -92,7 +94,7 @@ Layer.prototype.setStyle = function (style, opts) {
     }.bind(this))
     .catch(function (err) {
       var error = new CartoError(err);
-      this.trigger('error', error);
+      this.trigger(EVENTS.ERROR, error);
       return Promise.reject(error);
     }.bind(this));
 };
@@ -149,7 +151,7 @@ Layer.prototype.setSource = function (source) {
     }.bind(this))
     .catch(function (err) {
       var error = new CartoError(err);
-      this.trigger('error', error);
+      this.trigger(EVENTS.ERROR, error);
       return Promise.reject(error);
     }.bind(this));
 };
@@ -301,7 +303,7 @@ Layer.prototype._createInternalModel = function (engine) {
     if (value && _isStyleError(value)) {
       this._style.$setError(new CartoError(value));
     } else if (value) {
-      this.trigger('error', new CartoError(value));
+      this.trigger(EVENTS.ERROR, new CartoError(value));
     }
   }, this);
 

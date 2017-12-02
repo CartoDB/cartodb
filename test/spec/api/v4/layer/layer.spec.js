@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/layer', function () {
+fdescribe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -136,7 +136,7 @@ describe('api/v4/layer', function () {
             .then(function () {
               expect(function () {
                 return layer.setStyle(newStyle);
-              }).toThrowError();
+              }).toThrowError("A layer can't have a style which belongs to a different client.");
               done();
             });
         });
@@ -188,6 +188,27 @@ describe('api/v4/layer', function () {
             layer.setStyle(newStyle);
           });
       });
+    });
+  });
+
+  describe('.$setEngine', function () {
+    it('probando', function () {
+      var layer = new carto.layer.Layer(source, style);
+      var engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.resolve()) };
+      var error = {
+        message: 'an error'
+      };
+      var capturedError;
+      layer.$setEngine(engineMock);
+      layer.on(carto.events.ERROR, function (error) {
+        capturedError = error;
+      });
+
+      layer._internalModel.set('error', error);
+
+      expect(capturedError).toBeDefined();
+      expect(capturedError.name).toEqual('CartoError');
+      expect(capturedError.message).toEqual('an error');
     });
   });
 

@@ -55,9 +55,7 @@
           </li>
         <% } %>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
-          <% if (!hasGeom) { %>
-            <svg class="js-warningIcon" xmlns="http://www.w3.org/2000/svg" width="14" height="12" viewBox="0 0 14 12" data-tooltip="<%- _t('editor.layers.georeference.visualize') %>"><path fill="#FFB300" fill-rule="evenodd" d="M5.012 1.48C6.11-.444 7.887-.45 8.988 1.48l4.526 7.92c.82 1.436.15 2.6-1.523 2.6H2.01C.346 12-.333 10.83.485 9.4l4.526-7.92zM1.354 9.895C.917 10.66 1.116 11 2.01 11h9.98c.903 0 1.097-.333.656-1.104L8.12 1.976C7.404.72 6.596.722 5.88 1.975l-4.526 7.92zM6 9h2v1H6V9zm0-5h2v4H6V4z"/></svg>
-          <% } else { %>
+          <% if (hasGeom) { %>
             <button class="js-toggle">
               <% if (isVisible) { %>
                 <i class="CDB-IconFont CDB-IconFont-view u-actionTextColor"></i>
@@ -65,6 +63,8 @@
                 <i class="CDB-IconFont CDB-IconFont-hide u-actionTextColor"></i>
               <% } %>
             </button>
+          <% } else if (brokenLayer) { %>
+            <svg class="js-warningIcon" xmlns="http://www.w3.org/2000/svg" width="14" height="12" viewBox="0 0 14 12" data-tooltip="<%- _t('editor.layers.georeference.visualize') %>"><path fill="#FFB300" fill-rule="evenodd" d="M5.012 1.48C6.11-.444 7.887-.45 8.988 1.48l4.526 7.92c.82 1.436.15 2.6-1.523 2.6H2.01C.346 12-.333 10.83.485 9.4l4.526-7.92zM1.354 9.895C.917 10.66 1.116 11 2.01 11h9.98c.903 0 1.097-.333.656-1.104L8.12 1.976C7.404.72 6.596.722 5.88 1.975l-4.526 7.92zM6 9h2v1H6V9zm0-5h2v4H6V4z"/></svg>            
           <% } %>
         </li>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
@@ -76,14 +76,30 @@
         </li>
       </ul>
     </div>
-    <div class="u-flex Editor-ListLayer-info js-analyses-widgets-info">
-      <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-rSpace--m">
-        <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
-      </span>
-      <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
-        <%- _t('editor.layers.layer.widgets-count', { smart_count: numberOfWidgets }) %>
-      </span>
-    </div>
+      <div class="u-flex Editor-ListLayer-info js-analyses-widgets-info">
+        <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-rSpace--m">
+          <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
+        </span>
+        <span class="CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
+          <%- _t('editor.layers.layer.widgets-count', { smart_count: numberOfWidgets }) %>
+        </span>
+      </div>
   </div>
 </div>
-<ul class="Editor-ListAnalysis js-analyses <%- isVisible ? '' : 'is-hidden' %>  <%- isCollapsed ? 'is-collapsed' : '' %>"></ul>
+<% // Show this for regular layers or ghost nodes %>
+<% if (hasGeom || brokenLayer || !needsGeocoding) { %>
+  <ul class="Editor-ListAnalysis js-analyses <%- isVisible ? '' : 'is-hidden' %>  <%- isCollapsed ? 'is-collapsed' : '' %>"></ul>
+<% } %>
+<% if (needsGeocoding) { %>
+  <div class="u-tSpace--m">
+    <span class="CDB-Text CDB-Size-medium u-secondaryTextColor">
+      <%- _t('editor.layers.layer.geocode-text') %>
+    </span>
+
+    <div class="u-flex u-justifyEnd u-tSpace--m">
+      <button data-tooltip="<%- _t('editor.layers.layer.geocode-tooltip') %>" class="CDB-Button CDB-Button--small CDB-Button--primary js-geocode">
+        <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-small"><%- _t('editor.layers.layer.geocode') %></span>
+      </button>
+    </div>
+  </div>
+<% } %>

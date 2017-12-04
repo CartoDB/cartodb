@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Category widget | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- FIXME: include Leaflet because of Wax -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <style>
+      body { margin: 0; padding: 0; }
+      #widget { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      h2 { margin-top: 50px; }
+      button { margin: 50px; padding: 10px; }
+    </style>
+  </head>
+  <body>
+    <div id="widget">
+      <h2>Column</h2>
+      <input id="column" type="text" value="adm0name"></input>
+      <h2>Limit</h2>
+      <input id="limit" type="number" value="10"></input>
+      <h2>Operation</h2>
+      <select id="operation">
+        <option value="sum">SUM</option>
+        <option value="count">COUNT</option>
+        <option value="avg">AVG</option>
+        <option value="max">MAX</option>
+        <option value="min">MIN</option>
+      </select>
+      <h2>Operation column</h2>
+      <input id="operationColumn" type="text" value="pop_max"></input>
+      <button onclick="applyDataviewChanges()"><b>Apply</b></button>
+      <pre id="data"></pre>
+    </div>
+    <script>
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset(`
+        ne_10m_populated_places_simple
+      `);
+      const categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+        limit: 10,
+        operation: carto.operation.SUM,
+        operationColumn: 'pop_max'
+      });
+
+      categoryDataview.on('dataChanged', data => {
+        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      categoryDataview.on('error', error => {
+        alert(error.message);
+      });
+
+      client.addDataview(categoryDataview);
+
+      function applyDataviewChanges() {
+        const column = document.getElementById('column').value;
+        const limit = document.getElementById('limit').value;
+        const operation = document.getElementById('operation').value;
+        const operationColumn = document.getElementById('operationColumn').value;
+        categoryDataview.setColumn(column);
+        categoryDataview.setLimit(parseInt(limit));
+        categoryDataview.setOperation(operation);
+        categoryDataview.setOperationColumn(operationColumn);
+      }
+    </script>
+  </body>
+</html>

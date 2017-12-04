@@ -3,8 +3,6 @@ var Backbone = require('backbone');
 var status = require('../constants').status;
 var SourceBase = require('../source/base');
 var FilterBase = require('../filter/base');
-var BoundingBoxFilter = require('../filter/bounding-box');
-var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
 var CartoError = require('../error');
 
 /**
@@ -149,8 +147,7 @@ Base.prototype.getColumn = function () {
  */
 Base.prototype.addFilter = function (filter) {
   this._checkFilter(filter);
-  if ((filter !== this._boundingBoxFilter) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+  if (filter !== this._boundingBoxFilter) {
     this._addBoundingBoxFilter(filter);
   }
   return this;
@@ -165,8 +162,7 @@ Base.prototype.addFilter = function (filter) {
  */
 Base.prototype.removeFilter = function (filter) {
   this._checkFilter(filter);
-  if ((filter === this._boundingBoxFilter) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+  if (filter === this._boundingBoxFilter) {
     this._removeBoundingBoxFilter();
   }
   return this;
@@ -182,8 +178,7 @@ Base.prototype.removeFilter = function (filter) {
 Base.prototype.hasFilter = function (filter) {
   this._checkFilter(filter);
   return (filter === this._boundingBoxFilter) &&
-    (this._internalModel && this._internalModel.get('sync_on_bbox_change')) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter);
+    (this._internalModel && this._internalModel.get('sync_on_bbox_change'));
 };
 
 Base.prototype.getData = function () {

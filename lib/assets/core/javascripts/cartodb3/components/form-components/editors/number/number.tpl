@@ -4,5 +4,5 @@
   </li>
 <% } %>
 <li class="CDB-OptionInput-item">
-  <input type="text" class="CDB-InputText <% if (isFormatted) { %>is-number<% } %> <% if (isDisabled) { %>is-disabled<% } %> js-input" <% if (isDisabled) { %>readonly<% } %> value="<%- value %>" placeholder="<%- placeholder %>" />
+  <input type="text" class="CDB-InputText <% if (isFormatted) { %>is-number<% } %> <% if (isDisabled) { %>is-disabled<% } %> js-input <% if (help) { %> js-help<% } %>" <% if (isDisabled) { %>readonly<% } %> value="<%- value %>" placeholder="<%- placeholder %>" <% if (help) { %> data-tooltip="<%- help %>"<% } %> />
 </li>

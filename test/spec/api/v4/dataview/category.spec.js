@@ -130,6 +130,17 @@ describe('api/v4/dataview/category', function () {
       expect(operationArgs[0]).toEqual('categories');
       expect(operationArgs[1]).toEqual(1);
     });
+
+    it('should trigger a limitChanged event', function () {
+      var limitChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('limitChanged', limitChangedSpy);
+
+      expect(limitChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setLimit(7);
+
+      expect(limitChangedSpy).toHaveBeenCalledWith(7);
+    });
   });
 
   describe('.setOperation', function () {
@@ -164,6 +175,17 @@ describe('api/v4/dataview/category', function () {
       expect(operationArgs[0]).toEqual('aggregation');
       expect(operationArgs[1]).toEqual(carto.operation.AVG);
     });
+
+    it('should trigger a operationChanged event', function () {
+      var operationChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('operationChanged', operationChangedSpy);
+
+      expect(operationChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setOperation(carto.operation.AVG);
+
+      expect(operationChangedSpy).toHaveBeenCalledWith(carto.operation.AVG);
+    });
   });
 
   describe('.setOperationColumn', function () {
@@ -195,6 +217,17 @@ describe('api/v4/dataview/category', function () {
       var operationArgs = internalModelMock.set.calls.mostRecent().args;
       expect(operationArgs[0]).toEqual('aggregation_column');
       expect(operationArgs[1]).toEqual('columnB');
+    });
+
+    it('should trigger a operationColumnChanged event', function () {
+      var operationColumnChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('operationColumnChanged', operationColumnChangedSpy);
+
+      expect(operationColumnChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setOperationColumn('column2');
+
+      expect(operationColumnChangedSpy).toHaveBeenCalledWith('column2');
     });
   });
 
@@ -278,44 +311,6 @@ describe('api/v4/dataview/category', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel._bboxFilter).not.toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
-    });
-
-    it('internalModel event operationChanged should be properly hooked up', function () {
-      var operationChangedTriggered = false;
-      dataview.on('operationChanged', function () {
-        operationChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setOperation(carto.operation.MAX);
-
-      expect(operationChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      operationChangedTriggered = false;
-
-      dataview.$getInternalModel().set('aggregation', carto.operation.COUNT);
-
-      expect(operationChangedTriggered).toBe(true);
-    });
-
-    it('internalModel event operationColumnChanged should be properly hooked up', function () {
-      var operationColumnChangedTriggered = false;
-      dataview.on('operationColumnChanged', function () {
-        operationColumnChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setOperationColumn('columnA');
-
-      expect(operationColumnChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      operationColumnChangedTriggered = false;
-
-      dataview.$getInternalModel().set('aggregation_column', 'columnB');
-
-      expect(operationColumnChangedTriggered).toBe(true);
     });
 
     it('calling twice to $setEngine does not create another internalModel', function () {

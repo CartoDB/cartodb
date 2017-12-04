@@ -86,10 +86,7 @@ Category.prototype = Object.create(Base.prototype);
  */
 Category.prototype.setLimit = function (limit) {
   this._checkLimit(limit);
-  this._limit = limit;
-  if (this._internalModel) {
-    this._internalModel.set('categories', limit);
-  }
+  this._changeProperty('limit', limit, 'categories');
   return this;
 };
 
@@ -113,10 +110,7 @@ Category.prototype.getLimit = function () {
  */
 Category.prototype.setOperation = function (operation) {
   this._checkOperation(operation);
-  this._operation = operation;
-  if (this._internalModel) {
-    this._internalModel.set('aggregation', operation);
-  }
+  this._changeProperty('operation', operation, 'aggregation');
   return this;
 };
 
@@ -140,10 +134,7 @@ Category.prototype.getOperation = function () {
  */
 Category.prototype.setOperationColumn = function (operationColumn) {
   this._checkOperationColumn(operationColumn);
-  this._operationColumn = operationColumn;
-  if (this._internalModel) {
-    this._internalModel.set('aggregation_column', operationColumn);
-  }
+  this._changeProperty('operationColumn', operationColumn, 'aggregation_column');
   return this;
 };
 
@@ -180,33 +171,6 @@ Category.prototype.getData = function () {
 Category.prototype.DEFAULTS = {
   limit: 6,
   operation: constants.operation.COUNT
-};
-
-Category.prototype._listenToInternalModelSpecificEvents = function () {
-  this.listenTo(this._internalModel, 'change:categories', this._onLimitChanged);
-  this.listenTo(this._internalModel, 'change:aggregation', this._onOperationChanged);
-  this.listenTo(this._internalModel, 'change:aggregation_column', this._onOperationColumnChanged);
-};
-
-Category.prototype._onLimitChanged = function () {
-  if (this._internalModel) {
-    this._limit = this._internalModel.get('categories');
-  }
-  this.trigger('limitChanged', this._limit);
-};
-
-Category.prototype._onOperationChanged = function () {
-  if (this._internalModel) {
-    this._operation = this._internalModel.get('aggregation');
-  }
-  this.trigger('operationChanged', this._operation);
-};
-
-Category.prototype._onOperationColumnChanged = function () {
-  if (this._internalModel) {
-    this._operationColumn = this._internalModel.get('aggregation_column');
-  }
-  this.trigger('operationColumnChanged', this._operationColumn);
 };
 
 Category.prototype._checkOptions = function (options) {

@@ -353,7 +353,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.4.19",
       "from": "cartodb/deep-insights.js#fallback-reference",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#d252b4b1f56159c1d434c44a8846886b4cb672e0",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#33a55bc39017cf270672ca6a9d7c5ff5d0f240b6",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -626,9 +626,9 @@
       "resolved": "https://registry.npmjs.org/des.js/-/des.js-1.0.0.tgz"
     },
     "detective": {
-      "version": "4.6.0",
+      "version": "4.7.0",
       "from": "detective@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/detective/-/detective-4.6.0.tgz",
+      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.0.tgz",
       "dependencies": {
         "acorn": {
           "version": "5.2.1",
@@ -1008,9 +1008,9 @@
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
         },
         "uglify-js": {
-          "version": "3.2.0",
+          "version": "3.2.1",
           "from": "uglify-js@>=3.2.0 <3.3.0",
-          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.2.0.tgz"
+          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.2.1.tgz"
         }
       }
     },
@@ -1214,9 +1214,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.3.2",
+      "version": "2.4.0",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.3.2.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.0.tgz"
     },
     "js-tokens": {
       "version": "3.0.2",

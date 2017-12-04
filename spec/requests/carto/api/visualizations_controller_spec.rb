@@ -395,6 +395,7 @@ describe Carto::Api::VisualizationsController do
         show_permission: false,
         show_synchronization: false,
         show_uses_builder_features: false,
+        show_auth_tokens: false,
         load_totals: false
       }.freeze
 
@@ -1488,6 +1489,7 @@ describe Carto::Api::VisualizationsController do
                    show_liked: true,
                    show_likes: true,
                    show_permission: true,
+                   show_auth_tokens: true,
                    show_stats: true do |response|
             # We currently log 404 on errors. Maybe something that we should change in the future...
             response.status.should == 404
@@ -1547,13 +1549,12 @@ describe Carto::Api::VisualizationsController do
                 response.body[:tags].should_not be_nil
                 response.body[:title].should_not be_nil
                 response.body[:description].should_not be_nil
-                response.body[:auth_tokens].should eq []
 
                 # Optional information requiring parameters
                 response.body[:liked].should eq nil
                 response.body[:likes].should eq 0
                 response.body[:stats].should be_empty
-
+                response.body[:auth_tokens].should be_empty
                 response.body[:permission].should eq nil
               end
             end
@@ -1564,6 +1565,7 @@ describe Carto::Api::VisualizationsController do
                 show_liked: true,
                 show_likes: true,
                 show_permission: true,
+                show_auth_tokens: true,
                 show_stats: true
               )
 
@@ -1605,6 +1607,13 @@ describe Carto::Api::VisualizationsController do
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password) do |response|
+                response.status.should eq 200
+                response.body[:auth_tokens].should_not be_nil
+              end
+            end
+
+            it 'returns auth_tokens for password protected visualizations if requested by the owner' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 200
                 response.body[:auth_tokens].should_not be_nil
               end

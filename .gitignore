@@ -11,11 +11,11 @@ public/assets
 public/system
 public/uploads
 public/javascripts
-public/static
 public/stylesheets
 public/images
 public/fonts
 public/flash
+public/static
 app/assets/stylesheets/tmp/
 app/assets/fonts/icon_font/svgs
 db/schema.rb

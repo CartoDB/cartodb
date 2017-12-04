@@ -1065,6 +1065,7 @@
         "add-layer-error": "Could not add layer",
         "imports": {
           "ask-for-demo": "ask for demo",
+          "contact-us": "Contact us",
           "connector": "connector",
           "demo-email-title": "I am interested in the %{name} connector",
           "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",

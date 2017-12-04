@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add tooltip on Builder actions (#13102)
 * Add Grunt tasks to generate static files (#13130)
 * Improve geocoding onboarding (#13046)
 * Editor static view (#13043)
@@ -94,7 +95,7 @@ ion for time-series (#12670)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
 * Improve legends error (cartodb.js#1758)
-* Updates Dataservices API client default version to `0.21.0` (#12942)
+* Updates Dataservices API client default version to `0.22.0`
 * Improve user migrator
 * Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
@@ -103,6 +104,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Hide Salesforce Connector Form (CartoDB/tech-ops#324)
+* Fix Mapcard preview in Public Map (#13166)
 * Add hover state to nav tabs (#13158)
 * Change how redirection works after a successful import (CartoDB/support#1128)
 * Fix organization templates generation (#13150)

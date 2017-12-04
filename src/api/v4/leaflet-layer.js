@@ -54,6 +54,7 @@ var LeafletLayer = L.TileLayer.extend({
       this._internalView.off('featureClick');
       this._internalView.off('featureOver');
       this._internalView.off('featureOut');
+      this._internalView.off('featureError');
       this._internalView.notifyRemove();
     }
     this._internalView = null;
@@ -92,7 +93,11 @@ var LeafletLayer = L.TileLayer.extend({
 
   _onFeatureError: function (error) {
     var cartoError = new CartoError(error);
-    this.fire(Layer.events.FEATURE_ERROR, cartoError);
+    _.each(this._layers.toArray(), function (layer) {
+      if (layer.isInteractive()) {
+        layer.trigger(Layer.events.TILE_ERROR, cartoError);
+      }
+    });
   },
 
   _triggerLayerFeatureEvent: function (eventName, internalEvent) {

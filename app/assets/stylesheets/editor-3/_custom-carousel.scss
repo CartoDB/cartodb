@@ -70,7 +70,7 @@
   height: $baseSize * 7;
   transition: opacity, 400ms;
   opacity: 0;
-  z-index: 100;
+  z-index: 80;
   pointer-events: none;
 
   &.is-visible {

@@ -159,5 +159,25 @@ describe('api/v4/source/sql', function () {
 
       client.addLayer(layer).catch(function () { }); // Prevent console "uncaught error" warning.
     });
+
+    it('should trigger a CartoError when there is an error in the internal model', function () {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var source = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
+      var cartoCss = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      var layer = new carto.layer.Layer(source, cartoCss);
+      var spy = jasmine.createSpy('spy');
+      source.on(carto.events.ERROR, spy);
+      client.addLayer(layer);
+
+      source._internalModel.set('error', 'an error');
+
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
+        name: 'CartoError',
+        originalError: 'an error'
+      }));
+    });
   });
 });

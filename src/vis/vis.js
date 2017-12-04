@@ -120,7 +120,7 @@ var VisModel = Backbone.Model.extend({
 
     this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onEngineReloadSuccess, this);
     this._engine.on(Engine.Events.RELOAD_ERROR, this._onEngineReloadError, this);
-    this._engine.on(Engine.Events.ERROR, this._onEngineError, this);
+    this._engine.on(Engine.Events.LAYER_ERROR, this._onEngineLayerError, this);
 
     // Bind layerGroupModel object to engine
     this.layerGroupModel = this._engine._cartoLayerGroup;
@@ -302,7 +302,7 @@ var VisModel = Backbone.Model.extend({
     }
   },
 
-  _onEngineError: function (error) {
+  _onEngineLayerError: function (error) {
     if (error) {
       this.map.trigger('error:' + error.type, error);
     }

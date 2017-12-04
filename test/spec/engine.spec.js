@@ -254,4 +254,18 @@ describe('Engine', function () {
       expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
     });
   });
+
+  describe('CartoLayerGroup bindings', function () {
+    it('should trigger a windshaft error from CartoLayerGroup error', function () {
+      var spy = jasmine.createSpy('spy');
+      engineMock.on(Engine.Events.LAYER_ERROR, spy);
+
+      engineMock._cartoLayerGroup.trigger('error:layer', 'an error');
+
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
+        origin: 'windshaft',
+        _error: 'an error'
+      }));
+    });
+  });
 });

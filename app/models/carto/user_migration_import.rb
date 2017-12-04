@@ -71,8 +71,20 @@ module Carto
     end
 
     def import(service, package)
+      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+      raise "DB already exists at DB host" if import_job.db_exists?
+
       imported = do_import_metadata(package, service) if import_metadata?
-      do_import_data(package, service)
+
+      begin
+        do_import_data(import_job)
+      rescue => e
+        log.append('=== Error importing data. Rollback! ===')
+        rollback_import_data(package)
+        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
+        raise e
+      end
+
       import_visualizations(imported, package, service) if import_metadata?
     end
 
@@ -94,16 +106,10 @@ module Carto
       imported
     end
 
-    def do_import_data(package, service)
+    def do_import_data(import_job)
       log.append('=== Importing data ===')
-      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
       begin
         import_job.run!
-      rescue => e
-        log.append('=== Error importing data. Rollback! ===')
-        rollback_import_data(package)
-        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
-        raise e
       ensure
         import_job.terminate_connections
       end

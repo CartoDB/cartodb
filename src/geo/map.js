@@ -292,7 +292,7 @@ var Map = Model.extend({
         this.get('view_bounds_ne')
       ];
     }
-    return null;
+    return [[0, 0], [0, 0]];
   },
 
   getLayerAt: function (i) {

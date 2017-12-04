@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Feature click | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <style>
+      body { margin: 0; padding: 0; }
+      #map { position: absolute; height: 100%; width: 100%; }
+      #controls { position: absolute; padding: 0 20px 20px; background: white; }
+      .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
+      #content { margin-top: 20px; font-size: 1.2em; }
+      #content span { font-size: 2em; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="controls" class="column-right">
+      <h3>Click on the markers</h3>
+      <div id="content"></div>
+    </div>
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset(`
+        ne_10m_populated_places_simple
+      `);
+      const style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 16;
+          marker-fill: #FF583E;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const layer = new carto.layer.Layer(source, style, {
+        featureClickColumns: ['name', 'pop_max']
+      });
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+
+      layer.on(carto.layer.events.FEATURE_CLICKED, featureEvent => {
+        let content = '';
+        content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
+        content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
+        document.getElementById('content').innerHTML = content;
+      });
+    </script>
+  </body>
+</html>

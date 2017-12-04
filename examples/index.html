@@ -12,7 +12,7 @@
   <h4 style="margin-left:30px">CDN:<a href="../dist/public/carto.uncompressed.js"> ../dist/public/carto.uncompressed.js</a></h4>
   <script>
     $(function () {
-      $.getJSON('https://raw.githubusercontent.com/CartoDB/cartodb.js/1934-gmaps-examples/examples/categories.json').done(function(data) {
+      $.getJSON('./categories.json').done(function(data) {
         renderCategories(data);
       });
 

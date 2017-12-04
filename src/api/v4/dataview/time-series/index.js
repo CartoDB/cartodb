@@ -168,10 +168,6 @@ TimeSeries.prototype._validateLocalTimezone = function (localTimezone) {
   }
 };
 
-TimeSeries.prototype._listenToInternalModelSpecificEvents = function () {
-  // Empty function
-};
-
 TimeSeries.prototype._createInternalModel = function (engine) {
   this._internalModel = new HistogramDataviewModel({
     source: this._source.$getInternalModel(),

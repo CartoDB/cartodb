@@ -264,12 +264,7 @@ Base.prototype._listenToInternalModelSharedEvents = function () {
     this.listenTo(this._internalModel, 'loading', this._onStatusLoading);
     this.listenTo(this._internalModel, 'loaded', this._onStatusLoaded);
     this.listenTo(this._internalModel, 'statusError', this._onStatusError);
-    this._listenToInternalModelSpecificEvents();
   }
-};
-
-Base.prototype._listenToInternalModelSpecificEvents = function () {
-  throw new Error('_listenToInternalModelSpecificEvents must be implemented by the particular dataview.');
 };
 
 Base.prototype._onDataChanged = function () {

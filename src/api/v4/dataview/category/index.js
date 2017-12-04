@@ -173,9 +173,6 @@ Category.prototype.DEFAULTS = {
   operation: constants.operation.COUNT
 };
 
-Category.prototype._listenToInternalModelSpecificEvents = function () {
-};
-
 Category.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
     throw new TypeError('Category dataview options are not defined.');

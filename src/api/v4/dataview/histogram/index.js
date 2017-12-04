@@ -122,9 +122,6 @@ Histogram.prototype._checkOptions = function (options) {
   this._validateBins(options.bins);
 };
 
-Histogram.prototype._listenToInternalModelSpecificEvents = function () {
-};
-
 Histogram.prototype._createInternalModel = function (engine) {
   this._internalModel = new HistogramDataviewModel({
     source: this._source.$getInternalModel(),

@@ -89,8 +89,6 @@ Formula.prototype.DEFAULTS = {
   operation: constants.operation.COUNT
 };
 
-Formula.prototype._listenToInternalModelSpecificEvents = function () {};
-
 Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
     throw new TypeError('Formula dataview options are not defined.');

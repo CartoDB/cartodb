@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add tooltip on Builder actions (#13102)
 * Add Grunt tasks to generate static files (#13130)
 * Improve geocoding onboarding (#13046)
 * Editor static view (#13043)
@@ -102,6 +103,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fix Mapcard preview in Public Map (#13166)
 * Add hover state to nav tabs (#13158)
 * Change how redirection works after a successful import (CartoDB/support#1128)
 * Fix organization templates generation (#13150)

@@ -5,14 +5,18 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
+@mixin regularBorder() {
+  border: 1px solid $cSecondaryLine;
+}
+
 .Editor-ListLayer-item {
+  @include regularBorder();
   position: relative;
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
   transition: opacity 2s ease-in,
               border 0.2s ease-in;
-  border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
   cursor: pointer;
@@ -32,6 +36,10 @@
         text-decoration: none;
       }
     }
+  }
+
+  &.is-empty {
+    background: rgba($cHighlightYellow, 0.64);
   }
 
   &.is-hidden {
@@ -64,7 +72,7 @@
     }
 
     &:hover {
-      border: 1px solid $cSecondaryLine;
+      @include regularBorder();
       cursor: default;
     }
   }
@@ -107,6 +115,15 @@
     border-color: $cSecondaryBackground;
     background: $cSecondaryBackground;
   }
+
+  &--fetching {
+    cursor: default;
+
+    &:hover {
+      @include regularBorder();
+      transition: none;
+    }
+  }
 }
 
 .Editor-ListLayer-itemError {
@@ -148,10 +165,22 @@
   &--basemap {
     border: 1px solid $cMainLine;
   }
+
+  &--placeholder {
+    background: $cThirdBackground;
+  }
 }
 
-.Editor-ListLayer-info.is-hidden {
-  opacity: 0.24;
+.Editor-ListLayer-info {
+  &.is-hidden {
+    opacity: 0.24;
+  }
+
+  &--placeholder {
+    width: 120px;
+    height: 8px;
+    background: $cThirdBackground;
+  }
 }
 
 .Editor-ListLayer-title {
@@ -163,6 +192,12 @@
   flex: 1 0 auto;
   width: 0;
   padding-right: $baseSize * 2;
+
+  &--placeholder {
+    width: 142px;
+    height: 19px;
+    background: $cThirdBackground;
+  }
 }
 
 .Editor-ListAnalysis {
@@ -252,8 +287,8 @@
 }
 
 .Editor-ListAnalysis-layer {
+  @include regularBorder();
   padding-right: $baseSize;
-  border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: $cThirdBackground;
   transition: border 0.2s ease-in;
@@ -264,6 +299,16 @@
     .Editor-ListAnalysis-title,
     .Editor-ListAnalysis-itemInfoDataset {
       text-decoration: underline;
+    }
+  }
+
+  &--placeholder {
+    height: 32px;
+    background-color: #FFF;
+
+    &:hover {
+      @include regularBorder();
+      transition: none;
     }
   }
 }
@@ -284,6 +329,12 @@
 
 .Editor-ListAnalysis-itemInfoDataset {
   flex: 10;
+
+  &--placeholder {
+    width: 140px;
+    height: 8px;
+    background: $cThirdBackground;
+  }
 }
 
 .Editor-ListAnalysis-itemInfoIcon {
@@ -291,6 +342,12 @@
 
   + .Editor-ListAnalysis-itemInfoIcon {
     margin-left: 5px;
+  }
+
+  &--placeholder {
+    width: 20px;
+    height: 8px;
+    background: $cThirdBackground;
   }
 }
 

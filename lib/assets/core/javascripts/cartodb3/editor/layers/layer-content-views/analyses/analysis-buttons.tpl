@@ -1,4 +1,6 @@
-<button class="CDB-Button js-delete">
+<button class="CDB-Button js-delete
+<% if (disableDelete) { %> is-disabled<% } %>
+">
   <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase
   <% if (isDelete) { %> u-errorTextColor<% } else { %> u-actionTextColor<% } %>">
     <%- labelDelete %>

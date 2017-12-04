@@ -1618,11 +1618,7 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers (%{count}/%{maxCount})",
-        "georeference": {
-          "title": "Layer not georeferenced",
-          "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
-        }
+        "title-label": "Layers (%{count}/%{maxCount})"
       },
       "elements": {
         "title-label": "Elements"
@@ -1686,7 +1682,10 @@
         "add-analysis": "Add analysis",
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
-        "add-layer": "Add layer"
+        "add-layer": "Add layer",
+        "geocode-text": "To show data on this map, geocode your layer.",
+        "geocode": "Geocode",
+        "geocode-tooltip": "Geocode to visualize on the map"
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1855,7 +1854,7 @@
           "ip-address-column": "IP Address",
           "ip-address-help": "Select a column with IP addresses",
           "ip-address": "IP Addresses",
-          "long-lat": "Longitude and Latitude",
+          "long-lat": "Latitude and Longitude",
           "postal-code": "Postal Codes",
           "select-a-country": "Select a country column",
           "select-admin": "Select a region column",
@@ -2109,7 +2108,7 @@
         }
       },
       "georeference": {
-        "manually-add": "Please georeference or manually add data to visualize.",
+        "no-geometry": "There's no geometry in your data, please georeference it.",
         "georeference-button": "Georeference",
         "visualize": "Layer doesn't have geometry"
       },

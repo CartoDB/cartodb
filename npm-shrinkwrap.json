@@ -353,7 +353,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.4.19",
       "from": "cartodb/deep-insights.js#fallback-reference",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#33a55bc39017cf270672ca6a9d7c5ff5d0f240b6",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#34329cb9c3beedaee950b36694b5b73dfab1f67a",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

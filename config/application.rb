@@ -87,7 +87,6 @@ module CartoDB
       public_map_static.js
       embed_map_static.js
       editor.js
-
       account_templates.js
       account_deps.js
       account_static.js

@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Editor static view (#13043)
+* Add trial notification in static views (#13079)
 * Account static view (#12749)
 * Force UTF-8 encoding in the Compass task
 * Trigger error when interactivity request fails (#13093)
@@ -98,8 +100,11 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Add hover state to nav tabs (#13158)
+* Change how redirection works after a successful import (CartoDB/support#1128)
+* Fix organization templates generation (#13150)
+* Fix dataset export modal (CartoDB/support#1168)
 * Add hover to UI Elements (#13074)
-
 * By value color input filters columns of type date (#7873)
 * Fixes image export in editor (#13089)
 * Fix incorrect "back to dashboard" link in dataset view (#13111)
@@ -110,6 +115,7 @@ ion for time-series (#12670)
 * Fix for torque category legends (CartoDB/support#1120)
 * Upgrade cartodb extension to 0.20.0 (#13065)
 * Remove back arrow and add a tooltip to editor logo (#13067)
++ Track user events (#13051)
 * Fix dashboard redirections (#12775)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
@@ -132,6 +138,9 @@ ion for time-series (#12670)
 * Clean permissions ACL on group deletion (CartoDB/support/issues/1057)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
+* User destroy order should be Central, local (#CartoDB/cartodb-central/issues/1929)
+* Delete all external sources within one transaction (#13129).
+* NoMethodError: undefined method `has_feature_flag?' for nil:NilClass at visualizations controller (#13145).
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
@@ -302,6 +311,7 @@ ion for time-series (#12670)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
+* Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Treat all time series dataview timestamps as UTC (#13070)
 
 ### Internals

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Multilayer | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <style>
+      body { margin: 0; padding: 0; }
+      #map { position: absolute; height: 100%; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      const map = L.map('map').setView([40, 0], 5);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      const spainCitiesSource = new carto.source.SQL(`
+        SELECT *
+          FROM ne_10m_populated_places_simple
+          WHERE adm0name = \'Spain\'
+      `);
+      const spainCitiesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 8;
+          marker-fill: #FF583E;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
+
+      const europeCountriesSource = new carto.source.Dataset(`
+        ne_adm0_europe
+      `);
+      const europeCountriesStyle = new carto.style.CartoCSS(`
+        #layer {
+          polygon-fill: #FF583E;
+          polygon-opacity: 0.2;
+          ::outline {
+            line-color: #FFFFFF;
+            line-opacity: 0.8;
+          }
+        }
+      `);
+      const europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);
+
+      client.addLayers([europeCountriesLayer, spainCitiesLayer]);
+      client.getLeafletLayer().addTo(map);
+    </script>
+  </body>
+</html>

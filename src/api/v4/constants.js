@@ -73,14 +73,14 @@ function isValidTimeAggregation (agg) {
 /**
  * ATTRIBUTION constant
  *
- * &copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>
+ * &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>
  *
  * @type {string}
  * @constant
  * @memberof carto
  * @api
  */
-var ATTRIBUTION = '&copy;<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>';
+var ATTRIBUTION = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>';
 
 module.exports = {
   operation: operation,

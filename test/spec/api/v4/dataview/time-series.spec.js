@@ -105,7 +105,7 @@ describe('api/v4/dataview/time-series', function () {
       });
 
       expect(dataview._aggregation).toEqual(carto.dataview.timeAggregation.QUARTER);
-      expect(dataview._offset).toBe(-7);
+      expect(dataview._offset).toBe(-7 * 3600); // Internaly stored in seconds
       expect(dataview._localTimezone).toBe(true);
     });
 
@@ -248,6 +248,17 @@ describe('api/v4/dataview/time-series', function () {
 
       // Clean
       dataview._internalModel = null;
+    });
+
+    it('should Trigger a aggregationChanged event when the aggregation are changed', function () {
+      var aggregationChangedSpy = jasmine.createSpy('aggregationChangedSpy');
+      dataview.on('aggregationChanged', aggregationChangedSpy);
+
+      expect(aggregationChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setAggregation(carto.dataview.timeAggregation.HOUR);
+
+      expect(aggregationChangedSpy).toHaveBeenCalledWith(carto.dataview.timeAggregation.HOUR);
     });
   });
 

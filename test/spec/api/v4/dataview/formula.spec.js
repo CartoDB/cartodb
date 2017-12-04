@@ -114,6 +114,17 @@ describe('api/v4/dataview/formula', function () {
       expect(operationArgs[0]).toEqual('operation');
       expect(operationArgs[1]).toEqual(carto.operation.AVG);
     });
+
+    it('should Trigger a operationChanged event when the operation is changed', function () {
+      var operationChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('operationChanged', operationChangedSpy);
+
+      expect(operationChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setOperation(carto.operation.MAX);
+
+      expect(operationChangedSpy).toHaveBeenCalledWith(carto.operation.MAX);
+    });
   });
 
   describe('.getData', function () {
@@ -178,25 +189,6 @@ describe('api/v4/dataview/formula', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel._bboxFilter).not.toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
-    });
-
-    it('internalModel events should be properly hooked up', function () {
-      var operationChangedTriggered = false;
-      dataview.on('operationChanged', function () {
-        operationChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setOperation(carto.operation.MAX);
-
-      expect(operationChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      operationChangedTriggered = false;
-
-      dataview.$getInternalModel().set('operation', carto.operation.COUNT);
-
-      expect(operationChangedTriggered).toBe(true);
     });
 
     it('calling twice to $setEngine does not create another internalModel', function () {

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Guide | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <!-- FIXME: include Leaflet because of Wax -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <style>
+      * { margin:0; padding:0; }
+      html { box-sizing:border-box; height:100%; }
+      body { background:#f2f6f9; height:100%; font-family:"Open sans", Helvetica, Arial, sans-serif; }
+      #container { display:flex; width:100%; height:100%; }
+      #map { flex:1; margin:10px; }
+      #widgets { width:300px; margin:10px 10px 10px 0; }
+      .widget { background:white; padding:10px; margin-bottom:10px; }
+      .widget h1 { font-size:1.2em; }
+      .widget-formula .result { font-size:2em; }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="map"></div>
+      <div id="widgets">
+        <div id="countriesWidget" class="widget">
+          <h1>European countries</h1>
+          <select class="js-countries">
+            <option value="">All</option>
+          </select>
+        </div>
+        <div id="avgPopulationWidget" class="widget widget-formula">
+          <h1>Average population</h1>
+          <p><span class="js-average-population result">xxx</span> inhabitants</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      // 1. Setting up a Google Maps Map
+      // 1.1 Creating the Google Maps Map
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 50, lng: 15},
+        zoom: 4
+      });
+
+      // 1.2 Hide countries borders
+      map.set('styles', [{
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      // 2 Defining a carto.Client
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      // 3. Displaying countries and cities on the map
+      // 3.1 Defining the layers
+      // European Countries layer
+      const europeanCountriesDataset = new carto.source.Dataset(`
+        ne_adm0_europe
+      `);
+      const europeanCountriesStyle = new carto.style.CartoCSS(`
+        #layer {
+          polygon-fill: #162945;
+          polygon-opacity: 0.5;
+          ::outline {
+            line-width: 1;
+            line-color: #FFFFFF;
+            line-opacity: 0.5;
+          }
+        }
+      `);
+      const europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
+
+      // Europe cities layer
+      const populatedPlacesSource = new carto.source.SQL(`
+        SELECT *
+          FROM ne_10m_populated_places_simple
+          WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+      `);
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 8;
+          marker-fill: #FF583E;
+          marker-fill-opacity: 0.9;
+          marker-line-width: 0.5;
+          marker-line-color: #FFFFFF;
+          marker-line-opacity: 1;
+          marker-type: ellipse;
+          marker-allow-overlap: false;
+        }
+      `);
+      const populatedPlaces = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle, {
+        featureOverColumns: ['name']
+      });
+
+      // 3.2 Adding the layers to the client
+      client.addLayers([europeanCountries, populatedPlaces]);
+
+      // 3.3. Adding the layers to the map
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      // 4. Setting up tooltips
+      // 4.1 Showing the tooltip when user mouses over a city
+      const infowindow = new google.maps.InfoWindow();
+      populatedPlaces.on(carto.layer.events.FEATURE_OVER, featureEvent => {
+        infowindow.setPosition(featureEvent.latLng);
+        if (!infowindow.map) {
+          infowindow.setContent(featureEvent.data.name);
+          infowindow.open(map);
+        }
+      });
+
+      // 4.2 Hiding the tooltip
+      populatedPlaces.on(carto.layer.events.FEATURE_OUT, featureEvent => {
+        infowindow.close();
+      });
+
+      // 5 Creating a formula widget
+      // 5.1 Defining a formula dataview
+      const averagePopulation = new carto.dataview.Formula(populatedPlacesSource, 'pop_max', {
+        operation: carto.operation.AVG
+      });
+
+      // 5.2 Listening to data changes on the dataview
+      averagePopulation.on('dataChanged', data => {
+        refreshAveragePopulationWidget(data.result);
+      });
+
+      function refreshAveragePopulationWidget(avgPopulation) {
+        const widgetDom = document.querySelector('#avgPopulationWidget');
+        const averagePopulationDom = widgetDom.querySelector('.js-average-population');
+        averagePopulationDom.innerText = Math.floor(avgPopulation);
+      }
+
+      // 5.3 Adding the dataview to the client
+      client.addDataview(averagePopulation);
+
+      // 6 Creating a country selector widget
+      // 6.1 Defining a category dataview
+      const countriesDataview = new carto.dataview.Category(europeanCountriesDataset, 'admin', {
+        limit: 100
+      });
+
+      // 6.2 Listening to data changes on the dataview
+      countriesDataview.on('dataChanged', data => {
+        const countryNames = data.categories.map(category => category.name).sort();
+        refreshCountriesWidget(countryNames);
+      });
+
+      function refreshCountriesWidget(adminNames) {
+        const widgetDom = document.querySelector('#countriesWidget');
+        const countriesDom = widgetDom.querySelector('.js-countries');
+
+        countriesDom.onchange = event => {
+          const admin = event.target.value;
+          highlightCountry(admin);
+          filterPopulatedPlacesByCountry(admin);
+        };
+
+        // Fill in the list of countries
+        adminNames.forEach(admin => {
+          const option = document.createElement('option');
+          option.innerHTML = admin;
+          option.value = admin;
+          countriesDom.appendChild(option);
+        });
+      }
+
+      function highlightCountry(admin) {
+        let cartoCSS = `
+          #layer {
+            polygon-fill: #162945;
+            polygon-opacity: 0.5;
+            ::outline {
+              line-color: #FFFFFF;
+              line-width: 1;
+              line-opacity: 0.5;
+            }
+          }
+        `;
+        if (admin) {
+          cartoCSS = `
+            ${cartoCSS}
+            #layer[admin!='${admin}'] {
+              polygon-fill: #CDCDCD;
+            }
+          `;
+        }
+        europeanCountriesStyle.setContent(cartoCSS);
+      }
+
+      function filterPopulatedPlacesByCountry(admin) {
+        let query = `
+          SELECT *
+            FROM ne_10m_populated_places_simple
+            WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+        `;
+        if (admin) {
+          query = `
+            SELECT *
+              FROM ne_10m_populated_places_simple
+              WHERE adm0name='${admin}'
+          `;
+        }
+        populatedPlacesSource.setQuery(query);
+      }
+
+      // 6.3 Adding the dataview to the client
+      client.addDataview(countriesDataview);
+    </script>
+  </body>
+</html>

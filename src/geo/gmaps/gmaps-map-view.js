@@ -82,8 +82,15 @@ var GoogleMapsMapView = MapView.extend({
     MapView.prototype.clean.call(this);
   },
 
-  listenOnce: function (name, callback) {
-    google.maps.event.addListenerOnce(this._gmapsMap, name, callback);
+  /**
+   * Pass a function to be executed once the map is ready.
+   */
+  onReady: function (callback) {
+    if (this._isReady) {
+      callback();
+    } else {
+      google.maps.event.addListenerOnce(this._gmapsMap, 'idle', callback);
+    }
   },
 
   _getLayerViewFactory: function () {
@@ -153,7 +160,7 @@ var GoogleMapsMapView = MapView.extend({
         [ne.lat(), ne.lng()]
       ];
     }
-    return [ [0, 0], [0, 0] ];
+    return [[0, 0], [0, 0]];
   },
 
   setCursor: function (cursor) {

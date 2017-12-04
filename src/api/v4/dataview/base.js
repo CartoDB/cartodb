@@ -3,8 +3,6 @@ var Backbone = require('backbone');
 var status = require('../constants').status;
 var SourceBase = require('../source/base');
 var FilterBase = require('../filter/base');
-var BoundingBoxFilter = require('../filter/bounding-box');
-var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
 var CartoError = require('../error-handling/carto-error');
 var CartoValidationError = require('../error-handling/carto-validation-error');
 
@@ -150,8 +148,7 @@ Base.prototype.getColumn = function () {
  */
 Base.prototype.addFilter = function (filter) {
   this._checkFilter(filter);
-  if ((filter !== this._boundingBoxFilter) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+  if (filter !== this._boundingBoxFilter) {
     this._addBoundingBoxFilter(filter);
   }
   return this;
@@ -166,8 +163,7 @@ Base.prototype.addFilter = function (filter) {
  */
 Base.prototype.removeFilter = function (filter) {
   this._checkFilter(filter);
-  if ((filter === this._boundingBoxFilter) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+  if (filter === this._boundingBoxFilter) {
     this._removeBoundingBoxFilter();
   }
   return this;
@@ -183,8 +179,7 @@ Base.prototype.removeFilter = function (filter) {
 Base.prototype.hasFilter = function (filter) {
   this._checkFilter(filter);
   return (filter === this._boundingBoxFilter) &&
-    (this._internalModel && this._internalModel.get('sync_on_bbox_change')) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter);
+    (this._internalModel && this._internalModel.get('sync_on_bbox_change'));
 };
 
 Base.prototype.getData = function () {
@@ -265,12 +260,7 @@ Base.prototype._listenToInternalModelSharedEvents = function () {
     this.listenTo(this._internalModel, 'loading', this._onStatusLoading);
     this.listenTo(this._internalModel, 'loaded', this._onStatusLoaded);
     this.listenTo(this._internalModel, 'statusError', this._onStatusError);
-    this._listenToInternalModelSpecificEvents();
   }
-};
-
-Base.prototype._listenToInternalModelSpecificEvents = function () {
-  throw new Error('_listenToInternalModelSpecificEvents must be implemented by the particular dataview.');
 };
 
 Base.prototype._onDataChanged = function () {
@@ -303,10 +293,12 @@ Base.prototype._onStatusError = function (model, error) {
 Base.prototype._changeProperty = function (key, value, internalKey) {
   var prevValue = this['_' + key];
   this['_' + key] = value;
+  if (prevValue === value) {
+    return;
+  }
+  this._triggerChange(key, value);
   if (this._internalModel) {
     this._internalModel.set(internalKey || key, value);
-  } else if (prevValue !== value) {
-    this._triggerChange(key, value);
   }
 };
 

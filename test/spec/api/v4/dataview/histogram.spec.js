@@ -219,6 +219,17 @@ describe('api/v4/dataview/histogram', function () {
       // Clean
       dataview._internalModel = null;
     });
+
+    it('should Trigger a binsChanged event when the bins are changed', function () {
+      var binsChangedSpy = jasmine.createSpy('binsChangedSpy');
+      dataview.on('binsChanged', binsChangedSpy);
+
+      expect(binsChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setBins(11);
+
+      expect(binsChangedSpy).toHaveBeenCalledWith(11);
+    });
   });
 
   describe('.$setEngine', function () {
@@ -253,25 +264,6 @@ describe('api/v4/dataview/histogram', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel._bboxFilter).not.toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
-    });
-
-    it('internalModel events should be properly hooked up', function () {
-      var binsChangedTriggered = false;
-      dataview.on('binsChanged', function () {
-        binsChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setBins(dataview.getBins() + 1);
-
-      expect(binsChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      binsChangedTriggered = false;
-
-      dataview.$getInternalModel().set('bins', dataview.getBins() + 1);
-
-      expect(binsChangedTriggered).toBe(true);
     });
 
     it('calling twice to $setEngine does not create another internalModel', function () {

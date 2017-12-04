@@ -7,7 +7,7 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * Generic bounding box filter.
  *
  * @fires carto.filter.BoundingBox.boundsChanged
- * 
+ *
  * @constructor
  * @extends carto.filter.Base
  * @memberof carto.filter
@@ -85,11 +85,11 @@ BoundingBox.prototype.$getInternalModel = function () {
 module.exports = BoundingBox;
 
 /**
- * Event triggered when bounds of a bounding-box-filter changes.
+ * Event triggered when bounds of a bounding box filter changes.
  *
  * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
- * 
+ *
  * @event carto.filter.BoundingBox.boundsChanged
  * @type {carto.filter.Bounds}
  * @api
- */ 
+ */

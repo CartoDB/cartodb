@@ -161,23 +161,16 @@ describe('api/v4/dataview/base', function () {
       expect(eventValue).toEqual('whatever');
     });
 
-    it('should value in internal model if exists', function () {
-      var usedKey = '';
-      var usedValue = '';
-      var internalModel = {
-        set: function (key, value) {
-          usedKey = key;
-          usedValue = value;
-        }
-      };
+    it('should update internal model and trigger a change when the internalModel exists', function () {
+      var internalModelSpy = jasmine.createSpyObj('internalModelSpy', ['set']);
       base._example = 'something';
-      base._internalModel = internalModel;
+      base._internalModel = internalModelSpy;
       spyOn(base, '_triggerChange');
 
       base._changeProperty('example', 'whatever');
 
-      expect([usedKey, usedValue]).toEqual(['example', 'whatever']);
-      expect(base._triggerChange).not.toHaveBeenCalled();
+      expect(internalModelSpy.set).toHaveBeenCalledWith('example', 'whatever');
+      expect(base._triggerChange).toHaveBeenCalled();
     });
   });
 

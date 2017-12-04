@@ -122,15 +122,6 @@ Histogram.prototype._checkOptions = function (options) {
   this._validateBins(options.bins);
 };
 
-Histogram.prototype._listenToInternalModelSpecificEvents = function () {
-  this.listenTo(this._internalModel, 'change:bins', this._onBinsChanged);
-};
-
-Histogram.prototype._onBinsChanged = function () {
-  this._bins = this._internalModel.get('bins');
-  this._triggerChange('bins', this._bins);
-};
-
 Histogram.prototype._createInternalModel = function (engine) {
   this._internalModel = new HistogramDataviewModel({
     source: this._source.$getInternalModel(),

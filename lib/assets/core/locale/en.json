@@ -1164,7 +1164,7 @@
             "state-selected": "Campaign selected."
           },
           "salesforce": {
-            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CARTO or mantain your CARTO maps in sync with your %{brand} data.",
+            "fallback-desc": "Contact us to learn more about %{brand} integration",
             "input-placeholder": "Paste your %{brand} URL here"
           }
         },

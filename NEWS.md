@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add Grunt tasks to generate static files (#13130)
 * Improve geocoding onboarding (#13046)
 * Editor static view (#13043)
 * Add trial notification in static views (#13079)

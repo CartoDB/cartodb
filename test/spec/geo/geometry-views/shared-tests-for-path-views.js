@@ -161,8 +161,8 @@ module.exports = function (Path, MapView, PathView) {
         mapView: this.mapView
       });
 
-      // Listen for the map to be loaded
-      this.mapView.listenOnce('idle', function () {
+      // Listen for the map to be ready
+      this.mapView.onReady(function () {
         this.geometryView.render();
 
         // Marker that we'll interact with in the tests

@@ -13,6 +13,7 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Improve geocoding onboarding (#13046)
+* Editor static view (#13043)
 * Add trial notification in static views (#13079)
 * Account static view (#12749)
 * Force UTF-8 encoding in the Compass task
@@ -100,6 +101,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Add hover state to nav tabs (#13158)
 * Change how redirection works after a successful import (CartoDB/support#1128)
 * Fix organization templates generation (#13150)
 * Fix dataset export modal (CartoDB/support#1168)

@@ -92,9 +92,7 @@ SELECT *
 
       function error(id, cartoError) {
         document.querySelector(id).style.background = '#E57373';
-        setTimeout(() => {
-          alert(cartoError.message);
-        }, 10);
+        alert(cartoError.message);
       }
     </script>
   </body>

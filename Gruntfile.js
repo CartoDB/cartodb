@@ -389,7 +389,8 @@ module.exports = function (grunt) {
     'copy:js',
     'exorcise',
     'uglify',
-    'npm-build'
+    'npm-build',
+    'npm-build-static'
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [

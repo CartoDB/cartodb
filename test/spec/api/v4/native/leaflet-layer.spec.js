@@ -110,6 +110,21 @@ describe('src/api/v4/native/leaflet-layer', function () {
       expect(spy).toHaveBeenCalledWith(expectedExternalEvent);
     });
 
+    it('should trigger carto.layer.events.TILE_ERROR events', function () {
+      layer.on(carto.layer.events.TILE_ERROR, spy);
+      layer.setFeatureClickColumns(['column']);
+      var error = {
+        message: 'an error'
+      };
+
+      leafletLayer._internalView.trigger('featureError', error);
+
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
+        name: 'CartoError',
+        message: 'an error'
+      }));
+    });
+
     describe('mouse pointer', function () {
       describe('when mousing over a feature', function () {
         it("should NOT set the mouse cursor to 'pointer' if layer doesn't have featureOverColumns or featureClickColumns", function () {

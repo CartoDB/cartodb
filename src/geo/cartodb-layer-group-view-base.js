@@ -1,3 +1,5 @@
+var parseWindshaftErrors = require('../windshaft/error-parser');
+
 function CartoDBLayerGroupViewBase (layerGroupModel, opts) {
   opts = opts || {};
   this.interaction = [];
@@ -65,7 +67,10 @@ CartoDBLayerGroupViewBase.prototype = {
   },
 
   _manageInteractivityErrors: function (payload) {
-    this.trigger('featureError', payload);
+    var errors = parseWindshaftErrors(payload);
+    if (errors.length > 0) {
+      this.trigger('featureError', errors[0]);
+    }
   },
 
   _generateTileJSON: function (layerIndexInLayerGroup) {

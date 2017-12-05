@@ -76,7 +76,7 @@ describe('api/v4/dataview/time-series', function () {
         new carto.dataview.TimeSeries(); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Source property is required.');
+      expect(test).toThrowError(Error, 'Source property is required.');
     });
 
     it('column must be provided', function () {
@@ -84,7 +84,7 @@ describe('api/v4/dataview/time-series', function () {
         new carto.dataview.TimeSeries(source); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Column property is required.');
+      expect(test).toThrowError(Error, 'Column property is required.');
     });
 
     it('options set to default if not provided', function () {
@@ -116,7 +116,7 @@ describe('api/v4/dataview/time-series', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
+      expect(test).toThrowError(Error, 'Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
     });
 
     it('throw error if offset is not a valid hour', function () {
@@ -126,7 +126,7 @@ describe('api/v4/dataview/time-series', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+      expect(test).toThrowError(Error, 'Offset must an integer value between -12 and 14.');
 
       test = function () {
         new carto.dataview.TimeSeries(source, 'population', { // eslint-disable-line no-new
@@ -134,7 +134,7 @@ describe('api/v4/dataview/time-series', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+      expect(test).toThrowError(Error, 'Offset must an integer value between -12 and 14.');
     });
 
     it('throw error if localTimezone is not a binary value', function () {
@@ -144,7 +144,7 @@ describe('api/v4/dataview/time-series', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'LocalTimezone must be a boolean value.');
+      expect(test).toThrowError(Error, 'useLocalTimezone must be a boolean value.');
     });
   });
 
@@ -235,7 +235,7 @@ describe('api/v4/dataview/time-series', function () {
         dataview.setAggregation('century');
       };
 
-      expect(test).toThrowError(TypeError, 'Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
+      expect(test).toThrowError(Error, 'Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
     });
 
     it('should set aggregation to internal model as well', function () {
@@ -274,13 +274,13 @@ describe('api/v4/dataview/time-series', function () {
         dataview.setOffset(32);
       };
 
-      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+      expect(test).toThrowError(Error, 'Offset must an integer value between -12 and 14.');
 
       test = function () {
         dataview.setOffset(10.7);
       };
 
-      expect(test).toThrowError(TypeError, 'Offset must an integer value between -12 and 14.');
+      expect(test).toThrowError(Error, 'Offset must an integer value between -12 and 14.');
     });
 
     it('should set offset to internal model as well translated to seconds', function () {
@@ -308,7 +308,7 @@ describe('api/v4/dataview/time-series', function () {
         dataview.useLocalTimezone('Compton');
       };
 
-      expect(test).toThrowError(TypeError, 'LocalTimezone must be a boolean value.');
+      expect(test).toThrowError(Error, 'useLocalTimezone must be a boolean value.');
     });
 
     it('should set localTimezone to internal model as well', function () {

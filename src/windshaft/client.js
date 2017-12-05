@@ -5,6 +5,7 @@ var util = require('../core/util');
 var WindshaftConfig = require('./config');
 var RequestTracker = require('./request-tracker');
 var log = require('../cdb.log');
+var parseWindshaftErrors = require('./error-parser');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function (option) {
@@ -50,7 +51,8 @@ WindshaftClient.prototype.instantiateMap = function (request) {
       success: function (response) {
         this._requestTracker.track(request, response);
         if (response.errors) {
-          request.options.error && request.options.error(response);
+          var parsedErrors = parseWindshaftErrors(response);
+          request.options.error && request.options.error(parsedErrors);
         } else {
           request.options.success && request.options.success(response);
         }
@@ -59,11 +61,13 @@ WindshaftClient.prototype.instantiateMap = function (request) {
         // Ignore error if request was explicitly aborted
         if (textStatus === 'abort') return;
         var errors = {};
+        var parsedErrors = {};
         try {
           errors = JSON.parse(xhr.responseText);
+          parsedErrors = parseWindshaftErrors(errors);
         } catch (e) { }
         this._requestTracker.track(request, errors);
-        request.options.error && request.options.error(errors);
+        request.options.error && request.options.error(parsedErrors);
       }.bind(this)
     });
   } else {

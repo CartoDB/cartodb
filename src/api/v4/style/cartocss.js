@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Base = require('./base');
-var CartoError = require('../error');
+var CartoValidationError = require('../error-handling/carto-validation-error');
+var CartoError = require('../error-handling/carto-error');
 
 // Event constants
 var CONTENT_CHANGED = 'contentChanged';
@@ -70,11 +71,11 @@ function _onContentChanged (newContent) {
 
 function _checkContent (content) {
   if (!content) {
-    throw new TypeError('cartoCSS is required.');
+    throw new CartoValidationError('style', 'requiredCSS');
   }
 
   if (!_.isString(content)) {
-    throw new Error('cartoCSS must be a string.');
+    throw new CartoValidationError('style', 'requiredCSSString');
   }
 }
 

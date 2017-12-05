@@ -623,7 +623,6 @@ describe('src//model-updater', function () {
 
       expect(analysisModel.setError).toHaveBeenCalled();
       var error = analysisModel.setError.calls.argsFor(0)[0];
-      expect(error.type).toBeUndefined();
       expect(error.analysisId).toEqual('a1');
       expect(error.message).toEqual('fake_error_mesagge"');
       expect(error.context).toEqual({ something: 'fake_error_context' });
@@ -666,7 +665,8 @@ describe('src//model-updater', function () {
       expect(layer.setError).toHaveBeenCalled();
       var error = layer.setError.calls.argsFor(0)[0];
 
-      expect(error.type).toEqual('turbo-carto');
+      expect(error.type).toEqual('layer');
+      expect(error.subtype).toEqual('turbo-carto');
       expect(error.layerId).toEqual('LAYER_ID');
       expect(error.message).toEqual('turbo-carto: something went wrong');
       expect(error.context).toEqual({

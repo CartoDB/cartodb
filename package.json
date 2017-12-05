@@ -1,6 +1,10 @@
 {
   "name": "cartodb.js",
+<<<<<<< HEAD
   "version": "4.0.0-alpha.31",
+=======
+  "version": "4.0.0-alpha.zera",
+>>>>>>> Update version
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",

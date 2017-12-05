@@ -1,3 +1,7 @@
+/**
+ * This is a fragment taken from the old WAX library thats required in the google maps layer in order to get tiles.
+ * TODO: Revisit "gmaps-cartodb-layer-group-view.js" and remove this dependency.
+ */
 function Connector(options) {
   options = options || {};
 

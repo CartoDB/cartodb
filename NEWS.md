@@ -104,6 +104,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Enable data tab if layer needs geocoding
+* Fix bug in redirection after analysis is completed (CartoDB/support#1183)
 * Hide Salesforce Connector Form (CartoDB/tech-ops#324)
 * Disable "Your datasets" tab and add tooltip if user doesn't have any datasets (#13104)
 * Fix Mapcard preview in Public Map (#13166)

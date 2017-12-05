@@ -20,6 +20,7 @@ var metadataParser = require('./metadata/parser');
  * @fires carto.layer.Layer.FeatureEvent
  * @fires carto.layer.Layer.sourceChanged
  * @fires carto.layer.Layer.styleChanged
+ * @fires carto.layer.Layer.metadataChanged
  * @example
  * // no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
@@ -300,7 +301,7 @@ Layer.prototype._createInternalModel = function (engine) {
   internalModel.on('change:meta', function (layer, data) {
     var rules = data.cartocss_meta.rules;
     var metadataList = metadataParser.getMetadataFromRules(rules);
-    this.trigger('metadataChanged', metadataList);
+    this.trigger('metadataChanged', { styles: metadataList });
   }, this);
 
   internalModel.on('change:error', function (model, value) {
@@ -391,6 +392,16 @@ function _isStyleError (windshaftError) {
  * Contains a single argument with the Layer where the style has changed.
  *
  * @event carto.layer.Layer.styleChanged
+ * @type {carto.layer.Layer}
+ * @api
+ */
+
+/**
+ * Event triggered when the style metadata of the layer changes.
+ *
+ * Contains a list of metadata objects.
+ *
+ * @event carto.layer.Layer.metadataChanged
  * @type {carto.layer.Layer}
  * @api
  */

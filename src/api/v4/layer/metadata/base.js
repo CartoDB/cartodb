@@ -3,7 +3,7 @@
  *
  * @constructor
  * @abstract
- * @memberof metadata
+ * @memberof carto.layer.metadata
  * @api
  */
 function Base (type, rule) {
@@ -14,7 +14,7 @@ function Base (type, rule) {
 }
 
 /**
- * Return true is the metadata type is category
+ * Return true is the metadata type is categories
  *
  * @return {boolean}
  * @api
@@ -24,13 +24,13 @@ Base.prototype.isCategories = function () {
 };
 
 /**
- * Return true is the metadata type is gradient
+ * Return true is the metadata type is buckets
  *
  * @return {boolean}
  * @api
  */
-Base.prototype.isGradient = function () {
-  return this._type === 'gradient';
+Base.prototype.isBuckets = function () {
+  return this._type === 'buckets';
 };
 
 /**

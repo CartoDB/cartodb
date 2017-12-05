@@ -1,5 +1,5 @@
+var BucketsMetadata = require('./buckets');
 var CategoriesMetadata = require('./categories');
-var GradientMetadata = require('./gradient');
 var Rule = require('../../../../windshaft-integration/legends/rule.js');
 
 module.exports = {
@@ -15,10 +15,10 @@ module.exports = {
     rulesData.forEach(function (ruleData) {
       var rule = new Rule(ruleData);
 
-      if (isCategoriesMetadata(rule)) {
+      if (isBucketsMetadata(rule)) {
+        metadata.push(new BucketsMetadata(rule));
+      } else if (isCategoriesMetadata(rule)) {
         metadata.push(new CategoriesMetadata(rule));
-      } else if (isGradientMetadata(rule)) {
-        metadata.push(new GradientMetadata(rule));
       }
     });
 
@@ -26,10 +26,10 @@ module.exports = {
   }
 };
 
-function isCategoriesMetadata (rule) {
-  return rule.getBucketsWithCategoryFilter().length > 0;
+function isBucketsMetadata (rule) {
+  return rule.getBucketsWithRangeFilter().length > 0;
 }
 
-function isGradientMetadata (rule) {
-  return rule.getBucketsWithRangeFilter().length > 0;
+function isCategoriesMetadata (rule) {
+  return rule.getBucketsWithCategoryFilter().length > 0;
 }

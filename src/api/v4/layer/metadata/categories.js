@@ -6,7 +6,8 @@ var Base = require('./base');
  * @param {object} rule - Rule with the cartocss metadata
  * @constructor
  * @hideconstructor
- * @memberof metadata
+ * @extends carto.layer.metadata.Base
+ * @memberof carto.layer.metadata
  * @api
  */
 function Categories (rule) {
@@ -14,7 +15,7 @@ function Categories (rule) {
   var defaultBuckets = rule.getBucketsWithDefaultFilter();
 
   /**
-   * @typedef {object} metadata.Category
+   * @typedef {object} carto.layer.metadata.Category
    * @property {string} name - The name of the category
    * @property {string} value - The value of the category
    * @api
@@ -35,7 +36,7 @@ Categories.prototype = Object.create(Base.prototype);
 /**
  * Return the buckets
  *
- * @return {Category[]}
+ * @return {carto.layer.metadata.Category[]}
  * @api
  */
 Categories.prototype.getCategories = function () {

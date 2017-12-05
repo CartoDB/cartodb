@@ -6,14 +6,15 @@ var Base = require('./base');
  * @param {object} rule - Rule with the cartocss metadata
  * @constructor
  * @hideconstructor
- * @memberof metadata
+ * @extends carto.layer.metadata.Base
+ * @memberof carto.layer.metadata
  * @api
  */
-function Gradient (rule) {
+function Buckets (rule) {
   var rangeBuckets = rule.getBucketsWithRangeFilter();
 
   /**
-   * @typedef {object} metadata.Bucket
+   * @typedef {object} carto.layer.metadata.Bucket
    * @property {number} min - The minimum range value
    * @property {number} max - The maximum range value
    * @property {number|string} value - The value of the bucket
@@ -33,15 +34,15 @@ function Gradient (rule) {
   Base.call(this, 'gradient', rule);
 }
 
-Gradient.prototype = Object.create(Base.prototype);
+Buckets.prototype = Object.create(Base.prototype);
 
 /**
  * Return the buckets
  *
- * @return {Bucket[]}
+ * @return {carto.layer.metadata.Bucket[]}
  * @api
  */
-Gradient.prototype.getBuckets = function () {
+Buckets.prototype.getBuckets = function () {
   return this._buckets;
 };
 
@@ -51,7 +52,7 @@ Gradient.prototype.getBuckets = function () {
  * @return {number}
  * @api
  */
-Gradient.prototype.getAverage = function () {
+Buckets.prototype.getAverage = function () {
   return this._avg;
 };
 
@@ -61,7 +62,7 @@ Gradient.prototype.getAverage = function () {
  * @return {number}
  * @api
  */
-Gradient.prototype.getMin = function () {
+Buckets.prototype.getMin = function () {
   return this._min;
 };
 
@@ -71,8 +72,8 @@ Gradient.prototype.getMin = function () {
  * @return {number}
  * @api
  */
-Gradient.prototype.getMax = function () {
+Buckets.prototype.getMax = function () {
   return this._max;
 };
 
-module.exports = Gradient;
+module.exports = Buckets;

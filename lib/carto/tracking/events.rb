@@ -307,7 +307,7 @@ module Carto
       class SegmentFormat < Carto::Tracking::Formats::Internal
         def to_segment
           data = super
-          data[:data_properties] = to_hash['properties']
+          data[:data_properties] = to_hash
           data
         end
       end

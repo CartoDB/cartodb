@@ -21,7 +21,7 @@ describe('api/v4/filter/bounding-box', function () {
         bboxFilter.setBounds({ west: 0 });
       };
 
-      expect(test).toThrowError(TypeError, 'Bounds object is not valid. Use a carto.filter.Bounds object');
+      expect(test).toThrowError(Error, 'Bounds object is not valid. Use a carto.filter.Bounds object');
     });
 
     it('if bounds are valid, it assigns it to property, triggers the boundsChanged event and returns this', function () {

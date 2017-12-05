@@ -44,7 +44,7 @@ describe('api/v4/dataview/formula', function () {
         new carto.dataview.Formula(); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Source property is required.');
+      expect(test).toThrowError(Error, 'Source property is required.');
     });
 
     it('column must be provided', function () {
@@ -52,7 +52,7 @@ describe('api/v4/dataview/formula', function () {
         new carto.dataview.Formula(source); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Column property is required.');
+      expect(test).toThrowError('Column property is required.');
     });
 
     it('options set to default if not provided', function () {
@@ -78,7 +78,7 @@ describe('api/v4/dataview/formula', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+      expect(test).toThrowError(Error, 'Operation for formula dataview is not valid. Use carto.operation');
     });
   });
 
@@ -94,7 +94,7 @@ describe('api/v4/dataview/formula', function () {
         dataview.setOperation('swordfish');
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+      expect(test).toThrowError(Error, 'Operation for formula dataview is not valid. Use carto.operation');
     });
 
     it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {

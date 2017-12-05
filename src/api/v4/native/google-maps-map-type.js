@@ -3,6 +3,7 @@ var _ = require('underscore');
 var Layer = require('../layer');
 var triggerLayerFeatureEvent = require('./trigger-layer-feature-event');
 var GMapsCartoDBLayerGroupView = require('../../../geo/gmaps/gmaps-cartodb-layer-group-view');
+var CartoError = require('../error-handling/carto-error');
 
 /**
  * This object is a custom Google Maps MapType to enable feature interactivity
@@ -25,6 +26,7 @@ function GoogleMapsMapType (layers, engine, map) {
   this._internalView.on('featureClick', this._onFeatureClick, this);
   this._internalView.on('featureOver', this._onFeatureOver, this);
   this._internalView.on('featureOut', this._onFeatureOut, this);
+  this._internalView.on('featureError', this._onFeatureError, this);
 }
 
 GoogleMapsMapType.prototype.getTile = function (coord, zoom, ownerDocument) {
@@ -52,6 +54,15 @@ GoogleMapsMapType.prototype._onFeatureOut = function (internalEvent) {
     this._map.setOptions({ draggableCursor: 'auto' });
   }
   triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent, this._layers);
+};
+
+GoogleMapsMapType.prototype._onFeatureError = function (error) {
+  var cartoError = new CartoError(error);
+  _.each(this._layers.toArray(), function (layer) {
+    if (layer.isInteractive()) {
+      layer.trigger(Layer.events.TILE_ERROR, cartoError);
+    }
+  });
 };
 
 module.exports = GoogleMapsMapType;

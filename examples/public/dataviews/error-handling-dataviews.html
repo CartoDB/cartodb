@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Error handling in dataviews | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- FIXME: include Leaflet because of Wax -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <style>
+      body { margin: 0; padding: 0; }
+      #widget { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      h2 { margin-top: 50px; }
+      button { margin: 50px; padding: 10px; }
+    </style>
+  </head>
+  <body>
+    <div id="widget">
+      <h2>Column</h2>
+      <input id="column" type="text" value="pop_max"></input>
+      <h2>Operation</h2>
+      <select id="operation">
+        <option value="count">COUNT</option>
+        <option value="sum">SUM</option>
+        <option value="avg">AVG</option>
+        <option value="max">MAX</option>
+        <option value="min">MIN</option>
+      </select>
+      <button onclick="applyDataviewChanges()"><b>Apply</b></button>
+      <pre id="data"></pre>
+    </div>
+    <script>
+      function logCartoError (prefix, cartoError) {
+        if (cartoError.name !== 'CartoError') {
+          throw new Error('This is suposed to be a CartoError!')
+        }
+        console.log(prefix, '\n', cartoError.name, '\n', cartoError.errorCode, '\n', cartoError.message);
+      }
+
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset(`
+        ne_10m_populated_places_simple
+      `);
+      const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
+        operation: carto.operation.COUNT
+      });
+
+      formulaDataview.on('dataChanged', data => {
+        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      formulaDataview.on('error', function (error) {
+        logCartoError('DATAVIEW ERROR', error);
+      });
+
+      client.addDataview(formulaDataview)
+        .catch(function (error) {
+          logCartoError('ADD DATAVIEW', error);
+        });
+
+      function applyDataviewChanges() {
+        const column = document.getElementById('column').value;
+        const operation = document.getElementById('operation').value;
+        formulaDataview.setColumn(column);
+        formulaDataview.setOperation(operation);
+      }
+
+      function provokeError () {
+        formulaDataview.setColumn('non-existing');
+      }
+    </script>
+  </body>
+</html>

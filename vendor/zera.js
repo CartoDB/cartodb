@@ -1,4 +1,3 @@
-alert('fuck');
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -238,8 +237,7 @@ var Interactive = function () {
     }, {
         key: '_onMapMouseMove',
         value: function _onMapMouseMove(e) {
-          console.warn('FFFFFUCK')  ;
-          var _this3 = this;
+            var _this3 = this;
 
             var coords = this._getTileCoordsFromMouseEvent(e);
             this._loadTile(coords.z, coords.x, coords.y).then(function () {
@@ -398,9 +396,10 @@ var Interactive = function () {
     }, {
         key: 'remove',
         value: function remove() {
-            this._eventEmitter.removeEventListener(this._listeners.click);
-            this._eventEmitter.removeEventListener(this._listeners.move);
-            this._eventEmitter.removeEventListener(this._listeners.out);
+            this._eventEmitter.removeEventListener('mousemove');
+            this._eventEmitter.removeEventListener('click');
+            this._eventEmitter.removeEventListener('error');
+            this._eventEmitter.removeEventListener('featureout');
         }
 
         /**

@@ -299,8 +299,8 @@ Layer.prototype._createInternalModel = function (engine) {
 
   internalModel.on('change:meta', function (layer, data) {
     var rules = data.cartocss_meta.rules;
-    var metadata = metadataParser.getMetadataFromRules(rules);
-    this.trigger('metadataChanged', metadata);
+    var metadataList = metadataParser.getMetadataFromRules(rules);
+    this.trigger('metadataChanged', metadataList);
   }, this);
 
   internalModel.on('change:error', function (model, value) {

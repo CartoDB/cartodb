@@ -18,7 +18,7 @@ module.exports = {
       friendlyMessage: 'Your time series column type is number. Please use a date type.'
     },
     'invalid-aggregation-value': {
-      messageRegex: 'Invalid aggregation value. Valid ones: auto, minute, hour, day, week, month, quarter, year'
+      messageRegex: /Invalid aggregation value. Valid ones: auto, minute, hour, day, week, month, quarter, year/
     }
   },
   limit: {
@@ -33,7 +33,7 @@ module.exports = {
   tile: {
     'generic-tile-error': {
       messageRegex: /.*/,
-      friendlyMessage: /Some tiles might not be rendering correctly\./
+      friendlyMessage: 'Some tiles might not be rendering correctly.'
     }
   },
   layer: {
@@ -47,6 +47,17 @@ module.exports = {
     },
     'generic-layer-error': {
       messageRegex: /.*/
+    }
+  },
+  dataview: {
+    'formula-does-not-support-operation': {
+      messageRegex: /Formula does not support (.+) operation/
+    },
+    'column-does-not-exist': {
+      messageRegex: /column (.+) does not exist/
+    },
+    'permission-denied': {
+      messageRegex: /permission denied for (.+)/
     }
   }
 };

@@ -140,9 +140,9 @@ Engine.prototype.reload = function (options) {
       successCb(serverResponse);
       resolve();
     };
-    options.error = function (serverResponse) {
-      errorCb(serverResponse);
-      var error = self._getSimpleWindshaftError(serverResponse);
+    options.error = function (errors) {
+      errorCb(errors);
+      var error = self._getSimpleWindshaftError(errors);
       reject(error);
     };
     try {
@@ -153,8 +153,11 @@ Engine.prototype.reload = function (options) {
       this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
       this._windshaftClient.instantiateMap(request);
     } catch (error) {
-      this._manageClientError(error, options);
-      reject(error);
+      var windshaftError = new WindshaftError({
+        message: error.message
+      });
+      this._manageClientError(windshaftError, options);
+      reject(windshaftError);
     }
   }.bind(this));
 };
@@ -225,10 +228,9 @@ Engine.prototype._onReloadSuccess = function (serverResponse, options) {
  * Update internal models setting errores and trigger a reload_error event.
  * @private
  */
-Engine.prototype._onReloadError = function (serverResponse, options) {
-  var windshaftErrors = parseWindshaftErrors(serverResponse);
-  var error = this._getSimpleWindshaftError(serverResponse);
-  this._modelUpdater.setErrors(windshaftErrors);
+Engine.prototype._onReloadError = function (errors, options) {
+  var error = this._getSimpleWindshaftError(errors);
+  this._modelUpdater.setErrors(errors);
   this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, error);
   options.error && options.error(error);
 
@@ -246,8 +248,8 @@ Engine.prototype._buildOptions = function (options) {
     success: function (serverResponse) {
       this._onReloadSuccess(serverResponse, options);
     }.bind(this),
-    error: function (serverResponse) {
-      return this._onReloadError(serverResponse, options);
+    error: function (errors) {
+      return this._onReloadError(errors, options);
     }.bind(this)
   }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
 };
@@ -297,13 +299,9 @@ Engine.prototype._getSerializer = function () {
  * @private
  */
 Engine.prototype._manageClientError = function (error, options) {
-  var windshaftError = new WindshaftError({
-    message: error.message
-  });
-  this._modelUpdater.setErrors([windshaftError]);
-
+  this._modelUpdater.setErrors([error]);
   log.error(error.message);
-  options.error && options.error();
+  options.error && options.error([error]);
 };
 
 /**
@@ -318,11 +316,10 @@ Engine.prototype._bindCartoLayerGroupError = function () {
   }, this);
 };
 
-Engine.prototype._getSimpleWindshaftError = function (serverResponse) {
-  var windshaftErrors = parseWindshaftErrors(serverResponse);
-  var error = _.find(windshaftErrors, function (error) { return error.isGlobalError(); });
-  if (!error && windshaftErrors && windshaftErrors.length > 0) {
-    error = windshaftErrors[0];
+Engine.prototype._getSimpleWindshaftError = function (errors) {
+  var error = _.find(errors, function (error) { return error.isGlobalError(); });
+  if (!error && errors && errors.length > 0) {
+    error = errors[0];
   }
   return error;
 };

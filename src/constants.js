@@ -22,6 +22,7 @@ module.exports = {
     LAYER: 'layer',
     LIMIT: 'limit',
     TILE: 'tile', // Generic error for tiles
-    GENERIC: 'generic'
+    GENERIC: 'generic',
+    UNKNOWN: 'unknown'
   }
 };

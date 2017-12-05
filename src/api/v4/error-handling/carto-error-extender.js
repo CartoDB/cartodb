@@ -38,6 +38,9 @@ function _getListedError (cartoError, errorList) {
   var key;
   for (var i = 0; i < errorListkeys.length; i++) {
     key = errorListkeys[i];
+    if (!(errorList[key].messageRegex instanceof RegExp)) {
+      throw new Error('MessageRegex on ' + key + ' is not a RegExp.');
+    }
     if (errorList[key].messageRegex.test(cartoError.message)) {
       return {
         friendlyMessage: _replaceRegex(cartoError, errorList[key]),

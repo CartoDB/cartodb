@@ -1,11 +1,11 @@
 var _ = require('underscore');
 var WindshaftError = require('./error');
 
-var parseWindshaftErrors = function (response) {
+var parseWindshaftErrors = function (response, type) {
   response = response || {};
   if (response.errors_with_context) {
     return _.map(response.errors_with_context, function (error) {
-      return new WindshaftError(error);
+      return new WindshaftError(error, type);
     });
   }
   if (response.errors) {
@@ -14,7 +14,7 @@ var parseWindshaftErrors = function (response) {
       : response.errors[0];
 
     return [
-      new WindshaftError(content)
+      new WindshaftError(content, type)
     ];
   }
   return [];

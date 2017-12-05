@@ -36,6 +36,24 @@ describe('src/windshaft-integration/legends/rule-to-choropleth-legend-adapter', 
         'filter_avg': 1975
       }
     };
+    this.one_bucket_rule = {
+      'selector': '#layer',
+      'prop': 'polygon-fill',
+      'mapping': '>',
+      'buckets': [
+        {
+          'filter': {
+            'type': 'range',
+            'start': 100,
+            'end': 100
+          },
+          'value': '#AAAAAA'
+        }
+      ],
+      'stats': {
+        'filter_avg': 100
+      }
+    };
   });
 
   describe('.canAdapt', function () {
@@ -61,6 +79,18 @@ describe('src/windshaft-integration/legends/rule-to-choropleth-legend-adapter', 
         avg: 1975,
         max: 3000,
         min: 0
+      });
+    });
+    it('should return two buckets in case we receive just one', function () {
+      var attrs = adapter.adapt([this.one_bucket_rule]);
+      expect(attrs).toEqual({
+        colors: [
+          { label: '100', value: '#AAAAAA' },
+          { label: '100', value: '#AAAAAA' }
+        ],
+        avg: 100,
+        max: 100,
+        min: 100
       });
     });
   });

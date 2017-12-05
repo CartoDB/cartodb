@@ -3,14 +3,15 @@ var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 var SourceBase = require('../source/base');
 var StyleBase = require('../style/base');
 var CartoError = require('../error');
+var metadataParser = require('./metadata/parser');
 /**
  * Represent a layer Object.
- * 
- * 
+ *
+ *
  * /...
  *
  * The `styleChanged` event is triggered **only** when the style object is changed. Mutations in the style itself are ignored by this event.
- * 
+ *
  * @param {object} source - The source where the layer will fetch the data
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
@@ -130,7 +131,7 @@ Layer.prototype.setSource = function (source) {
     this.trigger('sourceChanged', this);
     return Promise.resolve();
   }
-  // If layer has been instantiated 
+  // If layer has been instantiated
   // If the source already has an engine and is different from the layer's engine throw an error.
   if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
     throw new Error('A layer can\'t have a source which belongs to a different client');
@@ -295,6 +296,12 @@ Layer.prototype._createInternalModel = function (engine) {
     infowindow: _getInteractivityFields(this._featureClickColumns),
     tooltip: _getInteractivityFields(this._featureOverColumns)
   }, { engine: engine });
+
+  internalModel.on('change:meta', function (layer, data) {
+    var rules = data.cartocss_meta.rules;
+    var metadata = metadataParser.getMetadataFromRules(rules);
+    this.trigger('metadataChanged', metadata);
+  }, this);
 
   internalModel.on('change:error', function (model, value) {
     if (value && _isStyleError(value)) {

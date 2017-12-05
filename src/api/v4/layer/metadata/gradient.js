@@ -3,35 +3,47 @@ var Base = require('./base');
 /**
  * Metadata type gradient
  *
- * @param {object} data - Rule with the cartocss metadata
+ * @param {object} rule - Rule with the cartocss metadata
  * @constructor
  * @hideconstructor
+ * @memberof metadata
+ * @api
  */
-function Gradient (data) {
-  _checkData(data);
+function Gradient (rule) {
+  var rangeBuckets = rule.getBucketsWithRangeFilter();
 
-  Base.call(this, 'gradient', data.column, data.mapping, data.prop);
-
-  this._avg = data.stats.filter_avg;
-  this._min = data.buckets.length > 0 ? data.buckets[0].filter.start : undefined;
-  this._max = data.buckets.length > 0 ? data.buckets[data.buckets.length - 1].filter.end : undefined;
   /**
-   * @typedef {object} Bucket
+   * @typedef {object} metadata.Bucket
    * @property {number} min - The minimum range value
    * @property {number} max - The maximum range value
    * @property {number|string} value - The value of the bucket
    * @api
    */
-  this._buckets = data.buckets.map(function (bucket) {
+  this._buckets = rangeBuckets.map(function (bucket) {
     return {
       min: bucket.filter.start,
       max: bucket.filter.end,
       value: bucket.value
     };
   });
+  this._avg = rule.getFilterAvg();
+  this._min = rangeBuckets.length > 0 ? rangeBuckets[0].filter.start : undefined;
+  this._max = rangeBuckets.length > 0 ? rangeBuckets[rangeBuckets.length - 1].filter.end : undefined;
+
+  Base.call(this, 'gradient', rule);
 }
 
 Gradient.prototype = Object.create(Base.prototype);
+
+/**
+ * Return the buckets
+ *
+ * @return {Bucket[]}
+ * @api
+ */
+Gradient.prototype.getBuckets = function () {
+  return this._buckets;
+};
 
 /**
  * Return the average of the column
@@ -63,16 +75,4 @@ Gradient.prototype.getMax = function () {
   return this._max;
 };
 
-/**
- * Return the buckets
- *
- * @return {Bucket[]}
- * @api
- */
-Gradient.prototype.getBuckets = function () {
-  return this._buckets;
-};
-
-function _checkData(data) {
-
-}
+module.exports = Gradient;

@@ -3,14 +3,14 @@
  *
  * @constructor
  * @abstract
- * @memberof carto
+ * @memberof metadata
  * @api
  */
-function Base (type, column, mapping, property) {
+function Base (type, rule) {
   this._type = type || '';
-  this._column = column;
-  this._mapping = mapping;
-  this._property = property;
+  this._column = rule.getColumn();
+  this._mapping = rule.getMapping();
+  this._property = rule.getProperty();
 }
 
 /**
@@ -19,8 +19,8 @@ function Base (type, column, mapping, property) {
  * @return {boolean}
  * @api
  */
-Base.prototype.isCategory = function () {
-  return this._type === 'category';
+Base.prototype.isCategories = function () {
+  return this._type === 'categories';
 };
 
 /**

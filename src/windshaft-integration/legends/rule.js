@@ -47,6 +47,18 @@ Rule.prototype._getBucketsByFilterType = function (filterType) {
   return [];
 };
 
+Rule.prototype.getColumn = function () {
+  return this._rule.column;
+};
+
+Rule.prototype.getMapping = function () {
+  return this._rule.mapping;
+};
+
+Rule.prototype.getProperty = function () {
+  return this._rule.prop;
+};
+
 Rule.prototype.getFilterAvg = function () {
   return this._rule.stats.filter_avg;
 };

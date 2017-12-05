@@ -3,27 +3,31 @@ var Base = require('./base');
 /**
  * Metadata type categories
  *
- * @param {object} data - Rule with the cartocss metadata
+ * @param {object} rule - Rule with the cartocss metadata
  * @constructor
  * @hideconstructor
+ * @memberof metadata
+ * @api
  */
-function Categories (data) {
-  _checkData(data);
-
-  Base.call(this, 'gradient', data.column, data.mapping, data.prop);
+function Categories (rule) {
+  var categoryBuckets = rule.getBucketsWithCategoryFilter();
+  var defaultBuckets = rule.getBucketsWithDefaultFilter();
 
   /**
-   * @typedef {object} Category
+   * @typedef {object} metadata.Category
    * @property {string} name - The name of the category
    * @property {string} value - The value of the category
    * @api
    */
-  this._categories = data.buckets.map(function (bucket) {
+  this._categories = categoryBuckets.map(function (bucket) {
     return {
       name: bucket.filter.name,
       value: bucket.value
     };
   });
+  this._defaultValue = defaultBuckets.length > 0 ? defaultBuckets[0].value : undefined;
+
+  Base.call(this, 'categories', rule);
 }
 
 Categories.prototype = Object.create(Base.prototype);
@@ -38,6 +42,14 @@ Categories.prototype.getCategories = function () {
   return this._categories;
 };
 
-function _checkData (data) {
+/**
+ * Return the default value
+ *
+ * @return {string}
+ * @api
+ */
+Categories.prototype.getDefaultValue = function () {
+  return this._defaultValue;
+};
 
-}
+module.exports = Categories;

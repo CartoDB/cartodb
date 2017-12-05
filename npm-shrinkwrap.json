@@ -2265,9 +2265,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.2.0",
+      "version": "3.2.1",
       "from": "uglify-js@>=3.2.0 <3.3.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.2.0.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.2.1.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

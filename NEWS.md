@@ -103,6 +103,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Disable "Your datasets" tab and add tooltip if user doesn't have any datasets (#13104)
 * Fix Mapcard preview in Public Map (#13166)
 * Add hover state to nav tabs (#13158)
 * Change how redirection works after a successful import (CartoDB/support#1128)

@@ -51,6 +51,8 @@ module CartoDB
                         status:       nil,
                         trace:        nil
                        }
+
+        @target_dbname = target_dbname
       end
 
       def run!
@@ -70,9 +72,22 @@ module CartoDB
         end
       end
 
-      def organization_import?
-        @pack_config['organization'] != nil
+      def terminate_connections
+        @user_conn && @user_conn.close
+        @user_conn = nil
+
+        @superuser_user_conn && @superuser_user_conn.close
+        @superuser_user_conn = nil
+
+        @superuser_conn && @superuser_conn.close
+        @superuser_conn = nil
       end
+
+      def db_exists?
+        superuser_pg_conn.query("select 1 from pg_database where datname = '#{@target_dbname}'").count > 0
+      end
+
+      private
 
       def process_user
         @target_username = @pack_config['user']['username']
@@ -80,8 +95,7 @@ module CartoDB
         @import_log[:id] = @pack_config['user']['username']
         @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
 
-        if @options[:target_org] == nil
-          @target_dbname = user_database(@target_userid)
+        if org_import?
           @target_dbuser = database_username(@target_userid)
           @target_schema = @pack_config['user']['database_schema']
           @target_org_id = nil
@@ -91,15 +105,13 @@ module CartoDB
           @target_schema = @pack_config['user']['database_schema']
           @target_org_id = organization_data['id']
 
-          if @pack_config['user']['id'] == organization_data['owner_id']
+          if owner?(organization_data)
             # If the user being imported into an org is the owner of the org, we make the import as it were a single-user
-            @target_dbname = user_database(@target_userid)
             @target_is_owner = true
           else
             # We fill the missing configuration data for the owner
             organization_owner_data = get_user_info(organization_data['owner_id'])
             @target_dbhost = @options[:host] || organization_owner_data['database_host']
-            @target_dbname = organization_owner_data['database_name']
             @target_is_owner = false
           end
         end
@@ -152,7 +164,7 @@ module CartoDB
           create_user(@target_dbuser)
           create_org_role(@target_dbname) # Create org role for the original org
           create_org_owner_role(@target_dbname)
-          if !@options[:target_org].nil?
+          if org_import?
             grant_user_org_role(@target_dbuser, @target_dbname)
           end
 
@@ -304,17 +316,6 @@ module CartoDB
                                 WHERE pg_stat_activity.datname = '#{database_name}'
                                 AND pid <> pg_backend_pid();")
         terminate_connections
-      end
-
-      def terminate_connections
-        @user_conn && @user_conn.close
-        @user_conn = nil
-
-        @superuser_user_conn && @superuser_user_conn.close
-        @superuser_user_conn = nil
-
-        @superuser_conn && @superuser_conn.close
-        @superuser_conn = nil
       end
 
       def user_pg_conn
@@ -629,7 +630,6 @@ module CartoDB
         end
       end
 
-
       def importjob_logger
         @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
       end
@@ -652,6 +652,35 @@ module CartoDB
 
       def pg_restore_bin_path
         Cartodb.get_config(:user_migrator, 'pg_restore_bin_path') || 'pg_restore'
+      end
+
+      def target_dbname
+        return @pack_config['users'][0]['database_name'] if @pack_config['organization']
+
+        @target_userid = @pack_config['user']['id']
+        if org_import?
+          user_database(@target_userid)
+        else
+          organization_data = get_org_info(@options[:target_org])
+          if owner?(organization_data)
+            user_database(@target_userid)
+          else
+            organization_owner_data = get_user_info(organization_data['owner_id'])
+            organization_owner_data['database_name']
+          end
+        end
+      end
+
+      def owner?(organization_data)
+        @pack_config['user']['id'] == organization_data['owner_id']
+      end
+
+      def org_import?
+        @options[:target_org] == nil
+      end
+
+      def organization_import?
+        @pack_config['organization'] != nil
       end
     end
   end

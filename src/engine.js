@@ -11,7 +11,6 @@ var Request = require('./windshaft/request');
 var Response = require('./windshaft/response');
 var WindshaftClient = require('./windshaft/client');
 var AnalysisService = require('./analysis/analysis-service');
-var parseWindshaftErrors = require('./windshaft/error-parser');
 var log = require('./cdb.log');
 var WindshaftError = require('./windshaft/error');
 

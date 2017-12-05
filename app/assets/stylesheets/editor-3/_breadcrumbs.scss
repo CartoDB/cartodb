@@ -1,0 +1,21 @@
+// Styles for Header Editor
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Editor-breadcrumb {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.Editor-breadcrumbSep {
+  margin-left: 4px;
+}
+
+.Editor-breadcrumbLink {
+  &:hover {
+    text-decoration: underline;
+  }
+}

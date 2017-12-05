@@ -93,10 +93,11 @@ describe Carto::UserMigrationImport do
       @user_migration_package_mock.stubs(:meta_dir).returns(:irrelevant_meta_dir)
       @user_migration_package_mock.stubs(:data_dir).returns :irrelevant_data_dir
       @user_mock = Carto::User.new
-      @export_job_mock = Object.new
-      @export_job_mock.expects(:run!).once
-      @export_job_mock.expects(:terminate_connections).once
-      CartoDB::DataMover::ImportJob.stubs(:new).returns @export_job_mock
+      @import_job_mock = Object.new
+      @import_job_mock.stubs(:db_exists?).returns false
+      @import_job_mock.expects(:run!).once
+      @import_job_mock.expects(:terminate_connections).once
+      CartoDB::DataMover::ImportJob.stubs(:new).returns @import_job_mock
       @user_migration_package_mock.stubs(:cleanup)
       @import.expects(:save!).once.returns @import
     end

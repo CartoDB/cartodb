@@ -13,13 +13,6 @@ module.exports = {
     }
   },
   generic: {
-    'number-column-used-in-time-series': {
-      messageRegex: /function date_part\(unknown, integer\) does not exist/,
-      friendlyMessage: 'Your time series column type is number. Please use a date type.'
-    },
-    'invalid-aggregation-value': {
-      messageRegex: /Invalid aggregation value. Valid ones: auto, minute, hour, day, week, month, quarter, year/
-    }
   },
   limit: {
     'over-platform-limits': {
@@ -58,6 +51,13 @@ module.exports = {
     },
     'permission-denied': {
       messageRegex: /permission denied for (.+)/
+    },
+    'wrong-type-column-used-in-time-series': {
+      messageRegex: /function date_part\(unknown, (.+)\) does not exist/,
+      friendlyMessage: 'Your time series column type is $0. Please use a date type.'
+    },
+    'invalid-aggregation-value': {
+      messageRegex: /Invalid aggregation value. Valid ones: auto, minute, hour, day, week, month, quarter, year/
     }
   }
 };

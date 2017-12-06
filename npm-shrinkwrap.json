@@ -332,8 +332,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.4.20",
-      "from": "cartodb/deep-insights.js#v0.4.20",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#946aff57fc1933d63c223ce81f69fe5fd6a77959",
+      "from": "cartodb/deep-insights.js#feedback-fixes-integration",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#93a2c031a68ca33d3448570c4a113b3168f96bc7",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -349,8 +349,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.31",
-      "from": "cartodb/cartodb.js#v4.0.0-alpha.31",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#8abacc595a048b51ab24a8e6b77d6ec6b12f49ce"
+      "from": "cartodb/cartodb.js#feedback-fixes",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#f9b449d7685fe00950980a521eeb97b8c3498e3a"
     },
     "center-align": {
       "version": "0.1.3",
@@ -581,9 +581,9 @@
       "resolved": "https://registry.npmjs.org/defined/-/defined-1.0.0.tgz"
     },
     "delegate": {
-      "version": "3.1.3",
+      "version": "3.2.0",
       "from": "delegate@>=3.1.2 <4.0.0",
-      "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.3.tgz"
+      "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.2.0.tgz"
     },
     "deps-sort": {
       "version": "2.0.0",

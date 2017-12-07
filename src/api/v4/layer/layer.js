@@ -5,23 +5,25 @@ var StyleBase = require('../style/base');
 var CartoError = require('../error-handling/carto-error');
 var CartoValidationError = require('../error-handling/carto-validation-error');
 var EVENTS = require('../events');
+var metadataParser = require('./metadata/parser');
 
 /**
  * Represent a layer Object.
- * 
- * 
+ *
+ *
  * /...
  *
  * The `styleChanged` event is triggered **only** when the style object is changed. Mutations in the style itself are ignored by this event.
- * 
+ *
  * @param {object} source - The source where the layer will fetch the data
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
- * @fires carto.layer.Layer.FeatureEvent
- * @fires carto.layer.Layer.sourceChanged
- * @fires carto.layer.Layer.styleChanged
+ * @fires carto.layer.FeatureEvent
+ * @fires carto.layer.sourceChanged
+ * @fires carto.layer.styleChanged
+ * @fires carto.layer.MetadataEvent
  * @example
  * // no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
@@ -115,7 +117,7 @@ Layer.prototype.getStyle = function () {
  * A source and a layer must belong to the same client so you can't
  * add a source belonging to a different client.
  *
- * @param {carto.source.Dataset|carto.source.SQL} source New source
+ * @param {carto.source.Base} source New source
  * @fires carto.layer.Layer.sourceChanged
  * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
  * {@link CartoError} if something goes bad
@@ -133,7 +135,7 @@ Layer.prototype.setSource = function (source) {
     this.trigger('sourceChanged', this);
     return Promise.resolve();
   }
-  // If layer has been instantiated 
+  // If layer has been instantiated
   // If the source already has an engine and is different from the layer's engine throw an error.
   if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
     throw new CartoValidationError('layer', 'differentSourceClient');
@@ -159,7 +161,7 @@ Layer.prototype.setSource = function (source) {
 /**
  * Get the current source for this layer.
  *
- * @return {carto.source.Dataset|carto.source.SQL} Current source
+ * @return {carto.source.Base} Current source
  * @api
  */
 Layer.prototype.getSource = function () {
@@ -299,6 +301,22 @@ Layer.prototype._createInternalModel = function (engine) {
     tooltip: _getInteractivityFields(this._featureOverColumns)
   }, { engine: engine });
 
+  internalModel.on('change:meta', function (layer, data) {
+    var rules = data.cartocss_meta.rules;
+    var styleMetadataList = metadataParser.getMetadataFromRules(rules);
+    /**
+     *
+     * Events triggered by {@link carto.layer.Layer} when the style contains Turbocarto ramps
+     *
+     * @event carto.layer.MetadataEvent
+     * @property {carto.layer.metadata.Base[]} styles - List of style metadata objects
+     *
+     * @api
+     */
+    var metadata = { styles: styleMetadataList };
+    this.trigger('metadataChanged', metadata);
+  }, this);
+
   internalModel.on('change:error', function (model, value) {
     if (value && _isStyleError(value)) {
       this._style.$setError(new CartoError(value));
@@ -378,7 +396,7 @@ function _isStyleError (windshaftError) {
  *
  * Contains a single argument with the Layer where the source has changed.
  *
- * @event carto.layer.Layer.sourceChanged
+ * @event carto.layer.sourceChanged
  * @type {carto.layer.Layer}
  * @api
  */
@@ -388,8 +406,18 @@ function _isStyleError (windshaftError) {
  *
  * Contains a single argument with the Layer where the style has changed.
  *
- * @event carto.layer.Layer.styleChanged
+ * @event carto.layer.styleChanged
  * @type {carto.layer.Layer}
+ * @api
+ */
+
+/**
+ * Event triggered when the style metadata of the layer changes.
+ *
+ * Contains a list of metadata objects.
+ *
+ * @event carto.layer.metadataChanged
+ * @type {carto.layer.MetadataEvent}
  * @api
  */
 

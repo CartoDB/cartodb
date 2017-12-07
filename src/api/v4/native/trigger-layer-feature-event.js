@@ -25,7 +25,7 @@ module.exports = function (eventName, internalEvent, layers) {
      *
      * Events triggered by {@link carto.layer.Layer} when users interact with a feature.
      *
-     * @event carto.layer.Layer.FeatureEvent
+     * @event carto.layer.FeatureEvent
      * @property {LatLng} latLng - Object with coordinates where interaction took place
      * @property {object} data - Object with feature data (one attribute for each specified column)
      *

@@ -297,6 +297,38 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
+  it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+
+    user = create_user_with_visualizations
+
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+
+    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
+    export.run_export
+
+    expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: false,
+      dry: false
+    )
+    import.run_import
+
+    expect(import.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
+    expect(import.log.entries).to include('DB already exists at DB host')
+
+    # DB exists, otherwise this would fail
+    user.in_database.run("select 1;")
+
+    user.destroy_cascade
+  end
+
   it 'doesn\'t export users with datasets without a physical table if metadata export is requested (see #12588)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
@@ -430,42 +462,25 @@ describe 'UserMigration' do
 
     export.run_export
 
+    drop_database(user)
+
+    # Let's fake the column to check that dry doesn't fix it
+    carto_user.update_column(:database_host, 'wadus')
+
     import = Carto::UserMigrationImport.create(
       exported_file: export.exported_file,
-      database_host: '127.0.0.2',
+      database_host: database_host,
       org_import: false,
       json_file: export.json_file,
       import_metadata: false,
       dry: true
     )
-    log = Carto::Log.create(type: 'user_migration_import')
-    import.log = log
-    package = Carto::UserMigrationPackage.for_import(import.id, log)
-    package.download(export.exported_file)
-
-    import_job = Object.new
-    import_job.expects(:run!).once
-    import_job.expects(:terminate_connections).once
-    CartoDB::DataMover::ImportJob.expects(:new)
-      .with(
-        job_uuid: import.id,
-        file: "#{package.data_dir}#{export.json_file[/\// =~ export.json_file..-1]}",
-        data: true,
-        metadata: false,
-        host: '127.0.0.2',
-        rollback: false,
-        into_org_name: nil,
-        mode: :import,
-        logger: log.logger,
-        import_job_logger: log.logger,
-        update_metadata: false
-      ).once.returns(import_job)
 
     import.run_import
     import.state.should eq 'complete'
 
-    carto_user.reload
-    carto_user.database_host.should eq database_host
+    carto_user2 = Carto::User.find(user.id)
+    carto_user2.attributes.should eq carto_user.attributes
   end
 
   def drop_database(user)

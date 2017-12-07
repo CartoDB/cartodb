@@ -7,7 +7,7 @@ const libraryName = 'CartoNode';
 const fileName = 'carto-node';
 
 const uglifySettings = {
-  test: /\.js(\.babel)?$/,
+  test: /\.js$/,
   sourceMap: true,
   beautify: false,
   mangle: {
@@ -34,7 +34,7 @@ const outputFile = env !== 'build'
     fileName + '.min.js');
 
 const config = {
-  entry: './lib/assets/core/javascripts/carto-node/index.js.babel',
+  entry: './lib/assets/core/javascripts/carto-node/index',
 
   output: {
     path: path.resolve(__dirname, '../../vendor/assets/javascripts/carto-node'),
@@ -47,7 +47,7 @@ const config = {
 
   module: {
     rules: [{
-      test: /\.js(\.babel)?$/,
+      test: /\.js$/,
       loader: 'babel-loader',
       include: [
         path.resolve(__dirname, '../../lib/assets/core/javascripts/carto-node')

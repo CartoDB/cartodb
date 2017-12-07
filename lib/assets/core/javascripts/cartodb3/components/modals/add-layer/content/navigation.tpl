@@ -17,10 +17,7 @@
       <% if (showDatasets) { %>
         <li class="Filters-typeItem js-filter-type">
           <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-datasets <%- listingType === 'datasets' && shared !== 'only' && !library ? 'is-selected' : '' %>">
-            <% if (totalItems) { %>
-              <strong><%- totalItems %></strong>
-            <% } %>
-            <%- _t('components.modals.add-layer.navigation.dataset-pluralize', { smart_count: totalItems }) %>
+            <%- _t('components.modals.add-layer.navigation.your-datasets') %>
           </button>
         </li>
         <% if (isInsideOrg) { %>
@@ -34,11 +31,13 @@
           </li>
         <% } %>
       <% } %>
-      <li class="Filters-typeItem js-filter-type">
-        <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-library <%- listingType === 'datasets' && library ? 'is-selected' : '' %>">
-          <%- _t('components.modals.add-layer.navigation.data-library') %>
-        </button>
-      </li>
+      <% if (hasDataLibrary) { %>
+        <li class="Filters-typeItem js-filter-type">
+          <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-library <%- listingType === 'datasets' && library ? 'is-selected' : '' %>">
+            <%- _t('components.modals.add-layer.navigation.data-library') %>
+          </button>
+        </li>
+      <% } %>
     </ul>
   </div>
 

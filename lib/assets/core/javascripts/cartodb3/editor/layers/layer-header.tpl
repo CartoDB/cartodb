@@ -1,6 +1,6 @@
 <div class="Editor-HeaderInfoEditor">
   <div class="u-rSpace--xl u-actionTextColor js-back Editor-HeaderInfoEditorShape">
-    <button>
+    <button class="js-backButton">
       <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
     </button>
   </div>

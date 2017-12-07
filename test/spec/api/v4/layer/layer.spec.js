@@ -44,13 +44,13 @@ describe('api/v4/layer', function () {
     it('should throw an error if source is not valid', function () {
       expect(function () {
         new carto.layer.Layer({}, style); // eslint-disable-line
-      }).toThrowError('The given object is not a valid source. See "carto.source.Base"');
+      }).toThrowError('The given object is not a valid source. See "carto.source.Base".');
     });
 
     it('should throw an error if style is not valid', function () {
       expect(function () {
         new carto.layer.Layer(source, {}); // eslint-disable-line
-      }).toThrowError('The given object is not a valid style. See "carto.style.Base"');
+      }).toThrowError('The given object is not a valid style. See "carto.style.Base".');
     });
   });
 
@@ -65,7 +65,7 @@ describe('api/v4/layer', function () {
     it('should throw an error when the parameter is not a valid style', function () {
       expect(function () {
         layer.setStyle('bad-style');
-      }).toThrowError('The given object is not a valid style. See "carto.style.Base"');
+      }).toThrowError('The given object is not a valid style. See "carto.style.Base".');
     });
 
     describe('when the layer has no engine', function () {
@@ -136,7 +136,7 @@ describe('api/v4/layer', function () {
             .then(function () {
               expect(function () {
                 return layer.setStyle(newStyle);
-              }).toThrowError();
+              }).toThrowError("A layer can't have a style which belongs to a different client.");
               done();
             });
         });
@@ -191,6 +191,27 @@ describe('api/v4/layer', function () {
     });
   });
 
+  describe('.$setEngine', function () {
+    it('probando', function () {
+      var layer = new carto.layer.Layer(source, style);
+      var engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.resolve()) };
+      var error = {
+        message: 'an error'
+      };
+      var capturedError;
+      layer.$setEngine(engineMock);
+      layer.on(carto.events.ERROR, function (error) {
+        capturedError = error;
+      });
+
+      layer._internalModel.set('error', error);
+
+      expect(capturedError).toBeDefined();
+      expect(capturedError.name).toEqual('CartoError');
+      expect(capturedError.message).toEqual('an error');
+    });
+  });
+
   describe('.setSource', function () {
     var layer;
     var newSource;
@@ -203,7 +224,7 @@ describe('api/v4/layer', function () {
     it('should throw an error when the source is not a valid parameter', function () {
       expect(function () {
         layer.setSource('bad-parameter');
-      }).toThrowError('The given object is not a valid source. See "carto.source.Base"');
+      }).toThrowError('The given object is not a valid source. See "carto.source.Base".');
     });
 
     describe("when the layer hasn't been set an engine", function () {
@@ -273,7 +294,7 @@ describe('api/v4/layer', function () {
 
           expect(function () {
             layer.setSource(newSource);
-          }).toThrowError('A layer can\'t have a source which belongs to a different client');
+          }).toThrowError('A layer can\'t have a source which belongs to a different client.');
         });
       });
     });

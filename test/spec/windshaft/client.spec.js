@@ -3,7 +3,6 @@ var _ = require('underscore');
 var util = require('cdb.core.util');
 var WindshaftClient = require('../../../src/windshaft/client');
 var Request = require('../../../src/windshaft/request');
-
 var LZMA = require('lzma');
 
 describe('windshaft/client', function () {
@@ -99,17 +98,23 @@ describe('windshaft/client', function () {
 
       this.ajaxParams.success(errors);
 
-      expect(errorCallback).toHaveBeenCalledWith(errors);
+      var callArgs = errorCallback.calls.mostRecent().args;
+      expect(callArgs[0][0]).toEqual(jasmine.objectContaining({
+        message: 'the error message',
+        origin: 'windshaft'
+      }));
     });
 
-    it('should invoke the error callback if ajax request goes wrong', function () {
+    it('should invoke the error callback if ajax request goes wrong. If it is not a windshaft error it returns an empty array', function () {
       var errorCallback = jasmine.createSpy('errorCallback');
       var request = new Request('mapDefinition', {}, { error: errorCallback });
       this.client.instantiateMap(request);
 
       this.ajaxParams.error({ responseText: JSON.stringify({ something: 'else' }) });
 
-      expect(errorCallback).toHaveBeenCalledWith({ something: 'else' });
+      var callArgs = errorCallback.calls.mostRecent().args;
+      expect(callArgs[0] instanceof Array).toBe(true);
+      expect(callArgs[0].length).toBe(0);
     });
 
     it('should ignore the error callback if request was aborted', function () {

@@ -91,14 +91,14 @@ Formula.prototype.DEFAULTS = {
 
 Formula.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Formula dataview options are not defined.');
+    throw this._getValidationError('formulaOptionsRequired');
   }
   this._checkOperation(options.operation);
 };
 
 Formula.prototype._checkOperation = function (operation) {
   if (_.isUndefined(operation) || !constants.isValidOperation(operation)) {
-    throw new TypeError('Operation for formula dataview is not valid. Use carto.operation');
+    throw this._getValidationError('formulaInvalidOperation');
   }
 };
 

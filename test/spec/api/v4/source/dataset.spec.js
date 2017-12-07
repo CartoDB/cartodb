@@ -61,7 +61,7 @@ describe('api/v4/source/dataset', function () {
       var cartoCSS = new carto.style.CartoCSS('#layer { marker-fill: red; }');
 
       invalidSource.on('error', function (cartoError) {
-        expect(cartoError.message).toMatch(/relation "invalid_dataset" does not exist/);
+        expect(cartoError.message).toMatch(/Invalid dataset name used. Dataset "invalid_dataset" does not exist./);
         done();
       });
       var layer = new carto.layer.Layer(invalidSource, cartoCSS);

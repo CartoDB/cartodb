@@ -9,7 +9,8 @@
 var events = {
   FEATURE_CLICKED: 'featureClicked',
   FEATURE_OVER: 'featureOver',
-  FEATURE_OUT: 'featureOut'
+  FEATURE_OUT: 'featureOut',
+  TILE_ERROR: 'featureError'
 };
 
 module.exports = events;

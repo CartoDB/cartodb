@@ -2,8 +2,11 @@ var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 var SourceBase = require('../source/base');
 var StyleBase = require('../style/base');
-var CartoError = require('../error');
+var CartoError = require('../error-handling/carto-error');
+var CartoValidationError = require('../error-handling/carto-validation-error');
+var EVENTS = require('../events');
 var metadataParser = require('./metadata/parser');
+
 /**
  * Represent a layer Object.
  *
@@ -78,7 +81,7 @@ Layer.prototype.setStyle = function (style, opts) {
   }
   // If style has an engine and is different from the layer`s engine throw an error
   if (style.$getEngine() && style.$getEngine() !== this._internalModel._engine) {
-    throw new Error('A layer can\'t have a style which belongs to a different client');
+    throw new CartoValidationError('layer', 'differentStyleClient');
   }
   // If style has no engine, set the layer engine in the style.
   if (!style.$getEngine()) {
@@ -93,7 +96,7 @@ Layer.prototype.setStyle = function (style, opts) {
     }.bind(this))
     .catch(function (err) {
       var error = new CartoError(err);
-      this.trigger('error', error);
+      this.trigger(EVENTS.ERROR, error);
       return Promise.reject(error);
     }.bind(this));
 };
@@ -135,7 +138,7 @@ Layer.prototype.setSource = function (source) {
   // If layer has been instantiated
   // If the source already has an engine and is different from the layer's engine throw an error.
   if (source.$getEngine() && source.$getEngine() !== this._internalModel._engine) {
-    throw new Error('A layer can\'t have a source which belongs to a different client');
+    throw new CartoValidationError('layer', 'differentSourceClient');
   }
   // If source has no engine use the layer engine.
   if (!source.$getEngine()) {
@@ -150,7 +153,7 @@ Layer.prototype.setSource = function (source) {
     }.bind(this))
     .catch(function (err) {
       var error = new CartoError(err);
-      this.trigger('error', error);
+      this.trigger(EVENTS.ERROR, error);
       return Promise.reject(error);
     }.bind(this));
 };
@@ -317,6 +320,8 @@ Layer.prototype._createInternalModel = function (engine) {
   internalModel.on('change:error', function (model, value) {
     if (value && _isStyleError(value)) {
       this._style.$setError(new CartoError(value));
+    } else if (value) {
+      this.trigger(EVENTS.ERROR, new CartoError(value));
     }
   }, this);
 
@@ -361,13 +366,13 @@ function _getInteractivityFields (columns) {
 
 function _checkStyle (style) {
   if (!(style instanceof StyleBase)) {
-    throw new TypeError('The given object is not a valid style. See "carto.style.Base"');
+    throw new CartoValidationError('layer', 'nonValidStyle');
   }
 }
 
 function _checkSource (source) {
   if (!(source instanceof SourceBase)) {
-    throw new TypeError('The given object is not a valid source. See "carto.source.Base"');
+    throw new CartoValidationError('layer', 'nonValidSource');
   }
 }
 
@@ -375,7 +380,7 @@ function _checkSource (source) {
  * Return true when a windshaft error is because a styling error.
  */
 function _isStyleError (windshaftError) {
-  return windshaftError.message && windshaftError.message.indexOf('style') === 0;
+  return windshaftError.message && windshaftError.message.indexOf('style') >= 0;
 }
 
 /**

@@ -3,7 +3,8 @@ var Backbone = require('backbone');
 var status = require('../constants').status;
 var SourceBase = require('../source/base');
 var FilterBase = require('../filter/base');
-var CartoError = require('../error');
+var CartoError = require('../error-handling/carto-error');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 
 /**
  * Base class for dataview objects.
@@ -214,19 +215,19 @@ Base.prototype._initialize = function (source, column, options) {
 
 Base.prototype._checkSource = function (source) {
   if (!(source instanceof SourceBase)) {
-    throw new TypeError('Source property is required.');
+    throw this._getValidationError('sourceRequired');
   }
 };
 
 Base.prototype._checkColumn = function (column) {
   if (_.isUndefined(column)) {
-    throw new TypeError('Column property is required.');
+    throw this._getValidationError('columnRequired');
   }
   if (!_.isString(column)) {
-    throw new TypeError('Column property must be a string.');
+    throw this._getValidationError('columnString');
   }
   if (_.isEmpty(column)) {
-    throw new TypeError('Column property must be not empty.');
+    throw this._getValidationError('emptyColumn');
   }
 };
 
@@ -236,7 +237,7 @@ Base.prototype._checkOptions = function (options) {
 
 Base.prototype._checkFilter = function (filter) {
   if (!(filter instanceof FilterBase)) {
-    throw new TypeError('Filter property is required.');
+    throw this._getValidationError('filterRequired');
   }
 };
 
@@ -325,6 +326,10 @@ Base.prototype._removeBoundingBoxFilter = function () {
   if (this._internalModel) {
     this._internalModel.set('sync_on_bbox_change', false);
   }
+};
+
+Base.prototype._getValidationError = function (code) {
+  return new CartoValidationError('dataview', code);
 };
 
 // Internal public methods

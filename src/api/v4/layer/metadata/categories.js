@@ -3,6 +3,18 @@ var Base = require('./base');
 /**
  * Metadata type categories
  *
+ * Adding a Turbocarto ramp (with categories) in the style generates a response
+ * from the server with the resulting information after computing the ramp.
+ * This information is wrapped in a metadata object of type 'categories', that
+ * contains a list of categories with the name of the category and the value. And
+ * also the default value if it has been defined in the ramp.
+ *
+ * For example, the following ramp will generate a metadata of type 'categories'
+ * with string values (the color) in its categories. The #CCCCCC is the default
+ * value in this case:
+ *
+ *   marker-fill: ramp([scalerank], (#F54690, #D16996, #CCCCCC), (1, 2), "=", category);
+ *
  * @param {object} rule - Rule with the cartocss metadata
  * @constructor
  * @hideconstructor

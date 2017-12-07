@@ -114,7 +114,7 @@ Layer.prototype.getStyle = function () {
  * A source and a layer must belong to the same client so you can't
  * add a source belonging to a different client.
  *
- * @param {carto.source.Dataset|carto.source.SQL} source New source
+ * @param {carto.source.Base} source New source
  * @fires carto.layer.Layer.sourceChanged
  * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
  * {@link CartoError} if something goes bad
@@ -158,7 +158,7 @@ Layer.prototype.setSource = function (source) {
 /**
  * Get the current source for this layer.
  *
- * @return {carto.source.Dataset|carto.source.SQL} Current source
+ * @return {carto.source.Base} Current source
  * @api
  */
 Layer.prototype.getSource = function () {
@@ -300,8 +300,18 @@ Layer.prototype._createInternalModel = function (engine) {
 
   internalModel.on('change:meta', function (layer, data) {
     var rules = data.cartocss_meta.rules;
-    var metadataList = metadataParser.getMetadataFromRules(rules);
-    this.trigger('metadataChanged', { styles: metadataList });
+    var styleMetadataList = metadataParser.getMetadataFromRules(rules);
+    /**
+     *
+     * Events triggered by {@link carto.layer.Layer} when the style contains Turbocarto ramps
+     *
+     * @event carto.layer.MetadataEvent
+     * @property {carto.layer.metadata.Base[]} styles - List of style metadata objects
+     *
+     * @api
+     */
+    var metadata = { styles: styleMetadataList };
+    this.trigger('metadataChanged', metadata);
   }, this);
 
   internalModel.on('change:error', function (model, value) {

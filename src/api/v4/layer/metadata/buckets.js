@@ -1,7 +1,23 @@
 var Base = require('./base');
 
 /**
- * Metadata type gradient
+ * Metadata type buckets
+ *
+ * Adding a Turbocarto ramp (with ranges) in the style generates a response
+ * from the server with the resulting information after computing the ramp.
+ * This information is wrapped in a metadata object of type 'buckets', that
+ * contains a list of buckets with the range (min, max) and the value. And
+ * also the total min, max range and the average of the total values.
+ *
+ * For example, the following ramp will generate a metadata of type 'buckets'
+ * with numeric values (the size) in its buckets:
+ *
+ *   marker-width: ramp([scalerank], range(5, 20), quantiles(5));
+ *
+ * Another example, this ramp will generate a metadata of type 'buckets'
+ * with string values (the color) in its buckets:
+ *
+ *   marker-fill: ramp([scalerank], (#FFC6C4, #EE919B, #CC607D), quantiles);
  *
  * @param {object} rule - Rule with the cartocss metadata
  * @constructor

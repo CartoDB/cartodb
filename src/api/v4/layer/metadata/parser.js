@@ -2,34 +2,34 @@ var BucketsMetadata = require('./buckets');
 var CategoriesMetadata = require('./categories');
 var Rule = require('../../../../windshaft-integration/legends/rule.js');
 
-module.exports = {
-  /**
-   * Generates a list of Metadata objects from the original cartocss_meta rules
-   *
-   * @param  {Rules} rulesData
-   * @return {metadata.Base[]}
-   */
-  getMetadataFromRules: function (rulesData) {
-    var metadata = [];
+/**
+ * Generates a list of Metadata objects from the original cartocss_meta rules
+ *
+ * @param  {Rules} rulesData
+ * @return {metadata.Base[]}
+ */
+function getMetadataFromRules (rulesData) {
+  var metadata = [];
 
-    rulesData.forEach(function (ruleData) {
-      var rule = new Rule(ruleData);
+  rulesData.forEach(function (ruleData) {
+    var rule = new Rule(ruleData);
 
-      if (isBucketsMetadata(rule)) {
-        metadata.push(new BucketsMetadata(rule));
-      } else if (isCategoriesMetadata(rule)) {
-        metadata.push(new CategoriesMetadata(rule));
-      }
-    });
+    if (_isBucketsMetadata(rule)) {
+      metadata.push(new BucketsMetadata(rule));
+    } else if (_isCategoriesMetadata(rule)) {
+      metadata.push(new CategoriesMetadata(rule));
+    }
+  });
 
-    return metadata;
-  }
-};
+  return metadata;
+}
 
-function isBucketsMetadata (rule) {
+function _isBucketsMetadata (rule) {
   return rule.getBucketsWithRangeFilter().length > 0;
 }
 
-function isCategoriesMetadata (rule) {
+function _isCategoriesMetadata (rule) {
   return rule.getBucketsWithCategoryFilter().length > 0;
 }
+
+module.exports = getMetadataFromRules;

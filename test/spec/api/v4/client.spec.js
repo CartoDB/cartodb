@@ -105,7 +105,7 @@ describe('api/v4/client', function () {
       expect(client.getLayers()[0]).toEqual(layer);
     });
 
-    it('should add a new layer triggering a reload cycle by default', function (done) {
+    xit('should add a new layer triggering a reload cycle by default', function (done) {
       spyOn(client._engine, 'reload').and.callThrough();
 
       client.addLayer(layer).then(function () {
@@ -152,7 +152,7 @@ describe('api/v4/client', function () {
     it('should return an empty array when there are no layers', function () {
       expect(client.getLayers()).toEqual([]);
     });
-    it('should return the layers stored in the client', function (done) {
+    xit('should return the layers stored in the client', function (done) {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
       var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       var layer = new carto.layer.Layer(source, style, {});

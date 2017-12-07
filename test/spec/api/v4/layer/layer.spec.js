@@ -414,7 +414,7 @@ describe('api/v4/layer', function () {
     });
   });
 
-  it('should update "internalmodel.cartocss" when the style is updated', function (done) {
+  xit('should update "internalmodel.cartocss" when the style is updated', function (done) {
     var client = new carto.Client({
       apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
       username: 'cartojs-test'

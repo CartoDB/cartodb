@@ -2,7 +2,7 @@ var Base = require('./base');
 
 /**
  * Metadata type categories
- *
+ * 
  * Adding a Turbocarto ramp (with categories) in the style generates a response
  * from the server with the resulting information after computing the ramp.
  * This information is wrapped in a metadata object of type 'categories', that

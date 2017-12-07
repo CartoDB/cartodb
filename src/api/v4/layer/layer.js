@@ -17,10 +17,10 @@ var metadataParser = require('./metadata/parser');
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
- * @fires carto.layer.Layer.FeatureEvent
- * @fires carto.layer.Layer.sourceChanged
- * @fires carto.layer.Layer.styleChanged
- * @fires carto.layer.Layer.metadataChanged
+ * @fires carto.layer.FeatureEvent
+ * @fires carto.layer.sourceChanged
+ * @fires carto.layer.styleChanged
+ * @fires carto.layer.MetadataEvent
  * @example
  * // no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
@@ -391,7 +391,7 @@ function _isStyleError (windshaftError) {
  *
  * Contains a single argument with the Layer where the source has changed.
  *
- * @event carto.layer.Layer.sourceChanged
+ * @event carto.layer.sourceChanged
  * @type {carto.layer.Layer}
  * @api
  */
@@ -401,7 +401,7 @@ function _isStyleError (windshaftError) {
  *
  * Contains a single argument with the Layer where the style has changed.
  *
- * @event carto.layer.Layer.styleChanged
+ * @event carto.layer.styleChanged
  * @type {carto.layer.Layer}
  * @api
  */
@@ -411,8 +411,8 @@ function _isStyleError (windshaftError) {
  *
  * Contains a list of metadata objects.
  *
- * @event carto.layer.Layer.metadataChanged
- * @type {carto.layer.Layer}
+ * @event carto.layer.metadataChanged
+ * @type {carto.layer.MetadataEvent}
  * @api
  */
 

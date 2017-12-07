@@ -141,6 +141,14 @@
         }
       },
       {
+        "title": "Legends",
+        "desc": "Create dynamic legends",
+        "file": {
+          "leaflet": "public/misc/legends-leaflet.html",
+          "gmaps": "public/misc/legends-gmaps.html"
+        }
+      },
+      {
         "title": "Most/less populated places",
         "desc": "Filter the 20 most/less populated places in the world",
         "file": {

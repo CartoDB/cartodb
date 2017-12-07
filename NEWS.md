@@ -103,6 +103,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)
 * Enable data tab if layer needs geocoding
 * Fix bug in redirection after analysis is completed (CartoDB/support#1183)
 * Hide Salesforce Connector Form (CartoDB/tech-ops#324)

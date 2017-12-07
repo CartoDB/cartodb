@@ -298,10 +298,6 @@ _.extend(
       }
     },
 
-    _findPos: function (map, o) {
-      return o.pixel;
-    },
-
     /**
      * Creates an instance of a googleMaps Point
      */
@@ -316,7 +312,7 @@ _.extend(
     },
 
     _manageOnEvents: function (map, o) {
-      var point = this._findPos(map, o);
+      var point = o.pixel;
       var latlng = this.projector.pixelToLatLng(point);
       var eventType = o.e.type.toLowerCase();
 

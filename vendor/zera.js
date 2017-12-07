@@ -520,7 +520,7 @@ var LeafletMap = function () {
     _createClass(LeafletMap, [{
         key: "project",
         value: function project(event) {
-            var latlng = event.latlng;
+            var latlng = event.latlng.wrap();
             return this._map.project(latlng, this._map.getZoom()).floor();
         }
     }, {

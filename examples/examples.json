@@ -2,12 +2,12 @@
   "publish": [
     {
       "title": "Single layer",
-      "desc": "Add one carto layer to your map",
+      "desc": "Add one CARTO layer to your map",
       "file": "public/single-layer.html"
     },
     {
       "title": "Multilayer",
-      "desc": "Add several carto layers to your map",
+      "desc": "Add multiple CARTO layers to your map",
       "file": "public/multilayer.html"
     },
     {
@@ -26,8 +26,8 @@
       "file": "public/histogram-dataview.html"
     },
     {
-      "title": "Time Series dataview",
-      "desc": "Create widgets with the time series dataview",
+      "title": "Time-Series dataview",
+      "desc": "Create widgets with the time-series dataview",
       "file": "public/time-series-dataview.html"
     },
     {
@@ -36,8 +36,8 @@
       "file": "public/change-source-style.html"
     },
     {
-      "title": "Interactive popups",
-      "desc": "Create popups and interact with your map",
+      "title": "Interactive Pop-Ups",
+      "desc": "Create pop-up information windows and interact with your map",
       "file": "public/interactivity-change-popups.html"
     },
     {

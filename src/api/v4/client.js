@@ -67,10 +67,11 @@ Client.prototype.addLayer = function (layer, opts) {
 };
 
 /**
- * Add multiple layers to the client.
+ * Add multiple layers to the client. Note the hierarchal order of layers.
  *
- * @param {carto.layer.Base[]} - An array with the layers to be added
+ * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
  * @param {object} opts
+ * @param {show/hide} opts* - Show or hide the layer. client.addLayer(B).hide();
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError

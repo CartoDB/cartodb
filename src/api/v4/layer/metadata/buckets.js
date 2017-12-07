@@ -31,7 +31,7 @@ function Buckets (rule) {
   this._min = rangeBuckets.length > 0 ? rangeBuckets[0].filter.start : undefined;
   this._max = rangeBuckets.length > 0 ? rangeBuckets[rangeBuckets.length - 1].filter.end : undefined;
 
-  Base.call(this, 'gradient', rule);
+  Base.call(this, 'buckets', rule);
 }
 
 Buckets.prototype = Object.create(Base.prototype);

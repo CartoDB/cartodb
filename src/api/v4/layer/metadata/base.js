@@ -14,23 +14,13 @@ function Base (type, rule) {
 }
 
 /**
- * Return true is the metadata type is categories
+ * Return the type of the metadata
  *
- * @return {boolean}
+ * @return {string}
  * @api
  */
-Base.prototype.isCategories = function () {
-  return this._type === 'categories';
-};
-
-/**
- * Return true is the metadata type is buckets
- *
- * @return {boolean}
- * @api
- */
-Base.prototype.isBuckets = function () {
-  return this._type === 'buckets';
+Base.prototype.getType = function () {
+  return this._type;
 };
 
 /**

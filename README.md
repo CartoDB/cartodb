@@ -23,3 +23,10 @@ You will need to sign a Contributor License Agreement (CLA) before making a subm
 
 This project is licensed under the BSD 3-clause "New" or "Revised" License - see the [LICENSE.txt](LICENSE.txt) file for details.
 
+## Building the library
+
+    npm run build
+
+To watch the files
+
+    npm run build:watch

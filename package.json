@@ -153,6 +153,7 @@
     "postversion": "git push origin v4 --follow-tags",
     "dist": "grunt build",
     "build": "webpack",
+    "build:watch": "webpack -w",
     "watch": "npm-watch"
   },
   "watch": {

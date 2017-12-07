@@ -32,4 +32,6 @@ function _isCategoriesMetadata (rule) {
   return rule.getBucketsWithCategoryFilter().length > 0;
 }
 
-module.exports = getMetadataFromRules;
+module.exports = {
+  getMetadataFromRules: getMetadataFromRules
+};

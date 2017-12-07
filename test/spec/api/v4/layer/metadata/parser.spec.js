@@ -106,8 +106,7 @@ describe('api/v4/layer/metadata/parser', function () {
 
       expect(metadataList).toBeDefined();
 
-      expect(metadataList[0].isBuckets()).toBe(true);
-      expect(metadataList[0].isCategories()).toBe(false);
+      expect(metadataList[0].getType()).toBe('buckets');
       expect(metadataList[0].getColumn()).toBe('scalerank');
       expect(metadataList[0].getMapping()).toBe('>');
       expect(metadataList[0].getProperty()).toBe('marker-width');
@@ -121,8 +120,7 @@ describe('api/v4/layer/metadata/parser', function () {
         { min: 7, max: 10, value: 20 }
       ]);
 
-      expect(metadataList[1].isBuckets()).toBe(true);
-      expect(metadataList[1].isCategories()).toBe(false);
+      expect(metadataList[0].getType()).toBe('buckets');
       expect(metadataList[1].getColumn()).toBe('pop_max');
       expect(metadataList[1].getMapping()).toBe('>');
       expect(metadataList[1].getProperty()).toBe('marker-fill-opacity');
@@ -207,8 +205,7 @@ describe('api/v4/layer/metadata/parser', function () {
 
       expect(metadataList).toBeDefined();
 
-      expect(metadataList[0].isBuckets()).toBe(false);
-      expect(metadataList[0].isCategories()).toBe(true);
+      expect(metadataList[0].getType()).toBe('categories');
       expect(metadataList[0].getColumn()).toBe('scalerank');
       expect(metadataList[0].getMapping()).toBe('=');
       expect(metadataList[0].getProperty()).toBe('marker-fill');
@@ -219,8 +216,7 @@ describe('api/v4/layer/metadata/parser', function () {
         { name: 10, value: '#38A6A5' }
       ]);
 
-      expect(metadataList[1].isBuckets()).toBe(false);
-      expect(metadataList[1].isCategories()).toBe(true);
+      expect(metadataList[0].getType()).toBe('categories');
       expect(metadataList[1].getColumn()).toBe('scalerank');
       expect(metadataList[1].getMapping()).toBe('=');
       expect(metadataList[1].getProperty()).toBe('marker-file');

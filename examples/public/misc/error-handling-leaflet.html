@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit SQL & CartoCSS | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <style>
+      * { margin: 0; padding: 0; }
+      html { box-sizing: border-box; height: 100%; }
+      body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
+      #container { display: flex; width: 100%; height: 100%; }
+      #map { flex: 1; margin: 10px; }
+      #controls { position: relative; width: 300px; margin: 20px; }
+      h3 { margin-bottom: 20px; }
+      .button { width: 100%; padding: 10px; margin: 20px 0; border: none; font-weight: bold; text-transform: uppercase; }
+      .button--to_wrong { background: #162945; color: white; }
+      .button--to_valid { background: white; color: #162945; } 
+      textarea { height: 100px; width: 100%; resize: none; }
+      .value { background-color: #000; padding: 1em; }
+      .value--valid { border: green 2px solid; color: green; }
+      .value--wrong { border: red 2px solid; color: red; }
+      .panel { padding: 1em; margin-bottom: 1em; color: white; }
+      .panel--ok { background: green; }
+      .panel--error { background: red; }
+      .panel--updating { background: orange; }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="map"></div>
+      <div id="controls">
+        <h3>DATASET</h3>
+        <div id="dataset-value" class="value"></div>
+        <button id="dataset-button" class="button" onclick="updateDataset()"></button>
+
+        <h3>STYLE</h3>
+        <div id="style-value" class="value"></div>
+        <button id="style-button" class="button" onclick="updateStyle()"></button>
+
+        <div id="panel" class="panel"></div>
+
+        <p>In this example we handle the client error while calling .addLayer</p>
+        <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+      </div>
+    </div>
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      // State
+      const state = {
+        isDatasetValid: true,
+        isStyleValid: true,
+        errorMessage: '',
+        updating: false
+      };
+
+      // Datasets
+      const validDataset = 'ne_10m_populated_places_simple';
+      const wrongDataset = 'wrong_dataset';
+
+      // Style
+      const validStyle = `
+        #layer {
+          marker-fill: red;
+        }`;
+      const wrongStyle = `
+        #layer {
+          marker-fill: wrong-color;
+        }`;
+
+      let source = new carto.source.Dataset(validDataset);
+      let style = new carto.style.CartoCSS(validStyle);
+      let layer = new carto.layer.Layer(source, style);
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+
+      updateUI();
+
+      function refreshLayer (layer) {
+        client.addLayer(layer)
+          .then(function () {
+            state.errorMessage = '';
+            state.updating = false;
+            updateUI();
+          })
+          .catch(function (error) {
+            state.errorMessage = error.message;
+            state.updating = false;
+            updateUI();
+          });
+      }
+
+      function updateDataset() {
+        client.removeLayer(layer);
+
+        state.isDatasetValid = !state.isDatasetValid;
+        state.updating = true;
+
+        const dataset = state.isDatasetValid
+          ? validDataset
+          : wrongDataset;
+        
+        updateUI();
+
+        source = new carto.source.Dataset(dataset);
+        layer = new carto.layer.Layer(source, style);
+        refreshLayer(layer);
+      }
+
+      function updateStyle() {
+        client.removeLayer(layer);
+
+        state.isStyleValid = !state.isStyleValid;
+        state.updating = true;
+
+        const styleContent = state.isStyleValid
+          ? validStyle
+          : wrongStyle;
+
+        updateUI();
+
+        style = new carto.style.CartoCSS(styleContent);
+        layer = new carto.layer.Layer(source, style);
+        refreshLayer(layer);
+      }
+
+      function updateUI () {
+        const datasetValueEl = document.getElementById('dataset-value');
+        const styleValueEl = document.getElementById('style-value');
+        const datasetButtonEl = document.getElementById('dataset-button');
+        const styleButtonEl = document.getElementById('style-button');
+        const panelEl = document.getElementById('panel');
+
+        datasetValueEl.textContent = state.isDatasetValid
+          ? validDataset
+          : wrongDataset;
+
+        styleValueEl.textContent = state.isStyleValid
+          ? validStyle
+          : wrongStyle;
+        
+        datasetButtonEl.textContent = state.isDatasetValid
+          ? 'Set wrong dataset'
+          : 'Revert to a valid dataset';
+
+        styleButtonEl.textContent = state.isStyleValid
+          ? 'Set wrong style'
+          : 'Revert to a valid style';
+        
+        if (state.isDatasetValid) {
+          datasetButtonEl.classList.add('button--to_wrong');
+          datasetButtonEl.classList.remove('button--to_valid');
+        } else {
+          datasetButtonEl.classList.remove('button--to_wrong');
+          datasetButtonEl.classList.add('button--to_valid');
+        }
+
+        if (state.isStyleValid) {
+          styleButtonEl.classList.add('button--to_wrong');
+          styleButtonEl.classList.remove('button--to_valid');
+        } else {
+          styleButtonEl.classList.remove('button--to_wrong');
+          styleButtonEl.classList.add('button--to_valid');
+        }
+
+        function setValueStyle (element, valid) {
+          if (valid) {
+            element.classList.add('value--valid');
+            element.classList.remove('value--wrong');
+          } else {
+            element.classList.add('value--wrong');
+            element.classList.remove('value--valid');
+          }
+        }
+
+        setValueStyle(datasetValueEl, state.isDatasetValid);
+        setValueStyle(styleValueEl, state.isStyleValid);
+
+        panelEl.textContent = state.updating
+          ? 'Updating...'
+          : state.errorMessage
+            ? state.errorMessage
+            : 'Everything OK';
+
+        if (state.updating) {
+          panelEl.classList.remove('panel--error');
+          panelEl.classList.remove('panel--ok');
+          panelEl.classList.add('panel--updating');
+        } else if (state.errorMessage) {
+          panelEl.classList.add('panel--error');
+          panelEl.classList.remove('panel--ok');
+          panelEl.classList.remove('panel--updating');
+        } else {
+          panelEl.classList.add('panel--ok');
+          panelEl.classList.remove('panel--error');
+          panelEl.classList.remove('panel--updating');
+        }
+      }
+
+    </script>
+  </body>
+</html>

@@ -100,6 +100,11 @@
         "title": "Custom Bounding Box filter",
         "desc": "Apply a custom bounding box filter to the widgets",
         "file": "public/filters/custom-bounding-box-leaflet.html"
+      },
+      {
+        "title": "Status and error handling",
+        "desc": "Manage the status and erros in dataviews",
+        "file": "public/dataviews/error-handling.html"
       }
     ]
   },
@@ -162,6 +167,13 @@
         "file": {
           "leaflet": "public/misc/edit-sql-cartocss-leaflet.html",
           "gmaps": "public/misc/edit-sql-cartocss-gmaps.html"
+        }
+      },
+      {
+        "title": "Error handling",
+        "desc": "Handle common errors in maps",
+        "file": {
+          "leaflet": "public/misc/error-handling-leaflet.html"
         }
       }
     ]

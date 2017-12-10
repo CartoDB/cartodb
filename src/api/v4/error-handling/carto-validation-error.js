@@ -1,7 +1,7 @@
 var CartoError = require('./carto-error');
 
 /**
- * Build a cartoError related to validation errors.
+ * Utility to build a cartoError related to validation errors.
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.

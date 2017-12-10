@@ -98,7 +98,7 @@ module.exports = CartoError;
  * `CartoError`.
  * 
  * The cartoErrors can be obtained listening to the client {@link carto.events|error events} `client.on(carto.events.ERROR, callback);` 
- * or through any async action events.
+ * , through any async action events or listening to the dataviews {@link carto.events|error events} `dataview.on(carto.events.ERROR, callback);`.
  * 
  * Promises are also rejected with a cartoError.
  * @example
@@ -115,6 +115,12 @@ module.exports = CartoError;
  * client.on(carto.events.ERROR, function (clientError) {
  *  console.error(clientError.message);
  * });
+ * @example
+ * // Listen when there is an error in a dataview
+ * dataview.on(carto.events.ERROR, function (error) {
+ *   console.error(error.message);
+ * });
+ * 
  * @typedef CartoError
  * @property {string} message - A short error description
  * @property {string} name - The name of the error "CartoError"

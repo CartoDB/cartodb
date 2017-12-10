@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Formula widget | Carto</title>
+    <title>Widgets error handling | Carto</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -52,7 +52,7 @@
         setText(data);
       });
 
-      formulaDataview.on('error', error => {
+      formulaDataview.on(carto.events.ERROR, error => {
         setText(error.message);
       });
 

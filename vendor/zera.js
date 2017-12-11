@@ -369,6 +369,11 @@ var Interactive = function () {
             // Add "e" property for backwards compatibility with wax.
             event.e = event.originalEvent || { type: eventType };
 
+            // To emulate wax behaviour stop event propagation when there is data.
+            if (event.data && event.originalEvent) {
+                event.originalEvent.stopPropagation();
+            }
+
             this._triggerEvent(eventType, event);
         }
 

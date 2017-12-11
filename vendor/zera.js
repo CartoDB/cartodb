@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["gridjson"] = factory();
+		exports["zera"] = factory();
 	else
-		root["gridjson"] = factory();
+		root["zera"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -404,6 +404,10 @@ var Interactive = function () {
             this._eventEmitter.removeEventListener('click');
             this._eventEmitter.removeEventListener('error');
             this._eventEmitter.removeEventListener('featureout');
+
+            // Remove native map listeners
+            this._map.off('click');
+            this._map.off('mousemove');
         }
 
         /**
@@ -465,6 +469,7 @@ var GoogleMap = function () {
         _classCallCheck(this, GoogleMap);
 
         this._map = nativeMap;
+        this._listeners = {};
     }
 
     /**
@@ -491,7 +496,12 @@ var GoogleMap = function () {
     }, {
         key: "on",
         value: function on(event, callback) {
-            this._map.addListener(event, callback);
+            this._listeners[event] = this._map.addListener(event, callback);
+        }
+    }, {
+        key: "off",
+        value: function off(event) {
+            this._listeners[event] && this._listeners[event].remove();
         }
 
         // We need to clone events to avoid mutations causing buggy behaviour
@@ -549,6 +559,11 @@ var LeafletMap = function () {
         value: function on(event, callback) {
             return this._map.on(event, callback);
         }
+    }, {
+        key: "off",
+        value: function off(event) {
+            return this._map.off(event);
+        }
 
         // We need to clone events to avoid mutations causing buggy behaviour
 
@@ -574,4 +589,4 @@ module.exports = LeafletMap;
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=gridjson.bundle.js.map
+//# sourceMappingURL=zera.js.map

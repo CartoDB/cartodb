@@ -2,10 +2,8 @@
 
 SEMVER_PATTERN="^v(0|[1-9]+)\.(0|[1-9]+)\.(0|[1-9]+)(-[a-z]+(\.[0-9a-z]+)?)?$"
 
-DIST_DIR="dist"
 DOCS_DIR="docs"
 EXAMPLES_DIR="examples"
-TMP_DIST_DIR="tmp_dist"
 TMP_DOCS_DIR="tmp_docs"
 TMP_EXAMPLES_DIR="tmp_examples"
 
@@ -22,52 +20,20 @@ fi
 
 # - Generation
 
-echo "Generating dist"
-npm run dist
-
 echo "Generating docs"
 npm run docs
 npm run docs:internal
 
-echo "Move dist to tmp file"
-mv $DIST_DIR $TMP_DIST_DIR
-
-echo "Move docs to tmp file"
+echo "Moving docs to tmp file"
 mv $DOCS_DIR $TMP_DOCS_DIR
 
-echo "Move examples to tmp file"
+echo "Moving examples to tmp file"
 mv $EXAMPLES_DIR $TMP_EXAMPLES_DIR
 
-echo "Copy index.html"
+echo "Copying index.html"
 cp config/jsdoc/index.html $TMP_DOCS_DIR/index.html || exit 1
 
 # - Deployment
-
-echo "Starting dist deployment"
-echo "Target: dist branch"
-
-echo "Fetching dist branch"
-git fetch origin dist:refs/remotes/origin/dist || exit 1
-
-echo "Checking out dist branch"
-git checkout -- . || exit 1
-git checkout -b dist origin/dist || exit 1
-
-echo "Copying source content to root"
-rm -rf *.js *.map || exit 1
-cp $TMP_DIST_DIR/public/* . || exit 1
-
-echo "Pushing new content to $ORIGIN_URL"
-git config user.name "Cartofante" || exit 1
-git config user.email "systems@cartodb.com" || exit 1
-
-git add *.js *.map || exit 1
-git commit --allow-empty -m "Update dist for $TRAVIS_BRANCH $CURRENT_COMMIT" || exit 1
-git push --force --quiet "$ORIGIN_URL_WITH_CREDENTIALS" dist > /dev/null 2>&1
-git tag "@${TRAVIS_BRANCH:1}"
-git push "$ORIGIN_URL_WITH_CREDENTIALS" "@${TRAVIS_BRANCH:1}"
-
-echo "Dist deployed successfully."
 
 echo "Starting docs/examples deployment"
 echo "Target: gh-pages branch"
@@ -91,14 +57,14 @@ mv $TMP_EXAMPLES_DIR/categories.json $EXAMPLES_DIR/v4/categories.json || exit 1
 mv $TMP_EXAMPLES_DIR/index.html $EXAMPLES_DIR/v4/index.html || exit 1
 mv $TMP_DOCS_DIR/index.html index.html || exit 1
 
-echo "Add version in index.html"
+echo "Adding version in index.html"
 sed -i "s|%VERSION|$TRAVIS_BRANCH|g" index.html
 
-echo "Use CDN carto.js in the v4 examples"
-CDN="https://cdn.rawgit.com/CartoDB/cartodb.js/@${TRAVIS_BRANCH:1}/carto.js"
-OLD="../../../dist/public/carto.uncompressed.js"
+echo "Using unpkg CDN carto.js in the v4 examples"
+CDN="https://unpkg.com/carto.js/carto.min.js"
+OLD="../../../dist/public/carto.js"
 sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/public/**/*.html
-OLD="../dist/public/carto.uncompressed.js"
+OLD="../dist/public/carto.js"
 sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/index.html
 
 echo "Pushing new content to $ORIGIN_URL"

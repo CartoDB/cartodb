@@ -160,7 +160,7 @@ module.exports = function (grunt) {
   // when registering the actual tasks _.uniq is used to discard duplicate tasks from begin run
   var allDeps = [
     'set_current_version',
-    'clean:dist',
+    'clean:dist_internal',
     'replace',
     'gitinfo',
     'copy:fonts'

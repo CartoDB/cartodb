@@ -5,13 +5,13 @@
 module.exports = {
   task: function() {
     return {
-      dist: {
+      dist_internal: {
         files: [{
           dot: true,
           src: [
             '.sass-cache',
             '.tmp',
-            '<%= config.dist %>',
+            '<%= config.dist %>/internal',
             '!<%= config.dist %>/.git*'
           ]
         }]

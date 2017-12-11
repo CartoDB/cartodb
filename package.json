@@ -150,14 +150,16 @@
     "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs": "rm -rf docs/public && jsdoc --configure config/jsdoc/public-conf.json",
-    "docs:internal": "rm -rf docs/internal && jsdoc --configure config/jsdoc/internal-conf.json",
-    "postversion": "git push origin v4 --follow-tags",
-    "dist": "grunt build",
-    "build": "rm -rf dist/public && webpack && webpack --config webpack.config.min.js && node scripts/publish.js",
+    "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",
+    "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
+    "build": "rm -rf dist/public; webpack && webpack --config webpack.config.min.js && node scripts/generate-package-json.js",
+    "build:internal": "grunt build",
     "build:watch": "webpack -w",
-    "deploy": "cd dist/public && npm publish",
-    "watch": "npm-watch"
+    "postversion": "git push origin HEAD --follow-tags",
+    "release": "npm version prerelease",
+    "release:minor": "npm version minor",
+    "release:patch": "npm version patch",
+    "publish:npm": "./scripts/publish.sh"
   },
   "watch": {
     "docs": "src/**/*.js"

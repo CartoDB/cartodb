@@ -104,6 +104,8 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)
+* Grunt: Run carto-node before browserify (#13187)
 * Enable data tab if layer needs geocoding
 * Fix bug in redirection after analysis is completed (CartoDB/support#1183)
 * Hide Salesforce Connector Form (CartoDB/tech-ops#324)
@@ -323,6 +325,7 @@ ion for time-series (#12670)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
 * Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Treat all time series dataview timestamps as UTC (#13070)
+* Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

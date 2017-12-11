@@ -104,6 +104,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)
+* Grunt: Run carto-node before browserify (#13187)
 * Enable data tab if layer needs geocoding
 * Fix bug in redirection after analysis is completed (CartoDB/support#1183)
 * Hide Salesforce Connector Form (CartoDB/tech-ops#324)

@@ -68,7 +68,6 @@ module CartoDB
       config.js
       app.js
       cdb.js
-      cdb_static.js
       carto_node.js
       embed.js
       dashboard_templates.js
@@ -85,6 +84,9 @@ module CartoDB
       public_map_templates_static.js
       public_map_deps_static.js
       public_map_static.js
+      show_templates_static.js
+      show_deps_static.js
+      show_static.js
       embed_map_static.js
       editor.js
       account_templates.js

@@ -27,6 +27,7 @@ module Carto
         @show_uses_builder_features = show_uses_builder_features
         @show_table_size_and_row_count = show_table_size_and_row_count
         @show_auth_tokens = show_auth_tokens
+        @show_auth_tokens = show_auth_tokens
         @password = password
 
         @presenter_cache = Carto::Api::PresenterCache.new
@@ -53,6 +54,7 @@ module Carto
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
+        poro[:google_maps_query_string] = @visualization.user.has_feature_flag?('google_maps') ? @visualization.user.google_maps_query_string : false
 
         if show_auth_tokens
           poro[:auth_tokens] = auth_tokens

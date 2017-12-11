@@ -17,6 +17,11 @@
  * - **operation** : The operations exposed.
  */
 
+// Add polyfill for `fetch`
+require('whatwg-fetch');
+// Add polyfill for `Promise`
+require('promise-polyfill');
+
 var Client = require('./client');
 var source = require('./source');
 var style = require('./style');

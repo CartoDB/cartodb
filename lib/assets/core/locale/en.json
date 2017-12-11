@@ -2499,6 +2499,10 @@
       }
     },
     "widgets": {
+      "breadcrumb": {
+        "widget-list": "Widget list",
+        "widget-options": "Widget options"
+      },
       "no-geometry-data": "Your dataset lacks geometry data, it is not possible to add a widget.",
       "options": {
         "remove": "Delete...",

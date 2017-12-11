@@ -7,15 +7,15 @@
 }
 
 .BlockList-item {
-  margin-bottom: $baseSize;
   display: flex;
+  margin-bottom: $baseSize;
   padding: $baseSize * 2;
   transition:
     border 200ms ease-in,
     box-shadow 300ms ease-in;
   border: 1px solid $cSecondaryLine;
-  background: $cWhite;
   border-radius: $baseSize / 2;
+  background: $cWhite;
   cursor: pointer;
 
   &.is-space {

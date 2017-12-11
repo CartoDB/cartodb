@@ -479,6 +479,9 @@ CartoDB::Application.routes.draw do
 
     # Permissions
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
+
+    # Api Keys
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/api_keys' => 'apikeys#create', as: :api_v1_api_keys_create
   end
 
   scope module: 'api/json', defaults: { format: :json } do

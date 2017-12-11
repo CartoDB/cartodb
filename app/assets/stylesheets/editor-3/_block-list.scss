@@ -70,6 +70,7 @@
     cursor: default;
   }
 }
+
 .BlockList-inner {
   flex: 1;
 }
@@ -97,16 +98,17 @@
 .BlockList-media {
   display: flex;
   position: relative;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   width: 40px;
   min-width: 40px;
   height: 40px;
-  border-radius: $baseSize / 2;
   overflow: hidden;
-  box-sizing: border-box;
+  border-radius: $baseSize / 2;
 
   &::after {
+    content: '';
     position: absolute;
     top: 0;
     right: 0;
@@ -115,7 +117,6 @@
     border: 1px solid rgba(#000, 0.08);
     border-radius: $halfBaseSize;
     pointer-events: none;
-    content: '';
   }
 }
 
@@ -141,14 +142,14 @@
 
 .HorizontalBlockList {
   display: flex;
-  /* remove when add new scroll */
-  max-width: 264px;
+  max-width: 264px; /* remove when add new scroll */
   overflow: visible; /* for class with .has-error to be visible */
 }
 
 .HorizontalBlockList-item {
   display: flex;
   position: relative;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   width: 40px;
@@ -159,7 +160,6 @@
   border-radius: 4px;
   background: $cThirdBackground;
   color: $cAltText;
-  box-sizing: border-box;
 
   &.is-add {
     background: $cBlue;
@@ -182,13 +182,13 @@
   }
 
   &::before {
+    content: '';
     position: absolute;
     top: 50%;
     left: -9px;
     width: 8px;
     height: 1px;
     background: $cMainLine;
-    content: '';
   }
 }
 

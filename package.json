@@ -146,6 +146,7 @@
     "node": "6.9.2"
   },
   "scripts": {
+    "ci": "npm run lint:css && grunt test",
     "test": "grunt test",
     "lint": "eslint .",
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",

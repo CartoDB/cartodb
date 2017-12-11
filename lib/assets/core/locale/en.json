@@ -1632,6 +1632,10 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "breadcrumb": {
+        "layers-list": "Layers list",
+        "layer-options": "Layer options"
+      },
       "errors": {
         "broken-node": "Broken node",
         "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"

@@ -64,6 +64,7 @@ module Carto
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
           show_auth_tokens: params[:show_auth_tokens] == 'true',
+          show_basemaps: params[:show_basemaps] == 'true',
           password: params[:password]
         )
 

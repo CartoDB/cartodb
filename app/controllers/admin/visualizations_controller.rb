@@ -89,7 +89,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
-    if current_user.has_feature_flag?('static_editor') && !current_user.builder_enabled? && @visualization.open_in_editor?
+    if current_user.has_feature_flag?('static_editor') && !current_user.builder_enabled?
       return render(file: 'public/static/show/index.html', layout: false)
     end
 

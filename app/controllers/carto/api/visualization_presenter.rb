@@ -10,7 +10,8 @@ module Carto
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
-                     show_table_size_and_row_count: true,  show_auth_tokens: true, password: nil)
+                     show_table_size_and_row_count: true,  show_auth_tokens: true, show_basemaps: true,
+                     password: nil)
         @visualization = visualization
         @current_viewer = current_viewer
         @context = context
@@ -27,7 +28,7 @@ module Carto
         @show_uses_builder_features = show_uses_builder_features
         @show_table_size_and_row_count = show_table_size_and_row_count
         @show_auth_tokens = show_auth_tokens
-        @show_auth_tokens = show_auth_tokens
+        @show_basemaps = show_basemaps
         @password = password
 
         @presenter_cache = Carto::Api::PresenterCache.new
@@ -55,6 +56,10 @@ module Carto
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
         poro[:google_maps_query_string] = @visualization.user.has_feature_flag?('google_maps') ? @visualization.user.google_maps_query_string : false
+
+        if show_basemaps
+          poro[:basemaps] = Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps] : {}
+        end
 
         if show_auth_tokens
           poro[:auth_tokens] = auth_tokens
@@ -160,7 +165,8 @@ module Carto
       attr_reader :related, :load_related_canonical_visualizations, :show_user,
                   :show_stats, :show_likes, :show_liked, :show_table,
                   :show_permission, :show_synchronization, :show_uses_builder_features,
-                  :show_table_size_and_row_count, :show_auth_tokens
+                  :show_table_size_and_row_count, :show_auth_tokens,
+                  :show_basemaps
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,

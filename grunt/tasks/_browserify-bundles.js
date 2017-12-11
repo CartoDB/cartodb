@@ -35,16 +35,5 @@ module.exports = {
     options: {
       require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ]
     }
-  },
-
-  'carto-public': {
-    src: [
-      'src/api/v4/index.js'
-    ],
-    dest: '<%= config.dist %>/public/carto.uncompressed.js',
-    options: {
-      external: [ 'leaflet' ],
-      require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ]
-    }
   }
 };

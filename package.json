@@ -1,6 +1,6 @@
 {
-  "name": "cartodb.js",
-  "version": "4.0.0-alpha.zera",
+  "name": "carto.js",
+  "version": "4.0.0-beta.0-4",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -34,6 +34,7 @@
     "d3-array": "1.2.1",
     "d3-format": "1.2.0",
     "d3-time-format": "2.1.0",
+    "iagolast-zera": "^1.0.0",
     "jquery": "2.1.4",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
@@ -90,6 +91,7 @@
     "semver": "~5.4.0",
     "source-map-support": "CartoDB/node-source-map-support#0.4.6-cdb1",
     "time-grunt": "~0.3.1",
+    "uglifyjs-webpack-plugin": "^1.1.2",
     "watchify": "3.4.0",
     "webpack": "^3.8.1"
   },
@@ -148,12 +150,13 @@
     "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",
-    "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
+    "docs": "rm -rf docs/public && jsdoc --configure config/jsdoc/public-conf.json",
+    "docs:internal": "rm -rf docs/internal && jsdoc --configure config/jsdoc/internal-conf.json",
     "postversion": "git push origin v4 --follow-tags",
     "dist": "grunt build",
-    "build": "webpack",
+    "build": "rm -rf dist/public && webpack && webpack --config webpack.config.min.js && node scripts/publish.js",
     "build:watch": "webpack -w",
+    "deploy": "cd dist/public && npm publish",
     "watch": "npm-watch"
   },
   "watch": {

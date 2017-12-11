@@ -10,7 +10,7 @@ module Carto
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
-                     show_table_size_and_row_count: true, show_auth_tokens: true, show_basemaps: true,
+                     show_table_size_and_row_count: true, show_auth_tokens: true, show_basemaps: false,
                      password: nil)
         @visualization = visualization
         @current_viewer = current_viewer

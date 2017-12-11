@@ -30,6 +30,7 @@
 
 .Carousel-item {
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   width: $baseSize * 11;
@@ -64,8 +65,9 @@
 .Carousel-shadow {
   display: block;
   position: absolute;
-  z-index: 100;
+  z-index: 80;
   top: 0;
+  box-sizing: border-box;
   width: 30px;
   height: $baseSize * 7;
   transition: opacity, 400ms;
@@ -80,12 +82,12 @@
 .Carousel-shadow--left {
   left: 0;
   background-color: rgba(#FFF, 0) !important;
-  background-image: linear-gradient(to left, #FFF, rgba(#FFF, 0));
+  background-image: linear-gradient(to right, #FFF, rgba(#FFF, 0));
 }
 
 .Carousel-shadow--right {
   right: 0;
-  background-image: linear-gradient(to left, rgba(#FFF, 0), #FFF);
+  background-image: linear-gradient(to right, rgba(#FFF, 0), #FFF);
 }
 
 .Carousel-list.ps-container > .ps-scrollbar-x-rail {

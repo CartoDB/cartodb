@@ -79,10 +79,16 @@ module CartoDB
       dashboard_static.js
       data_library_deps.js
       data_library.js
+      public_map_templates.js
       public_map_deps.js
       public_map.js
+      public_map_templates_static.js
+      public_map_deps_static.js
+      public_map_static.js
+      show_templates_static.js
+      show_deps_static.js
+      show_static.js
       editor.js
-
       account_templates.js
       account_deps.js
       account_static.js
@@ -93,7 +99,6 @@ module CartoDB
       keys_deps.js
       keys.js
       models.js
-      models_static.js
       organization_templates.js
       organization_deps.js
       organization.js

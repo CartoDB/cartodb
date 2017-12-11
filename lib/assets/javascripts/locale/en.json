@@ -1,4 +1,55 @@
 {
+  "common": {
+    "trial_notification": {
+      "views": {
+        "trial_notification": {
+          "message": "You're currently under your 30-day Trial Period. Add your billing info to keep using our platform.",
+          "add_payment": "Add payment method"
+        }
+      }
+    },
+  },
+  "show": {
+    "title": "Editor",
+    "header": {
+      "data_view": "Data View",
+      "map_view": "Map View",
+      "back": "Back",
+      "edit_metadata": "Edit metadata...",
+      "edit": "Edit",
+      "visualize": "VISUALIZE"
+    },
+  },
+  "protected_map": {
+    "title": "Protected map",
+    "content": {
+      "header": "This map is protected with password",
+      "placeholder": "Insert your password here",
+      "tip": "Contact with the owner in case you want access to it.",
+      "error": "Invalid password"
+    }
+  },
+  "forbidden_map": {
+    "title": "Embed error"
+  },
+  "helpers": {
+    "static_header_meta_tags": {
+      "map_created_by": "Map created by %{author} - CARTO"
+    }
+  },
+  "public_map": {
+    "info": {
+      "more": "more",
+      "more_from": "More from",
+      "more_info": "More info",
+      "updated": "Updated",
+      "views_pluralize": "1 view |||| %{smart_count} views"
+    },
+    "datasets": {
+      "title": "Datasets in use",
+      "dataset_pluralize": "1 dataset |||| %{smart_count} datasets"
+    }
+  },
   "account": {
     "title": "Your account | CARTO",
     "flash_messages": {
@@ -32,6 +83,36 @@
           "email_not_valid": "Email not valid",
           "change_email": "You can change the email if you set a password."
         }
+      }
+    }
+  },
+  "profile": {
+    "views": {
+      "content": {
+        "title": "Your profile information"
+      },
+      "form": {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "user_type": "User type",
+        "viewer": "VIEWER",
+        "read_only": "Read-only access for datasets and maps",
+        "builder": "BUILDER",
+        "become_builder": "Become a Builder",
+        "write_access": "Write access for editing and building datasets and maps",
+        "name": "Name",
+        "info_public_name": "Other users would reach you by your public name",
+        "website": "Website",
+        "location": "Location",
+        "description": "Your description",
+        "twitter": "Twitter username",
+        "disqus": "Disqus shortname",
+        "disqus_placeholder": "If empty, it will not appear",
+        "disqus_notified": "Be notified by new comments in your pages",
+        "jobs": "Jobs profile",
+        "available_for_hire": "Available for hire",
+        "show_banner": "Show a banner in your public profile linked to your email",
+        "save": "Save changes"
       }
     }
   }

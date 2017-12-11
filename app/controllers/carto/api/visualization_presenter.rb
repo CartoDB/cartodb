@@ -10,7 +10,7 @@ module Carto
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
-                     show_table_size_and_row_count: true,  show_auth_tokens: true, show_basemaps: true,
+                     show_table_size_and_row_count: true, show_auth_tokens: true, show_basemaps: true,
                      password: nil)
         @visualization = visualization
         @current_viewer = current_viewer
@@ -55,7 +55,9 @@ module Carto
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
-        poro[:google_maps_query_string] = @visualization.user.has_feature_flag?('google_maps') ? @visualization.user.google_maps_query_string : false
+        poro[:google_maps_query_string] = @visualization.user.has_feature_flag?('google_maps') ?
+          @visualization.user.google_maps_query_string :
+          false
 
         if show_basemaps
           poro[:basemaps] = Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps] : {}

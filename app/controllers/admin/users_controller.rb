@@ -10,7 +10,7 @@ class Admin::UsersController < Admin::AdminController
   include AvatarHelper
   include OrganizationNotificationsHelper
 
-  ssl_required  :account, :profile, :account_update, :profile_update, :delete
+  ssl_required  :account, :profile, :account_update, :profile_update, :delete, :lockout
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
@@ -36,6 +36,8 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
+    return render(file: "public/static/account/index.html", layout: false) if current_user.has_feature_flag?('static_account')
+
     respond_to do |format|
       format.html { render 'account' }
     end
@@ -112,8 +114,7 @@ class Admin::UsersController < Admin::AdminController
       raise PASSWORD_DOES_NOT_MATCH_MESSAGE
     end
 
-    @user.destroy
-    @user.delete_in_central
+    @user.destroy_account
 
     redirect_to logout_url
   rescue CartoDB::CentralCommunicationFailure => e
@@ -124,6 +125,16 @@ class Admin::UsersController < Admin::AdminController
     CartoDB.notify_exception(e, { user: @user.inspect }) unless e.message == PASSWORD_DOES_NOT_MATCH_MESSAGE
     flash.now[:error] = "Error deleting user: #{e.message}"
     render 'account'
+  end
+
+  def lockout
+    if current_user.locked?
+      @expiration_days = @user.remaining_days_deletion
+      @payments_url = @user.plan_url(request.protocol)
+      render locals: { breadcrumb: false }
+    else
+      render_404
+    end
   end
 
   private
@@ -151,4 +162,5 @@ class Admin::UsersController < Admin::AdminController
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
   end
+
 end

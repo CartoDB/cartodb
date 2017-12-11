@@ -431,6 +431,18 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      return nil unless deletion_date
+      (deletion_date.to_date - Date.today).to_i
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Something went wrong calculating the number of remaining days for account deletion')
+      return nil
+    end
+  end
+
   def viewable_by?(viewer)
     id == viewer.id || organization.try(:admin?, viewer)
   end
@@ -445,6 +457,8 @@ class Carto::User < ActiveRecord::Base
       !created_with_http_authentication? &&
       !organization.try(:auth_saml_enabled?)
   end
+
+  alias_method :should_display_old_password?, :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
@@ -520,6 +534,16 @@ class Carto::User < ActiveRecord::Base
     update_column(:dashboard_viewed_at, Time.now)
   end
 
+  # Special url that goes to Central if active (for old dashboard only)
+  def account_url(request_protocol)
+    request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username if CartoDB.account_host
+  end
+
+  # Special url that goes to Central if active
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
+  end
+
   def relevant_frontend_version
     frontend_version || CartoDB::Application.frontend_version
   end
@@ -579,10 +603,6 @@ class Carto::User < ActiveRecord::Base
     array
   end
 
-  def should_display_old_password?
-    needs_password_confirmation?
-  end
-
   def account_url(request_protocol)
     if CartoDB.account_host
       request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
@@ -592,6 +612,10 @@ class Carto::User < ActiveRecord::Base
   # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
+  end
+
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
   end
 
   def active?

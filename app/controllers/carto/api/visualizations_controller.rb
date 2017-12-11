@@ -28,7 +28,7 @@ module Carto
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :is_liked, :add_like,
                                                              :remove_like, :notify_watching, :list_watching,
-                                                             :static_map]
+                                                             :static_map, :show]
 
       # :update and :destroy are correctly handled by permission check on the model
       before_filter :ensure_user_can_create, only: [:create]
@@ -51,6 +51,7 @@ module Carto
       before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
+      rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
 
       def show
@@ -62,6 +63,7 @@ module Carto
           show_likes: params[:show_likes] == 'true',
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
+          show_auth_tokens: params[:show_auth_tokens] == 'true',
           password: params[:password]
         )
 
@@ -379,7 +381,8 @@ module Carto
         end
 
         if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
-          raise Carto::LoadError.new('Visualization not viewable', 403)
+          raise Carto::LoadError.new('Visualization not viewable', 403,
+                                     errors_cause: @visualization.password_protected? ? 'privacy_password' : nil)
         end
       end
 

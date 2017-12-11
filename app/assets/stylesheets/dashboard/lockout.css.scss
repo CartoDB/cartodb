@@ -1,0 +1,42 @@
+@import '../variables/sizes';
+
+.DummyDashboard {
+  display: flex;
+  flex-flow: column;
+  height: calc(100vh - 180px);
+  background: image-url('backgrounds/lockout.png') no-repeat center;
+  background-size: cover;
+}
+
+.Lockout .OnBoarding-welcomeContent {
+  margin-top: -225px;
+  margin-left: -180px;
+}
+
+.Lockout .OnBoarding-welcomeContentTitle,
+.Lockout .OnBoarding-welcomeContentText {
+  font-weight: normal;
+}
+
+.Lockout .OnBoarding-welcomeContentInner {
+  width: 500px;
+}
+
+.Lockout .OnBoarding-welcomeContentTitle {
+  font-size: $sFontSize-huge;
+  line-height: 35px;
+}
+
+.Lockout .OnBoarding-welcomeContentText {
+  line-height: 20px;
+}
+
+.Lockout .OnBoarding-welcomeContentText a {
+  text-decoration: underline;
+}
+
+.Lockout .CDB-Button--primary,
+.Lockout .CDB-Button--secondary {
+  margin-top: 20px;
+  padding-top: 13px;
+}

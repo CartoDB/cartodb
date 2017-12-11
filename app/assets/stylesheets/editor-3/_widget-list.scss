@@ -1,9 +1,8 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .WidgetList {
-  @include display-flex;
+  display: flex;
   flex-wrap: wrap;
 }
 
@@ -12,27 +11,36 @@
 }
 
 .WidgetList-item {
-  @include display-flex;
-  @include align-items(baseline);
+  display: flex;
   box-sizing: border-box;
   flex: 0 0 304px;
+  align-items: baseline;
   width: 304px;
   max-width: 304px;
   margin: 0 4px 8px;
   padding: $baseSize * 2;
-  border: 1px solid transparent;
+  transition: border 200ms ease-in;
+  border: 2px solid transparent;
   border-radius: $baseSize / 2;
   background: $cWhite;
+
+  &:hover {
+    border: 2px solid $cBlueHover;
+  }
+
+  &.is-selected {
+    border: 2px solid $cBlackHover;
+  }
 }
 
 .WidgetList-inner {
-  @include flex(1);
+  flex: 1;
   min-width: 0;
 }
 
 .WidgetPlaceHolder {
-  @include display-flex();
-  @include flex(1);
+  display: flex;
+  flex: 1;
   margin-right: 24px;
 }
 
@@ -45,7 +53,7 @@
 }
 
 .WidgetPlaceHolder-txt {
-  @include flex(1);
+  flex: 1;
 }
 
 .WidgetPlaceHolder-title {
@@ -84,10 +92,10 @@
 .Widget-histogramFakeContainer {
   margin-bottom: 12px;
   padding-top: 1px;
-}
 
-.Widget-histogramFakeContainer .Widget-categoryFakeText {
-  margin-bottom: 9px;
+  .Widget-categoryFakeText {
+    margin-bottom: 9px;
+  }
 }
 
 .Widget-histogramFake {
@@ -95,16 +103,16 @@
   height: 20px;
   border-top: 1px solid $cSecondaryLine;
   border-bottom: 1px solid $cSecondaryLine;
-}
 
-.Widget-histogramFake::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 0;
-  left: 0;
-  height: 1px;
-  background: $cSecondaryLine;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: $cSecondaryLine;
+  }
 }
 
 .Widget-formulaFakeContainer {

@@ -277,7 +277,8 @@ describe 'UserMigration' do
       database_host: user_attributes['database_host'],
       org_import: false,
       json_file: export.json_file,
-      import_metadata: true
+      import_metadata: true,
+      dry: false
     )
     import.stubs(:assert_organization_does_not_exist)
     import.stubs(:assert_user_does_not_exist)
@@ -292,6 +293,38 @@ describe 'UserMigration' do
       expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
     end
     expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
+
+    user.destroy_cascade
+  end
+
+  it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+
+    user = create_user_with_visualizations
+
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+
+    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
+    export.run_export
+
+    expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: false,
+      dry: false
+    )
+    import.run_import
+
+    expect(import.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
+    expect(import.log.entries).to include('DB already exists at DB host')
+
+    # DB exists, otherwise this would fail
+    user.in_database.run("select 1;")
 
     user.destroy_cascade
   end
@@ -417,6 +450,39 @@ describe 'UserMigration' do
     end
   end
 
+  it '#run_import does not modify database_host with dry' do
+    user = create_user_with_visualizations
+    carto_user = Carto::User.find(user.id)
+    database_host = carto_user.database_host
+
+    export = Carto::UserMigrationExport.create(
+      user: carto_user,
+      export_metadata: true
+    )
+
+    export.run_export
+
+    drop_database(user)
+
+    # Let's fake the column to check that dry doesn't fix it
+    carto_user.update_column(:database_host, 'wadus')
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: database_host,
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: false,
+      dry: true
+    )
+
+    import.run_import
+    import.state.should eq 'complete'
+
+    carto_user2 = Carto::User.find(user.id)
+    carto_user2.attributes.should eq carto_user.attributes
+  end
+
   def drop_database(user)
     conn = user.in_database(as: :cluster_admin)
     user.db_service.drop_database_and_user(conn)
@@ -453,7 +519,8 @@ describe 'UserMigration' do
       database_host: @carto_organization.owner.attributes['database_host'],
       org_import: true,
       json_file: @export.json_file,
-      import_metadata: true
+      import_metadata: true,
+      dry: false
     )
 
     imp.stubs(:assert_organization_does_not_exist)
@@ -467,7 +534,8 @@ describe 'UserMigration' do
       database_host: @user_attributes['database_host'],
       org_import: false,
       json_file: @export.json_file,
-      import_metadata: true
+      import_metadata: true,
+      dry: false
     )
     imp.stubs(:assert_organization_does_not_exist)
     imp.stubs(:assert_user_does_not_exist)

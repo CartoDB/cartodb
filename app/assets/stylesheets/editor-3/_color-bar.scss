@@ -1,6 +1,32 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
+
+.CDB-ListDecoration-item .ColorBar {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -14px - 2 * $baseSize;
+    left: 0;
+    height: 2px;
+    transition: background-color 0.2s ease-in;
+    background: transparent;
+  }
+
+  &:hover {
+    &::after {
+      background: $cBlueHover;
+    }
+  }
+
+  &.is-selected {
+    &::after {
+      background: $cMainBg;
+    }
+  }
+}
 
 .CDB-ListDecoration-itemLink.is-selected .ColorBarContainer {
   position: relative;
@@ -25,8 +51,8 @@
 }
 
 .ColorBarContainer {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
+  flex-direction: row;
   width: 100%;
   border-radius: 6px;
   background-image:
@@ -41,8 +67,9 @@
 }
 
 .ColorsBar {
-  @include display-flex();
-  @include flex(1);
+  display: flex;
+  flex: 1;
+  padding: 13px 8px;
 }
 
 .ColorBar {
@@ -68,7 +95,7 @@
   right: 0;
   bottom: -14px - 2 * $baseSize;
   left: 0;
-  height: 1px;
+  height: 2px;
   background: $cMainBg;
 }
 
@@ -130,15 +157,15 @@
 }
 
 .ColorBarWrapper--withInvertLink {
-  @include flex(1);
+  flex: 1;
 }
 
 .ColorBar-invertLink {
-  @include flex(0 0 27px);
-  @include opacity(0);
   position: relative;
   top: 12px;
+  flex: 0 0 27px;
   height: 13px;
+  opacity: 0;
   background-image: url('../images/layout/colorpicker/invert.svg');
   background-repeat: no-repeat;
 }
@@ -148,9 +175,9 @@
 }
 
 .is-selected .ColorBar-invertLink {
-  @include opacity(1);
+  opacity: 1;
 }
 
 .CustomList-item--invert:hover .ColorBar-invertLink {
-  @include opacity(1);
+  opacity: 1;
 }

@@ -1,3 +1,5 @@
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
 require_relative '../../helpers/avatar_helper'
 
 module Carto
@@ -9,8 +11,8 @@ module Carto
       include SqlApiHelper
       include CartoDB::ConfigUtils
       include FrontendConfigHelper
-      include AvatarHelper
       include AccountTypeHelper
+      include AvatarHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -21,6 +23,7 @@ module Carto
 
       ssl_required :show, :me, :update_me, :delete_me, :get_authenticated_users
 
+      before_filter :initialize_google_plus_config, only: [:me]
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
 
@@ -51,7 +54,10 @@ module Carto
           cant_be_deleted_reason: cant_be_deleted_reason,
           services: carto_viewer.try(:get_oauth_services),
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
-          asset_host: carto_viewer.try(:asset_host)
+          asset_host: carto_viewer.try(:asset_host),
+          google_sign_in: carto_viewer.try(:google_sign_in),
+          google_plus_iframe_src: carto_viewer.present? ? google_plus_iframe_src : nil,
+          google_plus_client_id: carto_viewer.present? ? google_plus_client_id : nil
         }
       end
 
@@ -97,8 +103,7 @@ module Carto
           render_jsonp({ message: "Error deleting user: #{PASSWORD_DOES_NOT_MATCH_MESSAGE}" }, 400) and return
         end
 
-        user.destroy
-        user.delete_in_central
+        user.destroy_account
 
         render_jsonp({ logout_url: logout_url }, 200)
       rescue CartoDB::CentralCommunicationFailure => e
@@ -131,6 +136,19 @@ module Carto
       end
 
       private
+
+      def google_plus_iframe_src
+        @google_plus_config.present? ? @google_plus_config.iframe_src : nil
+      end
+
+      def google_plus_client_id
+        @google_plus_config.present? ? @google_plus_config.client_id : nil
+      end
+
+      def initialize_google_plus_config
+        signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+        @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+      end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil

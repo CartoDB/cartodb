@@ -18,7 +18,7 @@
   </span>
 <% } %>
 <% if (customQueryApplied) { %>
-  <span class="Editor-ListAnalysis-itemInfoIcon Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small">
+  <span class="Editor-ListAnalysis-itemInfoIcon Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small js-sql">
     SQL
   </span>
 <% } %>

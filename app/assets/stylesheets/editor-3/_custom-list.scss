@@ -1,7 +1,6 @@
 // Custom list styles
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -70,62 +69,64 @@
   white-space: normal;
 }
 
-.CustomList-item.is-highlighted,
-.CustomList-item:hover {
-  background: rgba($cHighlight, 0.16);
-  cursor: pointer;
-}
-
-.CustomList-item.is-disabled {
+.CustomList-item {
+  &.is-highlighted,
   &:hover {
-    background: inherit;
-    cursor: default;
+    background: rgba($cBlue, 0.08);
+    cursor: pointer;
   }
-}
 
-.CustomList-item--invert {
-  @include display-flex();
+  &.is-disabled {
+    &:hover {
+      background: inherit;
+      cursor: default;
+    }
+  }
+
+  &--invert {
+    display: flex;
+  }
 }
 
 /* TODO move to cartoassets and change to border-top and :first-child */
 .CDB-ListDecoration-item {
   min-height: 41px;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+
+  .CDB-NavMenu-item:last-child {
+    margin-right: 0;
+  }
 }
 
 .CDB-ListDecoration-itemDisplay--flex {
-  @include display-flex();
-  @include justify-content(space-between);
+  display: flex;
+  justify-content: space-between;
 }
 
 .CDB-ListDecoration-itemPadding--vertical {
   min-height: auto;
 }
 
-.CDB-ListDecoration-item:last-of-type {
-  border-bottom: 0;
-}
-
-.CDB-ListDecoration-item .CDB-NavMenu-item:last-child {
-  margin-right: 0;
-}
-
 .CDB-ListDecoration-secondaryContainer {
-  @include display-flex();
-  @include flex-direction(row);
-  @include justify-content(space-between);
-  @include align-items(center);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .CDB-ListDecoration-rampNav-item {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   height: 40px;
   padding: 0;
 }
 
 .CDB-ListDecoration-rampImg {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
 
 .CDB-ListDecoration-rampItemBar {

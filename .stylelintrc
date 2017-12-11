@@ -23,5 +23,6 @@
     "declaration-empty-line-before": null,
     "block-no-empty": true,
     "shorthand-property-no-redundant-values": true,
+    "declaration-block-no-redundant-longhand-properties": null
   }
 }

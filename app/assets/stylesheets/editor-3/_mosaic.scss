@@ -12,13 +12,12 @@
 ```
 */
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
 .Mosaic-list {
-  @include display-flex();
-  @include flex-wrap(wrap);
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .Mosaic-item {
@@ -31,40 +30,40 @@
   border-radius: $halfBaseSize;
   cursor: pointer;
 
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: $halfBaseSize;
+    pointer-events: none;
+  }
+
   &:hover {
     &::before {
-      @include transition(all, 300ms);
-      border: 1px solid rgba(#000, 0.24);
+      transition: all 300ms;
+      border: 2px solid $cBlueHover;
     }
 
     .Mosaic-remove {
       opacity: 1;
     }
   }
-}
 
-.Mosaic-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: $halfBaseSize;
-  pointer-events: none;
+  &.is-selected::before {
+    top: -1px;
+    right: -1px;
+    bottom: -1px;
+    left: -1px;
+    border: 2px solid $cBlackHover;
+  }
 }
 
 .Mosaic-item--dashed::before {
   border: 1px dashed rgba(0, 0, 0, 0.08);
-}
-
-.Mosaic-item.is-selected::before {
-  top: -1px;
-  right: -1px;
-  bottom: -1px;
-  left: -1px;
-  border: 2px solid $cBlue;
 }
 
 .Mosaic-image {
@@ -86,7 +85,6 @@
 }
 
 .Mosaic-remove {
-  @include transition(opacity, 100ms);
   position: absolute;
   z-index: 2;
   right: 4px;
@@ -96,6 +94,7 @@
   padding-right: 6px;
   padding-bottom: 3px;
   padding-left: 4px;
+  transition: opacity 100ms;
   border-top-left-radius: 2px;
   border-bottom-right-radius: 2px;
   opacity: 0;

@@ -13,6 +13,7 @@
     var config = <%= safe_js_object frontend_config %>;
     var map_data = <%= safe_js_object @visualization.map.public_values.to_json %>;
     var basemaps = <%=raw Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps].to_json.html_safe: 'null' %>;
+    var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
   </script>
 
   <% content_for(:js) do %>

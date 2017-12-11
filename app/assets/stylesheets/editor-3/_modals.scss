@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -8,11 +7,11 @@
 }
 
 .Filters-typeItem {
-  @include display-flex(); /* todo when create new layout */
+  display: flex; /* todo when create new layout */
 }
 
 .DatasetsList-itemMeta {
-  @include align-items(baseline); /* todo when create new layout */
+  align-items: baseline; /* todo when create new layout */
 }
 
 .Modal-body {
@@ -33,9 +32,9 @@
 }
 
 .Modal-actions {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 80%;
   max-width: 640px;
   margin: $baseSize * 4 auto 0;
@@ -56,13 +55,13 @@
 }
 
 .ModalBlockList-item-header {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .ModalBlockList-item-headerTitle {
-  @include flex(1);
+  flex: 1;
 }
 
 .ModalBlockList-item-headerSubTitle {
@@ -70,15 +69,16 @@
 }
 
 .ModalBlockList {
-  @include display-flex();
-  @include flex-wrap(wrap);
+  display: flex;
   box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .ModalBlockList-item {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  position: relative;
   box-sizing: border-box;
+  flex-direction: column;
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
@@ -87,41 +87,66 @@
   border-radius: 4px;
   background: $cWhite;
   cursor: pointer;
+
+  &:hover {
+    transition: border 200ms ease-in;
+
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 10000;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cBlueHover;
+      border-radius: 4px;
+    }
+  }
+
+  .is-disabled {
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: auto;
+
+    .ModalBlockList-item-headerTitle {
+      opacity: 0.5;
+    }
+  }
+
+  &.is-selected {
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 10000;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cMainText;
+      border-radius: 4px;
+    }
+  }
+
+  &--full {
+    align-items: inherit;
+    width: 100%;
+    min-width: 100%;
+    margin: 16px 0 0;
+  }
 }
 
 .DatasetsList .ModalBlockList-item {
-  @include flex-direction(row);
+  flex-direction: row;
   padding: 12px;
 }
 
 .ModalBlockList-itemInput {
   margin-right: $baseSize * 2;
-}
-
-.ModalBlockList-item:hover {
-  @include transition(border, 200ms, ease-in);
-  border: 1px solid $cHoverLine;
-}
-
-.ModalBlockList-item--full {
-  @include align-items(inherit);
-  width: 100%;
-  min-width: 100%;
-  margin: 16px 0 0;
-}
-
-.ModalBlockList-item.is-selected {
-  border: 1px solid rgba($cBlue, 0.48);
-}
-
-.ModalBlockList-item.is-disabled {
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: auto;
-}
-
-.ModalBlockList-item.is-disabled .ModalBlockList-item-headerTitle {
-  @include opacity(0.5);
 }
 
 .ModalBlockList-item-media {
@@ -133,15 +158,15 @@
 }
 
 .Form-row {
-  @include align-items(center);
+  align-items: center;
 }
 
 /* Add Layer Modal */
 .ModalDataset-itemInfo {
-  @include display-flex();
-  @include align-items(center);
-  @include flex(1);
-  @include justify-content(space-between);
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   max-width: 850px;
 }
@@ -157,17 +182,17 @@
 }
 
 .Upgrade-info {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(space-between);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 20px;
   border-top: 1px solid rgba($cBlue, 0.32);
   background: rgba($cBlue, 0.08);
 }
 
 .Upgrade-infoActions {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
 
 .AddLayer-tabs {
@@ -193,22 +218,22 @@
 }
 
 .Publish-modal {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
 }
 
 .Publish-modalHeader {
-  @include flex(0 0 auto);
+  flex: 0 0 auto;
   padding: $baseSize * 3 0;
 }
 
 .Publish-modalBody {
-  @include display-flex();
-  @include flex(1);
-  @include flex-direction(column);
+  display: flex;
   position: relative;
+  flex: 1;
+  flex-direction: column;
   padding-bottom: 100px;
   overflow: hidden;
 }
@@ -235,11 +260,11 @@
 }
 
 .Publish-modalShare {
-  @include display-flex();
-  @include flex-direction(column);
-  @include flex-grow(1);
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
 }
 
 .Publish-optionsList {

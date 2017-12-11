@@ -1,19 +1,19 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpackFiles = require('../lib/build/files/webpack_files');
+const Package = require('./../package.json');
 
-const PACKAGE = require('./../package.json');
-const version = PACKAGE.version;
+const VERSION = Package.version;
 
 module.exports = {
   entry: './lib/assets/javascripts/cartodb/static.js',
   output: {
-    filename: `${version}/javascripts/[name].js`,
+    filename: `${VERSION}/javascripts/[name].js`,
     path: path.resolve(__dirname, '../public/assets'),
     publicPath: '/assets/'
   },
   devtool: 'source-map',
-  plugins: Object.keys(webpackFiles).map(function (entryName) {
+  plugins: Object.keys(webpackFiles).map((entryName) => {
     return new HtmlWebpackPlugin({
       inject: false,
       cache: false,
@@ -21,20 +21,5 @@ module.exports = {
       template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/static/index.jst.ejs'),
       config: webpackFiles[entryName]
     });
-  }),
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: [
-          path.resolve(__dirname, '../lib/assets/javascripts/cartodb3/carto-node')
-        ],
-        options: {
-          presets: ['es2015'],
-          plugins: ['transform-object-assign']
-        }
-      }
-    ]
-  }
+  })
 };

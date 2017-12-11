@@ -32,17 +32,17 @@ $cLingon:     rgba(#AC638B, 1);
   color: white;
   font-size: 20px;
 }
-.IllustrationIcon--neutral { background-color: $cNeutral }
-.IllustrationIcon--positive { background-color: $cPositive }
-.IllustrationIcon--notice { background-color: $cNotice }
-.IllustrationIcon--sunrise { background-color: $cSunrise }
-.IllustrationIcon--alert { background-color: $cAlert }
-.IllustrationIcon--negative { background-color: $cNegative }
-.IllustrationIcon--cyan { background-color: $cCyan }
-.IllustrationIcon--royal { background-color: $cRoyal }
-.IllustrationIcon--royalDark { background-color: $cRoyalDark }
-.IllustrationIcon--magenta { background-color: $cMagenta }
-.IllustrationIcon--lingon { background-color: $cLingon }
+.IllustrationIcon--neutral { background-color: $cNeutral; }
+.IllustrationIcon--positive { background-color: $cPositive; }
+.IllustrationIcon--notice { background-color: $cNotice; }
+.IllustrationIcon--sunrise { background-color: $cSunrise; }
+.IllustrationIcon--alert { background-color: $cAlert; }
+.IllustrationIcon--negative { background-color: $cNegative; }
+.IllustrationIcon--cyan { background-color: $cCyan; }
+.IllustrationIcon--royal { background-color: $cRoyal; }
+.IllustrationIcon--royalDark { background-color: $cRoyalDark; }
+.IllustrationIcon--magenta { background-color: $cMagenta; }
+.IllustrationIcon--lingon { background-color: $cLingon; }
 
 .IllustrationIcon--geometryLine {
   @include map-sprite(geometry_line);
@@ -55,7 +55,6 @@ $cLingon:     rgba(#AC638B, 1);
 .IllustrationIcon--geometryPolygon {
   @include map-sprite(geometry_polygon);
 }
-
 
 .IllustrationIcon-text {
   font-size: $sFontSize-smallUpperCase;

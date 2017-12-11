@@ -15,7 +15,6 @@
 @import "../../../old_common/form-elements";
 @import "../../../old_common/mixins";
 
-
 div.legends_panel {
   display: block;
   width: 100%;
@@ -37,33 +36,43 @@ div.legends_panel {
 
   .header {
     position: relative;
-    padding: 21px 30px 19px 30px;
+    padding: 21px 30px 19px;
     clear: both;
     overflow: hidden;
 
     h3 {
       padding: 0 !important;
       float: left;
-      border:0;
+      border: 0;
     }
 
-    .form_combo { position:absolute; right:18px; }
+    .form_combo {
+      position: absolute;
+      right: 18px;
+    }
   }
 
   .all {
     padding: 15px 0;
     overflow: auto;
-    span.label {margin-right:12px;}
+
+    span.label {
+      margin-right: 12px;
+    }
   }
 
   .titlePane .fields li {
     position: relative;
-    & > span:hover {cursor: default; }
+
+    & > span:hover {
+      cursor: default;
+    }
   }
 
   // When custom html template is applied, blocked block should show up
   // and overflow should be hidden
-  .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
+  .titlePane.disabled .wrapper,
+  .fieldPane.disabled .wrapper {
     overflow: hidden;
   }
 
@@ -71,12 +80,12 @@ div.legends_panel {
     display: none;
     position: absolute;
     z-index: 10;
-    top:0;
-    right:0;
-    bottom:0;
-    left:0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     padding: 20px 40px;
-    background: rgba(white,0.9);
+    background: rgba(white, 0.9);
     line-height: normal;
 
     text-align: center;
@@ -89,27 +98,26 @@ div.legends_panel {
       height: 110px;
 
       @include inline-block();
-
       @include table-sprite(block_icon);
     }
 
     p {
-      margin: 30px 0 3px 0;
+      margin: 30px 0 3px;
       color: #999;
       line-height: normal;
     }
 
     a {
       @include inline-block();
-      margin: 20px 0 0 0;
+      margin: 20px 0 0;
     }
-
   }
 
   // No content block
-  .no_content { display:none }
+  .no_content {
+    display: none;
+  }
 
-    
   &.editing_html {
     .header h3 {
       margin-left: 23px;
@@ -117,8 +125,28 @@ div.legends_panel {
 
     .menu {
       li:first-child { margin-left: 23px; }
-      &::after { content:' '; position:absolute; top:0; bottom:0; left:34px; width:1px; height:100%; background:rgba($cGray4,0.50); }
-      &::before { content:' '; position:absolute; top:0; bottom:0; left:36px; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+
+      &::after {
+        content: ' ';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 34px;
+        width: 1px;
+        height: 100%;
+        background: rgba($cGray4, 0.5);
+      }
+
+      &::before {
+        content: ' ';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 36px;
+        width: 1px;
+        height: 100%;
+        background: rgba(#509DD7, 0.25);
+      }
     }
   }
 
@@ -169,30 +197,52 @@ div.legends_panel {
 
         &.html_editor { margin-right: 2px; }
 
-        /*&.html_editor::before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, 0.5); }*/
-        &.html_editor { position:relative; }
+        /* &.html_editor::before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, 0.5); } */
+        &.html_editor {
+          position: relative;
+        }
 
-        &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
-        &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
-        &.html_editor  a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
+        &.editor a {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0);
+        }
 
-        &.editor       a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
-        &.title_editor a.selected { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
-        &.html_editor  a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
+        &.title_editor a {
+          @include size(20px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0);
+        }
+
+        &.html_editor a {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px);
+        }
+
+        &.editor a.selected {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px);
+        }
+
+        &.title_editor a.selected {
+          @include size(20px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px);
+        }
+
+        &.html_editor a.selected {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px);
+        }
       }
-
     }
-
   }
 
   div.forms {
     &.panel_content {
       z-index: 9;
       top: 42px;
-      padding: 0 30px 16px 30px;
+      padding: 0 30px 16px;
 
       .footer {
-        margin: 14px 0 0 0;
+        margin: 14px 0 0;
         text-align: center;
 
         .add { font-size: 24px; }
@@ -202,7 +252,8 @@ div.legends_panel {
         .no_content { display: none; }
       }
 
-      .custom, .choropleth {
+      .custom,
+      .choropleth {
         ul li .input { top: 13px; }
         ul li:hover .remove { @include opacity(1); }
 
@@ -210,17 +261,21 @@ div.legends_panel {
           position: relative;
           top: 3px;
           margin-left: 5px;
-          letter-spacing:0;
+          letter-spacing: 0;
           vertical-align: middle;
 
           @include opacity(0);
           @include inline-block();
-
           @include size(13px,13px);
-
           @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
-          &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
-          &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+
+          &:hover {
+            @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);
+          }
+
+          &:active {
+            @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);
+          }
         }
       }
 
@@ -229,7 +284,11 @@ div.legends_panel {
         top: 12px;
         right: 0;
 
-        .checkbox { position:relative; margin:8px 15px 0 0; float: left; }
+        .checkbox {
+          position: relative;
+          margin: 8px 15px 0 0;
+          float: left;
+        }
         .checkbox.disabled { cursor: pointer; }
         .checkbox span { margin-right: 5px; }
         .input { float: left; }
@@ -268,7 +327,7 @@ div.legends_panel {
 
     ul {
       width: 100%;
-      margin: 6px 0 0 0;
+      margin: 6px 0 0;
     }
 
     ul li {
@@ -277,11 +336,14 @@ div.legends_panel {
       height: 50px;
       padding: 13px 0;
       overflow: hidden;
-      border-bottom:1px solid rgba(#E5E5E5,0.5);
+      border-bottom: 1px solid rgba(#E5E5E5, 0.5);
 
       @include box-sizing(border-box);
 
-      &.title span.field { position:relative; top: 3px; }
+      &.title span.field {
+        position: relative;
+        top: 3px;
+      }
 
       & > span:first-child {
         margin-top: 2px;
@@ -296,10 +358,8 @@ div.legends_panel {
       .form_combo {
         @include inline-block();
       }
-
     }
   }
-
 
   h3 {
     padding-left: 30px;
@@ -309,7 +369,7 @@ div.legends_panel {
     li {
       padding: 13px 0;
       overflow: hidden;
-      border-bottom: 1px solid rgba(#999,0.25);
+      border-bottom: 1px solid rgba(#999, 0.25);
       color: $cGray4;
       font-size: 15px;
 
@@ -318,20 +378,24 @@ div.legends_panel {
         max-width: 50%;
         line-height: 16px;
         vertical-align: middle;
-        &:hover {cursor:all-scroll;}
+
+        &:hover {
+          cursor: all-scroll;
+        }
       }
 
       .form_combo {
         width: auto;
         float: right;
 
-        .select2-container {width:143px;}
+        .select2-container {
+          width: 143px;
+        }
       }
 
       .form_combo ~ span {
         margin-top: 3px;
       }
-
     }
   }
 }

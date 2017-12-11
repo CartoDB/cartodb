@@ -12,10 +12,10 @@
   border-radius: $sForms-borderRadius;
   color: $cTypography-paragraphs;
 
-  ::-webkit-input-placeholder { color: $cTypography-help;  }
-  :-moz-placeholder { color: $cTypography-help;  }
-  ::-moz-placeholder {  color: $cTypography-help;  }
-  :-ms-input-placeholder {  color: $cTypography-help;  }
+  ::-webkit-input-placeholder { color: $cTypography-help; }
+  :-moz-placeholder { color: $cTypography-help; }
+  ::-moz-placeholder { color: $cTypography-help; }
+  :-ms-input-placeholder { color: $cTypography-help; }
 }
 
 .Input--slim {

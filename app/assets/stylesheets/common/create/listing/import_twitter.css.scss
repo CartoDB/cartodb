@@ -4,13 +4,13 @@
 
 // Import twitter view styles
 
-.ImportTwitterPanel {}
 // Twitter categories
 .TwitterCategory .Form-inputIcon {
   top: 8px;
   font-size: 20px;
 }
-.TwitterCategory .Form-inputIcon.is-highlighted { color: #6F9FD0 }
+
+.TwitterCategory .Form-inputIcon.is-highlighted { color: #6F9FD0; }
 
 .TwitterCategory {
   height: 0;
@@ -25,11 +25,13 @@
 
   @include opacity(1);
 }
+
 // Datepicker
 .DatePicker-info {
   max-width: 140px !important;
   line-height: 20px !important;
 }
+
 // Credits usage
 .CreditsUsage-info {
   width: 300px;

@@ -2,20 +2,17 @@
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
-
-
-.ConnectDialog {
-
-}
-.ConnectDialog .Dialog-content { width: 100% }
+.ConnectDialog .Dialog-content { width: 100%; }
 
 .Dialog-body.ConnectDialog-body {
   min-height: 700px;
   padding: 0;
   background: $cStructure-grayBkg;
 }
-.ConnectDialog .Filters-separator { background: #DDD }
-.ConnectDialog .Filters-row { @include justify-content(center, center) }
+
+.ConnectDialog .Filters-separator { background: #DDD; }
+
+.ConnectDialog .Filters-row { @include justify-content(center, center); }
 
 .ConnectDialog-footer {
   position: fixed;
@@ -47,5 +44,7 @@
   text-align: center;
   vertical-align: top;
 }
-.ConnectDialog-footerButton { display: none }
-.ConnectDialog-footerButton.is-enabled { display: inline-block }
+
+.ConnectDialog-footerButton { display: none; }
+
+.ConnectDialog-footerButton.is-enabled { display: inline-block; }

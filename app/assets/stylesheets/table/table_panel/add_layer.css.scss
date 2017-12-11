@@ -11,7 +11,6 @@
 @import "../../old_common/vars";
 @import "../../old_common/mixins";
 
-
 .add_layer {
   position: relative;
   height: 55px;
@@ -48,7 +47,7 @@
     @include inline-block();
     margin: 0 0 0 27px;
     font: 500 17px $text-fonts;
-    letter-spacing:0;
+    letter-spacing: 0;
     line-height: 20px;
   }
 

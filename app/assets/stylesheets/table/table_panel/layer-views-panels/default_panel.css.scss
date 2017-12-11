@@ -14,8 +14,6 @@
 @import "../../../table/table-sprite";
 @import "../../../old_common/mixins";
 
-  
-  
 .layer-views {
 
   // Info doc icon
@@ -45,7 +43,6 @@
     }
   }
 
-
   // Actions block for each layer
   // - Undo
   // - Redo
@@ -54,19 +51,20 @@
   div.actions {
     display: block;
     position: absolute;
-    z-index:1;
-    right:0;
-    bottom:0;
-    left:0;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    left: 0;
     height: 38px;
     padding: 20px 20px 20px 56px;
-    border-top: 1px solid rgba(#999,0.25);
+    border-top: 1px solid rgba(#999, 0.25);
 
-    a.next, a.back {
+    a.next,
+    a.back {
       width: 30px;
       height: 25px;
-      margin: 4px 0 0 0;
-      padding:0;
+      margin: 4px 0 0;
+      padding: 0;
 
       @include text-indent();
     }
@@ -76,9 +74,10 @@
       @include text-indent();
       @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
       @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
-      border-left:0;
+      border-left: 0;
 
-      &:hover, &:active {
+      &:hover,
+      &:active {
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
       }
@@ -90,7 +89,8 @@
       @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
       @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
 
-      &:hover, &:active {
+      &:hover,
+      &:active {
         @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
         @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
       }
@@ -99,22 +99,29 @@
     a.disabled {
       opacity: 0.6;
 
-      &.next, &.next:active, &.next:hover {
+      &.next,
+      &.next:active,
+      &.next:hover {
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
       }
 
-      &.back, &.back:active, &.back:hover {
+      &.back,
+      &.back:active,
+      &.back:hover {
         @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
         @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
       }
     }
 
-    a.clearview {margin-right:18px;}
+    a.clearview {
+      margin-right: 18px;
+    }
 
-    button {margin:0;}
+    button {
+      margin: 0;
+    }
   }
-
 
   // Info block when action is done
   // - Error
@@ -124,46 +131,53 @@
   div.info {
     display: none;
     position: absolute;
-    z-index:2;
-    right:0;
+    z-index: 2;
+    right: 0;
     bottom: 78px;
-    left:0;
+    left: 0;
     max-height: 30%;
     padding: 17px 17px 17px 52px;
     border-top: 1px solid #EBDCE0;
     background: #FFF7E0;
     color: #888;
     font-size: 13px;
-    letter-spacing:0;
+    letter-spacing: 0;
 
     p {
       display: inline-block;
       color: #666;
-      letter-spacing:0;
+      letter-spacing: 0;
       line-height: 17px;
       word-wrap: break-word;
     }
 
     &.error {
-      background: rgba(#FFD7E3,0.5);
-      p {color:#EB2466;}
+      background: rgba(#FFD7E3, 0.5);
+
+      p {
+        color: #EB2466;
+      }
     }
 
     &.warning {
       display: block;
-      z-index:1001; // Filter shadow forces me to do it :S
-      bottom:0;
+      z-index: 1001; // Filter shadow forces me to do it :S
+      bottom: 0;
       height: auto;
       max-height: none;
-      padding:0;
+      padding: 0;
 
-      p { padding:20px 30px }
+      p {
+        padding: 20px 30px;
+      }
 
       &.editor {
         bottom: 79px;
-        p { padding-left:56px }
+
+        p {
+          padding-left: 56px;
+        }
       }
     }
   }
-
 }

@@ -7,33 +7,37 @@
    *
    */
 
-  
 @import "compass/css3/border-radius";
 @import "../../table/table-sprite";
 @import "../../old_common/mixins";
 @import "../../old_common/form-elements";
 
-
 // LOCAL VARS
 $corner_radius: 6px;
-
 
 // Layer info, as name, order, ... etc
 .layer-info {
   position: absolute;
-  z-index:0;
-  top: 0; right:0; bottom:auto; left:0;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: auto;
+  left: 0;
   height: 67px;
-  border-bottom: 1px solid rgba(#999,0.25);
+  border-bottom: 1px solid rgba(#999, 0.25);
   line-height: 62px;
 
   @include border-top-left-radius($corner_radius);
 
+  div.left {
+    width: 82%;
+  }
 
-  div.left {width:82%;}
-  div.right {width:45px; margin-right:20px;}
+  div.right {
+    width: 45px;
+    margin-right: 20px;
+  }
 
-    
   // Layer info block
   .info {
     display: block;
@@ -43,7 +47,11 @@ $corner_radius: 6px;
     padding-left: 24px;
     text-align: left;
 
-    * {@include inline-block(); letter-spacing:0; vertical-align:middle;}
+    * {
+      @include inline-block();
+      letter-spacing: 0;
+      vertical-align: middle;
+    }
 
     // Order element
     .order {
@@ -102,21 +110,26 @@ $corner_radius: 6px;
       line-height: 15px;
 
       @include display-flex();
-
       @include text-overflow();
 
-      a { margin-left: 5px }
+      a {
+        margin-left: 5px;
+      }
     }
-
 
     &:hover {
       text-decoration: none;
       cursor: pointer;
-      .name {color:#666;}
-      .order {background:#666;}
+
+      .name {
+        color: #666;
+      }
+
+      .order {
+        background: #666;
+      }
     }
   }
-
 
   // Layer name edition
   @include default-input();
@@ -132,18 +145,23 @@ $corner_radius: 6px;
     font: bold 17px $text-fonts;
   }
 
-
   // Remove button
   .remove {
     @include inline-block();
     width: 13px;
     height: 13px;
     margin-left: 5px;
-    letter-spacing:0;
+    letter-spacing: 0;
     vertical-align: middle;
 
     @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
-    &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
-    &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+
+    &:hover {
+      @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);
+    }
+
+    &:active {
+      @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);
+    }
   }
 }

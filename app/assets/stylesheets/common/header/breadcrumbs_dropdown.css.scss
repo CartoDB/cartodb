@@ -2,8 +2,8 @@
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
-.BreadcrumbsDropdown { width: 260px }
-.BreadcrumbsDropdown--compact { width: 120px }
+.BreadcrumbsDropdown { width: 260px; }
+.BreadcrumbsDropdown--compact { width: 120px; }
 
 .BreadcrumbsDropdown-list {
   display: block;
@@ -34,14 +34,13 @@
 .BreadcrumbsDropdown-icon {
   width: 20px;
 }
-.BreadcrumbsDropdown-options {}
 
 .BreadcrumbsDropdown-optionsItem {
   display: block;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
 }
-.BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px }
+.BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px; }
 
 .BreadcrumbsDropdown-optionsItem.is-selected {
   color: $cTypography-linkSelected;

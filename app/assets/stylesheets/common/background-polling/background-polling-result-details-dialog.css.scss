@@ -2,11 +2,8 @@
 @import '../../variables/colors';
 @import '../../variables/sizes';
 
-
 // Error details dialog styles
 $w: 560px;
-
-.BackgroundPollingDetails {}
 
 .BackgroundPollingDetails-body {
   @include display-flex();
@@ -19,7 +16,10 @@ $w: 560px;
   border-top: 1px solid $cStructure-mainLine;
   border-bottom: 0;
 }
-.BackgroundPollingDetails-body--noBorderTop { border-top: 0 }
+
+.BackgroundPollingDetails-body--noBorderTop {
+  border-top: 0;
+}
 
 .BackgroundPollingDetails-icon {
   margin-right: $sMargin-element;
@@ -60,5 +60,11 @@ $w: 560px;
   border-top: 0;
   text-align: center;
 }
-.Button.BackgroundPollingDetails-footerButton { display: inline-block }
-.Button.BackgroundPollingDetails-footerButton span { line-height: 42px }
+
+.Button.BackgroundPollingDetails-footerButton {
+  display: inline-block;
+}
+
+.Button.BackgroundPollingDetails-footerButton span {
+  line-height: 42px;
+}

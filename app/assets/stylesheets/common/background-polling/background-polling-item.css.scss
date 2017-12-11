@@ -19,7 +19,10 @@
   padding: 0 20px;
   background: $cCard-hoverFill;
 }
-.ImportItem:last-child { border: none }
+
+.ImportItem:last-child {
+  border: none;
+}
 
 .ImportItem-text {
   display: block;
@@ -88,5 +91,8 @@
 
 .ImportItem-closeButton:hover {
   border-color: $cNavButton-active;
-  .ImportItem-closeButtonIcon { color: $cNavButton-active }
+
+  .ImportItem-closeButtonIcon {
+    color: $cNavButton-active;
+  }
 }

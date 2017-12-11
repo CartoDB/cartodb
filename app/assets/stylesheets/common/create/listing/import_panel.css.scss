@@ -33,14 +33,14 @@ $w: 780px;
   margin: 5px auto 0;
 }
 .ImportPanel-headerDescription--normalWeight { font-weight: $sFontWeight-normal; }
-.ImportPanel-headerDescription--withoutWidth { width: auto }
-.ImportPanel-headerDescription--negative { color: $cHighlight-negative }
+.ImportPanel-headerDescription--withoutWidth { width: auto; }
+.ImportPanel-headerDescription--negative { color: $cHighlight-negative; }
 
-.ImportPanel-headerDescription--negative
+.ImportPanel-headerDescription--negative,
 .ImportPanel-headerDescriptionLink {
   color: $cHighlight-negative;
   text-decoration: underline;
-  &:hover { color: $cHighlight-negative }
+  &:hover { color: $cHighlight-negative; }
 }
 
 .ImportPanel-headerButton {
@@ -49,7 +49,7 @@ $w: 780px;
   left: 0;
   margin-top: -20px;
 }
-.ImportPanel-headerLink { margin-top: 30px }
+.ImportPanel-headerLink { margin-top: 30px; }
 
 .ImportPanel-body {
   display: block;
@@ -79,5 +79,5 @@ $w: 780px;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
 }
-.ImportPanel-actions { text-align: center }
-.ImportPanel-actionsButton { display: inline-block }
+.ImportPanel-actions { text-align: center; }
+.ImportPanel-actionsButton { display: inline-block; }

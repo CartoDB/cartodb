@@ -6,12 +6,13 @@
   background: $cThirdBackground;
   cursor: default;
 }
+
 .Editor-FormDialog {
   position: absolute;
+  z-index: 100;
   top: 36px;
   right: 0;
   width: 248px;
-  z-index: 100;
 }
 
 .Editor-FormDialog .CustomList {
@@ -51,15 +52,19 @@
 .CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
   color: #CCC;
 }
+
 .CDB-OptionInput-item--categories .InputColor {
   padding: 0;
 }
+
 .CDB-ColorBar.is-link {
   cursor: pointer;
 }
+
 .CDB-OptionInput-container {
   height: 100%;
 }
+
 .CDB-OptionInput-container--noSlider {
   width: 100%;
 }

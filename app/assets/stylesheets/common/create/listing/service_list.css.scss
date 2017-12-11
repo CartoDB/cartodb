@@ -15,8 +15,7 @@ $w: 780px;
 .ServiceList-header {
   padding: 28px 0 16px;
 }
-.ServiceList-body {}
-.ServiceList-items { display: block }
+.ServiceList-items { display: block; }
 
 .ServiceList-item {
   @include display-flex();
@@ -67,10 +66,6 @@ $w: 780px;
   border: 1px solid #CCC;
   background: transparent;
   color: $cTypography-paragraphs;
-
-  &:hover {
-
-  }
 }
 
 .IntermediateInfo.ServiceList-empty {

@@ -28,9 +28,9 @@
   @include align-items(baseline, baseline);
 }
 
-@media (min-width: $sMedia-tablet) { .CreateDialog-footerInner { width: $sMedia-tablet } }
+@media (min-width: $sMedia-tablet) { .CreateDialog-footerInner { width: $sMedia-tablet; } }
 
-@media (min-width: 940px) { .CreateDialog-footerInner { width: 940px } }
+@media (min-width: 940px) { .CreateDialog-footerInner { width: 940px; } }
 
 .CreateDialog-footerShadow {
   position: absolute;
@@ -60,7 +60,7 @@
 
   @include justify-content(initial, initial);
 }
-.CreateDialog-footerInfoIcon { margin-right: 8px }
+.CreateDialog-footerInfoIcon { margin-right: 8px; }
 
 .CreateDialog-footerInfoEnquiry {
   padding-bottom: 10px;
@@ -70,4 +70,4 @@
   @include display-flex();
   @include align-items(center, center);
 }
-.CreateDialog-footerActionsButton.is-separated { margin-right: 10px }
+.CreateDialog-footerActionsButton.is-separated { margin-right: 10px; }

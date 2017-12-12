@@ -11,9 +11,9 @@ module.exports = {
     libraryTarget: 'umd'
   },
   plugins: [
-    new UglifyJsPlugin(),
     // Include only the lastest camshaft-reference
-    new webpack.IgnorePlugin(/^\.\/((?!0\.59\.4).)*\/reference\.json$/)
+    new webpack.IgnorePlugin(/^\.\/((?!0\.59\.4).)*\/reference\.json$/),
+    new UglifyJsPlugin()
   ],
   // Do not to include Leaflet in the bundle
   externals: {

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Legends | Carto</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Carto.js -->
+    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <style>
+      body { margin: 0; padding: 0; }
+      #map { position: absolute; height: 100%; width: 100%; }
+      #legends { position: absolute; padding: 0 20px 20px; background: white; font-size: 1.2em }
+      .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
+      button { padding: 10px; margin-top: 20px; }
+      .circle { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="legends" class="column-right">
+      <h1>World cities</h1>
+      <div>
+        <p id="capital"></p>
+        <p id="normal"></p>
+      </div>
+      <div id="legend-population">
+        <p id="min"></p>
+        <p id="max"></p>
+        <p id="avg"></p>
+      </div>
+    </div>
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'YOUR_API_KEY',
+        username: 'cartojs-test'
+      });
+
+      const populatedPlacesSource = new carto.source.SQL(`
+        SELECT *
+          FROM ne_10m_populated_places_simple
+      `);
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: ramp([pop_max], range(5, 20), quantiles(5));
+          marker-fill: ramp([adm0cap], (rgba(105,115,120,0.5), black), (0, 1), "=", category);
+          marker-allow-overlap: true;
+          marker-line-width: 1;
+          marker-line-color: #FFFFFF;
+          marker-line-opacity: 0.5;
+        }
+      `);
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
+
+      client.addLayer(populatedPlacesLayer);
+      client.getLeafletLayer().addTo(map);
+
+      populatedPlacesLayer.on('metadataChanged', function(event) {
+        event.styles.forEach(function (styleMetadata) {
+          switch(styleMetadata.getProperty()) {
+            case 'marker-width':
+              renderLegendSize(styleMetadata);
+              break;
+            case 'marker-fill':
+              renderLegendCapital(styleMetadata);
+              break;
+          }
+        });
+      });
+
+      function renderLegendSize(metadata) {
+        document.getElementById('min').innerHTML = `
+          <div class="circle" style="width:5px; height:5px; border:1px solid;"></div> ${metadata.getMin()} inhabitants
+        `;
+        document.getElementById('max').innerHTML = `
+          <div class="circle" style="width:20px; height:20px; border:1px solid;"></div> ${metadata.getMax()} inhabitants
+        `;
+        document.getElementById('avg').innerHTML = `
+          <b>Average</b> ${metadata.getAverage().toFixed(2)}
+        `;
+      }
+
+      function renderLegendCapital(metadata) {
+        const categories = metadata.getCategories();
+
+        for (category of categories) {
+          switch (category.name) {
+            case 0:
+              document.getElementById('normal').innerHTML = `
+                <div class="circle" style="background:${category.value}"></div> Normal
+              `;
+              break;
+            case 1:
+              document.getElementById('capital').innerHTML = `
+                <div class="circle" style="background:${category.value}"></div> Capital
+              `;
+              break;
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

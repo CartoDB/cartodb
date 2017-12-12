@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var CartoError = require('../error');
+var CartoError = require('../error-handling/carto-error');
+var EVENTS = require('../events');
 
 /**
  * Base data source object.
@@ -45,7 +46,7 @@ Base.prototype._createInternalModel = function (engine) {
  * Fire a CartoError event from a internalError
  */
 Base.prototype._triggerError = function (model, internalError) {
-  this.trigger('error', new CartoError(internalError));
+  this.trigger(EVENTS.ERROR, new CartoError(internalError, { analysis: this }));
 };
 
 Base.prototype.$setEngine = function (engine) {

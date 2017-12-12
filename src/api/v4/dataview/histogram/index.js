@@ -62,7 +62,11 @@ Histogram.prototype.DEFAULTS = {
  */
 Histogram.prototype.getData = function () {
   if (this._internalModel) {
-    return parseHistogramData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'));
+    return parseHistogramData(
+      this._internalModel.get('data'),
+      this._internalModel.get('nulls'),
+      this._internalModel.get('totalAmount')
+    );
   }
   return null;
 };
@@ -107,24 +111,15 @@ Histogram.prototype.getDistributionType = function () {
 
 Histogram.prototype._validateBins = function (bins) {
   if (!_.isFinite(bins) || bins < 1 || Math.floor(bins) !== bins) {
-    throw new TypeError('Bins must be a positive integer value.');
+    throw this._getValidationError('histogramInvalidBins');
   }
 };
 
 Histogram.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Options object to create a histogram dataview is required.');
+    throw this._getValidationError('histogramOptionsRequired');
   }
   this._validateBins(options.bins);
-};
-
-Histogram.prototype._listenToInternalModelSpecificEvents = function () {
-  this.listenTo(this._internalModel, 'change:bins', this._onBinsChanged);
-};
-
-Histogram.prototype._onBinsChanged = function () {
-  this._bins = this._internalModel.get('bins');
-  this._triggerChange('bins', this._bins);
 };
 
 Histogram.prototype._createInternalModel = function (engine) {

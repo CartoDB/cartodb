@@ -1,12 +1,16 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var CartoError = require('./error');
+var CartoError = require('./error-handling/carto-error');
 var Engine = require('../../engine');
 var Events = require('./events');
 var LayerBase = require('./layer/base');
 var Layers = require('./layers');
-var Leaflet = require('./leaflet');
 var VERSION = require('../../../package.json').version;
+var CartoValidationError = require('./error-handling/carto-validation-error');
+
+function getValidationError (code) {
+  return new CartoValidationError('client', code);
+}
 
 /**
  * This is the entry point for a Carto.js application.
@@ -71,7 +75,6 @@ Client.prototype.addLayer = function (layer, opts) {
  *
  * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
  * @param {object} opts
- * @param {show/hide} opts* - Show or hide the layer. client.addLayer(B).hide();
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
@@ -213,11 +216,40 @@ Client.prototype.getDataviews = function () {
  * Return a Leaflet layer that groups all the layers that have been
  * added to this client.
  *
+ * @returns {L.TileLayer} A Leaflet layer that groups all the layers:
+ * {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer}
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
-  this._leafletLayer = this._leafletLayer || new Leaflet.LayerGroup(this._layers, this._engine);
+  // Check if Leaflet is loaded
+  _isLeafletLoaded();
+  if (!this._leafletLayer) {
+    var LeafletLayer = require('./native/leaflet-layer');
+    this._leafletLayer = new LeafletLayer(this._layers, this._engine);
+  }
   return this._leafletLayer;
+};
+
+/**
+ * Return a Google Maps mapType that groups all the layers that have been
+ * added to this client.
+ *
+ * @param {google.maps.Map}
+ *
+ * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
+ * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}
+ * @api
+ */
+Client.prototype.getGoogleMapsMapType = function (map) {
+  // NOTE: the map is required here because of wax.g.connector
+
+  // Check if Google Maps is loaded
+  _isGoogleMapsLoaded();
+  if (!this._gmapsMapType) {
+    var GoogleMapsMapType = require('./native/google-maps-map-type');
+    this._gmapsMapType = new GoogleMapsMapType(this._layers, this._engine, map);
+  }
+  return this._gmapsMapType;
 };
 
 /**
@@ -274,6 +306,10 @@ Client.prototype._bindEngine = function (engine) {
   }.bind(this));
 
   engine.on(Engine.Events.RELOAD_ERROR, function (err) {
+    this.trigger(Events.ERROR, new CartoError(err, { layers: this._layers }));
+  }.bind(this));
+
+  engine.on(Engine.Events.LAYER_ERROR, function (err) {
     this.trigger(Events.ERROR, new CartoError(err));
   }.bind(this));
 };
@@ -284,7 +320,7 @@ Client.prototype._bindEngine = function (engine) {
  */
 function _checkLayer (object) {
   if (!(object instanceof LayerBase)) {
-    throw new TypeError('The given object is not a layer');
+    throw getValidationError('badLayerType');
   }
 }
 
@@ -298,29 +334,50 @@ function _checkSettings (settings) {
 
 function _checkApiKey (apiKey) {
   if (!apiKey) {
-    throw new TypeError('apiKey property is required.');
+    throw getValidationError('apiKeyRequired');
   }
   if (!_.isString(apiKey)) {
-    throw new TypeError('apiKey property must be a string.');
+    throw getValidationError('apiKeyString');
   }
 }
 
 function _checkUsername (username) {
   if (!username) {
-    throw new TypeError('username property is required.');
+    throw getValidationError('usernameRequired');
   }
   if (!_.isString(username)) {
-    throw new TypeError('username property must be a string.');
+    throw getValidationError('usernameString');
   }
 }
 
 function _checkServerUrl (serverUrl, username) {
   var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
   if (!serverUrl.match(urlregex)) {
-    throw new TypeError('serverUrl is not a valid URL.');
+    throw getValidationError('nonValidServerURL');
   }
   if (serverUrl.indexOf(username) < 0) {
-    throw new TypeError('serverUrl doesn\'t match the username.');
+    throw getValidationError('serverURLDoesntMatchUsername');
+  }
+}
+
+function _isLeafletLoaded () {
+  if (!window.L) {
+    throw new Error('Leaflet is required');
+  }
+  if (window.L.version < '1.0.0') {
+    throw new Error('Leaflet +1.0 is required');
+  }
+}
+
+function _isGoogleMapsLoaded () {
+  if (!window.google) {
+    throw new Error('Google Maps is required');
+  }
+  if (!window.google.maps) {
+    throw new Error('Google Maps is required');
+  }
+  if (window.google.maps.version < '3.0.0') {
+    throw new Error('Google Maps +3.0 is required');
   }
 }
 

@@ -52,10 +52,9 @@ var status = {
  *
  * @enum {string} carto.dataview.timeAggregation
  * @readonly
- * @memberOf carto.dataview
+ * @memberof carto.dataview
  * @api
  */
-
 var timeAggregation = {
   AUTO: 'auto',
   YEAR: 'year',
@@ -71,10 +70,23 @@ function isValidTimeAggregation (agg) {
   return _.contains(timeAggregation, agg);
 }
 
+/**
+ * ATTRIBUTION constant
+ *
+ * &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>
+ *
+ * @type {string}
+ * @constant
+ * @memberof carto
+ * @api
+ */
+var ATTRIBUTION = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>';
+
 module.exports = {
   operation: operation,
   status: status,
   timeAggregation: timeAggregation,
   isValidOperation: isValidOperation,
-  isValidTimeAggregation: isValidTimeAggregation
+  isValidTimeAggregation: isValidTimeAggregation,
+  ATTRIBUTION: ATTRIBUTION
 };

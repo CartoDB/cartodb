@@ -1,7 +1,6 @@
 var DataviewBase = require('../../../../../src/api/v4/dataview/base');
 var status = require('../../../../../src/api/v4/constants').status;
 var carto = require('../../../../../src/api/v4/index');
-var CartoError = require('../../../../../src/api/v4/error');
 
 function createSourceMock () {
   return new carto.source.Dataset('foo');
@@ -80,6 +79,14 @@ describe('api/v4/dataview/base', function () {
     });
   });
 
+  describe('.getSource', function () {
+    it('should return the source object', function () {
+      var source = new carto.source.Dataset('table_name');
+      base._source = source;
+      expect(base.getSource()).toBe(source);
+    });
+  });
+
   describe('.setColumn', function () {
     it('should set the column name as string', function () {
       var column = 'column-test';
@@ -88,9 +95,29 @@ describe('api/v4/dataview/base', function () {
     });
 
     it('should throw an error if the argument is not string or undefined', function () {
-      expect(function () { base.setColumn(); }).toThrowError(TypeError, 'Column property is required.');
-      expect(function () { base.setColumn(12); }).toThrowError(TypeError, 'Column property must be a string.');
-      expect(function () { base.setColumn(''); }).toThrowError(TypeError, 'Column property must be not empty.');
+      var requiredColumnError;
+      var stringColumnError;
+      var emptyColumnError;
+
+      try { base.setColumn(); } catch (error) { requiredColumnError = error; }
+      try { base.setColumn(12); } catch (error) { stringColumnError = error; }
+      try { base.setColumn(''); } catch (error) { emptyColumnError = error; }
+
+      expect(requiredColumnError).toEqual(jasmine.objectContaining({
+        message: 'Column property is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:column-required'
+      }));
+      expect(stringColumnError).toEqual(jasmine.objectContaining({
+        message: 'Column property must be a string.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:column-string'
+      }));
+      expect(emptyColumnError).toEqual(jasmine.objectContaining({
+        message: 'Column property must be not empty.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:empty-column'
+      }));
     });
 
     it('should return the dataview', function () {
@@ -134,23 +161,16 @@ describe('api/v4/dataview/base', function () {
       expect(eventValue).toEqual('whatever');
     });
 
-    it('should value in internal model if exists', function () {
-      var usedKey = '';
-      var usedValue = '';
-      var internalModel = {
-        set: function (key, value) {
-          usedKey = key;
-          usedValue = value;
-        }
-      };
+    it('should update internal model and trigger a change when the internalModel exists', function () {
+      var internalModelSpy = jasmine.createSpyObj('internalModelSpy', ['set']);
       base._example = 'something';
-      base._internalModel = internalModel;
+      base._internalModel = internalModelSpy;
       spyOn(base, '_triggerChange');
 
       base._changeProperty('example', 'whatever');
 
-      expect([usedKey, usedValue]).toEqual(['example', 'whatever']);
-      expect(base._triggerChange).not.toHaveBeenCalled();
+      expect(internalModelSpy.set).toHaveBeenCalledWith('example', 'whatever');
+      expect(base._triggerChange).toHaveBeenCalled();
     });
   });
 
@@ -198,7 +218,17 @@ describe('api/v4/dataview/base', function () {
       expect(dataview.getStatus()).toEqual('error');
       expect(eventStatus).toEqual('error');
       expect(eventError).toEqual('an error');
-      expect(dataviewError instanceof CartoError).toBe(true);
+      expect(dataviewError.name).toEqual('CartoError');
+    });
+  });
+
+  describe('add bbox filter', function () {
+    it('should check if it is a proper object', function () {
+      function test () {
+        base.addFilter('invalid_filter');
+      }
+
+      expect(test).toThrowError('Filter property is required.');
     });
   });
 });

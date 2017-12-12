@@ -19,19 +19,19 @@ describe('api/v4/source/sql', function () {
     it('should throw an error if query is not provided', function () {
       expect(function () {
         new carto.source.SQL(); // eslint-disable-line
-      }).toThrowError('query is required.');
+      }).toThrowError('SQL Source must have a SQL query.');
     });
 
     it('should throw an error if query is empty', function () {
       expect(function () {
         new carto.source.SQL(''); // eslint-disable-line
-      }).toThrowError('query is required.');
+      }).toThrowError('SQL Source must have a SQL query.');
     });
 
     it('should throw an error if query is not a valid string', function () {
       expect(function () {
         new carto.source.SQL(3333); // eslint-disable-line
-      }).toThrowError('query must be a string.');
+      }).toThrowError('SQL Query must be a string.');
     });
   });
 
@@ -44,13 +44,13 @@ describe('api/v4/source/sql', function () {
     it('should throw an error if query is empty', function () {
       expect(function () {
         sqlQuery.setQuery('');
-      }).toThrowError('query is required.');
+      }).toThrowError('SQL Source must have a SQL query.');
     });
 
     it('should throw an error if query is not a valid string', function () {
       expect(function () {
         sqlQuery.setQuery(333);
-      }).toThrowError('query must be a string.');
+      }).toThrowError('SQL Query must be a string.');
     });
 
     it('should trigger an queryChanged event when there is no internal model', function (done) {
@@ -69,16 +69,64 @@ describe('api/v4/source/sql', function () {
       });
       var style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
       var layer = new carto.layer.Layer(sqlQuery, style);
+      var queryChangedSpy = jasmine.createSpy('queryChangedSpy');
+      var newQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
 
-      client.addLayer(layer).then(function () {
-        var expectedQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
+      sqlQuery.on('queryChanged', queryChangedSpy);
 
-        sqlQuery.on('queryChanged', function (newQuery) {
-          expect(newQuery).toEqual(expectedQuery);
+      client.addLayer(layer)
+        .then(function () {
+          return sqlQuery.setQuery(newQuery);
+        })
+        .then(function () {
+          expect(queryChangedSpy).toHaveBeenCalledWith(newQuery);
           done();
         });
-        sqlQuery.setQuery(expectedQuery);
+    });
+
+    it('should return a resolved promise when there is no internal model', function (done) {
+      var newQuery = 'SELECT * FROM ne_10m_populated_places_simple';
+      sqlQuery.setQuery(newQuery)
+        .then(function () {
+          expect(sqlQuery.getQuery()).toEqual(newQuery);
+          done();
+        });
+    });
+
+    it('should return a resolved promise when there is an internal model', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
       });
+      var style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      var layer = new carto.layer.Layer(sqlQuery, style);
+      var newQuery = 'SELECT * FROM ne_10m_populated_places_simple LIMIT 10';
+      client.addLayer(layer)
+        .then(function () {
+          return sqlQuery.setQuery(newQuery);
+        })
+        .then(function () {
+          expect(sqlQuery.getQuery()).toEqual(newQuery);
+          done();
+        });
+    });
+
+    it('should return a rejected promise with a CartoError when there is an internal model (and a reload error)', function (done) {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      var layer = new carto.layer.Layer(sqlQuery, style);
+      var newQuery = 'SELECT * FROM invalid_dataset';
+      client.addLayer(layer)
+        .then(function () {
+          return sqlQuery.setQuery(newQuery);
+        })
+        .catch(function (cartoError) {
+          expect(cartoError.message).toMatch(/Invalid dataset name used. Dataset "invalid_dataset" does not exist./);
+          done();
+        });
     });
   });
 
@@ -110,6 +158,26 @@ describe('api/v4/source/sql', function () {
       var layer = new carto.layer.Layer(invalidSource, cartoCss);
 
       client.addLayer(layer).catch(function () { }); // Prevent console "uncaught error" warning.
+    });
+
+    it('should trigger a CartoError when there is an error in the internal model', function () {
+      var client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      var source = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
+      var cartoCss = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      var layer = new carto.layer.Layer(source, cartoCss);
+      var spy = jasmine.createSpy('spy');
+      source.on(carto.events.ERROR, spy);
+      client.addLayer(layer);
+
+      source._internalModel.set('error', 'an error');
+
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
+        name: 'CartoError',
+        originalError: 'an error'
+      }));
     });
   });
 });

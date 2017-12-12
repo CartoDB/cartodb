@@ -1,12 +1,13 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var LeafletLayerView = function (layerModel, leafletMap, mapModel, showLimitErrors) {
-  this.showLimitErrors = showLimitErrors;
-  this.leafletLayer = this._createLeafletLayer(layerModel);
-  this.leafletMap = leafletMap;
+var LeafletLayerView = function (layerModel, opts) {
+  opts = opts || {};
   this.model = layerModel;
-  this.mapModel = mapModel;
+  this.mapModel = opts.mapModel;
+  this.leafletMap = opts.nativeMap;
+  this.leafletLayer = opts.nativeLayer || this._createLeafletLayer();
+  this.showLimitErrors = opts.showLimitErrors;
 
   this.setModel(layerModel);
 
@@ -31,6 +32,10 @@ _.extend(LeafletLayerView.prototype, {
 
   remove: function () {
     this.leafletMap.removeLayer(this.leafletLayer);
+    this.notifyRemove();
+  },
+
+  notifyRemove: function () {
     this.trigger('remove', this);
     this.model.unbind(null, null, this);
     this.unbind();

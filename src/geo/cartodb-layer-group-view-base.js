@@ -1,6 +1,9 @@
-function CartoDBLayerGroupViewBase (layerGroupModel, nativeMap) {
+var parseWindshaftErrors = require('../windshaft/error-parser');
+
+function CartoDBLayerGroupViewBase (layerGroupModel, opts) {
+  opts = opts || {};
   this.interaction = [];
-  this.nativeMap = nativeMap;
+  this.nativeMap = opts.nativeMap;
 
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
@@ -63,7 +66,10 @@ CartoDBLayerGroupViewBase.prototype = {
   },
 
   _manageInteractivityErrors: function (payload) {
-    this.trigger('featureError', payload);
+    var errors = parseWindshaftErrors(payload);
+    if (errors.length > 0) {
+      this.trigger('featureError', errors[0]);
+    }
   },
 
   _generateTileJSON: function (layerIndexInLayerGroup) {

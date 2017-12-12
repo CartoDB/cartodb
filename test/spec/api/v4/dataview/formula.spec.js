@@ -44,7 +44,7 @@ describe('api/v4/dataview/formula', function () {
         new carto.dataview.Formula(); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Source property is required.');
+      expect(test).toThrowError(Error, 'Source property is required.');
     });
 
     it('column must be provided', function () {
@@ -52,7 +52,7 @@ describe('api/v4/dataview/formula', function () {
         new carto.dataview.Formula(source); // eslint-disable-line no-new
       };
 
-      expect(test).toThrowError(TypeError, 'Column property is required.');
+      expect(test).toThrowError('Column property is required.');
     });
 
     it('options set to default if not provided', function () {
@@ -78,7 +78,7 @@ describe('api/v4/dataview/formula', function () {
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+      expect(test).toThrowError(Error, 'Operation for formula dataview is not valid. Use carto.operation');
     });
   });
 
@@ -94,7 +94,7 @@ describe('api/v4/dataview/formula', function () {
         dataview.setOperation('swordfish');
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for formula dataview is not valid. Use carto.operation');
+      expect(test).toThrowError(Error, 'Operation for formula dataview is not valid. Use carto.operation');
     });
 
     it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
@@ -113,6 +113,17 @@ describe('api/v4/dataview/formula', function () {
       var operationArgs = internalModelMock.set.calls.mostRecent().args;
       expect(operationArgs[0]).toEqual('operation');
       expect(operationArgs[1]).toEqual(carto.operation.AVG);
+    });
+
+    it('should Trigger a operationChanged event when the operation is changed', function () {
+      var operationChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('operationChanged', operationChangedSpy);
+
+      expect(operationChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setOperation(carto.operation.MAX);
+
+      expect(operationChangedSpy).toHaveBeenCalledWith(carto.operation.MAX);
     });
   });
 
@@ -178,25 +189,6 @@ describe('api/v4/dataview/formula', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel._bboxFilter).not.toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
-    });
-
-    it('internalModel events should be properly hooked up', function () {
-      var operationChangedTriggered = false;
-      dataview.on('operationChanged', function () {
-        operationChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setOperation(carto.operation.MAX);
-
-      expect(operationChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      operationChangedTriggered = false;
-
-      dataview.$getInternalModel().set('operation', carto.operation.COUNT);
-
-      expect(operationChangedTriggered).toBe(true);
     });
 
     it('calling twice to $setEngine does not create another internalModel', function () {

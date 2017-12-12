@@ -400,7 +400,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onTotalsError: function (model, error) {
-    var parsedError = error && this._parseAjaxError(error);
+    var parsedError = error && this._parseError(error);
     this._triggerStatusError(parsedError);
   },
 

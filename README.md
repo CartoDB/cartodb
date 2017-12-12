@@ -5,7 +5,7 @@ Carto.js is a JavaScript library to create custom location intelligence applicat
 ## Getting Started
 
 The best way to get started is to navigate through the Carto.js documentation site:
- 
+
 - [Guide](https://cartodb.github.io/full-reference-api/) will give you a good overview of the library.
 - [Examples](https://cartodb.github.io/full-reference-api/examples/) will demo some specific features.
 - [API Reference](https://cartodb.github.io/full-reference-api/docs/) will help you use a particular class or method.
@@ -13,7 +13,7 @@ The best way to get started is to navigate through the Carto.js documentation si
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/CartoDB/cartodb.js/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/CartoDB/cartodb.js/tags).
 
 ## Submitting Contributions
 
@@ -23,10 +23,41 @@ You will need to sign a Contributor License Agreement (CLA) before making a subm
 
 This project is licensed under the BSD 3-clause "New" or "Revised" License - see the [LICENSE.txt](LICENSE.txt) file for details.
 
-## Building the library
+## Development
 
-    npm run build
+### Run the tests
+
+```
+npm test
+```
+
+### Build the library
+
+```
+npm run build
+```
 
 To watch the files
 
-    npm run build:watch
+```
+npm run build:watch
+```
+
+### Generate the docs
+
+```
+npm run docs
+```
+
+### Release version
+
+```
+npm run bump
+```
+
+To publish a release
+
+```
+npm run release:npm
+npm run release:cdn
+```

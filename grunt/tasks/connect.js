@@ -3,7 +3,7 @@
  *
  */
 module.exports = {
-  task: function(config) {
+  task: function() {
     return {
       server: {
         options: {

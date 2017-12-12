@@ -2,13 +2,13 @@ var _ = require('underscore');
 var bundles = require('./_browserify-bundles');
 
 module.exports = {
-  task: function(grunt) {
+  task: function() {
     var cfg = {};
     var defaultOptions = {
       sourceMap: true,
       banner: [
-        '// CartoDB.js version: <%= grunt.config("bump.version") %>',
-        '// sha: <%= grunt.config.get("gitinfo").local.branch.current.SHA %>',
+        '// CartoDB.js version: <%= version %>',
+        '// sha: <%= gitinfo.local.branch.current.SHA %>',
       ].join("\n"),
     };
 

@@ -19,7 +19,7 @@ module.exports = {
         },
         files: [
           '.tmp/css/**/*.css',
-          '<%= config.dist %>/internal/themes/css/cartodb.css'
+          '<%= dist %>/internal/themes/css/cartodb.css'
         ]
       }
     };

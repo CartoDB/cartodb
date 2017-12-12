@@ -13,7 +13,7 @@ module.exports = {
           expand: true,
           cwd: 'themes/img',
           src: [ '**/*.{png,jpg,gif,svg}' ],
-          dest: '<%= config.dist %>/internal/themes/img'
+          dest: '<%= dist %>/internal/themes/img'
         }]
       }
     }

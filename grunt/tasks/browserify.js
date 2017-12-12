@@ -1,7 +1,7 @@
 var bundles = require('./_browserify-bundles');
 
 module.exports = {
-  task: function (grunt) {
+  task: function () {
     var cfg = {};
     for (var name in bundles) {
       var bundle = bundles[name];
@@ -9,7 +9,7 @@ module.exports = {
         src: bundle.src,
         dest: bundle.dest,
         options: {
-          watch: '<%= config.doWatchify %>',
+          watch: '<%= doWatchify %>',
           browserifyOptions: {
             debug: true // to generate source-maps
           }

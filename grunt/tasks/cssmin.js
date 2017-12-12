@@ -15,11 +15,11 @@ module.exports = {
 
       themes: {
         options: {
-          banner: '/* CartoDB.css minified version: <%= config.version.bugfixing %> */',
+          banner: '/* CartoDB.css minified version: <%= version %> */',
           check: 'gzip'
         },
         files: {
-          '<%= config.dist %>/internal/themes/css/cartodb.css': ['<%= config.dist %>/internal/themes/css/cartodb.css']
+          '<%= dist %>/internal/themes/css/cartodb.css': ['<%= dist %>/internal/themes/css/cartodb.css']
         }
       }
 

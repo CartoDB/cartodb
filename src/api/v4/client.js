@@ -13,10 +13,10 @@ function getValidationError (code) {
 }
 
 /**
- * This is the entry point for a Carto.js application.
+ * This is the entry point for a CARTO.js application.
  *
  * A CARTO client allows managing layers and dataviews. It also takes care
- * of the communication between a Carto.js application and the services in CARTO.
+ * of the communication between a CARTO.js application and the services in CARTO.
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
  *
@@ -71,9 +71,9 @@ Client.prototype.addLayer = function (layer, opts) {
 };
 
 /**
- * Add multiple layers to the client.
+ * Add multiple layers to the client. Note the hierarchal order of layers.
  *
- * @param {carto.layer.Base[]} - An array with the layers to be added
+ * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *

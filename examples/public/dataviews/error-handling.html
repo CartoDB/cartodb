@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Error handling in dataviews | Carto</title>
+    <title>Widgets error handling | Carto</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -12,7 +12,8 @@
       body { margin: 0; padding: 0; }
       #widget { display: flex; flex-direction: column; justify-content: center; align-items: center; }
       h2 { margin-top: 50px; }
-      button { margin: 50px; padding: 10px; }
+      button { margin-top: 50px; padding: 10px; }
+      .data { margin-top: 50px; }
     </style>
   </head>
   <body>
@@ -28,16 +29,10 @@
         <option value="min">MIN</option>
       </select>
       <button onclick="applyDataviewChanges()"><b>Apply</b></button>
-      <pre id="data"></pre>
+      <button onclick="provokeError()"><b>Provoke error</b></button>
+      <pre id="data" class="data"></pre>
     </div>
     <script>
-      function logCartoError (prefix, cartoError) {
-        if (cartoError.name !== 'CartoError') {
-          throw new Error('This is suposed to be a CartoError!')
-        }
-        console.log(prefix, '\n', cartoError.name, '\n', cartoError.errorCode, '\n', cartoError.message);
-      }
-
       const client = new carto.Client({
         apiKey: 'YOUR_API_KEY',
         username: 'cartojs-test'
@@ -50,18 +45,26 @@
         operation: carto.operation.COUNT
       });
 
-      formulaDataview.on('dataChanged', data => {
-        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      let data;
+
+      formulaDataview.on('dataChanged', newData => {
+        data = JSON.stringify(newData, null, 4);
+        setText(data);
       });
 
-      formulaDataview.on('error', function (error) {
-        logCartoError('DATAVIEW ERROR', error);
+      formulaDataview.on(carto.events.ERROR, error => {
+        setText(error.message);
       });
 
-      client.addDataview(formulaDataview)
-        .catch(function (error) {
-          logCartoError('ADD DATAVIEW', error);
-        });
+      formulaDataview.on('statusChanged', status => {
+        if (status === carto.dataview.status.LOADING) {
+          setText('Loading...');
+        } else if (status === carto.dataview.status.LOADED && data) {
+          setText(data);
+        }
+      });
+
+      client.addDataview(formulaDataview);
 
       function applyDataviewChanges() {
         const column = document.getElementById('column').value;
@@ -71,7 +74,11 @@
       }
 
       function provokeError () {
-        formulaDataview.setColumn('non-existing');
+        formulaDataview.setColumn('wrongcolumn');
+      }
+
+      function setText (text) {
+        document.getElementById('data').innerHTML = text;
       }
     </script>
   </body>

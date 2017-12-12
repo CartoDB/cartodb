@@ -3,7 +3,7 @@
  *  @namespace carto
  *
  *  @description
- *  # Carto.js
+ *  # CARTO.js
  *  All the library features are exposed through the `carto` namespace.
  *
  *

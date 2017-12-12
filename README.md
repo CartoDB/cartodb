@@ -25,7 +25,7 @@ This project is licensed under the BSD 3-clause "New" or "Revised" License - see
 
 ## Development
 
-### Building the library
+### Build the library
 
 ```
 npm run build
@@ -37,19 +37,21 @@ To watch the files
 npm run build:watch
 ```
 
-### Generating the docs
+### Generate the docs
 
 ```
 npm run docs
 ```
 
-### Release and publish
+### Release version
 
 ```
-npm run release
+npm run bump
 ```
 
+To publish a release
+
 ```
-npm run publish:npm
-npm run publish:cdn
+npm run release:npm
+npm run release:cdn
 ```

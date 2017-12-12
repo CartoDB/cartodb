@@ -158,10 +158,10 @@
     "build:internal": "grunt build",
     "build:watch": "webpack -w",
     "postversion": "git push origin HEAD --follow-tags",
-    "release": "npm version prerelease",
-    "release:minor": "npm version minor",
-    "release:patch": "npm version patch",
-    "publish:npm": "./scripts/publish.sh"
+    "bump": "npm version prerelease",
+    "bump:minor": "npm version minor",
+    "bump:patch": "npm version patch",
+    "release:npm": "./scripts/publish.sh"
   },
   "watch": {
     "docs": "src/**/*.js"

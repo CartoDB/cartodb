@@ -281,6 +281,7 @@ module Carto
         required_properties :user_id, :visualization_id, :type
       end
 
+      # Models a generic event for segment.
       class SegmentEvent < Event
         include Carto::Tracking::Services::Segment
 
@@ -288,6 +289,7 @@ module Carto
 
         private_class_method :new
 
+        # Just pass any hash at `properties` and it will be sent to Segment.
         def self.build(name, reporter_id, properties)
           new(name, reporter_id, properties) if EVENTS.include?(name)
         end
@@ -298,9 +300,10 @@ module Carto
 
         def initialize(name, reporter_id, properties)
           @name = name
-          @properties = properties
-          @format = SegmentFormat.new(properties)
-          @reporter = Carto::User.find(reporter_id)
+          # TODO: remove this filtering as frontend stops sending "user_id: '-'"
+          @properties = properties.select { |k, v| k != 'user_id' || v != '-' }
+          @format = SegmentFormat.new(@properties)
+          @reporter = Carto::User.where(id: reporter_id).first
         end
       end
 

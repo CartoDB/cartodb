@@ -4,7 +4,7 @@
     "samples": [
       {
         "title": "Add a layer",
-        "desc": "Add one carto layer to your map",
+        "desc": "Add one CARTO layer to your map",
         "file": {
           "leaflet": "public/layers/single-layer-leaflet.html",
           "gmaps": "public/layers/single-layer-gmaps.html"
@@ -12,7 +12,7 @@
       },
       {
         "title": "Add more layers",
-        "desc": "Add several carto layers to your map",
+        "desc": "Add multiple CARTO layers to your map",
         "file": {
           "leaflet": "public/layers/multilayer-leaflet.html",
           "gmaps": "public/layers/multilayer-gmaps.html"
@@ -20,7 +20,7 @@
       },
       {
         "title": "Change the source",
-        "desc": "Change the layer's source",
+        "desc": "Update the source of your layers",
         "file": {
           "leaflet": "public/layers/change-source-leaflet.html",
           "gmaps": "public/layers/change-source-gmaps.html"
@@ -28,7 +28,7 @@
       },
       {
         "title": "Change the style",
-        "desc": "Change the layer's style",
+        "desc": "Update the style of your layers",
         "file": {
           "leaflet": "public/layers/change-style-leaflet.html",
           "gmaps": "public/layers/change-style-gmaps.html"
@@ -138,8 +138,8 @@
         }
       },
       {
-        "title": "Pop-ups",
-        "desc": "Create interactive pop-ups",
+        "title": "Pop-Ups",
+        "desc": "Create pop-up information windows and interact with your map",
         "file": {
           "leaflet": "public/misc/popups-leaflet.html",
           "gmaps": "public/misc/popups-gmaps.html"
@@ -173,7 +173,8 @@
         "title": "Error handling",
         "desc": "Handle common errors in maps",
         "file": {
-          "leaflet": "public/misc/error-handling-leaflet.html"
+          "leaflet": "public/misc/error-handling-leaflet.html",
+          "gmaps": "public/misc/error-handling-gmaps.html"
         }
       }
     ]

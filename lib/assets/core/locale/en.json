@@ -2580,6 +2580,9 @@
       "data": "Data"
     },
     "edit-feature": {
+      "breadcrumb": {
+        "layer-list": "Layer list"
+      },
       "features": {
         "point": "point",
         "line": "line",

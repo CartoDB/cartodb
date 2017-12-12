@@ -27,10 +27,6 @@ module Carto
       end
     end
 
-    def granted_apis
-      @granted_apis
-    end
-
     def to_hash
       [granted_apis_hash, table_permissions_hash]
     end
@@ -61,14 +57,14 @@ module Carto
     end
 
     def process_apis_grant(grant)
-      @granted_apis += grant['apis'].reject { |api| !ALLOWED_APIS.include?(api.downcase) }
+      @granted_apis += grant['apis'].select { |api| ALLOWED_APIS.include?(api.downcase) }
     end
 
     def process_database_grant(grant)
       grant['tables'].each do |table|
         table_id = "#{table['schema']}.#{table['name']}"
         @table_permissions[table_id] ||= []
-        permissions = table['permissions'].reject { |p| !ALLOWED_PERMISSIONS.include?(p.downcase) }
+        permissions = table['permissions'].select { |p| ALLOWED_PERMISSIONS.include?(p.downcase) }
         permissions.each { |p| @table_permissions[table_id] << p.downcase unless @table_permissions.include?(p.downcase) }
       end
     end

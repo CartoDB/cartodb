@@ -151,13 +151,10 @@ describe('dataviews/histogram-dataview-model', function () {
       var histogramData = {
         bin_width: 10,
         bins_count: 3,
+        bins_start: 12,
         nulls: 0,
         aggregation: 'quarter'
       };
-      spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({
-        start: 0,
-        end: 57
-      });
       spyOn(this.model._totals, 'sync').and.callFake(function (method, model, options) {
         options.success(histogramData);
       });
@@ -169,8 +166,8 @@ describe('dataviews/histogram-dataview-model', function () {
 
       this.model._totals.fetch();
 
-      expect(this.model.get('start')).toEqual(0);
-      expect(this.model.get('end')).toEqual(57);
+      expect(this.model.get('start')).toEqual(12);
+      expect(this.model.get('end')).toEqual(42);
       expect(this.model.get('bins')).toEqual(3);
       expect(this.model.get('aggregation')).toEqual('quarter');
     });
@@ -482,9 +479,10 @@ describe('dataviews/histogram-dataview-model', function () {
     describe('column type is number', function () {
       describe('if bins present', function () {
         it('should include start and end if present', function () {
-          spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({ start: 11, end: 22 });
           this.model.set({
             bins: 33,
+            start: 11,
+            end: 22,
             column_type: 'number'
           });
 
@@ -492,7 +490,6 @@ describe('dataviews/histogram-dataview-model', function () {
         });
 
         it('should include bins', function () {
-          spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue(null);
           this.model.set({
             bins: 33,
             column_type: 'number'
@@ -503,7 +500,6 @@ describe('dataviews/histogram-dataview-model', function () {
       });
 
       it('should not include start, end and bins when own_filter is enabled', function () {
-        spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({ start: 0, end: 10 });
         this.model.set({
           url: 'http://example.com',
           start: 0,
@@ -721,10 +717,6 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('._onDataChanged', function () {
     beforeEach(function () {
-      spyOn(this.model._totals, 'getCurrentStartEnd').and.returnValue({
-        start: 0,
-        end: 57
-      });
     });
 
     it('should call _resetFilterAndFetch if column is date and aggregation', function () {
@@ -773,14 +765,10 @@ describe('dataviews/histogram-dataview-model', function () {
 
     it('should set the data fetched', function () {
       var model = new Backbone.Model({
-        bins: 5
+        bins: 5,
+        start: 11,
+        end: 22
       });
-      model.getCurrentStartEnd = function () {
-        return {
-          start: 11,
-          end: 22
-        };
-      };
 
       this.model._onDataChanged(model);
 

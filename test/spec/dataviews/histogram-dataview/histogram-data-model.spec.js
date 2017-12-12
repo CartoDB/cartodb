@@ -10,7 +10,7 @@ describe('dataviews/histogram-data-model', function () {
     var urlParams = _.map(_.keys(params), function (key) {
       return key + '=' + params[key];
     });
-    return url + '?' + urlParams.join('&');
+    return url + '?no_filters=1&' + urlParams.join('&');
   }
 
   beforeEach(function () {

@@ -10,6 +10,8 @@ migration(
       foreign_key :user_id, :users, type: :uuid, on_delete: :cascade, null: false
       String      :api_type, null: false
       String      :name
+      String      :db_role, null: false
+      String      :db_password, null: false
       String      :grants_json, type: 'json'
       DateTime    :created_at, null: false
       DateTime    :updated_at, null: false

@@ -280,6 +280,37 @@ module Carto
 
         required_properties :user_id, :visualization_id, :type
       end
+
+      class SegmentEvent < Event
+        include Carto::Tracking::Services::Segment
+
+        attr_reader :name
+
+        private_class_method :new
+
+        def self.build(name, reporter_id, properties)
+          new(name, reporter_id, properties) if EVENTS.include?(name)
+        end
+
+        private
+
+        EVENTS = ['WebGL stats'].freeze
+
+        def initialize(name, reporter_id, properties)
+          @name = name
+          @properties = properties
+          @format = SegmentFormat.new(properties)
+          @reporter = Carto::User.find(reporter_id)
+        end
+      end
+
+      class SegmentFormat < Carto::Tracking::Formats::Internal
+        def to_segment
+          data = super
+          data[:data_properties] = to_hash
+          data
+        end
+      end
     end
   end
 end

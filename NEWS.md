@@ -12,6 +12,11 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add tooltip on Builder actions (#13102)
+* Add Grunt tasks to generate static files (#13130)
+* Improve geocoding onboarding (#13046)
+* Editor static view (#13043)
+* Add trial notification in static views (#13079)
 * Account static view (#12749)
 * Force UTF-8 encoding in the Compass task
 * Trigger error when interactivity request fails (#13093)
@@ -98,8 +103,18 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)
+* Grunt: Run carto-node before browserify (#13187)
+* Enable data tab if layer needs geocoding
+* Fix bug in redirection after analysis is completed (CartoDB/support#1183)
+* Hide Salesforce Connector Form (CartoDB/tech-ops#324)
+* Disable "Your datasets" tab and add tooltip if user doesn't have any datasets (#13104)
+* Fix Mapcard preview in Public Map (#13166)
+* Add hover state to nav tabs (#13158)
+* Change how redirection works after a successful import (CartoDB/support#1128)
+* Fix organization templates generation (#13150)
+* Fix dataset export modal (CartoDB/support#1168)
 * Add hover to UI Elements (#13074)
-
 * By value color input filters columns of type date (#7873)
 * Fixes image export in editor (#13089)
 * Fix incorrect "back to dashboard" link in dataset view (#13111)
@@ -131,8 +146,12 @@ ion for time-series (#12670)
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
 * Clean permissions ACL on group deletion (CartoDB/support/issues/1057)
+* Safe check for destination DB on user import (CartoDB/cartodb-central/issues/1945)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
+* User destroy order should be Central, local (#CartoDB/cartodb-central/issues/1929)
+* Delete all external sources within one transaction (#13129).
+* NoMethodError: undefined method `has_feature_flag?' for nil:NilClass at visualizations controller (#13145).
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
@@ -303,7 +322,9 @@ ion for time-series (#12670)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
+* Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Treat all time series dataview timestamps as UTC (#13070)
+* Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

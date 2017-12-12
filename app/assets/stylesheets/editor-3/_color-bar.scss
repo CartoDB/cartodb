@@ -2,6 +2,32 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+.CDB-ListDecoration-item .ColorBar {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    right: 0;
+    bottom: -14px - 2 * $baseSize;
+    left: 0;
+    height: 2px;
+    transition: background-color 0.2s ease-in;
+    background: transparent;
+    content: '';
+  }
+
+  &:hover {
+    &::after {
+      background: $cBlueHover;
+    }
+  }
+
+  &.is-selected {
+    &::after {
+      background: $cMainBg;
+    }
+  }
+}
 
 .CDB-ListDecoration-itemLink.is-selected .ColorBarContainer {
   position: relative;
@@ -41,8 +67,9 @@
 }
 
 .ColorsBar {
-  @include display-flex();
-  @include flex(1);
+  display: flex;
+  flex: 1;
+  padding: 13px 8px;
 }
 
 .ColorBar {
@@ -65,7 +92,7 @@
   right: 0;
   bottom: -14px - 2 * $baseSize;
   left: 0;
-  height: 1px;
+  height: 2px;
   background: $cMainBg;
   content: '';
 }

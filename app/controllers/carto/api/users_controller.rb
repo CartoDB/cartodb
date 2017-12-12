@@ -103,8 +103,7 @@ module Carto
           render_jsonp({ message: "Error deleting user: #{PASSWORD_DOES_NOT_MATCH_MESSAGE}" }, 400) and return
         end
 
-        user.destroy
-        user.delete_in_central
+        user.destroy_account
 
         render_jsonp({ logout_url: logout_url }, 200)
       rescue CartoDB::CentralCommunicationFailure => e

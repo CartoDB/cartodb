@@ -11,8 +11,8 @@ module.exports = {
           src: [
             '.sass-cache',
             '.tmp',
-            '<%= config.dist %>/internal',
-            '!<%= config.dist %>/.git*'
+            '<%= dist %>/internal',
+            '!<%= dist %>/.git*'
           ]
         }]
       }

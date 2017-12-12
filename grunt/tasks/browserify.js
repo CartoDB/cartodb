@@ -9,7 +9,7 @@ module.exports = {
         src: bundle.src,
         dest: bundle.dest,
         options: {
-          watch: '<%= config.doWatchify %>',
+          watch: '<%= doWatchify %>',
           browserifyOptions: {
             debug: true // to generate source-maps
           }

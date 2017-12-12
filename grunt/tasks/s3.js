@@ -14,7 +14,7 @@ module.exports = {
         dryRun: false
       },
 
-      'js-bugfixing': {
+      'js-major': {
         options: {
           overwrite: true,
           cache: false,
@@ -28,12 +28,9 @@ module.exports = {
             // Bug fixing version
             action: 'upload',
             expand: true,
-            cwd: 'dist',
-            src: [
-              '*.js',
-              '!_*.js'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+            cwd: 'dist/public',
+            src: '*.js',
+            dest: "carto.js/v<%= version.major %>"
           }
         ]
       },
@@ -43,35 +40,29 @@ module.exports = {
           overwrite: true,
           cache: false,
           gzip: true,
-          // It will not upload minor vesion when it comes from a
-          // custom version, because it could overwrite production
-          // version
-          dryRun: isVersionPrerelease(config.version.bugfixing),
           headers: {
             ContentType: 'application/x-javascript'
           }
         },
-        files: [{
-            // Minor version
+        files: [
+          {
+            // Bug fixing version
             action: 'upload',
             expand: true,
-            cwd: 'dist',
-            src: [
-              '*.js',
-              '!_*.js'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+            cwd: 'dist/public',
+            src: '*.js',
+            dest: "carto.js/v<%= version.minor %>"
           }
         ]
       },
 
-      'css-bugfixing': {
+      'js-patch': {
         options: {
           overwrite: true,
           cache: false,
           gzip: true,
           headers: {
-            ContentType: 'text/css'
+            ContentType: 'application/x-javascript'
           }
         },
         files: [
@@ -79,45 +70,20 @@ module.exports = {
             // Bug fixing version
             action: 'upload',
             expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.css'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
+            cwd: 'dist/public',
+            src: '*.js',
+            dest: "carto.js/v<%= version.patch %>"
           }
         ]
       },
 
-      'css-minor': {
+      'js-full': {
         options: {
           overwrite: true,
           cache: false,
-          dryRun: isVersionPrerelease(config.version.bugfixing),
           gzip: true,
           headers: {
-            ContentType: 'text/css'
-          }
-        },
-        files: [{
-            // Minor version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.css'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
-          }
-        ]
-      },
-
-      'png-bugfixing': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/png'
+            ContentType: 'application/x-javascript'
           }
         },
         files: [
@@ -125,82 +91,9 @@ module.exports = {
             // Bug fixing version
             action: 'upload',
             expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.png'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          }
-        ]
-      },
-
-      'png-minor': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/png'
-          },
-          dryRun: isVersionPrerelease(config.version.bugfixing)
-        },
-        files: [
-          {
-            // Minor version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.png'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
-          }
-        ]
-      },
-
-      'gif-bugfixing': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/gif'
-          }
-        },
-        files: [
-          {
-            // Bug fixing version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.gif'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          }
-        ]
-      },
-
-      'gif-minor': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/gif'
-          },
-          dryRun: isVersionPrerelease(config.version.bugfixing)
-        },
-        files: [
-          {
-            // Minor version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.gif'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
+            cwd: 'dist/public',
+            src: '*.js',
+            dest: "carto.js/v<%= version.full %>"
           }
         ]
       }

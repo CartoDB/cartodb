@@ -12,6 +12,8 @@ read -n1 -r -p "Press Ctrl+C to cancel, or any other key to continue." key
 
 npm run build
 
+node scripts/generate-package-json.js
+
 echo "Uploading to NPM..."
 
 cd dist/public

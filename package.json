@@ -152,16 +152,17 @@
     "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "build": "rm -rf dist/public; webpack && webpack --config webpack.min.config.js",
+    "build:watch": "webpack -w",
+    "build:internal": "grunt build",
     "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",
     "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
-    "build": "rm -rf dist/public; webpack && webpack --config webpack.min.config.js && node scripts/generate-package-json.js",
-    "build:internal": "grunt build",
-    "build:watch": "webpack -w",
-    "postversion": "git push origin HEAD --follow-tags",
     "bump": "npm version prerelease",
     "bump:minor": "npm version minor",
     "bump:patch": "npm version patch",
-    "release:npm": "./scripts/publish.sh"
+    "release:npm": "./scripts/release_npm.sh",
+    "release:cdn": "./scripts/release_cdn.sh",
+    "postversion": "git push origin HEAD --follow-tags"
   },
   "watch": {
     "docs": "src/**/*.js"

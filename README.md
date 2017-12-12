@@ -25,6 +25,12 @@ This project is licensed under the BSD 3-clause "New" or "Revised" License - see
 
 ## Development
 
+### Run the tests
+
+```
+npm test
+```
+
 ### Build the library
 
 ```

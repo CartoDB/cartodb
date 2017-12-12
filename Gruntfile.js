@@ -33,32 +33,23 @@ module.exports = function (grunt) {
   var version = pkg.version.split('.');
 
   var config = {
-    dist: 'dist',
-    tmp: '.tmp',
-    version: {
-      major: version[0],
-      minor: version[0] + '.' + version[1],
-      bugfixing: pkg.version
-    },
-    pkg: pkg
   };
 
   grunt.initConfig({
     secrets: {},
     config: config,
     dist: 'dist',
+    tmp: '.tmp',
     version: {
       major: version[0],
       minor: version[0] + '.' + version[1],
-      bugfixing: pkg.version
+      patch: version[0] + '.' + version[1] + '.' + version[2]
     },
     pkg: pkg,
     gitinfo: {},
     browserify: require('./grunt/tasks/browserify').task(grunt),
     exorcise: require('./grunt/tasks/exorcise').task(),
     s3: require('./grunt/tasks/s3').task(grunt, config),
-    prompt: require('./grunt/tasks/prompt').task(grunt, config),
-    replace: require('./grunt/tasks/replace').task(grunt, config),
     fastly: require('./grunt/tasks/fastly').task(grunt, config),
     sass: require('./grunt/tasks/scss').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
@@ -72,11 +63,6 @@ module.exports = function (grunt) {
     jasmine: jasmineCfg,
     eslint: { target: getTargetDiff() }
   });
-
-  grunt.registerTask('release', [
-    'prompt:bump',
-    'build'
-  ]);
 
   grunt.registerTask('publish', function (target) {
     if (!grunt.file.exists('secrets.json')) {
@@ -103,25 +89,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('set_current_version', function () {
     var version = pkg.version;
-    var minor = version.split('.');
-    minor.pop();
-    minor = minor.join('.');
-    var options = {
-      version: version,
-      minor: minor,
-      increment: 'build',
-      bugfixing: version
-    };
-
-    // Check if version was set via prompt, and
-    // use that version and not the package version
-    var bump = grunt.config.get('bump');
-    if (bump) {
-      options = bump;
-      options.bugfixing = bump.version;
-    }
-
-    grunt.config.set('bump', options);
+    grunt.config.set('version', version);
   });
 
   grunt.registerTask('invalidate', function () {
@@ -145,7 +113,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('preWatch', function () {
-    grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
+    grunt.config('doWatchify', true); // required for browserify to use watch files instead
   });
 
   grunt.registerTask('build-jasmine-specrunners', _
@@ -161,7 +129,6 @@ module.exports = function (grunt) {
   var allDeps = [
     'set_current_version',
     'clean:dist_internal',
-    'replace',
     'gitinfo',
     'copy:fonts'
   ];
@@ -191,19 +158,15 @@ module.exports = function (grunt) {
     'watch'
   ];
 
-  grunt.registerTask('lint', [
-    'eslint'
-  ]);
-
   grunt.registerTask('default', [ 'build' ]);
   grunt.registerTask('build', _.uniq(buildJS.concat(css)));
   grunt.registerTask('build:js', _.uniq(buildJS));
   grunt.registerTask('build:css', _.uniq(css));
   grunt.registerTask('test', _.uniq(js.concat([
-    'lint',
+    'eslint',
     'jasmine'
   ])));
-  grunt.registerTask('dev', _.uniq(css.concat(devJS).concat('gitinfo').concat(watch)));
+  grunt.registerTask('dev', _.uniq(css.concat(devJS).concat(watch)));
   grunt.registerTask('dev:css', _.uniq(css.concat(watch)));
   grunt.registerTask('dev:js', _.uniq(devJS.concat(watch)));
 };

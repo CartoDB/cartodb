@@ -5,7 +5,7 @@ module.exports = {
         options: {},
         files: {
           // CartoDB.js CSSs (themes?)
-          '<%= config.dist %>/internal/themes/css/cartodb.css': [
+          '<%= dist %>/internal/themes/css/cartodb.css': [
             '.tmp/scss/**/*.css'
           ]
         }

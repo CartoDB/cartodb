@@ -7,7 +7,7 @@ module.exports = {
     var defaultOptions = {
       sourceMap: true,
       banner: [
-        '// CartoDB.js version: <%= grunt.config("bump.version") %>',
+        '// CartoDB.js version: <%= grunt.config("version") %>',
         '// sha: <%= grunt.config.get("gitinfo").local.branch.current.SHA %>',
       ].join("\n"),
     };

@@ -1,6 +1,6 @@
 class Carto::Api::ApiKeysController < ::Api::ApplicationController
   ssl_required :create
-  before_filter :optional_api_authorization
+  before_filter :api_authorization_required
 
   def create
     api_key = ::Carto::ApiKey.new

@@ -300,8 +300,9 @@ module Carto
 
         def initialize(name, reporter_id, properties)
           @name = name
-          @properties = properties
-          @format = SegmentFormat.new(properties)
+          # TODO: remove this filtering as frontend stops sending "user_id: '-'"
+          @properties = properties.select { |k, v| k != 'user_id' || v != '-' }
+          @format = SegmentFormat.new(@properties)
           @reporter = Carto::User.where(id: reporter_id).first
         end
       end

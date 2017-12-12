@@ -1,3 +1,7 @@
+/**
+ * This script adds the package.json with the updated version
+ * for the npm publish to the dist/public directory
+ */
 var fs = require('fs');
 var path = require('path');
 var version = require(path.join(__dirname, '../package.json')).version;

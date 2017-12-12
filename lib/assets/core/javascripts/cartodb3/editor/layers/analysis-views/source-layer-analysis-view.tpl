@@ -1,4 +1,4 @@
-<p class="Editor-ListAnalysis-itemInfoTitle CDB-Text CDB-Size-small u-secondaryTextColor u-ellipsis u-flex" title="<%- tableName %>">
+<p class="Editor-ListAnalysis-itemInfoTitle CDB-Text CDB-Size-small u-ellipsis u-flex" title="<%- tableName %>">
   <span class="CDB-Text is-semibold CDB-Size-small u-rSpace u-upperCase"  style="color: <%- bgColor %>">
     <%- id %>
   </span>

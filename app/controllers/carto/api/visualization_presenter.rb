@@ -55,9 +55,10 @@ module Carto
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
-        poro[:google_maps_query_string] = @visualization.user.has_feature_flag?('google_maps') ?
-          @visualization.user.google_maps_query_string :
-          false
+
+        if @visualization.user.has_feature_flag?('google_maps')
+          poro[:google_maps_query_string] = @visualization.user.google_maps_query_string
+        end
 
         if show_basemaps
           poro[:basemaps] = Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps] : {}

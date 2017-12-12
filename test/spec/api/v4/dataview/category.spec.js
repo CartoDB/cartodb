@@ -52,19 +52,25 @@ describe('api/v4/dataview/category', function () {
 
   describe('initialization', function () {
     it('source must be provided', function () {
-      var test = function () {
-        new carto.dataview.Category(); // eslint-disable-line no-new
-      };
+      var error;
+      try { new carto.dataview.Category(); } catch (err) { error = err; } // eslint-disable-line no-new
 
-      expect(test).toThrowError(TypeError, 'Source property is required.');
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Source property is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:source-required'
+      }));
     });
 
     it('column must be provided', function () {
-      var test = function () {
-        new carto.dataview.Category(source); // eslint-disable-line no-new
-      };
+      var error;
+      try { new carto.dataview.Category(source); } catch (err) { error = err; } // eslint-disable-line no-new
 
-      expect(test).toThrowError(TypeError, 'Column property is required.');
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Column property is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:column-required'
+      }));
     });
 
     it('options set to default if not provided', function () {
@@ -90,13 +96,20 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('throw error if no correct operation is provided', function () {
+      var error;
       var test = function () {
         new carto.dataview.Category(source, 'population', { // eslint-disable-line no-new
           operation: 'exponential'
         });
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for category dataview is not valid. Use carto.operation');
+      try { test(); } catch (err) { error = err; }
+
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Operation for category dataview is not valid. Use carto.operation',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-invalid-operation'
+      }));
     });
   });
 
@@ -107,10 +120,30 @@ describe('api/v4/dataview/category', function () {
       dataview = new carto.dataview.Category(source, 'population');
     });
 
-    it('checks if operation is valid', function () {
-      expect(function () { dataview.setLimit(); }).toThrowError(TypeError, 'Limit for category dataview is required.');
-      expect(function () { dataview.setLimit('12'); }).toThrowError(TypeError, 'Limit for category dataview must be a number.');
-      expect(function () { dataview.setLimit(0); }).toThrowError(TypeError, 'Limit for category dataview must be greater than 0.');
+    it('checks if limit is valid', function () {
+      var requiredError;
+      var numberError;
+      var positiveError;
+
+      try { dataview.setLimit(); } catch (err) { requiredError = err; }
+      try { dataview.setLimit('12'); } catch (err) { numberError = err; }
+      try { dataview.setLimit(0); } catch (err) { positiveError = err; }
+
+      expect(requiredError).toEqual(jasmine.objectContaining({
+        message: 'Limit for category dataview is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-limit-required'
+      }));
+      expect(numberError).toEqual(jasmine.objectContaining({
+        message: 'Limit for category dataview must be a number.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-limit-number'
+      }));
+      expect(positiveError).toEqual(jasmine.objectContaining({
+        message: 'Limit for category dataview must be greater than 0.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-limit-positive'
+      }));
     });
 
     it('if limit is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
@@ -130,6 +163,17 @@ describe('api/v4/dataview/category', function () {
       expect(operationArgs[0]).toEqual('categories');
       expect(operationArgs[1]).toEqual(1);
     });
+
+    it('should trigger a limitChanged event', function () {
+      var limitChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('limitChanged', limitChangedSpy);
+
+      expect(limitChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setLimit(7);
+
+      expect(limitChangedSpy).toHaveBeenCalledWith(7);
+    });
   });
 
   describe('.setOperation', function () {
@@ -140,11 +184,18 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('checks if operation is valid', function () {
+      var error;
       var test = function () {
         dataview.setOperation('swordfish');
       };
 
-      expect(test).toThrowError(TypeError, 'Operation for category dataview is not valid. Use carto.operation');
+      try { test(); } catch (err) { error = err; }
+
+      expect(error).toEqual(jasmine.objectContaining({
+        message: 'Operation for category dataview is not valid. Use carto.operation',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-invalid-operation'
+      }));
     });
 
     it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
@@ -164,6 +215,17 @@ describe('api/v4/dataview/category', function () {
       expect(operationArgs[0]).toEqual('aggregation');
       expect(operationArgs[1]).toEqual(carto.operation.AVG);
     });
+
+    it('should trigger a operationChanged event', function () {
+      var operationChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('operationChanged', operationChangedSpy);
+
+      expect(operationChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setOperation(carto.operation.AVG);
+
+      expect(operationChangedSpy).toHaveBeenCalledWith(carto.operation.AVG);
+    });
   });
 
   describe('.setOperationColumn', function () {
@@ -174,9 +236,29 @@ describe('api/v4/dataview/category', function () {
     });
 
     it('checks if operation is valid', function () {
-      expect(function () { dataview.setOperationColumn(); }).toThrowError(TypeError, 'Operation column for category dataview is required.');
-      expect(function () { dataview.setOperationColumn(12); }).toThrowError(TypeError, 'Operation column for category dataview must be a string.');
-      expect(function () { dataview.setOperationColumn(''); }).toThrowError(TypeError, 'Operation column for category dataview must be not empty.');
+      var requiredError;
+      var numberError;
+      var emptyError;
+
+      try { dataview.setOperationColumn(); } catch (err) { requiredError = err; }
+      try { dataview.setOperationColumn(12); } catch (err) { numberError = err; }
+      try { dataview.setOperationColumn(''); } catch (err) { emptyError = err; }
+
+      expect(requiredError).toEqual(jasmine.objectContaining({
+        message: 'Operation column for category dataview is required.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-operation-required'
+      }));
+      expect(numberError).toEqual(jasmine.objectContaining({
+        message: 'Operation column for category dataview must be a string.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-operation-string'
+      }));
+      expect(emptyError).toEqual(jasmine.objectContaining({
+        message: 'Operation column for category dataview must be not empty.',
+        type: 'dataview',
+        errorCode: 'validation:dataview:category-operation-empty'
+      }));
     });
 
     it('if operation is valid, it assigns it to property, returns this and nothing else if there is no internaModel', function () {
@@ -195,6 +277,17 @@ describe('api/v4/dataview/category', function () {
       var operationArgs = internalModelMock.set.calls.mostRecent().args;
       expect(operationArgs[0]).toEqual('aggregation_column');
       expect(operationArgs[1]).toEqual('columnB');
+    });
+
+    it('should trigger a operationColumnChanged event', function () {
+      var operationColumnChangedSpy = jasmine.createSpy('operationaChangedSpy');
+      dataview.on('operationColumnChanged', operationColumnChangedSpy);
+
+      expect(operationColumnChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngineMock());
+      dataview.setOperationColumn('column2');
+
+      expect(operationColumnChangedSpy).toHaveBeenCalledWith('column2');
     });
   });
 
@@ -278,44 +371,6 @@ describe('api/v4/dataview/category', function () {
       var internalModel = dataview.$getInternalModel();
       expect(internalModel._bboxFilter).not.toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(false);
-    });
-
-    it('internalModel event operationChanged should be properly hooked up', function () {
-      var operationChangedTriggered = false;
-      dataview.on('operationChanged', function () {
-        operationChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setOperation(carto.operation.MAX);
-
-      expect(operationChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      operationChangedTriggered = false;
-
-      dataview.$getInternalModel().set('aggregation', carto.operation.COUNT);
-
-      expect(operationChangedTriggered).toBe(true);
-    });
-
-    it('internalModel event operationColumnChanged should be properly hooked up', function () {
-      var operationColumnChangedTriggered = false;
-      dataview.on('operationColumnChanged', function () {
-        operationColumnChangedTriggered = true;
-      });
-      dataview.$setEngine(engine);
-
-      dataview.setOperationColumn('columnA');
-
-      expect(operationColumnChangedTriggered).toBe(true);
-
-      // Now directly in the internal model
-      operationColumnChangedTriggered = false;
-
-      dataview.$getInternalModel().set('aggregation_column', 'columnB');
-
-      expect(operationColumnChangedTriggered).toBe(true);
     });
 
     it('calling twice to $setEngine does not create another internalModel', function () {

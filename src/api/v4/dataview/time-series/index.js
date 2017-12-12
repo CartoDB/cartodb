@@ -5,10 +5,6 @@ var parseTimeSeriesData = require('./parse-data');
 var timeAggregation = require('../../constants').timeAggregation;
 var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
 
-function hoursToSeconds (hours) {
-  return hours * 3600;
-}
-
 /**
  * A dataview to represent an histogram of temporal data allowing to specify the granularity of the temporal-bins.
  *
@@ -44,7 +40,7 @@ function hoursToSeconds (hours) {
 function TimeSeries (source, column, options) {
   this._initialize(source, column, options);
   this._aggregation = this._options.aggregation;
-  this._offset = this._options.offset;
+  this._offset = _hoursToSeconds(this._options.offset);
   this._localTimezone = this._options.useLocalTimezone;
 }
 
@@ -64,7 +60,12 @@ TimeSeries.prototype.DEFAULTS = {
  */
 TimeSeries.prototype.getData = function () {
   if (this._internalModel) {
-    return parseTimeSeriesData(this._internalModel.get('data'), this._internalModel.get('nulls'), this._internalModel.get('totalAmount'), this._internalModel.getCurrentOffset());
+    return parseTimeSeriesData(
+      this._internalModel.get('data'),
+      this._internalModel.get('nulls'),
+      this._internalModel.get('totalAmount'),
+      this._internalModel.getCurrentOffset()
+    );
   }
   return null;
 };
@@ -94,7 +95,7 @@ TimeSeries.prototype.getAggregation = function () {
 };
 
 /**
- * Set time offset.
+ * Set time offset in hours.
  *
  * @param {number} offset
  * @fires carto.dataview.TimeSeries.offsetChanged
@@ -103,24 +104,18 @@ TimeSeries.prototype.getAggregation = function () {
  */
 TimeSeries.prototype.setOffset = function (offset) {
   this._validateOffset(offset);
-  var prevOffset = this._offset;
-  this._offset = offset;
-  if (this._internalModel) {
-    this._internalModel.set('offset', hoursToSeconds(offset));
-  } else if (prevOffset !== offset) {
-    this._triggerChange('offset', offset);
-  }
+  this._changeProperty('offset', _hoursToSeconds(offset));
   return this;
 };
 
 /**
- * Return the current time offset.
+ * Return the current time offset in hours.
  *
  * @return {number} Current time offset
  * @api
  */
 TimeSeries.prototype.getOffset = function () {
-  return this._offset;
+  return _secondsToHours(this._offset);
 };
 
 /**
@@ -148,7 +143,7 @@ TimeSeries.prototype.isUsingLocalTimezone = function () {
 
 TimeSeries.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
-    throw new TypeError('Options object to create a histogram dataview is required.');
+    throw this._getValidationError('timeSeriesOptionsRequired');
   }
   this._validateAggregation(options.aggregation);
   this._validateOffset(options.offset);
@@ -157,24 +152,20 @@ TimeSeries.prototype._checkOptions = function (options) {
 
 TimeSeries.prototype._validateAggregation = function (aggregation) {
   if (!isValidTimeAggregation(aggregation)) {
-    throw new TypeError('Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');
+    throw this._getValidationError('timeSeriesInvalidAggregation');
   }
 };
 
 TimeSeries.prototype._validateOffset = function (offset) {
   if (!_.isFinite(offset) || Math.floor(offset) !== offset || offset < -12 || offset > 14) {
-    throw new TypeError('Offset must an integer value between -12 and 14.');
+    throw this._getValidationError('timeSeriesInvalidOffset');
   }
 };
 
 TimeSeries.prototype._validateLocalTimezone = function (localTimezone) {
   if (!_.isBoolean(localTimezone)) {
-    throw new TypeError('LocalTimezone must be a boolean value.');
+    throw this._getValidationError('timeSeriesInvalidUselocaltimezone');
   }
-};
-
-TimeSeries.prototype._listenToInternalModelSpecificEvents = function () {
-  // Empty function
 };
 
 TimeSeries.prototype._createInternalModel = function (engine) {
@@ -182,7 +173,7 @@ TimeSeries.prototype._createInternalModel = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._column,
     aggregation: this._aggregation,
-    offset: hoursToSeconds(this._offset),
+    offset: this._offset,
     localTimezone: this._localTimezone,
     sync_on_data_change: true,
     sync_on_bbox_change: !!this._boundingBoxFilter,
@@ -194,6 +185,15 @@ TimeSeries.prototype._createInternalModel = function (engine) {
   });
 };
 
+// Utility functions 
+
+function _hoursToSeconds (hours) {
+  return hours * 3600;
+}
+
+function _secondsToHours (seconds) {
+  return seconds / 3600;
+}
 module.exports = TimeSeries;
 
 /**

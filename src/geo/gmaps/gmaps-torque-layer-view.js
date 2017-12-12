@@ -5,8 +5,8 @@ var Backbone = require('backbone');
 var GMapsLayerView = require('./gmaps-layer-view');
 var TorqueLayerViewBase = require('../torque-layer-view-base');
 
-var GMapsTorqueLayerView = function (layerModel, gmapsMap, mapModel, showLimitErrors) {
-  GMapsLayerView.call(this, layerModel, gmapsMap, mapModel, showLimitErrors);
+var GMapsTorqueLayerView = function (layerModel, opts) {
+  GMapsLayerView.apply(this, arguments);
 
   torque.GMapsTorqueLayer.call(this, this._initialAttrs(layerModel));
 

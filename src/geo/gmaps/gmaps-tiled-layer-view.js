@@ -2,8 +2,8 @@
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 
-var GMapsTiledLayerView = function (layerModel, gmapsMap) {
-  GMapsLayerView.call(this, layerModel, gmapsMap);
+var GMapsTiledLayerView = function (layerModel, opts) {
+  GMapsLayerView.apply(this, arguments);
   this.tileSize = new google.maps.Size(256, 256);
   this.opacity = 1.0;
   this.isPng = true;

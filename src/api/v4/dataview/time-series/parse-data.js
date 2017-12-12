@@ -35,7 +35,7 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
    * @api
    */
   return {
-    bins: _createResult(compactData, maxFreq),
+    bins: _createBins(compactData, maxFreq),
     nulls: nulls || 0,
     offset: secondsToHours(offset),
     totalAmount: totalAmount
@@ -45,7 +45,7 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
 /**
  * Transform the time series raw data into {@link carto.dataview.TimeSeriesBinItem}.
  */
-function _createResult (data, maxFreq) {
+function _createBins (data, maxFreq) {
   return data.map(function (bin) {
     /**
       * @typedef {object} carto.dataview.TimeSeriesBinItem

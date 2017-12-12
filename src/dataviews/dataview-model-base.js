@@ -270,7 +270,7 @@ module.exports = Model.extend({
       error: function (_model, response) {
         if (!response || (response && response.statusText !== 'abort')) {
           this.set('status', FETCH_ERROR_STATUS);
-          var error = this._parseAjaxError(response);
+          var error = this._parseError(response);
           this._triggerStatusError(error);
         }
       }.bind(this)
@@ -361,10 +361,10 @@ module.exports = Model.extend({
     }
   },
 
-  _parseAjaxError: function (response) {
+  _parseError: function (response) {
     var error = response && response.statusText;
     if (response && response.responseJSON) {
-      var errors = parseWindshaftErrors(response.responseJSON);
+      var errors = parseWindshaftErrors(response.responseJSON, 'dataview');
       if (errors.length > 0) {
         error = errors[0];
       }

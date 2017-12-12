@@ -3,9 +3,8 @@ var Backbone = require('backbone');
 var status = require('../constants').status;
 var SourceBase = require('../source/base');
 var FilterBase = require('../filter/base');
-var BoundingBoxFilter = require('../filter/bounding-box');
-var BoundingBoxLeafletFilter = require('../filter/bounding-box-leaflet');
-var CartoError = require('../error');
+var CartoError = require('../error-handling/carto-error');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 
 /**
  * Base class for dataview objects.
@@ -17,7 +16,7 @@ var CartoError = require('../error');
  * All dataviews point to a data source (dataset, sql query) that might change
  * due to different reasons (eg: SQL query changed). Dataview objects will trigger
  * events to notify subscribers when new data is available.
- * 
+ *
  * @constructor
  * @abstract
  * @memberof carto.dataview
@@ -104,6 +103,16 @@ Base.prototype.isEnabled = function () {
 };
 
 /**
+ * Return the current source.
+ *
+ * @return {carto.source.Base} Current source object
+ * @api
+ */
+Base.prototype.getSource = function () {
+  return this._source;
+};
+
+/**
  * Set the dataview column.
  *
  * @param  {string} column
@@ -139,8 +148,7 @@ Base.prototype.getColumn = function () {
  */
 Base.prototype.addFilter = function (filter) {
   this._checkFilter(filter);
-  if ((filter !== this._boundingBoxFilter) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+  if (filter !== this._boundingBoxFilter) {
     this._addBoundingBoxFilter(filter);
   }
   return this;
@@ -155,8 +163,7 @@ Base.prototype.addFilter = function (filter) {
  */
 Base.prototype.removeFilter = function (filter) {
   this._checkFilter(filter);
-  if ((filter === this._boundingBoxFilter) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter)) {
+  if (filter === this._boundingBoxFilter) {
     this._removeBoundingBoxFilter();
   }
   return this;
@@ -172,8 +179,7 @@ Base.prototype.removeFilter = function (filter) {
 Base.prototype.hasFilter = function (filter) {
   this._checkFilter(filter);
   return (filter === this._boundingBoxFilter) &&
-    (this._internalModel && this._internalModel.get('sync_on_bbox_change')) &&
-    (filter instanceof BoundingBoxFilter || filter instanceof BoundingBoxLeafletFilter);
+    (this._internalModel && this._internalModel.get('sync_on_bbox_change'));
 };
 
 Base.prototype.getData = function () {
@@ -209,19 +215,19 @@ Base.prototype._initialize = function (source, column, options) {
 
 Base.prototype._checkSource = function (source) {
   if (!(source instanceof SourceBase)) {
-    throw new TypeError('Source property is required.');
+    throw this._getValidationError('sourceRequired');
   }
 };
 
 Base.prototype._checkColumn = function (column) {
   if (_.isUndefined(column)) {
-    throw new TypeError('Column property is required.');
+    throw this._getValidationError('columnRequired');
   }
   if (!_.isString(column)) {
-    throw new TypeError('Column property must be a string.');
+    throw this._getValidationError('columnString');
   }
   if (_.isEmpty(column)) {
-    throw new TypeError('Column property must be not empty.');
+    throw this._getValidationError('emptyColumn');
   }
 };
 
@@ -231,7 +237,7 @@ Base.prototype._checkOptions = function (options) {
 
 Base.prototype._checkFilter = function (filter) {
   if (!(filter instanceof FilterBase)) {
-    throw new TypeError('Filter property is required.');
+    throw this._getValidationError('filterRequired');
   }
 };
 
@@ -254,12 +260,7 @@ Base.prototype._listenToInternalModelSharedEvents = function () {
     this.listenTo(this._internalModel, 'loading', this._onStatusLoading);
     this.listenTo(this._internalModel, 'loaded', this._onStatusLoaded);
     this.listenTo(this._internalModel, 'statusError', this._onStatusError);
-    this._listenToInternalModelSpecificEvents();
   }
-};
-
-Base.prototype._listenToInternalModelSpecificEvents = function () {
-  throw new Error('_listenToInternalModelSpecificEvents must be implemented by the particular dataview.');
 };
 
 Base.prototype._onDataChanged = function () {
@@ -292,10 +293,12 @@ Base.prototype._onStatusError = function (model, error) {
 Base.prototype._changeProperty = function (key, value, internalKey) {
   var prevValue = this['_' + key];
   this['_' + key] = value;
+  if (prevValue === value) {
+    return;
+  }
+  this._triggerChange(key, value);
   if (this._internalModel) {
     this._internalModel.set(internalKey || key, value);
-  } else if (prevValue !== value) {
-    this._triggerChange(key, value);
   }
 };
 
@@ -323,6 +326,10 @@ Base.prototype._removeBoundingBoxFilter = function () {
   if (this._internalModel) {
     this._internalModel.set('sync_on_bbox_change', false);
   }
+};
+
+Base.prototype._getValidationError = function (code) {
+  return new CartoValidationError('dataview', code);
 };
 
 // Internal public methods

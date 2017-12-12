@@ -1,5 +1,11 @@
+/* global google */
+var L = require('leaflet');
+var _ = require('underscore');
 var carto = require('../../../../src/api/v4');
-var LeafletLayerGroup = require('../../../../src/api/v4/leaflet/layer-group');
+var LeafletLayer = require('../../../../src/api/v4/native/leaflet-layer');
+var GoogleMapsMapType = require('../../../../src/api/v4/native/google-maps-map-type');
+var Engine = require('../../../../src/engine');
+var Events = require('../../../../src/api/v4/events');
 
 describe('api/v4/client', function () {
   var client;
@@ -99,7 +105,7 @@ describe('api/v4/client', function () {
       expect(client.getLayers()[0]).toEqual(layer);
     });
 
-    it('should add a new layer triggering a reload cycle by default', function (done) {
+    xit('should add a new layer triggering a reload cycle by default', function (done) {
       spyOn(client._engine, 'reload').and.callThrough();
 
       client.addLayer(layer).then(function () {
@@ -131,11 +137,11 @@ describe('api/v4/client', function () {
     it('should return a significative error when layer parameter is not a valid layer', function () {
       expect(function () {
         client.addLayer([]);
-      }).toThrowError('The given object is not a layer');
+      }).toThrowError('The given object is not a layer.');
     });
   });
 
-  describe('.addLayers', function () {
+  xdescribe('.addLayers', function () {
     it('should add a layers array', function () { });
     it('should add a layer array triggering ONE reload cycle by default', function () { });
     it('should add a layers array without triggering a reload cycle when opts.reload is false', function () { });
@@ -146,7 +152,7 @@ describe('api/v4/client', function () {
     it('should return an empty array when there are no layers', function () {
       expect(client.getLayers()).toEqual([]);
     });
-    it('should return the layers stored in the client', function (done) {
+    xit('should return the layers stored in the client', function (done) {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
       var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       var layer = new carto.layer.Layer(source, style, {});
@@ -161,7 +167,7 @@ describe('api/v4/client', function () {
     it('should throw a descriptive error when the parameter is invalid', function () {
       expect(function () {
         client.removeLayer({});
-      }).toThrowError('The given object is not a layer');
+      }).toThrowError('The given object is not a layer.');
     });
 
     it('¿should throw a descriptive error when layer is not in the client?', function () {
@@ -192,12 +198,114 @@ describe('api/v4/client', function () {
       leafletLayer = client.getLeafletLayer();
     });
 
-    it('should return an object', function () {
-      expect(leafletLayer instanceof LeafletLayerGroup).toBe(true);
+    it('should return an instance of LeafletLayer', function () {
+      expect(leafletLayer instanceof LeafletLayer).toBe(true);
     });
 
     it('should return the same object', function () {
       expect(leafletLayer === client.getLeafletLayer()).toBe(true);
+    });
+
+    it('should return a L.TileLayer', function () {
+      expect(leafletLayer instanceof L.TileLayer).toBe(true);
+    });
+
+    it('should have the OpenStreetMap / Carto attribution', function () {
+      expect(leafletLayer.getAttribution()).toBe('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>');
+    });
+
+    it('should throw an error if Leaflet is not loaded', function () {
+      var L = _.clone(window.L);
+
+      window.L = undefined;
+      expect(function () {
+        client.getLeafletLayer();
+      }).toThrowError('Leaflet is required');
+
+      // Restore window.L
+      window.L = L;
+    });
+
+    it('should throw an error if Leaflet version is <1.0', function () {
+      var L = _.clone(window.L);
+
+      window.L = { version: '0.7' };
+      expect(function () {
+        client.getLeafletLayer();
+      }).toThrowError('Leaflet +1.0 is required');
+
+      // Restore window.L
+      window.L = L;
+    });
+  });
+
+  describe('.getGoogleMapsMapType', function () {
+    var element;
+    var mapType;
+
+    beforeEach(function () {
+      element = document.createElement('div');
+      mapType = client.getGoogleMapsMapType(new google.maps.Map(element));
+    });
+
+    afterEach(function () {
+      element.remove();
+    });
+
+    it('should return an instance of GoogleMapsMapType', function () {
+      expect(mapType instanceof GoogleMapsMapType).toBe(true);
+    });
+
+    it('should return the same object', function () {
+      expect(mapType === client.getGoogleMapsMapType()).toBe(true);
+    });
+
+    it('should return an object with a MapType interface', function () {
+      expect(mapType.tileSize).toBeDefined();
+      expect(mapType.getTile).toBeDefined();
+    });
+
+    it('should throw an error if Google Maps is not loaded', function () {
+      var google = _.clone(window.google);
+
+      window.google = undefined;
+      expect(function () {
+        client.getGoogleMapsMapType();
+      }).toThrowError('Google Maps is required');
+
+      window.google = { maps: undefined };
+      expect(function () {
+        client.getGoogleMapsMapType();
+      }).toThrowError('Google Maps is required');
+
+      // Restore window.google
+      window.google = google;
+    });
+
+    it('should throw an error if Google Maps version is <3.0', function () {
+      var google = _.clone(window.google);
+
+      window.google.maps = { version: '2.4' };
+      expect(function () {
+        client.getGoogleMapsMapType();
+      }).toThrowError('Google Maps +3.0 is required');
+
+      // Restore window.google
+      window.google = google;
+    });
+  });
+
+  describe('engine bindings', function () {
+    it('should capture engine LAYER_ERROR and trigger own error', function () {
+      var capturedError;
+      client.on(Events.ERROR, function (error) {
+        capturedError = error;
+      });
+
+      client._engine._eventEmmitter.trigger(Engine.Events.LAYER_ERROR);
+
+      expect(capturedError).toBeDefined();
+      expect(capturedError.name).toEqual('CartoError');
     });
   });
 });

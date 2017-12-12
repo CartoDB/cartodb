@@ -44,22 +44,21 @@ var findContainerPoint = function (map, o) {
   return point;
 };
 
-var LeafletCartoDBLayerGroupView = function (layerModel, leafletMap) {
-  var self = this;
+var LeafletCartoDBLayerGroupView = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.apply(this, arguments);
 
   this.leafletLayer.on('load', function () {
-    self.trigger('load');
-  });
+    this.trigger('load');
+  }.bind(this));
 
   this.leafletLayer.on('loading', function () {
-    self.trigger('loading');
-  });
+    this.trigger('loading');
+  }.bind(this));
 
   this.leafletLayer.on('tileerror', function (layer) {
-    self.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
-  });
+    this.model.addError({ type: C.WINDSHAFT_ERRORS.TILE });
+  }.bind(this));
 };
 
 LeafletCartoDBLayerGroupView.prototype = _.extend(
@@ -69,11 +68,15 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
   {
     interactionClass: wax.leaf.interaction,
 
-    _createLeafletLayer: function (layerModel) {
-      return new L.TileLayer(null, {
+    _createLeafletLayer: function () {
+      var tileLayer = new L.TileLayer(null, {
         opacity: 0.99,
         maxZoom: 30
       });
+      tileLayer._setUrl = function (url, noDraw) {
+        return L.TileLayer.prototype.setUrl.call(this, url, noDraw);
+      };
+      return tileLayer;
     },
 
     _reload: function () {
@@ -88,7 +91,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
         L.Util.setOptions(this.leafletLayer, {subdomains: subdomains});
       }
 
-      this.leafletLayer.setUrl(tileURLTemplate);
+      this.leafletLayer._setUrl(tileURLTemplate);
 
       this._reloadInteraction();
     },

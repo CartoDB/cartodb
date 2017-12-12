@@ -200,8 +200,8 @@ module.exports = function (grunt) {
   grunt.registerTask('build:js', _.uniq(buildJS));
   grunt.registerTask('build:css', _.uniq(css));
   grunt.registerTask('test', _.uniq(js.concat([
-    'jasmine',
-    'lint'
+    'lint',
+    'jasmine'
   ])));
   grunt.registerTask('dev', _.uniq(css.concat(devJS).concat('gitinfo').concat(watch)));
   grunt.registerTask('dev:css', _.uniq(css.concat(watch)));

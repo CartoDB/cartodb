@@ -120,6 +120,7 @@ var VisModel = Backbone.Model.extend({
 
     this._engine.on(Engine.Events.RELOAD_SUCCESS, this._onEngineReloadSuccess, this);
     this._engine.on(Engine.Events.RELOAD_ERROR, this._onEngineReloadError, this);
+    this._engine.on(Engine.Events.LAYER_ERROR, this._onEngineLayerError, this);
 
     // Bind layerGroupModel object to engine
     this.layerGroupModel = this._engine._cartoLayerGroup;
@@ -166,11 +167,6 @@ var VisModel = Backbone.Model.extend({
     });
 
     this.listenTo(this.map, 'cartodbLayerMoved', this.reload);
-    this.listenTo(this.layerGroupModel, 'all', function (type, error) {
-      if (type.lastIndexOf('error:', 0) === 0) {
-        this.map.trigger(type, error);
-      }
-    });
 
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);
@@ -270,8 +266,8 @@ var VisModel = Backbone.Model.extend({
         this._onMapInstantiatedForTheFirstTime();
         options.success && options.success();
       }.bind(this),
-      error: function () {
-        options.error && options.error();
+      error: function (error) {
+        options.error && options.error(error && error.message);
       },
       includeFilters: false
     });
@@ -301,7 +297,15 @@ var VisModel = Backbone.Model.extend({
   },
 
   _onEngineReloadError: function (error) {
-    this.setError(error);
+    if (error && error.isGlobalError && error.isGlobalError()) {
+      this.setError(error);
+    }
+  },
+
+  _onEngineLayerError: function (error) {
+    if (error) {
+      this.map.trigger('error:' + error.type, error);
+    }
   },
 
   reload: function (options) {

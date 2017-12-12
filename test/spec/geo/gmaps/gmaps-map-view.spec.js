@@ -145,8 +145,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
 
   describe('listeners', function () {
     beforeEach(function (done) {
-      // Listen for the map to be loaded
-      mapView.listenOnce('idle', done);
+      // Listen for the map to be ready
+      mapView.onReady(done);
     });
 
     it('sets isReady to true if idle event is triggered', function () {

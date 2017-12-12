@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 
 /**
  * A Dataset that can be used as the data source for layers and dataviews.
@@ -52,13 +53,13 @@ Dataset.prototype._createInternalModel = function (engine) {
 
 function _checkTableName (tableName) {
   if (_.isUndefined(tableName)) {
-    throw new TypeError('Table name is required.');
+    throw new CartoValidationError('source', 'noDatasetName');
   }
   if (!_.isString(tableName)) {
-    throw new TypeError('Table name must be a string.');
+    throw new CartoValidationError('source', 'requiredDatasetString');
   }
   if (_.isEmpty(tableName)) {
-    throw new TypeError('Table name must be not empty.');
+    throw new CartoValidationError('source', 'requiredDataset');
   }
 }
 

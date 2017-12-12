@@ -1,12 +1,13 @@
 var _ = require('underscore');
 var Base = require('./base');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 
 /**
  * Generic bounding box filter.
  *
  * @fires carto.filter.BoundingBox.boundsChanged
- * 
+ *
  * @constructor
  * @extends carto.filter.Base
  * @memberof carto.filter
@@ -73,7 +74,7 @@ BoundingBox.prototype._checkBounds = function (bounds) {
       !_.isNumber(bounds.south) ||
       !_.isNumber(bounds.east) ||
       !_.isNumber(bounds.north)) {
-    throw new TypeError('Bounds object is not valid. Use a carto.filter.Bounds object');
+    throw new CartoValidationError('filter', 'invalidBoundsObject');
   }
 };
 
@@ -84,11 +85,11 @@ BoundingBox.prototype.$getInternalModel = function () {
 module.exports = BoundingBox;
 
 /**
- * Event triggered when bounds of a bounding-box-filter changes.
+ * Event triggered when bounds of a bounding box filter changes.
  *
  * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
- * 
+ *
  * @event carto.filter.BoundingBox.boundsChanged
  * @type {carto.filter.Bounds}
  * @api
- */ 
+ */

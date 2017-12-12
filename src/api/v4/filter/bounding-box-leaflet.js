@@ -6,7 +6,7 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * Bounding box filter for Leaflet maps.
  *
  * @param {L.Map} map - The map view
- * 
+ *
  * @fires carto.filter.BoundingBoxLeaflet.boundsChanged
  *
  * @constructor
@@ -48,11 +48,11 @@ BoundingBoxLeaflet.prototype.$getInternalModel = function () {
 module.exports = BoundingBoxLeaflet;
 
 /**
- * Event triggered when bounds of a bounding-box-leaflet-filter changes.
+ * Event triggered when bounds of a bounding box filter for Leaflet changes.
  *
  * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
- * 
+ *
  * @event carto.filter.BoundingBoxLeaflet.boundsChanged
  * @type {carto.filter.Bounds}
  * @api
- */ 
+ */

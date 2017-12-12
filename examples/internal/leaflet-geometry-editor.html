@@ -6,6 +6,9 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <link rel="stylesheet" href="../../dist/internal/themes/css/cartodb.css" />
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <style>
       html, body {
         height: 100%;
@@ -50,7 +53,7 @@
         color: blue;
         text-decoration: underline;
         display: block;
-        margin-bottom: 10px; 
+        margin-bottom: 10px;
       }
       #controls button.is-enabled {
         color: red;
@@ -357,7 +360,7 @@
           ]
         }
       };
-  
+
       var polygon = {
         "type": "Feature",
         "properties": {},
@@ -454,7 +457,7 @@
         updateDisplayedGeoJSON(geometry);
         geometry.on('change', updateDisplayedGeoJSON);
       }
-      
+
       function updateDisplayedGeoJSON (geometry) {
         if (geometry.isComplete()) {
           $('.js-geojson-textarea').val(JSON.stringify(geometry.toGeoJSON(), null, 2));

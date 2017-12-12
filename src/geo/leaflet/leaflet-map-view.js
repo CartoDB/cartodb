@@ -194,7 +194,11 @@ var LeafletMapView = MapView.extend({
     }, this);
   },
 
-  listenOnce: function (name, callback) {
+  /**
+   * Pass a function to be executed once the map is ready.
+   */
+  onReady: function (callback) {
+    // A Leaflet maps is always ready
     callback();
   },
 

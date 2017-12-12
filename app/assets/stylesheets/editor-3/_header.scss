@@ -121,6 +121,10 @@
   @include flex(1);
 }
 
+.Editor-HeaderInfo-zoom {
+  fill: $cBlue;
+}
+
 .Editor-HeaderInfo-zoom.is-white {
   fill: $cWhite;
 }

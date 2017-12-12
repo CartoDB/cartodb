@@ -121,8 +121,6 @@ module.exports = Model.extend({
       this.refresh();
     }, this);
 
-    this._listenToBBoxChanges();
-
     this.on('change:url', function (model, value, opts) {
       if (this.syncsOnDataChanges()) {
         this._newDataAvailable = true;

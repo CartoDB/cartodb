@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Model = require('../../core/model');
 
 /**
@@ -9,9 +10,12 @@ module.exports = Model.extend({
 
   initialize: function (map) {
     this._map = map;
-    this._map.on('move zoom', function () {
-      this.trigger('boundsChanged', this.getBounds());
-    }.bind(this));
+    this._debouncedTriggerBoundsChanged = _.debounce(this._triggerBoundsChanged, 200);
+    this._map.on(
+      'move zoom',
+      this._debouncedTriggerBoundsChanged,
+      this
+    );
   },
 
   getBounds: function () {
@@ -28,5 +32,9 @@ module.exports = Model.extend({
 
   clean: function () {
     this._map.off('move zoom');
+  },
+
+  _triggerBoundsChanged: function () {
+    this.trigger('boundsChanged', this.getBounds());
   }
 });

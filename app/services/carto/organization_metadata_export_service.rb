@@ -233,7 +233,7 @@ module Carto
       organization = Carto::Organization.find(organization.id)
       organization.groups.delete
       organization.notifications.delete
-      organization.assets.delete
+      organization.assets.map(&:destroy)
       organization.users.delete
       organization.delete
     end

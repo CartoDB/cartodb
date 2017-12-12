@@ -109,24 +109,6 @@
     ]
   },
   {
-    "title": "Error handling",
-    "xsamples": [
-      {
-        "title": "Errors in layers",
-        "desc": "Manage the errors in the layers",
-        "file": {
-          "leaflet": "public/layers/error-handling-leaflet.html",
-          "gmaps": "public/layers/error-handling-gmaps.html"
-        }
-      },
-      {
-        "title": "Errors in dataviews",
-        "desc": "Manage the errors in the dataviews",
-        "file": "public/dataviews/error-handling.html"
-      }
-    ]
-  },
-  {
     "title": "Misc",
     "samples": [
       {

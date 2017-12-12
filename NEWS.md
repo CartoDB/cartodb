@@ -103,6 +103,9 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Wayfinding: widget view (#13202)
+* Wayfinding: layer list (#13208)
+* Wayfinding: edit feature (#13203)
 * Wayfinding: modals breadcrumbs (#13205)
 * Improve wayfinding in layer view (#13185)
 * Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)

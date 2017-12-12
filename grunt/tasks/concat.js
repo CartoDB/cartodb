@@ -1,5 +1,5 @@
 module.exports = {
-  task: function(grunt, config) {
+  task: function() {
     return {
       themes: {
         options: {},

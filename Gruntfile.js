@@ -24,47 +24,35 @@ module.exports = function (grunt) {
   require('time-grunt')(grunt);
   var semver = require('semver');
 
-  var pkg = grunt.file.readJSON('package.json');
+  var version = grunt.file.readJSON('package.json').version;
 
-  if (!pkg.version || !semver.valid(pkg.version)) {
+  if (!version || !semver.valid(version)) {
     grunt.fail.fatal('package.json version is not valid', 1);
   }
 
-  var version = pkg.version.split('.');
-
-  var config = {
-  };
-
   grunt.initConfig({
     secrets: {},
-    config: config,
     dist: 'dist',
     tmp: '.tmp',
-    version: {
-      major: version[0],
-      minor: version[0] + '.' + version[1],
-      patch: version[0] + '.' + version[1] + '.' + version[2]
-    },
-    pkg: pkg,
     gitinfo: {},
-    browserify: require('./grunt/tasks/browserify').task(grunt),
+    browserify: require('./grunt/tasks/browserify').task(),
     exorcise: require('./grunt/tasks/exorcise').task(),
-    s3: require('./grunt/tasks/s3').task(grunt, config),
-    fastly: require('./grunt/tasks/fastly').task(grunt, config),
-    sass: require('./grunt/tasks/scss').task(grunt, config),
+    s3: require('./grunt/tasks/s3').task(version),
+    fastly: require('./grunt/tasks/fastly').task(),
+    sass: require('./grunt/tasks/scss').task(),
     watch: require('./grunt/tasks/watch').task(),
-    connect: require('./grunt/tasks/connect').task(config),
-    copy: require('./grunt/tasks/copy').task(config),
+    connect: require('./grunt/tasks/connect').task(),
+    copy: require('./grunt/tasks/copy').task(),
     clean: require('./grunt/tasks/clean').task(),
-    concat: require('./grunt/tasks/concat').task(grunt, config),
-    uglify: require('./grunt/tasks/uglify').task(),
+    concat: require('./grunt/tasks/concat').task(),
+    uglify: require('./grunt/tasks/uglify').task(version),
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
     jasmine: jasmineCfg,
     eslint: { target: getTargetDiff() }
   });
 
-  grunt.registerTask('publish', function (target) {
+  grunt.registerTask('publish_s3', function (target) {
     if (!grunt.file.exists('secrets.json')) {
       grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it', 1);
     }
@@ -72,24 +60,17 @@ module.exports = function (grunt) {
     // Read secrets
     grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
 
-    if (
-      !grunt.config('secrets') ||
-        !grunt.config('secrets').S3_KEY ||
-        !grunt.config('secrets').S3_SECRET ||
-        !grunt.config('secrets').S3_BUCKET
+    if (!grunt.config('secrets') ||
+        !grunt.config('secrets').AWS_USER_S3_KEY ||
+        !grunt.config('secrets').AWS_USER_S3_SECRET ||
+        !grunt.config('secrets').AWS_S3_BUCKET
     ) {
       grunt.fail.fatal('S3 keys not specified in secrets.json', 1);
     }
 
     grunt.task.run([
-      'jasmine', // Don't comment this line unless you have a GOOD REASON
       's3'
     ]);
-  });
-
-  grunt.registerTask('set_current_version', function () {
-    var version = pkg.version;
-    grunt.config.set('version', version);
   });
 
   grunt.registerTask('invalidate', function () {
@@ -127,7 +108,6 @@ module.exports = function (grunt) {
   // Define tasks order for each step as if run in isolation,
   // when registering the actual tasks _.uniq is used to discard duplicate tasks from begin run
   var allDeps = [
-    'set_current_version',
     'clean:dist_internal',
     'gitinfo',
     'copy:fonts'

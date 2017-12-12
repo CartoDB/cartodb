@@ -14,6 +14,7 @@ npm run build
 
 echo "Uploading to CDN..."
 
-grunt publish
+grunt publish_s3
+grunt invalidate
 
 echo "All done."

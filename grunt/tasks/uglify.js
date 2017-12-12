@@ -2,12 +2,12 @@ var _ = require('underscore');
 var bundles = require('./_browserify-bundles');
 
 module.exports = {
-  task: function(version) {
+  task: function() {
     var cfg = {};
     var defaultOptions = {
       sourceMap: true,
       banner: [
-        '// CartoDB.js version: ' + version,
+        '// CartoDB.js version: <%= version %>',
         '// sha: <%= gitinfo.local.branch.current.SHA %>',
       ].join("\n"),
     };

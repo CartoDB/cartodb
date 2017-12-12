@@ -15,7 +15,7 @@ module.exports = {
 
       themes: {
         options: {
-          banner: '/* CartoDB.css minified version: <%= version.patch %> */',
+          banner: '/* CartoDB.css minified version: <%= version %> */',
           check: 'gzip'
         },
         files: {

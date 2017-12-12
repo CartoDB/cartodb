@@ -10,7 +10,7 @@ module Carto
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
-                     show_table_size_and_row_count: true, show_auth_tokens: true, show_basemaps: false,
+                     show_table_size_and_row_count: true, show_auth_tokens: true, show_user_basemaps: false,
                      password: nil)
         @visualization = visualization
         @current_viewer = current_viewer
@@ -28,7 +28,7 @@ module Carto
         @show_uses_builder_features = show_uses_builder_features
         @show_table_size_and_row_count = show_table_size_and_row_count
         @show_auth_tokens = show_auth_tokens
-        @show_basemaps = show_basemaps
+        @show_user_basemaps = show_user_basemaps
         @password = password
 
         @presenter_cache = Carto::Api::PresenterCache.new
@@ -55,14 +55,6 @@ module Carto
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
-
-        if @visualization.user.has_feature_flag?('google_maps')
-          poro[:google_maps_query_string] = @visualization.user.google_maps_query_string
-        end
-
-        if show_basemaps
-          poro[:basemaps] = Cartodb.config[:basemaps].present? ? Cartodb.config[:basemaps] : {}
-        end
 
         if show_auth_tokens
           poro[:auth_tokens] = auth_tokens
@@ -169,7 +161,7 @@ module Carto
                   :show_stats, :show_likes, :show_liked, :show_table,
                   :show_permission, :show_synchronization, :show_uses_builder_features,
                   :show_table_size_and_row_count, :show_auth_tokens,
-                  :show_basemaps
+                  :show_user_basemaps
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
@@ -239,7 +231,9 @@ module Carto
 
       def user
         Carto::Api::UserPresenter.new(@visualization.user,
-                                      current_viewer: @current_viewer, fetch_db_size: false).to_poro
+                                      current_viewer: @current_viewer,
+                                      fetch_db_size: false,
+                                      fetch_basemaps: show_user_basemaps).to_poro
       end
     end
   end

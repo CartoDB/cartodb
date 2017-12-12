@@ -40,14 +40,11 @@ module.exports = DataviewModelBase.extend({
       }
 
       // Start - End
-      var limits = this._totals.getCurrentStartEnd();
-      if (limits !== null) {
-        if (_.isNumber(limits.start)) {
-          params.push('start=' + limits.start);
-        }
-        if (_.isNumber(limits.end)) {
-          params.push('end=' + limits.end);
-        }
+      var start = this.get('start');
+      var end = this.get('end');
+      if (_.isFinite(start) && _.isFinite(end)) {
+        params.push('start=' + start);
+        params.push('end=' + end);
       }
     }
     return params;
@@ -339,11 +336,12 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onDataChanged: function (model) {
-    var range = model && _.isFunction(model.getCurrentStartEnd) ? model.getCurrentStartEnd() : null;
-    if (range !== null) {
+    var start = model.get('start');
+    var end = model.get('end');
+    if (_.isFinite(start) && _.isFinite(end)) {
       this.set({
-        start: range.start,
-        end: range.end
+        start: start,
+        end: end
       });
     }
 

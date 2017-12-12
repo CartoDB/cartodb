@@ -13,10 +13,10 @@ function getValidationError (code) {
 }
 
 /**
- * This is the entry point for a Carto.js application.
+ * This is the entry point for a CARTO.js application.
  *
  * A CARTO client allows managing layers and dataviews. It also takes care
- * of the communication between a Carto.js application and the services in CARTO.
+ * of the communication between a CARTO.js application and the services in CARTO.
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
  *

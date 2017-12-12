@@ -7,6 +7,8 @@ module Carto
 
       ssl_required :create
 
+      skip_before_filter :api_authorization_required
+
       before_filter :load_event, only: :create
 
       rescue_from Carto::LoadError,

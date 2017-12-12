@@ -320,6 +320,7 @@ module.exports = function (grunt) {
     'cdb',
     'copy:js_cartodb',
     'setConfig:env.browserify_watch:true',
+    'npm-carto-node',
     'run_browserify',
     'concat:js',
     'jst'
@@ -424,7 +425,6 @@ module.exports = function (grunt) {
    * `grunt test`
    */
   grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
-    'npm-carto-node',
     'connect:test',
     'beforeDefault',
     'js_editor',

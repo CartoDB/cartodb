@@ -17,3 +17,8 @@
   width: auto;
   height: 16px;
 }
+
+.Tab-paneContentInner {
+  @include display-flex();
+  @include flex(1 1 auto);
+}

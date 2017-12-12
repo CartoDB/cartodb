@@ -57,7 +57,7 @@ var parseCategoryData = require('./parse-data.js');
  * // Data and status are fired by all dataviews.
  * categoryDataview.on('dataChanged', newData => { });
  * categoryDataview.on('statusChanged', (newData, error) => { });
- * categoryDataview.on('error', cartoError => { });
+ * categoryDataview.on(carto.events.ERROR, cartoError => { });
  *
  * // Listen to specific category-dataview events.
  * categoryDataview.on('columnChanged', newData => { });

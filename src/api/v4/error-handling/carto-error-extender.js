@@ -2,7 +2,7 @@ var _ = require('underscore');
 var ERROR_LIST = require('./error-list');
 
 /**
- * Get two parameters to enrich a CartoError.
+ * Returns two parameters to enrich a CartoError.
  * - friendlyMessage: A easy to understand error description.
  * - errorCode: Am unique error code
  * 

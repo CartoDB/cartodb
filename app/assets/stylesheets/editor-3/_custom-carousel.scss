@@ -81,12 +81,12 @@
 .Carousel-shadow--left {
   left: 0;
   background-color: rgba(#FFF, 0) !important;
-  background-image: linear-gradient(left, #FFF, rgba(#FFF, 0));
+  background-image: linear-gradient(to right, #FFF, rgba(#FFF, 0));
 }
 
 .Carousel-shadow--right {
   right: 0;
-  background-image: linear-gradient(left, rgba(#FFF, 0), #FFF);
+  background-image: linear-gradient(to right, rgba(#FFF, 0), #FFF);
 }
 
 .Carousel-list.ps-container > .ps-scrollbar-x-rail {

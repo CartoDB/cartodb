@@ -3,8 +3,7 @@ var L = require('leaflet');
 var C = require('../../constants');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
-// TODO: Include this from npm
-var zera = require('../../../vendor/zera');
+var zera = require('iagolast-zera');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 var findContainerPoint = function (map, o) {

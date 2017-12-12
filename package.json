@@ -154,7 +154,7 @@
     "lint:fix": "eslint . --fix",
     "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",
     "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
-    "build": "rm -rf dist/public; webpack --display verbose && webpack --config webpack.config.min.js && node scripts/generate-package-json.js",
+    "build": "rm -rf dist/public; webpack && webpack --config webpack.config.min.js && node scripts/generate-package-json.js",
     "build:internal": "grunt build",
     "build:watch": "webpack -w",
     "postversion": "git push origin HEAD --follow-tags",

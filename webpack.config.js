@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './src/api/v4/index.js',
@@ -8,8 +9,11 @@ module.exports = {
     library: 'carto',
     libraryTarget: 'umd'
   },
-  // Tell webpack not to include Leaflet in the bundle.
-  // Leaflet should will be included manually
+  plugins: [
+    // Include only the lastest camshaft-reference
+    new webpack.IgnorePlugin(/^\.\/((?!0\.59\.4).)*\/reference\.json$/)
+  ],
+  // Do not to include Leaflet in the bundle
   externals: {
     leaflet: 'L'
   }

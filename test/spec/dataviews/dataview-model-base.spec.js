@@ -499,6 +499,40 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
+  describe('isSourceType', function () {
+    it('should return true if the source type is source', function () {
+      var dataview = new DataviewModelBase({
+        source: this.analysisNodes.get('a0')
+      }, {
+        map: this.map,
+        engine: engineMock
+      });
+      dataview.getSourceType = function () {
+        return 'source';
+      };
+
+      expect(dataview.isSourceType()).toBe(true);
+    });
+  });
+
+  describe('when source type is not source', function () {
+    describe('isSourceType', function () {
+      it('should return false', function () {
+        var dataview = new DataviewModelBase({
+          source: this.analysisNodes.get('a0')
+        }, {
+          map: this.map,
+          engine: engineMock
+        });
+        dataview.getSourceType = function () {
+          return 'sampling';
+        };
+
+        expect(dataview.isSourceType()).toBe(false);
+      });
+    });
+  });
+
   describe('getSourceId', function () {
     it('should return the id of the source', function () {
       var dataview = new DataviewModelBase({

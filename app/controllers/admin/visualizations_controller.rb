@@ -92,8 +92,6 @@ class Admin::VisualizationsController < Admin::AdminController
     if table_action
       if current_user.builder_enabled? && @visualization.has_read_permission?(current_user)
         return redirect_to CartoDB.url(self, 'builder_dataset', { id: request.params[:id] }, current_user)
-      elsif current_user.has_feature_flag?('static_editor') && !current_user.builder_enabled?
-        return render(file: 'public/static/show/index.html', layout: false)
       elsif !@visualization.has_write_permission?(current_user)
         return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       end

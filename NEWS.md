@@ -332,6 +332,7 @@ ion for time-series (#12670)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
 * Optimize bundle size related to camshaft-reference (#13124)
+* Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

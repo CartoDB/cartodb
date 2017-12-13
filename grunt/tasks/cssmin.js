@@ -1,6 +1,6 @@
 
 /**
- *  Css lint grunt task for CartoDB.js
+ *  Css lint grunt task for Carto.js
  *
  */
 

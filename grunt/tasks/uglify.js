@@ -1,6 +1,10 @@
 var _ = require('underscore');
 var bundles = require('./_browserify-bundles');
 
+/**
+ *  Uglify grunt task for Carto.js
+ *
+ */
 module.exports = {
   task: function() {
     var cfg = {};
@@ -9,7 +13,7 @@ module.exports = {
       banner: [
         '// CartoDB.js version: <%= version %>',
         '// sha: <%= gitinfo.local.branch.current.SHA %>',
-      ].join("\n"),
+      ].join('\n'),
     };
 
     for (var bundleName in bundles) {

@@ -1,5 +1,5 @@
 /**
- *  Clean grunt task for CartoDB.js
+ *  Clean grunt task for Carto.js
  *
  */
 module.exports = {

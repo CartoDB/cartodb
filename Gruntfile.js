@@ -15,7 +15,7 @@ function getTargetDiff () {
 }
 
 /**
- *  Grunfile runner file for CartoDB.js
+ *  Grunfile runner file for Carto.js
  *  framework
  *
  */

@@ -1,7 +1,7 @@
 var semver = require('semver');
 
 /**
- *  S3 upload grunt task for CartoDB.js
+ *  S3 upload grunt task for Carto.js
  *
  */
 

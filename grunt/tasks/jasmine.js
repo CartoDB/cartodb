@@ -16,7 +16,7 @@ var defaultOptions = {
 };
 
 /**
- * Jasmine grunt task for CartoDB.js tests
+ * Jasmine grunt task for Carto.js tests
  * https://github.com/gruntjs/grunt-contrib-jasmine#options
  * Load order: vendor, helpers, source, specs,
  */

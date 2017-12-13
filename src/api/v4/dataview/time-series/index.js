@@ -200,14 +200,6 @@ function _secondsToHours (seconds) {
 module.exports = TimeSeries;
 
 /**
- * Fired when the data has changed.
- *
- * @event dataChanged
- * @type {carto.dataview.TimeSeriesData}
- * @api
- */
-
-/**
  * Fired when aggregation has changed. Handler gets a parameter with the new aggregation.
  *
  * @event aggregationChanged

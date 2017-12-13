@@ -1,10 +1,10 @@
+// TODO: Delete this!
 /**
  * Events fired by a layer
  *
  * @enum {string}
  * @readonly
  * @memberof carto.layer
- * @api
  */
 var events = {
   /**

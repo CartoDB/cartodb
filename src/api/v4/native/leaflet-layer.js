@@ -18,7 +18,6 @@ var CartoError = require('../error-handling/carto-error');
  *
  * NOTE: It also contains the feature events handlers. That's why it requires the carto layers array.
  */
-
 var LeafletLayer = L.TileLayer.extend({
   options: {
     opacity: 0.99,

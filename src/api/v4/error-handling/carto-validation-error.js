@@ -5,8 +5,6 @@ var CartoError = require('./carto-error');
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.
- *
- * @api
  */
 function CartoValidationError (type, message, opts) {
   return new CartoError({

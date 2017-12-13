@@ -36,8 +36,8 @@ function getValidationError (code) {
  * @memberof carto
  * @api
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  */
 function Client (settings) {
   _checkSettings(settings);
@@ -60,8 +60,8 @@ _.extend(Client.prototype, Backbone.Events);
  * @param {carto.layer.Base} - The layer to be added
  * @param {object} opts
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} - A promise that will be fulfilled when the layer is added.
  * @api
@@ -76,8 +76,8 @@ Client.prototype.addLayer = function (layer, opts) {
  * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
  * @param {object} opts
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the layers are added.
  * @api
@@ -97,8 +97,8 @@ Client.prototype.addLayers = function (layers, opts) {
  * @param {carto.layer.Base} - The layer to be removed
  * @param {object} opts
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the layer is removed.
  * @api
@@ -113,8 +113,8 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @param {carto.layer.Base[]} - An array with the layers to be removed
  * @param {object} opts
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the layers are removed.
  * @api
@@ -143,8 +143,8 @@ Client.prototype.getLayers = function () {
  *
  * @param {carto.dataview.Base} - The dataview to be added
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} - A promise that will be fulfilled when the dataview is added.
  * @api
@@ -159,8 +159,8 @@ Client.prototype.addDataview = function (dataview, opts) {
  * @param {carto.dataview.Base[]} - An array with the dataviews to be added
  * @param {object} opts
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the dataviews are added.
  * @api
@@ -180,8 +180,8 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  * @param {carto.dataview.Base} - The dataview array to be removed
  * @param {object} opts
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the dataview is removed.
  * @api

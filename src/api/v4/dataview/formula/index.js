@@ -14,8 +14,9 @@ var parseFormulaData = require('./parse-data.js');
  * @param {object} [options]
  * @param {carto.operation} [options.operation] - The operation to apply to the data
  *
- * @fires carto.dataview.Formula.dataChanged
- * @fires carto.dataview.Formula.operationChanged
+ * @fires dataChanged
+ * @fires operationChanged
+ * @fires error
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -48,7 +49,7 @@ Formula.prototype = Object.create(Base.prototype);
  * Set the dataview operation.
  *
  * @param  {carto.operation} operation
- * @fires carto.dataview.Formula.operationChanged
+ * @fires operationChanged
  * @return {carto.dataview.Formula} this
  * @api
  */
@@ -119,21 +120,9 @@ Formula.prototype._createInternalModel = function (engine) {
 module.exports = Formula;
 
 /**
- * Event triggered when the data in a formula-dataview changes.
+ * Fired when the operation has changed. Handler gets a parameter with the new operation.
  *
- * Contains a single argument with the new data.
- *
- * @event carto.dataview.Formula.dataChanged
- * @type {carto.dataview.FormulaData}
- * @api
- */
-
-/**
- * Event triggered when the operation in a formula-dataview changes.
- *
- * Contains a single argument with new operation.
- *
- * @event carto.dataview.Formula.operationChanged
+ * @event operationChanged
  * @type {carto.operation}
  * @api
  */

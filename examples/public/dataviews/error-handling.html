@@ -52,7 +52,7 @@
         setText(data);
       });
 
-      formulaDataview.on(carto.events.ERROR, error => {
+      formulaDataview.on('error', error => {
         setText(error.message);
       });
 

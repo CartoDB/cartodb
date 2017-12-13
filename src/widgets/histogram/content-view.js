@@ -40,9 +40,7 @@ module.exports = cdb.core.View.extend({
 
     var _initBinds = this._initBinds.bind(this);
     this._originalData.once('change:data', function () {
-      this._dataviewModel.fetch({
-        complete: _initBinds
-      });
+      _initBinds();
     }, this);
   },
 

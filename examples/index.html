@@ -12,8 +12,8 @@
   <h4 style="margin-left:30px">CDN:<a href="../dist/public/carto.js"> ../dist/public/carto.js</a></h4>
   <script>
     $(function () {
-      $.getJSON('./categories.json').done(function(data) {
-        renderCategories(data);
+      $.getJSON('./examples.json').done(function(data) {
+        renderCategories(data.categories);
       });
 
       function renderCategories(categories) {

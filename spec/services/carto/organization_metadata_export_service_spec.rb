@@ -101,6 +101,7 @@ describe Carto::OrganizationMetadataExportService do
         clean_redis
         Table.any_instance.stubs(:remove_table_from_user_database)
         @organization.notifications.each(&:destroy)
+        @organization.assets.each { |a| a.update_attribute(:storage_info, nil) } # Avoids remote deletion attempt
         @organization.assets.each(&:delete)
         @organization.assets.clear
         @organization.users.flat_map(&:visualizations).each(&:destroy)

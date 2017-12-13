@@ -103,6 +103,11 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Wayfinding: widget view (#13202)
+* Wayfinding: layer list (#13208)
+* Wayfinding: edit feature (#13203)
+* Wayfinding: modals breadcrumbs (#13205)
+* Improve wayfinding in layer view (#13185)
 * Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)
 * Grunt: Run carto-node before browserify (#13187)
 * Enable data tab if layer needs geocoding
@@ -333,6 +338,7 @@ ion for time-series (#12670)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
 * Optimize bundle size related to camshaft-reference (#13124)
+* Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

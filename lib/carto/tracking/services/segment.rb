@@ -8,7 +8,7 @@ module Carto
           segment_job = Resque::TrackingJobs::SendSegmentEvent
           supplied_properties = @format.to_segment
 
-          Resque.enqueue(segment_job, @reporter.id, name, supplied_properties)
+          Resque.enqueue(segment_job, @reporter.try(:id), name, supplied_properties)
         end
 
         def segment_api_key

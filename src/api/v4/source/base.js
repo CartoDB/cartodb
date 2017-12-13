@@ -7,6 +7,7 @@ var EVENTS = require('../events');
  * Base data source object.
  *
  * @constructor
+ * @fires error
  * @abstract
  * @memberof carto.source
  * @api

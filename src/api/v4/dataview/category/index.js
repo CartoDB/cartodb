@@ -34,10 +34,11 @@ var parseCategoryData = require('./parse-data.js');
  * @param {carto.operation} [options.operation] - The operation to apply to the data
  * @param {string} [options.operationColumn] - The column where the operation will be applied
  *
- * @fires carto.dataview.Category.dataChanged
- * @fires carto.dataview.Category.limitChanged
- * @fires carto.dataview.Category.operationChanged
- * @fires carto.dataview.Category.operationColumnChanged
+ * @fires dataChanged
+ * @fires limitChanged
+ * @fires operationChanged
+ * @fires operationColumnChanged
+ * @fires error
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -57,7 +58,7 @@ var parseCategoryData = require('./parse-data.js');
  * // Data and status are fired by all dataviews.
  * categoryDataview.on('dataChanged', newData => { });
  * categoryDataview.on('statusChanged', (newData, error) => { });
- * categoryDataview.on(carto.events.ERROR, cartoError => { });
+ * categoryDataview.on('error', cartoError => { });
  *
  * // Listen to specific category-dataview events.
  * categoryDataview.on('columnChanged', newData => { });
@@ -80,7 +81,7 @@ Category.prototype = Object.create(Base.prototype);
  * Set the categories limit.
  *
  * @param  {number} limit
- * @fires carto.dataview.Category.limitChanged
+ * @fires limitChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -104,7 +105,7 @@ Category.prototype.getLimit = function () {
  * Set the dataview operation.
  *
  * @param  {carto.operation} operation
- * @fires carto.dataview.Category.operationChanged
+ * @fires operationChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -128,7 +129,7 @@ Category.prototype.getOperation = function () {
  * Set the dataview operationColumn.
  *
  * @param  {string} operationColumn
- * @fires carto.dataview.Category.operationColumnChanged
+ * @fires operationColumnChanged
  * @return {carto.dataview.Category} this
  * @api
  */
@@ -232,41 +233,25 @@ Category.prototype._createInternalModel = function (engine) {
 module.exports = Category;
 
 /**
- * Event triggered when the data in a category-dataview changes.
+ * Fired when limit has changed. Handler gets a parameter with the new limit.
  *
- * Contains a single argument with the {@link carto.dataview.CategoryData}
- *
- * @event carto.dataview.Category.dataChanged
- * @type {carto.dataview.CategoryData}
- * @api
- */
-
-/**
- * Event triggered when the limit in a category-dataview changes.
- *
- * Contains a single argument with the new limit.
- *
- * @event carto.dataview.Category.limitChanged
+ * @event limitChanged
  * @type {number}
  * @api
  */
 
 /**
- * Event triggered when the operation in a category-dataview changes.
+ * Fired when operation has changed. Handler gets a parameter with the new limit.
  *
- * Contains a single argument with the new operation name.
- *
- * @event carto.dataview.Category.operationChanged
+ * @event operationChanged
  * @type {string}
  * @api
  */
 
 /**
- * Event triggered when the operationColumn in a category-dataview changes.
+ * Fired when operationColumn has changed. Handler gets a parameter with the new operationColumn.
  *
- * Contains a single argument with the new operationColumn name.
- *
- * @event carto.dataview.Category.operationColumnChanged
+ * @event operationColumnChanged
  * @type {string}
  * @api
  */

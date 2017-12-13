@@ -7,7 +7,7 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  *
  * @param {L.Map} map - The map view
  *
- * @fires carto.filter.BoundingBoxGoogleMaps.boundsChanged
+ * @fires boundsChanged
  *
  * @constructor
  * @extends carto.filter.Base
@@ -46,13 +46,3 @@ BoundingBoxGoogleMaps.prototype.$getInternalModel = function () {
 };
 
 module.exports = BoundingBoxGoogleMaps;
-
-/**
- * Event triggered when bounds of a bounding box filter for Google Maps changes.
- *
- * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
- *
- * @event carto.filter.BoundingBoxGoogleMaps.boundsChanged
- * @type {carto.filter.Bounds}
- * @api
- */

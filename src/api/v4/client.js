@@ -35,8 +35,8 @@ function getValidationError (code) {
  * @memberof carto
  * @api
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  */
 function Client (settings) {
   _checkSettings(settings);
@@ -60,8 +60,8 @@ _.extend(Client.prototype, Backbone.Events);
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
@@ -77,8 +77,8 @@ Client.prototype.addLayer = function (layer, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
@@ -99,8 +99,8 @@ Client.prototype.addLayers = function (layers, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
@@ -116,8 +116,8 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
@@ -147,8 +147,8 @@ Client.prototype.getLayers = function () {
  * @param {carto.dataview.Base} - The dataview to be added
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
@@ -164,8 +164,8 @@ Client.prototype.addDataview = function (dataview, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api
@@ -186,8 +186,8 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  * @param {object} opts
  * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
- * @fires CartoError
- * @fires carto.events.SUCCESS
+ * @fires error
+ * @fires success
  *
  * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
  * @api

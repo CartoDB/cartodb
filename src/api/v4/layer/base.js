@@ -6,6 +6,7 @@ var Backbone = require('backbone');
  *
  * @constructor
  * @abstract
+ * @fires error
  * @memberof carto.layer
  * @api
  */

@@ -9,12 +9,13 @@ var CartoError = require('../error-handling/carto-error');
  * A SQL Query that can be used as the data source for layers and dataviews.
  *
  * @param {string} query A SQL query containing a SELECT statement
+ * @fires error
  * @example
  * new carto.source.SQL('SELECT * FROM european_cities');
  * @constructor
  * @extends carto.source.Base
  * @memberof carto.source
- * @fires carto.source.SQL.queryChangedEvent
+ * @fires queryChanged
  * @api
  */
 function SQL (query) {
@@ -27,10 +28,10 @@ SQL.prototype = Object.create(Base.prototype);
 
 /**
  * Update the query. This method is asyncronous and returns a promise which is resolved when the style
- * is changed succesfully. It also fires a queryChangedEvent.
+ * is changed succesfully. It also fires a 'queryChanged' event.
  * 
  * @param {string} query - The sql query that will be the source of the data
- * @fires carto.source.SQL.queryChangedEvent
+ * @fires queryChanged
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
@@ -99,10 +100,9 @@ function _checkQuery (query) {
 module.exports = SQL;
 
 /**
- * Triggered every time the query is changed.
- * Contains a string with the new query.
+ * Fired when the query has changed. Handler gets a parameter with the new query.
  *
- * @event carto.source.SQL.queryChangedEvent
+ * @event queryChanged
  * @type {string}
  * @api
  */

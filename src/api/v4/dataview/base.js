@@ -20,8 +20,9 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * @constructor
  * @abstract
  * @memberof carto.dataview
- * @fires carto.dataview.Base.columnChanged
- * @fires carto.dataview.Base.statusChanged
+ * @fires columnChanged
+ * @fires statusChanged
+ * @fires error
  * @api
  */
 function Base () { }
@@ -116,7 +117,7 @@ Base.prototype.getSource = function () {
  * Set the dataview column.
  *
  * @param  {string} column
- * @fires carto.dataview.Base.columnChanged
+ * @fires columnChanged
  * @return {carto.dataview.Base} this
  * @api
  */
@@ -349,21 +350,28 @@ Base.prototype.$getInternalModel = function () {
 module.exports = Base;
 
 /**
- * Event triggered when the column in a dataview changes.
+ * Fired when the column name has changed. Handler gets a parameter with the new column name.
  *
- * Contains a single argument with the name of the changed column.
- *
- * @event carto.dataview.Base.columnChanged
+ * @event columnChanged
  * @type {string}
  * @api
  */
 
 /**
- * Event triggered when the status in a dataview changes.
+ * Fired when the status has changed. Handler gets a parameter with the new status.
  *
  * Contains a single argument with the new status.
  *
- * @event carto.dataview.Base.statusChanged
+ * @event statusChanged
  * @type {carto.dataview.status}
+ * @api
+ */
+
+/**
+ * Fired when the data has changed. Handler gets an object with specific data for the type
+ * of dataview that triggered the event.
+ *
+ * @event dataChanged
+ * @type {carto.dataview.CategoryData|carto.dataview.FormulaData|carto.dataview.HistogramData}
  * @api
  */

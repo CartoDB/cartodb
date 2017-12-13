@@ -13,13 +13,23 @@
   <div class="BlockList-title u-bSpace js-context-menu">
     <div class="BlockList-titleText js-header"></div>
   </div>
-  <div class="CDB-Text CDB-Size-small u-flex">
-    <span class="is-semibold u-rSpace u-upperCase" style="color: <%- sourceColor %>;">
-      <%- source %>
+  <div class="u-flex u-alignCenter">
+    <span class="CDB-Text CDB-Size-small is-semibold u-upperCase" style="color: <%- sourceColor %>;">
+      <%- sourceId %>
     </span>
-    <p class="u-ellipsis">
-      <span class="u-altTextColor u-rSpace--s">Source</span>
-      <%- layerName %>
-    </p>
+
+    <% if (!isSourceType) { %>
+      <span class="CDB-Text CDB-Size-small u-lSpace--s" style="color: <%- sourceColor %>;">
+        <i class="CDB-IconFont CDB-IconFont-ray"></i>
+      </span>
+    <% } %>
+
+    <span class="CDB-Text CDB-Size-small u-mainTextColor u-lSpace">
+      <%= sourceType %>
+    </span>
+
+    <span class="CDB-Text CDB-Size-small u-altTextColor u-ellipsis u-lSpace" title="<%= layerName %>">
+      <%= layerName %>
+    </span>
   </div>
 </div>

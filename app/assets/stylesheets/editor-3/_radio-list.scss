@@ -35,4 +35,24 @@
 
 .VerticalRadioList-itemInner {
   display: flex;
+
+  &:hover {
+    cursor: pointer;
+
+    .CDB-Radio + .CDB-Radio-face {
+      border: 1px solid $cBlueHover;
+
+      &::before {
+        background: $cHoverLine;
+      }
+    }
+
+    .CDB-Radio:checked:hover + .CDB-Radio-face {
+      border: 1px solid $cBlue;
+
+      &::before {
+        background: $cWhite;
+      }
+    }
+  }
 }

@@ -325,6 +325,7 @@ ion for time-series (#12670)
 * Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Treat all time series dataview timestamps as UTC (#13070)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
+* Fetch histogram and time series totals with a new `no_filters` parameter. (#13059)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

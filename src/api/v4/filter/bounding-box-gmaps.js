@@ -4,16 +4,24 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
  * Bounding box filter for Google Maps maps.
+ * 
+ * When this filter is included into a dataview only the data inside the {@link https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map|googleMap}
+ * bounds will be taken into account.
  *
- * @param {L.Map} map - The map view
+ * @param {google.maps.map} map - The google map to track the bounds
  *
- * @fires carto.filter.BoundingBoxGoogleMaps.boundsChanged
+ * @fires boundsChanged
  *
  * @constructor
  * @extends carto.filter.Base
  * @memberof carto.filter
  * @api
  *
+ * @example
+ * // Create a bonding box attached to a google map.
+ * const bboxFilter = new carto.filter.BoundingBoxGoogleMaps(googleMap);
+ * // Add the filter to a dataview. Generating new data when the map bounds are changed.
+ * dataview.addFilter(bboxFilter);
  */
 function BoundingBoxGoogleMaps (map) {
   // Adapt the Google Maps map to offer unique:
@@ -46,13 +54,3 @@ BoundingBoxGoogleMaps.prototype.$getInternalModel = function () {
 };
 
 module.exports = BoundingBoxGoogleMaps;
-
-/**
- * Event triggered when bounds of a bounding box filter for Google Maps changes.
- *
- * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
- *
- * @event carto.filter.BoundingBoxGoogleMaps.boundsChanged
- * @type {carto.filter.Bounds}
- * @api
- */

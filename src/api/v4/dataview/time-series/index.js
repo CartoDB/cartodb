@@ -6,7 +6,7 @@ var timeAggregation = require('../../constants').timeAggregation;
 var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
 
 /**
- * A dataview to represent an histogram of temporal data allowing to specify the granularity of the temporal-bins.
+ * A dataview to represent an histogram of temporal data allowing to specify the granularity of the {@link carto.dataview.timeAggregation|temporal-bins.}
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data
@@ -15,11 +15,13 @@ var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
  * @param {number} [options.offset] - Amount of hours to displace the aggregation from UTC
  * @param {boolean} [options.useLocalTimezone] - Indicates to use the user local timezone or not
  *
- * @fires carto.dataview.TimeSeries.dataChanged
- * @fires carto.dataview.TimeSeries.aggregationChanged
- * @fires carto.dataview.TimeSeries.localTimezoneChanged
- * @fires carto.dataview.TimeSeries.offsetChanged
- *
+ * @fires dataChanged
+ * @fires binsChanged
+ * @fires aggregationChanged
+ * @fires offsetChanged
+ * @fires localTimezoneChanged
+ * @fires error
+ * 
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -74,7 +76,7 @@ TimeSeries.prototype.getData = function () {
  * Set time aggregation.
  *
  * @param {carto.dataview.timeAggregation} aggregation
- * @fires carto.dataview.TimeSeries.aggregationChanged
+ * @fires aggregationChanged
  * @return {carto.dataview.TimeSeries} this
  * @api
  */
@@ -98,7 +100,7 @@ TimeSeries.prototype.getAggregation = function () {
  * Set time offset in hours.
  *
  * @param {number} offset
- * @fires carto.dataview.TimeSeries.offsetChanged
+ * @fires offsetChanged
  * @return {carto.dataview.TimeSeries} this
  * @api
  */
@@ -122,6 +124,7 @@ TimeSeries.prototype.getOffset = function () {
  * Set the local timezone flag. If enabled, the time offset is overriden by the use local timezone.
  *
  * @param {boolean} localTimezone
+ * @fires localTimezoneChanged
  * @return {carto.dataview.TimeSeries} this
  * @api
  */
@@ -197,41 +200,33 @@ function _secondsToHours (seconds) {
 module.exports = TimeSeries;
 
 /**
- * Event triggered when the totals data in a time-series-dataview changes.
+ * Fired when the data has changed.
  *
- * Contains a single argument with the new data.
- *
- * @event carto.dataview.TimeSeries.dataChanged
+ * @event dataChanged
  * @type {carto.dataview.TimeSeriesData}
  * @api
  */
 
 /**
- * Event triggered when the aggregation in a TimeSeries-dataview changes.
+ * Fired when aggregation has changed. Handler gets a parameter with the new aggregation.
  *
- * Contains a single argument with new aggregation.
- *
- * @event carto.dataview.TimeSeries.aggregationChanged
+ * @event aggregationChanged
  * @type {string}
  * @api
  */
 
 /**
- * Event triggered when the timezone in a TimeSeries-dataview changes.
+ * Fired when localTimezone has changed. Handler gets a parameter with the new timezone.
  *
- * Contains a single boolean argument (???).
- *
- * @event carto.dataview.TimeSeries.localTimezoneChanged
+ * @event localTimezoneChanged
  * @type {boolean}
  * @api
  */
 
 /**
- * Event triggered when the offset in a TimeSeries-dataview changes.
+ * Fired when offset has changed. Handler gets a parameter with the new offset.
  *
- * Contains a single string argument with the new offset
- *
- * @event carto.dataview.TimeSeries.offsetChanged
+ * @event offsetChanged
  * @type {string}
  * @api
  */

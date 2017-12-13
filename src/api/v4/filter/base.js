@@ -14,3 +14,11 @@ function Base () {}
 _.extend(Base.prototype, Backbone.Events);
 
 module.exports = Base;
+
+/**
+ * Fired when bounds have changed. Handler gets a parameter with the new bounds.
+ *
+ * @event boundsChanged
+ * @type {carto.filter.Bounds}
+ * @api
+ */

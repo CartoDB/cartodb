@@ -1,6 +1,5 @@
 /**
  * @namespace carto.events
- * @api
  */
 
 /**
@@ -8,7 +7,6 @@
   *
   * @constant {string} SUCCESS
   * @memberof carto.events
-  * @api
   */
 var SUCCESS = 'success';
 
@@ -17,10 +15,15 @@ var SUCCESS = 'success';
  *
  * @constant {string} ERROR
  * @memberof carto.events
- * @api
  */
 var ERROR = 'error';
 
+/**
+ * Fired when something went wrong on the server side.
+ * 
+ * @event error
+ * @type {CartoError}
+ */
 module.exports = {
   SUCCESS: SUCCESS,
   ERROR: ERROR

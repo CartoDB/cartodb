@@ -11,6 +11,7 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * @example
  * new carto.source.Dataset('european_cities');
  * @constructor
+ * @fires error
  * @extends carto.source.Base
  * @memberof carto.source
  * @api

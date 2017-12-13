@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 /**
  * Base style object.
  *
+ * @fires error
  * @constructor
  * @abstract
  * @memberof carto.style

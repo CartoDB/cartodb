@@ -43,6 +43,7 @@ module.exports = cdb.core.View.extend({
       this.$el.append(contentTemplate({
         sourceId: sourceId,
         sourceType: analyses.title(sourceType),
+        isSourceType: this._dataviewModel.isSourceType(),
         showSource: this.model.get('show_source') && letter !== '',
         sourceColor: sourceColor,
         layerName: escapeHTML(layerName)

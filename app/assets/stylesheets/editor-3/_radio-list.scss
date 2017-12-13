@@ -32,4 +32,26 @@
   &:last-child::after {
     content: none;
   }
+
+  &:hover {
+    cursor: pointer;
+
+    .CDB-Radio + .CDB-Radio-face {
+      border: 1px solid $cBlueHover;
+
+      &::before {
+        background: $cHoverLine;
+      }
+    }
+
+    .CDB-Radio:checked:hover + .CDB-Radio-face {
+      border: 1px solid $cBlue;
+    }
+
+    .CDB-Radio:checked:hover + .CDB-Radio-face {
+      &::before {
+        background: $cWhite;
+      }
+    }
+  }
 }

@@ -1,4 +1,4 @@
-<div class="VerticalRadioList-radio u-rSpace--m">
+<div class="u-rSpace--m">
   <input class="CDB-Radio" type="radio" <%- isDone && isSelected ? 'checked' : '' %>>
   <span class="u-iBlock CDB-Radio-face"></span>
 </div>

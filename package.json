@@ -113,7 +113,6 @@
     "cdb.templates": "./src/cdb.templates.js",
     "geojson": "./vendor/GeoJSON.js",
     "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
-    "lzma": "./vendor/lzma.js",
     "mousewheel": "./vendor/mousewheel.js",
     "mwheelIntent": "./vendor/mwheelIntent.js"
   },
@@ -121,7 +120,6 @@
     "leaflet": "global:L",
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
-    "lzma": "LZMA",
     "mousewheel": {
       "depends": [
         "jquery:jQuery"

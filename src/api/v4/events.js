@@ -24,6 +24,13 @@ var ERROR = 'error';
  * @event error
  * @type {CartoError}
  */
+
+/**
+ * Fired when a request to the server completed successfully.
+ * 
+ * @event success
+ */
+
 module.exports = {
   SUCCESS: SUCCESS,
   ERROR: ERROR

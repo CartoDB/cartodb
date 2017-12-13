@@ -40,6 +40,7 @@
     var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
+    var baseURL = '<%= @viz_owner_base_url %>';
     var mapzenApiKey = '<%= mapzen_api_key %>';
   </script>
   <%= javascript_include_tag 'common.js' %>

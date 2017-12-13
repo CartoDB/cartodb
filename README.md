@@ -55,9 +55,8 @@ npm run docs
 npm run bump
 ```
 
-To publish a release
+To publish a release to the `CDN` and `npm`
 
 ```
-npm run release:npm
-npm run release:cdn
+npm run release
 ```

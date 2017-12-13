@@ -17,4 +17,12 @@ echo "Uploading to CDN..."
 grunt publish_s3
 grunt invalidate
 
+echo "Uploading to npm..."
+
+node scripts/generate-package-json.js
+
+cd dist/public
+
+npm publish
+
 echo "All done."

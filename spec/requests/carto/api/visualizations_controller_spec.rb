@@ -1659,11 +1659,15 @@ describe Carto::Api::VisualizationsController do
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id), fetch_user: true do |response|
+                @visualization.user.update_attribute(:google_maps_key, 'waaaaadus')
+
                 response.status.should eq 200
                 user = response.body[:user]
                 user.should_not be_nil
                 user[:avatar_url].should_not be_nil
                 user[:quota_in_bytes].should be_nil
+                user[:google_maps_query_string].should_not be_nil
+                user[:google_maps_query_string].should eq @visualization.user.google_maps_query_string
               end
             end
 

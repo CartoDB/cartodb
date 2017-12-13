@@ -21,7 +21,7 @@ module Carto
           when 'fill'
             parse_fill(value)
           when 'stroke'
-            parse_stroke(value, @definition['fill'])
+            parse_stroke(value)
           else
             CartoDB::Logger.warning(message: 'Carto::Styles: Tried parsing an unkown attribute',
                                     attribute: key,

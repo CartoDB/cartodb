@@ -1,13 +1,44 @@
 require 'json'
 
 module Carto
+  class TablePermissions
+    ALLOWED_PERMISSIONS = ['select', 'insert', 'update', 'delete', 'truncate', 'references', 'trigger'].freeze
+
+    attr_reader :schema, :name, :permissions
+
+    def initialize(schema:, name:, permissions:[])
+      @schema = schema
+      @name = name
+      @permissions = permissions
+    end
+
+    def to_hash
+      {
+        'schema' => @schema,
+        'name' => @name,
+        'permissions' => @permissions
+      }
+    end
+
+    def +(permissions)
+      permissions = permissions.map { |p| p.downcase if ALLOWED_PERMISSIONS.include?(p.downcase)}
+      @permissions += permissions.reject { |p| @permissions.include?(p) }
+      byebug
+    end
+
+    def <<(permission)
+      permission = permission.downcase
+      @permissions << permission if ALLOWED_PERMISSIONS.include? && !@permissions.include?(permission)
+    end
+  end
+
   class ApiKeyGrants
     ALLOWED_APIS = ['sql', 'maps'].freeze
-    ALLOWED_PERMISSIONS = ['read', 'write'].freeze
 
-    attr_reader :granted_apis, :table_permissions
+    attr_reader :granted_apis
 
     def initialize(grants_json)
+      byebug
       grants_json ||= []
       grants_json = JSON.parse(grants_json) unless grants_json.is_a?(Array)
       @granted_apis = []
@@ -27,6 +58,10 @@ module Carto
       end
     end
 
+    def table_permissions
+      @table_permissions.values
+    end
+
     def to_hash
       [granted_apis_hash, table_permissions_hash]
     end
@@ -41,18 +76,9 @@ module Carto
     end
 
     def table_permissions_hash
-      tables = []
-      table_permissions.each do |key, value|
-        (schema, database) = key.split('.')
-        tables << {
-          'schema' => schema,
-          'database' => database,
-          'permissions' => value
-        }
-      end
       {
         'type' => 'database',
-        'tables' => tables
+        'tables' => @table_permissions.values.map(&:to_hash)
       }
     end
 
@@ -62,10 +88,10 @@ module Carto
 
     def process_database_grant(grant)
       grant['tables'].each do |table|
+        byebug
         table_id = "#{table['schema']}.#{table['name']}"
-        @table_permissions[table_id] ||= []
-        permissions = table['permissions'].select { |p| ALLOWED_PERMISSIONS.include?(p.downcase) }
-        permissions.each { |p| @table_permissions[table_id] << p.downcase unless @table_permissions.include?(p.downcase) }
+        permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table['schema'], name: table['name'])
+        permissions + table['permissions']
       end
     end
   end

@@ -3,7 +3,6 @@
 .VerticalRadioList-item {
   position: relative;
   display: flex;
-  align-items: center;
   margin-bottom: 1rem;
 
   &::after {
@@ -32,4 +31,8 @@
   &:last-child::after {
     content: none;
   }
+}
+
+.VerticalRadioList-itemInner {
+  display: flex;
 }

@@ -1938,7 +1938,7 @@
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
-        "placeholder-text": "You have not added any analysis yet. Add an analysis to discover new things.",
+        "placeholder-text": "Analysis allow you to build reproducible workflows for analyzing and explaining your data.",
         "add-analysis": {
           "label": "Add new analysis",
           "tooltip": "Add new analysis linked"

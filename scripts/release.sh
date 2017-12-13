@@ -20,6 +20,7 @@ grunt invalidate
 echo "Uploading to npm..."
 
 node scripts/generate-package-json.js
+cp README.md dist/public
 
 cd dist/public
 

@@ -715,8 +715,18 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  describe('._onDataChanged', function () {
+  describe('._onTotalsDataFetched', function () {
     beforeEach(function () {
+    });
+
+    it('should be called callwhen totals data has been fetched', function () {
+      spyOn(this.model, '_onTotalsDataFetched');
+      this.model._totals.off('loadModelCompleted', null, this.model);
+      this.model._initBinds();
+
+      this.model._totals.trigger('loadModelCompleted');
+
+      expect(this.model._onTotalsDataFetched).toHaveBeenCalled();
     });
 
     it('should call _resetFilterAndFetch if column is date and aggregation', function () {
@@ -725,7 +735,7 @@ describe('dataviews/histogram-dataview-model', function () {
       });
       this.model.set('column_type', 'date', { silent: true });
 
-      this.model._onDataChanged(model);
+      this.model._onTotalsDataFetched(null, model);
 
       expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
     });
@@ -736,7 +746,7 @@ describe('dataviews/histogram-dataview-model', function () {
       });
       this.model.set('column_type', 'date', { silent: true });
 
-      this.model._onDataChanged(model);
+      this.model._onTotalsDataFetched(null, model);
 
       expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
     });
@@ -747,7 +757,7 @@ describe('dataviews/histogram-dataview-model', function () {
       });
       this.model.set('column_type', 'number', { silent: true });
 
-      this.model._onDataChanged(model);
+      this.model._onTotalsDataFetched(null, model);
 
       expect(this.model._resetFilterAndFetch).toHaveBeenCalled();
     });
@@ -758,7 +768,7 @@ describe('dataviews/histogram-dataview-model', function () {
         end: 22
       });
 
-      this.model._onDataChanged(model);
+      this.model._onTotalsDataFetched(null, model);
 
       expect(this.model.fetch).toHaveBeenCalled();
     });
@@ -770,7 +780,7 @@ describe('dataviews/histogram-dataview-model', function () {
         end: 22
       });
 
-      this.model._onDataChanged(model);
+      this.model._onTotalsDataFetched(null, model);
 
       expect(this.model.get('start')).toEqual(11);
       expect(this.model.get('end')).toEqual(22);

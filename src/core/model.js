@@ -23,11 +23,11 @@ var Model = Backbone.Model.extend({
     // var date = new Date();
     this.trigger('loadModelStarted');
     $.when(Backbone.Model.prototype.fetch.call(this, args)).done(function (ev) {
-      self.trigger('loadModelCompleted', ev);
+      self.trigger('loadModelCompleted', ev, self);
       // var dateComplete = new Date()
       // console.log('completed in '+(dateComplete - date));
     }).fail(function (ev) {
-      self.trigger('loadModelFailed', ev);
+      self.trigger('loadModelFailed', ev, self);
     });
   },
   /**

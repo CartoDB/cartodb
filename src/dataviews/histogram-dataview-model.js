@@ -79,10 +79,10 @@ module.exports = DataviewModelBase.extend({
     this._updateURLBinding();
 
     // When original data gets fetched
-    this._totals.bind('change:data', this._onDataChanged, this);
+    this._totals.bind('loadModelCompleted', this._onTotalsDataFetched, this);
+    this._totals.once('loadModelCompleted', this._updateBindings, this);
     this._totals.bind('error', this.setUnavailable, this);
     this._totals.bind('error', this._onTotalsError, this);
-    this._totals.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
     this.on('change:localTimezone', this._onLocalTimezoneChanged, this);
@@ -335,7 +335,7 @@ module.exports = DataviewModelBase.extend({
     this._totals.setUrl(this.get('url'));
   },
 
-  _onDataChanged: function (model) {
+  _onTotalsDataFetched: function (data, model) {
     var start = model.get('start');
     var end = model.get('end');
     if (_.isFinite(start) && _.isFinite(end)) {

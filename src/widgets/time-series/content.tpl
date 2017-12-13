@@ -10,9 +10,9 @@
           </span>
           <p class="CDB-Text CDB-Size-small u-mainTextColor u-ellipsis" title="<%= layerName %>">
             <%= sourceType %>
-              <span class="u-altTextColor u-lSpace">
-                <%= layerName %>
-              </span>
+            <span class="u-altTextColor u-lSpace">
+              <%= layerName %>
+            </span>
           </p>
         </div>
       </dl>

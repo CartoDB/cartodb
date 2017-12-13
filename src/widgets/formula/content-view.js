@@ -8,7 +8,7 @@ var DropdownView = require('../dropdown/widget-dropdown-view');
 var animationTemplate = require('./animation-template.tpl');
 var AnimateValues = require('../animate-values.js');
 var layerColors = require('../../util/layer-colors');
-var analyses = require('../../data/analyses');
+var Analyses = require('../../data/analyses');
 var escapeHTML = require('../../util/escape-html');
 var TooltipView = require('../widget-tooltip-view');
 
@@ -63,7 +63,8 @@ module.exports = cdb.core.View.extend({
       template({
         title: this.model.get('title'),
         sourceId: sourceId,
-        sourceType: analyses.title(sourceType),
+        sourceType: Analyses.title(sourceType),
+        isSourceType: this._dataviewModel.isSourceType(),
         showStats: this.model.get('show_stats'),
         showSource: this.model.get('show_source') && letter !== '',
         operation: this._dataviewModel.get('operation'),

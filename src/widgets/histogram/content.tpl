@@ -3,16 +3,24 @@
   <% if (!isCollapsed) { %>
     <% if (showSource) { %>
       <dl class="CDB-Widget-info u-tSpace">
-        <div class="u-flex">
-          <span class="CDB-Text CDB-Size-small is-semibold u-rSpace u-upperCase" style="color: <%- sourceColor %>;">
+        <div class="u-flex u-alignCenter">
+          <span class="CDB-Text CDB-Size-small is-semibold u-upperCase" style="color: <%- sourceColor %>;">
             <%- sourceId %>
           </span>
-          <p class="CDB-Text CDB-Size-small u-mainTextColor u-ellipsis" title="<%= layerName %>">
-            <%= sourceType %>
-            <span class="u-altTextColor u-lSpace">
-              <%= layerName %>
+
+          <% if (!isSourceType) { %>
+            <span class="CDB-Text CDB-Size-small u-lSpace--s" style="color: <%- sourceColor %>;">
+              <i class="CDB-IconFont CDB-IconFont-ray"></i>
             </span>
-          </p>
+          <% } %>
+
+          <span class="CDB-Text CDB-Size-small u-mainTextColor u-lSpace">
+            <%= sourceType %>
+          </span>
+
+          <span class="CDB-Text CDB-Size-small u-altTextColor u-ellipsis u-lSpace" title="<%= layerName %>">
+            <%= layerName %>
+          </span>
         </div>
       </dl>
     <% } %>

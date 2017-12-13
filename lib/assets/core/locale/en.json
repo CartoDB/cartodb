@@ -1489,7 +1489,6 @@
     "published": "Published %{when}",
     "unpublished": "Unpublished map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
-    "button_add": "Add",
     "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
@@ -1632,6 +1631,10 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "add-layer": {
+        "label": "Add new layer",
+        "tooltip": "Add new layer to your project"
+      },
       "errors": {
         "broken-node": "Broken node",
         "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"
@@ -1936,6 +1939,10 @@
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
         "placeholder-text": "You have not added any analysis yet. Add an analysis to discover new things.",
+        "add-analysis": {
+          "label": "Add new analysis",
+          "tooltip": "Add new analysis linked"
+        },
         "points_source": "Point source",
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
@@ -2495,6 +2502,10 @@
       }
     },
     "widgets": {
+      "add-widget": {
+        "label": "Add new widget",
+        "tooltip": "Add new widget to your project"
+      },
       "no-geometry-data": "Your dataset lacks geometry data, it is not possible to add a widget.",
       "options": {
         "remove": "Delete...",

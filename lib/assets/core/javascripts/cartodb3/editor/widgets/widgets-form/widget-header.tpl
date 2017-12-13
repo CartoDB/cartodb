@@ -1,7 +1,7 @@
 <ul class="Editor-breadcrumb">
   <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium u-actionTextColor">
     <button class="js-back">
-      <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+      <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large u-rSpace"></i>
 
       <span class="Editor-breadcrumbLink"><%- _t('editor.widgets.breadcrumb.widget-list') %></span>
     </button>

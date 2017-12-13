@@ -4,7 +4,7 @@
       <ul class="Editor-breadcrumb">
         <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium u-actionTextColor">
           <button class="js-close">
-            <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+            <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large u-rSpace"></i>
 
             <span class="Editor-breadcrumbLink"><%- _t('back') %></span>
           </button>

@@ -13,10 +13,13 @@
   <div class="BlockList-title u-bSpace js-context-menu">
     <div class="BlockList-titleText js-header"></div>
   </div>
-  <div class="u-flex">
-    <span
-      class="CDB-SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace u-upperCase"
-      style="background-color: <%- sourceColor %>;"><%- source %></span>
-    <p class="CDB-Text CDB-Size-medium u-altTextColor u-ellipsis"><%- layerName %></p>
+  <div class="CDB-Text CDB-Size-small u-flex">
+    <span class="is-semibold u-rSpace u-upperCase" style="color: <%- sourceColor %>;">
+      <%- source %>
+    </span>
+    <p class="u-ellipsis">
+      <span class="u-altTextColor u-rSpace--s">Source</span>
+      <%- layerName %>
+    </p>
   </div>
 </div>

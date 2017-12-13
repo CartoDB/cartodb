@@ -1635,7 +1635,8 @@
     "layers": {
       "breadcrumb": {
         "layers-list": "Layers list",
-        "layer-options": "Layer options"
+        "layer-options": "Layer options",
+        "basemap-options": "Basemap options"
       },
       "errors": {
         "broken-node": "Broken node",

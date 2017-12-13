@@ -2379,6 +2379,13 @@
         }
       },
       "components": {
+        "method": {
+          "label": "performance",
+          "options": {
+            "marker": "slow",
+            "dot": "fast"
+          }
+        },
         "fill": "Size/Color",
         "color": "Color",
         "stroke": {

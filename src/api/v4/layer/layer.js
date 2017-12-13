@@ -8,7 +8,22 @@ var EVENTS = require('../events');
 var metadataParser = require('./metadata/parser');
 
 /**
- * A layer is a defined  
+ * Represents a layer Object.
+ * 
+ * A layer is the primary way to visualize geospatial data. 
+ * 
+ * To create a layer a {@link carto.source.Base|source} and {@link carto.style.Base|styles}
+ * are required:
+ * 
+ * - The {@link carto.source.Base|source} is used to know **what** data will be displayed in the Layer.
+ * - The {@link carto.style.Base|style} is used to know **how** to draw the data in the Layer.
+ * 
+ * A layer alone won't do too much. In order to get data from the CARTO server you must add the Layer to a {@link carto.Client|client}.
+ *
+ * ```
+ * // Create a layer. Remember this won't do anything unless the layer is added to a client.
+ * const layer = new carto.layer.Layer(source, style);
+ *```
  *
  * @param {object} source - The source where the layer will fetch the data
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
@@ -21,13 +36,17 @@ var metadataParser = require('./metadata/parser');
  * @fires featureOver
  * @fires error
  * @example
- * // no options
+ * // Create a layer with no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
  * @example
- * // with options
+ * // Create a layer indicating what columns will be included in the featureOver event.
  * new carto.layer.Layer(citiesSource, citiesStyle, {
- *   featureClickColumns: [ 'name', 'population' ],
  *   featureOverColumns: [ 'name' ]
+ * });
+ * @example
+ * // Listen to the event thrown when the mouse is over a feature
+ * layer.on('featureOver', featureEvent => {
+ *   console.log(`Mouse over city with name: ${featureEvent.data.name}`);
  * });
  * @constructor
  * @extends carto.layer.Base

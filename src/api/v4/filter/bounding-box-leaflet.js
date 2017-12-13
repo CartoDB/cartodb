@@ -4,8 +4,11 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
 
 /**
  * Bounding box filter for Leaflet maps.
+ * 
+ * When this filter is included into a dataview only the data inside the {@link http://leafletjs.com/reference-1.2.0.html#map|leafletMap}
+ * bounds will be taken into account.
  *
- * @param {L.Map} map - The map view
+ * @param {L.Map} map - The leaflet map view
  *
  * @fires boundsChanged
  *
@@ -13,7 +16,12 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * @extends carto.filter.Base
  * @memberof carto.filter
  * @api
- *
+ * 
+ * @example
+ * // Create a bonding box attached to a leaflet map.
+ * const bboxFilter = new carto.filter.BoundingBoxLeaflet(leafletMap);
+ * // Add the filter to a dataview. Generating new data when the map bounds are changed.
+ * dataview.addFilter(bboxFilter);
  */
 function BoundingBoxLeaflet (map) {
   // Adapt the Leaflet map to offer unique:

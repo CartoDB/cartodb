@@ -23,6 +23,7 @@ class Carto::ApiKey < ActiveRecord::Base
   before_save :serialize_grants
 
   after_save :add_to_redis
+  after_save :update_role_permissions
 
   validates :api_type, inclusion: { in: VALID_TYPES }
 
@@ -42,7 +43,25 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def create_db_role
+    user = ::User[self.user.id]
+    user.in_database(as: :superuser).run(
+      "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
+    )
+  end
 
+  def update_role_permissions
+    user = ::User[self.user.id]
+    user.in_database(as: :superuser).run(
+      "revoke all privileges on all tables in schema \"#{user.database_schema}\" from \"#{db_role}\""
+    )
+    schemas = []
+    table_permissions.each do |tp|
+      schemas <<= tp.schema
+      user.in_database(as: :superuser).run(
+        "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
+      )
+    end
+    schemas.uniq.each { |schema| user.in_database(as: :superuser).run("grant usage on schema \"#{schema}\" to \"#{db_role}\"") }
   end
 
   def update_modification_times
@@ -90,5 +109,4 @@ class Carto::ApiKey < ActiveRecord::Base
   def grants
     @grants ||= ::Carto::ApiKeyGrants.new(grants_json)
   end
-
 end

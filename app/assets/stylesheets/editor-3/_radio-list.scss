@@ -1,0 +1,35 @@
+@import 'cdb-variables/colors';
+
+.VerticalRadioList-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 18px;
+    bottom: -18px;
+    left: 7px;
+    background: #DDD;
+  }
+
+  &:first-child {
+    margin-top: 16px;
+    &::before {
+      content: '';
+      position: absolute;
+      width: 1px;
+      height: 17px;
+      top: -16px;
+      left: 7px;
+      background: #DDD;
+    }
+  }
+
+  &:last-child::after {
+    content: none;
+  }
+}

@@ -18,7 +18,7 @@
       <%- sourceId %>
     </span>
 
-    <% if (isSourceType) { %>
+    <% if (!isSourceType) { %>
       <span class="CDB-Text CDB-Size-small u-lSpace--s" style="color: <%- sourceColor %>;">
         <i class="CDB-IconFont CDB-IconFont-ray"></i>
       </span>

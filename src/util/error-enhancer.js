@@ -26,6 +26,8 @@ var ERRORS = {
 };
 
 module.exports = function (error) {
-  var type = (error && error.type) || 'generic';
+  var type = error && error.type && _.has(ERRORS, error.type)
+    ? error.type
+    : 'generic';
   return _.extend({}, error, ERRORS[type]);
 };

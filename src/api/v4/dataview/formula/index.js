@@ -5,7 +5,7 @@ var FormulaDataviewModel = require('../../../../dataviews/formula-dataview-model
 var parseFormulaData = require('./parse-data.js');
 
 /**
- * A formula is a simple numeric operation applied to the column of a data source (dataset or sql query).
+ * A formula is a simple numeric {@link carto.operation|operation} applied to the column of a {@link carto.source.Base|data source} (dataset or sql query).
  *
  * Like all dataviews, it is an async object so you must wait for the data to be available.
  *

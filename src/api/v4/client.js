@@ -15,8 +15,9 @@ function getValidationError (code) {
 /**
  * This is the entry point for a CARTO.js application.
  *
- * A CARTO client allows managing layers and dataviews. It also takes care
- * of the communication between a CARTO.js application and the services in CARTO.
+ * A CARTO client allows managing layers and dataviews. Some operations like addding a layer or a dataview are asynchronous.
+ * The client takes care of the communication between CARTO.js and the server for you.
+ *
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
  *
@@ -58,12 +59,11 @@ _.extend(Client.prototype, Backbone.Events);
  *
  * @param {carto.layer.Base} - The layer to be added
  * @param {object} opts
- * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
- * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
+ * @returns {Promise} - A promise that will be fulfilled when the layer is added.
  * @api
  */
 Client.prototype.addLayer = function (layer, opts) {
@@ -75,12 +75,11 @@ Client.prototype.addLayer = function (layer, opts) {
  *
  * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
  * @param {object} opts
- * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
+ * @returns {Promise} A promise that will be fulfilled when the layers are added.
  * @api
  */
 Client.prototype.addLayers = function (layers, opts) {
@@ -97,12 +96,11 @@ Client.prototype.addLayers = function (layers, opts) {
  *
  * @param {carto.layer.Base} - The layer to be removed
  * @param {object} opts
- * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
+ * @returns {Promise} A promise that will be fulfilled when the layer is removed.
  * @api
  */
 Client.prototype.removeLayer = function (layer, opts) {
@@ -114,12 +112,11 @@ Client.prototype.removeLayer = function (layer, opts) {
  *
  * @param {carto.layer.Base[]} - An array with the layers to be removed
  * @param {object} opts
- * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
+ * @returns {Promise} A promise that will be fulfilled when the layers are removed.
  * @api
  */
 Client.prototype.removeLayers = function (layers, opts) {
@@ -132,7 +129,7 @@ Client.prototype.removeLayers = function (layers, opts) {
 };
 
 /**
- * Get all the layers from the client
+ * Get all the {@link carto.layer.Base|layers} from the client
  *
  * @returns {carto.layer.Base[]} An array with all the Layers from the client
  * @api
@@ -145,12 +142,11 @@ Client.prototype.getLayers = function () {
  * Add a dataview to the client.
  *
  * @param {carto.dataview.Base} - The dataview to be added
- * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
- * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
+ * @returns {Promise} - A promise that will be fulfilled when the dataview is added.
  * @api
  */
 Client.prototype.addDataview = function (dataview, opts) {
@@ -162,12 +158,11 @@ Client.prototype.addDataview = function (dataview, opts) {
  *
  * @param {carto.dataview.Base[]} - An array with the dataviews to be added
  * @param {object} opts
- * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
+ * @returns {Promise} A promise that will be fulfilled when the dataviews are added.
  * @api
  */
 Client.prototype.addDataviews = function (dataviews, opts) {
@@ -184,12 +179,11 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  *
  * @param {carto.dataview.Base} - The dataview array to be removed
  * @param {object} opts
- * @param {boolean} opts.reload - Default: true. A boolean flag controlling if the client should be reloaded
  *
  * @fires CartoError
  * @fires carto.events.SUCCESS
  *
- * @returns {Promise} A promise that will be fulfilled when the reload cycle is completed
+ * @returns {Promise} A promise that will be fulfilled when the dataview is removed.
  * @api
  */
 Client.prototype.removeDataview = function (dataview, opts) {
@@ -213,7 +207,7 @@ Client.prototype.getDataviews = function () {
 };
 
 /**
- * Return a Leaflet layer that groups all the layers that have been
+ * Return a {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|leaflet layer} that groups all the layers that have been
  * added to this client.
  *
  * @returns {L.TileLayer} A Leaflet layer that groups all the layers:
@@ -231,10 +225,10 @@ Client.prototype.getLeafletLayer = function () {
 };
 
 /**
- * Return a Google Maps mapType that groups all the layers that have been
+ * Return a {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType} that groups all the layers that have been
  * added to this client.
  *
- * @param {google.maps.Map}
+ * @param {google.maps.Map} The native google map where the carto layer is going to be added.
  *
  * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
  * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}

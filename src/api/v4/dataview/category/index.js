@@ -11,7 +11,7 @@ var parseCategoryData = require('./parse-data.js');
  *
  * This is similar to a group by SQL operation, for example:
  *
- * ```sql
+ * ```
  * SELECT country, AVG(population) GROUP BY country
  * ```
  * The following code is the carto.js equivalent:
@@ -25,7 +25,7 @@ var parseCategoryData = require('./parse-data.js');
  *
  * Like all dataviews is an async object so you must wait for the data to be availiable.
  *
- * The data format for the category-dataview is described in {@link carto.dataview.CategoryItem}
+ * The data format for the category-dataview is described in {@link carto.dataview.CategoryData}
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The name of the column used to create categories
@@ -50,18 +50,23 @@ var parseCategoryData = require('./parse-data.js');
  *     operation: carto.operation.AVG, // Compute the average
  *     operationColumn: 'population' // The name of the column where the operation will be applied.
  *  });
- *
- * // This will give data like this: { Spain: 1234, France: 3456 ...} To view the actual format see: "CategoryItem".
+ * @example
+ * // Listen for data updates
+ * categoryDataview.on('dataChanged', newData => {
+ *  console.log(newData); // CategoryData object
+ * });
  * @example
  * // You can listen to multiple events emmited by the category-dataview.
- * // Data and status are fired by all dataviews.
- * categoryDataview.on('dataChanged', newData => { });
  * categoryDataview.on('statusChanged', (newData, error) => { });
  * categoryDataview.on(carto.events.ERROR, cartoError => { });
  *
  * // Listen to specific category-dataview events.
- * categoryDataview.on('columnChanged', newData => { });
- * categoryDataview.on('limitChanged', newData => { });
+ * categoryDataview.on('columnChanged', newData => {
+ *  console.log(newData); // 'population'
+ * });
+ * categoryDataview.on('limitChanged', newData => {
+ *  console.log(newData); // 11
+ * });
  * categoryDataview.on('operationChanged', newData => { });
  * categoryDataview.on('operationColumnChanged', newData => { });
  */

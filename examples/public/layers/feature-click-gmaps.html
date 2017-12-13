@@ -59,7 +59,7 @@
       client.addLayer(layer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      layer.on(carto.layer.events.FEATURE_CLICKED, featureEvent => {
+      layer.on('featureClicked', featureEvent => {
         let content = '';
         content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
         content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;

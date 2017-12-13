@@ -112,7 +112,7 @@
       // 4. Setting up tooltips
       // 4.1 Showing the tooltip when user mouses over a city
       const popup = L.popup({ closeButton: false });
-      populatedPlaces.on(carto.layer.events.FEATURE_OVER, featureEvent => {
+      populatedPlaces.on('featureOver', featureEvent => {
         popup.setLatLng(featureEvent.latLng);
         if (!popup.isOpen()) {
           popup.setContent(featureEvent.data.name);
@@ -121,7 +121,7 @@
       });
 
       // 4.2 Hiding the tooltip
-      populatedPlaces.on(carto.layer.events.FEATURE_OUT, featureEvent => {
+      populatedPlaces.on('featureOut', featureEvent => {
         popup.removeFrom(map);
       });
 

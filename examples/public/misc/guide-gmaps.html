@@ -108,7 +108,7 @@
       // 4. Setting up tooltips
       // 4.1 Showing the tooltip when user mouses over a city
       const infowindow = new google.maps.InfoWindow();
-      populatedPlaces.on(carto.layer.events.FEATURE_OVER, featureEvent => {
+      populatedPlaces.on('featureOver', featureEvent => {
         infowindow.setPosition(featureEvent.latLng);
         if (!infowindow.map) {
           infowindow.setContent(featureEvent.data.name);
@@ -117,7 +117,7 @@
       });
 
       // 4.2 Hiding the tooltip
-      populatedPlaces.on(carto.layer.events.FEATURE_OUT, featureEvent => {
+      populatedPlaces.on('featureOut', featureEvent => {
         infowindow.close();
       });
 

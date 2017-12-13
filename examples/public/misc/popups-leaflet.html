@@ -78,19 +78,16 @@
         popup.removeFrom(map);
       }
 
-      populatedPlacesLayer.on(carto.layer.events.FEATURE_CLICKED, openPopup);
-
-
       function setPopupsClick() {
-        populatedPlacesLayer.off(carto.layer.events.FEATURE_OVER);
-        populatedPlacesLayer.off(carto.layer.events.FEATURE_OUT);
-        populatedPlacesLayer.on(carto.layer.events.FEATURE_CLICKED, openPopup);
+        populatedPlacesLayer.off('featureOver');
+        populatedPlacesLayer.off('featureOut');
+        populatedPlacesLayer.on('featureClicked', openPopup);
       }
 
       function setPopupsHover() {
-        populatedPlacesLayer.off(carto.layer.events.FEATURE_CLICKED);
-        populatedPlacesLayer.on(carto.layer.events.FEATURE_OVER, openPopup);
-        populatedPlacesLayer.on(carto.layer.events.FEATURE_OUT, closePopup);
+        populatedPlacesLayer.off('featureClicked');
+        populatedPlacesLayer.on('featureOver', openPopup);
+        populatedPlacesLayer.on('featureOut', closePopup);
       }
     </script>
   </body>

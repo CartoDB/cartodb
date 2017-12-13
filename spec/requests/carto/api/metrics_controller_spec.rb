@@ -26,6 +26,8 @@ describe Carto::Api::MetricsController do
     user_properties = { user_id: user_id, api_key: @user.api_key }
 
     Carto::Tracking::Events::Event.descendants.each do |event_class|
+      next unless event_class.public_methods.include?(:new)
+
       event = event_class.new(user_id, user_id: user_id)
 
       event_class.any_instance.stubs(:report!)
@@ -48,9 +50,9 @@ describe Carto::Api::MetricsController do
   describe 'validations' do
     it 'should require properties' do
       Carto::Tracking::Events::Event.descendants.each do |event_class|
-        event = event_class.new(@user.id, {})
+        next unless event_class.public_methods.include?(:new)
 
-        puts "Testing #{event_class}"
+        event = event_class.new(@user.id, {})
 
         unless event.required_properties.empty?
           post_json metrics_url, name: event.name, properties: {} do |response|

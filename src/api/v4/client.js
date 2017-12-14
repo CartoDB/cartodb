@@ -62,8 +62,18 @@ _.extend(Client.prototype, Backbone.Events);
  *
  * @fires error
  * @fires success
+ * 
+ * @example
+ * // Add a layer to the client
+ * client.addLayer(layer)
+ *  .then(() => { 
+ *    console.log('Layer added');
+ *  })
+ *  .catch(cartoError => {
+ *    console.error(cartoError.message);
+ *  });
  *
- * @returns {Promise} - A promise that will be fulfilled when the layer is added.
+ * @returns {Promise} - A promise that will be fulfilled when the layer is added
  * @api
  */
 Client.prototype.addLayer = function (layer, opts) {
@@ -72,14 +82,25 @@ Client.prototype.addLayer = function (layer, opts) {
 
 /**
  * Add multiple layers to the client. Note the hierarchal order of layers.
+ * Use this method instead multiple calls to **addLayer** to improve performance.
  *
  * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
  * @param {object} opts
  *
  * @fires error
  * @fires success
+ * 
+ * @example
+ * // Add multiple layers ad once layer to the client
+ * client.addLayers([layer0, layer1])
+ *  .then(() => { 
+ *    console.log('Layers added');
+ *  })
+ *  .catch(cartoError => {
+ *    console.error(cartoError.message);
+ *  });
  *
- * @returns {Promise} A promise that will be fulfilled when the layers are added.
+ * @returns {Promise} A promise that will be fulfilled when the layers are added
  * @api
  */
 Client.prototype.addLayers = function (layers, opts) {
@@ -92,7 +113,17 @@ Client.prototype.addLayers = function (layers, opts) {
 };
 
 /**
- * Remove a layer from the client
+ * Remove a layer from the client.
+ * 
+ * @example
+ * // Remove a layer from the client
+ * client.removeLayer(layer)
+ * .then(() => {
+ *  console.log('Layer removed');
+ * })
+ * .catch(cartoError => {
+ *  console.error(cartoError.message);
+ * });
  *
  * @param {carto.layer.Base} - The layer to be removed
  * @param {object} opts
@@ -100,7 +131,7 @@ Client.prototype.addLayers = function (layers, opts) {
  * @fires error
  * @fires success
  *
- * @returns {Promise} A promise that will be fulfilled when the layer is removed.
+ * @returns {Promise} A promise that will be fulfilled when the layer is removed
  * @api
  */
 Client.prototype.removeLayer = function (layer, opts) {
@@ -108,7 +139,19 @@ Client.prototype.removeLayer = function (layer, opts) {
 };
 
 /**
- * Remove multiple layer from the client
+ * Remove multiple layer from the client.
+ * Use this method instead multiple calls to **removeLayer** to improve performance.
+ * 
+ * @example
+ * // Remove multiple layers from the client
+ * client.removeLayers([layer1, layer2])
+ * .then(() => {
+ *  console.log('Layers removed');
+ * })
+ * .catch(cartoError => {
+ *  console.error(cartoError.message);
+ * });
+ *
  *
  * @param {carto.layer.Base[]} - An array with the layers to be removed
  * @param {object} opts
@@ -116,7 +159,7 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @fires error
  * @fires success
  *
- * @returns {Promise} A promise that will be fulfilled when the layers are removed.
+ * @returns {Promise} A promise that will be fulfilled when the layers are removed
  * @api
  */
 Client.prototype.removeLayers = function (layers, opts) {
@@ -130,6 +173,14 @@ Client.prototype.removeLayers = function (layers, opts) {
 
 /**
  * Get all the {@link carto.layer.Base|layers} from the client
+ * 
+ * @example
+ * // Get all layers from the client
+ * const layers = client.getLayers();
+ * 
+ * @example
+ * // Hide all layers from the client
+ * client.getLayers().forEach(layer => layer.hide());
  *
  * @returns {carto.layer.Base[]} An array with all the Layers from the client
  * @api
@@ -140,13 +191,23 @@ Client.prototype.getLayers = function () {
 
 /**
  * Add a dataview to the client.
+ * 
+ * @example
+ * // Add a dataview to the client
+ * client.addDataview(dataview)
+ *  .then(() => {
+ *    console.log('Dataview added');
+ *  })
+ *  .catch(cartoError => {
+ *    console.error(cartoError.message);
+ *  }):
  *
  * @param {carto.dataview.Base} - The dataview to be added
  *
  * @fires error
  * @fires success
  *
- * @returns {Promise} - A promise that will be fulfilled when the dataview is added.
+ * @returns {Promise} - A promise that will be fulfilled when the dataview is added
  * @api
  */
 Client.prototype.addDataview = function (dataview, opts) {
@@ -156,13 +217,23 @@ Client.prototype.addDataview = function (dataview, opts) {
 /**
  * Add multipe dataviews to the client.
  *
+ * @example
+ * // Add several dataviews to the client
+ * client.addDataview([dataview0, dataview1])
+ *  .then(() => {
+ *    console.log('Dataviews added');
+ *  })
+ *  .catch(cartoError => {
+ *    console.error(cartoError.message);
+ *  }):
+ * 
  * @param {carto.dataview.Base[]} - An array with the dataviews to be added
  * @param {object} opts
  *
  * @fires error
  * @fires success
  *
- * @returns {Promise} A promise that will be fulfilled when the dataviews are added.
+ * @returns {Promise} A promise that will be fulfilled when the dataviews are added
  * @api
  */
 Client.prototype.addDataviews = function (dataviews, opts) {
@@ -176,6 +247,16 @@ Client.prototype.addDataviews = function (dataviews, opts) {
 
 /**
  * Remove a dataview from the client.
+ * 
+ * @example
+ * // Remove a dataview from the client
+ * client.removeDataview(dataview)
+ * .then(() => {
+ *    console.log('Dataviews removed');
+ *  })
+ *  .catch(cartoError => {
+ *    console.error(cartoError.message);
+ *  }):
  *
  * @param {carto.dataview.Base} - The dataview array to be removed
  * @param {object} opts
@@ -183,7 +264,7 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  * @fires error
  * @fires success
  *
- * @returns {Promise} A promise that will be fulfilled when the dataview is removed.
+ * @returns {Promise} A promise that will be fulfilled when the dataview is removed
  * @api
  */
 Client.prototype.removeDataview = function (dataview, opts) {
@@ -198,6 +279,10 @@ Client.prototype.removeDataview = function (dataview, opts) {
 
 /**
  * Get all the dataviews from the client
+ * 
+ * @example
+ * // Get all the dataviews from the client
+ * const dataviews = client.getDataviews();
  *
  * @returns {carto.dataview.Base[]} An array with all the dataviews from the client
  * @api
@@ -210,6 +295,14 @@ Client.prototype.getDataviews = function () {
  * Return a {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|leaflet layer} that groups all the layers that have been
  * added to this client.
  *
+ * @example 
+ * // Get the leafletlayer from the client
+ * const cartoLeafletLayer = client.getLeafletLayer();
+ * 
+ * @example
+ * // Add the leafletLayer to a leafletMap
+ * client.getLeafletLayer().addTo(map);
+ *  
  * @returns {L.TileLayer} A Leaflet layer that groups all the layers:
  * {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer}
  * @api
@@ -227,8 +320,16 @@ Client.prototype.getLeafletLayer = function () {
 /**
  * Return a {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType} that groups all the layers that have been
  * added to this client.
- *
- * @param {google.maps.Map} The native google map where the carto layer is going to be added.
+ * 
+ * @example
+ * // Get googlemaps MapType from client
+ * const gmapsMapType = client.getGoogleMapsMapType();
+ * 
+ * @example
+ * // Add googlemaps MapType to a google map
+ * googleMap.overlayMapTypes.push(client.getGoogleMapsMapType(googleMap));
+ * 
+ * @param {google.maps.Map} - The native google map where the carto layer is going to be added
  *
  * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
  * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}

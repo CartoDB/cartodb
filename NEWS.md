@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)
 * Add Grunt tasks to generate static files (#13130)
 * Improve geocoding onboarding (#13046)
@@ -103,6 +104,11 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Wayfinding: widget view (#13202)
+* Wayfinding: layer list (#13208)
+* Wayfinding: edit feature (#13203)
+* Wayfinding: modals breadcrumbs (#13205)
+* Improve wayfinding in layer view (#13185)
 * Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)
 * Grunt: Run carto-node before browserify (#13187)
 * Enable data tab if layer needs geocoding
@@ -151,7 +157,7 @@ ion for time-series (#12670)
 * CSV export allowed without geometries (#12888)
 * User destroy order should be Central, local (#CartoDB/cartodb-central/issues/1929)
 * Delete all external sources within one transaction (#13129).
-* NoMethodError: undefined method `has_feature_flag?' for nil:NilClass at visualizations controller (#13145).
+* NoMethodError: undefined method `has_feature_flag?` for nil:NilClass at visualizations controller (#13145).
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
@@ -326,6 +332,7 @@ ion for time-series (#12670)
 * Treat all time series dataview timestamps as UTC (#13070)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 * Fetch histogram and time series totals with a new `no_filters` parameter. (#13059)
+* Enable CSV exports for polygon and line datasets (#13212)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)
@@ -334,6 +341,7 @@ ion for time-series (#12670)
 * Adapt widget integration and specs to dataviews refactor (#12850)
 * Optimize bundle size related to camshaft-reference (#13124)
 * Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
+* Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

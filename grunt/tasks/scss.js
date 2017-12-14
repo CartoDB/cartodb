@@ -1,10 +1,10 @@
 /**
- *  SCSS grunt task for CartoDB.js
+ *  SCSS grunt task for CARTO.js
  *
  */
 
 module.exports = {
-  task: function (grunt, config) {
+  task: function () {
     return {
       dist: {
         options: {

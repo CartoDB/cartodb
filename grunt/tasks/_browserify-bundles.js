@@ -18,7 +18,7 @@ module.exports = {
       // TODO can be (re)moved?
       '!test/spec/ui/common/tabpane.spec.js'
     ],
-    dest: '<%= config.tmp %>/src-specs.js',
+    dest: '<%= tmp %>/src-specs.js',
     options: {
       require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ]
     }
@@ -31,19 +31,8 @@ module.exports = {
     exclude: [
       'src/api/v4/'
     ],
-    dest: '<%= config.dist %>/internal/cartodb.uncompressed.js',
+    dest: '<%= dist %>/internal/cartodb.uncompressed.js',
     options: {
-      require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ]
-    }
-  },
-
-  'carto-public': {
-    src: [
-      'src/api/v4/index.js'
-    ],
-    dest: '<%= config.dist %>/public/carto.uncompressed.js',
-    options: {
-      external: [ 'leaflet' ],
       require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ]
     }
   }

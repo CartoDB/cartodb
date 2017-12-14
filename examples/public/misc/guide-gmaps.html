@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Guide | Carto</title>
+    <title>Guide | CARTO</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <!-- Include Carto.js -->
-    <script src="../../../dist/public/carto.uncompressed.js"></script>
     <!-- Include Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <!-- FIXME: include Leaflet because of Wax -->
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
     <style>
@@ -110,7 +108,7 @@
       // 4. Setting up tooltips
       // 4.1 Showing the tooltip when user mouses over a city
       const infowindow = new google.maps.InfoWindow();
-      populatedPlaces.on(carto.layer.events.FEATURE_OVER, featureEvent => {
+      populatedPlaces.on('featureOver', featureEvent => {
         infowindow.setPosition(featureEvent.latLng);
         if (!infowindow.map) {
           infowindow.setContent(featureEvent.data.name);
@@ -119,7 +117,7 @@
       });
 
       // 4.2 Hiding the tooltip
-      populatedPlaces.on(carto.layer.events.FEATURE_OUT, featureEvent => {
+      populatedPlaces.on('featureOut', featureEvent => {
         infowindow.close();
       });
 

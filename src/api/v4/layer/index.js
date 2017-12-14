@@ -9,3 +9,8 @@ module.exports = {
   Layer: Layer,
   events: EventTypes
 };
+
+/**
+ *  @namespace carto.layer.metadata
+ *  @api
+ */

@@ -1,217 +1,68 @@
+var semver = require('semver');
 
 /**
- *  S3 upload grunt task for CartoDB.js
+ *  S3 upload grunt task for CARTO.js
  *
  */
 
 module.exports = {
-  task: function(grunt, config) {
-    return {
+  task: function(version) {
+    var tasks = {
       options: {
-        accessKeyId: "<%= secrets.S3_KEY %>",
-        secretAccessKey: "<%= secrets.S3_SECRET %>",
-        bucket: "<%= secrets.S3_BUCKET %>",
+        accessKeyId: "<%= secrets.AWS_USER_S3_KEY %>",
+        secretAccessKey: "<%= secrets.AWS_USER_S3_SECRET %>",
+        bucket: "<%= secrets.AWS_S3_BUCKET %>",
         dryRun: false
-      },
-
-      'js-bugfixing': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: true,
-          headers: {
-            ContentType: 'application/x-javascript'
-          }
-        },
-        files: [
-          {
-            // Bug fixing version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              '*.js',
-              '!_*.js'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          }
-        ]
-      },
-
-      'js-minor': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: true,
-          // It will not upload minor vesion when it comes from a
-          // custom version, because it could overwrite production
-          // version
-          dryRun: isVersionPrerelease(config.version.bugfixing),
-          headers: {
-            ContentType: 'application/x-javascript'
-          }
-        },
-        files: [{
-            // Minor version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              '*.js',
-              '!_*.js'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
-          }
-        ]
-      },
-
-      'css-bugfixing': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: true,
-          headers: {
-            ContentType: 'text/css'
-          }
-        },
-        files: [
-          {
-            // Bug fixing version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.css'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          }
-        ]
-      },
-
-      'css-minor': {
-        options: {
-          overwrite: true,
-          cache: false,
-          dryRun: isVersionPrerelease(config.version.bugfixing),
-          gzip: true,
-          headers: {
-            ContentType: 'text/css'
-          }
-        },
-        files: [{
-            // Minor version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.css'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
-          }
-        ]
-      },
-
-      'png-bugfixing': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/png'
-          }
-        },
-        files: [
-          {
-            // Bug fixing version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.png'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          }
-        ]
-      },
-
-      'png-minor': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/png'
-          },
-          dryRun: isVersionPrerelease(config.version.bugfixing)
-        },
-        files: [
-          {
-            // Minor version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.png'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
-          }
-        ]
-      },
-
-      'gif-bugfixing': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/gif'
-          }
-        },
-        files: [
-          {
-            // Bug fixing version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.gif'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.bugfixing %>"
-          }
-        ]
-      },
-
-      'gif-minor': {
-        options: {
-          overwrite: true,
-          cache: false,
-          gzip: false,
-          headers: {
-            ContentType: 'image/gif'
-          },
-          dryRun: isVersionPrerelease(config.version.bugfixing)
-        },
-        files: [
-          {
-            // Minor version
-            action: 'upload',
-            expand: true,
-            cwd: 'dist',
-            src: [
-              'themes/**/*.gif'
-            ],
-            dest: "cartodb.js/v<%= config.version.major %>/<%= config.version.minor %>"
-          }
-        ]
       }
+    };
+
+    var major = semver.major(version);
+    var minor = semver.minor(version);
+    var patch = semver.patch(version);
+    var prerelease = semver.prerelease(version);
+
+    if (prerelease) {
+      /**
+       * Publish prerelease URLs
+       */
+      var base = 'carto.js/v' + major + '.' + minor + '.' + patch + '-';
+      if (prerelease[0]) { // alpha, beta, rc
+        tasks['js-prerelease'] = createTask(base + prerelease[0]);
+      }
+      if (prerelease[1]) { // number
+        tasks['js-prerelease-number'] = createTask(base + prerelease[0] + '.' + prerelease[1]);
+      }
+    } else {
+      /**
+       * Publish release URLs
+       */
+      tasks['js-major'] = createTask('carto.js/v' + major);
+      tasks['js-minor'] = createTask('carto.js/v' + major + '.' + minor);
+      tasks['js-patch'] = createTask('carto.js/v' + major + '.' + minor + '.' + patch);
     }
+
+    function createTask(dest) {
+      return  {
+        options: {
+          overwrite: true,
+          cache: false,
+          gzip: true,
+          headers: {
+            ContentType: 'application/x-javascript'
+          }
+        },
+        files: [
+          {
+            action: 'upload',
+            expand: true,
+            cwd: 'dist/public',
+            src: '*.js',
+            dest: dest
+          }
+        ]
+      };
+    }
+
+    return tasks;
   }
-}
-
-
-// How to know if the version is prerelease or
-// not :(
-function isVersionPrerelease(v) {
-  var v = v.split('.');
-  return !/^[0-9]+$/.test(v[v.length - 1]);
 }

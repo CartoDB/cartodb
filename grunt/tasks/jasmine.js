@@ -16,7 +16,7 @@ var defaultOptions = {
 };
 
 /**
- * Jasmine grunt task for CartoDB.js tests
+ * Jasmine grunt task for CARTO.js tests
  * https://github.com/gruntjs/grunt-contrib-jasmine#options
  * Load order: vendor, helpers, source, specs,
  */
@@ -25,7 +25,7 @@ module.exports = {
     src: [], // actual src files are require'd in the *.spec.js files
     options: _.defaults({
       outfile: 'test/SpecRunner-src.html',
-      specs: '<%= config.tmp %>/src-specs.js',
+      specs: '<%= tmp %>/src-specs.js',
       '--web-security': 'no'
     }, defaultOptions)
   }

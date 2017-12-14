@@ -1,18 +1,18 @@
 /**
- *  Clean grunt task for CartoDB.js
+ *  Clean grunt task for CARTO.js
  *
  */
 module.exports = {
   task: function() {
     return {
-      dist: {
+      dist_internal: {
         files: [{
           dot: true,
           src: [
             '.sass-cache',
             '.tmp',
-            '<%= config.dist %>',
-            '!<%= config.dist %>/.git*'
+            '<%= dist %>/internal',
+            '!<%= dist %>/.git*'
           ]
         }]
       }

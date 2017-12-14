@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Feature over/out | Carto</title>
+    <title>Feature over/out | CARTO</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <!-- Include Carto.js -->
-    <script src="../../../dist/public/carto.uncompressed.js"></script>
     <!-- Include Leaflet -->
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
     <style>
       body { margin: 0; padding: 0; }
       #map { position: absolute; height: 100%; width: 100%; }
@@ -56,7 +56,7 @@
       client.addLayer(layer);
       client.getLeafletLayer().addTo(map);
 
-      layer.on(carto.layer.events.FEATURE_CLICKED, featureEvent => {
+      layer.on('featureClicked', featureEvent => {
         let content = '';
         if (featureEvent.data.name) {
           content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;

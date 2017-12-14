@@ -34,6 +34,15 @@ module Carto
     end
   end
 
+  class ProtectedVisualizationLoadError < LoadError
+    def initialize(visualization)
+      @visualization = visualization
+      super('Visualization not viewable', 403, errors_cause: 'privacy_password')
+    end
+
+    attr_reader :visualization
+  end
+
   class UnprocesableEntityError < CartoError
     def initialize(message, status = 422)
       super(message, status)
@@ -60,6 +69,28 @@ module Carto
       respond_to do |format|
         format.html { render text: message, status: status }
         format.json { render json: { errors: message, errors_cause: errors_cause }, status: status }
+      end
+    end
+
+    def rescue_from_protected_visualization_load_error(error)
+      message = error.message
+      status = error.status
+
+      respond_to do |format|
+        format.html { render text: message, status: status }
+        format.json {
+          errors_cause = error.errors_cause
+
+          visualization = error.visualization
+          visualization_info = {
+            privacy: visualization.privacy,
+            user: {
+              google_maps_query_string: visualization.user.google_maps_query_string
+            }
+          }
+          render json: { errors: message, errors_cause: errors_cause, visualization: visualization_info },
+                 status: status
+        }
       end
     end
 

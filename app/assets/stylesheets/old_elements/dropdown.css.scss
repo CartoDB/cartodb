@@ -15,8 +15,7 @@ div.dropdown {
   border: none;
   border-radius: 3px;
   background: WHITE;
-
-  @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 1px);
+  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 1px;
 
   &::before {
     content: ' ';

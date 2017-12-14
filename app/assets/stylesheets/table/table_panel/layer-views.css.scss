@@ -30,11 +30,11 @@ $corner_radius: 6px;
   border-right: 0;
   border-bottom: 0;
   background: white;
+  box-shadow: rgba(black, 0.07) 2px -1px 8px 0;
   letter-spacing: 0;
   vertical-align: top;
 
   @include border-top-left-radius($corner_radius);
-  @include box-shadow(rgba(black, 0.07) 2px -1px 8px 0);
 
   h3 {
     padding: 22px 0 21px 30px;
@@ -102,13 +102,12 @@ $corner_radius: 6px;
 
       &.top {
         top: -10px;
-
-        @include box-shadow(rgba(0,0,0,0.1) 0 5px 20px 0);
+        box-shadow: rgba(#000, 0.1) 0 5px 20px 0;
       }
 
       &.bottom {
-        @include box-shadow(rgba(0,0,0,0.12) 0 -5px 20px 0);
         bottom: -10px;
+        box-shadow: rgba(#000, 0.12) 0 -5px 20px 0;
       }
     }
   }

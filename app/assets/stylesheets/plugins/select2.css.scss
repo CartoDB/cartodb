@@ -130,8 +130,7 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   margin-top: -5px;
   border-top: 1px solid #AAA;
   border-radius: 4px;
-
-  @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 5px);
+  box-shadow: rgba(0, 0, 0, 0.2) 0 0 5px;
 }
 
 .select2-container .select2-choice div {
@@ -219,9 +218,9 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   font-size: 1em;
 
   &:focus {
-    @include box-shadow(rgba(0, 0, 0, 0.1) 0 0 2px 2px);
     border-color: #999;
     outline: none;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 2px 2px;
   }
 }
 

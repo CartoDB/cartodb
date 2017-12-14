@@ -156,10 +156,11 @@ div.map {
   div.map_toolbar {
     @include position(0, false, false, 0);
     @include size(100%, 66px);
-    @include box-shadow(rgba(black, 0.15) 0 3px 3px 0);
-    @include clearfix();
     z-index: 6;
     background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+    box-shadow: rgba(black, 0.15) 0 3px 3px 0;
+
+    @include clearfix();
 
     &.animated {
       overflow: hidden;
@@ -389,9 +390,9 @@ div.map {
     }
 
     &::after {
-      @include box-shadow(0 0 1px rgba(#000, 0.9));
       border-radius: 3px;
       background-color: #FFF;
+      box-shadow: 0 0 1px rgba(#000, 0.9);
     }
   }
 
@@ -518,7 +519,6 @@ div.map {
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
     @include inline-block;
-    @include box-shadow(rgba(0, 0, 0, 0.1) 0 0 4px 3px);
     position: absolute;
     z-index: 1000;
     top: 20px;
@@ -529,6 +529,7 @@ div.map {
     border-radius: 3px;
     background: #FFF;
     background: WHITE;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 3px;
 
     a {
       display: inline-block;

@@ -13,7 +13,6 @@
 
 .cartodb-public-header {
   @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
-  @include box-shadow(none);
   display: block;
   position: relative;
   z-index: 10;
@@ -22,6 +21,7 @@
   margin: 0;
   padding: 0;
   border: none;
+  box-shadow: none;
   font-family: $text-fonts;
 }
 

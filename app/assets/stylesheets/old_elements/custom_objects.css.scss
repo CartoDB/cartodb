@@ -74,7 +74,7 @@
       &.ui-state-active,
       &.ui-state-focus,
       &.ui-state-hover {
-        @include box-shadow(rgba(0, 0, 0, 0.15) 0 0 3px 3px);
+        box-shadow: rgba(0, 0, 0, 0.15) 0 0 3px 3px;
       }
     }
   }
@@ -277,7 +277,7 @@
 
     &.selected {
       @include background(linear-gradient(#F3F3F3, #FFF));
-      @include box-shadow(inset 002px 2px #ccc);
+      box-shadow: inset 002px 2px #CCC;
 
       &::after {
         opacity: 1;
@@ -758,13 +758,13 @@
   padding: 3px 12px;
   border-radius: 25px;
   background: WHITE;
+
+  box-shadow: rgba(black, 0.09) 0 0 2px 2px;
   color: #3474AF;
   font-size: 11px;
   font-weight: bold;
   line-height: 12px;
   text-transform: uppercase;
-
-  @include box-shadow(rgba(black, 0.09) 0 0 2px 2px);
 
   &:hover {
     text-decoration: none;
@@ -772,7 +772,7 @@
 
   &.white {
     &:hover {
-      @include box-shadow(rgba(black, 0.19) 0 0 2px 2px);
+      box-shadow: rgba(black, 0.19) 0 0 2px 2px;
       text-decoration: none;
     }
   }
@@ -783,7 +783,7 @@
     text-shadow: none;
 
     &:hover {
-      @include box-shadow(rgba(black, 0.19) 0 0 2px 2px);
+      box-shadow: rgba(black, 0.19) 0 0 2px 2px;
     }
   }
 
@@ -793,7 +793,7 @@
     text-shadow: none;
 
     &:hover {
-      @include box-shadow(rgba(black, 0.19) 0 0 2px 2px);
+      box-shadow: rgba(black, 0.19) 0 0 2px 2px;
     }
   }
 }

@@ -63,7 +63,6 @@
 }
 
 .edit_text_dialog {
-  @include box-shadow(rgba(black, 0.17) 0 0 6px 1px);
   position: absolute !important;
   z-index: 0 !important;
   max-width: 500px;
@@ -71,6 +70,7 @@
   padding: 11px;
   border: 1px solid #B7B7B7;
   border-radius: 4px;
+  box-shadow: rgba(black, 0.17) 0 0 6px 1px;
 
   @include background(linear-gradient(#FEFEFE, #F4F4F4));
 
@@ -358,7 +358,7 @@
   padding: 5px;
   border-radius: 4px;
 
-  @include box-shadow(rgba(0, 0, 0, 0.12) 0 0 2px 2px);
+  box-shadow: rgba(0, 0, 0, 0.12) 0 0 2px 2px;
 
   .content {
     display: inline-block;
@@ -395,9 +395,9 @@
 
     &:active {
       @include background(linear-gradient(#F9F9F9, #E1E1E1));
-      @include box-shadow(rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset);
       border-color: #ACACAC;
       background: #D3D3D3; // IE
+      box-shadow: rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
     }
   }
 
@@ -494,9 +494,9 @@
 
       &:active {
         @include background(linear-gradient(#F9F9F9, #E1E1E1));
-        @include box-shadow(rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset);
         border-color: #ACACAC;
         background: #D3D3D3; // IE
+        box-shadow: rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
       }
     }
   }

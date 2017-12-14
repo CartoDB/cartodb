@@ -87,9 +87,8 @@
   overflow-y: auto;
   border: 1px solid #999;
   border-radius: 3px;
-  background: WHITE;
-
-  @include box-shadow(none);
+  background: #FFF;
+  box-shadow: none;
 
   .CodeMirror-hint {
     display: block;

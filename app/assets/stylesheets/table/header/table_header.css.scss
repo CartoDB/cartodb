@@ -17,8 +17,7 @@ header.vis {
   padding: 11px 0 0;
   overflow: visible;
   border-bottom: 1px solid rgba(#333, 0.8);
-
-  @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
+  box-shadow: rgba(#000, 0.09) 0 -5px 3px 0 inset;
 
   .inner {
     width: auto;

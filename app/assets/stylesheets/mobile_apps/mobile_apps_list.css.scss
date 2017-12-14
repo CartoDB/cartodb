@@ -1,10 +1,8 @@
 // MobileApps items list
 // --------------------------------------------------
 
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
-@import 'compass/css3/border-radius';
 
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 

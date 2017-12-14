@@ -158,7 +158,7 @@ ion for time-series (#12670)
 * CSV export allowed without geometries (#12888)
 * User destroy order should be Central, local (#CartoDB/cartodb-central/issues/1929)
 * Delete all external sources within one transaction (#13129).
-* NoMethodError: undefined method `has_feature_flag?' for nil:NilClass at visualizations controller (#13145).
+* NoMethodError: undefined method `has_feature_flag?` for nil:NilClass at visualizations controller (#13145).
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
 * Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
@@ -341,6 +341,7 @@ ion for time-series (#12670)
 * Adapt widget integration and specs to dataviews refactor (#12850)
 * Optimize bundle size related to camshaft-reference (#13124)
 * Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
+* Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

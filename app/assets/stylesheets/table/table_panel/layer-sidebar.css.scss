@@ -8,7 +8,6 @@
    */
 
 @import "compass/css3/images";
-@import "compass/css3/opacity";
 @import "compass/css3/inline-block";
 @import "../../table/table-sprite";
 @import "../../old_common/mixins";
@@ -109,7 +108,7 @@
       border-bottom: 1px solid rgba(#999, 0.25);
 
       @include text-indent();
-      @include opacity(0.75);
+      opacity: 0.75;
 
       &.sql_mod { @include table-sprite(table_icons, $offset-x: 20px, $offset-y: -3px); }
       &.filters_mod { @include table-sprite(table_icons, $offset-x: 21px, $offset-y: -62px); }
@@ -137,18 +136,17 @@
       }
 
       &:hover {
+        opacity: 1;
         cursor: pointer;
-
-        @include opacity(1);
       }
 
       &.disabled {
-        @include opacity(0.15);
         border-color: #999;
+        opacity: 0.15;
       }
 
       &.selected {
-        @include opacity(1);
+        opacity: 1;
 
         &::before {
           content: '';

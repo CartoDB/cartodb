@@ -4,7 +4,6 @@
  *
  */
 
-@import "compass/css3/opacity";
 @import "../old_common/vars";
 
 .cartodb-body {
@@ -72,7 +71,7 @@
 }
 
 .cartodb-body .inner .map-info ul li .disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
   color: #333;
 
   &:hover {

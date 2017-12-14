@@ -315,8 +315,8 @@ div.table {
 
               // Fake column name added to each th
               &.auto {
-                @include opacity(0);
                 padding: 0 25px 0 0;
+                opacity: 0;
               }
             }
           }
@@ -485,7 +485,6 @@ div.table {
               }
 
               &::after {
-                @include opacity(1);
                 content: '';
                 display: none;
                 position: absolute;
@@ -497,6 +496,7 @@ div.table {
                 border-top: 3px solid #666;
                 border-right: 2px solid transparent;
                 border-left: 2px solid transparent;
+                opacity: 1;
                 line-height: 16px;
               }
 

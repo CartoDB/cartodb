@@ -373,7 +373,6 @@ a.Filters-cleanSearch {
 }
 
 .Filters--navListing::after {
-  @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
   content: '';
   position: absolute;
   z-index: 2;
@@ -383,6 +382,7 @@ a.Filters-cleanSearch {
   height: 18px;
   margin-left: -510px;
   background-color: transparent !important;
+  background-image: linear-gradient(to bottom, rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
 }
 
 .Filters--navListing .Filters-separator {

@@ -40,8 +40,7 @@
   width: 1020px;
   height: 18px;
   margin-left: -510px;
-
-  @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
+  background-image: linear-gradient(to bottom, rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
 }
 
 .CreateDialog-footerLine {

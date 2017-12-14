@@ -1,7 +1,6 @@
 // Privacy toggler
 // --------------------------------------------------
 
-@import '../variables/mixins';
 @import '../variables/colors';
 
 .PrivacyToggler {
@@ -38,5 +37,5 @@
 }
 
 .PrivacyToggler.is-disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
 }

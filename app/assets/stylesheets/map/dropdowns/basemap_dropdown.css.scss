@@ -1,17 +1,12 @@
-@import 'compass/css3/box-shadow';
-@import 'compass/css3/border-radius';
-@import 'compass/css3/inline-block';
 @import 'compass/css3/images';
-@import 'compass/css3/opacity';
-@import 'compass/css3/transform';
 @import '../../old_common/vars';
 @import '../../old_common/mixins';
 @import '../../map/map-sprite';
 @import '../../old_elements/elements-sprite';
 
 .option-button.basemap_dropdown {
-  @include inline-block();
-
+  display: inline-block;
+  vertical-align: top;
   cursor: pointer;
 
   strong {
@@ -20,31 +15,32 @@
   }
 
   // Custom basemap icon
-
   & > .thumb {
-
+    display: inline-block;
     margin: 0 5px 0 0;
+    border-radius: 2px;
     background-color: rgba(0, 0, 0, 0);
     background-position: 50% 50%;
-
     background-size: 34px;
+    box-shadow: 0 0 1px rgba(#000, 0.9);
+    vertical-align: top;
 
     @include position(6px, false, false, 6px);
-    @include inline-block();
     @include size(22px);
-    @include border-radius(2px);
-    @include box-shadow(0 0 1px rgba(#000, 0.9));
 
     &::before {
       content: ' ';
       border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 2px;
 
       @include position(0, 0, 0, 0);
-      @include border-radius(2px);
     }
   } // thumb
 
-  .info { @include inline-block(); }
+  .info {
+    display: inline-block;
+    vertical-align: top;
+  }
 }
 
 div.dropdown.basemap {
@@ -57,20 +53,18 @@ div.dropdown.basemap {
   }
 
   div.custom ul {
-    @include display-flex();
+    display: flex;
     padding: 0 5px 0 10px;
     border-bottom: none;
     vertical-align: top;
   }
 
   div.custom > ul {
+    box-sizing: border-box;
     width: auto;
     margin: 0 10px;
     padding: 10px;
-
     border-bottom: 1px solid rgba(204, 204, 204, 0.35);
-
-    @include box-sizing(border-box);
 
     & > li {
       &:first-child {
@@ -121,9 +115,8 @@ div.dropdown.basemap {
     &.add_basemap > a {
       small,
       &:hover small {
+        opacity: 0.5;
         color: #397DB8;
-
-        @include opacity(0.5);
       }
     }
 
@@ -169,13 +162,12 @@ div.dropdown.basemap {
       .thumb {
         position: relative;
         float: left;
+        border-radius: 2px;
         background-position: 50% 50%;
-
         background-size: 34px 34px;
         text-decoration: none;
 
         @include size(24px);
-        @include border-radius(2px);
         @include text-indent();
 
         &::before {
@@ -183,15 +175,13 @@ div.dropdown.basemap {
           border: 1px solid rgba(0, 0, 0, 0.15);
 
           @include position(0,0,0,0);
-          @include border-radius(2px);
+          border-radius: 2px;
         }
 
         .remove_layer {
-
           z-index: 2;
-
           padding: 0;
-
+          opacity: 0;
           background: rgba(black, 0.5);
           text-indent: 0;
 
@@ -200,7 +190,6 @@ div.dropdown.basemap {
           @include simple-transition(opacity, 100ms);
           @include border-top-left-radius(2px);
           @include border-bottom-right-radius(2px);
-          @include opacity(0);
 
           &::before {
             content: ' ';
@@ -265,8 +254,8 @@ div.dropdown.basemap {
       span.button {
         @include position(false, 2px, 2px, false);
         @include size(10px);
-        @include border-radius(10px);
         z-index: 2;
+        border-radius: 10px;
         background: white;
         text-indent: 0;
 

@@ -3,7 +3,6 @@
  *  Public table styles
  */
 
-@import "compass/css3/opacity";
 @import "compass/css3/images";
 @import "compass/css3/box-shadow";
 @import "compass/css3/border-radius";
@@ -31,14 +30,14 @@ body .inner {
   border-right: 1px solid #D1D1D1;
 }
 
-// Separator 
+// Separator
 div.separator {
-  @include opacity(0.2);
   position: absolute;
   z-index: 1000;
   top: 0;
   width: 100%;
   height: 1px;
+  opacity: 0.2;
   background: #808080; /* IE */
   background: #000;
 
@@ -63,7 +62,7 @@ a {
   }
 
   &.disabled {
-    @include opacity(0.3);
+    opacity: 0.3;
 
     &:hover {
       color: $link-color;

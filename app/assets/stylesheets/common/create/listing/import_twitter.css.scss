@@ -15,15 +15,13 @@
 .TwitterCategory {
   height: 0;
   overflow: hidden;
-
-  @include opacity(0);
-  @include transition(all, 250ms, linear);
+  transition: all 250ms linear;
+  opacity: 0;
 }
 
 .TwitterCategory.enabled {
   height: 60px;
-
-  @include opacity(1);
+  opacity: 1;
 }
 
 // Datepicker

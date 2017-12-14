@@ -1,7 +1,5 @@
-@import "../variables/mixins";
-
 .AssetItem {
-  @include inline-block();
+  display: inline-block;
   position: relative;
   width: 58px;
   height: 58px;
@@ -17,7 +15,6 @@
 }
 
 .AssetItem .image {
-  @include inline-block();
   position: absolute;
   width: 60px;
   max-width: 60px;
@@ -28,11 +25,12 @@
   background-position: center;
   line-height: 60px;
   text-align: center;
+  vertical-align: top;
 }
 
 .AssetItem:hover .delete {
-  @include opacity(1);
   display: block;
+  opacity: 1;
 }
 
 .AssetItem.AssetItem-User.is-selected .image {
@@ -52,8 +50,6 @@
 }
 
 .AssetItem .delete {
-  @include transition(opacity, 100ms);
-  @include opacity(0);
   position: absolute;
   z-index: 2;
   right: 0;
@@ -61,8 +57,10 @@
   width: 14px;
   height: 10px;
   padding: 0;
+  transition: opacity 100ms;
   border-top-left-radius: 2px;
   border-bottom-right-radius: 2px;
+  opacity: 0;
   background: #333;
   background: rgba(black, 0.5);
   text-indent: 0;

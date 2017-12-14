@@ -4,7 +4,6 @@
    */
 
 @import "compass/css3/border-radius";
-@import "compass/css3/opacity";
 @import "../old_common/vars";
 
 ul.ui-autocomplete {
@@ -56,7 +55,7 @@ ul.ui-autocomplete {
       background: WHITE;
 
       a {
-        @include opacity(0.4);
+        opacity: 0.4;
         color: $link-color;
         text-decoration: none;
       }

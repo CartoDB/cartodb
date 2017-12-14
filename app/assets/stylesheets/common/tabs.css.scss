@@ -57,7 +57,7 @@
 }
 
 .TabLink.disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
 
   &:hover {
     border-color: $cStructure-mainLine;

@@ -1,7 +1,4 @@
 // Retrofit of common/core, carried over to retrofit new_common (now plain common) default with the old styles while migrating
-@import "compass/css3/box-shadow";
-@import "compass/css3/border-radius";
-@import "compass/css3/opacity";
 @import "../common/default";
 @import "../old_common/vars";
 
@@ -19,7 +16,7 @@ a {
   }
 
   &.disabled {
-    @include opacity(0.3);
+    opacity: 0.3;
 
     &:hover {
       color: $link-color;
@@ -29,11 +26,11 @@ a {
   }
 
   &.tag {
-    @include border-radius(2px);
-    @include box-shadow(rgba(0, 0, 0, 0.12) 0 0 2px 2px);
     padding: 6px 7px;
     border: 1px solid #397DBA;
+    border-radius: 2px;
     background: #E1ECF5;
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.12);
     color: #397DB9;
   }
 }

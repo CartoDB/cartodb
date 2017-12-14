@@ -9,14 +9,13 @@
    */
 
   @import "compass/css3/box-sizing";
-  @import "compass/css3/opacity";
   @import "compass/css3/images";
   @import "compass/css3/inline-block";
   @import "compass/css3/transform";
   @import "../../../old_common/common-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
-  
+
 
   div.filters_panel {
     width: 100%;
@@ -28,8 +27,8 @@
 
       pointer-events: none;
 
-      &.top    { @include opacity(0); @include position(61px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
-      &.bottom { @include opacity(1); @include position(false, false, 0px, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
+      &.top    { opacity: 0; @include position(61px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
+      &.bottom { opacity: 1; @include position(false, false, 0px, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
 
       @include size(100%, 30px);
 
@@ -96,11 +95,11 @@
       overflow: auto;
       outline: none;
 
-      &:hover .jspVerticalBar { @include opacity(1); }
+      &:hover .jspVerticalBar { opacity: 1; }
 
       .jspContainer { overflow: hidden; position: relative; }
       .jspPane { position: absolute; }
-      .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
+      .jspVerticalBar   { @include simple-transition(opacity, 150ms); opacity: 0; position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
       .jspVerticalBar * { margin: 0; padding: 0; }
       .jspCap { display: none; }
       .jspTrack { background: none; position: relative; }
@@ -214,12 +213,12 @@
 
         &.date .range { clear:both; margin: 6px 0 0 0; }
 
-        &:hover .remove { @include opacity(1); }
+        &:hover .remove { opacity: 1; }
 
         .remove {
           float: right;
           display: block;
-          @include opacity(0);
+          opacity: 0;
 
           @include size(13px);
           @include position(21px, 30px, false, false);
@@ -234,7 +233,7 @@
     // Selection filter
     ul.filters .filter.selection {
 
-      &:hover .scroll .jspVerticalBar { @include opacity(1); }
+      &:hover .scroll .jspVerticalBar { opacity: 1; }
 
       .header {
 
@@ -365,8 +364,8 @@
 
           pointer-events: none;
 
-          &.top    { @include opacity(0); @include position(0, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 10; }
-          &.bottom { @include opacity(0); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
+          &.top    { opacity: 0; @include position(0, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 10; }
+          &.bottom { opacity: 0; @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
 
           @include size(100%, 30px);
 
@@ -433,7 +432,7 @@
           $radius: 3px;
 
           &.disabled {
-            @include opacity(.5);
+            opacity: 0.5;
             cursor: default;
 
             &:active { background-position: 50% 9px!important; }
@@ -496,7 +495,7 @@
           }
 
           &:after {
-            @include opacity(1);
+            opacity: 1;
             @include position(15px, false, false, 0);
             content: '';
             @include size(7px);
@@ -507,7 +506,7 @@
             @include simple-transition(opacity, 220ms);
           }
 
-          &.selected:after  { @include opacity(0); }
+          &.selected:after  { opacity: 0; }
           &.selected:before { background: #82D992; @include scale(1); }
           &.selected .value { background: #82D992; color:#fff; }
 

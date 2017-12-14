@@ -3,7 +3,7 @@
 @import '../variables/sizes';
 
 .u-transparent {
-  @include opacity(0);
+  opacity: 0;
 }
 
 // Center the content within the defined layout width
@@ -34,7 +34,8 @@
 }
 
 .u-disabled {
-  @include opacity(0.4);
+  opacity: 0.4;
+
   @include grayscale();
 }
 

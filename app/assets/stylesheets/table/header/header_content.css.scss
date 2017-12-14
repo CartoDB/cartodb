@@ -10,7 +10,6 @@
 @import "compass/css3/inline-block";
 @import "compass/css3/border-radius";
 @import "compass/css3/images";
-@import "compass/css3/opacity";
 @import "../../old_common/mixins";
 @import "../../old_common/vars";
 @import "../../old_common/common-sprite";
@@ -35,13 +34,13 @@ $text-shadow-color: rgba(black, 0.25);
 
       @include table-sprite(back);
       @include text-indent();
-      @include opacity(0.5);
+      opacity: 0.5;
 
       &:focus,
       &:hover {
         outline: none;
 
-        @include opacity(1);
+        opacity: 1;
       }
     }
 
@@ -81,7 +80,7 @@ $text-shadow-color: rgba(black, 0.25);
 
           @include text-overflow();
 
-          &.disabled { @include opacity(1); }
+          &.disabled { opacity: 1; }
         }
 
         &.logo {
@@ -149,7 +148,7 @@ $text-shadow-color: rgba(black, 0.25);
             color: rgba(255, 255, 255, 1);
             cursor: pointer;
           }
-          &.disabled { @include opacity(1); }
+          &.disabled { opacity: 1; }
         }
       }
     }
@@ -191,7 +190,7 @@ $text-shadow-color: rgba(black, 0.25);
         @include border-radius(3px);
 
         &.disabled {
-          @include opacity(0.5);
+          opacity: 0.5;
           &:hover { cursor: default; }
         }
       }

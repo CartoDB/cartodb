@@ -1,4 +1,3 @@
-@import '../../variables/mixins';
 @import '../../variables/colors';
 @import '../../variables/sizes';
 
@@ -23,7 +22,7 @@ $sHeight: 20px;
 }
 
 .Toggler.is-disabled {
-  @include opacity(0.4);
+  opacity: 0.4;
 
   label {
     cursor: default;
@@ -35,20 +34,19 @@ $sHeight: 20px;
 }
 
 .Toggler label {
-  @include transition(all 150ms ease);
   display: block;
   position: absolute;
   top: 0;
   left: 0;
   width: $sWidth;
   height: $sHeight;
+  transition: all 150ms ease;
   border-radius: 30px;
   background-color: #DDD;
   cursor: pointer;
 }
 
 .Toggler label::before {
-  @include transition(all 150ms ease);
   content: ' ';
   display: block;
   position: absolute;
@@ -56,6 +54,7 @@ $sHeight: 20px;
   left: 4px;
   width: 12px;
   height: 12px;
+  transition: all 150ms ease;
   border-radius: 30px;
   background-color: #FFF;
 }

@@ -1,4 +1,3 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
@@ -16,19 +15,19 @@
 //
 
 .OptionCards {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(stretch);
-  @include align-content(space-between, justify);
+  display: flex;
+  align-content: space-between;
+  align-items: stretch;
+  justify-content: center;
 }
 
 .OptionCard {
-  @include display-flex();
-  @include flex(1); // Grow evenly inside container
-  @include flex-direction(column);
-  @include justify-content(flex-start);
-  @include align-items(center);
-  @include align-content(space-between, justify);
+  display: flex;
+  flex: 1; // Grow evenly inside container
+  flex-direction: column;
+  align-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   padding: $sMargin-element;
   border: 1px solid $cStructure-mainLine;
   border-radius: $sCard-borderRadius;
@@ -43,8 +42,8 @@
 }
 
 .OptionCard--code {
-  @include align-items(flex-start, start);
   position: relative;
+  align-items: flex-start;
   max-height: 200px;
   overflow: hidden;
   background-color: $cStructure-grayBkg;
@@ -75,14 +74,14 @@
 }
 
 .OptionCard--onlyIcons {
-  @include justify-content(center);
+  justify-content: center;
   // Arbitrary size really, but gives a "square" like look where used (only export modal for now).
   // If need to use the same style but with other amount of items we need to rethink this…
   min-height: 114px;
 }
 
 .OptionCard.is-disabled {
-  @include opacity(0.4);
+  opacity: 0.4;
 }
 
 .OptionCard.is-selected {
@@ -123,9 +122,5 @@
   left: 0;
   width: 100%;
   height: 60px;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba($cStructure-grayBkg, 0.04)), color-stop(100%, rgba($cStructure-grayBkg, 0.95)));
-  background-image: -webkit-linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%);
-  background-image: -moz-linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%);
-  background-image: -o-linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%);
-  background-image: linear-gradient(top, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%); /* stylelint-disable-line */
+  background-image: linear-gradient(to bottom, rgba($cStructure-grayBkg, 0.04) 0%, rgba($cStructure-grayBkg, 0.95) 100%);
 }

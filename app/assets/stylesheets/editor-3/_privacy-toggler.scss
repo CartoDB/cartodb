@@ -1,8 +1,6 @@
 // Privacy toggler
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
-
 // TODO: remove editor
 $cStructure-softLine: rgba(#000, 0.06);
 $cHighlight-positive: rgba(#8FB83F, 1);
@@ -42,5 +40,5 @@ $cHighlight-negative: rgba(#F15743, 1);
 }
 
 .PrivacyToggler.is-disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
 }

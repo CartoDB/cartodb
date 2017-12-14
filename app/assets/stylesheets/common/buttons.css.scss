@@ -1,15 +1,14 @@
 // Buttons
 // --------------------------------------------------
 
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
 $cHighlight-mainHover: rgba(#007FBD, 1);
 
 .Button {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
   height: $sButton-height;
   padding: 0 29px;
   border: $sButton-border solid $cStructure-mainBkg;
@@ -60,7 +59,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 
 .Button.is-disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
 
   &:hover {
     cursor: default;

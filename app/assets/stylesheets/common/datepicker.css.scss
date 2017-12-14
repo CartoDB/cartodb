@@ -1,4 +1,3 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
@@ -65,7 +64,7 @@ $sDates-defaultWidth: 434px;
 }
 
 .DatePicker-dates.is-disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
 
   &:hover {
     border-color: #CCC;
@@ -157,17 +156,17 @@ $sDates-defaultWidth: 434px;
 
 // Timers
 .DatePicker-timers {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0 18px;
 }
 
 .DatePicker-timersFrom,
 .DatePicker-timersTo {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 180px;
   padding: 10px 10px 0;
   border-top: 1px solid $cStructure-mainLine;
@@ -182,9 +181,9 @@ $sDates-defaultWidth: 434px;
 
 // Date picker shortcuts
 .DatePicker-shortcuts {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 422px;
   height: 39px;
   margin-top: 9px;
@@ -326,12 +325,12 @@ table.datepickerViewYears tr.datepickerDoW {
 
 td.datepickerDisabled a,
 td.datepickerDisabled.datepickerNotInMonth a {
-  @include opacity(0.5);
+  opacity: 0.5;
   color: #333;
 }
 
 td.datepickerDisabled a:hover {
-  @include opacity(0.5);
+  opacity: 0.5;
   color: #333;
 }
 

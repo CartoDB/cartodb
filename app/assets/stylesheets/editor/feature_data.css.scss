@@ -1,7 +1,6 @@
 // Feature data dialog content styles
 // --------------------------------------------------
 
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
@@ -35,7 +34,6 @@
 }
 
 .FeatureData-mapMamufas {
-  @include css3-prefix(box-sizing, content-box);
   content: '';
   position: absolute;
   z-index: 2;
@@ -43,6 +41,7 @@
   right: 0;
   bottom: 0;
   left: 0;
+  box-sizing: content-box;
   width: 100%;
   border: 1px solid rgba(black, 0.1);
   border-right: 0;
@@ -70,14 +69,14 @@
   }
 
   &::before {
-    @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
     top: 275px;
     background-color: transparent !important;
+    background-image: linear-gradient(to bottom, rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
   }
 
   &::after {
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     bottom: 97px;
+    background-image: linear-gradient(to bottom, rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
   }
 }
 
@@ -98,9 +97,9 @@
 }
 
 .FeatureData-formFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: #F9F9F9;
 }
 

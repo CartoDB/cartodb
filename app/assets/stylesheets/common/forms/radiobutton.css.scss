@@ -1,4 +1,3 @@
-@import '../../variables/mixins';
 @import '../../variables/colors';
 @import '../../variables/sizes';
 
@@ -12,8 +11,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 .RadioButton {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
 }
 
 .RadioButton-input {
@@ -90,7 +89,7 @@
 }
 
 .RadioButton.is-disabled .RadioButton-input {
-  @include opacity(0.4);
+  opacity: 0.4;
 
   &:hover {
     border-color: $cStructure-mainLine;
@@ -103,7 +102,7 @@
 }
 
 .RadioButton.is-disabled .RadioButton-label {
-  @include opacity(0.4);
+  opacity: 0.4;
 }
 
 // CSS-only behaviour
@@ -152,7 +151,7 @@
 }
 
 .RadioButtonInput:disabled + .RadioButtonInput-face {
-  @include opacity(0.4);
+  opacity: 0.4;
 
   &:focus {
     border-color: $cStructure-mainLine;

@@ -11,10 +11,10 @@ $size: 36px;
 }
 
 .Logo--avatar {
-  @include transition(border-radius, 0.2s, linear);
   display: inline-block;
   width: $size;
   height: $size;
+  transition: border-radius 0.2s linear;
   border-radius: 4px;
   background: #FFF;
   line-height: $size + 10;
@@ -56,13 +56,13 @@ $size: 36px;
 }
 
 .Logo-sub {
-  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
   position: absolute;
   z-index: 1;
   top: -8px;
   right: -8px;
   width: 24px;
   height: 24px;
+  animation: fade-and-bounce-up 0.6s 350ms ease-in-out backwards;
   border-radius: 24px;
 }
 
@@ -76,39 +76,39 @@ $size: 36px;
   }
 
   &::after {
-    @include animation(spin 0.7s linear infinite);
-    @include opacity(1);
+    animation: spin 0.7s linear infinite;
+    opacity: 1;
   }
 }
 
-@include keyframes(spin) {
+@keyframes spin {
   100% {
-    @include transform(rotate(360deg));
+    transform: rotate(360deg);
   }
 }
 
-@include keyframes(fade-and-bounce-up) {
+@keyframes fade-and-bounce-up {
   0% {
-    @include opacity(0);
-    @include transform(translateY(6px));
+    transform: translateY(6px);
+    opacity: 0;
   }
 
   15% {
-    @include opacity(0.8);
-    @include transform(translateY(-3px));
+    transform: translateY(-3px);
+    opacity: 0.8;
   }
 
   45% {
-    @include opacity(1);
-    @include transform(translateY(2px));
+    transform: translateY(2px);
+    opacity: 1;
   }
 
   70% {
-    @include transform(translateY(-1px));
+    transform: translateY(-1px);
   }
 
   100% {
-    @include opacity(1);
-    @include transform(translateY(0));
+    transform: translateY(0);
+    opacity: 1;
   }
 }

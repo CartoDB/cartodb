@@ -12,7 +12,6 @@
 
 @import "compass/css3/inline-block";
 @import "compass/css3/images";
-@import "compass/css3/opacity";
 @import "compass/css3/transform";
 @import "../old_common/mixins";
 @import "../old_common/vars";
@@ -243,17 +242,20 @@
     }
 
     &.align-left::after {
-      @include opacity(0.8);
+      opacity: 0.8;
+
       @include background(image-url("layout/align_left.png") no-repeat 0 0);
     }
 
     &.align-center::after {
-      @include opacity(0.8);
+      opacity: 0.8;
+
       @include background(image-url("layout/align_center.png") no-repeat 0 0);
     }
 
     &.align-right::after {
-      @include opacity(0.8);
+      opacity: 0.8;
+
       @include background(image-url("layout/align_right.png") no-repeat 0 0);
     }
 
@@ -276,7 +278,7 @@
       @include box-shadow(inset 002px 2px #ccc);
 
       &::after {
-        @include opacity(1);
+        opacity: 1;
       }
     }
   }
@@ -440,7 +442,8 @@
     background: #F4F4F4 !important;
 
     a {
-      @include opacity(0.5);
+      opacity: 0.5;
+
       background: #F4F4F4 !important;
 
       &:hover {
@@ -683,8 +686,8 @@
   }
 
   &.disabled {
-    @include opacity(1);
     border-color: #CCC;
+    opacity: 1;
     background: #D8D8D8;
 
     span.handle {
@@ -699,7 +702,7 @@
 
   // Working
   &.working {
-    @include opacity(0.5);
+    opacity: 0.5;
 
     &:hover {
       cursor: default !important;

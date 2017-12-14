@@ -1,9 +1,4 @@
-@import 'compass/css3/box-shadow';
-@import 'compass/css3/border-radius';
-@import 'compass/css3/inline-block';
 @import 'compass/css3/images';
-@import 'compass/css3/opacity';
-@import 'compass/css3/transform';
 @import '../../old_common/vars';
 @import '../../old_common/mixins';
 @import '../../map/map-sprite';
@@ -19,23 +14,22 @@ div.dropdown.canvas_setup_dropdown {
   li {
     float: left;
     border: none;
+    border-radius: 5px;
     background: #F2F2F2;
-
-    @include border-radius(5px);
 
     &:first-child {
       margin-right: 1px;
 
-      @include border-radius(5px 0 0 5px);
+      border-radius: 5px 0 0 5px;
     }
 
     &:last-child {
-      @include border-radius(0 5px 5px 0);
+      border-radius: 0 5px 5px 0;
     }
 
     &:hover {
       a { background: image-url('layout/computer.png') no-repeat 50% 16px; }
-      strong { @include opacity(0.7); }
+      strong { opacity: 0.7; }
     }
 
     &.active {
@@ -43,7 +37,7 @@ div.dropdown.canvas_setup_dropdown {
       background: #F2F2F2;
 
       strong {
-        @include opacity(1);
+        opacity: 1;
         color: #397DB8;
       }
 
@@ -64,12 +58,11 @@ div.dropdown.canvas_setup_dropdown {
       bottom: 16px;
       left: 0;
       width: 100%;
+      opacity: 0.5;
       color: #444;
       font-size: 10px;
       text-align: center;
       text-transform: uppercase;
-
-      @include opacity(0.5);
     }
 
     &.desktop a {

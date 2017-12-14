@@ -2,7 +2,6 @@
 // dialog content styles
 // ---------------------------------------------
 
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
@@ -24,19 +23,19 @@ $width: 620px;
   }
 
   &::before {
-    @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
     top: 157px;
     background-color: transparent !important;
+    background-image: linear-gradient(to bottom, rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
   }
 
   &::after {
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     bottom: 97px;
+    background-image: linear-gradient(to bottom, rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
   }
 }
 
 .EditVisMetadata-header {
-  @include flex-grow(1);
+  flex-grow: 1;
   min-height: 100px;
   max-height: 100px;
   padding: 28px 0;
@@ -87,9 +86,9 @@ $width: 620px;
 }
 
 .EditVisMetadata-formFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: #F9F9F9;
 }
 

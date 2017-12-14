@@ -1,4 +1,3 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
@@ -7,11 +6,11 @@
 //
 // --------------------------------------------------
 .MapsList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-  @include flex-wrap(wrap);
+  display: flex;
   position: relative;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
   width: $sLayout-width + $sMargin-element;
   margin: 4px auto 0;
   padding-right: $sMargin-elementInline;
@@ -24,7 +23,7 @@
 }
 
 .MapsList--centerItems {
-  @include justify-content(center, center);
+  justify-content: center;
 }
 
 .MapsList.is-hidden {
@@ -51,7 +50,7 @@
 }
 
 .MapsList .MapsList-item.MapsList-item--fake {
-  @include opacity(0.6);
+  opacity: 0.6;
 }
 
 @media only screen and (max-width: $sMedia-mobile) {
@@ -70,8 +69,8 @@
 
 @media only screen and (max-width: $sMedia-tablet) {
   .MapsList {
-    @include flex-direction(row);
-    @include justify-content(flex-start);
+    flex-direction: row;
+    justify-content: flex-start;
   }
 
   .MapsList .MapsList-item.MapsList-item--fake {
@@ -87,7 +86,7 @@
 
 @media only screen and (max-width: 984px) {
   .MapsList {
-    @include justify-content(center);
+    justify-content: center;
     width: 640px;
     padding: 0;
   }
@@ -103,7 +102,7 @@
 
 @media only screen and (max-width: 663px) {
   .MapsList {
-    @include justify-content(center);
+    justify-content: center;
     width: 100%;
     padding: 0;
   }

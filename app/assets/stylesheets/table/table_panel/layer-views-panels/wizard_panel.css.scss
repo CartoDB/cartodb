@@ -6,7 +6,6 @@
    *
    */
 
-@import "compass/css3/opacity";
 @import "compass/css3/images";
 @import "compass/css3/inline-block";
 @import "../../../table/table-sprite";
@@ -92,8 +91,7 @@ div.wizards_panel {
 
       &.disabled {
         display: none;
-
-        @include opacity(0);
+        opacity: 0;
 
         &.left:hover {
           @include table-sprite(wizard-arrows);
@@ -157,7 +155,7 @@ div.wizards_panel {
         }
 
         @include simple-transition(opacity, 200ms);
-        @include opacity(0.7);
+        opacity: 0.7;
 
         // Wizard icons
         &.simple {
@@ -214,13 +212,13 @@ div.wizards_panel {
         &:hover {
           border-color: $cGray2;
 
-          @include opacity(1);
+          opacity: 1;
         }
 
         &.selected {
           border-color: $cGray2;
 
-          @include opacity(1);
+          opacity: 1;
 
           .name {
             color: #333;

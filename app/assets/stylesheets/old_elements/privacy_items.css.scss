@@ -11,7 +11,6 @@
 
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
-@import "compass/css3/opacity";
 @import "../table/table-sprite";
 @import "../old_common/mixins";
 
@@ -20,7 +19,7 @@
   @include border-radius(3px);
 
   @mixin privacy-disabled($color) {
-    @include opacity(0.5);
+    opacity: 0.5;
     background-color: rgba($color, 0.7);
     cursor: default !important;
   }

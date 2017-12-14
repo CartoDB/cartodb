@@ -1,8 +1,6 @@
 @import "compass/css3/box-shadow";
-@import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "compass/css3/images";
-@import "compass/css3/opacity";
 @import "compass/css3/transform";
 @import "../old_common/fonts";
 @import "../old_common/vars";
@@ -36,7 +34,7 @@
     outline: none;
 
     &:hover .jspVerticalBar {
-      @include opacity(1);
+      opacity: 1;
     }
 
     .jspContainer {
@@ -48,15 +46,16 @@
     }
 
     .jspVerticalBar {
-      @include simple-transition(opacity, 150ms);
-      @include opacity(0);
       position: absolute;
       z-index: 20;
       top: 0;
       right: 7px;
       width: 5px;
       height: 100%;
+      opacity: 0;
       background: none;
+
+      @include simple-transition(opacity, 150ms);
     }
 
     .jspVerticalBar * {
@@ -74,10 +73,10 @@
     }
 
     .jspDrag {
-      @include border-radius(5px);
       position: relative;
       top: 0;
       left: 0;
+      border-radius: 5px;
       background: rgba(#BBB, 0.5);
       cursor: pointer;
     }
@@ -105,14 +104,14 @@
   }
 
   .slide_view {
-    @include box-sizing(border-box);
-    @include border-radius(2px);
     display: block;
     position: relative;
+    box-sizing: border-box;
     width: 104px;
     height: 63px;
     margin: 0 auto 29px;
     padding: 11px;
+    border-radius: 2px;
     background: #EEE;
     background: -moz-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #EEE), color-stop(100%, #E5E5E5));
@@ -155,7 +154,7 @@
     }
 
     &:hover .close {
-      @include opacity(1);
+      opacity: 1;
     }
 
     &.active {
@@ -211,10 +210,6 @@
     }
 
     .close {
-      @include box-shadow(1px 1px 5px rgba(#000, 0.5));
-      @include opacity(0);
-      @include simple-transition(opacity, 0.1s, ease-in-out);
-      @include border-radius(90px);
       position: absolute;
       top: -12px;
       right: -11px;
@@ -222,6 +217,8 @@
       height: 16px;
       padding: 3px;
       border: 1px solid #FFF;
+      border-radius: 90px;
+      opacity: 0;
       background: #333;
       color: #FFF;
       font-family: "helvetica neue", "helvetica", arial;
@@ -231,19 +228,22 @@
       text-transform: uppercase;
       cursor: pointer;
 
+      @include box-shadow(1px 1px 5px rgba(#000, 0.5));
+      @include simple-transition(opacity, 0.1s, ease-in-out);
+
       &:hover {
         text-decoration: none;
       }
     }
 
     .info {
-      @include border-radius(2px);
-      @include box-sizing(border-box);
       position: relative;
       top: 14px;
+      box-sizing: border-box;
       height: 16px;
       margin: auto;
       padding: 4px 6px;
+      border-radius: 2px;
       background: #333;
       color: #9CA0A3;
       font-size: 9px;
@@ -258,13 +258,12 @@
     }
 
     .count {
-      @include box-sizing(border-box);
-      @include border-radius(200px);
-      @include simple-transition(background, 150ms);
+      box-sizing: border-box;
       width: 43px;
       height: 43px;
       margin: auto;
       padding: 3px;
+      border-radius: 200px;
       background: #D1D1D1;
       color: #FFF;
       font-size: 31px;
@@ -272,6 +271,8 @@
       line-height: normal;
       text-align: center;
       vertical-align: middle;
+
+      @include simple-transition(background, 150ms);
     }
   }
 

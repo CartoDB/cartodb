@@ -2,7 +2,6 @@
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "compass/css3/images";
-@import "compass/css3/opacity";
 @import "compass/css3/transform";
 @import "../old_common/fonts";
 @import "../old_common/vars";
@@ -136,7 +135,7 @@
     }
 
     .hint {
-      @include opacity(1);
+      opacity: 1;
       color: #000;
     }
   }
@@ -145,7 +144,7 @@
     border-color: rgba(#000, 0.5);
 
     .hint {
-      @include opacity(1);
+      opacity: 1;
       color: #000;
     }
   }
@@ -367,10 +366,10 @@
   }
 
   .hint {
-    @include opacity(0.7);
     display: none;
     margin: 2px 1px 0 0;
     padding: 0 0 0 20px;
+    opacity: 0.7;
     color: #FFF;
     font-size: 11px;
     text-align: right;
@@ -477,7 +476,7 @@
       }
 
       .content div {
-        @include opacity(0.8);
+        opacity: 0.8;
         background: #333;
       }
 
@@ -499,7 +498,7 @@
 
   &.open {
     .edit {
-      @include opacity(1);
+      opacity: 1;
       background: #FFF;
       color: #333;
 
@@ -509,7 +508,7 @@
     } // .edit
 
     .close {
-      @include opacity(1);
+      opacity: 1;
     }
   } // .open
 
@@ -533,7 +532,7 @@
 
     .edit,
     .close {
-      @include opacity(0);
+      opacity: 0;
     }
 
     .text {
@@ -544,11 +543,12 @@
   &:hover .edit,
   &:hover .close,
   &:hover div.dropdown.properties_dropdown {
-    @include opacity(1);
+    opacity: 1;
   }
 
   div.dropdown.properties_dropdown {
-    @include opacity(0);
+    opacity: 0;
+
     @include simple-transition(opacity, 0.1s, ease-in-out);
 
     ul li > span:first-child {
@@ -572,10 +572,9 @@
 
   .close,
   .edit {
-    @include opacity(0);
-    @include simple-transition(opacity, 0.1s, ease-in-out);
     position: absolute;
     border: 1px solid #FFF;
+    opacity: 0;
     background: #333;
     color: #FFF;
     font-family: "helvetica neue", "helvetica", arial;
@@ -583,6 +582,8 @@
     text-align: center;
     text-transform: uppercase;
     cursor: pointer;
+
+    @include simple-transition(opacity, 0.1s, ease-in-out);
   }
 
   .close {
@@ -720,13 +721,14 @@ div.cartodb-zoom .info {
 }
 
 div.rule {
-  @include opacity(0);
-  @include simple-transition(opacity, 0.1s, ease-in-out);
   position: absolute;
   z-index: 10;
   width: 1px;
   height: 100%;
+  opacity: 0;
   background: #AAA;
+
+  @include simple-transition(opacity, 0.1s, ease-in-out);
 
   &.horizontal {
     width: 100%;

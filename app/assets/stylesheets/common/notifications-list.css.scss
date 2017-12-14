@@ -57,15 +57,15 @@ $opacityTransition: 250ms;
 }
 
 .NotificationsList {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
   position: relative;
+  flex-direction: column;
   width: 100%;
   margin: 0 auto;
 }
 
 .NotificationsList-item {
-  @include display-flex();
+  display: flex;
   position: relative;
   box-sizing: border-box;
   margin-bottom: -1px;
@@ -85,9 +85,6 @@ $opacityTransition: 250ms;
 }
 
 .NotificationsList-itemCategory {
-  @include notification-type-icon();
-  @include opacity(1);
-  @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
   display: inline-block;
   position: relative;
   z-index: 1;
@@ -95,7 +92,11 @@ $opacityTransition: 250ms;
   height: 40px;
   margin-top: 3px;
   margin-right: 16px;
+  transition: opacity $opacityTransition ease-in-out;
   border: none;
+  opacity: 1;
+
+  @include notification-type-icon();
 }
 
 .NotificationsList-itemCategory--warning {
@@ -103,46 +104,43 @@ $opacityTransition: 250ms;
 }
 
 .NotificationsList-itemInfo {
-  @include display-flex();
-  @include flex-direction(row);
-  @include opacity(1);
-  @include flex(1);
-  @include transition(opacity, $opacityTransition);
-  @include justify-content(space-between, justify);
+  display: flex;
   position: relative;
   z-index: 1;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  transition: opacity $opacityTransition;
+  opacity: 1;
 }
 
 .NotificationsList-itemPrimaryInfo {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   width: 400px;
   margin-right: $sMargin-element;
 }
 
 .NotificationsList-itemSecondaryInfo {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   margin-top: 0;
 }
 
 .NotificationsList-itemMeta {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(flex-start, end);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   margin-bottom: 2 * $sMargin-min;
 }
 
 .NotificationsList-itemTitle {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   margin-bottom: 0;
   word-wrap: break-word;
-
-  -ms-word-break: break-all;
   word-break: break-word;
-
   overflow-wrap: break-word;
 
   ul,

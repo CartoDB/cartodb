@@ -4,7 +4,6 @@
  *
  */
 
-@import "compass/css3/opacity";
 @import "compass/css3/inline-block";
 @import "../old_common/vars";
 @import "../old_common/mixins";
@@ -147,13 +146,13 @@ body.public {
   }
 
   .navigation {
-    @include opacity(0);
     position: relative;
     z-index: 100;
     width: 100%;
     margin: auto;
     clear: both;
     overflow: hidden;
+    opacity: 0;
     text-align: center;
 
     ul {
@@ -194,7 +193,7 @@ body.public {
   }
 
   div.table table thead tr th > div p.auto {
-    @include opacity(0);
+    opacity: 0;
   }
 
   .cartodb-map-data {

@@ -31,7 +31,7 @@ $actionBarHeight: 17px;
 
 .IconList {
   // scss-lint:disable Shorthand
-  @include display-flex;
+  display: flex;
   position: relative;
   flex-wrap: wrap;
   margin: 0 -12px 0 0;

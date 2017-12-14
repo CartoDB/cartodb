@@ -47,7 +47,7 @@
 }
 
 .Card--privacy {
-  @include display-flex;
+  display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 25px;

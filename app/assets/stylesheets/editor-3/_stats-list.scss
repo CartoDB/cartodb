@@ -7,7 +7,7 @@
 }
 
 .StatsList-item {
-  @include display-flex;
+  display: flex;
   box-sizing: border-box;
   margin: 0 0 $baseSize * 3;
 }

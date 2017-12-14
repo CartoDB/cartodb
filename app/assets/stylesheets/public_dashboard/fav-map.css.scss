@@ -1,4 +1,3 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
@@ -19,8 +18,6 @@ $heightTall: 450px;
 }
 
 .FavMap::before {
-  @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.1));
-  @include transition(all, 100ms, ease-in-out);
   content: '';
   position: absolute;
   z-index: 9995;
@@ -28,6 +25,8 @@ $heightTall: 450px;
   left: 0;
   width: 100%;
   height: 0;
+  transition: all 100ms ease-in-out;
+  background-image: linear-gradient(to bottom, rgba(#000, 0), rgba(#000, 0.1));
 }
 
 .FavMap:not(.is-pre-loading):not(.is-loading)::before {
@@ -52,8 +51,8 @@ $heightTall: 450px;
 }
 
 .FavMap.FavMap--highShadow::before {
-  @include background-gradient(rgba(#000000, 0), rgba(#000000, 0.5));
   height: 180px;
+  background-image: linear-gradient(to bottom, rgba(#000, 0), rgba(#000, 0.5));
   pointer-events: none;
 }
 
@@ -62,12 +61,12 @@ $heightTall: 450px;
 }
 
 .FavMapTitle {
-  @include opacity(1);
   position: absolute;
   z-index: 10000;
   bottom: 45px;
   width: 100%;
   transition: opacity 150ms ease-in-out;
+  opacity: 1;
   line-height: normal;
 }
 

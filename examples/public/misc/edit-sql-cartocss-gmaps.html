@@ -2,6 +2,8 @@
 <html>
   <head>
     <title>Edit SQL & CartoCSS | Carto</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -13,39 +15,119 @@
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
     <style>
-      * { margin: 0; padding: 0; }
-      html { box-sizing: border-box; height: 100%; }
-      body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
-      #container { display: flex; width: 100%; height: 100%; }
-      #map { flex: 1; margin: 10px; }
-      #controls { position: relative; width: 300px; margin: 20px; }
-      h3 { margin-bottom: 20px; }
-      button { background: #162945; width: 100%; padding: 10px; margin: 20px 0; color: #FFF; border: none; font-weight: bold; text-transform: uppercase; }
-      textarea { height: 100px; width: 100%; resize: none; }
+      * {
+        margin:0;
+        padding:0;
+        box-sizing: border-box;
+      }
+      *:focus {
+        outline: none;
+      }
+      html {
+        height: 100%;
+      }
+      body {
+        background: #F2F6F9;
+        height: 100%;
+        font-family: 'Open sans'
+      }
+      #container {
+        display: flex;
+        height: 100%;
+      }
+      #map {
+        flex: 1;
+      }
+      #controls {
+        width: 308px;
+      }
+      .control-inner {
+        background: #fff;
+        padding: 20px 24px;
+        border-bottom: 2px solid #F2F6F9;
+      }
+      .control-inner {
+        font-size: 10px;
+        line-height: 14px;
+      }
+      .control-inner p {
+        margin-bottom: 4px;
+        color: #747D82;
+      }
+      .control-inner p:last-child {
+        margin-bottom: 0;
+      }
+      .control-inner h3 {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        margin-bottom: 8px;
+      }
+      .button-update {
+        border: 1px solid #1785FB;
+        color: #1785FB;
+        font-size: 12px;
+        line-height: 16px;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-family: 'Open sans';
+        cursor: pointer;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .button-update:hover {
+        background: rgba(23,133,251,.08);
+      }
+      textarea {
+        height: 100px; width: 100%; resize: none;
+        padding: 7px 8px 6px;
+        border: 1px solid #DDD;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 16px;
+        font-family: 'Open Sans';
+        color: #6A6A6A;
+        margin-bottom: 8px;
+       }
+       .action-container {
+        display: flex;
+        justify-content: flex-end;
+       }
     </style>
   </head>
   <body>
     <div id="container">
       <div id="map"></div>
       <div id="controls">
-        <h3>SQL</h3>
-        <textarea id="sql" rows="3">
+        <div class="control-inner">
+          <h3>SQL</h3>
+          <textarea id="sql" rows="3">
 SELECT *
-  FROM ne_10m_populated_places_simple
-</textarea>
-        <button onclick="updateSource()"> Update Layer source</button>
-        <h3>CartoCSS</h3>
-        <textarea id="cartocss" rows="3">
+FROM ne_10m_populated_places_simple
+          </textarea>
+          <div class="action-container">
+            <button class="button-update" onclick="updateSource()">UPDATE SQL</button>
+          </div>
+        </div>
+
+        <div class="control-inner">
+          <h3>CartoCSS</h3>
+          <textarea id="cartocss" rows="3">
 #layer {
   marker-fill: red;
 }
-</textarea>
-        <button onclick="updateStyle()"> Update Layer style</button>
-        <p> This example only uses one style and one layer whose content is changed. </p>
-        <p>
-          Since the style and source objects are the same the wont trigger events, you need to use the promise to handle errors.
-        </p>
-        <p class="popup"></p>
+          </textarea>
+          <div class="action-container">
+            <button class="button-update" onclick="updateStyle()">UPDATE STYLE</button>
+          </div>
+        </div>
+
+        <div class="control-inner">
+          <p> This example only uses one style and one layer whose content is changed. </p>
+          <p>
+            Since the style and source objects are the same the wont trigger events, you need to use the promise to handle errors.
+          </p>
+        </div>
       </div>
     </div>
     <script>
@@ -68,7 +150,15 @@ SELECT *
       });
 
       const populatedPlacesSource = new carto.source.SQL(getValue('#sql'));
-      const populatedPlacesStyle = new carto.style.CartoCSS(getValue('#cartocss'));
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-fill-opacity: 0.9;
+          marker-line-width: 0.5;
+          marker-line-color: #FFFFFF;
+        }
+      `);
       const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
 
       client.addLayer(populatedPlacesLayer);
@@ -99,7 +189,7 @@ SELECT *
       }
 
       function error(id, cartoError) {
-        document.querySelector(id).style.background = '#E57373';
+        document.querySelector(id).style.border = '1px solid #E57373';
         alert(cartoError.message);
       }
     </script>

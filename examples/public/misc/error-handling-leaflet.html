@@ -2,6 +2,9 @@
 <html>
   <head>
     <title>Error handling | Carto</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+
+
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -12,12 +15,32 @@
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
     <style>
-      * { margin: 0; padding: 0; }
-      html { box-sizing: border-box; height: 100%; }
-      body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
-      #container { display: flex; width: 100%; height: 100%; }
-      #map { flex: 1; margin: 10px; }
-      #controls { position: relative; width: 300px; margin: 20px; }
+      * {
+        margin:0;
+        padding:0;
+        box-sizing: border-box;
+      }
+      html {
+        height: 100%;
+      }
+      body {
+        background: #F2F6F9;
+        height: 100%;
+        font-family: 'Open sans'
+      }
+      #container {
+        display: flex;
+        height: 100%;
+      }
+      #map {
+        flex: 1;
+      }
+      #controls {
+        width: 308px;
+      }
+      .control-inner {
+        background: #fff;
+      }
       h3 { margin-bottom: 20px; }
       .button { width: 100%; padding: 10px; margin: 20px 0; border: none; font-weight: bold; text-transform: uppercase; }
       .button--to_wrong { background: #162945; color: white; }
@@ -36,18 +59,20 @@
     <div id="container">
       <div id="map"></div>
       <div id="controls">
-        <h3>DATASET</h3>
-        <div id="dataset-value" class="value"></div>
-        <button id="dataset-button" class="button" onclick="updateDataset()"></button>
+        <div class="control-inner">
+          <h3>DATASET</h3>
+          <div id="dataset-value" class="value"></div>
+          <button id="dataset-button" class="button" onclick="updateDataset()"></button>
 
-        <h3>STYLE</h3>
-        <div id="style-value" class="value"></div>
-        <button id="style-button" class="button" onclick="updateStyle()"></button>
+          <h3>STYLE</h3>
+          <div id="style-value" class="value"></div>
+          <button id="style-button" class="button" onclick="updateStyle()"></button>
 
-        <div id="panel" class="panel"></div>
+          <div id="panel" class="panel"></div>
 
-        <p>In this example we handle the client error while calling .addLayer</p>
-        <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+          <p>In this example we handle the client error while calling .addLayer</p>
+          <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+        </div>
       </div>
     </div>
     <script>

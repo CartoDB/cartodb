@@ -2,6 +2,9 @@
 <html>
   <head>
     <title>Populated places | Carto</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+
+
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Include Carto.js -->
@@ -10,19 +13,73 @@
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
     <style>
-      body { margin: 0; padding: 0; }
-      #map { position: absolute; height: 100%; width: 100%; }
-      #controls { position: absolute; padding: 0 20px 20px; background: white; }
-      .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
-      button { padding: 10px; margin-top: 20px; }
+      * {
+        box-sizing: border-box;
+      }
+      body, *{ margin: 0; padding: 0; }
+      #map {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        z-index: 0;
+      }
+      #controls {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 300px;
+        z-index: 2;
+        padding: 20px 24px;
+        background: white;
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        color: #2E3C43;
+      }
+
+      .actions li {
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .actions li:last-child {
+        margin-bottom: 0;
+      }
+      .actions li input {
+        margin: 0 8px 0 0;
+      }
+      .actions li label {
+        font: 12px/16px 'Open Sans';
+        cursor: pointer;
+      }
+      .actions li {
+        margin-right: 12px;
+      }
+      .actions li:last-child {
+        margin-right: 0;
+      }
+      .actions li:hover {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
     <div id="map"></div>
     <div id="controls" class="column-right">
-      <button onclick="setAll()">All places</button>
-      <button onclick="setMostPopulated(20)" style="color: #378230;">Most populated places</button>
-      <button onclick="setLessPopulated(20)" style="color: #F15743;">Less populated places</button>
+      <ul class="actions">
+        <li onclick="setAll()">
+          <input type="radio" name="style" value="01" id="all" checked="">
+          <label for="all">ALL Places<label>
+        </li>
+        <li onclick="setMostPopulated(20)">
+          <input type="radio" name="style" value="02" id="most">
+          <label for="most">Most populated places</label>
+        </li>
+        <li onclick="setLessPopulated(20)">
+          <input type="radio" name="style" value="03" id="less">
+          <label for="less">Less populated places</label>
+        </li>
+      </ul>
     </div>
     <script>
       const map = L.map('map').setView([30, 0], 3);
@@ -42,7 +99,9 @@
       `);
       const populatedPlacesStyle = new carto.style.CartoCSS(`
         #layer {
-          marker-fill: #162945;
+          marker-fill: #EE4D5A;
+          marker-width: 7;
+          marker-line-color: #FFFFFF;
         }
       `);
       const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
@@ -57,7 +116,9 @@
         `);
         populatedPlacesStyle.setContent(`
           #layer {
-            marker-fill: #162945;
+            marker-fill: #EE4D5A;
+            marker-width: 7;
+            marker-line-color: #FFFFFF;
           }
         `);
       }
@@ -70,10 +131,12 @@
         `);
         populatedPlacesStyle.setContent(`
           #layer {
-            marker-fill: #378230;
+            marker-fill: #68B69E;
+            marker-width: 12;
+            marker-line-color: #FFFFFF;
             text-name: [name];
-            text-face-name: 'DejaVu Sans Book';
-            text-size: 15;
+            text-face-name: 'Open Sans Regular';
+            text-size: 12;
             text-dy: -10;
           }
         `);
@@ -88,9 +151,11 @@
         populatedPlacesStyle.setContent(`
           #layer {
             marker-fill: #F15743;
+            marker-width: 12;
+            marker-line-color: #FFFFFF;
             text-name: [name];
-            text-face-name: 'DejaVu Sans Book';
-            text-size: 15;
+            text-face-name: 'Open Sans Regular';
+            text-size: 12;
             text-dy: -10;
           }
         `);

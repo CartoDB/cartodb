@@ -3,6 +3,8 @@
   <head>
     <title>Feature over/out | Carto</title>
     <meta name="viewport" content="initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+
     <meta charset="utf-8">
     <!-- Include Carto.js -->
     <script src="../../../dist/public/carto.uncompressed.js"></script>
@@ -12,17 +14,51 @@
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <style>
       body { margin: 0; padding: 0; }
-      #map { position: absolute; height: 100%; width: 100%; }
-      #controls { position: absolute; padding: 0 20px 20px; background: white; }
-      .column-right { display: flex; flex-direction: column; right: 0; }
-      #content { margin-top: 20px; font-size: 1.2em; }
-      #content span { font-size: 2em; }
+      * {
+        box-sizing: border-box;
+      }
+      body, *{ margin: 0; padding: 0; }
+      #map {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        z-index: 0;
+      }
+      #controls {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 200px;
+        z-index: 2;
+      }
+      #controls h2 {
+        font: 300 12px/16px 'Open Sans';
+        background: rgba(0, 0, 0, 0.64);
+        border-radius: 4px;
+        padding: 8px 12px;
+        color: #fff;
+      }
+      .container {
+        padding: 8px 12px;
+        background: white;
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        color: #2E3C43;
+        margin-top: 12px;
+      }
+      #content h3 {
+        font: 400 16px/22px 'Open Sans';
+        margin-bottom: 4px;
+      }
+      #content p {
+        font: 400 12px/16px 'Open Sans';
+      }
     </style>
   </head>
   <body>
     <div id="map"></div>
-    <div id="controls" class="column-right">
-      <h3>Move the mouse over the markers</h3>
+    <div id="controls">
+      <h2>Move the mouse over the markers</h2>
       <div id="content"></div>
     </div>
     <script>
@@ -49,8 +85,8 @@
       `);
       const style = new carto.style.CartoCSS(`
         #layer {
-          marker-width: 20;
-          marker-fill: #FF583E;
+          marker-width: 7;
+          marker-fill: #EE4D5A;
           marker-line-color: #FFFFFF;
         }
       `);
@@ -63,8 +99,10 @@
 
       layer.on(carto.layer.events.FEATURE_OVER, featureEvent => {
         let content = '';
-        content += `<b>${featureEvent.data.name.toUpperCase()}</b>`;
-        content += `<p><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
+        content += `<div class="container">`;
+        content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
+        content += `<p>${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
+        content += `</div>`;
         document.getElementById('content').innerHTML = content;
       });
 

@@ -24,6 +24,7 @@ module CartoDB
         disqus_shortname: user.disqus_shortname,
         available_for_hire: user.available_for_hire,
         base_url: user.public_url,
+        google_maps_query_string: user.google_maps_query_string,
         viewer: user.viewer,
         org_admin: user.organization_admin?,
         groups: user.groups ? user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [],

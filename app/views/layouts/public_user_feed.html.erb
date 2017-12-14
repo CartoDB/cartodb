@@ -16,6 +16,12 @@
     <meta property="og:image" content="<%= @avatar_url %>" />
 
     <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'user_feed' %>
+
+    <% if @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps' %>
+      <script type="text/javascript"
+          src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @most_viewed_vis_map.user.google_maps_query_string %>">
+      </script>
+    <% end %>
   </head>
   <body class="PublicBody PublicBody--grey">
     <%= render 'admin/shared/public_header' %>

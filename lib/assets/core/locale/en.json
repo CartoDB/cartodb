@@ -1,5 +1,6 @@
 {
   "feedback": "Give us feedback!",
+  "back": "Back",
   "back-to-dashboard": "Back to the dashboard",
   "edit-map": "Edit map",
   "map-settings": "Map options",
@@ -1632,6 +1633,10 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "breadcrumb": {
+        "layer-options": "Layer options",
+        "basemap-options": "Basemap options"
+      },
       "errors": {
         "broken-node": "Broken node",
         "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"
@@ -2495,6 +2500,9 @@
       }
     },
     "widgets": {
+      "breadcrumb": {
+        "widget-options": "Widget options"
+      },
       "no-geometry-data": "Your dataset lacks geometry data, it is not possible to add a widget.",
       "options": {
         "remove": "Delete...",

@@ -28,7 +28,7 @@
   "dependencies": {
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-alpha.34",
+    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.1",
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",
@@ -89,6 +89,9 @@
     "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "bump": "npm version patch",
+    "bump:major": "npm version major",
+    "bump:minor": "npm version minor",
     "postversion": "git push origin master --follow-tags"
   }
 }

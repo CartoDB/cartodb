@@ -36,12 +36,12 @@
   margin: -($sSpinner-default / 2) 0 0  - ($sSpinner-default / 2);
 }
 
-@include keyframes(load8) {
+@keyframes load8 {
   0% {
-    @include css3-prefix(transform, rotate(0deg));
+    transform: rotate(0deg);
   }
 
   100% {
-    @include css3-prefix(transform, rotate(360deg));
+    transform: rotate(360deg);
   }
 }

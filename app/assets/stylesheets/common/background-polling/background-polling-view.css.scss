@@ -87,7 +87,7 @@ $radius: 4px;
   overflow: auto;
 }
 
-@include keyframes(fade-and-scale-in) {
+@keyframes fade-and-scale-in {
   0% {
     transform: scale(2);
     opacity: 0;
@@ -104,7 +104,7 @@ $radius: 4px;
   }
 }
 
-@include keyframes(fade-and-bounce-up) {
+@keyframes fade-and-bounce-up {
   0% {
     transform: translateY(6px);
     opacity: 0;
@@ -130,7 +130,7 @@ $radius: 4px;
   }
 }
 
-@include keyframes(fade-and-scale-out) {
+@keyframes fade-and-scale-out {
   0% {
     transform: scale(1);
     opacity: 1;

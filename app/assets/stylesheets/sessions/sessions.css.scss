@@ -47,25 +47,25 @@ $cWhite: #FFF;
   margin: -(36px / 2) 0 0  - (36px / 2);
 }
 
-@include keyframes(load8) {
+@keyframes load8 {
   0% {
-    @include css3-prefix(transform, rotate(0deg));
+    transform: rotate(0deg);
   }
 
   100% {
-    @include css3-prefix(transform, rotate(360deg));
+    transform: rotate(360deg);
   }
 }
 
 .Sessions {
-  @include display-flex;
+  display: flex;
   flex-direction: column;
   min-height: 100vh;
   background-size: cover;
 }
 
 .Sessions-navy {
-  @include display-flex;
+  display: flex;
   flex-direction: column;
   min-height: 100vh;
   background-color: $cNavyBlue;
@@ -73,7 +73,7 @@ $cWhite: #FFF;
 }
 
 .Sessions-content {
-  @include display-flex;
+  display: flex;
   flex-grow: 1;
   align-items: center;
   justify-content: center;
@@ -81,7 +81,7 @@ $cWhite: #FFF;
 }
 
 .Sessions-inner {
-  @include display-flex;
+  display: flex;
   justify-content: space-between;
 }
 
@@ -160,7 +160,7 @@ $cWhite: #FFF;
 }
 
 .Sessions-left {
-  @include display-flex;
+  display: flex;
   flex-direction: column;
   width: 320px;
 }

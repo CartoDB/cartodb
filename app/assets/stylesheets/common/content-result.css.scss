@@ -139,7 +139,7 @@
   }
 }
 
-@include keyframes(pulsate) {
+@keyframes pulsate {
   0% {
     right: 100%;
   }

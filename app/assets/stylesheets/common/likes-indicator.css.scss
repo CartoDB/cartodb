@@ -59,7 +59,7 @@ $cLiked: #D93F56;
   }
 }
 
-@include keyframes(pulse) {
+@keyframes pulse {
   0% {
     transform: scale(1);
   }

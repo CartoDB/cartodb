@@ -105,7 +105,7 @@
     background-image: linear-gradient(-45deg rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
   }
 
-  @include keyframes(move) {
+  @keyframes move {
     0% { background-position: 0 0; }
     100% { background-position: $animatedSize $animatedSize; }
   }

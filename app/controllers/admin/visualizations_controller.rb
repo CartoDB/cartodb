@@ -425,7 +425,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def embed_map
-    if @viewed_user.has_feature_flag?('static_embed_map')
+    if @viewed_user && @viewed_user.has_feature_flag?('static_embed_map')
       return render(file: "public/static/embed_map/index.html", layout: false)
     end
 

@@ -12,7 +12,7 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * 
  * This filter could be usefull if you want give the users to ability to select a portion of the map and update the dataviews accordingly.
  * 
- * @fires carto.filter.BoundingBox.boundsChanged
+ * @fires boundsChanged
  *
  * @constructor
  * @fires boundsChanged

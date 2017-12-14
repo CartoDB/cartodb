@@ -105,6 +105,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Wayfinding: fix dialog footer (#13223)
+* Fix like buttons (#12779)
 * Wayfinding: widget view (#13202)
 * Wayfinding: layer list (#13208)
 * Wayfinding: edit feature (#13203)

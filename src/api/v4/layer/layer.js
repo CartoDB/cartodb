@@ -399,7 +399,7 @@ function _isStyleError (windshaftError) {
 }
 
 /**
- * @typedef {Object} LatLng
+ * @typedef {object} LatLng
  * @property {number} lat - Latitude
  * @property {number} lng - Longitude
  * @api

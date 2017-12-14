@@ -23,7 +23,7 @@ module Carto
 
           record_class_name.constantize.find(record_id)
         rescue
-          record_id ? (raise Carto::LoadError.new("#{record_class_name} not found")) : nil
+          record_id ? (raise Carto::LoadError.new("#{record_class_name} not found. Id: #{record_id}")) : nil
         end
 
         def to_hash
@@ -31,7 +31,7 @@ module Carto
         end
 
         def to_segment
-          user = fetch_record!(:user)
+          user = @hash['user_id'].present? ? fetch_record!(:user) : nil
           visualization = fetch_record!(:visualization)
           widget = fetch_record!(:widget)
 

@@ -6,16 +6,15 @@
 @import 'cdb-variables/colors';
 
 .Editor-HeaderInfoEditor {
-  @include display-flex();
-  height: 64px;
-  margin-bottom: 21px;
+  display: flex;
 }
-.Editor-HeaderInfoEditorShape {
-  line-height: 44px;
+.Editor-HeaderInfoEditor--layer {
+  margin-bottom: 31px;
 }
 
 .Editor-HeaderInfo {
-  @include display-flex();
+  display: flex;
+  margin-top: 4px;
   margin-bottom: 32px;
 
   &.is-block {
@@ -128,4 +127,8 @@
 
 .Editor-HeaderInfo-zoom.is-white {
   fill: $cWhite;
+}
+
+.Editor-HeaderInfo-source {
+  margin-left: 27px;
 }

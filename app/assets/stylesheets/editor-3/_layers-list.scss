@@ -323,6 +323,13 @@
   border-bottom-left-radius: $halfBaseSize;
 }
 
+.Editor-ListAnalysis-itemInfoTitle {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+}
+
 .Editor-ListAnalysis-itemInfoDataset {
   flex: 10;
 

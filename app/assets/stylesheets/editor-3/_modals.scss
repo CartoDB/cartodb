@@ -226,6 +226,9 @@
   flex: 0 0 auto;
   padding: $baseSize * 3 0;
 }
+.Dialog-contentWrapper--withBreadcrumbs .Publish-modalHeader {
+  padding-top: 0;
+}
 
 .Publish-modalBody {
   display: flex;

@@ -69,6 +69,15 @@
 .Modal-header {
   padding: $baseSize * 3 0;
 }
+.Dialog-contentWrapper--withBreadcrumbs .Modal-header {
+  padding-top: 0;
+}
+.Dialog-headerWrapper {
+  flex: 0 0 auto;
+  width: 940px;
+  margin: 0 auto;
+  padding-top: $baseSize * 3;
+}
 .Modal-inner--with-navigation {
   padding: 32px 0 0;
 }

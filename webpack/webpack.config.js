@@ -1,14 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
-
-var version = require('./package.json').version;
-var banner = 'CARTO.js https://carto.com/\n';
-banner += 'Version: ' + version + '\n';
+const banner = require('./banner');
 
 module.exports = {
   entry: './src/api/v4/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist/public'),
+    path: path.resolve(__dirname, '../dist/public'),
     filename: 'carto.js',
     library: 'carto',
     libraryTarget: 'umd'

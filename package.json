@@ -146,7 +146,7 @@
     "test": "grunt test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build": "rm -rf dist/public; webpack && webpack --config webpack.min.config.js",
+    "build": "rm -rf dist/public; webpack --config webpack/webpack.config.js && webpack --config webpack/webpack.min.config.js",
     "build:watch": "webpack -w",
     "build:internal": "grunt build",
     "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",

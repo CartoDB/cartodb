@@ -93,7 +93,7 @@ module.exports = CartoError;
 /**
  * Represents an error in the carto library.
  * 
- * Some actions like adding a layer to a map are asynchronous and requires a server round trip.
+ * Some actions like adding a layer to a map are asynchronous and require a server round trip.
  * If some error happens during this communnication with the server, an error with a `CartoError` object
  * will be fired.
  * 

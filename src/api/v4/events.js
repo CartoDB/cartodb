@@ -30,7 +30,6 @@ var ERROR = 'error';
  * 
  * @event success
  */
-
 module.exports = {
   SUCCESS: SUCCESS,
   ERROR: ERROR

@@ -4,7 +4,7 @@
       <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large u-rSpace"></i>
 
       <span class="Editor-breadcrumbLink">
-        <%- _t('editor.layers.breadcrumb.layers-list') %>
+        <%- _t('back') %>
       </span>
     </button>
   </li>

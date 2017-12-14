@@ -3,7 +3,7 @@
     <button class="js-back">
       <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large u-rSpace"></i>
 
-      <span class="Editor-breadcrumbLink"><%- _t('editor.layers.breadcrumb.layers-list') %></span>
+      <span class="Editor-breadcrumbLink"><%- _t('back') %></span>
     </button>
   </li>
 

@@ -3,22 +3,12 @@
 // Mixins
 // - Necessary SCSS functions
 // - Browser support:
-//  · IE => 10
+//  · IE => 11
 //  · Chrome => 21
 //  · Sarafi => 6
 //  · Firefox => 24
 //  · Opera => 12
 // --------------------------------------------------
-
-/* ADDS A BROWSER PREFIX TO THE PROPERTY */
-@mixin css3-prefix($property, $value) {
-  -webkit-#{$property}: #{$value};
-  -khtml-#{$property}: #{$value};
-  -moz-#{$property}: #{$value};
-  -ms-#{$property}: #{$value};
-  -o-#{$property}: #{$value};
-  #{$property}: #{$value};
-}
 
 @mixin grayscale() {
   -webkit-filter: grayscale(100%);

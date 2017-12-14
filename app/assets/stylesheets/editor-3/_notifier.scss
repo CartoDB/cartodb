@@ -3,13 +3,13 @@
 @import 'cdb-variables/sizes';
 
 .Notifier {
-  @include css3-prefix(hyphens, auto);
   position: relative;
   flex: 0 0 auto;
   margin: 0 -25px 0 -24px;
   overflow: hidden;
   border-top: 1px solid $cSecondaryLine;
   word-wrap: break-word;
+  hyphens: auto;
   overflow-wrap: break-word;
 
   &.is-dark {

@@ -10,19 +10,66 @@
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
     <style>
-      body { margin: 0; padding: 0; }
-      #map { position: absolute; height: 100%; width: 100%; }
-      #controls { position: absolute; padding: 0 20px 20px; background: white; }
-      .column-right { display: flex; flex-direction: column; right: 0; z-index: 800; }
-      button { padding: 10px; margin-top: 20px; }
+      * {
+        box-sizing: border-box;
+      }
+      body, *{ margin: 0; padding: 0; }
+      #map {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        z-index: 0;
+      }
+      #controls {
+        position: absolute;
+        padding: 20px;
+        background: white;
+        top: 12px;
+        right: 12px;
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        width: 200px;
+        color: #2E3C43;
+        z-index: 2;
+      }
+      #controls li {
+        list-style-type: none;
+        margin: 0 0 8px 0;
+        display: flex;
+        vertical-align: middle;
+      }
+      #controls li input {
+        margin: 0 8px 0 0;
+      }
+      #controls li label {
+        font: 12px/16px 'Open Sans';
+        cursor: pointer;
+      }
+      #controls li:last-child {
+        margin-bottom: 0;
+      }
+      #controls li:hover {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
     <div id="map"></div>
-    <div id="controls" class="column-right">
-      <button onclick="setRed()" style="color: red;">Red</button>
-      <button onclick="setGreen()" style="color: green;">Green</button>
-      <button onclick="setBlue()" style="color: blue;">Blue</button>
+    <div id="controls">
+      <ul>
+        <li onclick="setRed()">
+          <input type="radio" name="style" value="01" checked  id="red">
+          <label for="red">Red</label>
+        </li>
+        <li onclick="setGreen()">
+          <input type="radio" name="style" value="02" id="green">
+          <label for="green">Green</label>
+        </li>
+        <li onclick="setBlue()">
+          <input type="radio" name="style" value="03" id="blue">
+          <label for="blue">Blue</label>
+        </li>
+      </ul>
     </div>
     <script>
       const map = L.map('map').setView([30, 0], 3);
@@ -41,8 +88,8 @@
       `);
       const style = new carto.style.CartoCSS(`
         #layer {
-          marker-width: 8;
-          marker-fill: red;
+          marker-width: 7;
+          marker-fill: #EE4D5A;
           marker-line-color: #FFFFFF;
         }
       `);
@@ -54,8 +101,8 @@
       function setRed() {
         style.setContent(`
           #layer {
-            marker-width: 8;
-            marker-fill: red;
+            marker-width: 7;
+            marker-fill: #EE4D5A;
             marker-line-color: #FFFFFF;
           }
         `);
@@ -64,8 +111,8 @@
       function setGreen() {
         style.setContent(`
           #layer {
-            marker-width: 10;
-            marker-fill: green;
+            marker-width: 7;
+            marker-fill: #9BC63B;
             marker-line-color: #FFFFFF;
           }
         `);
@@ -74,8 +121,8 @@
       function setBlue() {
         style.setContent(`
           #layer {
-            marker-width: 12;
-            marker-fill: blue;
+            marker-width: 9;
+            marker-fill: #1785FB;
             marker-line-color: #FFFFFF;
           }
         `);

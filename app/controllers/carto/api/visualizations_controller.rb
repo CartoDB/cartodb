@@ -53,12 +53,14 @@ module Carto
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
+      rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
       def show
         presenter = VisualizationPresenter.new(
           @visualization, current_viewer, self,
           related_canonical_visualizations: params[:fetch_related_canonical_visualizations] == 'true',
           show_user: params[:fetch_user] == 'true',
+          show_user_basemaps: params[:show_user_basemaps] == 'true',
           show_liked: params[:show_liked] == 'true',
           show_likes: params[:show_likes] == 'true',
           show_permission: params[:show_permission] == 'true',
@@ -381,8 +383,11 @@ module Carto
         end
 
         if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
-          raise Carto::LoadError.new('Visualization not viewable', 403,
-                                     errors_cause: @visualization.password_protected? ? 'privacy_password' : nil)
+          if @visualization.password_protected?
+            raise Carto::ProtectedVisualizationLoadError.new(@visualization)
+          else
+            raise Carto::LoadError.new('Visualization not viewable', 403)
+          end
         end
       end
 

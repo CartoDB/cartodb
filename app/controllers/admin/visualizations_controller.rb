@@ -35,7 +35,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
   before_filter :user_metadata_propagation, only: [:index]
-  before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected]
+  before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected, :embed_map, :embed_protected]
   before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table,
@@ -89,21 +89,19 @@ class Admin::VisualizationsController < Admin::AdminController
     @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
-    if current_user.has_feature_flag?('static_editor') && !current_user.builder_enabled? && @visualization.open_in_editor?
-      return render(file: 'public/static/show/index.html', layout: false)
-    end
-
     if table_action
       if current_user.builder_enabled? && @visualization.has_read_permission?(current_user)
         return redirect_to CartoDB.url(self, 'builder_dataset', { id: request.params[:id] }, current_user)
       elsif !@visualization.has_write_permission?(current_user)
         return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       end
+    elsif current_user.builder_enabled? && !@visualization.open_in_editor?
+      return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
+    elsif current_user.has_feature_flag?('static_editor') && !current_user.builder_enabled?
+      return render(file: 'public/static/show/index.html', layout: false)
     elsif !@visualization.has_write_permission?(current_user)
       return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
                                      id: request.params[:id], redirected: true)
-    elsif current_user.builder_enabled? && !@visualization.open_in_editor?
-      return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
     end
 
     if @visualization.is_privacy_private? && @visualization.has_read_permission?(current_user)
@@ -427,8 +425,12 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def embed_map
+    if @viewed_user && @viewed_user.has_feature_flag?('static_embed_map')
+      return render(file: "public/static/embed_map/index.html", layout: false)
+    end
+
     if request.format == 'text/javascript'
-      error_message = "/* Javascript embeds  are deprecated, please use the html iframe instead */"
+      error_message = "/* Javascript embeds are deprecated, please use the html iframe instead */"
       return render inline: error_message, status: 400
     end
 

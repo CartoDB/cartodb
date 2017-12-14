@@ -294,6 +294,10 @@ module.exports = Model.extend({
     return this.get('source');
   },
 
+  isSourceType: function () {
+    return this.getSourceType() === 'source';
+  },
+
   isFiltered: function () {
     var isFiltered = false;
     if (this.filter) {

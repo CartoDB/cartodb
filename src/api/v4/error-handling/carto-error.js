@@ -9,8 +9,6 @@ var GENERIC_ORIGIN = 'generic';
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.
- *
- * @api
  */
 function CartoError (error, opts) {
   opts = opts || {};
@@ -93,12 +91,12 @@ module.exports = CartoError;
 /**
  * Represents an error in the carto library.
  * 
- * Some actions like adding a layer to a map are asynchronous and requires a server round trip.
+ * Some actions like adding a layer to a map are asynchronous and require a server round trip.
  * If some error happens during this communnication with the server, an error with a `CartoError` object
  * will be fired.
  * 
  * CartoErrors can be obtained by listening to the client 'error' `client.on('error', callback);`,
- * through any async action or by listening to the dataviews {@link carto.events|error events} `dataview.on('error', callback);`.
+ * through any async action or by listening to 'error' events on particular objects (eg: dataviews).
  * 
  * Promises are also rejected with a CartoError.
  * @example
@@ -108,7 +106,7 @@ module.exports = CartoError;
  *  .catch(cartoError => console.error(cartoError.message))
  * @example 
  * // Events also will be registered here when the map changes.
- * client.on(carto.events.SUCCESS, function () {
+ * client.on('success', function () {
  *  console.log('Client reloaded');
  * });
  * 

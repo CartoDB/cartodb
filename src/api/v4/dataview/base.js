@@ -380,6 +380,6 @@ module.exports = Base;
  * of dataview that triggered the event.
  *
  * @event dataChanged
- * @type {carto.dataview.CategoryData|carto.dataview.FormulaData|carto.dataview.HistogramData}
+ * @type {carto.dataview.CategoryData|carto.dataview.FormulaData|carto.dataview.HistogramData|carto.dataview.TimeSeriesData}
  * @api
  */

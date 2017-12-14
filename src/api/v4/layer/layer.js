@@ -319,11 +319,11 @@ Layer.prototype._createInternalModel = function (engine) {
   internalModel.on('change:meta', function (layer, data) {
     var rules = data.cartocss_meta.rules;
     var styleMetadataList = metadataParser.getMetadataFromRules(rules);
+
     /**
+     * Event fired by {@link carto.layer.Layer} when the style contains any TurboCarto ramp.
      *
-     * Events triggered by {@link carto.layer.Layer} when the style contains Turbocarto ramps
-     *
-     * @typedef carto.layer.Layer.MetadataEvent
+     * @typedef {object} carto.layer.MetadataEvent
      * @property {carto.layer.metadata.Base[]} styles - List of style metadata objects
      * @api
      */
@@ -399,7 +399,7 @@ function _isStyleError (windshaftError) {
 }
 
 /**
- * @typedef {Object} LatLng
+ * @typedef {object} LatLng
  * @property {number} lat - Latitude
  * @property {number} lng - Longitude
  * @api
@@ -425,7 +425,7 @@ function _isStyleError (windshaftError) {
  * Fired when style metadata has changed.
  *
  * @event metadataChanged
- * @type {carto.layer.Layer.MetadataEvent}
+ * @type {carto.layer.MetadataEvent}
  * @api
  */
 

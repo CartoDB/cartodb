@@ -11,10 +11,9 @@
 }
 
 .FlashMessage > .u-inner {
-  @include display-flex();
-  @include justify-content(center, justify);
-  @include flex-direction(column);
-  @include align-items(left);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   height: 80px;
   line-height: $sLineHeight-larger;
 }
@@ -26,7 +25,7 @@
   border-bottom: 1px solid $cStructure-mainLine;
 
   > .u-inner {
-    @include justify-content(center, center);
+    justify-content: center;
   }
 }
 
@@ -61,9 +60,9 @@
 }
 
 .FlashMessage-content {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
 }
 

@@ -14,8 +14,8 @@
 }
 
 .CDB-IconFont.CDB-IconFont--withLabel::before {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
 }
 
 .CDB-IconFont.CDB-IconFont--small::before {

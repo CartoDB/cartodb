@@ -59,14 +59,14 @@ $cWhite: #FFF;
 
 .Sessions {
   @include display-flex;
-  @include flex-direction(column);
+  flex-direction: column;
   min-height: 100vh;
   background-size: cover;
 }
 
 .Sessions-navy {
   @include display-flex;
-  @include flex-direction(column);
+  flex-direction: column;
   min-height: 100vh;
   background-color: $cNavyBlue;
   background-size: cover;
@@ -74,15 +74,15 @@ $cWhite: #FFF;
 
 .Sessions-content {
   @include display-flex;
-  @include flex-grow(1);
-  @include align-items(center, center);
-  @include justify-content(center, center);
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
   padding: 40px 0;
 }
 
 .Sessions-inner {
   @include display-flex;
-  @include justify-content(space-between, space-between);
+  justify-content: space-between;
 }
 
 .Sessions .Sessions-title {
@@ -161,7 +161,7 @@ $cWhite: #FFF;
 
 .Sessions-left {
   @include display-flex;
-  @include flex-direction(column);
+  flex-direction: column;
   width: 320px;
 }
 
@@ -470,7 +470,7 @@ $cWhite: #FFF;
 
 @media (max-width: $sLayout-width-l) {
   .Sessions-inner {
-    @include justify-content(center, center);
+    justify-content: center;
   }
 
   .Sessions-right {
@@ -490,7 +490,7 @@ $cWhite: #FFF;
 
 @media (max-width: $sLayout-width-l) {
   .Sessions-inner {
-    @include justify-content(center, center);
+    justify-content: center;
   }
 
   .Sessions-right {

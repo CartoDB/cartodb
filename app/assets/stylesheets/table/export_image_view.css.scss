@@ -87,9 +87,9 @@
 }
 
 .ExportImage-formatList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
 }
 

@@ -12,7 +12,7 @@
 }
 
 .Infobox {
-  @include flex(2);
+  flex: 2;
   margin-right: -24px;
   margin-left: -24px;
   padding: 21px 24px 24px;
@@ -42,7 +42,7 @@
 }
 
 .Infobox-title {
-  @include flex(1);
+  flex: 1;
 }
 
 .Infobox-buttonLink {
@@ -60,21 +60,21 @@
 }
 
 .Infobox-quota {
-  @include flex(10);
+  flex: 10;
   margin-right: $baseSize * 5;
 }
 
 .Infobox-buttons {
-  @include display-flex();
-  @include flex(10);
+  display: flex;
+  flex: 10;
 }
 
 .Infobox-buttons--quota {
-  @include flex(1);
+  flex: 1;
 }
 
 .Infobox-button {
-  @include flex(1);
+  flex: 1;
 
   &.Infobox-button--right {
     text-align: right;

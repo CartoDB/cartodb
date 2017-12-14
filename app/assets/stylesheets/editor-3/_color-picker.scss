@@ -5,7 +5,7 @@
 @import 'cdb-variables/colors';
 
 .ColorPicker-inputs {
-  @include display-flex();
+  display: flex;
   margin: 0 -2px;
   text-align: center;
 }

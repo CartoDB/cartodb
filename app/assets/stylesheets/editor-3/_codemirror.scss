@@ -5,7 +5,7 @@
 /* BASICS */
 
 .CodeMirror-editor {
-  @include flex(1 1 auto);
+  flex: 1 1 auto;
   position: relative;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .CodeMirror-error {
-  @include display-flex();
+  display: flex;
   padding: $halfBaseSize 10px;
   border-top: 1px solid #3A484E;
   background-color: #27333A;
@@ -39,7 +39,7 @@
 }
 
 .CodeMirror-errorMessage {
-  @include flex(1 1 auto);
+  flex: 1 1 auto;
   list-style-type: disc;
 }
 

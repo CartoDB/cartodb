@@ -9,10 +9,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 .IntermediateInfo {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(center, center);
-  @include justify-content(center, center);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 360px;
   margin: 0 auto;

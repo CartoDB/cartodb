@@ -3,7 +3,7 @@
 @import '../variables/sizes';
 
 .Feed {
-  @include flex(1);
+  flex: 1;
   margin: 0 0 30px;
   text-align: center;
 }
@@ -15,10 +15,10 @@
 }
 
 .FeedItem {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(flex-start);
+  display: flex;
   position: relative;
+  align-items: flex-start;
+  justify-content: flex-start;
   margin: 0 0 20px;
 }
 
@@ -28,10 +28,10 @@
 
 .FeedItem-avatar {
   $avatarSize: 60px;
-
-  @include flex(1);
   position: absolute;
   z-index: 10;
+
+  flex: 1;
   width: $avatarSize;
   height: $avatarSize;
 
@@ -65,7 +65,7 @@
 
 @media only screen and (min-width: 545px) and (max-width: 899px) {
   .Feed-content .FeedItem {
-    @include justify-content(center);
+    justify-content: center;
     margin-bottom: 40px;
   }
 

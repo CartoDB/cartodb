@@ -1,8 +1,8 @@
 @import 'compass/css3/border-radius';
 
 .Sessions-oauthContainer {
-  @include display-flex();
-  @include justify-content(space-between);
+  display: flex;
+  justify-content: space-between;
 
   .Sessions-oauthButton {
     margin-left: 8px;
@@ -14,7 +14,7 @@
 }
 
 .Sessions-oauthButton {
-  @include flex(1);
+  flex: 1;
   width: 100%;
   min-width: 156px;
   max-width: 320px;

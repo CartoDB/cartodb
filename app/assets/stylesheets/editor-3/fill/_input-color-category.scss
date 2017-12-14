@@ -6,8 +6,8 @@
 }
 
 .InputColorCategory-loader {
-  @include display-flex();
-  @include justify-content(center);
+  display: flex;
+  justify-content: center;
   padding: $baseSize * 2;
 }
 

@@ -9,18 +9,18 @@
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 .MobileAppsList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include flex-wrap(wrap);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   width: 100%;
   padding-bottom: 30px;
 }
 
 .MobileAppsList-item {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(flex-end);
+  display: flex;
   position: relative;
+  flex-direction: row;
+  align-items: flex-end;
   width: 100%;
   padding: $sMargin-element 0;
   text-decoration: none;
@@ -64,18 +64,18 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 
 .MobileAppsList-itemInfo {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(flex-end);
-  @include justify-content(space-between);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
   width: 100%;
 }
 
 .MobileAppsList-itemInfoName {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-content(space-between);
-  @include justify-content(space-between, start);
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  justify-content: space-between;
   height: 42px;
 }
 
@@ -94,9 +94,9 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 
 .MobileAppsList-details {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(flex-end);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .MobileAppsList-details--paragraph {

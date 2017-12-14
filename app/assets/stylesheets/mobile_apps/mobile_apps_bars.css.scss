@@ -6,17 +6,17 @@
 @import '../variables/sizes';
 
 .ProgressBars {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(flex-start);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 25px 0;
 }
 
 .ProgressBar-container {
-  @include display-flex();
-  @include flex-direction(row);
-  @include justify-content(space-between);
-  @include align-items(center);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
 
   &:not(:last-child) {

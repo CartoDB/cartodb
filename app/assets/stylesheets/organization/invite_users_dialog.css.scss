@@ -23,15 +23,15 @@ $width: 800px;
 }
 
 .InviteUsers-formFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: $width;
   background: #F9F9F9;
 }
 
 .Form-rowData.InviteUsers-userType {
-  @include justify-content(flex-start);
+  justify-content: flex-start;
 
   .Form-label {
     margin-left: 10px;

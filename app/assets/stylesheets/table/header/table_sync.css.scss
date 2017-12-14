@@ -29,14 +29,14 @@ div.sync_info {
   }
 
   ul {
+
+    display: flex;
     position: relative;
     top: 0;
+    align-items: center;
+    justify-content: flex-start;
     height: 20px;
     margin-top: 0;
-
-    @include display-flex();
-    @include align-items(center, center);
-    @include justify-content(flex-start, start);
 
     li {
       position: relative;

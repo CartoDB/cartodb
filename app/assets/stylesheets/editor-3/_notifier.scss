@@ -59,7 +59,7 @@
 }
 
 .Notifier-item {
-  @include display-flex();
+  display: flex;
   position: relative;
   margin: 0 $baseSize * 3;
   padding-top: 20px;
@@ -127,7 +127,7 @@
 }
 
 .Notifier-info {
-  @include flex(1);
+  flex: 1;
   min-width: 0; // To prevent firefox screw up
   padding-right: $baseSize * 2;
 }

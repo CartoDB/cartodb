@@ -11,12 +11,12 @@
 }
 
 .Editor-dropdown {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
   position: absolute;
   z-index: 100; // Lets treat it the same depth as CDB-Box-modal
   top: 40px;
   right: 0;
+  flex-direction: row;
 }
 
 .Editor-dropDownInfoText {
@@ -30,7 +30,7 @@
   max-width: 244px;
 
   &.is-visible {
-    @include display-flex();
+    display: flex;
   }
 }
 
@@ -109,8 +109,8 @@
 }
 
 .Editor-boxModalHeaderItem {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   padding: $baseSize + 4 $baseSize * 2;
   border-bottom: 1px solid $cMainLine;
 }

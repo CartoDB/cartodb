@@ -4,9 +4,9 @@
 
 // A Puzzle is a set of pieces that are connected one way or another
 .Puzzle {
-  @include display-flex();
-  @include justify-content(flex-start, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 
   & > .Puzzle-piece:not(:first-child):not(:last-child) {
     margin-right: -1px;

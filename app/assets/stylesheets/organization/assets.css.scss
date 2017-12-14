@@ -32,16 +32,16 @@ $actionBarHeight: 17px;
 .IconList {
   // scss-lint:disable Shorthand
   @include display-flex;
-  @include flex-wrap(wrap);
   position: relative;
+  flex-wrap: wrap;
   margin: 0 -12px 0 0;
 }
 
 .IconList-item {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;

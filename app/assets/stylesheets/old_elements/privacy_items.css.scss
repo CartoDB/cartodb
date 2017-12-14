@@ -34,8 +34,8 @@
 
   // Total shared users
   span.shared_users {
-    @include display-flex();
-    @include align-items(center, center);
+    display: flex;
+    align-items: center;
     width: auto;
     height: 20px;
     margin: 0 0 0 20px;

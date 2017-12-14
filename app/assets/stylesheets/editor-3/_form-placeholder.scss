@@ -92,7 +92,7 @@ $br: 2px;
 }
 
 .FormPlaceholder-fieldsItem {
-  @include align-items(center);
+  align-items: center;
   width: 100%;
   margin-top: 10px;
 }
@@ -112,5 +112,5 @@ $br: 2px;
 }
 
 .FormPlaceholder-widgetInner {
-  @include flex(1);
+  flex: 1;
 }

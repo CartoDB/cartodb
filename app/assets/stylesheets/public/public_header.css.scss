@@ -170,7 +170,7 @@
     }
 
     .options .account {
-      @include display-flex();
+      display: flex;
       padding: 8px 10px;
       font-size: 11px;
     }

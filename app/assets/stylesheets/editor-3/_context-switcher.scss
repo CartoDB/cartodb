@@ -46,9 +46,9 @@
 }
 
 .Editor-contextSwitcherButton {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   text-align: center;

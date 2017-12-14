@@ -52,9 +52,9 @@
 // Dropdown list
 .custom_text_combo {
   .select2-text {
-    @include display-flex();
-    @include align-items(center, center);
-    @include justify-content(space-between, justify);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     height: 30px;
     padding: 0 7px;
     border-top: 1px solid #B5B4B4;

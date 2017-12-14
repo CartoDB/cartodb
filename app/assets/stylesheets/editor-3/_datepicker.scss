@@ -4,13 +4,13 @@
 @import 'cdb-utilities/mixins';
 
 .DatePicker-timers {
-  @include display-flex();
+  display: flex;
   margin: 0 14px;
 }
 
 .DatePicker-timersField {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
 
 .DatePicker-timersField--spaced {

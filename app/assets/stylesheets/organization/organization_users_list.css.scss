@@ -9,19 +9,19 @@
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 .OrganizationList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include flex-wrap(wrap);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   width: 100%;
   margin-top: 1px; // makes the list not be overlapped by a .Filters block (so selected/hoevered item's border looks OK)
   padding-bottom: 30px;
 }
 
 .OrganizationList--centered {
-  min-height: 300px;
+  align-items: center;
 
-  @include justify-content(center, center);
-  @include align-items(center, center);
+  justify-content: center;
+  min-height: 300px;
 }
 
 .OrganizationList-user {
@@ -67,26 +67,26 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 
 .OrganizationList-userLink {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(flex-end);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
   padding: $sMargin-element 0;
   text-decoration: none !important;
 }
 
 .OrganizationList-userInfo {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(flex-end);
-  @include justify-content(space-between);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
   width: 100%;
 }
 
 .OrganizationList-userInfoName {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-content(space-between);
-  @include justify-content(space-between, start);
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  justify-content: space-between;
   max-width: 350px;
   height: 40px;
   padding: 1px 0;
@@ -100,8 +100,8 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 
 .OrganizationList-userInfoData {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
+  flex-direction: row;
 }
 
 .OrganizationList-userStats {
@@ -125,7 +125,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 
 .OrganizationList-paginator {
-  @include display-flex();
-  @include justify-content(flex-end, end);
+  display: flex;
+  justify-content: flex-end;
   padding: 30px 0;
 }

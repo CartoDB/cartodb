@@ -24,9 +24,9 @@
 }
 
 .ContextMenu-row {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   height: 80px;
 }
 
@@ -60,9 +60,9 @@
 }
 
 .ContextMenu-group {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .ContextMenu-group.is-hidden {

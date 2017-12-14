@@ -6,19 +6,19 @@
 @import '../variables/sizes';
 
 .MobilePlan {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(center);
-  @include justify-content(space-between);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   padding: 25px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .MobilePlan-items {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(center);
-  @include justify-content(flex-start);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .MobilePlan-icon {
@@ -38,9 +38,9 @@
 }
 
 .MobilePlan-info {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(flex-start);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .MobilePlan-title--lightGreen {

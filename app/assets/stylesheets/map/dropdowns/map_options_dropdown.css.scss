@@ -17,10 +17,10 @@ div.dropdown.map_options_dropdown {
     padding: 12px 15px;
 
     li {
-      @include display-flex();
-      @include justify-content(space-between, justify);
-      @include align-items(center, center);
+      display: flex;
       position: relative;
+      align-items: center;
+      justify-content: space-between;
       margin: 0;
       padding: 10px 0;
       border: none;

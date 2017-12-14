@@ -76,9 +76,9 @@ $sWidth: 681px;
 }
 
 .Georeference-preFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: $sWidth;
   margin-right: auto;
   margin-left: auto;
@@ -88,9 +88,9 @@ $sWidth: 681px;
 }
 
 .Georeference-estimation {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 410px; // to keep quota info on 2 lines
 
   & > *:not(:last-child) {
@@ -99,10 +99,10 @@ $sWidth: 681px;
 }
 
 .Georeference-quota {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(flex-end, end);
-  @include justify-content(space-between, justify);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
   width: 210px;
   height: 40px; // to match .Georeference-estimation
 
@@ -124,9 +124,9 @@ $sWidth: 681px;
 }
 
 .Georeference-upgradeFooter {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
   text-align: left;
 

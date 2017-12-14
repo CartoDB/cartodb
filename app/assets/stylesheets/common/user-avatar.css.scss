@@ -10,8 +10,8 @@
 @import '../variables/sizes';
 
 .UserAvatar {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
 
 .UserAvatar.is-in-list {
@@ -19,13 +19,13 @@
 }
 
 .UserAvatar.is-error::before {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
   content: 'x';
+  display: flex;
   position: absolute;
   top: -8px;
   right: -8px;
+  align-items: center;
+  justify-content: center;
   width: 16px;
   height: 16px;
   border-radius: 30px;
@@ -46,9 +46,9 @@
 }
 
 .UserAvatar-img--textReplacement {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid $cTypography-link;
   font-size: $sFontSize-small;
 
@@ -107,9 +107,9 @@
 // to just show [...], used in delete items for example
 // Example usage: <div class="UserAvatar"><span class="UserAvatar--moreItems../div>
 .UserAvatar-moreItems {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(baseline);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
   border-radius: $sAvatar-borderRadius;
   box-shadow: 0 0 0 1px $cIcons-default inset; // use box-shadow to get border inside of the box
   color: $cIcons-default;

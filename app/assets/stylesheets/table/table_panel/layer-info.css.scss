@@ -100,6 +100,8 @@ $corner_radius: 6px;
 
     // Layer info (second name?)
     .name_info {
+
+      display: flex;
       position: absolute;
       top: 34px;
       left: 67px;
@@ -110,7 +112,6 @@ $corner_radius: 6px;
       font: normal 11px $text-fonts;
       line-height: 15px;
 
-      @include display-flex();
       @include text-overflow();
 
       a {

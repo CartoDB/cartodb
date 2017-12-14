@@ -38,36 +38,38 @@
 }
 
 .AssetItem-icon {
-  @include align-items(center);
-  @include justify-content(center);
-  @include display-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
+
+  @include display-flex;
 }
 
 .AssetItem-label {
-  @include align-items(center);
-  @include justify-content(center);
-  @include display-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
+
+  @include display-flex;
 }
 
 .Modal-inner .AssetsList {
-  @include flex-wrap(wrap);
+  flex-wrap: wrap;
   margin: 0 -14px 20px;
 }
 
 .Modal-inner .AssetsList:last-child {
-  @include flex-wrap(wrap);
+  flex-wrap: wrap;
   margin: 0 -14px;
 }
 
 .AssetsList-item {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;

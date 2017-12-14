@@ -23,9 +23,9 @@ $cLingon:     rgba(#AC638B, 1);
 //   </div>
 //
 .IllustrationIcon {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 50px;
   height: 50px;
   border-radius: 30px; // Enough to make it round

@@ -11,7 +11,6 @@ var CartoError = require('../error-handling/carto-error');
  *
  * NOTE: It also contains the feature events handlers. That's why it requires the carto layers array.
  */
-
 function GoogleMapsMapType (layers, engine, map) {
   this._layers = layers;
   this._engine = engine;

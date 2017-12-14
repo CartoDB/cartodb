@@ -13,8 +13,9 @@ var parseHistogramData = require('./parse-data.js');
  * @param {object} [options]
  * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
  *
- * @fires carto.dataview.Histogram.dataChanged
- * @fires carto.dataview.Histogram.binsChanged
+ * @fires dataChanged
+ * @fires binsChanged
+ * @fires error
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -75,7 +76,7 @@ Histogram.prototype.getData = function () {
  * Set number of bins
  *
  * @param {number} bins
- * @fires carto.dataview.Histogram.dataChanged
+ * @fires binsChanged
  * @return {carto.dataview.Histogram} this
  * @api
  */
@@ -140,21 +141,9 @@ Histogram.prototype._createInternalModel = function (engine) {
 module.exports = Histogram;
 
 /**
- * Event triggered when the data in a histogram-dataview changes.
+ * Fired when bins have changed. Handler gets a parameter with the new bins.
  *
- * Contains a single argument with the new data.
- *
- * @event carto.dataview.Histogram.dataChanged
- * @type {carto.dataview.HistogramData}
- * @api
- */
-
-/**
- * Event triggered when the bins in a histogram-dataview changes.
- *
- * Contains a single argument with new number of bins.
- *
- * @event carto.dataview.Histogram.binsChanged
+ * @event binsChanged
  * @type {number}
  * @api
  */

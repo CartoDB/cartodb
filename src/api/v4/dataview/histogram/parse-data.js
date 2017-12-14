@@ -22,7 +22,7 @@ function parseHistogramData (data, nulls, totalAmount) {
 
   /**
    * @description
-   * #Object containing histogram data.
+   * Object containing histogram data.
    *
    * @typedef {object} carto.dataview.HistogramData
    * @property {number} nulls - The number of items with null value

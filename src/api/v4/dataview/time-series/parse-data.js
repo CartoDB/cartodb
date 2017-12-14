@@ -25,7 +25,7 @@ function parseTimeSeriesData (data, nulls, totalAmount, offset) {
 
   /**
    * @description
-   * #Object containing time series data.
+   * Object containing time series data.
    *
    * @typedef {object} carto.dataview.TimeSeriesData
    * @property {number} nulls - The number of items with null value

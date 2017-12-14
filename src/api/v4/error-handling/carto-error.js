@@ -9,8 +9,6 @@ var GENERIC_ORIGIN = 'generic';
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.
- *
- * @api
  */
 function CartoError (error, opts) {
   opts = opts || {};
@@ -91,16 +89,16 @@ function _handleAjaxResponse (error) {
 module.exports = CartoError;
 
 /**
-* Represents an error in the carto library.
+ * Represents an error in the carto library.
  * 
- * Some actions like adding a layer to a map will trigger a **reload cycle**
- * if some error happens during this reload cycle will be captured and transformed into a 
- * `CartoError`.
+ * Some actions like adding a layer to a map are asynchronous and require a server round trip.
+ * If some error happens during this communnication with the server, an error with a `CartoError` object
+ * will be fired.
  * 
- * The cartoErrors can be obtained listening to the client {@link carto.events|error events} `client.on(carto.events.ERROR, callback);` 
- * , through any async action events or listening to the dataviews {@link carto.events|error events} `dataview.on(carto.events.ERROR, callback);`.
+ * CartoErrors can be obtained by listening to the client 'error' `client.on('error', callback);`,
+ * through any async action or by listening to 'error' events on particular objects (eg: dataviews).
  * 
- * Promises are also rejected with a cartoError.
+ * Promises are also rejected with a CartoError.
  * @example
  * // Listen when a layer has been added or there has been an error.
  * client.addLayer(layerWithErrors)
@@ -108,16 +106,16 @@ module.exports = CartoError;
  *  .catch(cartoError => console.error(cartoError.message))
  * @example 
  * // Events also will be registered here when the map changes.
- * client.on(carto.events.SUCCESS, function () {
+ * client.on('success', function () {
  *  console.log('Client reloaded');
  * });
  * 
- * client.on(carto.events.ERROR, function (clientError) {
+ * client.on('error', function (clientError) {
  *  console.error(clientError.message);
  * });
  * @example
  * // Listen when there is an error in a dataview
- * dataview.on(carto.events.ERROR, function (error) {
+ * dataview.on('error', function (error) {
  *   console.error(error.message);
  * });
  * 

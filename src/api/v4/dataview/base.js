@@ -10,18 +10,27 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * Base class for dataview objects.
  *
  * Dataviews are a way to extract data from a CARTO account in predefined ways
- * (eg: a list of categories, the result of a formula operation, etc.). See
- * carto.dataview.Base subclasses to learn about each way of getting data.
+ * (eg: a list of categories, the result of a formula operation, etc.).
+ * 
+ * **This object should not be used direclty**
  *
- * All dataviews point to a data source (dataset, sql query) that might change
- * due to different reasons (eg: SQL query changed). Dataview objects will trigger
- * events to notify subscribers when new data is available.
+ * The data used in a dataviews cames from a {@link carto.source.Base|source} that might change
+ * due to different reasons (eg: SQL query changed).
+ * 
+ * When dataview data changes the dataview will trigger events to notify subscribers when new data is available.
+ * 
+ * @example
+ * // Keep your widget data sync. Remember each dataview has his own data format.
+ * dataview.on('dataChanged', newData => {
+ *  renderWidget(newData);
+ * })
  *
  * @constructor
  * @abstract
  * @memberof carto.dataview
- * @fires carto.dataview.Base.columnChanged
- * @fires carto.dataview.Base.statusChanged
+ * @fires columnChanged
+ * @fires statusChanged
+ * @fires error
  * @api
  */
 function Base () { }
@@ -103,7 +112,7 @@ Base.prototype.isEnabled = function () {
 };
 
 /**
- * Return the current source.
+ * Return the current source where the dataview gets the data from.
  *
  * @return {carto.source.Base} Current source object
  * @api
@@ -116,7 +125,7 @@ Base.prototype.getSource = function () {
  * Set the dataview column.
  *
  * @param  {string} column
- * @fires carto.dataview.Base.columnChanged
+ * @fires columnChanged
  * @return {carto.dataview.Base} this
  * @api
  */
@@ -130,7 +139,7 @@ Base.prototype.setColumn = function (column) {
 };
 
 /**
- * Return the current dataview column.
+ * Return the current dataview column where the dataview is applied.
  *
  * @return {string} Current dataview column
  * @api
@@ -140,7 +149,7 @@ Base.prototype.getColumn = function () {
 };
 
 /**
- * Add a filter.
+ * Add a {@link carto.filter.Base|filter}.
  *
  * @param  {carto.filter.Base} filter
  * @return {carto.dataview.Base} this
@@ -155,7 +164,7 @@ Base.prototype.addFilter = function (filter) {
 };
 
 /**
- * Remove a filter.
+ * Remove a {@link carto.filter.Base|filter}.
  *
  * @param  {carto.filter.Base} filter
  * @return {carto.dataview.Base} this
@@ -170,7 +179,7 @@ Base.prototype.removeFilter = function (filter) {
 };
 
 /**
- * Return true if the filter is added.
+ * Check if a {@link carto.filter.Base|filter} exists in the dataview.
  *
  * @param  {carto.filter.Base} filter
  * @return {carto.dataview.Base} this
@@ -349,21 +358,28 @@ Base.prototype.$getInternalModel = function () {
 module.exports = Base;
 
 /**
- * Event triggered when the column in a dataview changes.
+ * Fired when the column name has changed. Handler gets a parameter with the new column name.
  *
- * Contains a single argument with the name of the changed column.
- *
- * @event carto.dataview.Base.columnChanged
+ * @event columnChanged
  * @type {string}
  * @api
  */
 
 /**
- * Event triggered when the status in a dataview changes.
+ * Fired when the status has changed. Handler gets a parameter with the new status.
  *
  * Contains a single argument with the new status.
  *
- * @event carto.dataview.Base.statusChanged
+ * @event statusChanged
  * @type {carto.dataview.status}
+ * @api
+ */
+
+/**
+ * Fired when the data has changed. Handler gets an object with specific data for the type
+ * of dataview that triggered the event.
+ *
+ * @event dataChanged
+ * @type {carto.dataview.CategoryData|carto.dataview.FormulaData|carto.dataview.HistogramData|carto.dataview.TimeSeriesData}
  * @api
  */

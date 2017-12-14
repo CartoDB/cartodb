@@ -11,7 +11,7 @@
 function parseFormulaData (nulls, operation, result) {
   /**
    * @description
-   * #Object containing formula data
+   * Object containing formula data
    *
    * @typedef {object} carto.dataview.FormulaData
    * @property {number} nulls - Number of null values in the column

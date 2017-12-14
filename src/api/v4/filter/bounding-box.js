@@ -6,9 +6,16 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
 /**
  * Generic bounding box filter.
  *
+ * When this filter is included into a dataview only the data inside a custom **bounds** will be taken into account.
+ * 
+ * You can manually set the bounds via the `.setBounds()` method.
+ * 
+ * This filter could be usefull if you want give the users to ability to select a portion of the map and update the dataviews accordingly.
+ * 
  * @fires carto.filter.BoundingBox.boundsChanged
  *
  * @constructor
+ * @fires boundsChanged
  * @extends carto.filter.Base
  * @memberof carto.filter
  * @api
@@ -24,7 +31,7 @@ BoundingBox.prototype = Object.create(Base.prototype);
  * Set the bounds.
  *
  * @param  {carto.filter.Bounds} bounds
- * @fires carto.filter.BoundingBox.boundsChanged
+ * @fires boundsChanged
  * @return {carto.filter.BoundingBox} this
  * @api
  */
@@ -38,7 +45,7 @@ BoundingBox.prototype.setBounds = function (bounds) {
 /**
  * Reset the bounds.
  *
- * @fires carto.filter.BoundingBox.boundsChanged
+ * @fires boundsChanged
  * @return {carto.filter.BoundingBox} this
  * @api
  */
@@ -83,13 +90,3 @@ BoundingBox.prototype.$getInternalModel = function () {
 };
 
 module.exports = BoundingBox;
-
-/**
- * Event triggered when bounds of a bounding box filter changes.
- *
- * Contains a single {@link carto.filter.Bounds} argument with the new bounds.
- *
- * @event carto.filter.BoundingBox.boundsChanged
- * @type {carto.filter.Bounds}
- * @api
- */

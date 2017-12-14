@@ -17,7 +17,7 @@
 }
 
 .StatsList-arrow {
-  @include transform(rotate(90deg));
+  transform: rotate(90deg);
 }
 
 .StatsList-tag {

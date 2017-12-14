@@ -188,11 +188,10 @@ $text-shadow-color: rgba(black, 0.25);
         display: inline-block;
         height: 20px;
         margin: 0;
+        transition: all 150ms ease-in;
+        border-radius: 3px;
         background: rgba(#EEE, 0.8) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
         vertical-align: top;
-
-        @include simple-transition(all, 150ms);
-        @include border-radius(3px);
 
         &.disabled {
           opacity: 0.5;
@@ -220,11 +219,10 @@ $text-shadow-color: rgba(black, 0.25);
         border: 2px solid #FFF;
         border-radius: 30px;
         background: none;
+        box-shadow: none;
         color: #FFF;
         line-height: 20px;
         text-shadow: none;
-
-        @include box-shadow(none);
 
         span {
 

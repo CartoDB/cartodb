@@ -12,7 +12,6 @@
 }
 
 .PecanMap-MapsList {
-  transition: margin 150ms;
   display: block;
   position: relative;
   width: 5000px;
@@ -21,11 +20,12 @@
   padding: 0;
   clear: both;
   overflow: hidden;
+  transition: margin 150ms;
 }
 
 .PecanMap-MapsList.is--centered {
-  transition: none;
   margin: auto;
+  transition: none;
 }
 
 .MapCard-content--small {
@@ -59,10 +59,10 @@
 }
 
 .PecanMap-navigationButton {
-  transition: opacity 150ms;
   position: absolute;
   top: 90px;
   padding: 0;
+  transition: opacity 150ms;
   line-height: 40px !important;
 }
 

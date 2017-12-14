@@ -111,11 +111,11 @@ ul.tagit input[type="text"] {
   }
 
   &::before {
-    @include transform(rotate(45deg));
+    transform: rotate(45deg);
   }
 
   &::after {
-    @include transform(rotate(-45deg));
+    transform: rotate(-45deg);
   }
 }
 

@@ -54,7 +54,7 @@
             width: 234px;
             background: rgba(#FFEFBF, .5);
             padding: 14px;
-            @include border-radius(5px);
+            border-radius: 5px;
 
             font-size: 15px;
             a { color:  #666; text-decoration:underline; }
@@ -83,7 +83,7 @@
 
           background: #f2f2f2;
           padding: 10px;
-          @include border-radius(5px);
+          border-radius: 5px;
 
           & > div { text-align: left; }
 
@@ -99,11 +99,11 @@
 
       .jspContainer { overflow: hidden; position: relative; }
       .jspPane { position: absolute; }
-      .jspVerticalBar   { @include simple-transition(opacity, 150ms); opacity: 0; position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
+      .jspVerticalBar   { transition: opacity 150ms ease-in; opacity: 0; position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
       .jspVerticalBar * { margin: 0; padding: 0; }
       .jspCap { display: none; }
       .jspTrack { background: none; position: relative; }
-      .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+      .jspDrag { background: rgba(#BBB, .5); border-radius: 5px); position: relative; top: 0; left: 0; cursor: pointer;}
       .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
       .jspVerticalBar .jspArrow { height: 10px; }
       .jspVerticalBar .jspArrow:focus { outline: none; }
@@ -224,7 +224,7 @@
 
           @include size(13px);
           @include position(21px, 30px, false, false);
-          @include simple-transition(opacity, 150ms);
+          transition: opacity 150ms ease-in;
           @include common-sprite(close_grey);
 
           &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
@@ -304,7 +304,7 @@
         padding: 0;
         margin: 0 0 0 30px;
 
-        @include border-radius(4px);
+        border-radius: 4px;
         border: 1px solid #B7B7B7;
 
         .apply {
@@ -319,7 +319,7 @@
           text-shadow: 0 1px 0 white;
           background:#F9F9F9; // IE
           @include background(linear-gradient(#F9F9F9,#EBEBEB));
-          @include border-radius(5px);
+          border-radius: 5px;
           border: 1px solid #B0B0B0;
           letter-spacing: -1px;
           @include transform-style("linear");
@@ -432,7 +432,7 @@
           background: #f1f1f1;
           margin-right: -3px;
 
-          @include simple-transition(opacity, 100ms);
+          transition: opacity 100ms ease-in;
 
           $radius: 3px;
 
@@ -444,13 +444,13 @@
           }
 
           &.up   {
-            @include border-radius($radius 0 0 $radius);
+            border-radius: $radius 0 0 $radius;
             background: #f1f1f1 image-url('sprites/table/filters_scroll_up.png') no-repeat 50% 9px;
             &:active { background-position: 50% 10px;  }
           }
 
           &.down {
-            @include border-radius(0 $radius $radius 0);
+            border-radius: 0 $radius $radius 0;
             background: #f1f1f1 image-url('sprites/table/filters_scroll_down.png') no-repeat 50% 9px;
             &:active { background-position: 50% 10px;  }
           }
@@ -494,9 +494,9 @@
 
             background: #fff;
             border: none;
-            @include border-radius(200px);
+            border-radius: 200px;
             @include scale(0);
-            @include simple-transition(scale, 220ms);
+            transition: scale 220ms ease-in;
           }
 
           &:after {
@@ -507,8 +507,8 @@
 
             background: none;
             border: 1px solid #82D992;
-            @include border-radius(200px);
-            @include simple-transition(opacity, 220ms);
+            border-radius: 200px;
+            transition: opacity 220ms ease-in;
           }
 
           &.selected:after  { opacity: 0; }
@@ -522,10 +522,9 @@
             padding: 2px 4px;
             border: 1px solid #82D992;
             background: #fff;
-            @include border-radius(2px);
+            border-radius: 2px;
             color: #82D992;
-
-            @include simple-transition(background-color, 100ms);
+            transition: background-color 100ms ease-in;
           }
         }
       }

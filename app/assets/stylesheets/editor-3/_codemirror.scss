@@ -18,7 +18,7 @@
 }
 
 .CodeMirror-bullet {
-  @include transform(translateY(-50%));
+  transform: translateY(-50%);
   position: absolute;
   top: 50%;
   left: -25px;

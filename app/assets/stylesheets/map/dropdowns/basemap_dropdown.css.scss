@@ -181,13 +181,13 @@ div.dropdown.basemap {
         .remove_layer {
           z-index: 2;
           padding: 0;
+          transition: opacity 100ms ease-in;
           opacity: 0;
           background: rgba(black, 0.5);
           text-indent: 0;
 
           @include size(14px, 10px);
           @include position(false, 0, 0, false);
-          @include simple-transition(opacity, 100ms);
           @include border-top-left-radius(2px);
           @include border-bottom-right-radius(2px);
 

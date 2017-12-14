@@ -19,11 +19,11 @@
 
 .edit_in_place {
   .value {
-    @include transform(skew(-25deg));
     position: relative;
     z-index: 100;
     margin: 4px 5px 0 0;
     padding: 0 5px 3px;
+    transform: skew(-25deg);
     background: rgba(#FFDC73, 0.3);
     color: #666;
     font-size: 15px;
@@ -37,11 +37,11 @@
       max-width: 150px;
       padding: 1px;
       overflow: hidden;
+
+      transform: skew(25deg);
       text-overflow: ellipsis;
       vertical-align: top;
       white-space: nowrap;
-
-      @include transform(skew(25deg));
     }
 
     &.empty {

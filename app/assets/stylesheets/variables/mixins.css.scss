@@ -38,10 +38,6 @@
   }
 }
 
-@mixin transform($params) {
-  @include css3-prefix('transform', $params);
-}
-
 @mixin transform-style($style: preserve-3d) {
   @include css3-prefix('transform-style', $style);
 }

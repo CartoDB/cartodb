@@ -136,9 +136,8 @@ div.dropdown.map_options_dropdown {
 
       &,
       p {
+        transition: color 100ms ease-in;
         color: #B9B9B9;
-
-        @include simple-transition(color, 100ms);
       }
 
       &.inactive .form_switch {

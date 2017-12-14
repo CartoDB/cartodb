@@ -136,7 +136,7 @@ div.sync_info {
 // Animation function
 @include keyframes(pulsate) {
   0% {
-    @include transform(scale(0.1, 0.1));
+    transform: scale(0.1, 0.1);
     opacity: 0;
   }
 
@@ -145,7 +145,7 @@ div.sync_info {
   }
 
   100% {
-    @include transform(scale(1.4, 1.4));
+    transform: scale(1.4, 1.4);
     opacity: 0;
   }
 }

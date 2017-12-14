@@ -12,12 +12,12 @@
 }
 
 .ExportImageView-Header {
-  transition: all 200ms ease-in-out;
   position: absolute;
   z-index: 105;
   top: -35px;
   width: 100%;
   height: 40px;
+  transition: all 200ms ease-in-out;
   text-align: center;
 }
 
@@ -60,12 +60,12 @@
 
 .ExportImageView-Footer--inner {
   $width: 360px;
-
-  transition: margin 200ms ease-in-out;
   position: absolute;
   left: 50%;
   width: $width;
   margin-left: -$width / 2;
+
+  transition: margin 200ms ease-in-out;
   color: #9B9B9B;
 }
 
@@ -127,18 +127,17 @@
 }
 
 .ExportHelper.ExportHelper--header {
-  transition: opacity 500ms ease-in-out;
   position: absolute;
   top: 0;
   left: 0;
   box-sizing: border-box;
   width: 100%;
   padding: 10px;
+  transition: opacity 500ms ease-in-out;
   background: rgba(#000, 0.75);
 }
 
 .ExportHelper.ExportHelper--attribution {
-  transition: opacity 500ms ease-in-out;
   position: absolute;
   top: auto;
   right: 0;
@@ -147,6 +146,7 @@
   box-sizing: border-box;
   width: auto;
   padding: 0 5px;
+  transition: opacity 500ms ease-in-out;
   background: rgba(#FFF, 0.75);
   font-size: 11px;
 }

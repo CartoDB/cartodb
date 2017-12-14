@@ -414,7 +414,6 @@ $sLabel-width: 140px;
 }
 
 .Form-inputError {
-  transition: margin 200ms ease-in-out;
   position: absolute;
   z-index: 1;
   top: 50%;
@@ -423,6 +422,7 @@ $sLabel-width: 140px;
   height: 38px;
   margin-top: -20px;
   padding: 0 12px;
+  transition: margin 200ms ease-in-out;
   border: 1px solid #CCC;
   border-radius: 4px;
   background: #FFF4F4;

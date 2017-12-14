@@ -27,7 +27,6 @@
 }
 
 .Editor-panel {
-  transition: width 300ms ease-in-out;
   display: flex;
   position: absolute;
   top: 0;
@@ -40,6 +39,7 @@
   width: 100%;
   min-height: 0;
   padding: 19px 24px 0;
+  transition: width 300ms ease-in-out;
 }
 
 .Editor-panel.is-dark {

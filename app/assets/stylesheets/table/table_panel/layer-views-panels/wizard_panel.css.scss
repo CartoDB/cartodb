@@ -122,6 +122,7 @@ div.wizards_panel {
       position: relative;
       margin: 0 12px 0 0;
       padding: 0;
+      transition: opacity 200ms ease-in;
       letter-spacing: 0;
       vertical-align: top;
       word-space: 0; /* stylelint-disable-line */
@@ -155,8 +156,6 @@ div.wizards_panel {
 
           @include border-radius(0 0 3px 3px);
         }
-
-        @include simple-transition(opacity, 200ms);
 
         // Wizard icons
         &.simple {

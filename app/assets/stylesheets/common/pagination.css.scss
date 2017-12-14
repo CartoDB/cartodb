@@ -16,10 +16,10 @@
 }
 
 .Pagination--search {
-  @include transform(translateX(-50%));
   position: absolute;
   bottom: 150px;
   left: 50%;
+  transform: translateX(-50%);
 }
 
 .Pagination--searchShare {

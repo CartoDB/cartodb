@@ -37,11 +37,11 @@
   }
 
   .has-letter::after {
-    @include transform(translateY(-50%));
     content: attr(data-type);
     position: absolute;
     top: 50%;
     right: $baseSize;
+    transform: translateY(-50%);
     color: #768085;
     font-family: 'Monaco', 'Monospace';
     letter-spacing: -0.5;

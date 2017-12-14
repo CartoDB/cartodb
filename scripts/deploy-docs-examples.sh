@@ -53,7 +53,7 @@ mv $TMP_DOCS_DIR/internal $DOCS_DIR/v4-internal || exit 1
 rm -rf $EXAMPLES_DIR/v4 || exit 1
 mkdir $EXAMPLES_DIR/v4 || exit 1
 mv $TMP_EXAMPLES_DIR/public $EXAMPLES_DIR/v4/public || exit 1
-mv $TMP_EXAMPLES_DIR/categories.json $EXAMPLES_DIR/v4/categories.json || exit 1
+mv $TMP_EXAMPLES_DIR/examples.json $EXAMPLES_DIR/v4/examples.json || exit 1
 mv $TMP_EXAMPLES_DIR/index.html $EXAMPLES_DIR/v4/index.html || exit 1
 mv $TMP_DOCS_DIR/index.html index.html || exit 1
 

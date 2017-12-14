@@ -26,7 +26,8 @@ describe Carto::Api::GroupsController do
         "viewer" => @org_user_1.viewer,
         "org_admin" => false,
         "org_user" => true,
-        "remove_logo" => @org_user_1.remove_logo?
+        "remove_logo" => @org_user_1.remove_logo?,
+        "google_maps_query_string" => @org_user_1.google_maps_query_string
       }
 
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)

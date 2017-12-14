@@ -53,17 +53,12 @@ describe('widgets/histogram/content-view', function () {
   });
 
   describe('originalData is not loaded', function () {
-    it('should render histogram when originalData changes', function () {
-      spyOn(this.view, 'render').and.callThrough();
-      this.originalData.trigger('change:data', this.originalData);
-      expect(this.view.render).toHaveBeenCalled();
-      expect(this.view.$('h3').text()).toBe('Howdy');
-    });
+    it('should call _initBinds when originalData changes the first time', function () {
+      spyOn(this.view, '_initBinds');
 
-    it('should not fetch data until originalData changes', function () {
-      expect(this.dataviewModel.fetch).not.toHaveBeenCalled();
       this.originalData.trigger('change:data', this.originalData);
-      expect(this.dataviewModel.fetch).toHaveBeenCalled();
+
+      expect(this.view._initBinds).toHaveBeenCalled();
     });
   });
 
@@ -87,6 +82,7 @@ describe('widgets/histogram/content-view', function () {
   describe('originalData is loaded', function () {
     beforeEach(function () {
       this.originalData.trigger('change:data', this.originalData);
+      this.view.model.set('hasInitialState', true);
     });
 
     it('should revert the lockedByUser state when the model is changed', function () {
@@ -123,10 +119,11 @@ describe('widgets/histogram/content-view', function () {
           'bins': []
         });
       };
-
       this.view.lockedByUser = true;
       this.dataviewModel.fetch();
+
       this.dataviewModel.trigger('change:data');
+
       expect(this.view.lockedByUser).toBe(false);
     });
 
@@ -310,7 +307,7 @@ describe('widgets/histogram/content-view', function () {
       spyOn(this.view, '_isZoomed').and.returnValue(false);
       spyOn(this.view.miniHistogramChartView, 'replaceData');
       // Change data
-      this.originalData.trigger('change:data', this.originalData);
+      this.originalData.trigger('loadModelCompleted', null, this.originalData);
       expect(this.view.miniHistogramChartView.replaceData).toHaveBeenCalled();
     });
 
@@ -332,7 +329,7 @@ describe('widgets/histogram/content-view', function () {
       spyOn(this.view.filter, 'unsetRange');
       // Change data
       this.originalData.set('bins', 122, { silent: true });
-      this.originalData.trigger('change:data', this.originalData);
+      this.originalData.trigger('loadModelCompleted', null, this.originalData);
       expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
       expect(this.view.filter.unsetRange).toHaveBeenCalled();
       expect(this.view.model.get('filter_enabled')).toBeFalsy();

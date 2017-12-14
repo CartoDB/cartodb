@@ -104,11 +104,6 @@
           }
         },
         {
-          "title": "Custom Bounding Box filter",
-          "desc": "Apply a custom bounding box filter to the widgets",
-          "file": "public/filters/custom-bounding-box-leaflet.html"
-        },
-        {
           "title": "Status and error handling",
           "desc": "Manage the status and erros in dataviews",
           "file": "public/dataviews/error-handling.html"

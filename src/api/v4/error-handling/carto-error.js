@@ -9,8 +9,6 @@ var GENERIC_ORIGIN = 'generic';
  * @constructor
  * 
  * @return {CartoError} A well formed object representing the error.
- *
- * @api
  */
 function CartoError (error, opts) {
   opts = opts || {};

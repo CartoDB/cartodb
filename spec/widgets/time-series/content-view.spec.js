@@ -85,7 +85,7 @@ describe('widgets/time-series/content-view', function () {
         expect(this.view._headerView).toBeDefined();
         expect(this.view._dropdownView).toBeDefined();
         expect(this.view.$('.js-header .CDB-Widget-info').length).toBe(1);
-        expect(this.view.$('.u-altTextColor').html()).toBe('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
+        expect(this.view.$('.u-altTextColor').html()).toContain('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
         expect(this.view.render().$el.html()).toContain('<svg');
       });
     });

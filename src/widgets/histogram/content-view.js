@@ -260,6 +260,7 @@ module.exports = cdb.core.View.extend({
         title: this.model.get('title'),
         sourceId: sourceId,
         sourceType: analyses.title(sourceType),
+        isSourceType: this._dataviewModel.isSourceType(),
         showStats: this.model.get('show_stats'),
         showNulls: hasNulls,
         showSource: this.model.get('show_source') && letter !== '',

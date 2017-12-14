@@ -10,6 +10,8 @@
 @import "../../old_common/mixins";
 @import "../../old_common/vars";
 
+$width: 300px;
+
 // Navigation block
 div.vis_navigation {
   position: absolute;
@@ -20,7 +22,6 @@ div.vis_navigation {
   margin-left: -$width/2;
   padding: 0;
   text-align: center;
-  $width: 300px;
 
   nav {
     position: relative;

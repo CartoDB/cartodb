@@ -80,7 +80,7 @@ describe('widgets/time-series/torque-content-view', function () {
       expect(this.view.$('.js-torque-header').length).toBe(1);
       expect(this.view.$('.js-header .CDB-Dropdown').length).toBe(1);
       expect(this.view.$('.js-header .CDB-Widget-info').length).toBe(1);
-      expect(this.view.$('.u-altTextColor').html()).toBe('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
+      expect(this.view.$('.u-altTextColor').html()).toContain('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
       expect(this.view.$('svg').length).toBe(2);
       expect(this.view._histogramView.options.displayShadowBars).toBe(true);
       expect(this.view._histogramView.options.normalized).toBe(false);

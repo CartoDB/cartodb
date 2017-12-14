@@ -67,7 +67,7 @@ describe('widgets/formula/content-view', function () {
     this.model.set('show_source', true);
     this.view.render();
     expect(this.view.$('.CDB-Widget-info').length).toBe(1);
-    expect(this.view.$('.u-altTextColor').html()).toBe('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
+    expect(this.view.$('.u-altTextColor').html()).toContain('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
   });
 
   it('should render the widget when the layer name changes', function () {

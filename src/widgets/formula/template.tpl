@@ -13,11 +13,24 @@
   </div>
   <% if (showSource) { %>
     <dl class="CDB-Widget-info u-tSpace">
-      <div class="u-ellipsis u-flex">
-        <span class="CDB-SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace u-upperCase" style="background-color: <%= sourceColor %>;"><%= sourceId %></span>
-        <p class="CDB-Text CDB-Size-small u-mainTextColor u-ellipsis u-flex">
-          <%= sourceType %> <span class="u-altTextColor u-lSpace u-ellipsis" title="<%= layerName %>"><%= layerName %></span>
-        </p>
+      <div class="u-flex u-alignCenter">
+        <span class="CDB-Text CDB-Size-small is-semibold u-upperCase" style="color: <%- sourceColor %>;">
+          <%- sourceId %>
+        </span>
+
+        <% if (!isSourceType) { %>
+          <span class="CDB-Text CDB-Size-small u-lSpace--s" style="color: <%- sourceColor %>;">
+            <i class="CDB-IconFont CDB-IconFont-ray"></i>
+          </span>
+        <% } %>
+
+        <span class="CDB-Text CDB-Size-small u-mainTextColor u-lSpace">
+          <%= sourceType %>
+        </span>
+
+        <span class="CDB-Text CDB-Size-small u-altTextColor u-ellipsis u-lSpace" title="<%= layerName %>">
+          <%= layerName %>
+        </span>
       </div>
     </dl>
   <% } %>

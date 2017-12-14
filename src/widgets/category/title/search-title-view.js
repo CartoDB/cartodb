@@ -52,6 +52,7 @@ module.exports = cdb.core.View.extend({
         title: this.model.get('title'),
         sourceId: sourceId,
         sourceType: analyses.title(sourceType),
+        isSourceType: this.dataviewModel.isSourceType(),
         showSource: this.model.get('show_source') && letter !== '',
         sourceColor: sourceColor,
         layerName: escapeHTML(layerName),

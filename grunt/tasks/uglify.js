@@ -2,7 +2,7 @@ var _ = require('underscore');
 var bundles = require('./_browserify-bundles');
 
 /**
- *  Uglify grunt task for Carto.js
+ *  Uglify grunt task for CARTO.js
  *
  */
 module.exports = {

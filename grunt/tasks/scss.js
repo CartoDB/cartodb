@@ -1,5 +1,5 @@
 /**
- *  SCSS grunt task for Carto.js
+ *  SCSS grunt task for CARTO.js
  *
  */
 

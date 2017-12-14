@@ -1,5 +1,5 @@
 /**
- *  Image minifier grunt task for Carto.js
+ *  Image minifier grunt task for CARTO.js
  *
  */
 module.exports = {

@@ -1,6 +1,6 @@
 
 /**
- *  Fastly invalidation grunt task for Carto.js
+ *  Fastly invalidation grunt task for CARTO.js
  *
  */
 

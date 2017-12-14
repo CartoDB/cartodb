@@ -1,5 +1,5 @@
 /**
- *  Connect grunt task for Carto.js website
+ *  Connect grunt task for CARTO.js website
  *
  */
 module.exports = {

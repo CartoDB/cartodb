@@ -77,11 +77,10 @@
 
   // Options link
   a {
-    @include border-radius(50px);
-    @include transform-style("linear");
-    @include transition-property("background");
-    @include transition-duration(150ms);
     padding: 10px 18px;
+    transform-style: linear;
+    transition: background 150ms;
+    border-radius: 50px;
     color: WHITE;
     font-family: 'ProximaNova', Arial;
     font-size: 12px;

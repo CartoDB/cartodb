@@ -65,12 +65,11 @@ div.panes {
   }
 
   .emptyTableContainer {
-    @include transform-style("linear");
-    @include transition-property("text-indent");
-    @include transition-duration(300ms);
     display: inline-block;
     position: fixed;
     width: 100%;
+    transform-style: linear;
+    transition: text-indent 300ms;
     text-align: center;
 
     .emptynessInfo {
@@ -141,10 +140,6 @@ div.table {
         height: 37px;
 
         p {
-          @include transform-style("linear");
-          @include transition-property("text-indent");
-          @include transition-duration(300ms);
-          @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
           display: inline;
           position: fixed;
           z-index: 2;
@@ -152,8 +147,11 @@ div.table {
           width: 100%;
           margin: 12px 0 0 -50%;
           padding: 12px 0;
+          transform-style: linear;
+          transition: text-indent 300ms;
           border-bottom: 1px solid #CCC;
           background-color: #E5FAEA;
+          box-shadow: rgba(#000, 0.055) 0 3px 1px 0;
           color: #333;
           color: #666;
           font-family: $text-fonts;
@@ -332,10 +330,9 @@ div.table {
           }
 
           &:last-child {
-            @include transform-style("linear");
-            @include transition-property("padding-right");
-            @include transition-duration(500ms);
             padding-right: 62px;
+            transform-style: linear;
+            transition: padding-right 500ms;
           }
 
           // Column options
@@ -519,10 +516,9 @@ div.table {
           }
 
           &:last-child {
-            @include transform-style("linear");
-            @include transition-property("padding-right");
-            @include transition-duration(500ms);
             padding-right: 65px;
+            transform-style: linear;
+            transition: padding-right 500ms;
             border-right: none;
           }
         }
@@ -580,11 +576,9 @@ div.table {
           height: 36px;
           margin: -100px 0 0 -120px;
           padding: 0;
+          transform-style: linear;
+          transition: margin 300ms;
           vertical-align: top;
-
-          @include transform-style("linear");
-          @include transition-property("margin");
-          @include transition-duration(300ms);
 
           img {
             margin-left: 101px;

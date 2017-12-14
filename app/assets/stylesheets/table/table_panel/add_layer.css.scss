@@ -15,11 +15,10 @@
   position: relative;
   height: 55px;
   margin-top: -15px;
-  line-height: 35px;
 
-  @include transform-style("linear");
-  @include transition-property("height");
-  @include transition-duration(250ms);
+  transform-style: linear;
+  transition: height 250ms;
+  line-height: 35px;
 
   a.info {
     text-decoration: none;

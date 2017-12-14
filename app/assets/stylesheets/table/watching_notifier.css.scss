@@ -14,14 +14,12 @@
   right: 0;
   bottom: -50px;
   padding: 8px 10px;
+  transform-style: linear;
+  transition: bottom 250ms;
+  border-top-left-radius: 3px;
   background: #FF4D4D;
   color: white;
   font-size: 13px;
-
-  @include border-top-left-radius(3px);
-  @include transform-style("linear");
-  @include transition-property("bottom");
-  @include transition-duration(250ms);
 
   &.active { bottom: 0; }
 }

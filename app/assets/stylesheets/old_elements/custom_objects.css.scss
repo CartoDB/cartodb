@@ -50,12 +50,12 @@
   }
 
   .ui-slider-vertical {
-    @include border-radius(10px);
     position: absolute;
     top: 10px;
     left: 11px;
     width: 4px;
     height: 81px;
+    border-radius: 10px;
     background: #E5E5E5;
 
     .ui-slider-handle {
@@ -159,10 +159,10 @@
     right: 0;
 
     span.handle {
-      @include border-radius(2px);
       top: 7px;
       right: 6px;
       left: auto;
+      border-radius: 2px;
       background: rgba(black, 0.3);
 
       b {
@@ -190,11 +190,11 @@
 
     // Color expanded
     &.expanded {
-      @include border-radius($rad);
       width: 44px;
+      border-radius: $rad;
 
       &::before {
-        @include border-radius($rad);
+        border-radius: $rad;
       }
     }
 
@@ -215,8 +215,6 @@
   overflow: hidden;
 
   a.align {
-    @include border-radius(0);
-    @include background(linear-gradient(#FFF, #F2F2F2));
     display: block;
     position: relative;
     width: auto;
@@ -226,20 +224,23 @@
     float: left;
     border-top: 1px solid #9E9E9E;
     border-bottom: 1px solid #9E9E9E;
+    border-radius: 0;
+
+    @include background(linear-gradient(#FFF, #F2F2F2));
 
     &:nth-child(2) {
       border-right: 1px solid #9E9E9E;
     }
 
     &:first-child {
-      @include border-radius(3px 0 0 3px);
       border-right: 1px solid #9E9E9E;
       border-left: 1px solid #9E9E9E;
+      border-radius: 3px 0 0 3px;
     }
 
     &:last-child {
-      @include border-radius(0 3px 3px 0);
       border-right: 1px solid #9E9E9E;
+      border-radius: 0 3px 3px 0;
     }
 
     &.align-left::after {
@@ -304,17 +305,18 @@
   margin: 0;
   padding: 2px 19px 2px 4px;
   border: 1px solid #9E9E9E;
+
+  border-radius: 3px;
   vertical-align: top;
 
-  @include border-radius(3px);
   @include background(linear-gradient(#FFF, #F2F2F2));
 
   &.with-label {
-    @include border-radius(0);
     height: auto;
     margin: 0;
     padding: 0;
     border: none;
+    border-radius: 0;
     background: none;
 
     .label {
@@ -341,9 +343,10 @@
       margin: 0;
       padding: 2px 19px 2px 4px;
       border: 1px solid #9E9E9E;
+
+      border-radius: 3px;
       vertical-align: top;
 
-      @include border-radius(3px);
       @include background(linear-gradient(#FFF, #F2F2F2));
     }
   }
@@ -497,21 +500,21 @@
     position: relative;
     margin: 0 7px 2px 0;
     border: 1px solid #397DBA;
+    border-radius: 10px;
     background: WHITE;
     vertical-align: top;
     vertical-align: middle;
 
     @include size(10px);
-    @include border-radius(10px);
 
     &::before {
       @include size(6px);
-      @include border-radius(25px);
       content: ' ';
       display: none;
       position: absolute;
       top: 2px;
       left: 2px;
+      border-radius: 25px;
       background: #333;
     }
   }
@@ -593,11 +596,11 @@
     height: 10px;
     margin: 0 0 1px;
     border: 1px solid #999;
+
+    border-radius: 3px;
     background: WHITE;
     vertical-align: top;
     vertical-align: middle;
-
-    @include border-radius(3px);
 
     &::before {
       @include elements-sprite(checkbox);
@@ -650,20 +653,17 @@
   position: relative;
   width: 29px;
   height: 15px;
+  transform: linear;
+  transition: background 180ms;
   border: 1px solid #44759E;
+  border-radius: 12px;
   text-decoration: none;
   vertical-align: top;
   vertical-align: middle;
 
   @include text-indent();
-  @include border-radius(12px);
-  @include transform-style("linear");
-  @include transition-property("background");
-  @include transition-duration(180ms);
 
   &::before {
-    @include border-radius(12px);
-    @include background(linear-gradient(rgba(black, 0.18), rgba(black, 0)));
     content: ' ';
     position: absolute;
     z-index: 0;
@@ -671,20 +671,22 @@
     left: 0;
     width: 100%;
     height: 100%;
+    border-radius: 12px;
+
+    @include background(linear-gradient(rgba(black, 0.18), rgba(black, 0)));
   }
 
   span.handle {
-    @include border-radius(12px);
-    @include transform-style("linear");
-    @include transition-property("left");
-    @include transition-duration(180ms);
     position: absolute;
     z-index: 2;
     top: 1px;
     left: 15px;
     width: 11px;
     height: 11px;
+    transform: linear;
+    transition: left 180ms;
     border: 1px solid #44759E;
+    border-radius: 12px;
     background: #F2F2F2;
   }
 
@@ -728,12 +730,12 @@
     height: 12px;
 
     span.handle {
-      @include border-radius(10px);
       position: absolute;
       top: 0;
       left: 11px;
       width: 10px;
       height: 10px;
+      border-radius: 10px;
     }
 
     &.disabled span.handle {
@@ -753,15 +755,16 @@
   */
 
 .rounded {
-  @include border-radius(25px);
-  @include box-shadow(rgba(black, 0.09) 0 0 2px 2px);
   padding: 3px 12px;
+  border-radius: 25px;
   background: WHITE;
   color: #3474AF;
   font-size: 11px;
   font-weight: bold;
   line-height: 12px;
   text-transform: uppercase;
+
+  @include box-shadow(rgba(black, 0.09) 0 0 2px 2px);
 
   &:hover {
     text-decoration: none;

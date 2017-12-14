@@ -322,9 +322,9 @@
           border-radius: 5px;
           border: 1px solid #B0B0B0;
           letter-spacing: -1px;
-          @include transform-style("linear");
-          @include transition-property("box-shadow,border");
-          @include transition-duration(250ms);
+          transform-style: linear;
+          transition-property: box-shadow, border;
+          transition-duration: 250ms;
 
           // Hover
           &:hover {

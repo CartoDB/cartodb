@@ -452,9 +452,8 @@ div.map {
   div.cartodb-share,
   div.cartodb-layer-selector-box,
   div.cartodb-searchbox {
-    @include transform-style("linear");
-    @include transition-property("margin");
-    @include transition-duration(300ms);
+    transform-style: linear;
+    transition: margin 300ms;
   }
 
   div.cartodb-legend {
@@ -574,10 +573,6 @@ div.map {
     margin: -18px 0 0 0;
 
     p {
-      @include transform-style("linear");
-      @include transition-property("text-indent");
-      @include transition-duration(300ms);
-      @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
       display: inline;
       position: fixed;
       z-index: 2;
@@ -585,8 +580,11 @@ div.map {
       width: 100%;
       margin: 0 0 0 -50%;
       padding: 12px 0;
+      transform-style: linear;
+      transition: text-indent 300ms;
       border-bottom: 1px solid #CCC;
       background-color: #E5FAEA;
+      box-shadow: rgba(#000, 0.055) 0 3px 1px 0;
       color: #333;
       color: #666;
       font-family: $text-fonts;

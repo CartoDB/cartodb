@@ -7,7 +7,6 @@
 @import "../old_common/vars";
 
 ul.ui-autocomplete {
-  @include border-radius(3px);
   display: block;
   position: absolute;
   z-index: 1000 !important;
@@ -18,6 +17,7 @@ ul.ui-autocomplete {
   max-height: 120px;
   overflow-y: auto;
   border: 1px solid #999;
+  border-radius: 3px;
   background: WHITE;
 
   li {

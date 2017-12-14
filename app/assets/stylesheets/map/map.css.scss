@@ -79,7 +79,7 @@ div.map {
     }
 
     &.mobile div.cartodb-map { // MOBILE VERSION
-      @include border-radius(0);
+      border-radius: 0;
 
       .cartodb-logo {
         bottom: 10px !important;
@@ -232,8 +232,8 @@ div.map {
 
       &.full_screen .thumb {
         @include map-sprite(full_screen);
-        @include border-radius(0);
         border: none;
+        border-radius: 0;
       }
 
       &.dropdown > h5 {
@@ -262,19 +262,19 @@ div.map {
         display: inline-block;
         position: relative;
         margin: 0 5px 0 0;
+        border-radius: 2px;
         background-color: rgba(0, 0, 0, 0);
         background-position: 50% 50%;
         background-size: 34px;
         vertical-align: top;
 
         @include size(30px);
-        @include border-radius(2px);
 
         &::before {
           @include position(0, 0, 0, 0);
-          @include border-radius(2px);
           content: ' ';
           border: 1px solid  rgba(0, 0, 0, 0.15);
+          border-radius: 2px;
         }
 
         h5 {
@@ -347,12 +347,12 @@ div.map {
     height: auto;
     margin: 0 3px 0 0;
     padding: 10px 14px 10px 37px;
+
+    border-radius: 3px;
     background: rgba(#000, 0.7);
     color: #FFF;
     font-size: 13px;
     vertical-align: top;
-
-    @include border-radius(3px);
 
     &:last-child {
       margin-right: 0;
@@ -390,7 +390,7 @@ div.map {
 
     &::after {
       @include box-shadow(0 0 1px rgba(#000, 0.9));
-      @include border-radius(3px);
+      border-radius: 3px;
       background-color: #FFF;
     }
   }
@@ -403,12 +403,13 @@ div.map {
 
   &.table div.cartodb-map {
     @include position(66px, 0, 0, 0);
-    @include border-radius(0);
+    border-radius: 0;
   }
 
   &.derived div.cartodb-map {
     @include position(82px, 79px, 15px, 15px);
-    @include border-radius(3px);
+    border-radius: 3px;
+
     @include size(auto);
   }
 
@@ -518,7 +519,6 @@ div.map {
   div.editing {
     @include inline-block;
     @include box-shadow(rgba(0, 0, 0, 0.1) 0 0 4px 3px);
-    @include border-radius(3px);
     position: absolute;
     z-index: 1000;
     top: 20px;
@@ -526,6 +526,7 @@ div.map {
     margin-left: -120px;
     padding: 11px;
     border: 1px solid #999;
+    border-radius: 3px;
     background: #FFF;
     background: WHITE;
 
@@ -536,11 +537,11 @@ div.map {
     }
 
     span.tooltip {
-      @include border-radius(2px);
       position: absolute;
       top: 65px;
       left: -90px;
       width: 313px;
+      border-radius: 2px;
       background: rgba(0, 0, 0, 0.8);
       text-align: center;
 
@@ -729,13 +730,13 @@ div.cartodb-edit-buttons {
   }
 
   a.button {
-    @include border-radius(0);
     width: 29px;
     height: 24px;
     margin: 0;
     padding: 0 !important;
     float: left;
     border-right: 0;
+    border-radius: 0;
     font-size: 0;
     letter-spacing: 0;
     line-height: 0;
@@ -800,11 +801,11 @@ div.cartodb-popup.dark {
 
 // Same css for editing markers in Leaflet and GMaps
 .leaflet-editing-icon {
-  @include border-radius(6px);
   width: 9px !important;
   height: 9px !important;
   margin: -5px 0 0 -5px !important;
   border: 1px solid #397DBA;
+  border-radius: 6px;
 }
 
 :-webkit-full-screen {

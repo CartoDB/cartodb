@@ -72,13 +72,14 @@ a {
   }
 
   &.tag {
-    @include border-radius(2px);
-    @include box-shadow(rgba(0, 0, 0, 0.12) 0 0 2px 2px);
     padding: 6px 7px;
     border: 1px solid #397DBA;
+    border-radius: 2px;
     background: #E1ECF5;
     // font: normal 15px $text-fonts2;
     color: #397DB9;
+
+    @include box-shadow(rgba(0, 0, 0, 0.12) 0 0 2px 2px);
   }
 }
 

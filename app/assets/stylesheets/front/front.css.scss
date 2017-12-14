@@ -5,7 +5,6 @@
    */
 
 @import "compass/css3/box-shadow";
-@import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "compass/css3/text-shadow";
 @import "compass/css3/images";
@@ -29,10 +28,10 @@ body {
 
   /* SECTIONS */
   section {
-    @include border-radius(3px);
     position: relative;
     width: 960px;
     margin: 0 auto;
+    border-radius: 3px;
     background: WHITE;
 
     /* skeleton of a section */
@@ -173,13 +172,13 @@ body {
       input[type="text"],
       input[type="password"],
       input[type="email"] {
-        @include border-radius(3px);
         z-index: 10;
         width: 280px;
         height: auto;
         margin: 0;
         padding: 11px 15px;
         border: 1px solid #CCC;
+        border-radius: 3px;
         background: none;
         color: #333;
         font: normal 15px $text-fonts;

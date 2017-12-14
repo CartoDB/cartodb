@@ -25,13 +25,12 @@
     height: 16px;
     padding: 0 !important;
     border: none;
+    border-radius: 20px;
     background: #E5E5E5;
     color: white;
     font-size: 12px;
     line-height: 16px;
     text-align: center;
-
-    @include border-radius(20px);
 
     &:hover {
       background: #AAA;

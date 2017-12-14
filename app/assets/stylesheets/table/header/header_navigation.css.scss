@@ -32,22 +32,22 @@ div.vis_navigation {
     margin: 0;
     padding: 1px;
     border: 2px solid #FFF;
-    vertical-align: top;
 
-    @include border-radius(30px);
+    border-radius: 30px;
+    vertical-align: top;
 
     a.tab {
 
       display: inline-block;
       padding: 7px 25px;
+
+      border-radius: 30px;
       color: #FFF;
       font-size: 12px;
       font-weight: 500;
 
       text-transform: uppercase;
       vertical-align: top;
-
-      @include border-radius(30px);
 
       &.selected {
         margin: 0;

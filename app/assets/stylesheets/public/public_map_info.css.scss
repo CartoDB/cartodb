@@ -204,10 +204,9 @@
   display: inline-block;
   width: 46px;
   height: 46px;
+  border-radius: 100px;
   background: #FFF;
   vertical-align: top;
-
-  @include border-radius(100px);
 }
 
 .cartodb-info .inner .user .content {

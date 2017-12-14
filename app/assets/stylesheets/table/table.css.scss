@@ -261,10 +261,10 @@ div.table {
                 }
 
                 span.geo {
-                  @include border-radius(2px);
                   margin: 0 0 0 3px;
                   padding: 1px 2px;
                   border: 1px solid #C17400;
+                  border-radius: 2px;
                   background: ORANGE;
                   color: WHITE;
                   text-decoration: uppercase;
@@ -276,10 +276,10 @@ div.table {
               }
 
               input {
-                @include border-radius(3px);
                 margin: 0;
                 padding: 3px 4px;
                 border: 1px solid #CCC;
+                border-radius: 3px;
                 background: WHITE;
                 color: #333;
                 font: bold 13px $text-fonts;
@@ -471,8 +471,6 @@ div.table {
               overflow: visible;
 
               &::before {
-                @include border-radius(3px);
-                @include background(linear-gradient(#FAFAFA, #E8E8E8));
                 content: '';
                 display: none;
                 position: absolute;
@@ -483,7 +481,10 @@ div.table {
                 height: 12px;
                 padding: 0;
                 border: 1px solid #999;
+                border-radius: 3px;
                 background: #FAFAFA;
+
+                @include background(linear-gradient(#FAFAFA, #E8E8E8));
               }
 
               &::after {

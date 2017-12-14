@@ -1,11 +1,10 @@
 @import "compass/css3/inline-block";
-@import "compass/css3/border-radius";
 @import "compass/css3/box-shadow";
 @import "../old_common/vars";
 
 /** customization of codemirror styles */
 .cm-s-default .cm-color {
-  @include border-radius(2px);
+  border-radius: 2px;
   color: BLACK;
 
   &:hover {
@@ -75,8 +74,6 @@
 /** codemirror hints */
 
 .CodeMirror-hints {
-  @include border-radius(3px);
-  @include box-shadow(none);
   display: block;
   position: absolute;
   z-index: 1000 !important;
@@ -89,7 +86,10 @@
   padding: 0;
   overflow-y: auto;
   border: 1px solid #999;
+  border-radius: 3px;
   background: WHITE;
+
+  @include box-shadow(none);
 
   .CodeMirror-hint {
     display: block;
@@ -124,12 +124,12 @@
     }
 
     span.type {
-      @include border-radius(2px);
       position: absolute;
       z-index: 1;
       top: 8px;
       right: 8px;
       width: 20px;
+      border-radius: 2px;
       background: #CCC;
       color: WHITE;
       font-size: 11px;

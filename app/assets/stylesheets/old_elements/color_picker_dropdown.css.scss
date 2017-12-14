@@ -87,15 +87,14 @@ div.dropdown.color_picker {
   }
 
   .picker-indicator {
-    @include border-radius(10px);
     position: absolute;
     z-index: 1;
     width: 6px;
     height: 6px;
     border: 1px solid black;
+    border-radius: 10px;
 
     &::before {
-      @include border-radius(10px);
       content: '';
       position: absolute;
       z-index: 0;
@@ -104,6 +103,7 @@ div.dropdown.color_picker {
       width: 8px;
       height: 8px;
       border: 1px solid white;
+      border-radius: 10px;
     }
   }
 
@@ -147,10 +147,10 @@ div.dropdown.color_picker {
   }
 
   ul.default-colors {
-    @include border-radius(2px);
     display: block;
     width: 100%;
     margin: 0;
+    border-radius: 2px;
     letter-spacing: -4px;
 
     li {

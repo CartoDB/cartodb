@@ -337,12 +337,12 @@
         margin-left: -15px !important;
         padding: 15px 15px 15px 20px;
         border: 1px solid #999;
+        border-radius: 3px;
         background-color: white;
         cursor: all-scroll;
 
         @include box-shadow(rgba(0,0,0,0.1) 0 0 5px 2px);
         @include table-sprite(drag_points, $offset-y:23px, $offset-x:10px);
-        @include border-radius(3px);
         & > span { color: #999; }
       }
 

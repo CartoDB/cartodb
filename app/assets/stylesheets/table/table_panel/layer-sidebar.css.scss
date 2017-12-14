@@ -47,12 +47,12 @@
           left: 36px;
           width: 8px;
           height: 8px;
+          border-radius: 10px;
           background: #EB2466;
           color: white;
           font-size: 8px;
           line-height: 10px;
 
-          @include border-radius(10px);
           @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
         }
 
@@ -71,13 +71,13 @@
           left: 39px;
           width: 8px;
           height: 8px;
+          border-radius: 10px;
           background: #36D900;
           color: white;
           font-size: 8px;
           line-height: 10px;
 
           @include background(linear-gradient(#36D900,#238C00));
-          @include border-radius(10px);
           @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
 
           &::before {

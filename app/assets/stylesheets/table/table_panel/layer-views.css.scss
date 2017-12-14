@@ -83,11 +83,10 @@ $corner_radius: 6px;
       margin: 20px 0 0;
       padding: 20px;
       border: 1px solid #E6E6E6;
+      border-radius: 4px;
       color: #666;
       line-height: 18px;
       text-align: center;
-
-      @include border-radius(4px);
     }
 
     span.scroll {
@@ -98,9 +97,8 @@ $corner_radius: 6px;
       height: 10px;
       margin: 0;
       padding: 0;
+      border-radius: 0;
       background: transparent;
-
-      @include border-radius(0);
 
       &.top {
         top: -10px;

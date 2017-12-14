@@ -9,13 +9,14 @@
 @import "../old_common/vars";
 
 div.dropdown {
-  @include border-radius(3px);
-  @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 1px);
   display: none;
   position: absolute;
   z-index: 50;
   border: none;
+  border-radius: 3px;
   background: WHITE;
+
+  @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 1px);
 
   &::before {
     content: ' ';

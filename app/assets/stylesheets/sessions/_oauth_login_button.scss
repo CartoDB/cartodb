@@ -22,9 +22,9 @@
 }
 
 .Sessions-githubButton {
-  @include border-radius(4px);
   transition: all 0.15s;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
   background: #162945;
   background-image: image-url('layout/sessions/github_logo_white.svg');
   background-repeat: no-repeat;
@@ -40,9 +40,9 @@
 }
 
 .Sessions-googleButton {
-  @include border-radius(4px);
   transition: all 0.15s;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
   background: #162945;
   background-image: image-url('layout/sessions/google_plus_logo_white.svg');
   background-repeat: no-repeat;

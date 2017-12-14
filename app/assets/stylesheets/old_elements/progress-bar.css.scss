@@ -16,23 +16,26 @@
 
 @mixin progress-bar($h, $r, $grad, $min) {
   div.progress-bar {
-    @include border-radius($r);
     display: block;
     position: relative;
     width: 100%;
     height: $h;
     overflow: hidden;
+    border-radius: $r;
     background: #E5E5E5;
 
     .bar-3,
     .bar-2,
     .bar-1,
     .bar-0 {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: $r;
+
       @if $min {
         min-width: $min;
       }
-
-      @include border-radius($r);
 
       @if $grad {
         &::after {
@@ -43,9 +46,6 @@
           width: 100%;
         }
       }
-      position: absolute;
-      top: 0;
-      bottom: 0;
     }
 
     // Blue dark

@@ -60,9 +60,9 @@
   }
 
   .attribution p.highlighted {
-    @include border-radius(2px);
     padding: 10px;
     border: 1px solid #CCC;
+    border-radius: 2px;
     background: #F1F1F1;
   }
 

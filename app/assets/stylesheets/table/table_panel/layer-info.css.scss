@@ -58,13 +58,13 @@ $corner_radius: 6px;
     .order {
       width: 16px;
       padding: 1px 0;
+
+      border-radius: 2px;
       background: #A9A9A9;
       color: #ECECEC;
       font: bold 11px $text-fonts;
       line-height: 16px;
       text-align: center;
-
-      @include border-radius(2px);
     }
 
     // Layer name

@@ -68,7 +68,7 @@ $radius: 4px;
 
 .BackgroundPolling-headerBadgeCount {
   /* "backwards" to use the first keyframe's styles before animation starts */
-  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
+  animation: fade-and-bounce-up 0.6s 350ms ease-in-out backwards;
 }
 
 .BackgroundPolling-headerButton {

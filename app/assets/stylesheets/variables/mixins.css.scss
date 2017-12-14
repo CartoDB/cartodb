@@ -66,10 +66,6 @@
   }
 }
 
-@mixin animation($str) {
-  @include css3-prefix('animation', $str);
-}
-
 @mixin line-clamp($lines) {
   display: -webkit-box;
   overflow: hidden;

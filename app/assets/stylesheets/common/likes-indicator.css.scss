@@ -55,7 +55,7 @@ $cLiked: #D93F56;
 
 .LikesIndicator.is-animated {
   .LikesIndicator-icon {
-    @include animation(pulse 400ms both ease-in);
+    animation: pulse 400ms both ease-in;
   }
 }
 

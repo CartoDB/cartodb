@@ -6,7 +6,7 @@
 // Example usage:
 //   <div class="Spinner"></div>
 .Spinner {
-  @include animation(load8 1.1s infinite linear);
+  animation: load8 1.1s infinite linear;
   position: relative;
   margin: 0 auto;
   border-top: 2px solid $cStructure-mainLine;

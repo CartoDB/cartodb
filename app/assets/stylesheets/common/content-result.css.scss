@@ -76,7 +76,7 @@
   background: transparent;
 
   &::before {
-    @include animation(pulsate 1.5s linear infinite);
+    animation: pulsate 1.5s linear infinite;
     content: '';
     display: block;
     position: absolute;

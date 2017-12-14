@@ -56,7 +56,7 @@ div.sync_info {
           height: 2px;
           background: #365C82;
 
-          @include border-radius(3px);
+          border-radius: 3px;
         }
       }
     }
@@ -82,8 +82,7 @@ div.sync_info {
       padding: 0;
       border: 1px solid rgba(black, 0.5);
       text-shadow: none;
-
-      @include border-radius(10px);
+      border-radius: 10px;
       @include background(linear-gradient(#C9FF26,#41B200));
     }
 
@@ -96,9 +95,8 @@ div.sync_info {
       height: 8px;
       border: 3px solid #BBB;
       opacity: 0;
-
-      @include animation(pulsate 1.5s ease-out infinite);
-      @include border-radius(20px);
+      animation: pulsate 1.5s ease-out infinite;
+      border-radius: 20px;
     }
 
     &.syncing {

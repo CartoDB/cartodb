@@ -11,7 +11,6 @@ var Request = require('./windshaft/request');
 var Response = require('./windshaft/response');
 var WindshaftClient = require('./windshaft/client');
 var AnalysisService = require('./analysis/analysis-service');
-var log = require('./cdb.log');
 var WindshaftError = require('./windshaft/error');
 
 /**
@@ -299,7 +298,6 @@ Engine.prototype._getSerializer = function () {
  */
 Engine.prototype._manageClientError = function (error, options) {
   this._modelUpdater.setErrors([error]);
-  log.error(error.message);
   options.error && options.error([error]);
 };
 

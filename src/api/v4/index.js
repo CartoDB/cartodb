@@ -3,7 +3,7 @@
  *  @namespace carto
  *
  *  @description
- *  # Carto.js
+ *  # CARTO.js
  *  All the library features are exposed through the `carto` namespace.
  *
  *
@@ -16,6 +16,11 @@
  * - **events** : The events exposed.
  * - **operation** : The operations exposed.
  */
+
+// Add polyfill for `fetch`
+require('whatwg-fetch');
+// Add polyfill for `Promise`
+require('promise-polyfill');
 
 var Client = require('./client');
 var source = require('./source');

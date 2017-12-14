@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var LZMA = require('lzma');
+var LZMA = require('../../vendor/lzma');
 var util = require('../core/util');
 var WindshaftConfig = require('./config');
 var RequestTracker = require('./request-tracker');

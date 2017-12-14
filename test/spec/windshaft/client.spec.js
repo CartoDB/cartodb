@@ -3,7 +3,7 @@ var _ = require('underscore');
 var util = require('cdb.core.util');
 var WindshaftClient = require('../../../src/windshaft/client');
 var Request = require('../../../src/windshaft/request');
-var LZMA = require('lzma');
+var LZMA = require('../../../vendor/lzma');
 
 describe('windshaft/client', function () {
   describe('instantiateMap', function () {

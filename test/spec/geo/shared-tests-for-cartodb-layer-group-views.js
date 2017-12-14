@@ -154,6 +154,10 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
             clientX: 10,
             clientY: 20
           },
+          pixel: {
+            x: 10,
+            y: 20
+          },
           data: { cartodb_id: 10 }
         });
 
@@ -198,6 +202,10 @@ module.exports = function (createLayerGroupView, expectTileURLTemplateToMatch, f
           };
           fakeWax.fire('on', {
             e: waxEvent,
+            pixel: {
+              x: 10,
+              y: 20
+            },
             data: { cartodb_id: 10 }
           });
 

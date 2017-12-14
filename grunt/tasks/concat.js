@@ -1,11 +1,11 @@
 module.exports = {
-  task: function(grunt, config) {
+  task: function() {
     return {
       themes: {
         options: {},
         files: {
-          // CartoDB.js CSSs (themes?)
-          '<%= config.dist %>/internal/themes/css/cartodb.css': [
+          // CARTO.js CSSs (themes?)
+          '<%= dist %>/internal/themes/css/cartodb.css': [
             '.tmp/scss/**/*.css'
           ]
         }

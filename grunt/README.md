@@ -1,9 +1,8 @@
 ## Grunt tasks list
 
-These are the tasks(*) we provide:
+These are the tasks(\*) we provide:
 
-- [x] ```grunt publish```     => publish CartoDB.js library in S3 (you need secret keys).
-- [x] ```grunt release```     => same as publish task.
+- [x] ```grunt publish_s3```     => publish CARTO.js library in S3 (you need secret keys).
 - [x] ```grunt clean```       => clean temporary and dist folders.
 - [x] ```grunt invalidate```  => invalidate library files through fastly.
 - [x] ```grunt test```        => run library test suite in the console (it will generate a SpecRunner.html file in test folder).

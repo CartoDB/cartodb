@@ -3,9 +3,12 @@ var Backbone = require('backbone');
 
 /**
  * Base layer object.
+ * 
+ * This object should not be used directly! use {@link carto.layer.Layer} instead.
  *
  * @constructor
  * @abstract
+ * @fires error
  * @memberof carto.layer
  * @api
  */

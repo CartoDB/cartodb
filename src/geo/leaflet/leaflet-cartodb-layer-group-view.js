@@ -3,8 +3,7 @@ var L = require('leaflet');
 var C = require('../../constants');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
-var wax = require('wax.cartodb.js');
-
+var zera = require('carto-zera');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 var findContainerPoint = function (map, o) {
@@ -66,7 +65,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
   LeafletLayerView.prototype,
   CartoDBLayerGroupViewBase.prototype,
   {
-    interactionClass: wax.leaf.interaction,
+    interactionClass: zera.Interactive,
 
     _createLeafletLayer: function () {
       var tileLayer = new L.TileLayer(null, {

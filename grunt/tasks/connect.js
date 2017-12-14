@@ -1,9 +1,9 @@
 /**
- *  Connect grunt task for CartoDB.js website
+ *  Connect grunt task for CARTO.js website
  *
  */
 module.exports = {
-  task: function(config) {
+  task: function() {
     return {
       server: {
         options: {

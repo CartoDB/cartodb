@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Feature over/out | Carto</title>
+    <title>Feature over/out | CARTO</title>
     <meta name="viewport" content="initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
-
     <meta charset="utf-8">
-    <!-- Include Carto.js -->
-    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
     <!-- Include Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <!-- FIXME: include Leaflet because of Wax -->
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
     <style>
       body { margin: 0; padding: 0; }
       * {
@@ -97,7 +94,7 @@
       client.addLayer(layer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      layer.on(carto.layer.events.FEATURE_OVER, featureEvent => {
+      layer.on('featureOver', featureEvent => {
         let content = '';
         content += `<div class="container">`;
         content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
@@ -106,7 +103,7 @@
         document.getElementById('content').innerHTML = content;
       });
 
-      layer.on(carto.layer.events.FEATURE_OUT, featureEvent => {
+      layer.on('featureOut', featureEvent => {
         document.getElementById('content').innerHTML = '';
       });
     </script>

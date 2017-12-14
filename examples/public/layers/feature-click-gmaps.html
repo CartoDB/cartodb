@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Feature click | Carto</title>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
-
+    <title>Feature click | CARTO</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <!-- Include Carto.js -->
-    <script src="../../../dist/public/carto.uncompressed.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
     <!-- Include Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <!-- FIXME: include Leaflet because of Wax -->
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
     <style>
       * {
         box-sizing: border-box;
@@ -96,7 +93,7 @@
       client.addLayer(layer);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      layer.on(carto.layer.events.FEATURE_CLICKED, featureEvent => {
+      layer.on('featureClicked', featureEvent => {
         let content = '';
         content += `<div class="container">`;
         content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;

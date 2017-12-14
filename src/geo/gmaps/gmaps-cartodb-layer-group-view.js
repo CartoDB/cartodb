@@ -1,10 +1,9 @@
 /* global Image, google */
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
-require('leaflet'); // NOTE: Leaflet needs to be required before wax because wax relies on global L internally
-var wax = require('wax.cartodb.js');
+var zera = require('carto-zera');
+
 var C = require('../../constants');
-var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var Profiler = require('cdb.core.Profiler');
@@ -76,22 +75,28 @@ var GMapsCartoDBLayerGroupView = function (layerModel, options) {
     self.featureClick && self.featureClick.apply(opts, arguments);
   }, 10);
 
-  this.options = _.defaults(opts, CartoDBDefaultOptions);
   this.tiles = 0;
 
-  wax.g.connector.call(this, opts);
+  this.options = {
+    tiles: options.tiles,
+    scheme: options.scheme || 'xyz',
+    blankImage: options.blankImage || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
+  };
 
-  // lovely wax connector overwrites options so set them again
-  // TODO: remove wax.connector here
+  // non-configurable options
+  this.interactive = true;
+  this.tileSize = new google.maps.Size(256, 256);
+
+  // DOM element cache
+  this.cache = {};
+
   _.extend(this.options, opts);
   GMapsLayerView.apply(this, arguments);
   this.projector = new Projector(opts.map);
   CartoDBLayerGroupViewBase.apply(this, arguments);
 };
 
-// TODO: Do we need this?
-GMapsCartoDBLayerGroupView.prototype = new wax.g.connector(); // eslint-disable-line
-GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
+GMapsCartoDBLayerGroupView.prototype.interactionClass = zera.Interactive;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
   CartoDBLayerGroupViewBase.prototype,
@@ -201,7 +206,7 @@ _.extend(
         return image;
       }
 
-      var tile = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+      var tile = this._getTile(coord, zoom, ownerDocument);
 
       // in IE8 semi transparency does not work and needs filter
       if (ielt9) {
@@ -235,6 +240,35 @@ _.extend(
       return tile;
     },
 
+    // Get a tile element from a coordinate, zoom level, and an ownerDocument.
+    _getTile: function (coord, zoom, ownerDocument) {
+      var key = zoom + '/' + coord.x + '/' + coord.y;
+      if (!this.cache[key]) {
+        var img = this.cache[key] = new Image(256, 256);
+        this.cache[key].src = this._getTileUrl(coord, zoom);
+        this.cache[key].setAttribute('gTileKey', key);
+        this.cache[key].onerror = function () { img.style.display = 'none'; };
+      }
+      return this.cache[key];
+    },
+
+    // Get a tile url, based on x, y coordinates and a z value.
+    _getTileUrl: function (coord, z) {
+      // Y coordinate is flipped in Mapbox, compared to Google
+      var mod = Math.pow(2, z);
+      var y = (this.options.scheme === 'tms') ? (mod - 1) - coord.y : coord.y;
+      var x = (coord.x % mod);
+
+      x = (x < 0) ? (coord.x % mod) + mod : x;
+
+      if (y < 0) return this.options.blankImage;
+
+      return this.options.tiles[parseInt(x + y, 10) % this.options.tiles.length]
+        .replace(/\{z\}/g, z)
+        .replace(/\{x\}/g, x)
+        .replace(/\{y\}/g, y);
+    },
+
     _reload: function () {
       var tileURLTemplates;
       if (this.model.hasTileURLTemplates()) {
@@ -243,7 +277,6 @@ _.extend(
         tileURLTemplates = [ EMPTY_GIF ];
       }
 
-      // wax uses this
       this.options.tiles = tileURLTemplates;
       this.tiles = 0;
       this.cache = {};
@@ -265,42 +298,6 @@ _.extend(
       }
     },
 
-    _findPos: function (map, o) {
-      var curleft = 0;
-      var curtop = 0;
-      var obj = map.getDiv();
-
-      var x, y;
-      if (o.e.changedTouches && o.e.changedTouches.length > 0) {
-        x = o.e.changedTouches[0].clientX + window.scrollX;
-        y = o.e.changedTouches[0].clientY + window.scrollY;
-      } else {
-        x = o.e.clientX;
-        y = o.e.clientY;
-      }
-
-      // If the map is fixed at the top of the window, we can't use offsetParent
-      // cause there might be some scrolling that we need to take into account.
-      var point;
-      if (obj.offsetParent && obj.offsetTop > 0) {
-        do {
-          curleft += obj.offsetLeft;
-          curtop += obj.offsetTop;
-          obj = obj.offsetParent;
-        } while (obj);
-        point = this._newPoint(
-          x - curleft, y - curtop);
-      } else {
-        var rect = obj.getBoundingClientRect();
-        var scrollX = (window.scrollX || window.pageXOffset);
-        var scrollY = (window.scrollY || window.pageYOffset);
-        point = this._newPoint(
-          (o.e.clientX ? o.e.clientX : x) - rect.left - obj.clientLeft - scrollX,
-          (o.e.clientY ? o.e.clientY : y) - rect.top - obj.clientTop - scrollY);
-      }
-      return point;
-    },
-
     /**
      * Creates an instance of a googleMaps Point
      */
@@ -315,7 +312,7 @@ _.extend(
     },
 
     _manageOnEvents: function (map, o) {
-      var point = this._findPos(map, o);
+      var point = o.pixel;
       var latlng = this.projector.pixelToLatLng(point);
       var eventType = o.e.type.toLowerCase();
 

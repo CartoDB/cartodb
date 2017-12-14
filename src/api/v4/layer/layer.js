@@ -8,30 +8,45 @@ var EVENTS = require('../events');
 var metadataParser = require('./metadata/parser');
 
 /**
- * Represent a layer Object.
+ * Represents a layer Object.
+ * 
+ * A layer is the primary way to visualize geospatial data. 
+ * 
+ * To create a layer a {@link carto.source.Base|source} and {@link carto.style.Base|styles}
+ * are required:
+ * 
+ * - The {@link carto.source.Base|source} is used to know **what** data will be displayed in the Layer.
+ * - The {@link carto.style.Base|style} is used to know **how** to draw the data in the Layer.
+ * 
+ * A layer alone won't do too much. In order to get data from the CARTO server you must add the Layer to a {@link carto.Client|client}.
  *
- *
- * /...
- *
- * The `styleChanged` event is triggered **only** when the style object is changed. Mutations in the style itself are ignored by this event.
+ * ```
+ * // Create a layer. Remember this won't do anything unless the layer is added to a client.
+ * const layer = new carto.layer.Layer(source, style);
+ *```
  *
  * @param {object} source - The source where the layer will fetch the data
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
- * @fires carto.layer.FeatureEvent
- * @fires carto.layer.sourceChanged
- * @fires carto.layer.styleChanged
- * @fires carto.layer.MetadataEvent
+ * @fires metadataChanged
+ * @fires featureClicked
+ * @fires featureOut
+ * @fires featureOver
+ * @fires error
  * @example
- * // no options
+ * // Create a layer with no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
  * @example
- * // with options
+ * // Create a layer indicating what columns will be included in the featureOver event.
  * new carto.layer.Layer(citiesSource, citiesStyle, {
- *   featureClickColumns: [ 'name', 'population' ],
  *   featureOverColumns: [ 'name' ]
+ * });
+ * @example
+ * // Listen to the event thrown when the mouse is over a feature
+ * layer.on('featureOver', featureEvent => {
+ *   console.log(`Mouse over city with name: ${featureEvent.data.name}`);
  * });
  * @constructor
  * @extends carto.layer.Base
@@ -62,10 +77,10 @@ Layer.prototype = Object.create(Base.prototype);
  * Set a new style for this layer.
  *
  * @param {carto.style.CartoCSS} New style
- * @fires carto.layer.Layer.styleChanged
+ * @fires styleChanged
+ * @fires error
  * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
  * {@link CartoError} if something goes bad
- * @api
  */
 Layer.prototype.setStyle = function (style, opts) {
   var prevStyle = this._style;
@@ -118,10 +133,10 @@ Layer.prototype.getStyle = function () {
  * add a source belonging to a different client.
  *
  * @param {carto.source.Base} source New source
- * @fires carto.layer.Layer.sourceChanged
+ * @fires sourceChanged
+ * @fires error
  * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
  * {@link CartoError} if something goes bad
- * @api
  */
 Layer.prototype.setSource = function (source) {
   var prevSource = this._source;
@@ -304,16 +319,16 @@ Layer.prototype._createInternalModel = function (engine) {
   internalModel.on('change:meta', function (layer, data) {
     var rules = data.cartocss_meta.rules;
     var styleMetadataList = metadataParser.getMetadataFromRules(rules);
+
     /**
+     * Event fired by {@link carto.layer.Layer} when the style contains any TurboCarto ramp.
      *
-     * Events triggered by {@link carto.layer.Layer} when the style contains Turbocarto ramps
-     *
-     * @event carto.layer.MetadataEvent
+     * @typedef {object} carto.layer.MetadataEvent
      * @property {carto.layer.metadata.Base[]} styles - List of style metadata objects
-     *
      * @api
      */
     var metadata = { styles: styleMetadataList };
+
     this.trigger('metadataChanged', metadata);
   }, this);
 
@@ -384,39 +399,32 @@ function _isStyleError (windshaftError) {
 }
 
 /**
- * @typedef {Object} LatLng
+ * @typedef {object} LatLng
  * @property {number} lat - Latitude
  * @property {number} lng - Longitude
- *
  * @api
  */
 
 /**
- * Event triggered when the source of the layer changes.
+ * Fired when the source has changed. Handler gets a parameter with the new source.
  *
- * Contains a single argument with the Layer where the source has changed.
- *
- * @event carto.layer.sourceChanged
+ * @event sourceChanged
  * @type {carto.layer.Layer}
  * @api
  */
 
 /**
- * Event triggered when the style of the layer changes.
+ * Fired when the style has changed. Handler gets a parameter with the new style.
  *
- * Contains a single argument with the Layer where the style has changed.
- *
- * @event carto.layer.styleChanged
+ * @event styleChanged
  * @type {carto.layer.Layer}
  * @api
  */
 
 /**
- * Event triggered when the style metadata of the layer changes.
+ * Fired when style metadata has changed.
  *
- * Contains a list of metadata objects.
- *
- * @event carto.layer.metadataChanged
+ * @event metadataChanged
  * @type {carto.layer.MetadataEvent}
  * @api
  */

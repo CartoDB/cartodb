@@ -1,5 +1,5 @@
 /**
- *  Watch grunt task for CartoDB.js
+ *  Watch grunt task for CARTO.js
  *
  */
 module.exports = {
@@ -19,7 +19,7 @@ module.exports = {
         },
         files: [
           '.tmp/css/**/*.css',
-          '<%= config.dist %>/internal/themes/css/cartodb.css'
+          '<%= dist %>/internal/themes/css/cartodb.css'
         ]
       }
     };

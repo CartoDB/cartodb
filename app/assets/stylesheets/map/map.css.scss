@@ -13,11 +13,12 @@
 @import "../old_elements/elements-sprite";
 
 div.map {
-  @include box-sizing(border-box);
+  z-index: 1;
+  box-sizing: border-box;
+  background: #333 image-url('layout/noise.png') repeat 0 0;
+
   @include position(0, 0, 0, 0); // 1px to cause header opacity black border needs to be present
   @include size(100%);
-  z-index: 1;
-  background: #333 image-url('layout/noise.png') repeat 0 0;
 }
 
 div.map,
@@ -135,10 +136,11 @@ div.map {
   }
 
   .mobile_bkg {
+
+    box-sizing: border-box;
     opacity: 0;
     background: #333;
 
-    @include box-sizing(border-box);
     @include position(0, 0, 0, 0);
     @include size(100%);
 

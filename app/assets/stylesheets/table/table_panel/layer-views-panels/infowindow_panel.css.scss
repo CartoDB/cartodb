@@ -147,13 +147,13 @@
 
     z-index: 9;
     top: 112px;
+
+    box-sizing: border-box;
     width: 100%;
     padding: 9px 23px 3px 30px;
     border-top: 1px solid rgba(#DDD, 0.5);
     border-bottom: 1px solid rgba(#DDD, 0.5);
     background: #F6F6F6;
-
-    @include box-sizing(border-box);
 
     .tip {
       @include size(10px, 6px);

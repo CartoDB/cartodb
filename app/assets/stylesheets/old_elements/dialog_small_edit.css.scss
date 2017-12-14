@@ -41,12 +41,12 @@
     }
 
     input {
-      @include box-sizing(border-box);
       position: relative;
       top: 0;
       right: 0;
       bottom: 0;
       left: 0;
+      box-sizing: border-box;
       width: 100%;
       margin: 0;
       padding: 0;
@@ -104,6 +104,8 @@
   textarea {
     display: block;
     position: relative;
+
+    box-sizing: border-box;
     width: 100%;
     max-width: 500px - 22;
     max-height: 500px - 60;
@@ -115,8 +117,6 @@
     color: #666;
     font-family: $text-fonts;
     font-size: 15px;
-
-    @include box-sizing(border-box);
 
     &:focus {
       border-color: #999;

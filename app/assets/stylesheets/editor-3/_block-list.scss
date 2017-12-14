@@ -203,5 +203,6 @@
 
 .HorizontalBlockList-item-text,
 .HorizontalBlockList-item-icon {
-  @include inline-block();
+  display: inline-block;
+  vertical-align: top;
 }

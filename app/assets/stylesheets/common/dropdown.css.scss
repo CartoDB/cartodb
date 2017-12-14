@@ -13,7 +13,6 @@
  * The tick can be placed horizontally by .tick_left/center/right, or vertically by .tick_top/middle/bottom, in
  * combination with horizontal_left/right and vertical_top/bottom.
  */
-@import '../variables/mixins';
 @import '../variables/colors';
 
 .Dropdown {
@@ -27,12 +26,12 @@
   box-shadow: 0 0 5px 1px rgba(#000, 0.2), 0 0 1px 0 rgba(#000, 0.3);
 
   &::before {
-    @include transform(rotate(45deg));
     content: ' ';
     display: block !important;
     position: absolute;
     width: 10px;
     height: 10px;
+    transform: rotate(45deg);
     background-color: $cStructure-mainBkg;
     box-shadow: 0 0 5px 1px rgba(black, 0.2);
   }
@@ -194,15 +193,14 @@
 }
 
 .Dropdown-content {
-  @include display-flex();
-  @include flex(1);
-  @include flex-direction(column);
+  display: flex;
   position: relative;
+  flex: 1;
+  flex-direction: column;
   min-height: 0;
   max-height: 300px;
 
   .ScrollView {
-    -webkit-flex-basis: auto;
     flex-basis: auto;
     margin: 0;
     padding: 0;

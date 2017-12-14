@@ -37,11 +37,12 @@
 }
 
 .cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 span {
-  @include inline-block();
+  display: inline-block;
   width: 150px;
   float: left;
   overflow: hidden;
   text-overflow: ellipsis;
+  vertical-align: top;
   white-space: nowrap;
 }
 
@@ -251,9 +252,10 @@
 }
 
 .overlay-properties ul li {
-  @include inline-block();
+  display: inline-block;
   padding: 0 10px;
   border-right: 1px solid  rgba(217, 217, 217, 0.8);
+  vertical-align: top;
 }
 
 .overlay-properties ul li:last-child {
@@ -262,11 +264,12 @@
 }
 
 .overlay-properties ul li .field {
-  @include inline-block();
+  display: inline-block;
+  vertical-align: top;
 }
 
 .overlay-properties ul li .field .form-view {
-  @include inline-block();
+  display: inline-block;
   margin: 0 8px 0 0;
   vertical-align: top;
 }
@@ -377,8 +380,9 @@
     strong,
     em,
     span {
-      @include inline-block();
+      display: inline-block;
       margin-left: 3px;
+      vertical-align: top;
     }
   }
 
@@ -753,10 +757,11 @@ div.dropdown.properties_dropdown {
       }
 
       span {
-        @include inline-block();
+        display: inline-block;
         margin-right: 20px;
         color: #BABABA;
         font-size: 13px;
+        vertical-align: top;
 
         &.handle {
           margin: 0;

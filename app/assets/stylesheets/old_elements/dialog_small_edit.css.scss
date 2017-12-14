@@ -135,9 +135,10 @@
       }
 
       & > div.column {
-        @include inline-block();
+        display: inline-block;
         margin-right: 4px;
         letter-spacing: 0;
+        vertical-align: top;
         word-spacing: 0;
 
         label {
@@ -202,7 +203,8 @@
     // }
 
     // div.field {
-    //   @include inline-block();
+    //   display: inline-block;
+    vertical-align: top;
     //   margin-right: 4px;
     //   letter-spacing:0;
 
@@ -239,10 +241,11 @@
       background: WHITE;
 
       a {
-        @include inline-block();
+        display: inline-block;
         width: 65px;
         font-size: 13px;
         font-weight: normal;
+        vertical-align: top;
 
         span.radio {
           margin-top: 0 !important;
@@ -301,9 +304,10 @@
 
       & > span,
       & > p {
-        @include inline-block();
+        display: inline-block;
         position: relative;
         margin: 0;
+        vertical-align: top;
       }
 
       input {
@@ -354,8 +358,9 @@
   padding: 5px;
 
   .content {
-    @include inline-block();
+    display: inline-block;
     float: left;
+    vertical-align: top;
   }
 
   input {
@@ -397,8 +402,7 @@
     height: auto;
 
     ul {
-      @include inline-block();
-      @include border-radius(4px);
+      display: inline-block;
       position: relative;
       min-width: 215px;
       max-width: 400px;
@@ -408,6 +412,9 @@
       padding: 4px 4px 1px;
       border: 1px solid #000;
       background: WHITE;
+      vertical-align: top;
+
+      @include border-radius(4px);
 
       li.tagit-choice {
         @include border-radius(3px);
@@ -419,19 +426,21 @@
         font: normal 11px "Arial";
 
         span.tagit-label {
-          @include inline-block();
+          display: inline-block;
           padding: 0 5px;
           border-right: 1px solid #2B5B85;
           line-height: 19px;
+          vertical-align: top;
         }
 
         a.tagit-close {
-          @include inline-block();
+          display: inline-block;
           position: relative;
           width: auto;
           height: 100%;
           margin: 0;
           line-height: 19px;
+          vertical-align: top;
 
           &:hover {
             text-decoration: none;
@@ -457,7 +466,7 @@
         padding: 0;
 
         input {
-          @include inline-block();
+          display: inline-block;
           position: relative;
           top: 0;
           right: auto;
@@ -467,6 +476,7 @@
           padding: 0;
           font-size: 13px;
           line-height: 15px;
+          vertical-align: top;
         }
       }
     }

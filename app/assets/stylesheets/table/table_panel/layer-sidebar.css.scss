@@ -14,14 +14,16 @@
 
 // Layer actions sidebar
 .layer-sidebar {
+
+  display: inline-block;
   position: absolute;
   z-index: 6;
   top: 68px;
   bottom: 0;
   left: 0;
   letter-spacing: 0;
+  vertical-align: top;
 
-  @include inline-block();
   @include size(65px, auto);
   @include border-left-radius(4px);
   @include single-box-shadow( -4px, 0, 5px, 0, rgba(black,0.03), true);
@@ -106,9 +108,9 @@
       width: 100%;
       height: 60px;
       border-bottom: 1px solid rgba(#999, 0.25);
+      opacity: 0.75;
 
       @include text-indent();
-      opacity: 0.75;
 
       &.sql_mod { @include table-sprite(table_icons, $offset-x: 20px, $offset-y: -3px); }
       &.filters_mod { @include table-sprite(table_icons, $offset-x: 21px, $offset-y: -62px); }

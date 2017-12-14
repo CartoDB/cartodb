@@ -192,13 +192,14 @@ div.dropdown {
   }
 
   ul {
-    @include inline-block();
+    display: inline-block;
     position: relative;
     width: 100%;
     margin: 0;
     padding: 0;
     overflow: visible;
     list-style: none;
+    vertical-align: top;
 
     li {
       display: block;

@@ -302,7 +302,8 @@
 
         a.radiobutton,
         .form {
-          @include inline-block();
+          display: inline-block;
+          vertical-align: top;
         }
       }
     }

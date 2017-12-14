@@ -88,7 +88,7 @@
 }
 
 .ContentResult-icon {
-  @include inline-block();
+  display: inline-block;
   width: 38px;
   height: 38px;
   border: 1px solid $cStructure-mainLine;
@@ -96,6 +96,7 @@
   color: $cTypography-help;
   font-size: 22px;
   line-height: 36px;
+  vertical-align: top;
 }
 // Icon types
 .ContentResult-iconNegative {

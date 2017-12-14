@@ -15,7 +15,15 @@
 @import "../old_common/mixins";
 
 .privacy-status {
-  @include inline-block();
+  display: inline-block;
+  width: auto;
+  min-width: 20px;
+  height: 20px;
+  border: 0;
+  text-decoration: none;
+  vertical-align: top;
+  vertical-align: middle;
+
   @include border-radius(3px);
 
   @mixin privacy-disabled($color) {
@@ -23,12 +31,6 @@
     background-color: rgba($color, 0.7);
     cursor: default !important;
   }
-  width: auto;
-  min-width: 20px;
-  height: 20px;
-  border: 0;
-  text-decoration: none;
-  vertical-align: middle;
 
   // Total shared users
   span.shared_users {

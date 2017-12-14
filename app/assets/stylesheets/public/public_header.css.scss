@@ -64,9 +64,10 @@
   float: right;
 
   li {
-    @include inline-block();
+    display: inline-block;
     margin-left: 0;
     line-height: 64px;
+    vertical-align: top;
     vertical-align: middle;
 
     &:first-child a {

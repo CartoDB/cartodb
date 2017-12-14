@@ -181,7 +181,7 @@ div.table {
             height: 66px;
 
             & > div {
-              @include inline-block();
+              display: inline-block;
               position: fixed;
               z-index: 1;
               width: inherit;
@@ -190,6 +190,7 @@ div.table {
               padding: 10px 0 15px;
               border-bottom: 1px solid #CCC;
               background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+              vertical-align: top;
 
               &::after {
                 content: ' ';
@@ -213,27 +214,30 @@ div.table {
                 padding: 10px 5px;
 
                 span {
-                  @include inline-block();
+                  display: inline-block;
                   margin: 6px 0 5px 5px;
                   color: #7C7C7C;
+                  vertical-align: top;
                 }
               }
 
               &.interactuable {
                 div,
                 a {
-                  @include inline-block();
+                  display: inline-block;
                   margin: 6px 0 5px 5px;
                   color: #7C7C7C;
+                  vertical-align: top;
 
                   &::after {
-                    @include inline-block();
                     content: '';
+                    display: inline-block;
                     position: relative;
                     left: 2px;
                     border-top: 3px solid #7C7C7C;
                     border-right: 3px solid transparent;
                     border-left: 3px solid transparent;
+                    vertical-align: top;
                   }
 
                   &:hover {
@@ -249,9 +253,10 @@ div.table {
 
               a,
               div {
-                @include inline-block();
+                display: inline-block;
                 margin: 6px 0 5px 5px;
                 color: #7C7C7C;
+                vertical-align: top;
 
                 &:hover {
                   text-decoration: none;
@@ -567,10 +572,7 @@ div.table {
 
       &.sql_loader {
         div.float_info {
-          @include inline-block();
-          @include transform-style("linear");
-          @include transition-property("margin");
-          @include transition-duration(300ms);
+          display: inline-block;
           position: fixed;
           top: 50%;
           left: 50%;
@@ -579,6 +581,10 @@ div.table {
           margin: -100px 0 0 -120px;
           padding: 0;
           vertical-align: top;
+
+          @include transform-style("linear");
+          @include transition-property("margin");
+          @include transition-duration(300ms);
 
           img {
             margin-left: 101px;
@@ -608,7 +614,7 @@ div.table {
 
         div.float_info,
         div.float_action {
-          @include inline-block();
+          display: inline-block;
           position: fixed;
           z-index: -10;
           left: 50%;
@@ -661,8 +667,9 @@ div.table {
           }
 
           div.float_action {
-            @include inline-block();
+            display: inline-block;
             background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;
+            vertical-align: top;
           }
         }
       }
@@ -774,7 +781,7 @@ div.order_selector {
 
   a.asc,
   a.desc {
-    @include inline-block();
+    display: inline-block;
     position: relative;
     margin-top: 13px;
     padding: 0;
@@ -784,6 +791,7 @@ div.order_selector {
     font-size: 9px;
     font-weight: bold;
     text-transform: uppercase;
+    vertical-align: top;
 
     &:hover {
       background-color: #397DB9;

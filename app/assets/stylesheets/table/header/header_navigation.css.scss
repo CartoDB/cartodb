@@ -24,25 +24,29 @@ div.vis_navigation {
   text-align: center;
 
   nav {
+
+    display: inline-block;
     position: relative;
 
     z-index: 1;
     margin: 0;
     padding: 1px;
     border: 2px solid #FFF;
+    vertical-align: top;
 
-    @include inline-block();
     @include border-radius(30px);
 
     a.tab {
+
+      display: inline-block;
       padding: 7px 25px;
       color: #FFF;
       font-size: 12px;
       font-weight: 500;
 
       text-transform: uppercase;
+      vertical-align: top;
 
-      @include inline-block();
       @include border-radius(30px);
 
       &.selected {
@@ -74,6 +78,8 @@ div.globalerror {
 
   p {
     @include border-top-radius(3px);
+
+    display: inline-block;
     width: auto;
     height: 14px;
     margin-top: 39px;
@@ -82,8 +88,7 @@ div.globalerror {
     color: white;
     font: normal 13px $text-fonts;
     line-height: 15px;
-
-    @include inline-block();
+    vertical-align: top;
 
     &.error {
       background-color: #FFEBF1;

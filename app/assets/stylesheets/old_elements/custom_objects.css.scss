@@ -103,11 +103,12 @@
   */
 
 .form_color {
-  @include inline-block();
-  $rad: 3px;
+  display: inline-block;
   position: relative;
   width: 44px;
   height: 21px;
+  vertical-align: top;
+  $rad: 3px;
 
   a {
     position: absolute;
@@ -295,9 +296,7 @@
   */
 
 .form_spinner {
-  @include inline-block();
-  @include border-radius(3px);
-  @include background(linear-gradient(#FFF, #F2F2F2));
+  display: inline-block;
   position: relative;
   width: auto !important;
   min-width: 20px;
@@ -305,6 +304,10 @@
   margin: 0;
   padding: 2px 19px 2px 4px;
   border: 1px solid #9E9E9E;
+  vertical-align: top;
+
+  @include border-radius(3px);
+  @include background(linear-gradient(#FFF, #F2F2F2));
 
   &.with-label {
     @include border-radius(0);
@@ -330,9 +333,7 @@
     }
 
     .input {
-      @include inline-block();
-      @include border-radius(3px);
-      @include background(linear-gradient(#FFF, #F2F2F2));
+      display: inline-block;
       position: relative;
       width: auto !important;
       min-width: 20px;
@@ -340,6 +341,10 @@
       margin: 0;
       padding: 2px 19px 2px 4px;
       border: 1px solid #9E9E9E;
+      vertical-align: top;
+
+      @include border-radius(3px);
+      @include background(linear-gradient(#FFF, #F2F2F2));
     }
   }
 
@@ -467,10 +472,11 @@
   */
 
 .radiobutton {
-  @include inline-block();
+  display: inline-block;
   outline: none;
   color: #397DB9;
   font-weight: bold;
+  vertical-align: top;
   vertical-align: middle;
 
   &.hidden_radio span.radio {
@@ -487,14 +493,16 @@
   }
 
   span.radio {
-    @include inline-block();
-    @include size(10px);
-    @include border-radius(10px);
+    display: inline-block;
     position: relative;
     margin: 0 7px 2px 0;
     border: 1px solid #397DBA;
     background: WHITE;
+    vertical-align: top;
     vertical-align: middle;
+
+    @include size(10px);
+    @include border-radius(10px);
 
     &::before {
       @include size(6px);
@@ -573,20 +581,23 @@
   */
 
 .checkbox {
-  @include inline-block();
+  display: inline-block;
   text-decoration: none;
+  vertical-align: top;
   vertical-align: middle;
 
   span.check {
-    @include inline-block();
-    @include border-radius(3px);
+    display: inline-block;
     position: relative;
     width: 10px;
     height: 10px;
     margin: 0 0 1px;
     border: 1px solid #999;
     background: WHITE;
+    vertical-align: top;
     vertical-align: middle;
+
+    @include border-radius(3px);
 
     &::before {
       @include elements-sprite(checkbox);
@@ -635,18 +646,20 @@
 
 .switch,
 .form_switch {
-  @include inline-block();
-  @include text-indent();
-  @include border-radius(12px);
-  @include transform-style("linear");
-  @include transition-property("background");
-  @include transition-duration(180ms);
+  display: inline-block;
   position: relative;
   width: 29px;
   height: 15px;
   border: 1px solid #44759E;
   text-decoration: none;
+  vertical-align: top;
   vertical-align: middle;
+
+  @include text-indent();
+  @include border-radius(12px);
+  @include transform-style("linear");
+  @include transition-property("background");
+  @include transition-duration(180ms);
 
   &::before {
     @include border-radius(12px);

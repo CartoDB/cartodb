@@ -173,9 +173,9 @@ div.dropdown.basemap {
         &::before {
           content: '';
           border: 1px solid rgba(0, 0, 0, 0.15);
+          border-radius: 2px;
 
           @include position(0,0,0,0);
-          border-radius: 2px;
         }
 
         .remove_layer {

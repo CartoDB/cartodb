@@ -37,10 +37,11 @@
 
   input[type="text"] {
     @include box-sizing(border-box);
-    @include inline-block();
+    display: inline-block;
     width: 106px;
     margin: 0;
     padding: 14px 11px;
+    vertical-align: top;
   }
 
   label {

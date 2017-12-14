@@ -70,11 +70,13 @@ div.dropdown.color_picker {
   }
 
   .picker {
-    @include inline-block();
-    @include border-left-radius(2px);
+    display: inline-block;
     width: 164px;
     height: 100px;
+    vertical-align: top;
     cursor: crosshair;
+
+    @include border-left-radius(2px);
 
     &::before {
       @include position(0, 0, 0, 0);
@@ -113,11 +115,13 @@ div.dropdown.color_picker {
   }
 
   .slider {
-    @include inline-block();
-    @include border-right-radius(2px);
+    display: inline-block;
     width: 13px;
     height: 100px;
+    vertical-align: top;
     cursor: crosshair;
+
+    @include border-right-radius(2px);
   }
 
   .slider-indicator {
@@ -150,7 +154,7 @@ div.dropdown.color_picker {
     letter-spacing: -4px;
 
     li {
-      @include inline-block();
+      display: inline-block;
       width: 12px;
       height: 20px;
       margin: 0;
@@ -225,13 +229,14 @@ div.dropdown.color_picker {
     letter-spacing: -4px;
 
     span.color {
-      @include inline-block();
-      @include border-left-radius(3px);
+      display: inline-block;
       position: relative;
       width: 12px;
       height: 21px;
       letter-spacing: 0;
       vertical-align: top;
+
+      @include border-left-radius(3px);
 
       &::before {
         @include border-left-radius(3px);
@@ -247,8 +252,7 @@ div.dropdown.color_picker {
     }
 
     input.text {
-      @include inline-block();
-      @include border-right-radius(3px);
+      display: inline-block;
       width: 48px;
       height: 13px;
       padding: 3px;
@@ -259,6 +263,8 @@ div.dropdown.color_picker {
       letter-spacing: 0;
       line-height: 13px;
       vertical-align: top;
+
+      @include border-right-radius(3px);
 
       &:focus {
         border-color: rgba(0, 0, 0, 0.4);
@@ -272,7 +278,7 @@ div.dropdown.color_picker {
     }
 
     input.submit {
-      @include inline-block();
+      display: inline-block;
       width: 50px;
       height: 21px;
       margin: 0 0 0 3px;

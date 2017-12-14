@@ -1,4 +1,3 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
@@ -29,9 +28,9 @@ $width: 620px;
 }
 
 .ErrorDetails-item {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   padding: 20px 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }

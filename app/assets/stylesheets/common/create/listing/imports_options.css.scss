@@ -1,7 +1,5 @@
-@import '../../../variables/mixins';
 @import '../../../variables/colors';
 @import '../../../variables/sizes';
-@import 'compass/css3/images';
 
 // Imports styles
 $w: 780px;
@@ -40,9 +38,9 @@ $w: 780px;
 }
 
 .ImportOptions-tabsList {
-  @include display-flex();
-  @include flex-wrap(nowrap);
-  @include transition(margin, 150ms);
+  display: flex;
+  flex-wrap: nowrap;
+  transition: margin 150ms;
 }
 
 .ImportOptions-tab {

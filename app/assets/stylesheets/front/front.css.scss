@@ -119,10 +119,11 @@ body {
       letter-spacing: -4px;
 
       a {
-        @include inline-block();
+        display: inline-block;
         margin: 0 35px 0 0;
         padding: 0;
         letter-spacing: 0;
+        vertical-align: top;
         vertical-align: middle;
 
         img {
@@ -150,7 +151,8 @@ body {
       }
 
       p {
-        @include inline-block();
+        display: inline-block;
+        vertical-align: top;
       }
 
       label {
@@ -203,7 +205,7 @@ body {
 
       /* Errors */
       div.field_with_errors {
-        @include inline-block();
+        display: inline-block;
         width: auto;
         vertical-align: top;
 

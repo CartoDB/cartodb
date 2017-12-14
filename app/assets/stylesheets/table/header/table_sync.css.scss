@@ -63,13 +63,13 @@ div.sync_info {
   }
 
   div.circle {
+
+    display: inline-block;
     position: relative;
     width: 10px;
     height: 10px;
     margin-top: 5px;
     vertical-align: top;
-
-    @include inline-block();
 
     span.point {
       position: absolute;

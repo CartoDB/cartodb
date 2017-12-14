@@ -19,7 +19,7 @@ table th div.dropdown {
     line-height: normal;
 
     a {
-      @include inline-block();
+      display: inline-block;
       padding: 0;
       text-decoration: underline;
       vertical-align: top;

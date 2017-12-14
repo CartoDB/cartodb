@@ -154,10 +154,11 @@ div.dropdown.map_options_dropdown {
       &:hover { background: #FFF; }
 
       a {
-        @include inline-block();
+        display: inline-block;
         margin: 0;
         padding: 0;
         float: right;
+        vertical-align: top;
       }
     }
   }

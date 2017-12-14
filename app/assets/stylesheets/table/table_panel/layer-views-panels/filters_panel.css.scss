@@ -158,14 +158,16 @@
 
         .remove {
           margin: 0 0 0 7px;
-          @include inline-block();
+          display: inline-block;
+    vertical-align: top;
           @include size(13px);
           @include common-sprite(close_grey);
           &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
 
         .form_combo {
-          @include inline-block();
+          display: inline-block;
+    vertical-align: top;
           text-align: left;
           span { color: #666666 }
         }
@@ -391,7 +393,8 @@
           float: left;
 
           .switch { // small switch
-            @include inline-block();
+            display: inline-block;
+    vertical-align: top;
             @include size(21px, 12px);
             margin: 2px 0 0 0;
 
@@ -406,7 +409,8 @@
           }
 
           label {
-            @include inline-block();
+            display: inline-block;
+    vertical-align: top;
             font-size: 13px;
             color: #999999;
             cursor: pointer;
@@ -422,7 +426,8 @@
         }
 
         .btn {
-          @include inline-block();
+          display: inline-block;
+    vertical-align: top;
           @include size(25px, 21px);
           background: #f1f1f1;
           margin-right: -3px;
@@ -535,7 +540,8 @@
 
       .loading   { display:block; }
 
-      .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
+      .hist { margin: auto; position: relative; display: inline-block;
+    vertical-align: top; bottom: -3px; }
       .background.bar { fill: #E5E5E5; }
       .foreground.bar { fill: #4DC964; fill-opacity: .3; }
       .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }

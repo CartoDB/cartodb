@@ -48,8 +48,9 @@ $corner_radius: 6px;
     text-align: left;
 
     * {
-      @include inline-block();
+      display: inline-block;
       letter-spacing: 0;
+      vertical-align: top;
       vertical-align: middle;
     }
 
@@ -79,7 +80,7 @@ $corner_radius: 6px;
       @include text-overflow();
 
       i.synced {
-        @include inline-block();
+        display: inline-block;
         width: 12px;
         height: 12px;
         margin: 5px 0 0 4px;
@@ -147,11 +148,12 @@ $corner_radius: 6px;
 
   // Remove button
   .remove {
-    @include inline-block();
+    display: inline-block;
     width: 13px;
     height: 13px;
     margin-left: 5px;
     letter-spacing: 0;
+    vertical-align: top;
     vertical-align: middle;
 
     @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);

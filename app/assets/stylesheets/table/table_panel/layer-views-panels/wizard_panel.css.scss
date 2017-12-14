@@ -117,18 +117,20 @@ div.wizards_panel {
     @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
     li {
+
+      display: inline-block;
       position: relative;
       margin: 0 12px 0 0;
       padding: 0;
       letter-spacing: 0;
+      vertical-align: top;
       word-space: 0; /* stylelint-disable-line */
-
-      @include inline-block();
 
       a {
         display: block;
         position: relative;
         margin: 30px 0;
+        opacity: 0.7;
 
         @include size(92px, 90px);
         @include box-shadow(0 0 3px 4px rgba(black, 0.15));
@@ -155,7 +157,6 @@ div.wizards_panel {
         }
 
         @include simple-transition(opacity, 200ms);
-        opacity: 0.7;
 
         // Wizard icons
         &.simple {
@@ -283,7 +284,8 @@ div.wizards_panel {
         }
 
         .form_combo {
-          @include inline-block();
+          display: inline-block;
+          vertical-align: top;
         }
 
         &.label_text { border: none; }
@@ -304,7 +306,7 @@ div.wizards_panel {
 
         // Text between fields like " - to - "
         span.field span.text {
-          @include inline-block();
+          display: inline-block;
           width: 43px;
           margin-left: 5px;
           line-height: 21px;

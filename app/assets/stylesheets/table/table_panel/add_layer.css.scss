@@ -28,7 +28,7 @@
   // Add layer
   // (Add layer button)
   .add {
-    @include inline-block();
+    display: inline-block;
     width: 16px;
     height: 16px;
     margin: 0 0 0 23px;
@@ -36,6 +36,7 @@
     color: #ECECEC;
     line-height: 16px;
     text-align: center;
+    vertical-align: top;
 
     @include text-indent();
     @include border-radius(2px);
@@ -44,11 +45,12 @@
 
   // (Add layer text)
   .action {
-    @include inline-block();
+    display: inline-block;
     margin: 0 0 0 27px;
     font: 500 17px $text-fonts;
     letter-spacing: 0;
     line-height: 20px;
+    vertical-align: top;
   }
 
   &:hover {

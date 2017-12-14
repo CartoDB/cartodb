@@ -1,4 +1,3 @@
-@import "../../../variables/mixins";
 @import "../../../variables/colors";
 @import "../../../variables/sizes";
 
@@ -12,14 +11,13 @@ $w: 780px;
 }
 
 .ImportPanel-header {
+  display: flex;
   position: relative;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   padding: $sMargin-group 0;
   text-align: center;
-
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(center);
 }
 
 .ImportPanel-headerIcon {

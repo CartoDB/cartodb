@@ -70,10 +70,11 @@
 }
 
 .ContextMenu-groupItem {
-  @include inline-block();
+  display: inline-block;
   margin-right: 20px;
   color: $cTypography-secondary;
   line-height: normal;
+  vertical-align: top;
 
   &:last-child {
     margin-right: 0;
@@ -81,10 +82,11 @@
 }
 
 .ContextMenu-orderLink {
-  @include inline-block();
+  display: inline-block;
   color: #CCC;
   font-size: 15px;
   line-height: 19px;
+  vertical-align: top;
 
   &:hover {
     color: #666;

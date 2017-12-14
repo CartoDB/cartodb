@@ -166,17 +166,19 @@ div.map {
     }
 
     .options {
-      @include inline-block();
+      display: inline-block;
       position: absolute;
       top: 0;
       left: 0;
+      vertical-align: top;
     }
   }
 
   .options {
-    @include inline-block();
+    display: inline-block;
     margin: 20px 0 0 45px;
     float: left;
+    vertical-align: top;
 
     & > li.button {
       &.canvas_setup,
@@ -212,10 +214,11 @@ div.map {
     }
 
     & > li {
-      @include inline-block();
+      display: inline-block;
       margin: 0 5px 0 0;
       padding: 0 15px 0 0;
       border-right: 1px solid rgba(#D9D9D9, 0.8);
+      vertical-align: top;
       cursor: pointer;
 
       &.export_image .info h5 {
@@ -256,14 +259,16 @@ div.map {
       }
 
       & > .thumb {
-        @include inline-block();
-        @include size(30px);
-        @include border-radius(2px);
+        display: inline-block;
         position: relative;
         margin: 0 5px 0 0;
         background-color: rgba(0, 0, 0, 0);
         background-position: 50% 50%;
         background-size: 34px;
+        vertical-align: top;
+
+        @include size(30px);
+        @include border-radius(2px);
 
         &::before {
           @include position(0, 0, 0, 0);
@@ -283,8 +288,9 @@ div.map {
       }
 
       .info {
-        @include inline-block();
+        display: inline-block;
         padding-top: 2px;
+        vertical-align: top;
 
         h5,
         .name {
@@ -334,8 +340,7 @@ div.map {
   }
 
   .option-button {
-    @include inline-block();
-    @include border-radius(3px);
+    display: inline-block;
     position: relative;
     box-sizing: border-box;
     min-width: 70px;
@@ -345,6 +350,9 @@ div.map {
     background: rgba(#000, 0.7);
     color: #FFF;
     font-size: 13px;
+    vertical-align: top;
+
+    @include border-radius(3px);
 
     &:last-child {
       margin-right: 0;
@@ -523,7 +531,7 @@ div.map {
     background: WHITE;
 
     a {
-      @include inline-block();
+      display: inline-block;
       position: relative;
       vertical-align: top;
     }
@@ -707,11 +715,12 @@ div.cartodb-edit-buttons {
 
   // CartoDB id
   .cartodb_id {
-    @include inline-block();
+    display: inline-block;
     margin-top: 8px;
     color: #999;
     font-size: 13px;
     letter-spacing: 0;
+    vertical-align: top;
     word-spacing: 0;
   }
 

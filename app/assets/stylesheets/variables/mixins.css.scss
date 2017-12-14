@@ -20,12 +20,6 @@
   #{$property}: #{$value};
 }
 
-// Display inline
-@mixin inline-block() {
-  display: inline-block;
-  vertical-align: top;
-}
-
 // Display flex functions
 @mixin display-flex() {
   display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */

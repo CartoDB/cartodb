@@ -33,13 +33,15 @@
     }
 
     span {
-      @include inline-block();
-      @include transform(skew(25deg));
+      display: inline-block;
       max-width: 150px;
       padding: 1px;
       overflow: hidden;
       text-overflow: ellipsis;
+      vertical-align: top;
       white-space: nowrap;
+
+      @include transform(skew(25deg));
     }
 
     &.empty {

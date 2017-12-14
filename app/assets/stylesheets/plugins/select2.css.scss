@@ -675,10 +675,12 @@ disabled look for already selected choices in the results dropdown
   }
 
   span.value {
-    @include inline-block();
-    @include text-overflow();
+    display: inline-block;
     width: 85%;
     line-height: 22px;
+    vertical-align: top;
+
+    @include text-overflow();
   }
 }
 

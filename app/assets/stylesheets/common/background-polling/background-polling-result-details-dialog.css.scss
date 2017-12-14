@@ -1,4 +1,3 @@
-@import '../../variables/mixins';
 @import '../../variables/colors';
 @import '../../variables/sizes';
 
@@ -6,9 +5,9 @@
 $w: 560px;
 
 .BackgroundPollingDetails-body {
-  @include display-flex();
-  @include justify-content(flex-start);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: $w;
   min-width: initial;
   margin: 0 auto;

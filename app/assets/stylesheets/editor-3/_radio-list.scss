@@ -6,26 +6,26 @@
   margin-bottom: 1rem;
 
   &::after {
+    content: '';
     position: absolute;
     bottom: -18px;
     left: 7px;
     width: 1px;
     height: 18px;
     background: #DDD;
-    content: '';
   }
 
   &:first-child {
     margin-top: 16px;
 
     &::before {
+      content: '';
       position: absolute;
       top: -16px;
       left: 7px;
       width: 1px;
       height: 17px;
       background: #DDD;
-      content: '';
     }
   }
 

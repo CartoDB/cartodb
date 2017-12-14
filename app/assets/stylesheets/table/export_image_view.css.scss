@@ -12,7 +12,7 @@
 }
 
 .ExportImageView-Header {
-  @include transition(all, 200ms, ease-in-out);
+  transition: all 200ms ease-in-out;
   position: absolute;
   z-index: 105;
   top: -35px;
@@ -59,8 +59,9 @@
 }
 
 .ExportImageView-Footer--inner {
-  @include transition(margin, 200ms, ease-in-out);
   $width: 360px;
+
+  transition: margin 200ms ease-in-out;
   position: absolute;
   left: 50%;
   width: $width;
@@ -126,7 +127,7 @@
 }
 
 .ExportHelper.ExportHelper--header {
-  @include transition(opacity, 500ms, ease-in-out);
+  transition: opacity 500ms ease-in-out;
   position: absolute;
   top: 0;
   left: 0;
@@ -137,7 +138,7 @@
 }
 
 .ExportHelper.ExportHelper--attribution {
-  @include transition(opacity, 500ms, ease-in-out);
+  transition: opacity 500ms ease-in-out;
   position: absolute;
   top: auto;
   right: 0;

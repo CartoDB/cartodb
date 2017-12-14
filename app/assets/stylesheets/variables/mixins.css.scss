@@ -46,16 +46,6 @@
   @include css3-prefix('transform-style', $style);
 }
 
-@mixin transition($properties...) {
-  @if length($properties) >= 1 {
-    @include css3-prefix('transition', $properties);
-  }
-
-  @else {
-    @include css3-prefix('transition', $what: all, $length: 1s, $easing: ease-in-out);
-  }
-}
-
 /* FONT FACE */
 @mixin font-face($fontFamily: myFont, $eotFileSrc: 'myFont.eot', $woffFileSrc: 'myFont.woff', $ttfFileSrc: 'myFont.ttf', $svgFileSrc: 'myFont.svg', $svgFontID: '#myFont') {
   font-family: $fontFamily;

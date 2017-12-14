@@ -414,7 +414,7 @@ $sLabel-width: 140px;
 }
 
 .Form-inputError {
-  @include transition(margin, 200ms, ease-in-out);
+  transition: margin 200ms ease-in-out;
   position: absolute;
   z-index: 1;
   top: 50%;

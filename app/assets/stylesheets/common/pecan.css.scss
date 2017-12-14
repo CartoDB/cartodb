@@ -12,7 +12,7 @@
 }
 
 .PecanMap-MapsList {
-  @include transition(margin, 150ms);
+  transition: margin 150ms;
   display: block;
   position: relative;
   width: 5000px;
@@ -24,7 +24,7 @@
 }
 
 .PecanMap-MapsList.is--centered {
-  @include transition(none);
+  transition: none;
   margin: auto;
 }
 
@@ -59,7 +59,7 @@
 }
 
 .PecanMap-navigationButton {
-  @include transition(opacity, 150ms);
+  transition: opacity 150ms;
   position: absolute;
   top: 90px;
   padding: 0;

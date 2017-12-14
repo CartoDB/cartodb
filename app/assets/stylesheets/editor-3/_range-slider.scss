@@ -64,7 +64,7 @@
 }
 
 .rangesliderHandle {
-  @include transition(transform 200ms);
+  transition: transform 200ms;
   position: absolute;
   z-index: 3;
   top: 0;

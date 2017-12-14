@@ -27,7 +27,7 @@
 }
 
 .Editor-panel {
-  @include transition(width, 300ms, ease-in-out);
+  transition: width 300ms ease-in-out;
   display: flex;
   position: absolute;
   top: 0;

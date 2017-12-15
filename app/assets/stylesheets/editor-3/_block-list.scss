@@ -3,11 +3,13 @@
 @import 'cdb-variables/sizes';
 
 .BlockList {
+  position: relative;
   margin-bottom: $baseSize;
 }
 
 .BlockList-item {
   display: flex;
+  position: relative;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
   transition: border 200ms ease-in,
@@ -87,9 +89,9 @@
 }
 
 .BlockList-dragIcon {
-  position: relative;
-  top: 12px;
-  left: -36px;
+  position: absolute;
+  top: 28px;
+  left: -20px;
   transition: opacity 200ms ease-in;
   opacity: 0;
 }

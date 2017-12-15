@@ -21,7 +21,11 @@
     "Jaime Chapinal <jaime.chapinal@carto.com>",
     "Nicklas Gummesson <nicklas@carto.com>",
     "Francisco Dans <francisco@carto.com>",
-    "Emilio García <emilio@carto.com>"
+    "Emilio García <emilio@carto.com>",
+    "Ivan Malagon <ivan@carto.com>",
+    "Ruben Moya <ruben@carto.com>",
+    "Jesus Arroyo Torrens <jarroyo@carto.com>",
+    "Iago Lastra <iago@carto.com>"
   ],
   "license": "BSD-3-Clause",
   "dependencies": {

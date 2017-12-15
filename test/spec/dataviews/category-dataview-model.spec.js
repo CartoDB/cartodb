@@ -27,6 +27,8 @@ describe('dataviews/category-dataview-model', function () {
     var analysisService = new AnalysisService({ engine: engineMock });
     this.source = analysisService.analyse(analysisDefinition);
 
+    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
     this.model = new CategoryDataviewModel({
       source: this.source
     }, {
@@ -168,7 +170,6 @@ describe('dataviews/category-dataview-model', function () {
   describe('bindings to map bounds', function () {
     beforeEach(function () {
       // Disable debounce
-      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
       this.model._bboxFilter._stopBinds();
       this.model._bboxFilter._initBinds();
 

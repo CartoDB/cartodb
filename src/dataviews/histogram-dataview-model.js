@@ -40,14 +40,11 @@ module.exports = DataviewModelBase.extend({
       }
 
       // Start - End
-      var limits = this._totals.getCurrentStartEnd();
-      if (limits !== null) {
-        if (_.isNumber(limits.start)) {
-          params.push('start=' + limits.start);
-        }
-        if (_.isNumber(limits.end)) {
-          params.push('end=' + limits.end);
-        }
+      var start = this.get('start');
+      var end = this.get('end');
+      if (_.isFinite(start) && _.isFinite(end)) {
+        params.push('start=' + start);
+        params.push('end=' + end);
       }
     }
     return params;
@@ -82,10 +79,10 @@ module.exports = DataviewModelBase.extend({
     this._updateURLBinding();
 
     // When original data gets fetched
-    this._totals.bind('change:data', this._onDataChanged, this);
+    this._totals.bind('loadModelCompleted', this._onTotalsDataFetched, this);
+    this._totals.once('loadModelCompleted', this._updateBindings, this);
     this._totals.bind('error', this.setUnavailable, this);
     this._totals.bind('error', this._onTotalsError, this);
-    this._totals.once('change:data', this._updateBindings, this);
 
     this.on('change:column', this._onColumnChanged, this);
     this.on('change:localTimezone', this._onLocalTimezoneChanged, this);
@@ -338,12 +335,13 @@ module.exports = DataviewModelBase.extend({
     this._totals.setUrl(this.get('url'));
   },
 
-  _onDataChanged: function (model) {
-    var range = model && _.isFunction(model.getCurrentStartEnd) ? model.getCurrentStartEnd() : null;
-    if (range !== null) {
+  _onTotalsDataFetched: function (data, model) {
+    var start = model.get('start');
+    var end = model.get('end');
+    if (_.isFinite(start) && _.isFinite(end)) {
       this.set({
-        start: range.start,
-        end: range.end
+        start: start,
+        end: end
       });
     }
 

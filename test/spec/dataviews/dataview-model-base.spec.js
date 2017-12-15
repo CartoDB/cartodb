@@ -70,6 +70,9 @@ describe('dataviews/dataview-model-base', function () {
     });
     this.analysisNodes = this.source.getNodesCollection();
 
+    // Disable debounce
+    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
     this.model = new DataviewModelBase({
       source: this.source
     }, {
@@ -79,8 +82,6 @@ describe('dataviews/dataview-model-base', function () {
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
     engineMock._dataviewsCollection.add(this.model);
 
-    // Disable debounce
-    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
     this.model._bboxFilter._stopBinds();
     this.model._bboxFilter._initBinds();
   });
@@ -153,8 +154,6 @@ describe('dataviews/dataview-model-base', function () {
         });
 
         it('should change bounds', function () {
-          expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._bboxFilter);
-          expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('boundsChanged');
           expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:sync_on_bbox_change');
           expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:url');
           expect(this.model.on.calls.argsFor(2)[0]).toEqual('change:enabled');

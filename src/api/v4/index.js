@@ -31,7 +31,7 @@ var filter = require('./filter');
 var events = require('./events');
 var constants = require('./constants');
 
-var carto = window.carto = {
+var carto = {
   version: require('../../../package.json').version,
   ATTRIBUTION: constants.ATTRIBUTION,
   Client: Client,

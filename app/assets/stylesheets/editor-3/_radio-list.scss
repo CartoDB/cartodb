@@ -56,4 +56,12 @@
       }
     }
   }
+
+  &.has-error {
+    .CDB-Text {
+      // !important because we're using the style attribute in the
+      // element for the layer color, we need to override it somehow
+      color: $cError !important;
+    }
+  }
 }

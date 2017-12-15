@@ -14,13 +14,14 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
     end
     dbs = {}
     hosts.each do |h|
-      top_account_types = ::User.where(:database_host => h).group_and_count(:account_type).order(Sequel.desc(:count)).all[0..4]
+      total_account_types = ::User.where(:database_host => h).group_and_count(:account_type).order(Sequel.desc(:count)).all
       users_in_database = ::User.where(:database_host => h).count
-      dbs[h] = {'count' => users_in_database, 'top_account_types_percentages' => {}}
-      top_account_types.each do |a|
+      dbs[h] = {'count' => users_in_database, 'total_account_types_percentages' => {}, 'total_account_types_count' => {}}
+      total_account_types.each do |a|
         percentage = (a[:count] * 100) / users_in_database
         if percentage > 1
-          dbs[h]['top_account_types_percentages'][a[:account_type]] = percentage
+          dbs[h]['total_account_types_percentages'][a[:account_type]] = percentage
+          dbs[h]['total_account_types_count'][a[:account_type]] = a[:count]
         end
       end
     end

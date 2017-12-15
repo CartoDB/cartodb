@@ -23,12 +23,11 @@ $corner_radius: 6px;
   border: 1px solid rgba(black, 0.4);
   border-right: 0;
   border-bottom: 0;
+  border-top-left-radius: $corner_radius;
   background: white;
   background: #EDEDED;
   box-shadow: rgba(black, 0.15) 0 0 2px 2px;
   letter-spacing: -4px;
-
-  @include border-top-left-radius($corner_radius);
 
   .layer_panel {
     position: relative;
@@ -40,10 +39,9 @@ $corner_radius: 6px;
     transition-property: padding, margin;
     transition-duration: 250ms;
     border-top: 1px solid #999;
+    border-top-left-radius: $corner_radius;
     background: #EDEDED;
     box-shadow: rgba(black, 0.1) 0 -10px 20px 0;
-
-    @include border-top-left-radius($corner_radius);
 
     &:hover {
       padding-bottom: 15px;
@@ -75,8 +73,7 @@ $corner_radius: 6px;
       bottom: 0;
       left: 10px;
       border: 2px dashed #AAA;
-
-      @include border-top-left-radius(3px);
+      border-top-left-radius: 3px;
     }
 
     &::before {

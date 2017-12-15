@@ -29,12 +29,11 @@ $corner_radius: 6px;
   border: 1px solid #D0D0D0;
   border-right: 0;
   border-bottom: 0;
+  border-top-left-radius: $corner_radius;
   background: white;
   box-shadow: rgba(black, 0.07) 2px -1px 8px 0;
   letter-spacing: 0;
   vertical-align: top;
-
-  @include border-top-left-radius($corner_radius);
 
   h3 {
     padding: 22px 0 21px 30px;

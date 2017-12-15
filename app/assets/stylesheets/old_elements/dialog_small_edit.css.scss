@@ -358,7 +358,7 @@
   padding: 5px;
   border-radius: 4px;
 
-  box-shadow: rgba(0, 0, 0, 0.12) 0 0 2px 2px;
+  box-shadow: rgba(#000, 0.12) 0 0 2px 2px;
 
   .content {
     display: inline-block;
@@ -397,7 +397,7 @@
       @include background(linear-gradient(#F9F9F9, #E1E1E1));
       border-color: #ACACAC;
       background: #D3D3D3; // IE
-      box-shadow: rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
+      box-shadow: rgba(#FFF, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
     }
   }
 
@@ -496,7 +496,7 @@
         @include background(linear-gradient(#F9F9F9, #E1E1E1));
         border-color: #ACACAC;
         background: #D3D3D3; // IE
-        box-shadow: rgba(255, 255, 255, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
+        box-shadow: rgba(#FFF, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
       }
     }
   }

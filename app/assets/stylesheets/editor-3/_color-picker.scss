@@ -68,7 +68,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: $halfBaseSize;
   pointer-events: none;
 }
@@ -92,7 +92,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: 2px;
   pointer-events: none;
 }
@@ -116,7 +116,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: 2px;
   pointer-events: none;
 }
@@ -128,7 +128,7 @@
   width: $baseSize * 3;
   height: $baseSize * 3;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: 2px;
   background-image: url('../images/layout/colorpicker/alpha.png');
   background-position: 100%;
@@ -173,7 +173,7 @@
   height: 10px;
   border: 2px solid $cWhite;
   border-radius: 50%;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 1px 0 rgba(#000, 0.5);
 }
 
 .colorpicker-saturation i {
@@ -205,7 +205,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: $baseSize - 2;
   pointer-events: none;
 }

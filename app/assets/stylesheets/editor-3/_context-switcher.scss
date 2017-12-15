@@ -30,7 +30,7 @@
   overflow: hidden;
   border-radius: 4px;
   background: $cBlue;
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 0 2px 0 rgba(#000, 0.24), 0 4px 8px 0 rgba(#000, 0.16);
 }
 
 .Editor-contextSwitcher.Editor-contextSwitcher--view {
@@ -55,7 +55,7 @@
 }
 
 .Editor-contextSwitcherItem {
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-right: 1px solid rgba(#000, 0.08);
 
   &:last-child {
     border-right: 0;
@@ -71,7 +71,7 @@
 }
 
 .Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
-  fill: rgba(0, 0, 0, 0.16);
+  fill: rgba(#000, 0.16);
 }
 
 .Editor-contextSwitcherMedia {

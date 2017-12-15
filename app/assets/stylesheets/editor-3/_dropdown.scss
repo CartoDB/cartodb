@@ -92,14 +92,14 @@
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
-  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.16);
   white-space: normal;
 }
 
 .Editor-boxModal--darked {
   border: 1px solid rgba(30, 39, 44, 0.34);
   background: #263239;
-  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.36);
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.36);
 }
 
 .Editor-boxModalHeader {

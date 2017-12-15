@@ -266,7 +266,7 @@ div.map {
         position: relative;
         margin: 0 5px 0 0;
         border-radius: 2px;
-        background-color: rgba(0, 0, 0, 0);
+        background-color: rgba(#000, 0);
         background-position: 50% 50%;
         background-size: 34px;
         vertical-align: top;
@@ -276,7 +276,7 @@ div.map {
         &::before {
           @include position(0, 0, 0, 0);
           content: ' ';
-          border: 1px solid  rgba(0, 0, 0, 0.15);
+          border: 1px solid  rgba(#000, 0.15);
           border-radius: 2px;
         }
 
@@ -531,7 +531,7 @@ div.map {
     border-radius: 3px;
     background: #FFF;
     background: WHITE;
-    box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 3px;
+    box-shadow: rgba(#000, 0.1) 0 0 4px 3px;
 
     a {
       display: inline-block;
@@ -545,7 +545,7 @@ div.map {
       left: -90px;
       width: 313px;
       border-radius: 2px;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(#000, 0.8);
       text-align: center;
 
       p {
@@ -562,7 +562,7 @@ div.map {
         height: 0;
         margin-left: -3px;
         border-right: 6px solid transparent;
-        border-bottom: 6px solid  rgba(0, 0, 0, 0.8);
+        border-bottom: 6px solid  rgba(#000, 0.8);
         border-left: 6px solid transparent;
       }
     }
@@ -767,12 +767,14 @@ div.cartodb-edit-buttons {
     }
 
     &:first-child {
-      @include border-left-radius(3px);
+      border-top-left-radius: 3px;
+      border-bottom-left-radius: 3px;
     }
 
     &:last-child {
-      @include border-right-radius(3px);
       border-right: 1px solid #B0B0B0;
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
     }
   }
 }

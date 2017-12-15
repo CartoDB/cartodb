@@ -15,7 +15,7 @@ div.dropdown {
   border: none;
   border-radius: 3px;
   background: WHITE;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 1px;
+  box-shadow: rgba(#000, 0.2) 0 0 4px 1px;
 
   &::before {
     content: ' ';
@@ -99,7 +99,7 @@ div.dropdown {
 
   // With border
   &.border {
-    $after_color:  rgba(0, 0, 0, 0.35);
+    $after_color:  rgba(#000, 0.35);
     border: 1px solid $after_color;
 
     &::after {
@@ -211,11 +211,13 @@ div.dropdown {
       }
 
       &:first-child {
-        @include border-top-radius(3px);
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
       }
 
       &:last-child {
-        @include border-bottom-radius(3px);
+        border-bottom-right-radius: 3px;
+        border-bottom-left-radius: 3px;
       }
 
       &:hover {

@@ -19,7 +19,7 @@
     display: inline-block;
     margin: 0 5px 0 0;
     border-radius: 2px;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgba(#000, 0);
     background-position: 50% 50%;
     background-size: 34px;
     box-shadow: 0 0 1px rgba(#000, 0.9);
@@ -30,7 +30,7 @@
 
     &::before {
       content: ' ';
-      border: 1px solid rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(#000, 0.15);
       border-radius: 2px;
 
       @include position(0, 0, 0, 0);
@@ -172,7 +172,7 @@ div.dropdown.basemap {
 
         &::before {
           content: '';
-          border: 1px solid rgba(0, 0, 0, 0.15);
+          border: 1px solid rgba(#000, 0.15);
           border-radius: 2px;
 
           @include position(0,0,0,0);
@@ -182,14 +182,14 @@ div.dropdown.basemap {
           z-index: 2;
           padding: 0;
           transition: opacity 100ms ease-in;
+          border-top-left-radius: 2px;
+          border-bottom-right-radius: 2px;
           opacity: 0;
           background: rgba(black, 0.5);
           text-indent: 0;
 
           @include size(14px, 10px);
           @include position(false, 0, 0, false);
-          @include border-top-left-radius(2px);
-          @include border-bottom-right-radius(2px);
 
           &::before {
             content: ' ';
@@ -205,7 +205,7 @@ div.dropdown.basemap {
 
         &:hover {
           cursor: pointer;
-          &::before { border: 1px solid rgba(0, 0, 0, 0.5); }
+          &::before { border: 1px solid rgba(#000, 0.5); }
         }
       }
 

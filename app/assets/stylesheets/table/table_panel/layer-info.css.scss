@@ -25,9 +25,8 @@ $corner_radius: 6px;
   left: 0;
   height: 67px;
   border-bottom: 1px solid rgba(#999, 0.25);
+  border-top-left-radius: $corner_radius;
   line-height: 62px;
-
-  @include border-top-left-radius($corner_radius);
 
   div.left {
     width: 82%;

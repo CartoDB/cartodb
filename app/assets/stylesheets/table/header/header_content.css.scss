@@ -131,7 +131,7 @@ $text-shadow-color: rgba(black, 0.25);
         display: inline-block;
         width: auto;
         padding-left: 15px;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(#FFF, 0.5);
         font-size: 0.938em;
         font-style: italic;
         font-weight: 300;
@@ -144,12 +144,12 @@ $text-shadow-color: rgba(black, 0.25);
         .link { text-decoration: underline; }
 
         a {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(#FFF, 0.5);
           font-style: normal;
           font-weight: 300;
 
           &:hover {
-            color: rgba(255, 255, 255, 1);
+            color: rgba(#FFF, 1);
             cursor: pointer;
           }
           &.disabled { opacity: 1; }

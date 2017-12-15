@@ -24,11 +24,12 @@ div.dropdown.color_picker {
   }
 
   div.top {
-    @include border-top-radius(3px);
     position: relative;
     padding: 8px;
     overflow: visible;
     border-bottom: 1px solid #D6D6D6;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
     background: #EEE;
     text-align: center;
 
@@ -73,10 +74,10 @@ div.dropdown.color_picker {
     display: inline-block;
     width: 164px;
     height: 100px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
     vertical-align: top;
     cursor: crosshair;
-
-    @include border-left-radius(2px);
 
     &::before {
       @include position(0, 0, 0, 0);
@@ -118,10 +119,10 @@ div.dropdown.color_picker {
     display: inline-block;
     width: 13px;
     height: 100px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
     vertical-align: top;
     cursor: crosshair;
-
-    @include border-right-radius(2px);
   }
 
   .slider-indicator {
@@ -187,24 +188,24 @@ div.dropdown.color_picker {
       }
 
       &:first-child a {
-        @include border-top-left-radius(2px);
+        border-top-left-radius: 2px;
       }
 
       &:nth-child(16) a {
-        @include border-bottom-left-radius(2px);
+        border-bottom-left-radius: 2px;
       }
 
       &:nth-child(15) a {
-        @include border-top-right-radius(2px);
+        border-top-right-radius: 2px;
 
         &::before {
-          @include border-top-right-radius(2px);
+          border-top-right-radius: 2px;
           border-color: #ABABAB;
         }
       }
 
       &:last-child a {
-        @include border-bottom-right-radius(2px);
+        border-bottom-right-radius: 2px;
       }
     }
 
@@ -214,11 +215,13 @@ div.dropdown.color_picker {
 
       li {
         &:first-child a {
-          @include border-left-radius(2px);
+          border-top-left-radius: 2px;
+          border-bottom-left-radius: 2px;
         }
 
         &:last-child a {
-          @include border-right-radius(2px);
+          border-top-right-radius: 2px;
+          border-bottom-right-radius: 2px;
         }
       }
     }
@@ -233,20 +236,21 @@ div.dropdown.color_picker {
       position: relative;
       width: 12px;
       height: 21px;
+      border-top-left-radius: 3px;
+      border-bottom-left-radius: 3px;
       letter-spacing: 0;
       vertical-align: top;
 
-      @include border-left-radius(3px);
-
       &::before {
-        @include border-left-radius(3px);
         content: ' ';
         position: absolute;
         top: 0;
         left: 0;
         width: 10px;
         height: 19px;
-        border: 1px solid  rgba(0, 0, 0, 0.2);
+        border: 1px solid  rgba(#000, 0.2);
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
         background: none;
       }
     }
@@ -256,18 +260,18 @@ div.dropdown.color_picker {
       width: 48px;
       height: 13px;
       padding: 3px;
-      border: 1px solid  rgba(0, 0, 0, 0.2);
+      border: 1px solid  rgba(#000, 0.2);
       border-left: 0;
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
       color: #666;
       font: normal 11px $text-fonts;
       letter-spacing: 0;
       line-height: 13px;
       vertical-align: top;
 
-      @include border-right-radius(3px);
-
       &:focus {
-        border-color: rgba(0, 0, 0, 0.4);
+        border-color: rgba(#000, 0.4);
         outline: none;
       }
 

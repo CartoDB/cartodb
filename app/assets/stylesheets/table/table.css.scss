@@ -765,13 +765,15 @@ div.order_selector {
   right: 0;
 
   a.asc {
-    @include border-left-radius(2px);
     margin-right: 1px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
   }
 
   a.desc {
-    @include border-right-radius(2px);
     margin-right: 10px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
   }
 
   a.asc,

@@ -101,12 +101,14 @@
     line-height: 35px;
 
     &:first-child {
-      @include border-top-radius(2px);
       border-top: 0;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
     }
 
     &:last-child {
-      @include border-bottom-radius(2px);
+      border-bottom-right-radius: 2px;
+      border-bottom-left-radius: 2px;
     }
 
     span.value,

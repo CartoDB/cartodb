@@ -518,11 +518,11 @@
 
   &.editable {
     .text {
-      @include user-select(inherit);
       padding: 5px 9px;
       transition: padding 100ms ease-in;
       border: 1px dashed #CCC;
       cursor: text !important;
+      user-select: inherit;
 
       .content {
         padding: 10px 10px 3px;
@@ -631,7 +631,7 @@
 // .overlay
 .overlay.editable .content {
   .text {
-    @include user-select(inherit);
+    user-select: inherit;
   }
 }
 
@@ -665,7 +665,6 @@
   }
 
   .text {
-    @include user-select(none);
     transition: padding 0.05s ease-in-out;
     color: #FFF;
     font-size: 20px;
@@ -678,6 +677,7 @@
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     hyphens: auto;
+    user-select: none;
 
     em,
     i {
@@ -715,9 +715,9 @@ div.cartodb-zoom .info {
   border: 1px solid #999;
   border-radius: 4px;
   background: WHITE;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  -webkit-box-shadow: rgba(#000, 0.2) 0 0 4px 2px;
+  -moz-box-shadow: rgba(#000, 0.2) 0 0 4px 2px;
+  box-shadow: rgba(#000, 0.2) 0 0 4px 2px;
   color: #858585;
   font: normal 13px "Helvetica", Arial;
   line-height: normal;

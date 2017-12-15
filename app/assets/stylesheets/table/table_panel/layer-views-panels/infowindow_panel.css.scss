@@ -24,9 +24,8 @@
     position: relative;
     z-index: 2;
     padding: 10px 0 0 8px;
+    border-top-left-radius: 3px;
     background: image-url('layout/linen.png') repeat 0 0;
-
-    @include border-top-left-radius(3px);
 
     &::after {
       content: '';
@@ -46,12 +45,12 @@
       a {
         display: inline-block;
         width: 99px;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
         background: white;
         line-height: 41px;
         text-align: center;
         vertical-align: top;
-
-        @include border-top-radius(3px);
 
         &.selected {
           position: relative;
@@ -248,15 +247,12 @@
     bottom: 0;
     left: 0;
     padding: 20px 40px;
+    border-top-left-radius: 4px;
     background: rgba(white, 0.9);
     line-height: normal;
-
     text-align: center;
 
-    @include border-top-left-radius(4px);
-
     span.block-icon {
-
       display: inline-block;
       position: relative;
       width: 111px;

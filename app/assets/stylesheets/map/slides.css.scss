@@ -8,6 +8,8 @@
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
 
+$width: 140px;
+
 .slides_panel {
   position: absolute;
   z-index: 1;
@@ -17,7 +19,6 @@
   width: $width;
   transition: left 100ms ease-in;
   background: #333 image-url('layout/noise.png') repeat 0 0;
-  $width: 140px;
 
   &.active {
     left: 0;

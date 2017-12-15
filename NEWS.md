@@ -335,7 +335,6 @@ ion for time-series (#12670)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 * Enable CSV exports for polygon and line datasets (#13196)
 * Fix wrong padding in widgets list (#13200)
-* Enable CSV exports for polygon and line datasets (#13212)
 * Add fetch polyfill (#13230)
 
 ### Internals

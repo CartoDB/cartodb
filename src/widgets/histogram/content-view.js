@@ -38,11 +38,8 @@ module.exports = cdb.core.View.extend({
     this._numberOfFilters = 0;
     this._initStateApplied = false;
 
-    var _initBinds = this._initBinds.bind(this);
     this._originalData.once('change:data', function () {
-      this._dataviewModel.fetch({
-        complete: _initBinds
-      });
+      this._initBinds();
     }, this);
   },
 

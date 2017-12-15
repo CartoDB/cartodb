@@ -1360,7 +1360,7 @@ module.exports = cdb.core.View.extend({
 
     var self = this;
     var geometryDefinition = obj.definition[Object.keys(obj.definition)[0]]; // Gets first definition by geometry
-    var colorsRange = geometryDefinition && geometryDefinition.color.range;
+    var colorsRange = geometryDefinition && geometryDefinition.color && geometryDefinition.color.range;
     var data = this.model.get('data');
     var interpolatedColors = d3Interpolate.interpolateRgbBasis(colorsRange);
     var domain = this._calculateDataDomain();

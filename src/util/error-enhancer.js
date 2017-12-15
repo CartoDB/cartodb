@@ -22,6 +22,10 @@ var ERRORS = {
     error: 'Too many bins returned',
     message: 'There are too many bins returned. Try selecting a less granular aggregation or filtering the data source.',
     refresh: false
+  },
+  dataview: {
+    level: 'error',
+    refresh: false
   }
 };
 

@@ -9,7 +9,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  builder_embed: './lib/assets/core/javascripts/cartodb3/public_editor.js',
+  builder_embed: ['whatwg-fetch', './lib/assets/core/javascripts/cartodb3/public_editor.js'],
   dataset: './lib/assets/core/javascripts/cartodb3/dataset.js',
   builder: './lib/assets/core/javascripts/cartodb3/editor.js'
 };

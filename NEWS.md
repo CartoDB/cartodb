@@ -105,6 +105,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix like buttons (#13231)
+* Wayfinding: fix dialog footer (#13223)
 * Wayfinding: widget view (#13202)
 * Wayfinding: layer list (#13208)
 * Wayfinding: edit feature (#13203)
@@ -332,7 +333,11 @@ ion for time-series (#12670)
 * Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Treat all time series dataview timestamps as UTC (#13070)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
+* Fetch histogram and time series totals with a new `no_filters` parameter. (#13059)
 * Enable CSV exports for polygon and line datasets (#13212)
+* Enable CSV exports for polygon and line datasets (#13196)
+* Fix wrong padding in widgets list (#13200)
+* Add fetch polyfill (#13230)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

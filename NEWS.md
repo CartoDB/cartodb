@@ -104,6 +104,8 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Wayfinding: fix dialog footer (#13223)
+* Fix like buttons (#12779)
 * Wayfinding: widget view (#13202)
 * Wayfinding: layer list (#13208)
 * Wayfinding: edit feature (#13203)
@@ -333,6 +335,9 @@ ion for time-series (#12670)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 * Fetch histogram and time series totals with a new `no_filters` parameter. (#13059)
 * Enable CSV exports for polygon and line datasets (#13212)
+* Enable CSV exports for polygon and line datasets (#13196)
+* Fix wrong padding in widgets list (#13200)
+* Add fetch polyfill (#13230)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

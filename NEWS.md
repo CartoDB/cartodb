@@ -334,6 +334,7 @@ ion for time-series (#12670)
 * Treat all time series dataview timestamps as UTC (#13070)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 * Enable CSV exports for polygon and line datasets (#13212)
+* Add fetch polyfill (#13230)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.124.13222",
+  "version": "4.10.125.13222",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -42,7 +42,8 @@
     "tangram": "cartodb/tangram#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
-    "webpack": "2.3.2"
+    "webpack": "2.3.2",
+    "whatwg-fetch": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",

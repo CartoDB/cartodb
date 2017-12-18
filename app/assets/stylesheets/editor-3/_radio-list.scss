@@ -34,8 +34,13 @@
   }
 }
 
+.VerticalRadioList-radio {
+  display: flex;
+}
+
 .VerticalRadioList-itemInner {
   display: flex;
+  align-items: center;
 
   &:hover {
     cursor: pointer;

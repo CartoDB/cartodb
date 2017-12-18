@@ -28,6 +28,7 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * @constructor
  * @abstract
  * @memberof carto.dataview
+ * @fires dataChanged
  * @fires columnChanged
  * @fires statusChanged
  * @fires error

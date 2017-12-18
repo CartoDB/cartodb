@@ -16,11 +16,14 @@ var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
  * @param {boolean} [options.useLocalTimezone] - Indicates to use the user local timezone or not
  *
  * @fires dataChanged
+ * @fires columnChanged
+ * @fires statusChanged
+ * @fires error
+ *
  * @fires binsChanged
  * @fires aggregationChanged
  * @fires offsetChanged
  * @fires localTimezoneChanged
- * @fires error
  * 
  * @constructor
  * @extends carto.dataview.Base

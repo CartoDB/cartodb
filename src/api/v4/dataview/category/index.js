@@ -23,7 +23,7 @@ var parseCategoryData = require('./parse-data.js');
  *  });
  * ```
  *
- * Like all dataviews is an async object so you must wait for the data to be availiable.
+ * Like every other dataview, this is an async object and you must wait for the data to be availiable.
  *
  * The data format for the category-dataview is described in {@link carto.dataview.CategoryData}
  *
@@ -35,10 +35,13 @@ var parseCategoryData = require('./parse-data.js');
  * @param {string} [options.operationColumn] - The column where the operation will be applied
  *
  * @fires dataChanged
+ * @fires columnChanged
+ * @fires statusChanged
+ * @fires error
+ *
  * @fires limitChanged
  * @fires operationChanged
  * @fires operationColumnChanged
- * @fires error
  *
  * @constructor
  * @extends carto.dataview.Base

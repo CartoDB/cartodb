@@ -14,8 +14,11 @@ var parseHistogramData = require('./parse-data.js');
  * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
  *
  * @fires dataChanged
- * @fires binsChanged
+ * @fires columnChanged
+ * @fires statusChanged
  * @fires error
+ *
+ * @fires binsChanged
  *
  * @constructor
  * @extends carto.dataview.Base

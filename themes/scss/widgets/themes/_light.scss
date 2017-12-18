@@ -121,11 +121,9 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Widget-listItem--fake:before {
     background-color: $loadingBkg;
   }
-  .CDB-Widget-listButton {
-    &:hover {
-      .CDB-Widget-progressState:not(.is-accepted) {
-        background: $cHighlightHover;
-      }
+  .CDB-Widget-listButton:hover {
+    .CDB-Widget-progressState:not(.is-accepted) {
+      background: $cHighlightHover;
     }
   }
   .CDB-Widget-listButton--withBorder {

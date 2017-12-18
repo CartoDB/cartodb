@@ -85,7 +85,6 @@ Client.prototype.addLayer = function (layer, opts) {
  * Use this method instead multiple calls to **addLayer** to improve performance.
  *
  * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -103,12 +102,8 @@ Client.prototype.addLayer = function (layer, opts) {
  * @returns {Promise} A promise that will be fulfilled when the layers are added
  * @api
  */
-Client.prototype.addLayers = function (layers, opts) {
-  opts = opts || {};
+Client.prototype.addLayers = function (layers) {
   layers.forEach(this._addLayer, this);
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 
@@ -154,7 +149,6 @@ Client.prototype.removeLayer = function (layer, opts) {
  *
  *
  * @param {carto.layer.Base[]} - An array with the layers to be removed
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -162,12 +156,8 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @returns {Promise} A promise that will be fulfilled when the layers are removed
  * @api
  */
-Client.prototype.removeLayers = function (layers, opts) {
-  opts = opts || {};
+Client.prototype.removeLayers = function (layers) {
   layers.forEach(this._removeLayer, this);
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 
@@ -228,7 +218,6 @@ Client.prototype.addDataview = function (dataview, opts) {
  *  }):
  * 
  * @param {carto.dataview.Base[]} - An array with the dataviews to be added
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -236,12 +225,8 @@ Client.prototype.addDataview = function (dataview, opts) {
  * @returns {Promise} A promise that will be fulfilled when the dataviews are added
  * @api
  */
-Client.prototype.addDataviews = function (dataviews, opts) {
-  opts = opts || {};
+Client.prototype.addDataviews = function (dataviews) {
   dataviews.forEach(this._addDataview, this);
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 
@@ -259,7 +244,6 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  *  }):
  *
  * @param {carto.dataview.Base} - The dataview array to be removed
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -267,13 +251,9 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  * @returns {Promise} A promise that will be fulfilled when the dataview is removed
  * @api
  */
-Client.prototype.removeDataview = function (dataview, opts) {
-  opts = opts || {};
+Client.prototype.removeDataview = function (dataview) {
   this._dataviews.splice(this._dataviews.indexOf(dataview));
   this._engine.removeDataview(dataview.$getInternalModel());
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 

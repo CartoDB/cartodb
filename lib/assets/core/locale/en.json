@@ -1948,7 +1948,7 @@
           "label": "Add new analysis",
           "tooltip": "Add new analysis linked"
         },
-        "edit-analysis-tooltip": "Edit %{name} Analysis",
+        "edit-analysis-tooltip": "Edit Analysis",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",

@@ -45,7 +45,6 @@ module.exports = Model.extend({
         params.push('auth_token=' + authToken);
       }
     }
-    console.log('Totals URL', params.join('&'));
     return this.get('url') + '?' + params.join('&');
   },
 

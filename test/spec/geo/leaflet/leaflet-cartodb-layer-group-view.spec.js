@@ -4,7 +4,7 @@ var LayersCollection = require('../../../../src/geo/map/layers.js');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group.js');
 var LeafletCartoDBLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-layer-group-view');
 
-fdescribe('leaflet-cartodb-layer-group-view', function () {
+describe('leaflet-cartodb-layer-group-view', function () {
   var container;
   var leafletMap;
 

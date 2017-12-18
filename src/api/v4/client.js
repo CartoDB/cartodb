@@ -81,10 +81,9 @@ Client.prototype.addLayer = function (layer, opts) {
 };
 
 /**
- * Add multiple layers to the client. Note the hierarchal order of layers.
- * Use this method instead multiple calls to **addLayer** to improve performance.
+ * Add multiple layers to the client at once.
  *
- * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
+ * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer.
  *
  * @fires error
  * @fires success
@@ -135,7 +134,6 @@ Client.prototype.removeLayer = function (layer, opts) {
 
 /**
  * Remove multiple layer from the client.
- * Use this method instead multiple calls to **removeLayer** to improve performance.
  * 
  * @example
  * // Remove multiple layers from the client
@@ -162,7 +160,7 @@ Client.prototype.removeLayers = function (layers) {
 };
 
 /**
- * Get all the {@link carto.layer.Base|layers} from the client
+ * Get all the {@link carto.layer.Base|layers} from the client.
  * 
  * @example
  * // Get all layers from the client
@@ -258,7 +256,7 @@ Client.prototype.removeDataview = function (dataview) {
 };
 
 /**
- * Get all the dataviews from the client
+ * Get all the dataviews from the client.
  * 
  * @example
  * // Get all the dataviews from the client
@@ -283,8 +281,8 @@ Client.prototype.getDataviews = function () {
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
  *  
- * @returns {L.TileLayer} A Leaflet layer that groups all the layers:
- * {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer}
+ * @returns A {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer} layer that groups all the layers.
+ * 
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
@@ -309,7 +307,7 @@ Client.prototype.getLeafletLayer = function () {
  * // Add googlemaps MapType to a google map
  * googleMap.overlayMapTypes.push(client.getGoogleMapsMapType(googleMap));
  * 
- * @param {google.maps.Map} - The native google map where the carto layer is going to be added
+ * @param {google.maps.Map} - The native Google Maps map where the CARTO layers will be displayed.
  *
  * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
  * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}

@@ -87,11 +87,11 @@ $timeSliderBorder: rgba(#FFF, 1);
     background-color: $elementBkg !important;
   }
   .CDB-Widget-progressState--pattern {
-    background-color: $selected;
+    background-color: $cMainBg;
     background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
   }
   .CDB-Widget-progressState.is-accepted {
-    background-color: $selected;
+    background-color: $cMainBg;
   }
   .CDB-Widget-dot--navigation {
     background: $elementBkg;
@@ -120,6 +120,13 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Widget-listItem--fake:after,
   .CDB-Widget-listItem--fake:before {
     background-color: $loadingBkg;
+  }
+  .CDB-Widget-listButton {
+    &:hover {
+      .CDB-Widget-progressState:not(.is-accepted) {
+        background: $cHighlightHover;
+      }
+    }
   }
   .CDB-Widget-listButton--withBorder {
     &:before {
@@ -190,6 +197,7 @@ $timeSliderBorder: rgba(#FFF, 1);
   //Charts
   .extent {
     stroke: $link;
+    color: $cMainBg;
   }
 
   .CDB-Chart-bar--timeSeries {

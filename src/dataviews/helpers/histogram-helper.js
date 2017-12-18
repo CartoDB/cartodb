@@ -1,5 +1,5 @@
-var moment = require('moment');
 var _ = require('underscore');
+var moment = require('moment');
 
 // Preserve the ascendant order!
 var MOMENT_AGGREGATIONS = {
@@ -12,10 +12,6 @@ var MOMENT_AGGREGATIONS = {
   quarter: 'Q',
   year: 'y'
 };
-
-function formatUTCTimestamp (timestamp) {
-  return moment.unix(timestamp).utc().format('DD-MM-YYYY HH:mm:ss');
-}
 
 var helper = {};
 
@@ -34,13 +30,6 @@ function trimBuckets (buckets, filledBuckets, totalBuckets) {
     ? buckets.slice(0, index)
     : buckets;
 }
-
-helper.isShorterThan = function (limit, aggregation) {
-  var keys = _.keys(MOMENT_AGGREGATIONS);
-  var limitIndex = _.indexOf(keys, limit);
-  var aggregationIndex = _.indexOf(keys, aggregation);
-  return limitIndex > -1 && aggregationIndex > -1 && aggregationIndex < limitIndex;
-};
 
 helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, from, totalBuckets) {
   var startDate = moment.unix(start).utc();
@@ -81,49 +70,6 @@ helper.hasChangedSomeOf = function (list, changed) {
   return _.some(_.keys(changed), function (key) {
     return _.contains(list, key);
   });
-};
-
-helper.calculateLimits = function (bins) {
-  var start = Infinity;
-  var end = -Infinity;
-
-  _.each(bins, function (bin) {
-    if (_.isFinite(bin.min)) {
-      start = Math.min(bin.min, start);
-    }
-    if (_.isFinite(bin.max)) {
-      end = Math.max(bin.max, end);
-    }
-  });
-
-  return {
-    start: start !== Infinity ? start : null,
-    end: end !== -Infinity ? end : null
-  };
-};
-
-helper.calculateDateRanges = function (min, max) {
-  var startDate = moment.unix(min).utc();
-  var endDate = moment.unix(max).utc();
-  var ranges = {};
-
-  _.each(_.keys(MOMENT_AGGREGATIONS), function (agg) {
-    var startClone = startDate.clone();
-    var endClone = endDate.clone();
-    var start = startClone.startOf(agg).unix();
-    var end = endClone.startOf(agg).add(1, MOMENT_AGGREGATIONS[agg]).unix() - 1;
-
-    ranges[agg] = {
-      start: start,
-      end: end
-    };
-  });
-
-  return ranges;
-};
-
-helper.formatUTCTimestamp = function (timestamp) {
-  return formatUTCTimestamp(timestamp);
 };
 
 module.exports = helper;

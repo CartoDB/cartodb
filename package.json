@@ -121,7 +121,6 @@
     "mwheelIntent": "./vendor/mwheelIntent.js"
   },
   "browserify-shim": {
-    "leaflet": "global:L",
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
     "mousewheel": {

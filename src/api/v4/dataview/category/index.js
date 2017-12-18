@@ -14,7 +14,7 @@ var parseCategoryData = require('./parse-data.js');
  * ```
  * SELECT country, AVG(population) GROUP BY country
  * ```
- * The following code is the carto.js equivalent:
+ * The following code is the CARTO.js equivalent:
  *
  * ```javascript
  * var categoryDataview = new carto.dataview.Category(citiesSource, 'country', {

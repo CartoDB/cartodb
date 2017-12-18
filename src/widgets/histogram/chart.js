@@ -3,13 +3,13 @@ var _ = require('underscore');
 var d3 = require('d3');
 var d3Interpolate = require('d3-interpolate');
 var cdb = require('cartodb.js');
-var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 var timestampHelper = require('../../util/timestamp-helper');
 var viewportUtils = require('../../viewport-utils');
 
-var FILTERED_COLOR = '#1181FB';
+var FILTERED_COLOR = '#2E3C43';
 var UNFILTERED_COLOR = 'rgba(0, 0, 0, 0.06)';
+var HOVER_COLOR = '#82BB90';
 var TIP_RECT_HEIGHT = 17;
 var TIP_H_PADDING = 6;
 var TRIANGLE_SIDE = 14;
@@ -1441,7 +1441,7 @@ module.exports = cdb.core.View.extend({
       }
     }
 
-    return tinycolor(currentFillColor).darken(20).toString();
+    return HOVER_COLOR;
   },
 
   _updateChart: function () {

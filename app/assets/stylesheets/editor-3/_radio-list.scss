@@ -48,7 +48,7 @@
       }
     }
 
-    .CDB-Radio:checked:hover + .CDB-Radio-face {
+    .CDB-Radio:checked + .CDB-Radio-face {
       border: 1px solid $cBlue;
 
       &::before {

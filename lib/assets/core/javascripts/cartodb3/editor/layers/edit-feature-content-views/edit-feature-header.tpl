@@ -7,7 +7,10 @@
     </button>
   </li>
 
-  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium"><span class="Editor-breadcrumbSep"> / </span> <%- _t('editor.edit-feature.edit', { featureType: featureType }) %></li>
+  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium">
+    <span class="Editor-breadcrumbSep"> / </span>
+    <%- breadcrumbLabel %>
+  </li>
 </ul>
 
 <div class="Editor-HeaderInfoEditor Editor-HeaderInfoEditor--layer">

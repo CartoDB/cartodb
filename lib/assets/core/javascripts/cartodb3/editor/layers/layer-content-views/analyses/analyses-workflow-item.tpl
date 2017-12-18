@@ -16,11 +16,9 @@
     </div>
   <% } %>
 
-  <div class="CDB-Text CDB-Size-medium u-rSpace--m u-upperCase" style="color: <%- bgColor %>;">
-    <%- nodeId %>
-    <% if (!isNew) { %>
-      <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium VerticalRadioList-item-icon"></i>
-    <% } %>
+  <div class="CDB-Text CDB-Size-small is-semibold u-rSpace u-upperCase u-flex u-alignCenter" style="color: <%- bgColor %>;">
+    <span class="u-rSpace--s"><%- nodeId %></span>
+    <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium VerticalRadioList-item-icon"></i>
   </div>
 
   <div class="CDB-Text CDB-Size-medium js-analysis-name">

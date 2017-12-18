@@ -125,12 +125,36 @@ describe('leaflet-cartodb-layer-group-view', function () {
   });
 
   describe('event firing', function () {
+    var eventData = {
+      containerPoint: { x: 264, y: 309 },
+      data: {
+        name: 'fakeCityName',
+        cartodb_id: 123
+      },
+      e: {
+        clientX: 696,
+        clientY: 325,
+        type: 'mousemove'
+      },
+      latlng: {
+        lat: 42.293564192170095,
+        lng: -8.173828125000002
+      },
+      layer: 0,
+      layerPoint: { x: 264, y: 309 },
+      originalEvent: {},
+      target: {},
+      type: 'mouseMove'
+    };
+
     it('should trigger a "featureOver" event when interactivity class triggers a mousemove event with some data', function (done) {
       spyOn(cartoDbLayer0, 'isInteractive').and.returnValue(true);
       layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModelMock, {
         nativeMap: leafletMap,
         mapModel: mapModelMock
       });
+      eventData.e.type = 'mousemove';
+      eventData.type = 'mousemove';
 
       layerGroupView.on('featureOver', function (event) {
         expect(event.layer).toEqual(cartoDbLayer0);
@@ -143,28 +167,6 @@ describe('leaflet-cartodb-layer-group-view', function () {
         done();
       });
 
-      var eventData = {
-        containerPoint: { x: 264, y: 309 },
-        data: {
-          name: 'fakeCityName',
-          cartodb_id: 123
-        },
-        e: {
-          clientX: 696,
-          clientY: 325,
-          type: 'mousemove'
-        },
-        latlng: {
-          lat: 42.293564192170095,
-          lng: -8.173828125000002
-        },
-        layer: 0,
-        layerPoint: { x: 264, y: 309 },
-        originalEvent: {},
-        target: {},
-        type: 'mouseMove'
-      };
-
       layerGroupView.interaction[0]._eventEmitter.dispatchEvent('mousemove', eventData);
     });
 
@@ -174,6 +176,8 @@ describe('leaflet-cartodb-layer-group-view', function () {
         nativeMap: leafletMap,
         mapModel: mapModelMock
       });
+      eventData.e.type = 'click';
+      eventData.type = 'click';
 
       layerGroupView.on('featureClick', function (event) {
         expect(event.layer).toEqual(cartoDbLayer0);
@@ -186,28 +190,6 @@ describe('leaflet-cartodb-layer-group-view', function () {
         done();
       });
 
-      var eventData = {
-        containerPoint: { x: 264, y: 309 },
-        data: {
-          name: 'fakeCityName',
-          cartodb_id: 123
-        },
-        e: {
-          clientX: 696,
-          clientY: 325,
-          type: 'click'
-        },
-        latlng: {
-          lat: 42.293564192170095,
-          lng: -8.173828125000002
-        },
-        layer: 0,
-        layerPoint: { x: 264, y: 309 },
-        originalEvent: {},
-        target: {},
-        type: 'click'
-      };
-
       layerGroupView.interaction[0]._eventEmitter.dispatchEvent('click', eventData);
     });
 
@@ -217,6 +199,8 @@ describe('leaflet-cartodb-layer-group-view', function () {
         nativeMap: leafletMap,
         mapModel: mapModelMock
       });
+      eventData.e.type = 'mousemove';
+      eventData.type = 'mousemove';
 
       layerGroupView.on('featureOut', function (event) {
         expect(event.layer).toEqual(cartoDbLayer0);
@@ -226,25 +210,6 @@ describe('leaflet-cartodb-layer-group-view', function () {
         // expect(event.latlng).toEqual([42.293564192170095, -8.173828125000002]);
         done();
       });
-
-      var eventData = {
-        containerPoint: { x: 264, y: 309 },
-        data: {},
-        e: {
-          clientX: 696,
-          clientY: 325,
-          type: 'click'
-        },
-        latlng: {
-          lat: 42.293564192170095,
-          lng: -8.173828125000002
-        },
-        layer: 0,
-        layerPoint: { x: 264, y: 309 },
-        originalEvent: {},
-        target: {},
-        type: 'click'
-      };
 
       layerGroupView.interaction[0]._eventEmitter.dispatchEvent('featureout', eventData);
     });

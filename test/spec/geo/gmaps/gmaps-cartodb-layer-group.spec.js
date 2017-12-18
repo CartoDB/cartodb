@@ -129,12 +129,22 @@ describe('gmaps-cartodb-layer-group-view', function () {
   });
 
   describe('event firing', function () {
+    var eventData = {
+      da: { x: 121.8125, y: 94.56249999999997 },
+      data: { name: 'fakeCityName', cartodb_id: 123 },
+      e: { type: 'mousemove' },
+      latLng: { lat: function () { return 42.48830197960228; }, lng: function () { return -8.701171875; } },
+      layer: 0,
+      pixel: { x: 243, y: 274 }
+    };
+
     it('should trigger a "featureOver" event when interactivity class triggers a mousemove event with some data', function (done) {
       spyOn(cartoDbLayer0, 'isInteractive').and.returnValue(true);
       layerGroupView = new LeafletCartoDBLayerGroupView(layerGroupModelMock, {
         nativeMap: googleMap,
         mapModel: mapModelMock
       });
+      eventData.e.type = 'mousemove';
 
       layerGroupView.on('featureOver', function (event) {
         expect(event.layer).toEqual(cartoDbLayer0);
@@ -147,15 +157,6 @@ describe('gmaps-cartodb-layer-group-view', function () {
         done();
       });
 
-      var eventData = {
-        da: { x: 121.8125, y: 94.56249999999997 },
-        data: { name: 'fakeCityName', cartodb_id: 123 },
-        e: { type: 'mousemove' },
-        latLng: { lat: function () { return 42.48830197960228; }, lng: function () { return -8.701171875; } },
-        layer: 0,
-        pixel: { x: 243, y: 274 }
-      };
-
       layerGroupView.interaction[0]._eventEmitter.dispatchEvent('mousemove', eventData);
     });
 
@@ -165,6 +166,7 @@ describe('gmaps-cartodb-layer-group-view', function () {
         nativeMap: googleMap,
         mapModel: mapModelMock
       });
+      eventData.e.type = 'click';
 
       layerGroupView.on('featureClick', function (event) {
         expect(event.layer).toEqual(cartoDbLayer0);
@@ -177,15 +179,6 @@ describe('gmaps-cartodb-layer-group-view', function () {
         done();
       });
 
-      var eventData = {
-        da: { x: 121.8125, y: 94.56249999999997 },
-        data: { name: 'fakeCityName', cartodb_id: 123 },
-        e: { type: 'click' },
-        latLng: { lat: function () { return 42.48830197960228; }, lng: function () { return -8.701171875; } },
-        layer: 0,
-        pixel: { x: 243, y: 274 }
-      };
-
       layerGroupView.interaction[0]._eventEmitter.dispatchEvent('click', eventData);
     });
 
@@ -195,6 +188,7 @@ describe('gmaps-cartodb-layer-group-view', function () {
         nativeMap: googleMap,
         mapModel: mapModelMock
       });
+      eventData.e.type = 'mousemove';
 
       layerGroupView.on('featureOut', function (event) {
         expect(event.layer).toEqual(cartoDbLayer0);
@@ -204,15 +198,6 @@ describe('gmaps-cartodb-layer-group-view', function () {
         // expect(event.latlng).toEqual([42.293564192170095, -8.173828125000002]);
         done();
       });
-
-      var eventData = {
-        da: { x: 121.8125, y: 94.56249999999997 },
-        data: { name: 'fakeCityName', cartodb_id: 123 },
-        e: { type: 'mousemove' },
-        latLng: { lat: function () { return 42.48830197960228; }, lng: function () { return -8.701171875; } },
-        layer: 0,
-        pixel: { x: 243, y: 274 }
-      };
 
       layerGroupView.interaction[0]._eventEmitter.dispatchEvent('featureout', eventData);
     });

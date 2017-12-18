@@ -1,5 +1,5 @@
+/* global L */
 var _ = require('underscore');
-var L = require('leaflet');
 var Backbone = require('backbone');
 var config = require('cdb.config');
 var log = require('cdb.log');

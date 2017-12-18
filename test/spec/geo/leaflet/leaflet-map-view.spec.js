@@ -1,8 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var L = require('leaflet');
-global.L = L;
 
 var Map = require('../../../../src/geo/map');
 var TileLayer = require('../../../../src/geo/map/tile-layer');

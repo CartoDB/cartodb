@@ -1,5 +1,5 @@
+/* global L */
 /* global google */
-var L = require('leaflet');
 var _ = require('underscore');
 var carto = require('../../../../src/api/v4');
 var LeafletLayer = require('../../../../src/api/v4/native/leaflet-layer');

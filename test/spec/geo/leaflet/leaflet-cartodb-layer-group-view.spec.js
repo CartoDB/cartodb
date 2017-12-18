@@ -1,5 +1,5 @@
+/* global L */
 var _ = require('underscore');
-var L = require('leaflet');
 
 var SharedTestsForCartoDBLayerGroupViews = require('../shared-tests-for-cartodb-layer-group-views');
 var FakeWax = require('../fake-wax');

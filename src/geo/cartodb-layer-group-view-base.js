@@ -4,6 +4,7 @@ function CartoDBLayerGroupViewBase (layerGroupModel, opts) {
   opts = opts || {};
   this.interaction = [];
   this.nativeMap = opts.nativeMap;
+  this._mapModel = opts.mapModel;
 
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
@@ -20,10 +21,18 @@ CartoDBLayerGroupViewBase.prototype = {
     this._clearInteraction();
 
     this.model.forEachGroupedLayer(function (layerModel, layerIndex) {
-      if (layerModel.isVisible()) {
+      if (this._isIteractionEnabledForLayer(layerModel)) {
         this._enableInteraction(layerIndex);
       }
     }, this);
+  },
+
+  _isIteractionEnabledForLayer: function (layerModel) {
+    if (!layerModel.isVisible()) {
+      return false;
+    }
+    // Builder needs interactivity when the layer has no popup/infowindows to allow feature edition.
+    return layerModel.isInteractive() || this._mapModel.isFeatureInteractivityEnabled();
   },
 
   _clearInteraction: function () {
@@ -57,6 +66,7 @@ CartoDBLayerGroupViewBase.prototype = {
         .on('off', function (o) {
           if (self._interactionDisabled) return;
           o = o || {};
+          // TODO: zera has an .on('error', () => { }) callback that should be used here
           if (o.errors != null) {
             self._manageInteractivityErrors(o);
           }
@@ -85,9 +95,9 @@ CartoDBLayerGroupViewBase.prototype = {
     }
   },
 
-  error: function (e) {},
+  error: function (e) { },
 
-  tilesOk: function () {}
+  tilesOk: function () { }
 };
 
 module.exports = CartoDBLayerGroupViewBase;

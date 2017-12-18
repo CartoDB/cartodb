@@ -6,6 +6,10 @@ var FakeWax = require('../fake-wax');
 GmapsCartoDBLayerGroupView.prototype.interactionClass = FakeWax;
 
 var createLayerGroupView = function (layerGroupModel, container) {
+  var mapModelMock = {
+    isFeatureInteractivityEnabled: jasmine.createSpy('isFeatureInteractivityEnabled').and.returnValue(false)
+  };
+
   var gmapsMap = new google.maps.Map(container, {
     center: new google.maps.LatLng(0, 0),
     zoom: 3,
@@ -17,7 +21,9 @@ var createLayerGroupView = function (layerGroupModel, container) {
   });
 
   var layerGroupView = new GmapsCartoDBLayerGroupView(layerGroupModel, {
-    nativeMap: gmapsMap
+    nativeMap: gmapsMap,
+    mapModel: mapModelMock
+
   });
   gmapsMap.overlayMapTypes.setAt(1, layerGroupView.gmapsLayer);
   return layerGroupView;

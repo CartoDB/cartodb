@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.24",
-      "from": "cartodb/deep-insights.js#v0.4.24",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#6e58a8b41e2fc98b3c2805999a7062202d169af7",
+      "version": "0.4.25",
+      "from": "cartodb/deep-insights.js#v0.4.25",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a16651810b120c7d4904bcfb3e537da2e25460a8",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

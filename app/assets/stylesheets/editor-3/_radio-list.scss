@@ -1,6 +1,7 @@
 @import 'cdb-variables/colors';
 
 .VerticalRadioList-item {
+  display: flex;
   position: relative;
   margin-bottom: 1rem;
 
@@ -35,7 +36,6 @@
 
 .VerticalRadioList-itemInner {
   display: flex;
-  align-items: center;
 
   &:hover {
     cursor: pointer;

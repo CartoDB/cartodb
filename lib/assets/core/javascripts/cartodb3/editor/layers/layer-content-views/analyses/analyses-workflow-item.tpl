@@ -16,7 +16,7 @@
     </div>
   <% } %>
 
-  <div class="CDB-Text CDB-Size-medium is-semibold u-rSpace--m u-upperCase u-flex u-alignCenter" style="color: <%- bgColor %>;">
+  <div class="CDB-Text CDB-Size-medium is-semibold u-rSpace--m u-upperCase" style="color: <%- bgColor %>;">
     <%- nodeId %>
     <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium VerticalRadioList-item-icon"></i>
   </div>

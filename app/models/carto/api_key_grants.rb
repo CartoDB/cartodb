@@ -3,6 +3,7 @@ require 'json'
 module Carto
   class TablePermissions
     ALLOWED_PERMISSIONS = ['select', 'insert', 'update', 'delete', 'truncate', 'references', 'trigger'].freeze
+    WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
 
     attr_reader :schema, :name, :permissions
 
@@ -23,12 +24,15 @@ module Carto
     def +(permissions)
       permissions = permissions.map { |p| p.downcase if ALLOWED_PERMISSIONS.include?(p.downcase)}
       @permissions += permissions.reject { |p| @permissions.include?(p) }
-      byebug
     end
 
     def <<(permission)
       permission = permission.downcase
       @permissions << permission if ALLOWED_PERMISSIONS.include? && !@permissions.include?(permission)
+    end
+
+    def write?
+      (@permissions & WRITE_PERMISSIONS).length > 0
     end
   end
 
@@ -38,7 +42,6 @@ module Carto
     attr_reader :granted_apis
 
     def initialize(grants_json)
-      byebug
       grants_json ||= []
       grants_json = JSON.parse(grants_json) unless grants_json.is_a?(Array)
       @granted_apis = []
@@ -88,7 +91,6 @@ module Carto
 
     def process_database_grant(grant)
       grant['tables'].each do |table|
-        byebug
         table_id = "#{table['schema']}.#{table['name']}"
         permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table['schema'], name: table['name'])
         permissions + table['permissions']

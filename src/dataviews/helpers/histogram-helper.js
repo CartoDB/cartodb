@@ -37,8 +37,8 @@ helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBin
     definedBucket = buckets[i] !== undefined;
     filledBuckets.push(definedBucket);
 
-    var bucketStart = add(start, i, AGGREGATION_DATA[aggregation]);
-    var nextBucketStart = add(start, i + 1, AGGREGATION_DATA[aggregation]);
+    var bucketStart = this.add(start, i, aggregation);
+    var nextBucketStart = this.add(start, i + 1, aggregation);
 
     buckets[i] = _.extend({
       bin: i,
@@ -72,8 +72,6 @@ helper.hasChangedSomeOf = function (list, changed) {
   });
 };
 
-/* Internal functions */
-
 /**
  * Add a `number` of aggregations to the provided timestamp
  *
@@ -83,10 +81,15 @@ helper.hasChangedSomeOf = function (list, changed) {
  * @param {string} aggregation.unit - unit of the aggregation
  * @param {number} aggregation.factor - number of aggretagion units
  */
-function add (timestamp, number, aggregation) {
+helper.add = function (timestamp, number, aggregation) {
+  if (!AGGREGATION_DATA.hasOwnProperty(aggregation)) {
+    throw Error('aggregation "' + aggregation + '" is not defined');
+  }
   var date = new Date(timestamp * 1000);
-  var value = number * aggregation.factor;
-  switch (aggregation.unit) {
+  var unit = AGGREGATION_DATA[aggregation].unit;
+  var factor = AGGREGATION_DATA[aggregation].factor;
+  var value = number * factor;
+  switch (unit) {
     case 'second':
       return date.setUTCSeconds(date.getUTCSeconds() + value) / 1000;
     case 'minute':
@@ -104,7 +107,9 @@ function add (timestamp, number, aggregation) {
     default:
       return 0;
   }
-}
+};
+
+/* Internal functions */
 
 function _getDaysInMonth (year, month) {
   return [31, (_isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];

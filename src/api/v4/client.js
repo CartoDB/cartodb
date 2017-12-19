@@ -83,7 +83,7 @@ Client.prototype.addLayer = function (layer, opts) {
 /**
  * Add multiple layers to the client at once.
  *
- * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer.
+ * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the top layer.
  *
  * @fires error
  * @fires success

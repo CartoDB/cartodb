@@ -105,6 +105,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Fix grammar errors in analysis description (#13258)
 * Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)
 * Fix like buttons (#13231)
 * Wayfinding: fix dialog footer (#13223)

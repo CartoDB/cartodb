@@ -111,7 +111,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
     dataviewModel.set('bins', 10, { silent: true });
   }
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'show_source', 'normalized', 'style', 'hasInitialState'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'show_source', 'normalized', 'style', 'hasInitialState', 'table_name'];
   var widgetAttrs = _.pick(extendedAttrs, attrsNames);
   var options = makeWidgetStyleOptions(extendedAttrs);
 

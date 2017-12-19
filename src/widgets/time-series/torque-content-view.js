@@ -33,7 +33,10 @@ module.exports = cdb.core.View.extend({
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
     var sourceType = this._dataviewModel.getSourceType() || '';
-    var layerName = this._layerModel.get('layer_name') || '';
+    var isSourceType = this._dataviewModel.isSourceType();
+    var layerName = isSourceType
+      ? this.model.get('table_name')
+      : this._layerModel.get('layer_name');
 
     if (this._isDataEmpty()) {
       this.$el.html(placeholderTemplate({
@@ -43,7 +46,7 @@ module.exports = cdb.core.View.extend({
       this.$el.html(torqueTemplate({
         sourceId: sourceId,
         sourceType: analyses.title(sourceType),
-        isSourceType: this._dataviewModel.isSourceType(),
+        isSourceType: isSourceType,
         showSource: this.model.get('show_source') && letter !== '',
         sourceColor: sourceColor,
         layerName: escapeHTML(layerName)

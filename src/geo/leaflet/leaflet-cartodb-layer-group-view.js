@@ -87,7 +87,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
       }
 
       if (subdomains) {
-        L.Util.setOptions(this.leafletLayer, {subdomains: subdomains});
+        L.Util.setOptions(this.leafletLayer, { subdomains: subdomains });
       }
 
       this.leafletLayer._setUrl(tileURLTemplate);

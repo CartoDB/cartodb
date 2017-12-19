@@ -958,7 +958,11 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}.",
+        "geometry-types": {
+          "point": "points",
+          "polygon,point": "points or polygons"
+        },
         "unknown-geometry-type": "unknown",
         "more-info": "More info",
         "option-types": {

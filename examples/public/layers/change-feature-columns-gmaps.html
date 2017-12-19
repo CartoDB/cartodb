@@ -78,7 +78,6 @@
       .actions li:hover {
         cursor: pointer;
       }
-
     </style>
   </head>
   <body>
@@ -128,7 +127,7 @@
         }
       `);
       const layer = new carto.layer.Layer(source, style, {
-        featureOverColumns: ['name']
+        featureClickColumns: ['name']
       });
 
       client.addLayer(layer);
@@ -149,12 +148,12 @@
       });
 
       function setMoreData() {
-        layer.setFeatureOverColumns(['name', 'pop_max', 'pop_min']);
+        layer.setFeatureClickColumns(['name', 'pop_max', 'pop_min']);
         document.getElementById('content').innerHTML = '';
       }
 
       function setLessData() {
-        layer.setFeatureOverColumns(['name']);
+        layer.setFeatureClickColumns(['name']);
         document.getElementById('content').innerHTML = '';
       }
     </script>

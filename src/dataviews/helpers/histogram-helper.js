@@ -1,16 +1,14 @@
 var _ = require('underscore');
-var moment = require('moment');
 
-// Preserve the ascendant order!
-var MOMENT_AGGREGATIONS = {
-  second: 's',
-  minute: 'm',
-  hour: 'h',
-  day: 'd',
-  week: 'w',
-  month: 'M',
-  quarter: 'Q',
-  year: 'y'
+var AGGREGATION_DATA = {
+  second: { unit: 'second', factor: 1 },
+  minute: { unit: 'minute', factor: 1 },
+  hour: { unit: 'hour', factor: 1 },
+  day: { unit: 'day', factor: 1 },
+  week: { unit: 'day', factor: 7 },
+  month: { unit: 'month', factor: 1 },
+  quarter: { unit: 'month', factor: 3 },
+  year: { unit: 'month', factor: 12 }
 };
 
 var helper = {};
@@ -32,7 +30,6 @@ function trimBuckets (buckets, filledBuckets, totalBuckets) {
 }
 
 helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, from, totalBuckets) {
-  var startDate = moment.unix(start).utc();
   var filledBuckets = []; // To catch empty buckets
   var definedBucket = false;
 
@@ -40,11 +37,14 @@ helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBin
     definedBucket = buckets[i] !== undefined;
     filledBuckets.push(definedBucket);
 
+    var bucketStart = add(start, i, AGGREGATION_DATA[aggregation]);
+    var nextBucketStart = add(start, i + 1, AGGREGATION_DATA[aggregation]);
+
     buckets[i] = _.extend({
       bin: i,
-      start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
-      next: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
+      start: bucketStart,
+      end: nextBucketStart - 1,
+      next: nextBucketStart,
       freq: 0
     }, buckets[i]);
     delete buckets[i].timestamp;
@@ -71,5 +71,47 @@ helper.hasChangedSomeOf = function (list, changed) {
     return _.contains(list, key);
   });
 };
+
+/* Internal functions */
+
+/**
+ * Add a `number` of aggregations to the provided timestamp
+ *
+ * @param {number} timestamp - Starting timestamp
+ * @param {number} number - Number of aggregations to add
+ * @param {object} aggregation
+ * @param {string} aggregation.unit - unit of the aggregation
+ * @param {number} aggregation.factor - number of aggretagion units
+ */
+function add (timestamp, number, aggregation) {
+  var date = new Date(timestamp * 1000);
+  var value = number * aggregation.factor;
+  switch (aggregation.unit) {
+    case 'second':
+      return date.setUTCSeconds(date.getUTCSeconds() + value) / 1000;
+    case 'minute':
+      return date.setUTCMinutes(date.getUTCMinutes() + value) / 1000;
+    case 'hour':
+      return date.setUTCHours(date.getUTCHours() + value) / 1000;
+    case 'day':
+      return date.setUTCDate(date.getUTCDate() + value) / 1000;
+    case 'month':
+      var n = date.getUTCDate();
+      date.setUTCDate(1);
+      date.setUTCMonth(date.getUTCMonth() + value);
+      date.setUTCDate(Math.min(n, _getDaysInMonth(date.getUTCFullYear(), date.getUTCMonth())));
+      return date.getTime() / 1000;
+    default:
+      return 0;
+  }
+}
+
+function _getDaysInMonth (year, month) {
+  return [31, (_isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+}
+
+function _isLeapYear (year) {
+  return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+}
 
 module.exports = helper;

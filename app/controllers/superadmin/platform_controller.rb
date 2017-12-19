@@ -1,8 +1,10 @@
+require_dependency 'carto/db/database'
+require_dependency 'carto/db/connection'
+
 class Superadmin::PlatformController < Superadmin::SuperadminController
+
   respond_to :json
-
   ssl_required :databases_info
-
   layout 'application'
 
   def databases_info
@@ -26,6 +28,22 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
       end
     end
     respond_with(dbs)
+  end
+
+  def database_validation
+    if !params[:database_host]
+      hosts = [params[:database_host]]
+      render json: { error: "Database host parameter is mandatory" }, status: 400
+    end
+    Carto::Db::Connection.connect(params[:database_host], 'postgres', {as: :cluster_admin}) do |conn|
+      database = Carto::Db::Database.new(params[:database_host], conn)
+      db_users = database.users()
+      non_carto_users = db_users.select{ |u| !CartoDB::SYSTEM_DB_USERS.include?(u.name) && !u.carto_user}
+      carto_users = db_users.select{ |u| u.carto_user }
+      connected_users = check_for_users_in_database(carto_users, params[:database_host])
+      debugger
+      render json: {:db_users => non_carto_users, :carto_users => connected_users}
+    end
   end
 
   def total_users
@@ -64,4 +82,11 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
     respond_with({:count => CartoDB::Stats::Platform.new.likes})
   end
 
-end # Superadmin::PlatformController
+  private
+
+  def check_for_users_in_database(db_users, db_host)
+    user_ids = db_users.map{ |u| u.id }
+    Carto::User.where(database_host: db_host).where(id: user_ids).all
+  end
+
+end

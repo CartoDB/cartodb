@@ -9,15 +9,15 @@ var metadataParser = require('./metadata/parser');
 
 /**
  * Represents a layer Object.
- * 
- * A layer is the primary way to visualize geospatial data. 
- * 
+ *
+ * A layer is the primary way to visualize geospatial data.
+ *
  * To create a layer a {@link carto.source.Base|source} and {@link carto.style.Base|styles}
  * are required:
- * 
+ *
  * - The {@link carto.source.Base|source} is used to know **what** data will be displayed in the Layer.
  * - The {@link carto.style.Base|style} is used to know **how** to draw the data in the Layer.
- * 
+ *
  * A layer alone won't do too much. In order to get data from the CARTO server you must add the Layer to a {@link carto.Client|client}.
  *
  * ```
@@ -191,12 +191,27 @@ Layer.prototype.getSource = function () {
  * @api
  */
 Layer.prototype.setFeatureClickColumns = function (columns) {
-  this._featureClickColumns = columns;
-  if (this._internalModel) {
-    this._internalModel.infowindow.update(_getInteractivityFields(columns));
+  var prevColumns = this._featureClickColumns;
+  // TODO: _checkColumns(columns);
+  if (prevColumns === columns) {
+    return Promise.resolve();
   }
-
-  return this;
+  // If layer is not instantiated just store the new status
+  if (!this._internalModel) {
+    this._featureClickColumns = columns;
+    return Promise.resolve();
+  }
+  // Update the internalModel and return a promise
+  this._internalModel.infowindow.fields.set(_getInteractivityFields(columns).fields, { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      this._featureClickColumns = columns;
+    }.bind(this))
+    .catch(function (err) {
+      var error = new CartoError(err);
+      this.trigger(EVENTS.ERROR, error);
+      return Promise.reject(error);
+    }.bind(this));
 };
 
 /**
@@ -217,12 +232,27 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
  * @api
  */
 Layer.prototype.setFeatureOverColumns = function (columns) {
-  this._featureOverColumns = columns;
-  if (this._internalModel) {
-    this._internalModel.tooltip.update(_getInteractivityFields(columns));
+  var prevColumns = this._featureOverColumns;
+  // TODO: _checkColumns(columns);
+  if (prevColumns === columns) {
+    return Promise.resolve();
   }
-
-  return this;
+  // If layer is not instantiated just store the new status
+  if (!this._internalModel) {
+    this._featureOverColumns = columns;
+    return Promise.resolve();
+  }
+  // Update the internalModel and return a promise
+  this._internalModel.tooltip.fields.set(_getInteractivityFields(columns).fields, { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      this._featureOverColumns = columns;
+    }.bind(this))
+    .catch(function (err) {
+      var error = new CartoError(err);
+      this.trigger(EVENTS.ERROR, error);
+      return Promise.reject(error);
+    }.bind(this));
 };
 
 /**

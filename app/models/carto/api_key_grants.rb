@@ -7,7 +7,7 @@ module Carto
 
     attr_reader :schema, :name, :permissions
 
-    def initialize(schema:, name:, permissions:[])
+    def initialize(schema: , name: , permissions:[])
       @schema = schema
       @name = name
       @permissions = permissions
@@ -32,7 +32,7 @@ module Carto
     end
 
     def write?
-      (@permissions & WRITE_PERMISSIONS).length > 0
+      !(@permissions & WRITE_PERMISSIONS).empty?
     end
   end
 

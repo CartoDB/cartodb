@@ -49,8 +49,7 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def update_role_permissions
-    user = ::User[self.user.id]
-    revoke_privileges(user)
+    revoke_privileges
 
     read_schemas = []
     write_schemas = []
@@ -64,7 +63,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
     write_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
 
-    if write_schemas.size > 0
+    if !write_schemas.empty?
       write_schemas << 'cartodb'
       grant_usage_for_cartodb
     end
@@ -101,7 +100,7 @@ class Carto::ApiKey < ActiveRecord::Base
   private
 
   def connection
-    @connection ||= ::User[self.user.id].in_database(as: :superuser)
+    @connection ||= ::User[user.id].in_database(as: :superuser)
   end
 
   def redis_key
@@ -126,7 +125,7 @@ class Carto::ApiKey < ActiveRecord::Base
     JSON.parse(affected_schemas_json || '[]')
   end
 
-  def revoke_privileges(user)
+  def revoke_privileges
     affected_schemas.each do |schema|
       connection.run(
         "revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\""

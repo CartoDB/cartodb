@@ -45,7 +45,7 @@ module.exports = cdb.core.View.extend({
     var isSourceType = this.dataviewModel.isSourceType();
     var layerName = isSourceType
       ? this.model.get('table_name')
-      : this._layerModel.get('layer_name');
+      : this.layerModel.get('layer_name');
 
     this.$el.html(
       template({

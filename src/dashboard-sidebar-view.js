@@ -40,7 +40,9 @@ module.exports = cdb.core.View.extend({
 
     this._widgets = options.widgets;
 
-    this._widgets.bind('add', this._maybeRenderWidgetView, this);
+    this._widgets.bind('add', function (model) {
+      this._maybeRenderWidgetView(model, true);
+    }, this);
     this._widgets.bind('reset', this.render, this);
     this._widgets.bind('orderChanged', this.render, this);
     this._widgets.bind('change:collapsed', this._onWidgetUpdate, this);
@@ -57,7 +59,10 @@ module.exports = cdb.core.View.extend({
 
     this.$el.html(template());
     this.$el.toggleClass('CDB-Widget-canvas--withMenu', this.model.get('renderMenu'));
-    this._widgets.each(this._maybeRenderWidgetView, this);
+
+    this._widgets.each(function (model) {
+      this._maybeRenderWidgetView(model, false);
+    }, this);
     this._toggleVisiblity();
 
     this._renderScroll();
@@ -101,11 +106,17 @@ module.exports = cdb.core.View.extend({
     return this.el.querySelector('.js-container');
   },
 
-  _maybeRenderWidgetView: function (widgetModel) {
+  _maybeRenderWidgetView: function (widgetModel, renderOnTop) {
     var view = this._widgetViewFactory.createWidgetView(widgetModel);
+
     if (view) {
       this.addView(view);
-      this._$container().append(view.render().el);
+
+      if (renderOnTop) {
+        this._$container().prepend(view.render().el);
+      } else {
+        this._$container().append(view.render().el);
+      }
     }
   },
 

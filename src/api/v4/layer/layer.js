@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 var SourceBase = require('../source/base');
@@ -192,7 +193,7 @@ Layer.prototype.getSource = function () {
  */
 Layer.prototype.setFeatureClickColumns = function (columns) {
   var prevColumns = this._featureClickColumns;
-  // TODO: _checkColumns(columns);
+  _checkColumns(columns);
   if (prevColumns === columns) {
     return Promise.resolve();
   }
@@ -233,7 +234,7 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
  */
 Layer.prototype.setFeatureOverColumns = function (columns) {
   var prevColumns = this._featureOverColumns;
-  // TODO: _checkColumns(columns);
+  _checkColumns(columns);
   if (prevColumns === columns) {
     return Promise.resolve();
   }
@@ -418,6 +419,12 @@ function _checkStyle (style) {
 function _checkSource (source) {
   if (!(source instanceof SourceBase)) {
     throw new CartoValidationError('layer', 'nonValidSource');
+  }
+}
+
+function _checkColumns (columns) {
+  if (_.any(columns, function (item) { return !_.isString(item); })) {
+    throw new CartoValidationError('layer', 'nonValidColumns');
   }
 }
 

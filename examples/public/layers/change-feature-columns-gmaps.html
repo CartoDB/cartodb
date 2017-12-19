@@ -86,12 +86,12 @@
       <h2>Click on the markers</h2>
       <div class="container">
         <ul class="actions">
-          <li onclick="setMoreData()">
-            <input type="radio" name="style" value="01"   id="red">
+          <li>
+            <input id="red" type="radio" name="style" onclick="setMoreData()">
             <label for="red">More data</label>
           </li>
-          <li onclick="setLessData()">
-            <input type="radio" name="style" value="02" id="green" checked>
+          <li>
+            <input id="green" type="radio" name="style" onclick="setLessData()" checked>
             <label for="green">Less data</label>
           </li>
         </ul>

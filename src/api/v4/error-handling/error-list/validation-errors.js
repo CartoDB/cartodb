@@ -8,6 +8,10 @@ module.exports = {
       messageRegex: /nonValidStyle/,
       friendlyMessage: 'The given object is not a valid style. See "carto.style.Base".'
     },
+    'non-valid-columns': {
+      messageRegex: /nonValidColumns/,
+      friendlyMessage: 'The given object is not a valid array of string columns.'
+    },
     'source-with-different-client': {
       messageRegex: /differentSourceClient/,
       friendlyMessage: "A layer can't have a source which belongs to a different client."

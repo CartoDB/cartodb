@@ -1,4 +1,5 @@
 var carto = require('../../../../../src/api/v4');
+var CartoError = require('../../../../../src/api/v4/error-handling/carto-error');
 
 describe('api/v4/layer', function () {
   var source;
@@ -136,7 +137,7 @@ describe('api/v4/layer', function () {
             .then(function () {
               expect(function () {
                 return layer.setStyle(newStyle);
-              }).toThrowError("A layer can't have a style which belongs to a different client.");
+              }).toThrowError('A layer can\'t have a style which belongs to a different client.');
               done();
             });
         });
@@ -227,7 +228,7 @@ describe('api/v4/layer', function () {
       }).toThrowError('The given object is not a valid source. See "carto.source.Base".');
     });
 
-    describe("when the layer hasn't been set an engine", function () {
+    describe('when the layer hasn\'t been set an engine', function () {
       it('should normally add the source', function () {
         layer.setSource(newSource);
 
@@ -324,6 +325,140 @@ describe('api/v4/layer', function () {
           expect(sourceChangedSoy).toHaveBeenCalled();
           done();
         });
+    });
+  });
+
+  describe('.setFeatureClickColumns', function () {
+    var layer;
+    var newColums;
+
+    beforeEach(function () {
+      layer = new carto.layer.Layer(source, style);
+      newColums = ['a', 'b'];
+    });
+
+    it('should throw an error when the columns are not a valid parameter', function () {
+      expect(function () {
+        layer.setFeatureClickColumns([1, 2, 3]);
+      }).toThrowError('The given object is not a valid array of string columns.');
+    });
+
+    describe('when the layer hasn\'t been set an engine', function () {
+      it('should normally add the columns', function () {
+        layer.setFeatureClickColumns(newColums);
+
+        expect(layer.getFeatureClickColumns()).toEqual(newColums);
+      });
+    });
+
+    describe('when the layer has been set an engine', function () {
+      var engineMock;
+
+      it('should normally add the columns', function (done) {
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.resolve()) };
+        layer.$setEngine(engineMock);
+
+        layer.setFeatureClickColumns(newColums)
+          .then(function () {
+            var actualColumns = layer.getFeatureClickColumns();
+            var expectedColumns = newColums;
+            expect(actualColumns).toBeDefined();
+            expect(actualColumns).toEqual(expectedColumns);
+            done();
+          });
+      });
+
+      it('should throw an error when the columns are not valid', function (done) {
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.reject(new Error())) };
+        layer.$setEngine(engineMock);
+
+        layer.setFeatureClickColumns(['wrong'])
+          .catch(function (error) {
+            expect(error instanceof Error).toBe(true);
+            done();
+          });
+      });
+
+      it('should fire an error event when the columns are not valid', function (done) {
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.reject(new Error())) };
+        layer.$setEngine(engineMock);
+
+        var columnChangedError = jasmine.createSpy('columnChangedError');
+        layer.on('error', columnChangedError);
+
+        layer.setFeatureClickColumns(['wrong'])
+          .catch(function () {
+            expect(columnChangedError).toHaveBeenCalled();
+            done();
+          });
+      });
+    });
+  });
+
+  describe('.setFeatureOverColumns', function () {
+    var layer;
+    var newColums;
+
+    beforeEach(function () {
+      layer = new carto.layer.Layer(source, style);
+      newColums = ['a', 'b'];
+    });
+
+    it('should throw an error when the columns are not a valid parameter', function () {
+      expect(function () {
+        layer.setFeatureOverColumns([1, 2, 3]);
+      }).toThrowError('The given object is not a valid array of string columns.');
+    });
+
+    describe('when the layer hasn\'t been set an engine', function () {
+      it('should normally add the columns', function () {
+        layer.setFeatureOverColumns(newColums);
+
+        expect(layer.getFeatureOverColumns()).toEqual(newColums);
+      });
+    });
+
+    describe('when the layer has been set an engine', function () {
+      var engineMock;
+
+      it('should normally add the columns', function (done) {
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.resolve()) };
+        layer.$setEngine(engineMock);
+
+        layer.setFeatureOverColumns(newColums)
+          .then(function () {
+            var actualColumns = layer.getFeatureOverColumns();
+            var expectedColumns = newColums;
+            expect(actualColumns).toBeDefined();
+            expect(actualColumns).toEqual(expectedColumns);
+            done();
+          });
+      });
+
+      it('should throw an error when the columns are not valid', function (done) {
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.reject(new Error())) };
+        layer.$setEngine(engineMock);
+
+        layer.setFeatureOverColumns(['wrong'])
+          .catch(function (error) {
+            expect(error instanceof Error).toBe(true);
+            done();
+          });
+      });
+
+      it('should fire an error event when the columns are not valid', function (done) {
+        engineMock = { on: jasmine.createSpy('on'), reload: jasmine.createSpy('reload').and.returnValue(Promise.reject(new Error())) };
+        layer.$setEngine(engineMock);
+
+        var columnChangedError = jasmine.createSpy('columnChangedError');
+        layer.on('error', columnChangedError);
+
+        layer.setFeatureOverColumns(['wrong'])
+          .catch(function () {
+            expect(columnChangedError).toHaveBeenCalled();
+            done();
+          });
+      });
     });
   });
 

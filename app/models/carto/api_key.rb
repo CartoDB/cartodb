@@ -109,7 +109,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
   def redis_hash_as_array
     hash = ['user', user.username, 'type', type, 'dbRole', db_role, 'dbPassword', db_password]
-    grants.granted_apis.each { |api| hash += ["grants_#{api}", true]}
+    grants.granted_apis.each { |api| hash += ["grants_#{api}", true] }
     hash
   end
 

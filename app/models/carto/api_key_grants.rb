@@ -7,7 +7,7 @@ module Carto
 
     attr_reader :schema, :name, :permissions
 
-    def initialize(schema: , name: , permissions:[])
+    def initialize(schema:, name:, permissions: [])
       @schema = schema
       @name = name
       @permissions = permissions
@@ -22,7 +22,7 @@ module Carto
     end
 
     def +(permissions)
-      permissions = permissions.map { |p| p.downcase if ALLOWED_PERMISSIONS.include?(p.downcase)}
+      permissions = permissions.map { |p| p.downcase if ALLOWED_PERMISSIONS.include?(p.downcase) }
       @permissions += permissions.reject { |p| @permissions.include?(p) }
     end
 
@@ -52,12 +52,12 @@ module Carto
     def process_grant(grant)
       type = grant['type']
       case type
-        when 'apis'
-          process_apis_grant(grant)
-        when 'database'
-          process_database_grant(grant)
-        else
-          raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
+      when 'apis'
+        process_apis_grant(grant)
+      when 'database'
+        process_database_grant(grant)
+      else
+        raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
       end
     end
 

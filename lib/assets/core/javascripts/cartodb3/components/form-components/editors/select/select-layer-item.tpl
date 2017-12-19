@@ -7,8 +7,8 @@
     </span>
 
     <% if (!isSourceType) { %>
-      <span class="CDB-Text CDB-Size-small u-lSpace--s" style="color: <%- color %>;">
-        <i class="CDB-IconFont CDB-IconFont-ray"></i>
+      <span class="CDB-Text CDB-Size-small u-lSpace--s u-flex" style="color: <%- color %>;">
+        <i class="CDB-IconFont CDB-Size-small CDB-IconFont-ray"></i>
       </span>
     <% } %>
 

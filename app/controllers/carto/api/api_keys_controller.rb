@@ -1,6 +1,11 @@
 class Carto::Api::ApiKeysController < ::Api::ApplicationController
   ssl_required :create
   before_filter :api_authorization_required
+  before_filter :check_feature_flag
+
+  def check_feature_flag
+    render_404 unless current_user.try(:has_feature_flag?, 'auth_api')
+  end
 
   def create
     api_key = ::Carto::ApiKey.new

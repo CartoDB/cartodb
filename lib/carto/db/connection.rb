@@ -1,6 +1,6 @@
 module Carto
   module Db
-    class InvalidConfiguration < Exception; end
+    class InvalidConfiguration < RuntimeError; end
 
     class Connection
 
@@ -12,7 +12,7 @@ module Carto
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
 
       class << self
-        def connect(db_host, db_name, options={}, &block)
+        def connect(db_host, db_name, options = {}, &block)
           validate_options(options)
           if options[:statement_timeout]
             connect.execute(%Q{ SET statement_timeout TO #{options[:statement_timeout]} })
@@ -31,7 +31,7 @@ module Carto
           end
         ensure
           if options[:statement_timeout]
-            connect.execute(%Q{ SET statement_timeout TO DEFAULT })
+            connect.execute(%{ SET statement_timeout TO DEFAULT })
           end
         end
 
@@ -89,41 +89,41 @@ module Carto
           }
 
           case options[:as]
-            when :superuser
-              config
-            when :cluster_admin
-              config.merge({
-                database: 'postgres'
-              })
-            when :public_user
-              config.merge({
-                username: CartoDB::PUBLIC_DB_USER,
-                password: CartoDB::PUBLIC_DB_USER_PASSWORD
-              })
-            when :public_db_user
-              config.merge({
-                username: options[:username],
-                password: CartoDB::PUBLIC_DB_USER_PASSWORD
-              })
-            else
-              if !options[:username] || !options[:password]
-              end
-              config.merge({
-                username: options[:username],
-                password: options[:password]
-              })
+          when :superuser
+            config
+          when :cluster_admin
+            config.merge(
+              database: 'postgres'
+            )
+          when :public_user
+            config.merge(
+              username: CartoDB::PUBLIC_DB_USER,
+              password: CartoDB::PUBLIC_DB_USER_PASSWORD
+            )
+          when :public_db_user
+            config.merge(
+              username: options[:username],
+              password: CartoDB::PUBLIC_DB_USER_PASSWORD
+            )
+          else
+            config.merge(
+              username: options[:username],
+              password: options[:password]
+            )
           end
         end
 
         def validate_options(options)
           if !options[:user_schema] && options[:as] != :cluster_admin
-            CartoDB::Logger.error(message: 'Db connection needs user schema if the user is not the cluster admin',
-                                  params: {user_type: options[:as], username: options[:username], schema: options[:user_schema]})
-            raise Carto::Db::InvalidConfiguration.new('Db connection needs user schema if the user is not the cluster admin')
+            CartoDB::Logger.error(message: 'Connection needs user schema if the user is not the cluster admin',
+                                  params: { user_type: options[:as],
+                                            username: options[:username],
+                                            schema: options[:user_schema] })
+            raise Carto::Db::InvalidConfiguration.new('Connection needs user schema if user is not the cluster admin')
           end
           if !options[:as] && (!options[:username] || !options[:password])
             CartoDB::Logger.error(message: 'Db connection needs username/password for regular user',
-                                  params: {user_type: options[:as], username: options[:username]})
+                                  params: { user_type: options[:as], username: options[:username] })
             raise Carto::Db::InvalidConfiguration.new('Db connection needs user username/password for regular user')
           end
         end

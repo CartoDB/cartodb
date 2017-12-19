@@ -9,13 +9,13 @@ module CartoDB
   end
 
   DEFAULT_DB_SCHEMA = 'public'.freeze
-  PUBLIC_DB_USER  = 'publicuser'.freeze
-  PUBLIC_DB_USER_PASSWORD  = 'publicuser'.freeze
-  TILE_DB_USER    = 'tileuser'.freeze
+  PUBLIC_DB_USER = 'publicuser'.freeze
+  PUBLIC_DB_USER_PASSWORD = 'publicuser'.freeze
+  TILE_DB_USER = 'tileuser'.freeze
   PG_ADMIN_USER = 'postgres'.freeze
   DS_USER = 'geocoder_api'.freeze
   SYSTEM_DB_USERS = [PG_ADMIN_USER, TILE_DB_USER, PUBLIC_DB_USER, DS_USER].freeze
-  SRID            = 4326
+  SRID = 4326
 
   SURROGATE_NAMESPACE_VISUALIZATION = 'rv'.freeze
   SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'.freeze

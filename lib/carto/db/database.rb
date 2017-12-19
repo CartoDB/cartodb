@@ -39,13 +39,14 @@ module Carto
           and table_catalog = '#{@database_name}'
         }
 
-        if is_activerecord_connection?
+        if activerecord_connection?
           @conn.select_all(query).map do |t|
             Trigger.new(
               database_name: t['table_catalog'],
               database_schema: t['table_schema'],
               table_name: t['table_name'],
-              trigger_name: t['tgname'])
+              trigger_name: t['tgname']
+            )
           end
         else
           @conn[query].all.map do |t|
@@ -53,7 +54,8 @@ module Carto
               database_name: t[:table_catalog],
               database_schema: t[:table_schema],
               table_name: t[:table_name],
-              trigger_name: t[:tgname])
+              trigger_name: t[:tgname]
+            )
           end
         end
       end
@@ -81,13 +83,14 @@ module Carto
              and rolname = '#{owner_role}'
           group by ns.nspname, pc.relname;
         }
-        if is_activerecord_connection?
+        if activerecord_connection?
           @conn.select_all(query).map do |t|
             View.new(
               database_name: @database_name,
               database_schema: t['schemaname'],
               name: t['matviewname'],
-              relkind: relkind)
+              relkind: relkind
+            )
           end
         else
           @conn[query].all.map do |t|
@@ -95,7 +98,8 @@ module Carto
               database_name: @database_name,
               database_schema: t[:schemaname],
               name: t[:matviewname],
-              relkind: relkind)
+              relkind: relkind
+            )
           end
         end
       end
@@ -113,13 +117,14 @@ module Carto
                 AND n.nspname = '#{schema}'
                 AND rolname = '#{owner_role}'
         }
-        if is_activerecord_connection?
+        if activerecord_connection?
           @conn.select_all(query).map do |t|
             Function.new(
               database_name: @database_name,
               database_schema: ['nspname'],
               name: t['proname'],
-              argument_data_types: t['argument_data_types'])
+              argument_data_types: t['argument_data_types']
+            )
           end
         else
           @conn[query].all.map do |t|
@@ -127,14 +132,15 @@ module Carto
               database_name: @database_name,
               database_schema: [:nspname],
               name: t[:proname],
-              argument_data_types: t[:argument_data_types])
+              argument_data_types: t[:argument_data_types]
+            )
           end
         end
       end
 
-      def users()
+      def users
         query = "SELECT usename from pg_user"
-        if is_activerecord_connection?
+        if activerecord_connection?
           @conn.select_all(query).map do |t|
             User.new(
               database_name: @database_name,
@@ -153,9 +159,9 @@ module Carto
 
       private
 
-      def is_activerecord_connection?
+      def activerecord_connection?
         ## Right now we have two kind of connections from Sequel and from AR
-        @conn.kind_of? ActiveRecord::ConnectionAdapters::AbstractAdapter
+        @conn.is_a? ActiveRecord::ConnectionAdapters::AbstractAdapter
       end
 
     end

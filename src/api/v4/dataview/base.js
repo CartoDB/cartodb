@@ -49,7 +49,7 @@ Base.prototype.getStatus = function () {
 };
 
 /**
- * Return true is the current status is loading
+ * Return true is the current status is loading.
  *
  * @return {boolean}
  * @api
@@ -59,7 +59,7 @@ Base.prototype.isLoading = function () {
 };
 
 /**
- * Return true is the current status is loaded
+ * Return true is the current status is loaded.
  *
  * @return {boolean}
  * @api
@@ -69,7 +69,7 @@ Base.prototype.isLoaded = function () {
 };
 
 /**
- * Return true is the current status is error
+ * Return true is the current status is error.
  *
  * @return {boolean}
  * @api

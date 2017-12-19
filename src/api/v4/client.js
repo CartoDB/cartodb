@@ -133,7 +133,7 @@ Client.prototype.removeLayer = function (layer, opts) {
 };
 
 /**
- * Remove multiple layer from the client.
+ * Remove multiple layers from the client.
  * 
  * @example
  * // Remove multiple layers from the client

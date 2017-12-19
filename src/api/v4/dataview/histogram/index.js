@@ -59,7 +59,7 @@ Histogram.prototype.DEFAULTS = {
 };
 
 /**
- * Return the resulting data
+ * Return the resulting data.
  *
  * @return {carto.dataview.HistogramData}
  * @api
@@ -76,7 +76,7 @@ Histogram.prototype.getData = function () {
 };
 
 /**
- * Set number of bins
+ * Set the number of bins.
  *
  * @param {number} bins
  * @fires binsChanged
@@ -90,7 +90,7 @@ Histogram.prototype.setBins = function (bins) {
 };
 
 /**
- * Return the current number of bins
+ * Return the current number of bins.
  *
  * @return {number} Current number of bins
  * @api

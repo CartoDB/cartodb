@@ -6,7 +6,7 @@ var timeAggregation = require('../../constants').timeAggregation;
 var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
 
 /**
- * A dataview to represent an histogram of temporal data allowing to specify the granularity of the {@link carto.dataview.timeAggregation|temporal-bins.}
+ * A dataview to represent an histogram of temporal data allowing to specify the granularity of the {@link carto.dataview.timeAggregation|temporal bins.}
  *
  * @param {carto.source.Base} source - The source where the dataview will fetch the data
  * @param {string} column - The column name to get the data

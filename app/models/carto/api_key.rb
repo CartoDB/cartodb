@@ -43,25 +43,33 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def create_db_role
-    user = ::User[self.user.id]
-    user.in_database(as: :superuser).run(
+    connection.run(
       "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
     )
   end
 
   def update_role_permissions
     user = ::User[self.user.id]
-    user.in_database(as: :superuser).run(
-      "revoke all privileges on all tables in schema \"#{user.database_schema}\" from \"#{db_role}\""
-    )
-    schemas = []
+    revoke_privileges(user)
+
+    read_schemas = []
+    write_schemas = []
     table_permissions.each do |tp|
-      schemas <<= tp.schema
-      user.in_database(as: :superuser).run(
+      read_schemas << tp.schema unless read_schemas.include?(tp.schema)
+      write_schemas << tp.schema unless write_schemas.include?(tp.schema) || !tp.write?
+      connection.run(
         "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
       )
     end
-    schemas.uniq.each { |schema| user.in_database(as: :superuser).run("grant usage on schema \"#{schema}\" to \"#{db_role}\"") }
+
+    write_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
+
+    if write_schemas.size > 0
+      write_schemas << 'cartodb'
+      grant_usage_for_cartodb
+    end
+
+    update_column(:affected_schemas_json, (write_schemas + read_schemas).uniq.to_json)
   end
 
   def update_modification_times
@@ -92,6 +100,10 @@ class Carto::ApiKey < ActiveRecord::Base
 
   private
 
+  def connection
+    @connection ||= ::User[self.user.id].in_database(as: :superuser)
+  end
+
   def redis_key
     "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
   end
@@ -108,5 +120,41 @@ class Carto::ApiKey < ActiveRecord::Base
 
   def grants
     @grants ||= ::Carto::ApiKeyGrants.new(grants_json)
+  end
+
+  def affected_schemas
+    JSON.parse(affected_schemas_json || '[]')
+  end
+
+  def revoke_privileges(user)
+    affected_schemas.each do |schema|
+      connection.run(
+        "revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\""
+      )
+      connection.run(
+        "revoke usage on schema \"#{schema}\" from \"#{db_role}\""
+      )
+      connection.run(
+        "revoke execute on all functions in schema \"#{schema}\" from \"#{db_role}\""
+      )
+      connection.run(
+        "revoke usage, select on all sequences in schema \"#{schema}\" from \"#{db_role}\""
+      )
+    end
+    connection.run("revoke usage on schema \"cartodb\" from \"#{db_role}\"")
+    connection.run("revoke execute on all functions in schema \"cartodb\" from \"#{db_role}\"")
+  end
+
+  def grant_usage_for_cartodb
+    connection.run("grant usage on schema \"cartodb\" to \"#{db_role}\"")
+    connection.run("grant execute on all functions in schema \"cartodb\" to \"#{db_role}\"")
+  end
+
+  def grant_aux_write_privileges_for_schema(s)
+    connection.run("grant usage on schema \"#{s}\" to \"#{db_role}\"")
+    connection.run("grant execute on all functions in schema \"#{s}\" to \"#{db_role}\"")
+    connection.run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
+    connection.run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
+    connection.run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
   end
 end

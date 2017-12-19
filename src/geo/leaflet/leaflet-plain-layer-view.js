@@ -1,5 +1,5 @@
+/* global L */
 var _ = require('underscore');
-var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 
 var LeafletPlainLayerView = function (layerModel, opts) {

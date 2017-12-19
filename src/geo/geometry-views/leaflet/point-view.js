@@ -1,4 +1,4 @@
-var L = require('leaflet');
+/* global L */
 var PointViewBase = require('../base/point-view-base.js');
 var LeafletMarkerAdapter = require('./leaflet-marker-adapter');
 

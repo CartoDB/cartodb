@@ -1,4 +1,4 @@
-var L = require('leaflet');
+/* global L */
 var PathViewBase = require('../base/path-view-base');
 var PointView = require('./point-view');
 var LeafletPathAdapter = require('./leaflet-path-adapter');

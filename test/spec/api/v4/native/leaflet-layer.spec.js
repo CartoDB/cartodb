@@ -61,7 +61,7 @@ describe('src/api/v4/native/leaflet-layer', function () {
       var style = new carto.style.CartoCSS('bar');
       layer = new carto.layer.Layer(source, style);
 
-      client.addLayer(layer, { reload: false });
+      client.addLayer(layer);
 
       internalEventMock = {
         layer: {
@@ -112,7 +112,7 @@ describe('src/api/v4/native/leaflet-layer', function () {
 
     it('should trigger carto.layer.events.TILE_ERROR events', function () {
       layer.on(carto.layer.events.TILE_ERROR, spy);
-      layer.setFeatureClickColumns(['column']);
+      layer._featureClickColumns = [ 'foo' ];
       var error = {
         message: 'an error'
       };
@@ -135,8 +135,8 @@ describe('src/api/v4/native/leaflet-layer', function () {
           expect(map.getContainer().style.cursor).toEqual('');
         });
 
-        it("should set the mouse cursor to 'pointer' if layer has setFeatureOverColumns", function () {
-          layer.setFeatureOverColumns([ 'foo' ]);
+        it("should set the mouse cursor to 'pointer' if layer has featureOverColumns", function () {
+          layer._featureOverColumns = [ 'foo' ];
 
           expect(map.getContainer().style.cursor).toEqual('');
 
@@ -145,8 +145,8 @@ describe('src/api/v4/native/leaflet-layer', function () {
           expect(map.getContainer().style.cursor).toEqual('pointer');
         });
 
-        it("should set the mouse cursor to 'pointer' if layer has setFeatureClickColumns", function () {
-          layer.setFeatureClickColumns([ 'foo' ]);
+        it("should set the mouse cursor to 'pointer' if layer has featureClickColumns", function () {
+          layer._featureClickColumns = [ 'foo' ];
 
           expect(map.getContainer().style.cursor).toEqual('');
 

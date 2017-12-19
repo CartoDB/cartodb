@@ -1,5 +1,4 @@
 var carto = require('../../../../../src/api/v4');
-var CartoError = require('../../../../../src/api/v4/error-handling/carto-error');
 
 describe('api/v4/layer', function () {
   var source;

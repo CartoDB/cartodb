@@ -96,8 +96,8 @@ describe('src/api/v4/native/google-maps-map-type', function () {
           expect(map.get('draggableCursor')).not.toBeDefined();
         });
 
-        it("should set the mouse cursor to 'pointer' if layer has setFeatureOverColumns", function () {
-          layer.setFeatureOverColumns([ 'foo' ]);
+        it("should set the mouse cursor to 'pointer' if layer has featureOverColumns", function () {
+          layer._featureOverColumns = [ 'foo' ];
 
           expect(map.get('draggableCursor')).not.toBeDefined();
 
@@ -106,8 +106,8 @@ describe('src/api/v4/native/google-maps-map-type', function () {
           expect(map.get('draggableCursor')).toEqual('pointer');
         });
 
-        it("should set the mouse cursor to 'pointer' if layer has setFeatureClickColumns", function () {
-          layer.setFeatureClickColumns([ 'foo' ]);
+        it("should set the mouse cursor to 'pointer' if layer has featureClickColumns", function () {
+          layer._featureClickColumns = [ 'foo' ];
 
           expect(map.get('draggableCursor')).not.toBeDefined();
 

@@ -10,7 +10,7 @@
   "data-source": "Data source",
   "edit-analysis": "Edit analysis",
   "add-analysis": "Add new analysis node",
-  "back-layers": "Back to the LAYERS pane",
+  "back-layers": "Back to the Layers list",
   "user": {
     "you": "You"
   },
@@ -53,7 +53,7 @@
       "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
-      "title": "Edit pane",
+      "title": "Edit mode",
       "description": "Manage all the components of your map: add layers and widgets, import datasets, customize analyses, and change styles."
     },
     "map": {
@@ -61,14 +61,14 @@
       "description": "Your map reflects changes instantly."
     },
     "widgets": {
-      "title": "Widgets pane",
+      "title": "Widgets list",
       "description": "The widgets you add to your map appear directly on your visualization."
     },
     "skip": "skip",
     "next": "next"
   },
   "data-onboarding": {
-    "title": "Welcome to the layer pane",
+    "title": "Welcome to the Layers list",
     "description": "Analyze, style, and enhance your data with pop-ups and&nbsp;legends.",
     "take-tour": "Take the tour",
     "edit-layer": "Edit layer",

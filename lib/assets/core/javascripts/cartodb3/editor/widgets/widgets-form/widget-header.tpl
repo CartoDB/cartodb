@@ -16,11 +16,24 @@
       <div class="Editor-HeaderInfo-titleText js-header"></div>
     </div>
 
-    <div class="Editor-HeaderInfo u-flex">
-      <p class="CDB-Text CDB-Size-small u-ellipsis">
-        <span class="CDB-Text is-semibold u-rSpace--s u-upperCase" style="color: <%- sourceColor %>;"><%- source %></span>
-        <a href="<%- url %>" target="_blank" title="<%- layerName %>" class="Editor-headerLayerName"><%- layerName %></a>
-      </p>
+    <div class="Editor-HeaderInfo u-flex u-alignCenter">
+      <span class="CDB-Text CDB-Size-small is-semibold u-bSpace--s u-upperCase" style="color: <%- color %>;">
+        <%- source %>
+      </span>
+
+      <% if (!isSourceType) { %>
+        <span class="CDB-Text CDB-Size-small u-lSpace--s u-flex" style="color: <%- color %>;">
+          <i class="CDB-IconFont CDB-Size-small CDB-IconFont-ray"></i>
+        </span>
+      <% } %>
+
+      <span class="CDB-Text CDB-Size-medium u-lSpace">
+        <%= nodeTitle %>
+      </span>
+
+      <span class="CDB-Text CDB-Size-medium u-altTextColor u-ellipsis u-lSpace" title="<%= layerName %>">
+        <%= layerName %>
+      </span>
     </div>
   </div>
 </div>

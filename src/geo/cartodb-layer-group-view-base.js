@@ -21,18 +21,10 @@ CartoDBLayerGroupViewBase.prototype = {
     this._clearInteraction();
 
     this.model.forEachGroupedLayer(function (layerModel, layerIndex) {
-      if (this._isIteractionEnabledForLayer(layerModel)) {
+      if (layerModel.isVisible() && (layerModel.isInteractive() || this._mapModel.isFeatureInteractivityEnabled())) {
         this._enableInteraction(layerIndex);
       }
     }, this);
-  },
-
-  _isIteractionEnabledForLayer: function (layerModel) {
-    if (!layerModel.isVisible()) {
-      return false;
-    }
-    // Builder needs interactivity when the layer has no popup/infowindows to allow feature edition.
-    return layerModel.isInteractive() || this._mapModel.isFeatureInteractivityEnabled();
   },
 
   _clearInteraction: function () {

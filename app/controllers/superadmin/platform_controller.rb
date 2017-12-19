@@ -82,7 +82,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
 
   def check_for_users_in_database(db_users, db_host)
     user_ids = db_users.map(&:id)
-    Carto::User.where(database_host: db_host).where(id: user_ids).all
+    Carto::User.where(database_host: db_host).where(id: user_ids).all.map(&:username)
   end
 
 end

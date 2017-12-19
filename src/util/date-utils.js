@@ -1,10 +1,9 @@
-var moment = require('moment');
-require('moment-timezone');
-
 var dateUtils = {};
 
 dateUtils.getLocalOffset = function () {
-  return moment.tz(moment.tz.guess()).utcOffset() * 60;
+  var date = new Date();
+  // Return local timezone offset in seconds
+  return date.getTimezoneOffset() * (-60);
 };
 
 module.exports = dateUtils;

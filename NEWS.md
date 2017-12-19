@@ -343,6 +343,7 @@ ion for time-series (#12670)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
+* Add missing hover in widgets (https://github.com/CartoDB/deep-insights.js/issues/640)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

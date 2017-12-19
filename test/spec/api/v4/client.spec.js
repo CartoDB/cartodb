@@ -105,21 +105,12 @@ describe('api/v4/client', function () {
       expect(client.getLayers()[0]).toEqual(layer);
     });
 
-    xit('should add a new layer triggering a reload cycle by default', function (done) {
+    it('should add a new layer triggering a reload cycle by default', function (done) {
       spyOn(client._engine, 'reload').and.callThrough();
 
       client.addLayer(layer).then(function () {
         expect(client._engine.reload).toHaveBeenCalled();
         expect(client._engine.reload.calls.count()).toEqual(1);
-        done();
-      });
-    });
-
-    it('should add a new layer without triggering a reload cycle when opts.reload is false', function (done) {
-      spyOn(client._engine, 'reload').and.callThrough();
-
-      client.addLayer(layer, { reload: false }).then(function () {
-        expect(client._engine.reload).not.toHaveBeenCalled();
         done();
       });
     });

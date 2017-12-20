@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.133",
+  "version": "4.10.133-staging.0",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -383,9 +383,9 @@
       "resolved": "git://github.com/cartodb/carto.git#4dfe5361b302dda8163cd41ccbf7a9dc6898019a"
     },
     "carto-zera": {
-      "version": "1.0.0",
-      "from": "git://github.com/CartoDB/zera.git#support-1222",
-      "resolved": "git://github.com/CartoDB/zera.git#0713e42a9155483cc4a6953f0a06f6262e4dda0f"
+      "version": "1.0.1",
+      "from": "carto-zera@1.0.1",
+      "resolved": "https://registry.npmjs.org/carto-zera/-/carto-zera-1.0.1.tgz"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.26",
-      "from": "git://github.com/CartoDB/deep-insights.js.git#support-1222",
-      "resolved": "git://github.com/CartoDB/deep-insights.js.git#8cf4a98b9ba41ff8fee27a0990369be3cae489c9",
+      "version": "0.4.28",
+      "from": "git://github.com/CartoDB/deep-insights.js.git#v0.4.28",
+      "resolved": "git://github.com/CartoDB/deep-insights.js.git#4be7f7fbd18d903d05a148dd135602de1f9ee1d4",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -410,16 +410,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.6",
-      "from": "cartodb/cartodb.js#support-1222",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#11ee691a02e8831c545f27787ff504bdbb735e8c",
-      "dependencies": {
-        "carto-zera": {
-          "version": "1.0.0",
-          "from": "cartodb/zera#support-1222",
-          "resolved": "git://github.com/cartodb/zera.git#0713e42a9155483cc4a6953f0a06f6262e4dda0f"
-        }
-      }
+      "version": "4.0.0-beta.8",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.8",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#de94cfbf96a9060c6e0862ab61e28300707509fc"
     },
     "center-align": {
       "version": "0.1.3",

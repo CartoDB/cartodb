@@ -1,21 +1,15 @@
-var moment = require('moment');
 var _ = require('underscore');
 
-// Preserve the ascendant order!
-var MOMENT_AGGREGATIONS = {
-  second: 's',
-  minute: 'm',
-  hour: 'h',
-  day: 'd',
-  week: 'w',
-  month: 'M',
-  quarter: 'Q',
-  year: 'y'
+var AGGREGATION_DATA = {
+  second: { unit: 'second', factor: 1 },
+  minute: { unit: 'minute', factor: 1 },
+  hour: { unit: 'hour', factor: 1 },
+  day: { unit: 'day', factor: 1 },
+  week: { unit: 'day', factor: 7 },
+  month: { unit: 'month', factor: 1 },
+  quarter: { unit: 'month', factor: 3 },
+  year: { unit: 'month', factor: 12 }
 };
-
-function formatUTCTimestamp (timestamp) {
-  return moment.unix(timestamp).utc().format('DD-MM-YYYY HH:mm:ss');
-}
 
 var helper = {};
 
@@ -35,15 +29,7 @@ function trimBuckets (buckets, filledBuckets, totalBuckets) {
     : buckets;
 }
 
-helper.isShorterThan = function (limit, aggregation) {
-  var keys = _.keys(MOMENT_AGGREGATIONS);
-  var limitIndex = _.indexOf(keys, limit);
-  var aggregationIndex = _.indexOf(keys, aggregation);
-  return limitIndex > -1 && aggregationIndex > -1 && aggregationIndex < limitIndex;
-};
-
 helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBins, from, totalBuckets) {
-  var startDate = moment.unix(start).utc();
   var filledBuckets = []; // To catch empty buckets
   var definedBucket = false;
 
@@ -51,11 +37,14 @@ helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBin
     definedBucket = buckets[i] !== undefined;
     filledBuckets.push(definedBucket);
 
+    var bucketStart = this.add(start, i, aggregation);
+    var nextBucketStart = this.add(start, i + 1, aggregation);
+
     buckets[i] = _.extend({
       bin: i,
-      start: startDate.clone().add(i, MOMENT_AGGREGATIONS[aggregation]).unix(),
-      end: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix() - 1,
-      next: startDate.clone().add(i + 1, MOMENT_AGGREGATIONS[aggregation]).unix(),
+      start: bucketStart,
+      end: nextBucketStart - 1,
+      next: nextBucketStart,
       freq: 0
     }, buckets[i]);
     delete buckets[i].timestamp;
@@ -83,47 +72,51 @@ helper.hasChangedSomeOf = function (list, changed) {
   });
 };
 
-helper.calculateLimits = function (bins) {
-  var start = Infinity;
-  var end = -Infinity;
-
-  _.each(bins, function (bin) {
-    if (_.isFinite(bin.min)) {
-      start = Math.min(bin.min, start);
-    }
-    if (_.isFinite(bin.max)) {
-      end = Math.max(bin.max, end);
-    }
-  });
-
-  return {
-    start: start !== Infinity ? start : null,
-    end: end !== -Infinity ? end : null
-  };
+/**
+ * Add a `number` of aggregations to the provided timestamp
+ *
+ * @param {number} timestamp - Starting timestamp
+ * @param {number} number - Number of aggregations to add
+ * @param {object} aggregation
+ * @param {string} aggregation.unit - unit of the aggregation
+ * @param {number} aggregation.factor - number of aggretagion units
+ */
+helper.add = function (timestamp, number, aggregation) {
+  if (!AGGREGATION_DATA.hasOwnProperty(aggregation)) {
+    throw Error('aggregation "' + aggregation + '" is not defined');
+  }
+  var date = new Date(timestamp * 1000);
+  var unit = AGGREGATION_DATA[aggregation].unit;
+  var factor = AGGREGATION_DATA[aggregation].factor;
+  var value = number * factor;
+  switch (unit) {
+    case 'second':
+      return date.setUTCSeconds(date.getUTCSeconds() + value) / 1000;
+    case 'minute':
+      return date.setUTCMinutes(date.getUTCMinutes() + value) / 1000;
+    case 'hour':
+      return date.setUTCHours(date.getUTCHours() + value) / 1000;
+    case 'day':
+      return date.setUTCDate(date.getUTCDate() + value) / 1000;
+    case 'month':
+      var n = date.getUTCDate();
+      date.setUTCDate(1);
+      date.setUTCMonth(date.getUTCMonth() + value);
+      date.setUTCDate(Math.min(n, _getDaysInMonth(date.getUTCFullYear(), date.getUTCMonth())));
+      return date.getTime() / 1000;
+    default:
+      return 0;
+  }
 };
 
-helper.calculateDateRanges = function (min, max) {
-  var startDate = moment.unix(min).utc();
-  var endDate = moment.unix(max).utc();
-  var ranges = {};
+/* Internal functions */
 
-  _.each(_.keys(MOMENT_AGGREGATIONS), function (agg) {
-    var startClone = startDate.clone();
-    var endClone = endDate.clone();
-    var start = startClone.startOf(agg).unix();
-    var end = endClone.startOf(agg).add(1, MOMENT_AGGREGATIONS[agg]).unix() - 1;
+function _getDaysInMonth (year, month) {
+  return [31, (_isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+}
 
-    ranges[agg] = {
-      start: start,
-      end: end
-    };
-  });
-
-  return ranges;
-};
-
-helper.formatUTCTimestamp = function (timestamp) {
-  return formatUTCTimestamp(timestamp);
-};
+function _isLeapYear (year) {
+  return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+}
 
 module.exports = helper;

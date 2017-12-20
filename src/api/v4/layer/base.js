@@ -41,7 +41,7 @@ Base.$generateId = function () {
 };
 
 /**
- * Return the real carto.js model used by the layer.
+ * Return the real CARTO.js model used by the layer.
  */
 Base.prototype.$getInternalModel = function () {
   return this._internalModel;

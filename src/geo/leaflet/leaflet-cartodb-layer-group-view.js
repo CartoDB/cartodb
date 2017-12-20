@@ -1,5 +1,5 @@
+/* global L */
 var _ = require('underscore');
-var L = require('leaflet');
 var C = require('../../constants');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
@@ -87,7 +87,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
       }
 
       if (subdomains) {
-        L.Util.setOptions(this.leafletLayer, {subdomains: subdomains});
+        L.Util.setOptions(this.leafletLayer, { subdomains: subdomains });
       }
 
       this.leafletLayer._setUrl(tileURLTemplate);

@@ -1,6 +1,6 @@
+/* global L */
 var $ = require('jquery');
 var _ = require('underscore');
-var L = require('leaflet');
 var MapView = require('../map-view');
 var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
 

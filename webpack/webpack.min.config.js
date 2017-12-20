@@ -16,9 +16,5 @@ module.exports = {
     new webpack.IgnorePlugin(/^\.\/((?!0\.59\.4).)*\/reference\.json$/),
     new UglifyJsPlugin(),
     new webpack.BannerPlugin(banner)
-  ],
-  // Do not to include Leaflet in the bundle
-  externals: {
-    leaflet: 'L'
-  }
+  ]
 };

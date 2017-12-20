@@ -26,7 +26,7 @@ describe('widgets/formula/content-view', function () {
       title: 'Max population',
       hasInitialState: true
     }, {
-      dataviewModel,
+      dataviewModel: dataviewModel,
       layerModel: layerModel
     });
 

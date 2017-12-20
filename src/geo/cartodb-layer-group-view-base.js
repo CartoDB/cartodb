@@ -21,7 +21,8 @@ CartoDBLayerGroupViewBase.prototype = {
     this._clearInteraction();
 
     this.model.forEachGroupedLayer(function (layerModel, layerIndex) {
-      if (layerModel.isVisible() && (layerModel.isInteractive() || this._mapModel.isFeatureInteractivityEnabled())) {
+      if ((layerModel.isVisible()) &&
+          (layerModel.isInteractive() || (this._mapModel && this._mapModel.isFeatureInteractivityEnabled()))) {
         this._enableInteraction(layerIndex);
       }
     }, this);

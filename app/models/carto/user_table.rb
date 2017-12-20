@@ -211,6 +211,49 @@ module Carto
 
     private
 
+    # TODO: replace with actual geopkg metadata fetch
+    # {
+    #   information: {
+    #     vendor: 'carto',
+    #     version: version,
+    #     name: visualization.display_name || visualization.name,
+    #     description: visualization.description,
+    #     attributions: visualization.attributions,
+    #     created_at: Time.now.to_i,
+    #     classification: {
+    #       tags: visualization.tags || []
+    #     }
+    #   },
+    #   data: {
+    #     source: hash_gen.source_for_visualization(visualization)
+    #   },
+    #   schema: hash_gen.schema_for_table_schema(
+    #     visualization.user_table.service.schema(cartodb_types: false)
+    #   ),
+    #   publishing: {
+    #     privacy: visualization.privacy
+    #   }
+    # }
+
+    def geopkg_metadata
+      {
+        information: {
+          vendor: 'carto',
+          version: '0.0.1',
+          name: 'Super Nice Name!',
+          description: 'This is actually quite a nice dataset',
+          attributions: 'carto,guido,world',
+          created_at: Time.now.to_i,
+          classification: {
+            tags: ['good', 'nice', 'awesome']
+          }
+        },
+        publishing: {
+          privacy: 'public'
+        }
+      }
+    end
+
     def default_privacy_value
       user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
     end
@@ -242,7 +285,7 @@ module Carto
     end
 
     def create_canonical_visualization
-      visualization = Carto::VisualizationFactory.create_canonical_visualization(self)
+      visualization = Carto::VisualizationFactory.create_canonical_visualization(self, metadata: geopkg_metadata)
       update_attribute(:map, visualization.map)
       visualization.map.set_default_boundaries!
     end

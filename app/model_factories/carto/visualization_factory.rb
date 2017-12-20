@@ -1,9 +1,24 @@
 module Carto
   class VisualizationFactory
-    def self.create_canonical_visualization(user_table)
+    def self.create_canonical_visualization(user_table, metadata: nil)
       kind = user_table.raster? ? Carto::Visualization::KIND_RASTER : Carto::Visualization::KIND_GEOM
-      esv = user_table.external_source_visualization
       user = user_table.user
+
+      if metadata
+        description = metadata[:information][:description]
+        attributions = metadata[:information][:attributions]
+        source = metadata[:information][:source]
+        tags = metadata[:information][:classification][:tags]
+        privacy = metadata[:publishing][:privacy]
+      else
+        esv = user_table.external_source_visualization
+
+        description = user_table.description
+        attributions = esv.try(:attributions)
+        source = esv.try(:source)
+        tags = user_table.tags && user_table.tags.split(',')
+        privacy = user_table.visualization_privacy
+      end
 
       # Map must be saved before layers, so register_table_dependencies is called after adding each layer
       # to the map. There are several reloads in this process, since the layers<->maps relation is not synchronized
@@ -15,11 +30,11 @@ module Carto
         name: user_table.name,
         map: build_canonical_map(user, base_layers.first),
         type: Carto::Visualization::TYPE_CANONICAL,
-        description: user_table.description,
-        attributions: esv.try(:attributions),
-        source: esv.try(:source),
-        tags: user_table.tags && user_table.tags.split(','),
-        privacy: user_table.visualization_privacy,
+        description: description,
+        attributions: attributions,
+        source: source,
+        tags: tags,
+        privacy: privacy,
         user: user,
         kind: kind,
         overlays: Carto::OverlayFactory.build_default_overlays(user)

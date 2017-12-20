@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.24",
+      "version": "0.4.26",
       "from": "cartodb/deep-insights.js#1119-fix-select-torque",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f0817cfbd653c2a97c8aa452ca352305643d0d09",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#3d4a9a7e8b5c77e8e9e770e2e786934dc281f146",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -410,9 +410,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.3",
+      "version": "4.0.0-beta.6",
       "from": "cartodb/cartodb.js#1119-fix-select-torque",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#249e7b0ae1a850eff59c2475b842ddc86c8eb515"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#7dcdeec1aca1baadf7ae160b3ba6db4c2be483c1"
     },
     "center-align": {
       "version": "0.1.3",

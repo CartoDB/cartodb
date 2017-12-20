@@ -79,12 +79,11 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onError: function (model, response) {
-    if (response.statusText === 'abort') {
+  _onError: function (model, error) {
+    if (error && error.message === 'abort') {
       return;
     }
 
-    var error = this._extractError(response);
     var enhancedError = errorEnhancer(error);
 
     this.options.contentView.$el.addClass('is-hidden');

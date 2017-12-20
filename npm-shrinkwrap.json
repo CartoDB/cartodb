@@ -383,9 +383,9 @@
       "resolved": "git://github.com/cartodb/carto.git#4dfe5361b302dda8163cd41ccbf7a9dc6898019a"
     },
     "carto-zera": {
-      "version": "1.0.0",
-      "from": "carto-zera@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/carto-zera/-/carto-zera-1.0.0.tgz"
+      "version": "1.0.1",
+      "from": "carto-zera@1.0.1",
+      "resolved": "https://registry.npmjs.org/carto-zera/-/carto-zera-1.0.1.tgz"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.27",
-      "from": "cartodb/deep-insights.js#v0.4.27",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#73a470d1e379f228f602488500b74da66aabc7db",
+      "version": "0.4.28",
+      "from": "git://github.com/CartoDB/deep-insights.js.git#v0.4.28",
+      "resolved": "git://github.com/CartoDB/deep-insights.js.git#4be7f7fbd18d903d05a148dd135602de1f9ee1d4",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -410,9 +410,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.7",
-      "from": "cartodb/cartodb.js#v4.0.0-beta.7",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#bda7a569a52deae21a272fbda4c0bf802a5b5170"
+      "version": "4.0.0-beta.8",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.8",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#de94cfbf96a9060c6e0862ab61e28300707509fc"
     },
     "center-align": {
       "version": "0.1.3",

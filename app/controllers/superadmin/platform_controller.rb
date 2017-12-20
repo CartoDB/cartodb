@@ -31,14 +31,14 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
 
   def database_validation
     if !params[:database_host]
-      render json: { error: "Database host parameter is mandatory" }, status: 400
+      return render json: { error: "Database host parameter is mandatory" }, status: 400
     end
     Carto::Db::Connection.connect(params[:database_host], 'postgres', as: :cluster_admin) do |conn|
       db_users = Carto::Db::Database.new(params[:database_host], conn).users
       non_carto_users = db_users.select { |u| !CartoDB::SYSTEM_DB_USERS.include?(u.name) && !u.carto_user }
       carto_users = db_users.select(&:carto_user)
       connected_users = check_for_users_in_database(carto_users, params[:database_host])
-      render json: { db_users: non_carto_users, carto_users: connected_users }
+      return render json: { db_users: non_carto_users, carto_users: connected_users }
     end
   end
 

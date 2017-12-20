@@ -1,4 +1,4 @@
-var L = require('leaflet');
+/* global L */
 var _ = require('underscore');
 var Layer = require('../layer');
 var constants = require('../constants');

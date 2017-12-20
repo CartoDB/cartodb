@@ -1,4 +1,4 @@
-var L = require('leaflet');
+/* global L */
 var LayersCollection = require('../../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');

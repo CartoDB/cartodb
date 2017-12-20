@@ -67,7 +67,7 @@ Base.prototype.$getEngine = function (engine) {
 };
 
 /**
- * Return the real carto.js model used by the source.
+ * Return the real CARTO.js model used by the source.
  */
 Base.prototype.$getInternalModel = function () {
   return this._internalModel;

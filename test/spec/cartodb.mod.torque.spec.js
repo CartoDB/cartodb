@@ -1,5 +1,4 @@
 var torque = require('../../src/cartodb.mod.torque');
-require('leaflet').noConflict();
 
 describe('torque', function () {
   it('should set a window.torque object', function () {

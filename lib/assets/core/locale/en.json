@@ -1634,7 +1634,7 @@
     "layers": {
       "add-layer": {
         "label": "Add new layer",
-        "tooltip": "Add new layer to your dashboard"
+        "tooltip": "Add new layer to your map"
       },
       "breadcrumb": {
         "layer-options": "Layer options",
@@ -1946,7 +1946,7 @@
         "placeholder-text": "Analysis allow you to build reproducible workflows for analyzing and explaining your data.",
         "add-analysis": {
           "label": "Add new analysis",
-          "tooltip": "Add a new analysis node that is linked to your layer"
+          "tooltip": "Add a new node to your analysis workflow"
         },
         "edit-analysis-tooltip": "Edit Analysis",
         "points_source": "Point source",
@@ -2510,7 +2510,7 @@
     "widgets": {
       "add-widget": {
         "label": "Add new widget",
-        "tooltip": "Add new widget to your dashboard"
+        "tooltip": "Add new widget to your map"
       },
       "breadcrumb": {
         "widget-options": "Widget options"

@@ -33,8 +33,6 @@ describe('widgets/category/content-view', function () {
     return view;
   };
 
-
-
   describe('.render', function () {
     it('should render properly', function () {
       view = createViewFn();

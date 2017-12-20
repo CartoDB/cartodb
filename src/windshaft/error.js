@@ -1,9 +1,9 @@
 var WINDSHAFT_ERRORS = require('../constants').WINDSHAFT_ERRORS;
 
-var WindshaftError = function (error, type) {
+var WindshaftError = function (error, type, origin) {
   this._error = error;
 
-  this.origin = 'windshaft';
+  this.origin = origin || 'windshaft';
   this.type = getType(error.type, type, WINDSHAFT_ERRORS.GENERIC);
   this.subtype = error.subtype;
   this.message = truncateMessage(error.message);

@@ -104,6 +104,7 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Stop building static pages on dev (#13188)
 * Fix like buttons (#13231)
 * Wayfinding: fix dialog footer (#13223)
 * Wayfinding: widget view (#13202)

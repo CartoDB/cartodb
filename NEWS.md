@@ -106,6 +106,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Redesign add buttons (#13215)
+* Stop building static pages on dev (#13188)
 * Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)
 * Fix like buttons (#13231)
 * Wayfinding: fix dialog footer (#13223)

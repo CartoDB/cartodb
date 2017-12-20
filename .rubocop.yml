@@ -185,9 +185,6 @@ Layout/SpaceBeforeSemicolon:
 Layout/SpaceAroundOperators:
   Enabled: true
 
-Layout/SpaceInsideBrackets:
-  Enabled: true
-
 Layout/SpaceInsideParens:
   Enabled: true
 
@@ -655,8 +652,6 @@ Lint/DeprecatedClassMethods:
 Lint/ElseLayout:
   Enabled: false
 Lint/HandleExceptions:
-  Enabled: false
-Lint/LiteralInCondition:
   Enabled: false
 Lint/LiteralInInterpolation:
   Enabled: false

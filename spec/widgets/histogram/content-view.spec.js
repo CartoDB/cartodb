@@ -5,11 +5,13 @@ var HistogramWidgetModel = require('../../../src/widgets/histogram/histogram-wid
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
 
 describe('widgets/histogram/content-view', function () {
+  var nodeId = 'a0';
+
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.layerModel = vis.map.layers.first();
     this.layerModel.set('layer_name', '< & ><h1>Hello</h1>');
-    var source = vis.analysis.findNodeById('a0');
+    var source = vis.analysis.findNodeById(nodeId);
     this.dataviewModel = vis.dataviews.createHistogramModel({
       id: 'widget_3',
       column: 'col',
@@ -52,7 +54,7 @@ describe('widgets/histogram/content-view', function () {
     });
   });
 
-  describe('originalData is not loaded', function () {
+  describe('when originalData is not loaded', function () {
     it('should call _initBinds when originalData changes the first time', function () {
       spyOn(this.view, '_initBinds');
 
@@ -79,10 +81,98 @@ describe('widgets/histogram/content-view', function () {
     });
   });
 
-  describe('originalData is loaded', function () {
+  describe('when originalData is loaded', function () {
     beforeEach(function () {
       this.originalData.trigger('change:data', this.originalData);
       this.view.model.set('hasInitialState', true);
+    });
+
+    describe('.render', function () {
+    });
+
+    describe('when collapsed is true', function () {
+      describe('render', function () {
+        it('should hide the content', function () {
+          expect(this.view.$('.CDB-Widget-content').length).toBe(1);
+          this.widgetModel.set('collapsed', true);
+          expect(this.view.$('.CDB-Widget-content').length).toBe(0);
+        });
+      });
+    });
+
+    describe('when show_stats is true', function () {
+      describe('render', function () {
+        it('should show stats', function () {
+          expect(this.view.$('.CDB-Widget-info').length).toBe(0);
+          this.widgetModel.set('show_stats', true);
+          this.view.render();
+          expect(this.view.$('.CDB-Widget-info').length).toBe(1);
+        });
+      });
+    });
+
+    describe('when nulls is not defined in dataview', function () {
+      describe('.render', function () {
+        it('should hide nulls', function () {
+          spyOn(this.view._dataviewModel, 'hasNulls').and.returnValue(false);
+          this.widgetModel.set('show_stats', true);
+          this.view.render();
+          expect(this.view.$('.js-nulls').length).toBe(0);
+        });
+      });
+    });
+
+    describe('when show_source is true', function () {
+      var tableName = 'table_name';
+      var sourceType = 'sampling';
+      var layerName = 'Test Layer Name';
+
+      beforeEach(function () {
+        this.widgetModel.set({
+          show_source: true,
+          table_name: tableName
+        });
+      });
+
+      describe('when dataViewModel is sourceType', function () {
+        describe('.render', function () {
+          it('should render properly', function () {
+            this.view.render();
+
+            expect(this.view.$el.html()).toContain(nodeId);
+            expect(this.view.$el.html()).toContain('Source');
+            expect(this.view.$el.html()).toContain(tableName);
+          });
+        });
+      });
+
+      describe('when dataViewModel is not sourceType', function () {
+        beforeEach(function () {
+          spyOn(this.dataviewModel, 'getSourceType').and.returnValue(sourceType);
+          spyOn(this.dataviewModel, 'isSourceType').and.returnValue(false);
+          this.layerModel.set('layer_name', layerName, { silent: true });
+        });
+
+        describe('.render', function () {
+          it('should render properly', function () {
+            this.view.render();
+
+            expect(this.view.$('.CDB-IconFont-ray').length).toBe(1);
+            expect(this.view.$el.html()).toContain(nodeId);
+            expect(this.view.$el.html()).toContain('Sampling');
+            expect(this.view.$el.html()).toContain(layerName);
+          });
+        });
+      });
+    });
+
+    describe('.initBinds', function () {
+      it('should render the widget when the layer name changes', function () {
+        spyOn(this.view, 'render');
+        this.view._initBinds();
+        this.layerModel.set('layer_name', 'Hello');
+        expect(this.view.render).toHaveBeenCalled();
+      });
     });
 
     it('should revert the lockedByUser state when the model is changed', function () {
@@ -253,41 +343,6 @@ describe('widgets/histogram/content-view', function () {
       this.view.$('.js-zoom').click();
       expect(this.view._onChangeZoomed).toHaveBeenCalled();
       expect(this.view.histogramChartView.replaceData).toHaveBeenCalled();
-    });
-
-    it('should show stats when show_stats is true', function () {
-      expect(this.view.$('.CDB-Widget-info').length).toBe(0);
-      this.widgetModel.set('show_stats', true);
-      this.view.render();
-      expect(this.view.$('.CDB-Widget-info').length).toBe(1);
-    });
-
-    it('should hide nulls if dataview model doesnt have nulls defined', function () {
-      spyOn(this.view._dataviewModel, 'hasNulls').and.returnValue(false);
-      this.widgetModel.set('show_stats', true);
-      this.view.render();
-      expect(this.view.$('.js-nulls').length).toBe(0);
-    });
-
-    it('should show source when show_source is true', function () {
-      expect(this.view.$('.CDB-Widget-info').length).toBe(0);
-      this.widgetModel.set('show_source', true);
-      this.view.render();
-      expect(this.view.$('.CDB-Widget-info').length).toBe(1);
-      expect(this.view.$('.u-altTextColor').html()).toContain('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
-    });
-
-    it('should render the widget when the layer name changes', function () {
-      spyOn(this.view, 'render');
-      this.view._initBinds();
-      this.layerModel.set('layer_name', 'Hello');
-      expect(this.view.render).toHaveBeenCalled();
-    });
-
-    it('should collapse properly', function () {
-      expect(this.view.$('.CDB-Widget-content').length).toBe(1);
-      this.widgetModel.set('collapsed', true);
-      expect(this.view.$('.CDB-Widget-content').length).toBe(0);
     });
 
     it('should update data and original data of the mini histogram if there is a data change and it is not zoomed', function () {

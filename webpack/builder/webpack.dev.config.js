@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const {resolve} = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const PACKAGE = require('./package.json');
+const PACKAGE = require('../../package.json');
 const version = PACKAGE.version;
 
 const stats = (env) => {
@@ -14,9 +14,9 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  builder_embed: ['whatwg-fetch', './lib/assets/core/javascripts/cartodb3/public_editor.js'],
-  dataset: './lib/assets/core/javascripts/cartodb3/dataset.js',
-  builder: './lib/assets/core/javascripts/cartodb3/editor.js'
+  builder_embed: ['whatwg-fetch', resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/public_editor.js')],
+  dataset: resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/dataset.js'),
+  builder: resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/editor.js')
 };
 
 module.exports = env => {
@@ -24,13 +24,13 @@ module.exports = env => {
     entry: entryPoints,
     output: {
       filename: `${version}/javascripts/[name].js`,
-      path: resolve(__dirname, 'public/assets')
+      path: resolve(__dirname, '../../', 'public/assets')
     },
     resolve: {
       symlinks: false,
       modules: [
-        resolve(__dirname, 'node_modules'),
-        resolve(__dirname, 'lib/assets/node_modules')
+        resolve(__dirname, '../../', 'node_modules'),
+        resolve(__dirname, '../../', 'lib/assets/node_modules')
       ]
     },
     devtool: 'source-map',
@@ -81,7 +81,7 @@ module.exports = env => {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, 'node_modules/cartodb.js')
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ],
           options: {
             shim: {
@@ -101,29 +101,29 @@ module.exports = env => {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [
-            resolve(__dirname, 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, 'node_modules/cartodb.js'),
-            resolve(__dirname, 'node_modules/cartodb-deep-insights.js')
+            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
+            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
           ]
         },
         {
           test: /\.mustache$/,
           use: 'raw-loader',
           include: [
-            resolve(__dirname, 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, 'node_modules/cartodb.js'),
-            resolve(__dirname, 'node_modules/cartodb-deep-insights.js')
+            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
+            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
           ]
         },
         {
           test: /\.js$/,
           loader: 'babel-loader',
           include: [
-            resolve(__dirname, 'node_modules/tangram-cartocss'),
-            resolve(__dirname, 'node_modules/tangram.cartodb')
+            resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
+            resolve(__dirname, '../../', 'node_modules/tangram.cartodb')
           ],
           options: {
-            presets: ['es2015']
+            presets: ['env']
           }
         }
       ]

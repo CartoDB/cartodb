@@ -53,7 +53,7 @@ const config = {
         path.resolve(__dirname, '../../lib/assets/core/javascripts/carto-node')
       ],
       options: {
-        presets: ['es2015'],
+        presets: ['env'],
         plugins: ['transform-object-assign']
       }
     }]

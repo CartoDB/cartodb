@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const {resolve} = require('path');
-const PACKAGE = require('./package.json');
+const PACKAGE = require('../../package.json');
 const version = PACKAGE.version;
 
 const isVendor = (module, count) => {
@@ -102,7 +102,7 @@ module.exports = env => {
             resolve(__dirname, 'node_modules/tangram.cartodb')
           ],
           options: {
-            presets: ['es2015']
+            presets: ['env']
           }
         },
         {

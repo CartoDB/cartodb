@@ -60,4 +60,36 @@ describe('widgets/time-series/torque-histogram-view', function () {
       expect(this.torqueLayerModel.get('step')).toBe(128);
     });
   });
+
+  describe('_timeToStep', function () {
+    var prevStart;
+    var prevEnd;
+    var prevSteps;
+    
+    beforeEach(function () {
+      prevSteps = this.view._torqueLayerModel.get('steps');
+      prevStart = this.view._torqueLayerModel.get('start');
+      prevEnd = this.view._torqueLayerModel.get('end');
+    });
+
+    afterEach(function () {
+      this.view._torqueLayerModel.get(prevSteps);
+      this.view._torqueLayerModel.set(prevStart);
+      this.view._torqueLayerModel.set(prevEnd);
+    });
+
+    it('should return first and last steps if start and end are equal', function () {
+      this.view._torqueLayerModel.set({
+        steps: 5,
+        start: 2,
+        end: 2
+      }, { silent: true });
+
+      var minStep = this.view._timeToStep(45, 'min');
+      var maxStep = this.view._timeToStep(45, 'max');
+
+      expect(minStep).toBe(0);
+      expect(maxStep).toBe(5);
+    });
+  });
 });

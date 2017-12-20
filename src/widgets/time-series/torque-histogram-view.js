@@ -102,7 +102,7 @@ module.exports = HistogramView.extend({
         ? steps
         : 0
       : (steps * (1000 * timestamp - start)) / (end - start);
-    step = step.toFixed(2);
+    step = Number(step.toFixed(2));
 
     return step;
   },

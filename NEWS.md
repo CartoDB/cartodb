@@ -15,6 +15,7 @@ to the oauth.google_plus section of the configuration file.
 * Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)
 * Add Grunt tasks to generate static files (#13130)
+* Do not request image files in Dropbox sync (CartoDB/support#1192)
 * Improve geocoding onboarding (#13046)
 * Editor static view (#13043)
 * Add trial notification in static views (#13079)
@@ -105,6 +106,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Stop building static pages on dev (#13188)
+* Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)
 * Fix like buttons (#13231)
 * Wayfinding: fix dialog footer (#13223)
 * Wayfinding: widget view (#13202)
@@ -353,6 +355,7 @@ ion for time-series (#12670)
 * Optimize bundle size related to camshaft-reference (#13124)
 * Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
 * Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
+* Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

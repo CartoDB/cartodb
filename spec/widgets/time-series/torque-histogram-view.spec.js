@@ -65,7 +65,7 @@ describe('widgets/time-series/torque-histogram-view', function () {
     var prevStart;
     var prevEnd;
     var prevSteps;
-    
+
     beforeEach(function () {
       prevSteps = this.view._torqueLayerModel.get('steps');
       prevStart = this.view._torqueLayerModel.get('start');

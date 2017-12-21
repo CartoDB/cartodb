@@ -34,6 +34,10 @@ var AGGREGATION_FORMATS = {
   year: {
     display: 'YYYY',
     unit: 'y'
+  },
+  decade: {
+    display: 'YYYY',
+    unit: 'y'
   }
 };
 

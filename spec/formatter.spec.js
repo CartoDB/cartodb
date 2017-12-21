@@ -26,6 +26,7 @@ describe('formatter', function () {
   });
 
   it('should format timestamps correctly', function () {
+    expect(formatter.timestampFactory('decade', 0)(timestamp)).toEqual('2010');
     expect(formatter.timestampFactory('year', 0)(timestamp)).toEqual('2017');
     expect(formatter.timestampFactory('quarter', 0)(timestamp)).toEqual('Q2 2017');
     expect(formatter.timestampFactory('month', 0)(timestamp)).toEqual('May 2017');

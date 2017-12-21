@@ -40,7 +40,6 @@
       border: 2px solid $cBlueHover;
       border-radius: 4px;
       content: '';
-      z-index: 10000;
       pointer-events: none;
     }
   }
@@ -57,7 +56,6 @@
       border: 2px solid $cMainText;
       border-radius: 4px;
       content: '';
-      z-index: 10000;
       pointer-events: none;
     }
   }

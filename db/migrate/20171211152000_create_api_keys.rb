@@ -8,7 +8,7 @@ migration(
       Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
       String      :token, null: false
       foreign_key :user_id, :users, type: :uuid, on_delete: :cascade, null: false
-      String      :api_type, null: false
+      String      :type, null: false
       String      :name
       String      :db_role, null: false
       String      :db_password, null: false
@@ -19,7 +19,8 @@ migration(
     end
 
     alter_table :api_keys do
-      add_index [:token]
+      add_index :token, unique: true
+      add_index :db_role, unique: true
     end
   end,
   Proc.new do

@@ -2,9 +2,7 @@ require 'securerandom'
 
 class Carto::ApiKey < ActiveRecord::Base
 
-  TOKEN_LENGTH = 40
-  ROLE_LENGTH = 10
-  PASSWORD_LENGTH = 40
+  include Carto::AuthTokenGenerator
 
   TYPE_REGULAR = 'regular'.freeze
   TYPE_MASTER = 'master'.freeze
@@ -12,37 +10,43 @@ class Carto::ApiKey < ActiveRecord::Base
 
   VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
-  REDIS_KEY_PREFIX = 'api_keys:'.freeze
+  self.inheritance_column = :_type
 
   belongs_to :user
 
   before_create :create_token
   before_create :create_db_config
 
-  before_save :update_modification_times
   before_save :serialize_grants
 
   after_save :add_to_redis
   after_save :update_role_permissions
 
-  validates :api_type, inclusion: { in: VALID_TYPES }
-
-  alias_attribute :type, :api_type
-  alias_attribute :type=, :api_type=
+  validates :type, inclusion: { in: VALID_TYPES }
 
   attr_writer :redis_client
 
+  def grants
+    @grants ||= ::Carto::ApiKeyGrants.new(grants_json)
+  end
+
+  private
+
+  PASSWORD_LENGTH = 40
+
+  REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
   def create_token
-    self.token = SecureRandom.hex(TOKEN_LENGTH / 2) unless token
+    begin
+      self.token = generate_auth_token
+    end while self.class.exists?(token: token)
   end
 
   def create_db_config
-    self.db_role = "#{user.username}_role_#{SecureRandom.hex(ROLE_LENGTH / 2)}" unless db_role
+    begin
+      self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
+    end while self.class.exists?(db_role: db_role)
     self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
-    create_db_role
-  end
-
-  def create_db_role
     connection.run(
       "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
     )
@@ -53,7 +57,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
     read_schemas = []
     write_schemas = []
-    table_permissions.each do |tp|
+    grants.table_permissions.each do |tp|
       read_schemas << tp.schema unless read_schemas.include?(tp.schema)
       write_schemas << tp.schema unless write_schemas.include?(tp.schema) || !tp.write?
       connection.run(
@@ -71,40 +75,17 @@ class Carto::ApiKey < ActiveRecord::Base
     update_column(:affected_schemas_json, (write_schemas + read_schemas).uniq.to_json)
   end
 
-  def update_modification_times
-    now = Time.now
-    self.created_at = now unless created_at
-    self.updated_at = now
-  end
-
   def serialize_grants
-    self.grants_json = grants_hash.to_json
+    self.grants_json = grants.to_hash.to_json
   end
 
   def add_to_redis
+    redis_key = "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
     redis_client.hmset(redis_key, redis_hash_as_array)
   end
 
-  def granted_apis
-    grants.granted_apis
-  end
-
-  def table_permissions
-    grants.table_permissions
-  end
-
-  def grants_hash
-    grants.to_hash
-  end
-
-  private
-
   def connection
     @connection ||= ::User[user.id].in_database(as: :superuser)
-  end
-
-  def redis_key
-    "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
   end
 
   def redis_hash_as_array
@@ -115,10 +96,6 @@ class Carto::ApiKey < ActiveRecord::Base
 
   def redis_client
     @redis_client ||= $users_metadata
-  end
-
-  def grants
-    @grants ||= ::Carto::ApiKeyGrants.new(grants_json)
   end
 
   def affected_schemas

@@ -49,18 +49,6 @@ module Carto
       grants_json.each { |grant| process_grant(grant) }
     end
 
-    def process_grant(grant)
-      type = grant['type']
-      case type
-      when 'apis'
-        process_apis_grant(grant)
-      when 'database'
-        process_database_grant(grant)
-      else
-        raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
-      end
-    end
-
     def table_permissions
       @table_permissions.values
     end
@@ -70,6 +58,18 @@ module Carto
     end
 
     private
+
+    def process_grant(grant)
+      type = grant['type']
+      case type
+        when 'apis'
+          process_apis_grant(grant)
+        when 'database'
+          process_database_grant(grant)
+        else
+          raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
+      end
+    end
 
     def granted_apis_hash
       {

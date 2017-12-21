@@ -12,10 +12,10 @@ module Carto
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
 
       class << self
-        def connect(db_host, db_name, options = {}, &block)
+        def connect(db_host, db_name, options = {})
           validate_options(options)
           if options[:statement_timeout]
-            connect.execute(%Q{ SET statement_timeout TO #{options[:statement_timeout]} })
+            connect.execute(%{ SET statement_timeout TO #{options[:statement_timeout]} })
           end
 
           configuration = get_db_configuration_for(db_host, db_name, options)
@@ -24,10 +24,12 @@ module Carto
             get_database(options, configuration)
           end
 
+          database = Carto::Db::Database.new(db_host, connection)
+
           if block_given?
-            yield(connection)
+            yield(database, connection)
           else
-            connection
+            return database, connection
           end
         ensure
           if options[:statement_timeout]
@@ -49,7 +51,7 @@ module Carto
           #       all internal calls to functions should use the schema name like if we were using
           #       namespaces to avoid collisions and problems
           if options[:as] != :cluster_admin
-            conn.execute(%Q{ SET search_path TO #{build_search_path(options[:user_schema])} })
+            conn.execute(%{ SET search_path TO #{build_search_path(options[:user_schema])} })
           end
           conn
         end

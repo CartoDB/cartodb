@@ -39,24 +39,15 @@ module Carto
           and table_catalog = '#{@database_name}'
         }
 
-        if activerecord_connection?
-          @conn.select_all(query).map do |t|
-            Trigger.new(
-              database_name: t['table_catalog'],
-              database_schema: t['table_schema'],
-              table_name: t['table_name'],
-              trigger_name: t['tgname']
-            )
-          end
-        else
-          @conn[query].all.map do |t|
-            Trigger.new(
-              database_name: t[:table_catalog],
-              database_schema: t[:table_schema],
-              table_name: t[:table_name],
-              trigger_name: t[:tgname]
-            )
-          end
+        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
+        query_result.map do |t|
+          t = t.deep_symbolize_keys
+          Trigger.new(
+            database_name: t[:table_catalog],
+            database_schema: t[:table_schema],
+            table_name: t[:table_name],
+            trigger_name: t[:tgname]
+          )
         end
       end
 
@@ -83,24 +74,15 @@ module Carto
              and rolname = '#{owner_role}'
           group by ns.nspname, pc.relname;
         }
-        if activerecord_connection?
-          @conn.select_all(query).map do |t|
-            View.new(
-              database_name: @database_name,
-              database_schema: t['schemaname'],
-              name: t['matviewname'],
-              relkind: relkind
-            )
-          end
-        else
-          @conn[query].all.map do |t|
-            View.new(
-              database_name: @database_name,
-              database_schema: t[:schemaname],
-              name: t[:matviewname],
-              relkind: relkind
-            )
-          end
+        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
+        query_result.map do |v|
+          v = v.deep_symbolize_keys
+          View.new(
+            database_name: @database_name,
+            database_schema: v[:schemaname],
+            name: v[:matviewname],
+            relkind: relkind
+          )
         end
       end
 
@@ -117,51 +99,32 @@ module Carto
                 AND n.nspname = '#{schema}'
                 AND rolname = '#{owner_role}'
         }
-        if activerecord_connection?
-          @conn.select_all(query).map do |t|
-            Function.new(
-              database_name: @database_name,
-              database_schema: ['nspname'],
-              name: t['proname'],
-              argument_data_types: t['argument_data_types']
-            )
-          end
-        else
-          @conn[query].all.map do |t|
-            Function.new(
-              database_name: @database_name,
-              database_schema: [:nspname],
-              name: t[:proname],
-              argument_data_types: t[:argument_data_types]
-            )
-          end
+        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
+        query_result.map do |f|
+          f = f.deep_symbolize_keys
+          Function.new(
+            database_name: @database_name,
+            database_schema: f[:nspname],
+            name: f[:proname],
+            argument_data_types: f[:argument_data_types]
+          )
         end
       end
 
       def users
         query = "SELECT usename from pg_user"
-        if activerecord_connection?
-          @conn.select_all(query).map do |t|
-            User.new(
-              database_name: @database_name,
-              name: t['usename']
-            )
-          end
-        else
-          @conn[query].all.map do |t|
-            User.new(
-              database_name: @database_name,
-              name: t[:usename]
-            )
-          end
+        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
+        query_result.map do |u|
+          u = u.deep_symbolize_keys
+          User.new(database_name: @database_name, name: u[:usename])
         end
       end
 
       private
 
-      def activerecord_connection?
+      def activerecord_connection?(conn)
         ## Right now we have two kind of connections from Sequel and from AR
-        @conn.is_a? ActiveRecord::ConnectionAdapters::AbstractAdapter
+        conn.is_a? ActiveRecord::ConnectionAdapters::AbstractAdapter
       end
 
     end

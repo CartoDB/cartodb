@@ -26,6 +26,10 @@ module Carto
         name.match(/#{Regexp.quote(Carto::Db::User.db_username_prefix)}/)
       end
 
+      def system_db_user
+        CartoDB::SYSTEM_DB_USERS.include?(name)
+      end
+
       private
 
       def extract_id

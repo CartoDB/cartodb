@@ -56,8 +56,7 @@ describe('dashboard-sidebar-view', function () {
       spyOn(widgetView, 'render').and.returnValue({ el: document.createElement('div') });
 
       this.containerMock = {
-        prepend: jasmine.createSpy(),
-        append: jasmine.createSpy()
+        prepend: jasmine.createSpy()
       };
       spyOn(this.view, '_$container').and.returnValue(this.containerMock);
       spyOn(this.view, '_cleanScroll');
@@ -73,7 +72,7 @@ describe('dashboard-sidebar-view', function () {
     });
 
     it('should render widgets stacked one below another', function () {
-      expect(this.containerMock.append).toHaveBeenCalled();
+      expect(this.containerMock.prepend).toHaveBeenCalled();
     });
 
     it('should render added widget on top of the existing ones', function () {

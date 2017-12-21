@@ -21,8 +21,6 @@
     <% if (isTableSource) { %>
       <div class="Editor-HeaderInfo-source u-flex">
         <p class="CDB-Text CDB-Size-small u-ellipsis">
-          <span class="CDB-Text is-semibold u-rSpace--s u-upperCase" style="color: <%- bgColor %>;"><%- id %></span>
-
           <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
         </p>
       </div>

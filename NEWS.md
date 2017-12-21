@@ -106,6 +106,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix grammar errors in analysis description (#13258)
+* Redesign add buttons (#13215)
 * Onboarding: center bounding box automatically when new datasets are added (#13245)
 * Stop building static pages on dev (#13188)
 * Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)

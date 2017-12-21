@@ -392,18 +392,6 @@
       "from": "cartocolor@4.0.0",
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
-    "cartodb-deep-insights.js": {
-      "version": "0.4.28",
-      "from": "git://github.com/CartoDB/deep-insights.js.git#v0.4.28",
-      "resolved": "git://github.com/CartoDB/deep-insights.js.git#4be7f7fbd18d903d05a148dd135602de1f9ee1d4",
-      "dependencies": {
-        "node-polyglot": {
-          "version": "2.2.2",
-          "from": "node-polyglot@>=2.2.2 <3.0.0",
-          "resolved": "https://registry.npmjs.org/node-polyglot/-/node-polyglot-2.2.2.tgz"
-        }
-      }
-    },
     "cartodb-pecan": {
       "version": "0.2.0",
       "from": "cartodb-pecan@>=0.2.0 <0.3.0",
@@ -636,9 +624,9 @@
       "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-1.2.0.tgz"
     },
     "d3-interpolate": {
-      "version": "1.1.2",
-      "from": "d3-interpolate@1.1.2",
-      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.2.tgz"
+      "version": "1.1.6",
+      "from": "d3-interpolate@>=1.1.6 <2.0.0",
+      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.6.tgz"
     },
     "d3-time": {
       "version": "1.0.8",
@@ -708,9 +696,9 @@
       "resolved": "https://registry.npmjs.org/des.js/-/des.js-1.0.0.tgz"
     },
     "detective": {
-      "version": "4.7.0",
+      "version": "4.7.1",
       "from": "detective@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.0.tgz",
+      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.1.tgz",
       "dependencies": {
         "acorn": {
           "version": "5.2.1",
@@ -1808,9 +1796,9 @@
       }
     },
     "node-polyglot": {
-      "version": "1.0.0",
-      "from": "node-polyglot@1.0.0",
-      "resolved": "https://registry.npmjs.org/node-polyglot/-/node-polyglot-1.0.0.tgz"
+      "version": "2.2.2",
+      "from": "node-polyglot@>=2.2.2 <3.0.0",
+      "resolved": "https://registry.npmjs.org/node-polyglot/-/node-polyglot-2.2.2.tgz"
     },
     "normalize-package-data": {
       "version": "2.4.0",
@@ -2013,7 +2001,7 @@
     },
     "postcss": {
       "version": "5.0.19",
-      "from": "postcss@5.0.19",
+      "from": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
       "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.0.19.tgz",
       "dependencies": {
         "has-flag": {
@@ -2029,47 +2017,30 @@
       }
     },
     "postcss-scss": {
-      "version": "0.4.0",
-      "from": "postcss-scss@0.4.0",
-      "resolved": "https://registry.npmjs.org/postcss-scss/-/postcss-scss-0.4.0.tgz",
+      "version": "1.0.2",
+      "from": "postcss-scss@>=1.0.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/postcss-scss/-/postcss-scss-1.0.2.tgz",
       "dependencies": {
-        "chalk": {
-          "version": "1.1.3",
-          "from": "chalk@>=1.1.3 <2.0.0",
-          "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz",
-          "dependencies": {
-            "supports-color": {
-              "version": "2.0.0",
-              "from": "supports-color@^2.0.0",
-              "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
-            }
-          }
-        },
-        "has-flag": {
-          "version": "1.0.0",
-          "from": "has-flag@>=1.0.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/has-flag/-/has-flag-1.0.0.tgz"
-        },
         "postcss": {
-          "version": "5.2.18",
-          "from": "postcss@>=5.2.5 <6.0.0",
-          "resolved": "https://registry.npmjs.org/postcss/-/postcss-5.2.18.tgz"
+          "version": "6.0.14",
+          "from": "postcss@>=6.0.3 <7.0.0",
+          "resolved": "https://registry.npmjs.org/postcss/-/postcss-6.0.14.tgz"
         },
-        "strip-ansi": {
-          "version": "3.0.1",
-          "from": "strip-ansi@>=3.0.0 <4.0.0",
-          "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-3.0.1.tgz"
+        "source-map": {
+          "version": "0.6.1",
+          "from": "source-map@>=0.6.1 <0.7.0",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
         },
         "supports-color": {
-          "version": "3.2.3",
-          "from": "supports-color@>=3.2.3 <4.0.0",
-          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-3.2.3.tgz"
+          "version": "4.5.0",
+          "from": "supports-color@>=4.4.0 <5.0.0",
+          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-4.5.0.tgz"
         }
       }
     },
     "postcss-strip-inline-comments": {
       "version": "0.1.5",
-      "from": "postcss-strip-inline-comments@0.1.5",
+      "from": "postcss-strip-inline-comments@>=0.1.5 <0.2.0",
       "resolved": "https://registry.npmjs.org/postcss-strip-inline-comments/-/postcss-strip-inline-comments-0.1.5.tgz"
     },
     "postcss-value-parser": {
@@ -2747,7 +2718,7 @@
     },
     "tinycolor2": {
       "version": "1.4.1",
-      "from": "tinycolor2@1.4.1",
+      "from": "tinycolor2@>=1.4.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.4.1.tgz"
     },
     "tmp": {
@@ -2852,9 +2823,9 @@
       "resolved": "https://registry.npmjs.org/upper-case/-/upper-case-1.1.3.tgz"
     },
     "urijs": {
-      "version": "1.17.1",
-      "from": "urijs@1.17.1",
-      "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.17.1.tgz"
+      "version": "1.19.0",
+      "from": "urijs@>=1.19.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.19.0.tgz"
     },
     "url": {
       "version": "0.11.0",

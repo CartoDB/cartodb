@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.28",
-      "from": "git://github.com/CartoDB/deep-insights.js.git#v0.4.28",
-      "resolved": "git://github.com/CartoDB/deep-insights.js.git#4be7f7fbd18d903d05a148dd135602de1f9ee1d4",
+      "version": "0.4.30",
+      "from": "git://github.com/CartoDB/deep-insights.js.git#1071-decades",
+      "resolved": "git://github.com/CartoDB/deep-insights.js.git#943c5f0c75a2a96e34d1249005680a70ad6a55c0",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -411,8 +411,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-beta.8",
-      "from": "cartodb/cartodb.js#v4.0.0-beta.8",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#de94cfbf96a9060c6e0862ab61e28300707509fc"
+      "from": "cartodb/cartodb.js#1071-decades",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#4080321d9629254d51a26aac7bf2ccc54295ea75"
     },
     "center-align": {
       "version": "0.1.3",
@@ -708,9 +708,9 @@
       "resolved": "https://registry.npmjs.org/des.js/-/des.js-1.0.0.tgz"
     },
     "detective": {
-      "version": "4.7.0",
+      "version": "4.7.1",
       "from": "detective@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.0.tgz",
+      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.1.tgz",
       "dependencies": {
         "acorn": {
           "version": "5.2.1",

@@ -67,10 +67,6 @@
       z-index: -1;
     }
 
-    &:first-child {
-      margin-top: 1px;
-    }
-
     &:hover {
       @include regularBorder();
       cursor: default;

@@ -29,13 +29,6 @@
   margin-top: 0;
 }
 
-.ie11-hotfix {
-  .ScrollView--horizontal {
-    /* Temporary hack. Apply necessary fixed height to parent .ie11-hotfix */
-    height: inherit;
-  }
-}
-
 .ScrollView--horizontal {
 
   &,

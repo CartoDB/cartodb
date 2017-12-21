@@ -46,6 +46,8 @@ npm-debug.log
 lib/assets/javascripts/cartodb/organization/*
 lib/assets/javascripts/cartodb3/*
 lib/assets/test/spec/cartodb3/*
+lib/assets/javascripts/dashboard/*
+lib/assets/test/spec/dashboard/*
 lib/assets/locale/*
 lib/build/dist
 lib/build/grunt-aws.json

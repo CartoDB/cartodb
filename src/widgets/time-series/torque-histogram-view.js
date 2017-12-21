@@ -93,22 +93,28 @@ module.exports = HistogramView.extend({
     this._reSelectRange();
   },
 
-  _timeToStep: function (timestamp) {
+  _timeToStep: function (timestamp, place) {
     var steps = this._torqueLayerModel.get('steps');
     var start = this._torqueLayerModel.get('start');
     var end = this._torqueLayerModel.get('end');
-    var step = (steps * (1000 * timestamp - start)) / (end - start);
+    var step = (end - start) === 0
+      ? place === 'max'
+        ? steps
+        : 0
+      : (steps * (1000 * timestamp - start)) / (end - start);
+    step = Number(step.toFixed(2));
+
     return step;
   },
 
-  _reSelectRange: function () {
+  _reSelectRange: function (model) {
     if (!this._rangeFilter.isEmpty()) {
       this._torqueLayerModel.pause();
 
       var min = this._rangeFilter.get('min');
       var max = this._rangeFilter.get('max');
-      var loStep = this._timeToStep(min);
-      var hiStep = this._timeToStep(max);
+      var loStep = this._timeToStep(min, 'min');
+      var hiStep = this._timeToStep(max, 'max');
 
       // -- HACK: Reset filter if the min/max values are out of the scope
       var data = this._dataviewModel.get('data');

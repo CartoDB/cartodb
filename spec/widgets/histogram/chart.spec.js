@@ -5,7 +5,6 @@ var d3 = require('d3');
 var WidgetHistogramChart = require('../../../src/widgets/histogram/chart');
 var viewportUtils = require('../../../src/viewport-utils');
 var formatter = require('../../../src/formatter');
-require('moment-timezone');
 
 function flushAllD3Transitions () {
   var now = Date.now;

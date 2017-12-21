@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.13-5.13122.1",
+  "version": "4.10.136",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.28",
-      "from": "cartodb/deep-insights.js#13122-center-node-info",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#4331b6176084bebfc76d59d58795d4237823bf98",
+      "version": "0.4.29",
+      "from": "cartodb/deep-insights.js#v0.4.29",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#c9594fef807d8629d7b602dcb323749a822cdf6b",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -708,9 +708,9 @@
       "resolved": "https://registry.npmjs.org/des.js/-/des.js-1.0.0.tgz"
     },
     "detective": {
-      "version": "4.7.0",
+      "version": "4.7.1",
       "from": "detective@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.0.tgz",
+      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.1.tgz",
       "dependencies": {
         "acorn": {
           "version": "5.2.1",

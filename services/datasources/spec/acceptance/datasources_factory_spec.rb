@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require 'yaml'
 require_relative '../../../../spec/rspec_configuration'
+require_relative '../../../../spec/spec_helper'
 
 require_relative '../../lib/datasources'
 require_relative '../doubles/user'
@@ -12,6 +12,7 @@ describe DatasourcesFactory do
 
   def get_config
     @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']
+    @config ||= Cartodb.config
   end
 
   describe '#provider_instantiations' do

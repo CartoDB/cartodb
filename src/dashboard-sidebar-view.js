@@ -103,9 +103,10 @@ module.exports = cdb.core.View.extend({
 
   _maybeRenderWidgetView: function (widgetModel) {
     var view = this._widgetViewFactory.createWidgetView(widgetModel);
+
     if (view) {
       this.addView(view);
-      this._$container().append(view.render().el);
+      this._$container().prepend(view.render().el);
     }
   },
 

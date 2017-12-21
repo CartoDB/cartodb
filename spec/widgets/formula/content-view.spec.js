@@ -4,76 +4,159 @@ var FormulaWidgetContent = require('../../../src/widgets/formula/content-view');
 var AnimateValues = require('../../../src/widgets/animate-values');
 
 describe('widgets/formula/content-view', function () {
-  beforeEach(function () {
+  var view, model, layerModel, dataviewModel;
+  var nodeId = 'a0';
+
+  var createViewFn = function (options) {
     AnimateValues.prototype.animateValue = function () {};
     var vis = specHelper.createDefaultVis();
-    this.layerModel = vis.map.layers.first();
-    this.layerModel.set('layer_name', '< & ><h1>Hello</h1>');
-    var source = vis.analysis.findNodeById('a0');
-    this.dataviewModel = vis.dataviews.createFormulaModel({
+    var source = vis.analysis.findNodeById(nodeId);
+
+    layerModel = vis.map.layers.first();
+    layerModel.set('layer_name', '< & ><h1>Hello</h1>');
+
+    dataviewModel = vis.dataviews.createFormulaModel({
       column: 'col',
       source: source,
       operation: 'avg'
     });
-    this.model = new WidgetModel({
+    dataviewModel.set('data', 123, { silent: true });
+
+    model = new WidgetModel({
       title: 'Max population',
       hasInitialState: true
     }, {
-      dataviewModel: this.dataviewModel,
-      layerModel: this.layerModel
+      dataviewModel: dataviewModel,
+      layerModel: layerModel
     });
-    this.view = new FormulaWidgetContent({
-      model: this.model
+
+    view = new FormulaWidgetContent({
+      model: model
     });
-    this.view.render();
+
+    return view;
+  };
+
+  describe('.render', function () {
+    it('should render properly', function () {
+      view = createViewFn();
+      view.render();
+
+      expect(view.$('.js-title').text()).toContain('Max population');
+    });
   });
 
-  it('should render the formula', function () {
-    this.dataviewModel.set('data', 100);
-    expect(this.view.$('.js-title').text()).toContain('Max population');
+  describe('when collapsed is true', function () {
+    beforeEach(function () {
+      view = createViewFn();
+      model.set('collapsed', true);
+    });
+
+    describe('.render', function () {
+      it('should render properly', function () {
+        view.render();
+
+        expect(view.$('.js-title').length).toBe(0);
+        expect(view.$('.js-value').length).toBe(1);
+        expect(view.$('.js-value').text()).toBe('123');
+      });
+
+      it('should not disable dataviewModel', function () {
+        view.render();
+
+        expect(dataviewModel.get('enabled')).toBeTruthy();
+        dataviewModel.set('data', 67);
+        expect(view.$('.js-value').text()).toBe('67');
+      });
+    });
   });
 
-  it('should render the collapsed formula', function () {
-    this.dataviewModel.set('data', 123);
-    this.model.set('collapsed', true);
-    expect(this.view.$('.js-value').text()).toBe('123');
+  describe('when description is available', function () {
+    var description = 'This is the best widget!';
+
+    describe('.render', function () {
+      it('should render properly', function () {
+        view = createViewFn();
+        view.render();
+
+        expect(view.$('.js-description').length).toBe(0);
+        model.set('description', description);
+        view.render();
+
+        expect(view.$('.js-description').length).toBe(1);
+        expect(view.$('.js-description').text()).toBe(description);
+      });
+    });
   });
 
-  it('should render description if available', function () {
-    this.dataviewModel.set('data', 123);
-    expect(this.view.$('.js-description').length).toBe(0);
-    this.model.set('description', 'hello');
-    this.view.render();
-    expect(this.view.$('.js-description').length).toBe(1);
-    expect(this.view.$('.js-description').text()).toBe('hello');
+  describe('when show_stats is true', function () {
+    describe('.render', function () {
+      it('should render properly', function () {
+        view = createViewFn();
+        view.render();
+
+        expect(view.$('.CDB-Widget-info').length).toBe(0);
+        model.set('show_stats', true);
+        view.render();
+
+        expect(view.$('.CDB-Widget-info').length).toBe(1);
+      });
+    });
   });
 
-  it('should not disable dataviewModel when it is collapsed', function () {
-    this.model.set('collapsed', true);
-    expect(this.dataviewModel.get('enabled')).toBeTruthy();
-    this.dataviewModel.set('data', 67);
-    expect(this.view.$('.js-value').text()).toBe('67');
+  describe('when show_source is true', function () {
+    var tableName = 'table_name';
+    var sourceType = 'sampling';
+    var layerName = 'Test Layer Name';
+
+    beforeEach(function () {
+      model.set({
+        show_source: true,
+        table_name: tableName
+      });
+    });
+
+    describe('when dataViewModel is sourceType', function () {
+      describe('.render', function () {
+        it('should render properly', function () {
+          view.render();
+
+          expect(view.$el.html()).toContain(nodeId);
+          expect(view.$el.html()).toContain('Source');
+          expect(view.$el.html()).toContain(tableName);
+        });
+      });
+    });
+
+    describe('when dataViewModel is not sourceType', function () {
+      beforeEach(function () {
+        spyOn(dataviewModel, 'getSourceType').and.returnValue(sourceType);
+        spyOn(dataviewModel, 'isSourceType').and.returnValue(false);
+        layerModel.set('layer_name', layerName, { silent: true });
+      });
+
+      describe('.render', function () {
+        it('should render properly', function () {
+          view.render();
+
+          expect(view.$('.CDB-IconFont-ray').length).toBe(1);
+          expect(view.$el.html()).toContain(nodeId);
+          expect(view.$el.html()).toContain('Sampling');
+          expect(view.$el.html()).toContain(layerName);
+        });
+      });
+    });
   });
 
-  it('should render formula stats if show_stats is enabled', function () {
-    expect(this.view.$('.CDB-Widget-info').length).toBe(0);
-    this.model.set('show_stats', true);
-    this.view.render();
-    expect(this.view.$('.CDB-Widget-info').length).toBe(1);
-  });
+  describe('.initBinds', function () {
+    it('should render the widget when the layer name changes', function () {
+      view = createViewFn();
+      view.render();
 
-  it('should render widget source if show_source is enabled', function () {
-    expect(this.view.$('.CDB-Widget-info').length).toBe(0);
-    this.model.set('show_source', true);
-    this.view.render();
-    expect(this.view.$('.CDB-Widget-info').length).toBe(1);
-    expect(this.view.$('.u-altTextColor').html()).toContain('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
-  });
-
-  it('should render the widget when the layer name changes', function () {
-    spyOn(this.view, 'render');
-    this.view._initBinds();
-    this.layerModel.set('layer_name', 'Hello');
-    expect(this.view.render).toHaveBeenCalled();
+      spyOn(view, 'render');
+      view._initBinds();
+      layerModel.set('layer_name', 'Hello');
+      expect(view.render).toHaveBeenCalled();
+    });
   });
 });

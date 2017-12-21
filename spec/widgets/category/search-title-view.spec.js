@@ -3,6 +3,8 @@ var CategoryWidgetModel = require('../../../src/widgets/category/category-widget
 var SearchTitleView = require('../../../src/widgets/category/title/search-title-view');
 
 describe('widgets/category/search-title-view', function () {
+  var nodeId = 'a0';
+
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.layer = vis.map.layers.first();
@@ -10,7 +12,7 @@ describe('widgets/category/search-title-view', function () {
     this.layer.getGeometryType = function () {
       return 'point';
     };
-    var source = vis.analysis.findNodeById('a0');
+    var source = vis.analysis.findNodeById(nodeId);
     this.dataviewModel = vis.dataviews.createCategoryModel({
       column: 'col',
       source: source
@@ -37,12 +39,66 @@ describe('widgets/category/search-title-view', function () {
       });
     });
 
-    it('should render properly', function () {
-      this.view.render();
-      var $el = this.view.$el;
-      expect($el.find('.js-title').length).toBe(1);
-      expect($el.find('.CDB-Widget-options').length).toBe(1);
-      expect($el.find('.js-titleText').length).toBe(1);
+    describe('.render', function () {
+      it('should render properly', function () {
+        this.view.render();
+        var $el = this.view.$el;
+        expect($el.find('.js-title').length).toBe(1);
+        expect($el.find('.CDB-Widget-options').length).toBe(1);
+        expect($el.find('.CDB-Widget-info').length).toBe(0);
+        expect($el.find('.js-titleText').length).toBe(1);
+      });
+    });
+
+    describe('when show_source is true', function () {
+      var tableName = 'table_name';
+      var sourceType = 'sampling';
+      var layerName = 'Test Layer Name';
+
+      beforeEach(function () {
+        this.widgetModel.set({
+          show_source: true,
+          table_name: tableName
+        });
+      });
+
+      describe('when dataViewModel is sourceType', function () {
+        describe('.render', function () {
+          it('should render properly', function () {
+            this.view.render();
+
+            expect(this.view.$el.html()).toContain(nodeId);
+            expect(this.view.$el.html()).toContain('Source');
+            expect(this.view.$el.html()).toContain(tableName);
+          });
+        });
+      });
+
+      describe('when dataViewModel is not sourceType', function () {
+        beforeEach(function () {
+          spyOn(this.dataviewModel, 'getSourceType').and.returnValue(sourceType);
+          spyOn(this.dataviewModel, 'isSourceType').and.returnValue(false);
+          this.layer.set('layer_name', layerName, { silent: true });
+        });
+
+        describe('.render', function () {
+          it('should render properly', function () {
+            this.view.render();
+
+            expect(this.view.$('.CDB-IconFont-ray').length).toBe(1);
+            expect(this.view.$el.html()).toContain(nodeId);
+            expect(this.view.$el.html()).toContain('Sampling');
+            expect(this.view.$el.html()).toContain(layerName);
+          });
+        });
+      });
+    });
+
+    it('should render the widget when the layer name changes', function () {
+      spyOn(this.view, 'render');
+      this.view._initBinds();
+      this.layer.set('layer_name', 'Hello');
+      expect(this.view.render).toHaveBeenCalled();
     });
 
     describe('search', function () {

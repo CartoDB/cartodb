@@ -1,6 +1,6 @@
 {
   "name": "cartodb-deep-insights.js",
-  "version": "0.4.25",
+  "version": "0.4.28",
   "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   "dependencies": {
     "backbone": "1.2.3",
     "cartocolor": "4.0.0",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.3",
+    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.8",
     "d3": "3.5.17",
     "d3-interpolate": "1.1.2",
     "jquery": "2.1.4",

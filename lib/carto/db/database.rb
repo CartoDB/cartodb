@@ -3,7 +3,7 @@
 require_dependency 'carto/db/view'
 require_dependency 'carto/db/function'
 require_dependency 'carto/db/trigger'
-require_dependency 'carto/db/user'
+require_dependency 'carto/db/role'
 
 module Carto
   module Db
@@ -111,12 +111,12 @@ module Carto
         end
       end
 
-      def users
+      def roles
         query = "SELECT usename from pg_user"
         query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
-        query_result.map do |u|
-          u = u.deep_symbolize_keys
-          User.new(database_name: @database_name, name: u[:usename])
+        query_result.map do |r|
+          r = r.deep_symbolize_keys
+          Role.new(database_name: @database_name, name: r[:usename])
         end
       end
 

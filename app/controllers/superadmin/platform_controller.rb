@@ -33,9 +33,9 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
 
   def database_validation
     Carto::Db::Connection.connect(params[:database_host], 'postgres', as: :cluster_admin) do |database, _|
-      db_users = database.users
-      non_carto_users = db_users.select { |u| !u.system_db_user && !u.carto_user }
-      carto_users = db_users.select(&:carto_user)
+      db_users = database.roles
+      non_carto_users = db_users.select { |r| !r.system_db_role && !r.carto_db_role }
+      carto_users = db_users.select(&:carto_db_role)
       connected_users = check_for_users_in_database(carto_users, params[:database_host])
       return render json: { db_users: non_carto_users, carto_users: connected_users }
     end

@@ -1,0 +1,24 @@
+<%= content_for(:dashboard_js) do -%>
+  <script type="text/javascript">
+      var can_change_email = <%= @user.can_change_email? %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
+<% end %>
+<%= content_for :dashboard_body do %>
+    <div class="CDB-Text FormAccount-Section u-inner">
+      <%= render partial: 'admin/shared/pages_subheader' %>
+
+      <div class="FormAccount-Content">
+        <% if content_for? :profile_title %>
+          <div class="FormAccount-title">
+            <p class="FormAccount-titleText"><%= yield :profile_title %></p>
+          </div>
+
+          <span class="FormAccount-separator"></span>
+        <% end %>
+
+        <%= yield :profile_body %>
+      </div>
+    </div>
+<% end %>
+<%= render :template => 'layouts/carto_gears_api/dashboard' %>

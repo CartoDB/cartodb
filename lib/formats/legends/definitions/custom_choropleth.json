@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "required": ["colors"],
+  "additionalProperties": false,
+  "properties": {
+    "prefix": { "type": "string" },
+    "suffix": { "type": "string" },
+    "left_label": { "type": "string" },
+    "right_label": { "type": "string" },
+    "colors": {
+      "type": "array",
+      "additionalProperties": false,
+      "items": {
+        "type": "object",
+        "required": [
+          "color"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$"
+          }
+        }
+      }
+    }
+  }
+}

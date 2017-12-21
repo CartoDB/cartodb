@@ -1,0 +1,3 @@
+UserMailer#invitation_sent
+
+Hi, find me in app/views/user_mailer/invitation_sent

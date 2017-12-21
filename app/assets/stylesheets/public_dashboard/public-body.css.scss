@@ -1,0 +1,24 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// The body for public dashboard, to get the sticky footer in case of content do not fill up the viewport.
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+.PublicBody {
+  @include display-flex();
+  @include flex-direction(column);
+  min-height: 100vh;
+}
+.PublicBody--grey {
+  background: #F9F9F9;
+}
+.PublicBody-content {
+  @include display-flex();
+  @include flex-grow(1);
+  margin-top: 120px;
+}
+.PublicBody.PublicBody--grey .PublicBody-content {
+  background: #F9F9F9;
+}

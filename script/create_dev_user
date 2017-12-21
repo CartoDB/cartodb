@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if test -n "$1"; then
+	SUBDOMAIN="$1"
+else
+	echo -n "Enter a subdomain: "; read SUBDOMAIN
+fi
+
+if test -n "$2"; then
+	PASSWORD="$2"
+else
+	echo -n "Enter a password (cleartext!): "; read PASSWORD
+fi
+
+if test -n "$3"; then
+	EMAIL="$3"
+else
+	echo -n "Enter an email: "; read EMAIL
+fi
+
+echo "--- Creating dev user"
+bundle exec rake cartodb:db:create_dev_user --trace SUBDOMAIN="${SUBDOMAIN}" \
+	PASSWORD="${PASSWORD}" \
+	EMAIL="${EMAIL}"
+if test $? -ne 0; then exit 1; fi

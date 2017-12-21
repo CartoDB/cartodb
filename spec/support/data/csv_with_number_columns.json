@@ -1,0 +1,1762 @@
+[
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "1.4",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "East Africa",
+		"Country": "Burundi"
+	},
+	{
+		"2002": "18.584",
+		"2003": "3.93",
+		"2004": "1142.795",
+		"2005": "10.476",
+		"2006": "10.768",
+		"region": "AFRICA",
+		"subregion": "East Africa",
+		"Country": "Kenya"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "2.149",
+		"region": "AFRICA",
+		"subregion": "East Africa",
+		"Country": "Mauritius"
+	},
+	{
+		"2002": "4.0",
+		"2003": "No Report",
+		"2004": "35.009",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "East Africa",
+		"Country": "Rwanda"
+	},
+	{
+		"2002": "2.461",
+		"2003": "1.727",
+		"2004": "0.62",
+		"2005": "0.362",
+		"2006": "4.131",
+		"region": "AFRICA",
+		"subregion": "East Africa",
+		"Country": "United Republic of Tanzania"
+	},
+	{
+		"2002": "0.268",
+		"2003": "9.508",
+		"2004": "0.152",
+		"2005": "0.07",
+		"2006": "7.773",
+		"region": "AFRICA",
+		"subregion": "North Africa",
+		"Country": "Algeria"
+	},
+	{
+		"2002": "4.07",
+		"2003": "0.55",
+		"2004": "2.03",
+		"2005": "0.053",
+		"2006": "0.07",
+		"region": "AFRICA",
+		"subregion": "North Africa",
+		"Country": "Egypt"
+	},
+	{
+		"2002": "0.359",
+		"2003": "2.06",
+		"2004": "0.011",
+		"2005": "0.151",
+		"2006": "0.032",
+		"region": "AFRICA",
+		"subregion": "North Africa",
+		"Country": "Libyan Arab Jamahiriya"
+	},
+	{
+		"2002": "15.801",
+		"2003": "2.59",
+		"2004": "4.004",
+		"2005": "843.047",
+		"2006": "53.66",
+		"region": "AFRICA",
+		"subregion": "North Africa",
+		"Country": "Morocco"
+	},
+	{
+		"2002": "15",
+		"2003": "77",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "AFRICA",
+		"subregion": "North Africa",
+		"Country": "Morocco"
+	},
+	{
+		"2002": "No Report",
+		"2003": "1.922",
+		"2004": "2.0",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "North Africa",
+		"Country": "Sudan"
+	},
+	{
+		"2002": "1.055",
+		"2003": "0.54",
+		"2004": "1.005",
+		"2005": "0.03",
+		"2006": "29.667",
+		"region": "AFRICA",
+		"subregion": "North Africa",
+		"Country": "Tunisia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "8.988",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Angola"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "0.6",
+		"2006": "0.157",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Botswana"
+	},
+	{
+		"2002": "No Report",
+		"2003": "20.283",
+		"2004": "2.394",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Malawi"
+	},
+	{
+		"2002": "No Report",
+		"2003": "15.0",
+		"2004": "No Report",
+		"2005": "21.8",
+		"2006": "2.02",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Mozambique"
+	},
+	{
+		"2002": "0.189",
+		"2003": "0.056",
+		"2004": "15.493",
+		"2005": "0.197",
+		"2006": "0.908",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Namibia"
+	},
+	{
+		"2002": "178",
+		"2003": "176",
+		"2004": "257",
+		"2005": "",
+		"2006": "",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Namibia"
+	},
+	{
+		"2002": "436.499",
+		"2003": "776.726",
+		"2004": "593.041",
+		"2005": "309.561",
+		"2006": "360.253",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "South Africa"
+	},
+	{
+		"2002": "1.058",
+		"2003": "4.568",
+		"2004": "No Report",
+		"2005": "0.7",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Swaziland"
+	},
+	{
+		"2002": "17.3",
+		"2003": "0.055",
+		"2004": "0.0060",
+		"2005": "2.0",
+		"2006": "0.073",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Zambia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "0.0060",
+		"2005": "0.0050",
+		"2006": "0.0020",
+		"region": "AFRICA",
+		"subregion": "Southern Africa",
+		"Country": "Zimbabwe"
+	},
+	{
+		"2002": "0.05",
+		"2003": "0.013",
+		"2004": "291.67",
+		"2005": "28.193",
+		"2006": "28.2",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Benin"
+	},
+	{
+		"2002": "No Report",
+		"2003": "0.028",
+		"2004": "0.163",
+		"2005": "0.028",
+		"2006": "0.011",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Burkina Faso"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "2.4",
+		"2005": "2.004",
+		"2006": "4.4",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Cameroon"
+	},
+	{
+		"2002": "41.824",
+		"2003": "113.267",
+		"2004": "335.68",
+		"2005": "157.0",
+		"2006": "42.125",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Cape Verde"
+	},
+	{
+		"2002": "0.611",
+		"2003": "0.8",
+		"2004": "8.005",
+		"2005": "0.2",
+		"2006": "1.4",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Congo"
+	},
+	{
+		"2002": "3.15",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "0.07",
+		"2006": "0.445",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "CÙte d'Ivoire"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "0.1",
+		"2006": "0.108",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Gabon"
+	},
+	{
+		"2002": "No Report",
+		"2003": "0.107",
+		"2004": "No Report",
+		"2005": "17.137",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Gambia"
+	},
+	{
+		"2002": "10.4",
+		"2003": "15.37",
+		"2004": "616.678",
+		"2005": "661.2",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Ghana"
+	},
+	{
+		"2002": "No Report",
+		"2003": "0.771",
+		"2004": "0.097",
+		"2005": "40.0",
+		"2006": "8.5",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Guinea"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "0.294",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Liberia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "1.0",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Mali"
+	},
+	{
+		"2002": "2.98",
+		"2003": "2.2",
+		"2004": "0.759",
+		"2005": "No Report",
+		"2006": "0.057",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Niger"
+	},
+	{
+		"2002": "35.347",
+		"2003": "134.983",
+		"2004": "124.47",
+		"2005": "395.91",
+		"2006": "14435.88",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Nigeria"
+	},
+	{
+		"2002": "0.837",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "18.5",
+		"2006": "27.817",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Senegal"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "6.0",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Sierra Leone"
+	},
+	{
+		"2002": "3.051",
+		"2003": "1.775",
+		"2004": "412.001",
+		"2005": "43.615",
+		"2006": "29.688",
+		"region": "AFRICA",
+		"subregion": "West and Central Africa",
+		"Country": "Togo"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "0.0080",
+		"2005": "4.96",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Anguilla"
+	},
+	{
+		"2002": "No Report",
+		"2003": "62.0",
+		"2004": "25.0",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Antigua and Barbuda"
+	},
+	{
+		"2002": "490.681",
+		"2003": "1.0",
+		"2004": "274.012",
+		"2005": "598.2",
+		"2006": "29.841",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Aruba"
+	},
+	{
+		"2002": "2477.273",
+		"2003": "4361.124",
+		"2004": "740.26",
+		"2005": "1001.0",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Bahamas"
+	},
+	{
+		"2002": "No Report",
+		"2003": "97.0",
+		"2004": "37.0",
+		"2005": "57.0",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Barbados"
+	},
+	{
+		"2002": "8.86",
+		"2003": "0.7",
+		"2004": "No Report",
+		"2005": "10.0",
+		"2006": "5.13",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Bermuda"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "0.272",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "British Virgin Islands"
+	},
+	{
+		"2002": "404.825",
+		"2003": "6.007",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Cayman Islands"
+	},
+	{
+		"2002": "28199",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Cayman Islands"
+	},
+	{
+		"2002": "406.019",
+		"2003": "506.5",
+		"2004": "309.05",
+		"2005": "282.0",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Cuba"
+	},
+	{
+		"2002": "4.526",
+		"2003": "8.7",
+		"2004": "0.323",
+		"2005": "0.499",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Dominica"
+	},
+	{
+		"2002": "2300.669",
+		"2003": "735.703",
+		"2004": "2242.67",
+		"2005": "2247.454",
+		"2006": "5105.277",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Dominican Republic"
+	},
+	{
+		"2002": "77.32",
+		"2003": "8.5",
+		"2004": "24.0",
+		"2005": "16.019",
+		"2006": "21.0",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Grenada"
+	},
+	{
+		"2002": "755",
+		"2003": "719",
+		"2004": "776",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Grenada"
+	},
+	{
+		"2002": "No Report",
+		"2003": "608.5",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Guadeloupe"
+	},
+	{
+		"2002": "272.76",
+		"2003": "45.0",
+		"2004": "74.9",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Haiti"
+	},
+	{
+		"2002": "3725.0",
+		"2003": "1586.0",
+		"2004": "1739.45",
+		"2005": "142.38",
+		"2006": "111.763",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Jamaica"
+	},
+	{
+		"2002": "5500",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Jamaica"
+	},
+	{
+		"2002": "No Report",
+		"2003": "1138.0",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Martinique"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "0.054",
+		"2005": "No Report",
+		"2006": "0.0070",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Montserrat"
+	},
+	{
+		"2002": "2455.168",
+		"2003": "7728.0",
+		"2004": "9025.0",
+		"2005": "No Report",
+		"2006": "1989.0",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Netherlands Antilles"
+	},
+	{
+		"2002": "208.28",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Puerto Rico"
+	},
+	{
+		"2002": "76637",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Puerto Rico"
+	},
+	{
+		"2002": "No Report",
+		"2003": "36.0",
+		"2004": "6.245",
+		"2005": "5368.0",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Saint Kitts and Nevis"
+	},
+	{
+		"2002": "No Report",
+		"2003": "433.0",
+		"2004": "100.256",
+		"2005": "99.0",
+		"2006": "50.7",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Saint Lucia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "1.5",
+		"2004": "28.086",
+		"2005": "58.322",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Saint Vincent and the Grenadines"
+	},
+	{
+		"2002": "172.769",
+		"2003": "172.771",
+		"2004": "590.0",
+		"2005": "1891.82",
+		"2006": "1316.076",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Trinidad and Tobago"
+	},
+	{
+		"2002": "1.689",
+		"2003": "48.209",
+		"2004": "0.047",
+		"2005": "3.314",
+		"2006": "0.07",
+		"region": "AMERICAS",
+		"subregion": "Caribbean",
+		"Country": "Turks and Caicos Islands"
+	},
+	{
+		"2002": "9.991",
+		"2003": "56.7",
+		"2004": "735.419",
+		"2005": "244.279",
+		"2006": "90.789",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Belize"
+	},
+	{
+		"2002": "2955.0",
+		"2003": "4291.85",
+		"2004": "4590.38",
+		"2005": "7049.25",
+		"2006": "22909.562",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Costa Rica"
+	},
+	{
+		"2002": "100381",
+		"2003": "100997",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Costa Rica"
+	},
+	{
+		"2002": "2075.154",
+		"2003": "2044.3",
+		"2004": "2710.156",
+		"2005": "71.627",
+		"2006": "107.374",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "El Salvador"
+	},
+	{
+		"2002": "2934.265",
+		"2003": "9200.504",
+		"2004": "4481.0",
+		"2005": "5085.077",
+		"2006": "287.107",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Guatemala"
+	},
+	{
+		"2002": "79.023",
+		"2003": "5649.133",
+		"2004": "3934.75",
+		"2005": "472.709",
+		"2006": "2714.176",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Honduras"
+	},
+	{
+		"2002": "708",
+		"2003": "4101",
+		"2004": "104",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Honduras"
+	},
+	{
+		"2002": "2208.437",
+		"2003": "1110.7",
+		"2004": "3703.0",
+		"2005": "6951.2",
+		"2006": "9720.0",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Nicaragua"
+	},
+	{
+		"2002": "12739",
+		"2003": "11626",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Nicaragua"
+	},
+	{
+		"2002": "2587.7",
+		"2003": "9487.0",
+		"2004": "7068.0",
+		"2005": "18314.3",
+		"2006": "36000.0",
+		"region": "AMERICAS",
+		"subregion": "Central America",
+		"Country": "Panama"
+	},
+	{
+		"2002": "181.391",
+		"2003": "475.574",
+		"2004": "3176.685",
+		"2005": "2535.035",
+		"2006": "2705.369",
+		"region": "AMERICAS",
+		"subregion": "North America",
+		"Country": "Canada"
+	},
+	{
+		"2002": "10086",
+		"2003": "20465",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "AMERICAS",
+		"subregion": "North America",
+		"Country": "Canada"
+	},
+	{
+		"2002": "12639.347",
+		"2003": "21107.238",
+		"2004": "26844.196",
+		"2005": "30227.4",
+		"2006": "21336.676",
+		"region": "AMERICAS",
+		"subregion": "North America",
+		"Country": "Mexico"
+	},
+	{
+		"2002": "102170.2",
+		"2003": "117024.8",
+		"2004": "165957.0",
+		"2005": "174599.0",
+		"2006": "146972.0",
+		"region": "AMERICAS",
+		"subregion": "North America",
+		"Country": "United States of America"
+	},
+	{
+		"2002": "1638.281",
+		"2003": "1992.708",
+		"2004": "3114.773",
+		"2005": "5502.568",
+		"2006": "5894.702",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Argentina"
+	},
+	{
+		"2002": "5103.03",
+		"2003": "12881.0",
+		"2004": "8700.0",
+		"2005": "11461.225",
+		"2006": "14088.0",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Bolivia"
+	},
+	{
+		"2002": "9560.7",
+		"2003": "9766.702",
+		"2004": "8194.545",
+		"2005": "16151.52",
+		"2006": "14323.68",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Brazil"
+	},
+	{
+		"2002": "2262.311",
+		"2003": "2410.508",
+		"2004": "5263.359",
+		"2005": "5384.705",
+		"2006": "6783.026",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Chile"
+	},
+	{
+		"2002": "120579.0",
+		"2003": "145601.0",
+		"2004": "187808.37",
+		"2005": "217633.99",
+		"2006": "181310.215",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Colombia"
+	},
+	{
+		"2002": "11212.3",
+		"2003": "6847.59",
+		"2004": "4778.807",
+		"2005": "43361.129",
+		"2006": "34249.095",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Ecuador"
+	},
+	{
+		"2002": "No Report",
+		"2003": "74.0",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "French Guiana"
+	},
+	{
+		"2002": "No Report",
+		"2003": "278.783",
+		"2004": "156.972",
+		"2005": "49.342",
+		"2006": "No Report",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Guyana"
+	},
+	{
+		"2002": "230.152",
+		"2003": "278.991",
+		"2004": "468.283",
+		"2005": "490.984",
+		"2006": "493.0",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Paraguay"
+	},
+	{
+		"2002": "14568.175",
+		"2003": "7940.54",
+		"2004": "13650.083",
+		"2005": "22397.9",
+		"2006": "19452.717",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Peru"
+	},
+	{
+		"2002": "340.0",
+		"2003": "814.0",
+		"2004": "750.4",
+		"2005": "1507.0",
+		"2006": "577.0",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Suriname"
+	},
+	{
+		"2002": "43.013",
+		"2003": "49.919",
+		"2004": "66.265",
+		"2005": "103.267",
+		"2006": "569.202",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Uruguay"
+	},
+	{
+		"2002": "18213.68",
+		"2003": "32339.56",
+		"2004": "31277.05",
+		"2005": "58851.955",
+		"2006": "39057.94",
+		"region": "AMERICAS",
+		"subregion": "South America",
+		"Country": "Venezuela (Bolivarian Republic of)"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "0.944",
+		"2005": "No Report",
+		"2006": "0.0",
+		"region": "ASIA",
+		"subregion": "Central Asia and Transcaucasian countries",
+		"Country": "Armenia"
+	},
+	{
+		"2002": "0.119",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "Central Asia and Transcaucasian countries",
+		"Country": "Kazakhstan"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "1.0",
+		"2006": "5.133",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Cambodia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "45.0",
+		"2004": "No Report",
+		"2005": "255.8",
+		"2006": "358.2",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "China"
+	},
+	{
+		"2002": "8.3",
+		"2003": "6.63",
+		"2004": "55.53",
+		"2005": "17.005",
+		"2006": "14.88",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Hong Kong Special Administrative Region of China"
+	},
+	{
+		"2002": "2.314",
+		"2003": "58.116",
+		"2004": "6.319",
+		"2005": "1.013",
+		"2006": "1.124",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Indonesia"
+	},
+	{
+		"2002": "16.9",
+		"2003": "2.5",
+		"2004": "85.5",
+		"2005": "2.993",
+		"2006": "9.9",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Japan"
+	},
+	{
+		"2002": "0.027",
+		"2003": "0.0010",
+		"2004": "0.231",
+		"2005": "0.0050",
+		"2006": "0.018",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Macao Special Aadministrative Region of China"
+	},
+	{
+		"2002": "No Report",
+		"2003": "2.5",
+		"2004": "0.049",
+		"2005": "5.1",
+		"2006": "2.218",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Malaysia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "1.0",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Myanmar"
+	},
+	{
+		"2002": "8.026",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "0.0020",
+		"2006": "0.0020",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Philippines"
+	},
+	{
+		"2002": "1.17",
+		"2003": "0.905",
+		"2004": "0.0080",
+		"2005": "No Report",
+		"2006": "4.772",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Republic of Korea"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "0.01",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Singapore"
+	},
+	{
+		"2002": " Prov. of China\"\"",
+		"2003": "Govt",
+		"2004": "Govt",
+		"2005": "Govt",
+		"2006": "Govt",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "\"\"Taiwan"
+	},
+	{
+		"2002": " Prov. of China\"\"",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "\"\"Taiwan"
+	},
+	{
+		"2002": " Prov. of China\"\"",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "\"\"Taiwan"
+	},
+	{
+		"2002": "14.73",
+		"2003": "11.0",
+		"2004": "7.0",
+		"2005": "6.29",
+		"2006": "36.036",
+		"region": "ASIA",
+		"subregion": "East and South-East Asia",
+		"Country": "Thailand"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "1.9",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Afghanistan"
+	},
+	{
+		"2002": "0.0020",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "0.0040",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Bahrain"
+	},
+	{
+		"2002": " Islamic Republic of\"\"",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "\"\"Iran"
+	},
+	{
+		"2002": " Islamic Republic of\"\"",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "\"\"Iran"
+	},
+	{
+		"2002": " Islamic Republic of\"\"",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "\"\"Iran"
+	},
+	{
+		"2002": "96.012",
+		"2003": "80.009",
+		"2004": "31.014",
+		"2005": "163.5",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Israel"
+	},
+	{
+		"2002": "0.188",
+		"2003": "9.0",
+		"2004": "32.0",
+		"2005": "0.485",
+		"2006": "5.26",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Jordan"
+	},
+	{
+		"2002": "0.0020",
+		"2003": "4.7",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Kuwait"
+	},
+	{
+		"2002": "7.839",
+		"2003": "40.728",
+		"2004": "11.893",
+		"2005": "25.265",
+		"2006": "8.774",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Lebanon"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "1.827",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Pakistan"
+	},
+	{
+		"2002": "1.528",
+		"2003": "0.9",
+		"2004": "No Report",
+		"2005": "0.3",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Saudi Arabia"
+	},
+	{
+		"2002": "57.237",
+		"2003": "36.738",
+		"2004": "40.483",
+		"2005": "14.399",
+		"2006": "1.916",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "Syrian Arab Republic"
+	},
+	{
+		"2002": "0.013",
+		"2003": "0.408",
+		"2004": "0.195",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "Near and Middle East /South-West Asia",
+		"Country": "United Arab Emirates"
+	},
+	{
+		"2002": "2.0",
+		"2003": "3.0",
+		"2004": "6.0",
+		"2005": "4.0",
+		"2006": "206.0",
+		"region": "ASIA",
+		"subregion": "South Asia",
+		"Country": "India"
+	},
+	{
+		"2002": "15.801",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "ASIA",
+		"subregion": "South Asia",
+		"Country": "Maldives"
+	},
+	{
+		"2002": "15",
+		"2003": "",
+		"2004": "",
+		"2005": "",
+		"2006": "",
+		"region": "ASIA",
+		"subregion": "South Asia",
+		"Country": "Maldives"
+	},
+	{
+		"2002": "0.0030",
+		"2003": "0.0030",
+		"2004": "0.107",
+		"2005": "2.008",
+		"2006": "No Report",
+		"region": "EUROPE",
+		"subregion": "East Europe",
+		"Country": "Belarus"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "0.046",
+		"2005": "0.98",
+		"2006": "No Report",
+		"region": "EUROPE",
+		"subregion": "East Europe",
+		"Country": "Republic of Moldova"
+	},
+	{
+		"2002": "58.155",
+		"2003": "53.35",
+		"2004": "92.65",
+		"2005": "109.0",
+		"2006": "16.595",
+		"region": "EUROPE",
+		"subregion": "East Europe",
+		"Country": "Russian Federation"
+	},
+	{
+		"2002": "0.012",
+		"2003": "0.094",
+		"2004": "16.816",
+		"2005": "2.06",
+		"2006": "3.328",
+		"region": "EUROPE",
+		"subregion": "East Europe",
+		"Country": "Ukraine"
+	},
+	{
+		"2002": "0.0060",
+		"2003": "1.286",
+		"2004": "2.3",
+		"2005": "2.848",
+		"2006": "3.857",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Albania"
+	},
+	{
+		"2002": "0.24",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "10.0",
+		"2006": "0.65",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Bosnia and Herzegovina"
+	},
+	{
+		"2002": "36.282",
+		"2003": "8.884",
+		"2004": "0.896",
+		"2005": "141.745",
+		"2006": "80.177",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Bulgaria"
+	},
+	{
+		"2002": "3.365",
+		"2003": "350.769",
+		"2004": "17.595",
+		"2005": "8.963",
+		"2006": "5.64",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Croatia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "0.069",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Montenegro"
+	},
+	{
+		"2002": "2.72",
+		"2003": "12.68",
+		"2004": "24.579",
+		"2005": "109.71",
+		"2006": "10.715",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Romania"
+	},
+	{
+		"2002": "1.926",
+		"2003": "6.021",
+		"2004": "15.469",
+		"2005": "5.349",
+		"2006": "12.876",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Serbia and Montenegro"
+	},
+	{
+		"2002": "0.342",
+		"2003": "No Report",
+		"2004": "0.176",
+		"2005": "11.975",
+		"2006": "No Report",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "The former Yugoslav Republic of Macedonia"
+	},
+	{
+		"2002": "7.734",
+		"2003": "2.833",
+		"2004": "125.676",
+		"2005": "41.029",
+		"2006": "77.553",
+		"region": "EUROPE",
+		"subregion": "Southeast Europe",
+		"Country": "Turkey"
+	},
+	{
+		"2002": "0.275",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "0.108",
+		"2006": "0.109",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Andorra"
+	},
+	{
+		"2002": "36.896",
+		"2003": "58.306",
+		"2004": "75.519",
+		"2005": "244.849",
+		"2006": "61.778",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Austria"
+	},
+	{
+		"2002": "3589.0",
+		"2003": "645.6",
+		"2004": "3541.0",
+		"2005": "9259.0",
+		"2006": "3945.851",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Belgium"
+	},
+	{
+		"2002": "1.944",
+		"2003": "9.571",
+		"2004": "1.376",
+		"2005": "1.314",
+		"2006": "6.893",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Cyprus"
+	},
+	{
+		"2002": "6.042",
+		"2003": "2.624",
+		"2004": "3.283",
+		"2005": "10.163",
+		"2006": "4.708",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Czech Republic"
+	},
+	{
+		"2002": "14.152",
+		"2003": "104.004",
+		"2004": "32.026",
+		"2005": "56.095",
+		"2006": "76.059",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Denmark"
+	},
+	{
+		"2002": "2.286",
+		"2003": "30.486",
+		"2004": "5.219",
+		"2005": "0.05",
+		"2006": "0.525",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Estonia"
+	},
+	{
+		"2002": "0.442",
+		"2003": "1.1",
+		"2004": "1.1",
+		"2005": "1.2",
+		"2006": "6.5",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Finland"
+	},
+	{
+		"2002": "3667.198",
+		"2003": "4185.011",
+		"2004": "4502.188",
+		"2005": "5196.607",
+		"2006": "10175.025",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "France"
+	},
+	{
+		"2002": "2150.094",
+		"2003": "1014.103",
+		"2004": "971.479",
+		"2005": "1084.5",
+		"2006": "1720.498",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Germany"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "No Report",
+		"2005": "No Report",
+		"2006": "0.104",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Gibraltar"
+	},
+	{
+		"2002": "18.035",
+		"2003": "200.645",
+		"2004": "1151.852",
+		"2005": "42.824",
+		"2006": "60.652",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Greece"
+	},
+	{
+		"2002": "58.928",
+		"2003": "23.467",
+		"2004": "94.37",
+		"2005": "7.802",
+		"2006": "7.286",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Hungary"
+	},
+	{
+		"2002": "1.87",
+		"2003": "1.192",
+		"2004": "6.159",
+		"2005": "1.143",
+		"2006": "12.84",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Iceland"
+	},
+	{
+		"2002": "30.467",
+		"2003": "106.909",
+		"2004": "167.336",
+		"2005": "306.147",
+		"2006": "254.884",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Ireland"
+	},
+	{
+		"2002": "4057.229",
+		"2003": "3521.329",
+		"2004": "3583.688",
+		"2005": "4372.061",
+		"2006": "4624.145",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Italy"
+	},
+	{
+		"2002": "646",
+		"2003": "512",
+		"2004": "836",
+		"2005": "",
+		"2006": "",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Italy"
+	},
+	{
+		"2002": "No Report",
+		"2003": "0.616",
+		"2004": "0.64",
+		"2005": "0.684",
+		"2006": "1.123",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Latvia"
+	},
+	{
+		"2002": "0.014",
+		"2003": "0.014",
+		"2004": "0.012",
+		"2005": "0.023",
+		"2006": "No Report",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Liechtenstein"
+	},
+	{
+		"2002": "0.732",
+		"2003": "0.183",
+		"2004": "13.449",
+		"2005": "0.698",
+		"2006": "3.124",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Lithuania"
+	},
+	{
+		"2002": "2.486",
+		"2003": "11.153",
+		"2004": "4.481",
+		"2005": "1.187",
+		"2006": "3.825",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Luxembourg"
+	},
+	{
+		"2002": "4.535",
+		"2003": "3.716",
+		"2004": "0.152",
+		"2005": "6.398",
+		"2006": "4.269",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Malta"
+	},
+	{
+		"2002": "0.01",
+		"2003": "0.0",
+		"2004": "No Report",
+		"2005": "0.0010",
+		"2006": "0.0010",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Monaco"
+	},
+	{
+		"2002": "7968.0",
+		"2003": "17560.0",
+		"2004": "12387.0",
+		"2005": "14603.0",
+		"2006": "10584.1",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Netherlands"
+	},
+	{
+		"2002": "35.828",
+		"2003": "31.369",
+		"2004": "40.507",
+		"2005": "177.315",
+		"2006": "40.502",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Norway"
+	},
+	{
+		"2002": "422.179",
+		"2003": "401.225",
+		"2004": "21.721",
+		"2005": "16.871",
+		"2006": "21.928",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Poland"
+	},
+	{
+		"2002": "3140.103",
+		"2003": "3021.257",
+		"2004": "7422.752",
+		"2005": "18083.241",
+		"2006": "34477.48",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Portugal"
+	},
+	{
+		"2002": "0.069",
+		"2003": "0.697",
+		"2004": "1.978",
+		"2005": "0.36",
+		"2006": "0.962",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Slovakia"
+	},
+	{
+		"2002": "55.38",
+		"2003": "1.61",
+		"2004": "106.69",
+		"2005": "2.14",
+		"2006": "4.67",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Slovenia"
+	},
+	{
+		"2002": "17618.187",
+		"2003": "49279.342",
+		"2004": "33135.629",
+		"2005": "48429.453",
+		"2006": "49652.959",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Spain"
+	},
+	{
+		"2002": "41.0",
+		"2003": "42.071",
+		"2004": "29.0",
+		"2005": "33.0",
+		"2006": "1358.0",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Sweden"
+	},
+	{
+		"2002": "185.942",
+		"2003": "188.617",
+		"2004": "361.451",
+		"2005": "282.614",
+		"2006": "354.378",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "Switzerland"
+	},
+	{
+		"2002": "3635.0",
+		"2003": "7119.0",
+		"2004": "4779.0",
+		"2005": "3814.0",
+		"2006": "3814.0",
+		"region": "EUROPE",
+		"subregion": "West & Central Europe",
+		"Country": "United Kingdom of Great Britain and Northern Ireland"
+	},
+	{
+		"2002": "105.874",
+		"2003": "288.164",
+		"2004": "202.009",
+		"2005": "87.514",
+		"2006": "251.594",
+		"region": "OCEANIA",
+		"subregion": "Oceania",
+		"Country": "Australia"
+	},
+	{
+		"2002": "No Report",
+		"2003": "No Report",
+		"2004": "25.0",
+		"2005": "No Report",
+		"2006": "No Report",
+		"region": "OCEANIA",
+		"subregion": "Oceania",
+		"Country": "Marshall Islands"
+	},
+	{
+		"2002": "0.267",
+		"2003": "7.061",
+		"2004": "17.873",
+		"2005": "7.555",
+		"2006": "32.954",
+		"region": "OCEANIA",
+		"subregion": "Oceania",
+		"Country": "New Zealand"
+	}
+]

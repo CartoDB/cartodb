@@ -1,0 +1,40 @@
+(function() {
+
+    function get_url_params(url, conversion) {
+      conversion = conversion || {};
+      if(!url) {
+        return {};
+      }
+      var search = url.split('?');
+      if(search.length < 2) {
+        return {};
+      }
+      search = search[1];
+      var tokens = search.split('&');
+      var params = {};
+      for(var i = 0; i < tokens.length; ++i) {
+        var tk = tokens[i].split('=');
+        var fn = conversion[tk[0]] || function(v) { return v };
+        if(tk.length === 2) {
+          params[tk[0]] = fn(decodeURIComponent(tk[1]));
+        }
+      }
+      return params;
+    }
+    
+    var url = location.search;
+    var opt = get_url_params(url);
+
+    var height = opt.height || '400';
+    if(height.indexOf('%') == -1)  {
+      height += 'px';
+    }
+
+    var l = document.createElement("a");
+    l.href = url
+    if(l.protocol.indexOf('http') != -1) {
+        var port = l.port ? ':' + l.port: '';
+        document.write('<iframe src="' + l.protocol + '//' + l.hostname + port + '/viz/embed_forbidden" frameborder="0" width="100%" height="' + height +'" ></iframe>');
+    }
+
+})();

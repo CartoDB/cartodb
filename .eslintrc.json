@@ -1,0 +1,19 @@
+{
+  "extends": "semistandard",
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jasmine": true
+  },
+  "globals": {
+    "_t": true,
+    "__ENV__": true,
+    "grunt": true,
+    "CartoNode": true
+  },
+  "rules": {
+    "camelcase": "off",
+    "no-mixed-operators": "off",
+    "no-useless-escape": "off"
+  }
+}

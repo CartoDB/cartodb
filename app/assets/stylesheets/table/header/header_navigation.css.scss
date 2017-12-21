@@ -1,0 +1,106 @@
+
+  /**
+   *  Navigation block styles within table/vis header
+   *
+   *  - It contains vis/table tabs and globalerror.
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
+  @import "../../old_common/mixins";
+  @import "../../old_common/vars";
+
+  // Navigation block
+  div.vis_navigation {
+    position:absolute;
+    $width: 300px;
+    width: $width;
+    top: 4px;
+    left:50%;
+    margin-left: -$width/2;
+    padding:0;
+    text-align:center;
+
+    z-index: 100;
+
+    nav {
+      position:relative;
+      @include inline-block();
+      padding: 1px;
+      margin:0;
+
+      @include border-radius(30px);
+      border: 2px solid #fff;
+
+      z-index:1;
+
+      a.tab {
+        padding:7px 25px;
+        @include inline-block();
+        font-size:12px;
+        font-weight:500;
+        color:#fff;
+
+        text-transform: uppercase;
+
+        @include border-radius(30px);
+
+        &:hover, &:focus, &:active {}
+
+        &.selected {
+          margin:0;
+          color: #326A98;
+          background:#fff;
+
+          &:hover {text-decoration:none; cursor:default;}
+          &:focus, &:active {}
+        }
+
+        &.disabled { &:hover, &:focus, &:active {} }
+      }
+    }
+  }
+
+
+  // Global error element
+  div.globalerror {
+    position: absolute;
+    top:auto;
+    left:0;
+    bottom:0;
+    width:100%;
+    height:30px;
+    padding:0;
+    overflow:hidden;
+    text-align:center;
+    z-index:0;
+
+    p {
+      @include border-top-radius(3px);
+      margin-top:39px;
+      @include inline-block();
+      height:14px;
+      width:auto;
+      padding:8px 15px;
+      line-height:15px;
+      background:rgba(0,0,0,0.35);
+      font:normal 13px $text-fonts;
+      color:white;
+
+      &.error {
+        color: #EB2466;
+        background-color: #FFEBF1;
+      }
+
+      &.warn {
+        color: #555;
+        background-color: rgba(#FFFFBF, 0.90);
+      }
+
+      img {
+        position: relative;
+        top: 3px;
+        margin-right: 5px;
+      }
+    }
+  }

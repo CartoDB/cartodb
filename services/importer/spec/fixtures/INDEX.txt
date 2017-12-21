@@ -1,0 +1,12 @@
+Directory:  /nlmdata/sample                           Last updated: 12/11/12
+
+               The National Library of Medicine Publications
+                      NLM Database Distribution Files
+
+File          Updated  Size Mode   Description
+============ ======== ===== ====== =========================================
+medline         <sub-directory>    Samples of NLM Medline data
+toxnet        missing    0  ASCII  Samples of NLM Toxnet data
+
+     *.txt=ASCII TEXT, *.ps=PostScript, *.wp=WordPerfect, *.bin=Binary
+       *.exe=DOS program, *.zip=PKZIP (compressed), *.gif=Image file

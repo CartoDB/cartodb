@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8' />
+    <title><%= yield :page_title -%>CARTO</title>
+    <%= favicon_link_tag "/favicons/favicon.ico" -%>
+    <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
+    <%= yield :css -%>
+    <%= csrf_meta_tag -%>
+  </head>
+  <body>
+    <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
+      <% breadcrumb = local_assigns.fetch(:breadcrumb, true) %>
+      <%= render 'admin/shared/private_header', :breadcrumb => breadcrumb %>
+
+      <% if current_user.notification.present? %>
+        <div class="CDB-Text FlashMessage">
+          <div class="u-inner">
+            <p class="FlashMessage-info"><%= raw current_user.notification %></p>
+          </div>
+        </div>
+      <% end %>
+
+      <%= render 'admin/shared/trial_notification' %>
+    <% else %>
+      <%= render 'admin/shared/vis_header' %>
+    <% end %>
+
+    <%= yield %>
+    <% if ( ( controller_name == "visualizations" || controller_name == "tables" ) && action_name == "show" ) %>
+      <%= render 'shared/olark' -%>
+    <% end %>
+
+    <%= insert_trackjs() -%>
+    <%= yield :js -%>
+    <%= insert_google_analytics('primary') -%>
+    <%= insert_hubspot() -%>
+    <%= render 'admin/shared/intercom' %>
+  </body>
+</html>

@@ -1,0 +1,409 @@
+{
+  "results": [
+    {
+      "id": "tag:search.twitter.com,2005:834008296361172992",
+      "objectType": "activity",
+      "verb": "share",
+      "postedTime": "2017-02-21T11:54:07.000Z",
+      "generator": {
+        "displayName": "Twitter Web Client",
+        "link": "http://twitter.com"
+      },
+      "provider": {
+        "objectType": "service",
+        "displayName": "Twitter",
+        "link": "http://www.twitter.com"
+      },
+      "link": "http://twitter.com/charley_glynn/statuses/834008296361172992",
+      "body": "RT @uSIG_CCHS_CSIC: Carto tips: Using blend modes and opacity levels-https://t.co/eGDWGkfWCv via @OrdnanceSurvey https://t.co/qEfFQpLGvL",
+      "actor": {
+        "objectType": "person",
+        "id": "id:twitter.com:492926788",
+        "link": "http://www.twitter.com/charley_glynn",
+        "displayName": "Charley Glynn",
+        "postedTime": "2012-02-15T08:23:02.000Z",
+        "image": "https://pbs.twimg.com/profile_images/740123846951460864/gi1ee2lJ_normal.jpg",
+        "summary": "happy husband, doting dad, Everton fan, music, film & design fan, pushing pixels and joining dots @ordnancesurvey working on #GeoDataViz",
+        "friendsCount": 2482,
+        "followersCount": 1415,
+        "listedCount": 168,
+        "statusesCount": 7536,
+        "twitterTimeZone": "London",
+        "verified": false,
+        "utcOffset": "0",
+        "preferredUsername": "charley_glynn",
+        "languages": [
+          "en"
+        ],
+        "links": [
+          {
+            "href": "http://www.cartoblography.wordpress.com",
+            "rel": "me"
+          }
+        ],
+        "location": {
+          "objectType": "place",
+          "displayName": "Southampton, England"
+        },
+        "favoritesCount": 7414
+      },
+      "object": {
+        "id": "tag:search.twitter.com,2005:833972033960620032",
+        "objectType": "activity",
+        "verb": "post",
+        "postedTime": "2017-02-21T09:30:02.000Z",
+        "generator": {
+          "displayName": "TweetDeck",
+          "link": "https://about.twitter.com/products/tweetdeck"
+        },
+        "provider": {
+          "objectType": "service",
+          "displayName": "Twitter",
+          "link": "http://www.twitter.com"
+        },
+        "link": "http://twitter.com/uSIG_CCHS_CSIC/statuses/833972033960620032",
+        "body": "Carto tips: Using blend modes and opacity levels-https://t.co/eGDWGkfWCv via @OrdnanceSurvey https://t.co/qEfFQpLGvL",
+        "display_text_range": [
+          0,
+          92
+        ],
+        "actor": {
+          "objectType": "person",
+          "id": "id:twitter.com:704613732614344704",
+          "link": "http://www.twitter.com/uSIG_CCHS_CSIC",
+          "displayName": "uSIG (CCHS-CSIC)",
+          "postedTime": "2016-03-01T10:26:19.759Z",
+          "image": "https://pbs.twimg.com/profile_images/802141753553854464/4ZSz4PI-_normal.jpg",
+          "summary": "Unidad SIG. Espacio, tiempo, ciencia y tecnología #SIG #Cartografía y #Teledetección en Ciencias Humanas y Sociales @CSIC. #GIS #Cartography #RemoteSensing",
+          "friendsCount": 317,
+          "followersCount": 515,
+          "listedCount": 41,
+          "statusesCount": 1462,
+          "twitterTimeZone": null,
+          "verified": false,
+          "utcOffset": null,
+          "preferredUsername": "uSIG_CCHS_CSIC",
+          "languages": [
+            "es"
+          ],
+          "links": [
+            {
+              "href": "http://unidadsig.cchs.csic.es/sig/",
+              "rel": "me"
+            }
+          ],
+          "location": {
+            "objectType": "place",
+            "displayName": "Madrid, España"
+          },
+          "favoritesCount": 811
+        },
+        "object": {
+          "objectType": "note",
+          "id": "object:search.twitter.com,2005:833972033960620032",
+          "summary": "Carto tips: Using blend modes and opacity levels-https://t.co/eGDWGkfWCv via @OrdnanceSurvey https://t.co/qEfFQpLGvL",
+          "link": "http://twitter.com/uSIG_CCHS_CSIC/statuses/833972033960620032",
+          "postedTime": "2017-02-21T09:30:02.000Z"
+        },
+        "favoritesCount": 11,
+        "twitter_entities": {
+          "hashtags": [],
+          "urls": [
+            {
+              "url": "https://t.co/eGDWGkfWCv",
+              "expanded_url": "https://www.ordnancesurvey.co.uk/blog/2017/02/carto-tips-using-blend-modes-opacity-levels/",
+              "display_url": "ordnancesurvey.co.uk/blog/2017/02/c…",
+              "indices": [
+                49,
+                72
+              ]
+            }
+          ],
+          "user_mentions": [
+            {
+              "screen_name": "OrdnanceSurvey",
+              "name": "Ordnance Survey",
+              "id": 22614266,
+              "id_str": "22614266",
+              "indices": [
+                77,
+                92
+              ]
+            }
+          ],
+          "symbols": [],
+          "media": [
+            {
+              "id": 833943995302760449,
+              "id_str": "833943995302760449",
+              "indices": [
+                93,
+                116
+              ],
+              "media_url": "http://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+              "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+              "url": "https://t.co/qEfFQpLGvL",
+              "display_url": "pic.twitter.com/qEfFQpLGvL",
+              "expanded_url": "https://twitter.com/uSIG_CCHS_CSIC/status/833972033960620032/photo/1",
+              "type": "photo",
+              "sizes": {
+                "medium": {
+                  "w": 600,
+                  "h": 415,
+                  "resize": "fit"
+                },
+                "large": {
+                  "w": 650,
+                  "h": 450,
+                  "resize": "fit"
+                },
+                "thumb": {
+                  "w": 150,
+                  "h": 150,
+                  "resize": "crop"
+                },
+                "small": {
+                  "w": 340,
+                  "h": 235,
+                  "resize": "fit"
+                }
+              }
+            }
+          ]
+        },
+        "twitter_extended_entities": {
+          "media": [
+            {
+              "id": 833943995302760449,
+              "id_str": "833943995302760449",
+              "indices": [
+                93,
+                116
+              ],
+              "media_url": "http://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+              "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+              "url": "https://t.co/qEfFQpLGvL",
+              "display_url": "pic.twitter.com/qEfFQpLGvL",
+              "expanded_url": "https://twitter.com/uSIG_CCHS_CSIC/status/833972033960620032/photo/1",
+              "type": "animated_gif",
+              "sizes": {
+                "medium": {
+                  "w": 600,
+                  "h": 415,
+                  "resize": "fit"
+                },
+                "large": {
+                  "w": 650,
+                  "h": 450,
+                  "resize": "fit"
+                },
+                "thumb": {
+                  "w": 150,
+                  "h": 150,
+                  "resize": "crop"
+                },
+                "small": {
+                  "w": 340,
+                  "h": 235,
+                  "resize": "fit"
+                }
+              },
+              "video_info": {
+                "aspect_ratio": [
+                  13,
+                  9
+                ],
+                "variants": [
+                  {
+                    "bitrate": 0,
+                    "content_type": "video/mp4",
+                    "url": "https://video.twimg.com/tweet_video/C5LDpTKXUAE1xex.mp4"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "twitter_lang": "en",
+        "twitter_filter_level": "low"
+      },
+      "favoritesCount": 0,
+      "twitter_entities": {
+        "hashtags": [],
+        "urls": [
+          {
+            "url": "https://t.co/eGDWGkfWCv",
+            "expanded_url": "https://www.ordnancesurvey.co.uk/blog/2017/02/carto-tips-using-blend-modes-opacity-levels/",
+            "display_url": "ordnancesurvey.co.uk/blog/2017/02/c…",
+            "indices": [
+              69,
+              92
+            ]
+          }
+        ],
+        "user_mentions": [
+          {
+            "screen_name": "uSIG_CCHS_CSIC",
+            "name": "uSIG (CCHS-CSIC)",
+            "id": 704613732614344704,
+            "id_str": "704613732614344704",
+            "indices": [
+              3,
+              18
+            ]
+          },
+          {
+            "screen_name": "OrdnanceSurvey",
+            "name": "Ordnance Survey",
+            "id": 22614266,
+            "id_str": "22614266",
+            "indices": [
+              97,
+              112
+            ]
+          }
+        ],
+        "symbols": [],
+        "media": [
+          {
+            "id": 833943995302760449,
+            "id_str": "833943995302760449",
+            "indices": [
+              113,
+              136
+            ],
+            "media_url": "http://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+            "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+            "url": "https://t.co/qEfFQpLGvL",
+            "display_url": "pic.twitter.com/qEfFQpLGvL",
+            "expanded_url": "https://twitter.com/uSIG_CCHS_CSIC/status/833972033960620032/photo/1",
+            "type": "photo",
+            "sizes": {
+              "medium": {
+                "w": 600,
+                "h": 415,
+                "resize": "fit"
+              },
+              "large": {
+                "w": 650,
+                "h": 450,
+                "resize": "fit"
+              },
+              "thumb": {
+                "w": 150,
+                "h": 150,
+                "resize": "crop"
+              },
+              "small": {
+                "w": 340,
+                "h": 235,
+                "resize": "fit"
+              }
+            },
+            "source_status_id": 833972033960620032,
+            "source_status_id_str": "833972033960620032",
+            "source_user_id": 704613732614344704,
+            "source_user_id_str": "704613732614344704"
+          }
+        ]
+      },
+      "twitter_extended_entities": {
+        "media": [
+          {
+            "id": 833943995302760449,
+            "id_str": "833943995302760449",
+            "indices": [
+              113,
+              136
+            ],
+            "media_url": "http://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+            "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/C5LDpTKXUAE1xex.jpg",
+            "url": "https://t.co/qEfFQpLGvL",
+            "display_url": "pic.twitter.com/qEfFQpLGvL",
+            "expanded_url": "https://twitter.com/uSIG_CCHS_CSIC/status/833972033960620032/photo/1",
+            "type": "animated_gif",
+            "sizes": {
+              "medium": {
+                "w": 600,
+                "h": 415,
+                "resize": "fit"
+              },
+              "large": {
+                "w": 650,
+                "h": 450,
+                "resize": "fit"
+              },
+              "thumb": {
+                "w": 150,
+                "h": 150,
+                "resize": "crop"
+              },
+              "small": {
+                "w": 340,
+                "h": 235,
+                "resize": "fit"
+              }
+            },
+            "source_status_id": 833972033960620032,
+            "source_status_id_str": "833972033960620032",
+            "source_user_id": 704613732614344704,
+            "source_user_id_str": "704613732614344704",
+            "video_info": {
+              "aspect_ratio": [
+                13,
+                9
+              ],
+              "variants": [
+                {
+                  "bitrate": 0,
+                  "content_type": "video/mp4",
+                  "url": "https://video.twimg.com/tweet_video/C5LDpTKXUAE1xex.mp4"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "twitter_lang": "en",
+      "retweetCount": 6,
+      "gnip": {
+        "profileLocations": [
+          {
+            "address": {
+              "country": "United Kingdom",
+              "countryCode": "GB",
+              "locality": "Southampton",
+              "region": "England",
+              "subRegion": "City of Southampton"
+            },
+            "displayName": "Southampton, England, United Kingdom",
+            "geo": {
+              "coordinates": [
+                -1.40428,
+                50.90395
+              ],
+              "type": "point"
+            },
+            "objectType": "place"
+          }
+        ],
+        "matching_rules": [
+          {
+            "value": "(carto) (has:geo OR has:profile_geo)",
+            "tag": null
+          }
+        ],
+        "urls": [
+          {
+            "url": "https://t.co/eGDWGkfWCv",
+            "expanded_url": "https://www.ordnancesurvey.co.uk/blog/2017/02/carto-tips-using-blend-modes-opacity-levels/",
+            "expanded_status": 200,
+            "expanded_url_title": "Carto tips: Using blend modes and opacity levels - Ordnance Survey Blog",
+            "expanded_url_description": "Colour is one of the main graphic elements that a cartographer uses to make their map clear to read. Amongst other things we use colour to create familiarity, to differentiate features and to create a clear visual hierarchy. There are many things we can do to the features on our maps to change their appearance... Read More"
+          }
+        ]
+      },
+      "twitter_filter_level": "low"
+    }
+  ]
+}

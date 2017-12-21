@@ -1,0 +1,11 @@
+State;County;Location;lng;lat;Metal Level;Issuer Name;Plan Marketing Name;Plan Type;Rating Area;Premium Adult Individual Age 27;Premium Adult Individual Age 50*;Premium Family;Premium Single Parent Family;Premium Couple*;Premium Child;Display
+MI;ALCONA;alcona mi;-83.128974;44.683627;Catastrophic;Blue Cross Blue Shield of Huesca;"Blue Cross
+ Premier Value";PPO;Rating Area 15;131.8;224.61;445.2;302.46;321.44;79.86;Yes
+MI;ALCONA;alcona mi;-83.128974;44.683627;Catastrophic;Blue Cross Blue Shield of Michigan;"Blue Cross
+ Premier Value";PPO;Rating Area 15;131.8;224.61;445.2;302.46;321.44;79.86;Yes
+MI;ALCONA;alcona mi;-83.128974;44.683627;Bronze;Blue Cross Blue Shield of Michigan;"Blue Cross
+
+ Premier Bronze";PPO;Rating Area 15;172.99;294.82;584.34;396.99;421.92;104.82;Yes
+MI;ALCONA;alcona mi;-83.128974;44.683627;Silver;Blue Cross Blue Shield of Michigan;"Blue Cross
+ Premier Silver";PPO;Rating Area 15;227.31;387.38;767.82;521.64;554.4;137.73;Yes
+MI;ALCONA;alcona mi;-83.128974;44.683627;Gold;Blue Cross Blue Shield of Michigan;Blue Cross Premier Gold;PPO;Rating Area 15;274.62;468;927.64;630.22;669.78;166.4;Yes

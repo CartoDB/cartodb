@@ -1,0 +1,26 @@
+<%= content_for(:title) do %>CARTO · Maps by <%= @name %><% end %>
+
+<%= content_for(:description) do %><%= @page_description %><% end %>
+
+<div class="CDB-Text PublicBody-content">
+  <% if @visualizations.size == 0 %>
+    <%= render 'admin/shared/no_results', is_maps: true, alt_url: CartoDB.url(self, 'public_datasets_home') %>
+  <% else %>
+    <ul class="MapsList">
+      <% @visualizations.each do |vis| %>
+        <%= render 'shared/mapcard', vis: vis %>
+      <% end %>
+      <%# at most 3 cards per line, visbility is handled by CSS depending on viewport size %>
+      <% ((3 - @visualizations.size + 3) % 3).times.each do %>
+        <li class="MapsList-item MapsList-item--fake">
+          <div class="MapCard MapCard--squared MapCard--borderless">
+            <div class="MapCard-header MapCard-header--fake"></div>
+            <div class="MapCard-content"></div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
+
+<%= render 'admin/pages/shared/pagination' %>

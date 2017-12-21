@@ -1,0 +1,44 @@
+"Agadez, Niger",1,1,17.0926609,7.5755601
+"Agapa, Russia",1,1,53.3041992,59.1366501
+"Ames, United States",1,5,42.02535,-93.6202
+"Ames, United States",2,5,30.05339,-94.74227
+"Ames, United States",3,5,36.24605,-98.18511
+"Ames, United States",4,5,42.83659,-74.59919
+"Ames, United States",5,5,41.45263,-96.62508
+"Amman, Jordan",1,1,31.95181,35.94042
+"Anlu, China",1,1,31.25582,113.68918
+"Apsheronsk, Russia",1,1,44.46301,39.72893
+"Baranavichy, Belarus",1,1,53.13963,26.02236
+"Berekum, Ghana",1,1,7.45498,-2.58425
+"Bilbao, Kingdom of Spain",1,1,37.2187881,-5.3498902
+"Dawson, Canada",1,2,64.06332,-139.43439
+"Dawson, Canada",2,2,48.72222,-94.48447
+"Fredericton, Canada",1,1,45.96063,-66.63911
+"Guasave, Mexico",1,1,25.5706,-108.47102
+"Hinton, Canada",1,1,53.40095,-117.57697
+"Katoomba, Australia",1,1,-33.71181,150.31056
+"Kirkuk, Iraq",1,1,35.4687309,44.3895187
+"La Paz, Mexico",1,2,19.35847,-98.95884
+"La Paz, Mexico",2,2,24.15464,-110.31023
+"My Tho, Vietnam",1,1,10.35595,106.36643
+"Otsu, Japan",1,1,42.73321,143.59012
+"Oymyakon, Russia",1,1,63.4606133,142.786026
+"Paramaribo, Suriname",1,1,5.82031,-55.16542
+"Pinheiro, Brazil",1,1,-2.52138,-45.0832
+"Pochutla, Mexico",1,1,15.7434,-96.46694
+"Pori, Finland",1,1,61.48596,21.79537
+"Salluit, Canada",1,1,62.20523,-75.64252
+"Santa Fe, Argentina",1,1,-31.63666,-60.712
+"Sekondi, Ghana",1,1,4.9340301,-1.70972
+"Shahrud, Iran",1,2,30.9944096,50.0435715
+"Shahrud, Iran",2,2,30.1367893,52.5212402
+"Sittwe, Myanmar",1,1,20.13819,92.88672
+"Smithton, Australia",1,1,-40.85546,145.12035
+"Sumy, Ukraine",1,1,50.90787,34.79759
+"Tabriz, Iran",1,1,38.0797081,46.3001518
+"Tongling, China",1,1,30.94496,117.81258
+"Tver, Russia",1,1,56.85238,35.93375
+"Whyalla, Australia",1,1,-33.03351,137.58416
+"Wonsan, Korea, North",1,3,34.5083313,126.3166122
+"Wonsan, Korea, North",2,3,36.1985207,127.0890808
+"Wonsan, Korea, North",3,3,35.188839,126.947731

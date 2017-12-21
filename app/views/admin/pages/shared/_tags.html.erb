@@ -1,0 +1,28 @@
+<% if @tags.size > 0 %>
+  <ul class="tags">
+    <li><strong>Browse by tag</strong></li>
+
+    <% @tags.last(10).reverse.each_with_index do |tag, i| %>
+      <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
+        <% if params[:tag] && params[:tag] == tag %>
+
+          <% if action_name == 'datasets' %>
+            <%= tag.capitalize.truncate(40) %> <%= link_to "x", "/datasets", { :class => "close" } %>
+          <% else %>
+            <%= link_to "x", "/", { :class => "close" } %>
+            <h3><%= tag.capitalize.truncate(40) %></h3>
+          <% end %>
+        
+        <% else %>
+
+          <% if action_name == 'datasets' %>
+            <h3><%= link_to tag.capitalize.truncate(40), CartoDB.url(self, 'public_datasets_tag', {tag: tag}), :rel => "tag"  %></h3>
+          <% else %>
+            <h3><%= link_to tag.capitalize.truncate(40), CartoDB.url(self, 'public_tag', {tag: tag}), :rel => "tag"  %></h3>
+          <% end %>
+
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

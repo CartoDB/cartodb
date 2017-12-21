@@ -1,0 +1,253 @@
+
+/**
+ *  Styles for public table showed in public table
+ *
+ */
+
+@import "compass/css3/opacity";
+@import "compass/css3/inline-block";
+@import "../old_common/vars";
+@import "../old_common/mixins";
+@import "compass/reset/utilities";
+@import "../variables/sizes";
+
+html {
+  line-height: 1;
+}
+
+body.public { /* Public table CSS */
+
+  .pane_table {
+    @include reset-table-cell();
+    @include position(8px, calc(35% + 8px), 8px, 8px);
+    z-index: 10;
+    border-radius: 3px;
+    overflow: hidden;
+    &.is-active {
+      background: #fff;
+    }
+  }
+
+  .pane_map { top: 0px; overflow-x: hidden; }
+
+  .panes .emptyTableContainer {
+    position:relative;
+  }
+
+  min-width: inherit;
+
+  .dialog {
+
+    position:relative;
+    z-index: 10000;
+
+    .block.modal.api {
+
+      .content {
+        padding: 0;
+        position:relative;
+      }
+
+      .inner {
+        padding: 28px 40px 0 40px;
+        position:relative;
+      }
+
+      .shadow {
+        position: absolute;
+        height: 60px;
+        bottom: 0;
+        width: 100%;
+        @extend .white-gradient-shadow-bottom;
+      }
+
+      code {
+        color: #666666;
+        font-size: 13px;
+        line-height: 120%;
+      }
+
+      .sample {
+        padding: 23px 40px;
+        background: #F2F2F2;
+        border-bottom: 1px solid #E5E5E5;
+
+        p {
+          font-size: 13px;
+          color: #999999;
+        }
+
+      }
+
+      h4 {
+        margin: 0 0 5px 0;
+        color: #666666;
+        text-transform: uppercase;
+        font-family: $text-fonts;
+        font-size:11px;
+      }
+
+      .foot {
+
+        padding: 38px;
+
+        p {
+          float:left;
+          width: 357px;
+          color: #666666;
+          font-size: 13px;
+          line-height: 120%;
+          padding: 5px 0;
+          a { text-decoration: underline; }
+        }
+      }
+    }
+  }
+
+  div.separator.bottom {
+    display:none;
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #E5E5E5;
+  }
+
+  div.table.public table tbody tr td div.cell {
+    cursor: default;
+  }
+
+  div.table.public table tbody tr:hover {
+    background: inherit;
+    border-top: 1px solid #ECECEC;
+
+    & + tr {
+      border-top: 1px solid #ECECEC;
+    }
+  }
+
+  div.table table thead tr th {
+    > div {
+      label.interactuable .coloptions {
+        line-height: 1;
+
+        &:after {
+          display:none;
+        }
+      }
+
+      p {
+        font-weight: normal;
+      }
+    }
+  }
+
+  div.table table tfoot.page_loader {
+    display:none;
+  }
+
+  .navigation {
+
+    margin: auto;
+    clear: both;
+    overflow: hidden;
+
+    position:relative;
+    z-index: 100;
+    @include opacity(0);
+    width: 100%;
+    text-align: center;
+
+    ul {
+
+      max-width: 1024px;
+      margin: auto;
+      @include clearfix();
+
+      li {
+
+        display: inline-block;
+        list-style:none;
+        margin: 0 1px 0 0;
+
+        &:last-child { margin-left: $sMargin-group; }
+
+        a {
+          &:hover {
+
+          }
+
+          display:block;
+          width: 36px;
+          height: 36px;
+          border: 1px solid #636D72;
+          border-radius: 19px;
+          color: #636D72;
+          text-align: center;
+
+          i {
+            font-size: 14px;
+          }
+        }
+
+        a.selected {
+          color: #fff;
+          border-color: #fff;
+          cursor:default;
+        }
+
+      }
+    }
+  }
+
+  div.table table thead tr th>div p.auto {
+    @include opacity(0);
+  }
+
+  .cartodb-map-data {
+    position: relative;
+    top: 300px;
+    z-index: 100;
+  }
+
+  div.panes {
+    overflow-y:hidden;
+    overflow-x: auto;
+    clear:both;
+
+    div.shadow { display:none; }
+
+    div.table table thead tr th > div > div {
+      position:relative;
+    }
+  }
+
+  div.panes.panes_mobile {
+    top: 0px;
+    overflow-x: hidden;
+
+    .table.public {
+      background: #fff;
+    }
+
+    .Checkbox {
+      position: absolute;
+      top: 35px;
+      right: 35px;
+      z-index: 30;
+      background-color: rgba(#000, .5);
+      padding: 3px 5px;
+      border-radius: 3px;
+    }
+
+    .Checkbox-label {
+      color: #fff;
+    }
+
+    .table.public,
+    .cartodb-map.public {
+      @include position(15px, 15px, 60px, 15px);
+      z-index: 10;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+  }
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Protected map — CARTO</title>
+    <%= stylesheet_link_tag 'password_protected.css' %>
+  </head>
+
+  <body class='PublicPage-body PublicPage-background--navyBlue'>
+    <div class='PublicPage-centerContainer'>
+      <div class='PublicPage-container'>
+
+        <div class='PublicPage-header'>
+          <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://carto.com" %>">
+            <img src="<%= image_path "layout/carto-logo.svg" %>" alt="CARTO">
+          </a>
+        </div>
+
+        <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'>This map is protected with password</p>
+
+        <div class='PublicPage-form'>
+          <%= form_tag "embed_protected?#{request.query_string}", method: :post do %>
+
+            <div class='PublicPage-field-withTooltip'>
+              <%= password_field_tag 'password', params[:password], class: "PublicPage-form--inputText RoundBorders-all CDB-Text CDB-Size-medium is-light u-whiteTextColor #{ flash[:error].present? ? 'is-alert' : ''}", placeholder: 'Insert your password'%>
+
+              <%- if flash[:error].present? %>
+                <div class="PublicPage-inputTooltip CDB-InfoTooltip CDB-InfoTooltip--left u-lSpace--xl is-error">
+                  <p class='CDB-Text CDB-Size-medium CDB-InfoTooltip-text'><%= flash[:error] %></p>
+                </div>
+              <% end %>
+            </div>
+
+          <% end %>
+        </div>
+
+        <p class='CDB-Text CDB-Size-medium is-light u-hintTextColor u-tSpace-xl'>Contact with the owner in case you want access to it.</p>
+      </div>
+    </div>
+  </body>
+</html>

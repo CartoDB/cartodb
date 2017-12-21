@@ -1,0 +1,48 @@
+<% content_for(:page_title) do %>
+  New <%= current_user.organization.name %> user |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'organization.css',  :media => 'all' %>
+<% end %>
+
+<%= render :partial => 'shared/flash_message' %>
+
+<div class="FormAccount-Section u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="FormAccount-Content">
+    <div class="Filters is-relative">
+      <div class="Filters-inner">
+        <span class="Filters-separator"></span>
+        <div class="Filters-row">
+          <ul class="Filters-group CDB-Text CDB-Size-medium">
+            <li class="u-flex u-alignCenter">
+              <a href="<%= current_user_url('organization') %>" class="u-actionTextColor u-flex u-alignCenter">
+                <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
+              </a>
+            </li>
+            <li class="Filters-typeItem">
+              <div class="FormAccount-title">
+                <p class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">New user</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <%= render partial: 'form' %>
+  </div>
+</div>
+
+
+
+<%= render 'admin/shared/footer' %>

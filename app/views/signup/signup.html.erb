@@ -1,0 +1,144 @@
+<% content_for :title do %><%= @organization.name %> sign up<% end %>
+
+<% content_for :js do %>
+  <%= javascript_include_tag 'cdb.js' %>
+<% end %>
+
+<%= render :partial => 'shared/flash_message', locals: { error_message: @organization.auth_username_password_enabled ? nil : model_errors(@user) } %>
+
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-content">
+
+    <div class="Sessions-inner">
+      <div class="Sessions-notloggedin is-active">
+        <div class="Sessions-left">
+          <div class="Sessions-leftInner">
+            <div class="Sessions-logoContainer">
+              <picture class="Navbar-brand">
+                <% if @organization.present? && @organization.avatar_url.present? %>
+                  <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
+                <% else %>
+                  <% if @organization.present? %>
+                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                  <% else %>
+                    <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                  <% end %>
+                <% end %>
+              </picture>
+            </div>
+
+            <% if params[:referrer] == "mapincartodb" %>
+              <% provider = CGI.parse(URI.parse(params[:after]).query)['provider'].first %>
+              <% if provider.present? %>
+                <% if provider == "data.gov" %>
+                  <p class="Sessions-description">Transform this dataset from Data.gov into an incredible map in seconds.</p>
+                <% else %>
+                  <p class="Sessions-description">Transform this dataset from <%= provider %> into an incredible map in seconds.</p>
+                <% end %>
+              <% else %>
+                <p class="Sessions-description">Transform this dataset into an incredible map in seconds.</p>
+              <% end %>
+            <% end %>
+
+
+            <%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
+
+              <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
+
+              <div class="Sessions-fieldsGroup">
+                <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
+                  <div class="Sessions-field">
+                    <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
+                    <% if !@user.errors[:username].blank? %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:username] %>">!</div>
+                    <% end %>
+                  </div>
+
+                  <div class="Sessions-field">
+                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? || duplicated_username_prompt? || @user.google_sign_in %>
+                    <% if !@user.errors[:email].blank? %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <% if @oauth_fields.present? %>
+                  <% @oauth_fields.each do |name, value| %>
+                    <input type="hidden" name="<%= name %>" value="<%= value %>" />
+                  <% end %>
+                <% elsif @organization.auth_username_password_enabled %>
+                  <div class="Sessions-field">
+                    <%= f.password_field :password, class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: 'Password' %>
+                    <% if !@user.errors[:password].blank? %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:password] %>">!</div>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
+                  <div class="Sessions-field">
+                    <p>
+                      <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
+                        <span class="js-Loading-text">Sign up</span>
+                        <span class="js-Loading-anim" style="display: none;">
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--01"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--02"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--03"></span>
+                          </span>
+                        </span>
+                      </button>
+                    </p>
+                  </div>
+                <% end %>
+              </div>
+
+              <div style="display:none">
+                <%= f.check_box :terms, { checked: true } %>
+              </div>
+            <% end %>
+
+            <% unless @oauth_fields.present? %>
+              <div class="Sessions-field Sessions-oauthContainer">
+                <% @oauth_configs.each do |config| %>
+                  <%= render partial: config.button_template, locals: { config: config } %>
+                <% end %>
+              </div>
+            <% end %>
+
+            <% if @organization.auth_username_password_enabled %>
+              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="Sessions-footer">
+    <div class="u-inner">
+      <div class="Sessions-notloggedin is-active">
+        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">
+          Already have an account?
+          <% if params[:after].present? %>
+            <% if (params[:referrer].present?) %>
+              <%= link_to "Log in", login_url(after: params[:after], referrer: params[:referrer]) %>
+            <% else %>
+              <%= link_to "Log in", login_url(after: params[:after]) %>
+            <% end %>
+          <% else %>
+            <%= link_to "Log in", login_url %>
+          <% end %>
+        </p>
+
+        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">By clicking in "sign up" you accept the <%= link_to 'terms and conditions', terms_path %> of the service and the <%= link_to 'privacy policy', privacy_path %></p>
+      </div>
+    </div>
+  </footer>
+</div>

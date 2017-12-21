@@ -4,110 +4,150 @@ var WidgetModel = require('../../../src/widgets/widget-model');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
 
 describe('widgets/time-series/content-view', function () {
-  beforeEach(function () {
+  var view, widgetModel, layerModel, dataviewModel, originalData;
+  var nodeId = 'a0';
+
+  var createViewFn = function (options) {
     var vis = specHelper.createDefaultVis();
-    this.layerModel = vis.map.layers.first();
-    this.layerModel.set('layer_name', '< & ><h1>Hello</h1>');
-    var source = vis.analysis.findNodeById('a0');
-    this.dataviewModel = vis.dataviews.createHistogramModel({
+    var source = vis.analysis.findNodeById(nodeId);
+
+    layerModel = vis.map.layers.first();
+
+    dataviewModel = vis.dataviews.createHistogramModel({
       column: 'col',
       source: source
     });
+    spyOn(dataviewModel, 'fetch').and.callThrough();
 
-    this.originalData = this.dataviewModel.getUnfilteredDataModel();
-    this.originalData.set({
+    originalData = dataviewModel.getUnfilteredDataModel();
+    originalData.set({
       data: [{ bin: 10 }, { bin: 3 }],
       start: 0,
       end: 256,
       bins: 2
     });
-    this.dataviewModel.sync = function (method, dataviewModel, options) {
-      this.options = options;
-    }.bind(this);
 
-    var widgetModel = new WidgetModel({
-      show_source: true
+    widgetModel = new WidgetModel({
+      show_source: false
     }, {
-      dataviewModel: this.dataviewModel,
-      layerModel: this.layerModel
+      dataviewModel: dataviewModel,
+      layerModel: layerModel
     });
 
     spyOn(HistogramChartView.prototype, '_setupFillColor').and.returnValue('red');
 
-    spyOn(this.dataviewModel, 'fetch').and.callThrough();
-    this.view = new TimeSeriesContentView({
+    view = new TimeSeriesContentView({
       model: widgetModel
     });
-  });
 
-  describe('.render', function () {
-    describe('with data', function () {
-      beforeEach(function () {
-        this.originalData.set('data', [], { silent: true });
-        this.view.render();
-      });
+    return view;
+  };
 
-      it('should render placeholder', function () {
-        expect(this.view.$el.html()).not.toBe('');
-        expect(this.view.$('.CDB-Widget-content--timeSeries').length).toBe(1);
-      });
+  describe('when widget has data', function () {
+    describe('.render', function () {
+      it('should render properly', function () {
+        view = createViewFn();
+        view.render();
 
-      it('should not render chart just yet since have no data', function () {
-        expect(this.view.$el.html()).not.toContain('<svg');
+        expect(view.$('.js-header').length).toBe(1);
+        expect(view.$('.js-title').length).toBe(1);
+        expect(view.$('.js-content').length).toBe(1);
+        expect(view.$('.CDB-Widget-info').length).toBe(0);
+        expect(view._histogramView).toBeDefined();
+        expect(view._headerView).toBeDefined();
+        expect(view._dropdownView).toBeDefined();
+        expect(view.render().$el.html()).toContain('<svg');
       });
     });
 
-    describe('without data', function () {
-      beforeEach(function () {
-        var timeOffset = 10000;
-        var startTime = (new Date()).getTime() - timeOffset;
+    describe('when show_source is true', function () {
+      var tableName = 'table_name';
+      var sourceType = 'sampling';
+      var layerName = 'Test Layer Name';
 
-        this.dataviewModel.fetch();
-        this.options.success({
-          bins_count: 3,
-          bin_width: 100,
-          nulls: 0,
-          bins_start: 10,
-          bins: [{
-            start: startTime,
-            end: startTime + timeOffset,
-            freq: 3
-          }]
+      beforeEach(function () {
+        view = createViewFn();
+        widgetModel.set({
+          show_source: true,
+          table_name: tableName
         });
       });
 
-      it('should render chart', function () {
-        this.view.render();
+      describe('when dataViewModel is sourceType', function () {
+        describe('.render', function () {
+          it('should render properly', function () {
+            view.render();
 
-        expect(this.view.$('.js-header').length).toBe(1);
-        expect(this.view.$('.js-content').length).toBe(1);
-        expect(this.view._histogramView).toBeDefined();
-        expect(this.view._headerView).toBeDefined();
-        expect(this.view._dropdownView).toBeDefined();
-        expect(this.view.$('.js-header .CDB-Widget-info').length).toBe(1);
-        expect(this.view.$('.u-altTextColor').html()).toContain('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
-        expect(this.view.render().$el.html()).toContain('<svg');
+            expect(view.$('.CDB-Widget-info').length).toBe(1);
+            expect(view.$el.html()).toContain(nodeId);
+            expect(view.$el.html()).toContain('Source');
+            expect(view.$el.html()).toContain(tableName);
+          });
+        });
+      });
+
+      describe('when dataViewModel is not sourceType', function () {
+        beforeEach(function () {
+          spyOn(dataviewModel, 'getSourceType').and.returnValue(sourceType);
+          spyOn(dataviewModel, 'isSourceType').and.returnValue(false);
+          layerModel.set('layer_name', layerName, { silent: true });
+        });
+
+        describe('.render', function () {
+          it('should render properly', function () {
+            view.render();
+
+            expect(view.$('.CDB-Widget-info').length).toBe(1);
+            expect(view.$('.CDB-IconFont-ray').length).toBe(1);
+            expect(view.$el.html()).toContain(nodeId);
+            expect(view.$el.html()).toContain('Sampling');
+            expect(view.$el.html()).toContain(layerName);
+          });
+        });
+      });
+    });
+  });
+
+  describe('when wiget has no data', function () {
+    beforeEach(function () {
+      view = createViewFn();
+      originalData.set('data', [], { silent: true });
+      view.render();
+    });
+
+    describe('.render', function () {
+      it('should render placeholder', function () {
+        expect(view.$el.html()).not.toBe('');
+        expect(view.$('.CDB-Widget-content--timeSeries').length).toBe(1);
+      });
+
+      it('should not render chart just yet since there is no data', function () {
+        expect(view.$el.html()).not.toContain('<svg');
       });
     });
   });
 
   describe('.initBinds', function () {
-    it('should hook up events properly', function () {
-      this.view.model.off();
-      spyOn(this.view, 'render');
+    beforeEach(function () {
+      view = createViewFn();
+    });
 
-      this.view._initBinds();
+    it('should hook up events properly', function () {
+      view.model.off();
+      spyOn(view, 'render');
+
+      view._initBinds();
 
       // DataviewModel events
-      this.view.model.trigger('change:hasInitialState');
-      expect(this.view.render).toHaveBeenCalled();
+      view.model.trigger('change:hasInitialState');
+      expect(view.render).toHaveBeenCalled();
     });
 
     it('should render the widget when the layer name changes', function () {
-      spyOn(this.view, 'render');
-      this.view._initBinds();
-      this.layerModel.set('layer_name', 'Hello');
-      expect(this.view.render).toHaveBeenCalled();
+      spyOn(view, 'render');
+      view._initBinds();
+      layerModel.set('layer_name', 'Hello');
+      expect(view.render).toHaveBeenCalled();
     });
   });
 });

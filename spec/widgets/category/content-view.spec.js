@@ -4,50 +4,49 @@ var CategoryWidgetModel = require('../../../src/widgets/category/category-widget
 var CategoryContentView = require('../../../src/widgets/category/content-view');
 
 describe('widgets/category/content-view', function () {
-  beforeEach(function () {
+  var view, model, layerModel, dataviewModel;
+
+  var createViewFn = function (options) {
     var vis = specHelper.createDefaultVis();
     var source = vis.analysis.findNodeById('a0');
-    this.dataviewModel = vis.dataviews.createCategoryModel({
+
+    dataviewModel = vis.dataviews.createCategoryModel({
       column: 'col',
       source: source
     });
-    this.layerModel = vis.map.layers.first();
-    this.layerModel.set('layer_name', '< & ><h1>Hello</h1>');
-    this.model = new CategoryWidgetModel({
+
+    layerModel = vis.map.layers.first();
+    layerModel.set('layer_name', '< & ><h1>Hello</h1>');
+
+    model = new CategoryWidgetModel({
       title: 'Categories of something',
       hasInitialState: true
     }, {
-      dataviewModel: this.dataviewModel,
-      layerModel: this.layerModel
+      dataviewModel: dataviewModel,
+      layerModel: layerModel
     });
 
-    this.view = new CategoryContentView({
-      model: this.model
+    view = new CategoryContentView({
+      model: model
     });
-    this.renderResult = this.view.render();
-  });
 
-  it('should render fine', function () {
-    expect(this.renderResult).toBe(this.view);
-    expect(_.size(this.view._subviews)).toBe(7);
-  });
+    return view;
+  };
 
-  it('should show source when show_source is true', function () {
-    expect(this.view.$('.CDB-Widget-info').length).toBe(1);
-    this.model.set('show_source', true);
-    this.view.render();
-    expect(this.view.$('.CDB-Widget-info').length).toBe(2);
-    expect(this.view.$('.u-altTextColor').html()).toContain('&lt; &amp; &gt;&lt;h1&gt;Hello&lt;/h1&gt;');
-  });
+  describe('.render', function () {
+    it('should render properly', function () {
+      view = createViewFn();
+      view.render();
 
-  it('should render the widget when the layer name changes', function () {
-    spyOn(this.view, 'render');
-    this.view._initBinds();
-    this.layerModel.set('layer_name', 'Hello');
-    expect(this.view.render).toHaveBeenCalled();
+      expect(this.renderResult).toBe(this.view);
+      expect(view.$('.js-header').length).toBe(1);
+      expect(view.$('.js-content').length).toBe(1);
+      expect(view.$('.js-footer').length).toBe(1);
+      expect(_.size(view._subviews)).toBe(7);
+    });
   });
 
   afterEach(function () {
-    this.view.clean();
+    view.clean();
   });
 });

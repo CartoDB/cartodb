@@ -37,6 +37,9 @@ var createFakeDataviewModel = function (attrs) {
   dataview.getLayerName = function () {
     return '';
   };
+  dataview.isSourceType = function () {
+    return true;
+  };
 
   return dataview;
 };

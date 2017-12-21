@@ -12,6 +12,7 @@ module.exports = {
         {
           id: 'layer1',
           type: 'cartodb',
+          name: 'Layer Name',
           options: {
             source: 'a0',
             cartocss: '#layer { polygon-fill: #CDCDCD; }'
@@ -19,6 +20,7 @@ module.exports = {
         }, {
           id: 'layer2',
           type: 'torque',
+          name: 'Torque Layer',
           options: {
             source: 'a0',
             cartocss: '#layer { polygon-fill: #CDCDCD; }'

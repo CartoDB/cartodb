@@ -250,14 +250,17 @@ module.exports = cdb.core.View.extend({
     var letter = layerColors.letter(sourceId);
     var sourceColor = layerColors.getColorForLetter(letter);
     var sourceType = this._dataviewModel.getSourceType() || '';
-    var layerName = this._layerModel.get('layer_name') || '';
+    var isSourceType = this._dataviewModel.isSourceType();
+    var layerName = isSourceType
+      ? this.model.get('table_name')
+      : this._layerModel.get('layer_name');
 
     this.$el.html(
       template({
         title: this.model.get('title'),
         sourceId: sourceId,
         sourceType: analyses.title(sourceType),
-        isSourceType: this._dataviewModel.isSourceType(),
+        isSourceType: isSourceType,
         showStats: this.model.get('show_stats'),
         showNulls: hasNulls,
         showSource: this.model.get('show_source') && letter !== '',

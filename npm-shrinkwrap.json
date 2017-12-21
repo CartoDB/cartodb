@@ -394,8 +394,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.4.30",
-      "from": "cartodb/deep-insights.js#v0.4.30",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#9017e01934d16f1c71f60c8cd0205ef65227015f",
+      "from": "cartodb/deep-insights.js#640-missing-hover-in-widgets",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#3638970b8287f53c4908f23aad9bf7c7d4e89a3b",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -2744,11 +2744,6 @@
       "version": "1.2.0",
       "from": "tiny-emitter@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.2.0.tgz"
-    },
-    "tinycolor2": {
-      "version": "1.4.1",
-      "from": "tinycolor2@1.4.1",
-      "resolved": "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.4.1.tgz"
     },
     "tmp": {
       "version": "0.0.33",

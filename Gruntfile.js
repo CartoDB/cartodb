@@ -332,6 +332,12 @@ module.exports = function (grunt) {
     'copy:js_test_cartodb3'
   ]);
 
+  grunt.registerTask('js_dashboard', [
+    'copy:locale',
+    'copy:js_dashboard',
+    'copy:js_test_dashboard'
+  ]);
+
   grunt.registerTask('js', [
     'js_editor',
     'js_builder'
@@ -412,12 +418,24 @@ module.exports = function (grunt) {
     requireWebpackTask().affected.call(this, option, grunt);
   });
 
+  grunt.registerTask('dashboard', 'Generate only dashboard specs', function (option) {
+    requireWebpackTask().dashboard.call(this, option, grunt);
+  });
+
   grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
     requireWebpackTask().bootstrap.call(this, 'builder_specs', grunt);
   });
 
+  grunt.registerTask('bootstrap_webpack_dashboard_specs', 'Create the webpack compiler', function () {
+    requireWebpackTask().bootstrap.call(this, 'dashboard_specs', grunt);
+  });
+
   grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {
     requireWebpackTask().compile.call(this, 'builder_specs');
+  });
+
+  grunt.registerTask('webpack:dashboard_specs', 'Webpack compilation task for dashboard specs', function () {
+    requireWebpackTask().compile.call(this, 'dashboard_specs');
   });
 
   /**
@@ -448,6 +466,20 @@ module.exports = function (grunt) {
     'jasmine:affected:build',
     'connect:specs',
     'watch:js_affected'
+  ]);
+
+  /**
+   * `grunt dashboard_specs` compile dashboard specs
+   */
+  grunt.registerTask('dashboard_specs', 'Build only dashboard specs', [
+    'connect:test',
+    'beforeDefault',
+    'js_dashboard',
+    'dashboard',
+    'bootstrap_webpack_dashboard_specs',
+    'webpack:dashboard_specs',
+    'jasmine:dashboard',
+    'watch:dashboard_specs'
   ]);
 
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {

@@ -9,9 +9,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  builder_embed: ['whatwg-fetch', resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/public_editor.js')],
-  dataset: resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/dataset.js'),
-  builder: resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/editor.js')
+  'user-feed': resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js'
 };
 
 module.exports = env => {
@@ -74,55 +72,7 @@ module.exports = env => {
       ]),
     module: {
       rules: [
-        {
-          test: /\.js$/,
-          loader: 'shim-loader',
-          include: [
-            resolve(__dirname, '../../', 'node_modules/cartodb.js')
-          ],
-          options: {
-            shim: {
-              'wax.cartodb.js': {
-                exports: 'wax'
-              },
-              'lzma': {
-                exports: 'LZMA'
-              },
-              'html-css-sanitizer': {
-                exports: 'html'
-              }
-            }
-          }
-        },
-        {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          include: [
-            resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
-            resolve(__dirname, '../../', 'node_modules/tangram.cartodb')
-          ],
-          options: {
-            presets: ['env']
-          }
-        },
-        {
-          test: /\.tpl$/,
-          use: 'tpl-loader',
-          include: [
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
-            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
-          ]
-        },
-        {
-          test: /\.mustache$/,
-          use: 'raw-loader',
-          include: [
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
-            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
-          ]
-        }
+
       ]
     },
 

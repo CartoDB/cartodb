@@ -394,8 +394,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.4.28",
-      "from": "git://github.com/CartoDB/deep-insights.js.git#v0.4.28",
-      "resolved": "git://github.com/CartoDB/deep-insights.js.git#4be7f7fbd18d903d05a148dd135602de1f9ee1d4",
+      "from": "cartodb/deep-insights.js#13244-make-widgets-appear-on-top",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#b5b57d5a87bcd7a29d2010aababfe6f6d90af8e1",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",
@@ -708,9 +708,9 @@
       "resolved": "https://registry.npmjs.org/des.js/-/des.js-1.0.0.tgz"
     },
     "detective": {
-      "version": "4.7.0",
+      "version": "4.7.1",
       "from": "detective@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.0.tgz",
+      "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.1.tgz",
       "dependencies": {
         "acorn": {
           "version": "5.2.1",

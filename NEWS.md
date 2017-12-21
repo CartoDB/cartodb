@@ -105,6 +105,8 @@ ion for time-series (#12670)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 
 ### Bug fixes / enhancements
+* Redesign add buttons (#13215)
+* Onboarding: center bounding box automatically when new datasets are added (#13245)
 * Stop building static pages on dev (#13188)
 * Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)
 * Fix like buttons (#13231)
@@ -347,6 +349,8 @@ ion for time-series (#12670)
 * Add fetch polyfill (#13230)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
+* Make new widgets appear on top (#13244)
+* Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)
@@ -357,6 +361,7 @@ ion for time-series (#12670)
 * Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
 * Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
 * Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
+* Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

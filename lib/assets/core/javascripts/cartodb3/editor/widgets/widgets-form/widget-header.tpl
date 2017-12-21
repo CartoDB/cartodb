@@ -27,11 +27,11 @@
         </span>
       <% } %>
 
-      <span class="CDB-Text CDB-Size-medium u-lSpace">
+      <span class="CDB-Text CDB-Size-small u-lSpace">
         <%= nodeTitle %>
       </span>
 
-      <span class="CDB-Text CDB-Size-medium u-altTextColor u-ellipsis u-lSpace" title="<%= layerName %>">
+      <span class="CDB-Text CDB-Size-small u-altTextColor u-ellipsis u-lSpace" title="<%= layerName %>">
         <%= layerName %>
       </span>
     </div>

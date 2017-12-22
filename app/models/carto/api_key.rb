@@ -17,7 +17,12 @@ class Carto::ApiKey < ActiveRecord::Base
   before_create :create_token
   before_create :create_db_config
 
-  before_save :serialize_grants
+  before_validation :serialize_grants
+  serialize :grants_json, Carto::CartoJsonSymbolizerSerializer
+  validates :grants_json, carto_json_symbolizer: true
+
+  serialize :affected_schemas_json, Carto::CartoJsonSymbolizerSerializer
+  validates :affected_schemas_json, carto_json_symbolizer: true
 
   after_save :add_to_redis
   after_save :update_role_permissions
@@ -76,7 +81,7 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def serialize_grants
-    self.grants_json = grants.to_hash.to_json
+    self.grants_json = grants.to_hash
   end
 
   def add_to_redis
@@ -99,7 +104,7 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def affected_schemas
-    JSON.parse(affected_schemas_json || '[]')
+    affected_schemas_json || []
   end
 
   def revoke_privileges

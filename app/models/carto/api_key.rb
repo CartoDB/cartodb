@@ -67,9 +67,11 @@ class Carto::ApiKey < ActiveRecord::Base
     api_key_grants.table_permissions.each do |tp|
       read_schemas << tp.schema unless read_schemas.include?(tp.schema)
       write_schemas << tp.schema unless write_schemas.include?(tp.schema) || !tp.write?
-      connection.run(
-        "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
-      )
+      unless tp.permissions.empty?
+        connection.run(
+          "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
+        )
+      end
     end
 
     write_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }

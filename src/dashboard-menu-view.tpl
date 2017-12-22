@@ -44,7 +44,7 @@
 
       <div class="CDB-Dashboard-menuInfo">
         <button class="js-toggle-view">
-          <i class="CDB-Text CDB-Size-medium CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>
+          <i class="CDB-IconFont CDB-Size-medium CDB-IconFont-rArrowLight Size-large"></i>
         </button>
       </div>
 
@@ -86,7 +86,7 @@
   <div class="CDB-Dashboard-menuHeaderMobile">
     <div class="u-flex u-alignStart CDB-Dashboard-menuHeaderMobileInner">
       <button class="js-toggle-view u-actionTextColor CDB-Dashboard-menuHeaderMobileActions">
-        <i class="CDB-Text CDB-Size-medium CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>
+        <i class="CDB-IconFont CDB-Size-medium CDB-IconFont-rArrowLight Size-large"></i>
       </button>
       <div class="CDB-Dashboard-menuHeaderMobileText">
         <% if (showLogo === true) { %>

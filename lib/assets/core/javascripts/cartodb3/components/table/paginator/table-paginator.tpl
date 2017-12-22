@@ -3,7 +3,7 @@
     js-prev
   <% } %>
 ">
-  <i class="CDB-Text is-semibold CDB-IconFont CDB-IconFont-lArrowLight CDB-Size-small
+  <i class="CDB-IconFont is-semibold CDB-IconFont-lArrowLight CDB-Size-small
   <% if (isPrevAvailable) { %>
     u-actionTextColor
   <% } else { %>
@@ -25,7 +25,7 @@
     js-next
   <% } %>
 ">
-  <i class="CDB-Text is-semibold CDB-IconFont CDB-IconFont-rArrowLight CDB-Size-small
+  <i class="CDB-IconFont is-semibold CDB-IconFont-rArrowLight CDB-Size-small
   <% if (isNextAvailable) { %>
     u-actionTextColor
   <% } else { %>

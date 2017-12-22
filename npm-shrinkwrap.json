@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.140",
+  "version": "4.10.141",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.30",
+      "version": "0.4.31",
       "from": "cartodb/deep-insights.js#640-missing-hover-in-widgets",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#3638970b8287f53c4908f23aad9bf7c7d4e89a3b",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9bd9de82ac8c236db96825cbcd46faa1e22e7ceb",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

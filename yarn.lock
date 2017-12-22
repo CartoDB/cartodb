@@ -15,8 +15,8 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.66.tgz#5680b74a6135d33d4c00447e7c3dc691a4601625"
 
 JSONStream@^1.0.3:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.2.tgz#c102371b6ec3a7cf3b847ca00c20bb0fce4c6dea"
   dependencies:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
@@ -68,8 +68,8 @@ ajv@^4.9.1:
     json-stable-stringify "^1.0.1"
 
 ajv@^5.1.0, ajv@^5.2.0, ajv@^5.2.3, ajv@^5.3.0:
-  version "5.5.1"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.5.1.tgz#b38bb8876d9e86bee994956a04e721e88b248eb2"
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.5.2.tgz#73b5eeca3fab653e3d3f9422b341ad42205dc965"
   dependencies:
     co "^4.6.0"
     fast-deep-equal "^1.0.0"
@@ -1274,9 +1274,9 @@ capture-stack-trace@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/capture-stack-trace/-/capture-stack-trace-1.0.0.tgz#4a6fa07399c26bba47f0b2496b4d0fb408c5550d"
 
-carto-zera@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/carto-zera/-/carto-zera-1.0.0.tgz#b732dbe8a756cb33db818eb53d6f6e81cd613d8b"
+carto-zera@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/carto-zera/-/carto-zera-1.0.1.tgz#7e6e8a8e398e9badf801d63b97a36a7196bf97d8"
   dependencies:
     eslint "^4.10.0"
     eslint-config-iagolast "^1.0.0"
@@ -1291,7 +1291,7 @@ carto@cartodb/carto#master, "carto@github:cartodb/carto#master":
 
 cartoassets@CartoDB/CartoAssets#master:
   version "0.2.0"
-  resolved "https://codeload.github.com/CartoDB/CartoAssets/tar.gz/20cfe25090143eced5b42561a573c4a1068dd327"
+  resolved "https://codeload.github.com/CartoDB/CartoAssets/tar.gz/a79c4a921b2b4590ce0d2b5a26e11d17cbf47bdd"
 
 cartocolor@4.0.0:
   version "4.0.0"
@@ -1299,16 +1299,16 @@ cartocolor@4.0.0:
   dependencies:
     colorbrewer "1.0.0"
 
-cartodb.js@CartoDB/cartodb.js#v4.0.0-beta.5:
-  version "4.0.0-beta.5"
-  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/411a2b3a54190c12f854338bee9158b27fc5b293"
+cartodb.js@CartoDB/cartodb.js#v4.0.0-beta.8:
+  version "4.0.0-beta.8"
+  resolved "https://codeload.github.com/CartoDB/cartodb.js/tar.gz/de94cfbf96a9060c6e0862ab61e28300707509fc"
   dependencies:
     backbone "1.2.3"
     backbone-poller "^1.1.3"
     browserify-shim "3.8.12"
     camshaft-reference "0.34.0"
     carto cartodb/carto#master
-    carto-zera "^1.0.0"
+    carto-zera "1.0.1"
     clip-path-polygon "0.1.12"
     d3-array "1.2.1"
     d3-format "1.2.0"
@@ -1538,6 +1538,10 @@ color-convert@^1.9.0:
 color-name@^1.1.1:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
+
+color-support@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/color-support/-/color-support-1.1.3.tgz#93834379a1cc9a0c61f82f52f0d04322251bd5a2"
 
 colorbrewer@1.0.0:
   version "1.0.0"
@@ -1995,8 +1999,8 @@ detect-libc@^1.0.2:
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
 detective@^4.0.0, detective@^4.5.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/detective/-/detective-4.7.0.tgz#6276e150f9e50829ad1f90ace4d9a2304188afcf"
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/detective/-/detective-4.7.1.tgz#0eca7314338442febb6d65da54c10bb1c82b246e"
   dependencies:
     acorn "^5.2.1"
     defined "^1.0.0"
@@ -2490,10 +2494,11 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
 
 fancy-log@^1.1.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/fancy-log/-/fancy-log-1.3.1.tgz#c4a3462ba14adf5dfbab79731fd3844a2069cbbb"
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/fancy-log/-/fancy-log-1.3.2.tgz#f41125e3d84f2e7d89a43d06d958c8f78be16be1"
   dependencies:
     ansi-gray "^0.1.1"
+    color-support "^1.1.3"
     time-stamp "^1.0.0"
 
 fast-deep-equal@^1.0.0:
@@ -3711,8 +3716,8 @@ is-lower-case@^1.1.0:
     lower-case "^1.1.0"
 
 is-my-json-valid@^2.12.4:
-  version "2.16.1"
-  resolved "https://registry.yarnpkg.com/is-my-json-valid/-/is-my-json-valid-2.16.1.tgz#5a846777e2c2620d1e69104e5d3a03b1f6088f11"
+  version "2.17.1"
+  resolved "https://registry.yarnpkg.com/is-my-json-valid/-/is-my-json-valid-2.17.1.tgz#3da98914a70a22f0a8563ef1511a246c6fc55471"
   dependencies:
     generate-function "^2.0.0"
     generate-object-property "^1.1.0"
@@ -4460,8 +4465,8 @@ mold-source-map@~0.4.0:
     through "~2.2.7"
 
 moment@^2.18.1:
-  version "2.19.4"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.4.tgz#17e5e2c6ead8819c8ecfad83a0acccb312e94682"
+  version "2.20.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
 
 morgan@^1.6.1:
   version "1.9.0"
@@ -6229,10 +6234,6 @@ tiny-lr-fork@0.0.5:
     faye-websocket "~0.4.3"
     noptify "~0.0.3"
     qs "~0.5.2"
-
-tinycolor2@1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
 
 title-case@^1.1.0:
   version "1.1.2"

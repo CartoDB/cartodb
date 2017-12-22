@@ -38,7 +38,6 @@
     "postcss": "5.0.19",
     "postcss-scss": "0.4.0",
     "postcss-strip-inline-comments": "0.1.5",
-    "tinycolor2": "1.4.1",
     "underscore": "1.8.3",
     "urijs": "1.17.1"
   },

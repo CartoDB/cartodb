@@ -9,7 +9,7 @@
     "_t": true,
     "__ENV__": true,
     "grunt": true,
-    "CartoNode": true
+    "CartoApiClient": true
   },
   "rules": {
     "camelcase": "off",

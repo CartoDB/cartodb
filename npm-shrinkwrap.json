@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.31",
-      "from": "cartodb/deep-insights.js#640-missing-hover-in-widgets",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#9bd9de82ac8c236db96825cbcd46faa1e22e7ceb",
+      "version": "0.4.32",
+      "from": "cartodb/deep-insights.js#v0.4.32",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#15eb1840638e2bad5d79b78fcf652cfa3b031cbd",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

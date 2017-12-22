@@ -48,13 +48,16 @@ module.exports = AutoStyler.extend({
 
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i];
-      var start = '"';
-      var end = i !== categories.length - 1 ? '", ' : '"';
+      var next = i !== categories.length - 1 ? ', ' : '';
 
-      catListColors += start + this.colors.getColorByCategory(cat.name) + end;
+      catListColors += '"' + this.colors.getColorByCategory(cat.name) + '"' + next;
       if (!cat.agg) {
-        catListValues += start + cat.name.replace(/"/g, '\\"') + end;
-      } else if (end === '"') {
+        if (!isNaN(cat.name)) {
+          catListValues += cat.name + next;
+        } else {
+          catListValues += '"' + String(cat.name).replace(/"/g, '\\"') + '"' + next;
+        }
+      } else if (i === categories.length - 1) {
         catListValues = catListValues.substring(0, catListValues.length - 2);
       }
     }

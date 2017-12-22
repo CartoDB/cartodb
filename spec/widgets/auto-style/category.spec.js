@@ -76,5 +76,31 @@ describe('src/widgets/auto-style/category', function () {
       this.updateColorsByData();
       expect(this.categoryAutoStyler.getStyle()).toBe('#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74", "#A5AA99"), ("soccer", "basketball", "baseball", "handball", "hockey"));  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
     });
+
+    it('should generate the ramp without quotation marks when the name are ints', function () {
+      this.dataview.set('data', [
+        { name: 1 },
+        { name: 2 },
+        { name: 3 },
+        { name: -4 },
+        { name: 235 }
+      ]);
+      this.dataview.layer.set('initialStyle', '#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1;  polygon-fill: #e49115;  polygon-fill-opacity: 0.9; }');
+      this.updateColorsByData();
+      expect(this.categoryAutoStyler.getStyle()).toBe('#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1;  polygon-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74"), (1, 2, 3, -4, 235));  polygon-fill-opacity: 0.9; }');
+    });
+
+    it('should generate the ramp without quotation marks when the name are floats', function () {
+      this.dataview.set('data', [
+        { name: 1.2 },
+        { name: 0.0001 },
+        { name: 5.3 },
+        { name: -4.2 },
+        { name: Infinity }
+      ]);
+      this.dataview.layer.set('initialStyle', '#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1;  polygon-fill: #e49115;  polygon-fill-opacity: 0.9; }');
+      this.updateColorsByData();
+      expect(this.categoryAutoStyler.getStyle()).toBe('#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1;  polygon-fill: ramp([something], ("#7F3C8D", "#11A579", "#3969AC", "#F2B701", "#E73F74"), (1.2, 0.0001, 5.3, -4.2, Infinity));  polygon-fill-opacity: 0.9; }');
+    });
   });
 });

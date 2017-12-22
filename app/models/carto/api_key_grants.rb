@@ -37,6 +37,8 @@ module Carto
     attr_reader :granted_apis
 
     def initialize(grants_json = [])
+      @granted_apis = []
+      @table_permissions = {}
       grants_json.each { |grant| process_grant(grant) }
     end
 
@@ -60,8 +62,6 @@ module Carto
     private
 
     def process_grant(grant)
-      @granted_apis = []
-      @table_permissions = {}
       type = grant[:type]
       case type
       when 'apis'

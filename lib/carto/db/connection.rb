@@ -119,7 +119,9 @@ module Carto
                                             schema: options[:user_schema] })
             raise Carto::Db::InvalidConfiguration.new('Connection needs user schema if user is not the cluster admin')
           end
-          if !options[:as] || (options[:as] && (!options[:username] || !options[:password]))
+
+          ## If we don't pass user type we are using a regular user and username/password is mandatory
+          if !options[:as] && (!options[:username] || !options[:password])
             CartoDB::Logger.error(message: 'Db connection needs username/password for regular user',
                                   params: { user_type: options[:as], username: options[:username] })
             raise Carto::Db::InvalidConfiguration.new('Db connection needs user username/password for regular user')

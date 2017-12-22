@@ -9,7 +9,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  'user-feed': resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js'
+  'user-feed': resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js')
 };
 
 module.exports = env => {

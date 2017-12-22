@@ -39,8 +39,7 @@ module Carto
           and table_catalog = '#{@database_name}'
         }
 
-        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
-        query_result.map do |t|
+        execute_query(@conn, query).map do |t|
           t = t.deep_symbolize_keys
           Trigger.new(
             database_name: t[:table_catalog],
@@ -74,8 +73,7 @@ module Carto
              and rolname = '#{owner_role}'
           group by ns.nspname, pc.relname;
         }
-        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
-        query_result.map do |v|
+        execute_query(@conn, query).map do |v|
           v = v.deep_symbolize_keys
           View.new(
             database_name: @database_name,
@@ -99,8 +97,7 @@ module Carto
                 AND n.nspname = '#{schema}'
                 AND rolname = '#{owner_role}'
         }
-        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
-        query_result.map do |f|
+        execute_query(@conn, query).map do |f|
           f = f.deep_symbolize_keys
           Function.new(
             database_name: @database_name,
@@ -112,15 +109,17 @@ module Carto
       end
 
       def roles
-        query = "SELECT usename from pg_user"
-        query_result = activerecord_connection?(@conn) ? @conn.select_all(query) : @conn[query].all
-        query_result.map do |r|
+        execute_query(@conn, "SELECT usename from pg_user").map do |r|
           r = r.deep_symbolize_keys
           Role.new(database_name: @database_name, name: r[:usename])
         end
       end
 
       private
+
+      def execute_query(conn, query)
+        activerecord_connection?(conn) ? conn.select_all(query) : conn[query].all
+      end
 
       def activerecord_connection?(conn)
         ## Right now we have two kind of connections from Sequel and from AR

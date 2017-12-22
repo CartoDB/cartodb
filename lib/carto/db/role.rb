@@ -8,7 +8,7 @@ module Carto
       def initialize(database_name:, name:)
         @database_name = database_name
         @name = name
-        @id = extract_id
+        @id = extract_id(name)
       end
 
       def ==(other)
@@ -22,17 +22,17 @@ module Carto
         return "cartodb_staging_user_" if Rails.env.staging?
       end
 
-      def carto_db_role
+      def carto_db_role?
         name.match(/#{Regexp.quote(Carto::Db::Role.db_username_prefix)}/)
       end
 
-      def system_db_role
+      def system_db_role?
         CartoDB::SYSTEM_DB_USERS.include?(name)
       end
 
       private
 
-      def extract_id
+      def extract_id(name)
         id_data = name.split(Carto::Db::Role.db_username_prefix)
         # Return id exists else we return nil
         id_data.size > 1 ? id_data[1] : nil

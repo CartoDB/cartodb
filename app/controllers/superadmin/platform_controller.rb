@@ -21,7 +21,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
       users_in_database = ::User.where(database_host: h).count
       dbs[h] = { count: users_in_database, total_account_types_percentages: {}, total_account_types_count: {} }
       total_account_types.each do |a|
-        if users_in_database && users_in_database > 0
+        if users_in_database.to_i > 0
           percentage = (a[:count] * 100) / users_in_database
           dbs[h][:total_account_types_percentages][a[:account_type]] = percentage
           dbs[h][:total_account_types_count][a[:account_type]] = a[:count]
@@ -34,9 +34,11 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   def database_validation
     Carto::Db::Connection.connect(params[:database_host], 'postgres', as: :cluster_admin) do |database, _|
       db_users = database.roles
-      non_carto_users = db_users.select { |r| !r.system_db_role && !r.carto_db_role }
-      carto_users = db_users.select(&:carto_db_role)
-      connected_users = check_for_users_in_database(carto_users, params[:database_host])
+      non_carto_users = db_users.select { |r| !r.system_db_role? && !r.carto_db_role? }
+      carto_users = db_users.select(&:carto_db_role?)
+      connected_users = Carto::User.where(database_host: params[:database_host])
+                                   .where(id: carto_users.map(&:id))
+                                   .pluck(:username)
       return render json: { db_users: non_carto_users, carto_users: connected_users }
     end
   end
@@ -78,11 +80,6 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   end
 
   private
-
-  def check_for_users_in_database(db_users, db_host)
-    user_ids = db_users.map(&:id)
-    Carto::User.where(database_host: db_host).where(id: user_ids).all.map(&:username)
-  end
 
   def check_for_database_host
     if !params[:database_host]

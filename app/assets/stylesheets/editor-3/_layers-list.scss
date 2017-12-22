@@ -67,10 +67,6 @@
       z-index: -1;
     }
 
-    &:first-child {
-      margin-top: 1px;
-    }
-
     &:hover {
       @include regularBorder();
       cursor: default;
@@ -325,6 +321,13 @@
   margin-left: -1px;
   border-top-left-radius: $halfBaseSize;
   border-bottom-left-radius: $halfBaseSize;
+}
+
+.Editor-ListAnalysis-itemInfoTitle {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
 }
 
 .Editor-ListAnalysis-itemInfoDataset {

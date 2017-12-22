@@ -1,6 +1,19 @@
-<div class="u-flex">
-  <span class="CDB-SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace u-upperCase" style="background-color: <%- color %>;"><%- layer_id %></span>
-  <p class="CDB-Text CDB-Size-medium u-ellipsis u-flex" title="<%- nodeTitle %> - <%- layerName %>">
-    <%- nodeTitle %> <span class="u-altTextColor u-lSpace u-ellipsis"><%- layerName %></span>
-  </p>
+<div class="u-flex u-alignCenter">
+  <span class="CDB-Text CDB-Size-small is-semibold u-bSpace--s u-upperCase" style="color: <%- color %>;">
+    <%- layer_id %>
+  </span>
+
+  <% if (!isSourceType) { %>
+    <span class="CDB-Text CDB-Size-small u-lSpace--s u-flex" style="color: <%- color %>;">
+      <i class="CDB-IconFont CDB-Size-small CDB-IconFont-ray"></i>
+    </span>
+  <% } %>
+
+  <span class="CDB-Text CDB-Size-medium u-lSpace">
+    <%= nodeTitle %>
+  </span>
+
+  <span class="CDB-Text CDB-Size-medium u-altTextColor u-ellipsis u-lSpace" title="<%= layerName %>">
+    <%= layerName %>
+  </span>
 </div>

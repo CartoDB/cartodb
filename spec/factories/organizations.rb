@@ -52,7 +52,7 @@ FactoryGirl.define do
           assertion_consumer_service_url: 'https://localhost.lan/saml/finalize',
           name_identifier_format: '',
           email_attribute: 'username'
-        }
+        }.stringify_keys
       end
     end
   end

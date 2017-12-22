@@ -362,7 +362,6 @@ module.exports = function (grunt) {
   grunt.registerTask('dev', [
     'npm-carto-node',
     'pre',
-    'npm-build-static',
     'npm-start'
   ]);
 

@@ -7,11 +7,12 @@ module Carto
 
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
-      def initialize(user, fetch_groups: false, current_viewer: nil, fetch_db_size: true)
+      def initialize(user, fetch_groups: false, current_viewer: nil, fetch_db_size: true, fetch_basemaps: false)
         @user = user
         @fetch_groups = fetch_groups
         @current_viewer = current_viewer
         @fetch_db_size = fetch_db_size
+        @fetch_basemaps = fetch_basemaps
       end
 
       def to_poro
@@ -32,6 +33,7 @@ module Carto
           disqus_shortname:           @user.disqus_shortname,
           available_for_hire:         @user.available_for_hire,
           base_url:                   @user.public_url,
+          google_maps_query_string:   @user.google_maps_query_string,
           quota_in_bytes:             @user.quota_in_bytes,
           table_count:                @user.table_count,
           viewer:                     @user.viewer?,
@@ -45,6 +47,8 @@ module Carto
         if fetch_groups
           poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
+
+        poro[:basemaps] = @user.basemaps if fetch_basemaps
 
         poro[:db_size_in_bytes] = @user.db_size_in_bytes if fetch_db_size
 
@@ -70,6 +74,7 @@ module Carto
           last_name:        @user.last_name,
           avatar_url:       @user.avatar_url,
           base_url:         @user.public_url,
+          google_maps_query_string: @user.google_maps_query_string,
           disqus_shortname: @user.disqus_shortname,
           viewer:           @user.viewer?,
           org_admin:        @user.organization_admin?,
@@ -241,7 +246,7 @@ module Carto
 
       private
 
-      attr_reader :current_viewer, :current_user, :fetch_groups, :fetch_db_size
+      attr_reader :current_viewer, :current_user, :fetch_groups, :fetch_db_size, :fetch_basemaps
 
       def failed_import_count
         Carto::DataImport.where(user_id: @user.id, state: 'failure').count

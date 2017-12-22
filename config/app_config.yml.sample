@@ -712,6 +712,8 @@ test:
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
     body: ""
+  session_domain:     '.localhost.lan'
+  subdomainless_urls: false
 
 staging:
   <<: *defaults

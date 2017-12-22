@@ -1,10 +1,8 @@
-@import 'cdb-utilities/mixins';
-
 .Tab-pane,
 .Tab-paneContent {
-  @include display-flex();
-  @include flex(1 1 auto);
-  @include flex-direction(column);
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   min-height: 0;
 }
 
@@ -16,4 +14,9 @@
 .Tab-paneLabelImage {
   width: auto;
   height: 16px;
+}
+
+.Tab-paneContentInner {
+  display: flex;
+  flex: 1 1 auto;
 }

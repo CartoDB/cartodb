@@ -360,6 +360,7 @@ module.exports = function (grunt) {
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
+  registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
 
   /**
    * `grunt dev`
@@ -369,6 +370,14 @@ module.exports = function (grunt) {
     'npm-carto-node',
     'pre',
     'npm-start'
+  ]);
+
+  grunt.registerTask('dashboard', [
+    'clean',
+    'js_dashboard',
+    'css',
+    'manifest',
+    'npm-dashboard'
   ]);
 
   grunt.registerTask('default', [
@@ -418,7 +427,7 @@ module.exports = function (grunt) {
     requireWebpackTask().affected.call(this, option, grunt);
   });
 
-  grunt.registerTask('dashboard', 'Generate only dashboard specs', function (option) {
+  grunt.registerTask('generate_dashboard_specs', 'Generate only dashboard specs', function (option) {
     requireWebpackTask().dashboard.call(this, option, grunt);
   });
 
@@ -475,7 +484,7 @@ module.exports = function (grunt) {
     'connect:test',
     'beforeDefault',
     'js_dashboard',
-    'dashboard',
+    'generate_dashboard_specs',
     'bootstrap_webpack_dashboard_specs',
     'webpack:dashboard_specs',
     'jasmine:dashboard',

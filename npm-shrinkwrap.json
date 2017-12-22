@@ -393,9 +393,9 @@
       "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
     },
     "cartodb-deep-insights.js": {
-      "version": "0.4.30",
-      "from": "cartodb/deep-insights.js#fix-iconfont",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#feec908f6fc9324ec07b1f0025f5cb8d6f832b6f",
+      "version": "0.4.31",
+      "from": "cartodb/deep-insights.js#v0.4.31",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f3fa2eeb33289b6a35b6d1b4ada3ead672e384e8",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

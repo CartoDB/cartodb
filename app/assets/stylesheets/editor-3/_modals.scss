@@ -101,6 +101,7 @@
       border-radius: 4px;
       content: '';
       z-index: 10000;
+      pointer-events: none;
     }
   }
 
@@ -127,6 +128,7 @@
       border-radius: 4px;
       content: '';
       z-index: 10000;
+      pointer-events: none;
     }
   }
 

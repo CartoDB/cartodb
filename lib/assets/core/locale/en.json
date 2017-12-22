@@ -961,6 +961,7 @@
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}.",
         "geometry-types": {
           "point": "points",
+          "polygon": "polygons",
           "polygon,point": "points or polygons"
         },
         "unknown-geometry-type": "unknown",

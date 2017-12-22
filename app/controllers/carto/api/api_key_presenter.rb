@@ -15,12 +15,12 @@ module Carto
             apis: @api_key_grants.granted_apis
           },
           {
-            'type' => 'database',
-            'tables' => @api_key_grants.table_permissions.map do |p|
+            type: 'database',
+            tables: @api_key_grants.table_permissions.map do |p|
               {
-                'schema' => p.schema,
-                'name' => p.name,
-                'permissions' => p.permissions
+                schema: p.schema,
+                name: p.name,
+                permissions: p.permissions
               }
             end
           }

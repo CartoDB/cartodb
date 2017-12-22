@@ -119,7 +119,7 @@ module.exports = CartoError;
  *   console.error(error.message);
  * });
  * 
- * @typedef CartoError
+ * @typedef {object} CartoError
  * @property {string} message - A short error description
  * @property {string} name - The name of the error "CartoError"
  * @property {string} origin - Where the error was originated: 'windshaft' | 'ajax' | 'validation'

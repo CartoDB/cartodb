@@ -28,7 +28,7 @@ module Carto
 
     def <<(permission)
       permission = permission.downcase
-      @permissions << permission if ALLOWED_PERMISSIONS.include? && !@permissions.include?(permission)
+      @permissions << permission if ALLOWED_PERMISSIONS.include?(permission) && !@permissions.include?(permission)
     end
 
     def write?

@@ -25,7 +25,7 @@ end
 class CartoJsonSymbolizerValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     if value && !(value.is_a?(Hash) || value.is_a?(Array))
-      !(value.is_a?(Hash) || value.is_a?(Array))
+      record.errors[attribute] << 'wrongly formatted (not a Hash or invalid JSON)'
     end
   end
 end

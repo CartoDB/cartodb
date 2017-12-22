@@ -106,6 +106,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix grammar errors in analysis description (#13258)
+* Fix hubspot dependency for static views (#13261)
 * Fix icons not showing (#13276)
 * Redesign add buttons (#13215)
 * Onboarding: center bounding box automatically when new datasets are added (#13245)

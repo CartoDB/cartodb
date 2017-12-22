@@ -22,16 +22,16 @@ module Carto
 
           configuration = get_db_configuration_for(db_host, db_name, options)
 
-          connection = $pool.fetch(configuration) do
+          conn = $pool.fetch(configuration) do
             get_database(options, configuration)
           end
 
-          database = Carto::Db::Database.new(db_host, connection)
+          database = Carto::Db::Database.new(db_host, conn)
 
           if block_given?
-            yield(database, connection)
+            yield(database, conn)
           else
-            return database, connection
+            return database, conn
           end
         ensure
           if options[:statement_timeout]
@@ -67,14 +67,6 @@ module Carto
 
         def get_connection_name(kind = :carto_db_connection)
           kind.to_s
-        end
-
-        def connection(options = {})
-          configuration = get_db_configuration_for(options[:as])
-
-          $pool.fetch(configuration) do
-            get_database(options, configuration)
-          end
         end
 
         def get_db_configuration_for(db_host, db_name, options)

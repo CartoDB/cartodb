@@ -18,8 +18,8 @@ class Carto::ApiKey < ActiveRecord::Base
   before_create :create_db_config
 
   before_validation :serialize_grants
-  serialize :grants_json, Carto::CartoJsonSymbolizerSerializer
-  validates :grants_json, carto_json_symbolizer: true
+  serialize :grants, Carto::CartoJsonSymbolizerSerializer
+  validates :grants, carto_json_symbolizer: true
 
   serialize :affected_schemas, Carto::CartoJsonSymbolizerSerializer
   validates :affected_schemas, carto_json_symbolizer: true
@@ -33,8 +33,8 @@ class Carto::ApiKey < ActiveRecord::Base
 
   attr_writer :redis_client
 
-  def grants
-    @grants ||= ::Carto::ApiKeyGrants.new(grants_json)
+  def api_key_grants
+    @api_key_grants ||= ::Carto::ApiKeyGrants.new(grants)
   end
 
   private
@@ -64,7 +64,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
     read_schemas = []
     write_schemas = []
-    grants.table_permissions.each do |tp|
+    api_key_grants.table_permissions.each do |tp|
       read_schemas << tp.schema unless read_schemas.include?(tp.schema)
       write_schemas << tp.schema unless write_schemas.include?(tp.schema) || !tp.write?
       connection.run(
@@ -83,7 +83,7 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def serialize_grants
-    self.grants_json = grants.to_json
+    self.grants = api_key_grants.to_json
   end
 
   def add_to_redis
@@ -97,7 +97,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
   def redis_hash_as_array
     hash = ['user', user.username, 'type', type, 'dbRole', db_role, 'dbPassword', db_password]
-    grants.granted_apis.each { |api| hash += ["grants_#{api}", true] }
+    api_key_grants.granted_apis.each { |api| hash += ["grants_#{api}", true] }
     hash
   end
 

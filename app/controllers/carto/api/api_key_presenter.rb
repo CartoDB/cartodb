@@ -35,7 +35,7 @@ module Carto
 
       def to_poro
         return {} unless @api_key
-        grants_presenter = ApiKeyGrantsPresenter.new(@api_key.grants)
+        grants_presenter = ApiKeyGrantsPresenter.new(@api_key.api_key_grants)
         {
           id: @api_key.id,
           user: { username: @api_key.user.username },

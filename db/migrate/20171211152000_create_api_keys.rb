@@ -12,7 +12,7 @@ migration(
       String      :name, null: false
       String      :db_role, null: false
       String      :db_password, null: false
-      String      :grants_json, type: 'json'
+      String      :grants, type: 'json'
       String      :affected_schemas, type: 'json'
       DateTime    :created_at, null: false
       DateTime    :updated_at, null: false

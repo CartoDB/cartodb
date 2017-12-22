@@ -69,12 +69,12 @@ module Carto
       @table_permissions = {}
       type = grant[:type]
       case type
-        when 'apis'
-          @granted_apis += generate_apis_grant(grant[:apis])
-        when 'database'
-          process_database_grant(grant[:tables])
-        else
-          raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
+      when 'apis'
+        @granted_apis += generate_apis_grant(grant[:apis])
+      when 'database'
+        process_database_grant(grant[:tables])
+      else
+        raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
       end
     end
 

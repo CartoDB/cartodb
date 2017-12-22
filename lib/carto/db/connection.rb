@@ -15,7 +15,9 @@ module Carto
         def connect(db_host, db_name, options = {})
           validate_options(options)
           if options[:statement_timeout]
-            connect.execute(%{ SET statement_timeout TO #{options[:statement_timeout]} })
+            filtered_options = options.reject { |k, _| k == :statement_timeout }
+            _, conn = connect(db_host, db_name, filtered_options)
+            conn.execute(%{ SET statement_timeout TO #{options[:statement_timeout]} })
           end
 
           configuration = get_db_configuration_for(db_host, db_name, options)
@@ -33,7 +35,9 @@ module Carto
           end
         ensure
           if options[:statement_timeout]
-            connect.execute(%{ SET statement_timeout TO DEFAULT })
+            filtered_options = options.reject { |k, _| k == :statement_timeout }
+            _, conn = connect(db_host, db_name, filtered_options)
+            conn.execute(%{ SET statement_timeout TO DEFAULT })
           end
         end
 

@@ -13,7 +13,7 @@ module Carto
       @permissions = permissions
     end
 
-    def to_hash
+    def to_json
       {
         'schema' => @schema,
         'name' => @name,
@@ -41,11 +41,7 @@ module Carto
 
     attr_reader :granted_apis
 
-    def initialize(grants_json)
-      grants_json ||= []
-      grants_json = JSON.parse(grants_json, symbolize_names: true) unless grants_json.is_a?(Array)
-      @granted_apis = []
-      @table_permissions = {}
+    def initialize(grants_json = [])
       grants_json.each { |grant| process_grant(grant) }
     end
 
@@ -53,44 +49,41 @@ module Carto
       @table_permissions.values
     end
 
-    def to_hash
-      [granted_apis_hash, table_permissions_hash]
+    def to_json
+      [
+        {
+          type: 'apis',
+          apis: granted_apis
+        },
+        {
+          type: 'database',
+          tables: @table_permissions.values.map(&:to_json)
+        }
+      ]
     end
 
     private
 
     def process_grant(grant)
+      @granted_apis = []
+      @table_permissions = {}
       type = grant[:type]
       case type
         when 'apis'
-          process_apis_grant(grant)
+          @granted_apis += generate_apis_grant(grant[:apis])
         when 'database'
-          process_database_grant(grant)
+          process_database_grant(grant[:tables])
         else
           raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
       end
     end
 
-    def granted_apis_hash
-      {
-        type: 'apis',
-        apis: granted_apis
-      }
-    end
-
-    def table_permissions_hash
-      {
-        type: 'database',
-        tables: @table_permissions.values.map(&:to_hash)
-      }
-    end
-
-    def process_apis_grant(grant)
-      @granted_apis += grant[:apis].select { |api| ALLOWED_APIS.include?(api.downcase) }
+    def generate_apis_grant(grant)
+      grant.select { |api| ALLOWED_APIS.include?(api.downcase) }
     end
 
     def process_database_grant(grant)
-      grant[:tables].each do |table|
+      grant.each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
         permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table[:schema], name: table[:name])
         permissions + table[:permissions]

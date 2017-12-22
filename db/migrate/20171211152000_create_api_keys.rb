@@ -9,11 +9,11 @@ migration(
       String      :token, null: false
       foreign_key :user_id, :users, type: :uuid, on_delete: :cascade, null: false
       String      :type, null: false
-      String      :name
+      String      :name, null: false
       String      :db_role, null: false
       String      :db_password, null: false
       String      :grants_json, type: 'json'
-      String      :affected_schemas_json, type: 'json'
+      String      :affected_schemas, type: 'json'
       DateTime    :created_at, null: false
       DateTime    :updated_at, null: false
     end
@@ -21,6 +21,7 @@ migration(
     alter_table :api_keys do
       add_index :token, unique: true
       add_index :db_role, unique: true
+      add_index :user_id
     end
   end,
   Proc.new do

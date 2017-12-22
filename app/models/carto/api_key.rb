@@ -21,8 +21,10 @@ class Carto::ApiKey < ActiveRecord::Base
   serialize :grants_json, Carto::CartoJsonSymbolizerSerializer
   validates :grants_json, carto_json_symbolizer: true
 
-  serialize :affected_schemas_json, Carto::CartoJsonSymbolizerSerializer
-  validates :affected_schemas_json, carto_json_symbolizer: true
+  serialize :affected_schemas, Carto::CartoJsonSymbolizerSerializer
+  validates :affected_schemas, carto_json_symbolizer: true
+
+  validates :name, presence: true
 
   after_save :add_to_redis
   after_save :update_role_permissions
@@ -77,11 +79,11 @@ class Carto::ApiKey < ActiveRecord::Base
       grant_usage_for_cartodb
     end
 
-    update_column(:affected_schemas_json, (write_schemas + read_schemas).uniq.to_json)
+    update_column(:affected_schemas, (write_schemas + read_schemas).uniq.to_json)
   end
 
   def serialize_grants
-    self.grants_json = grants.to_hash
+    self.grants_json = grants.to_json
   end
 
   def add_to_redis
@@ -103,11 +105,8 @@ class Carto::ApiKey < ActiveRecord::Base
     @redis_client ||= $users_metadata
   end
 
-  def affected_schemas
-    affected_schemas_json || []
-  end
-
   def revoke_privileges
+    affected_schemas ||= []
     affected_schemas.each do |schema|
       connection.run(
         "revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\""

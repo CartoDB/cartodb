@@ -21,14 +21,9 @@ module Carto
       }
     end
 
-    def +(permissions)
+    def merge!(permissions)
       permissions = permissions.map { |p| p.downcase if ALLOWED_PERMISSIONS.include?(p.downcase) }
       @permissions += permissions.reject { |p| @permissions.include?(p) }
-    end
-
-    def <<(permission)
-      permission = permission.downcase
-      @permissions << permission if ALLOWED_PERMISSIONS.include?(permission) && !@permissions.include?(permission)
     end
 
     def write?
@@ -86,7 +81,7 @@ module Carto
       grant.each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
         permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table[:schema], name: table[:name])
-        permissions + table[:permissions]
+        permissions.merge!(table[:permissions])
       end
     end
   end

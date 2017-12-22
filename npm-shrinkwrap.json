@@ -394,8 +394,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.4.30",
-      "from": "cartodb/deep-insights.js#v0.4.30",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#9017e01934d16f1c71f60c8cd0205ef65227015f",
+      "from": "cartodb/deep-insights.js#fix-iconfont",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#feec908f6fc9324ec07b1f0025f5cb8d6f832b6f",
       "dependencies": {
         "node-polyglot": {
           "version": "2.2.2",

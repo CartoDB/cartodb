@@ -15,6 +15,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   private
+
   def check_feature_flag
     render_404 unless current_user.try(:has_feature_flag?, 'auth_api')
   end

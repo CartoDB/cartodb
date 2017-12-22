@@ -38,7 +38,7 @@ module Carto
         grants_presenter = ApiKeyGrantsPresenter.new(@api_key.grants)
         {
           id: @api_key.id,
-          user: {username: @api_key.user.username},
+          user: { username: @api_key.user.username },
           type: @api_key.type,
           token: @api_key.token,
           grants: grants_presenter.to_poro,

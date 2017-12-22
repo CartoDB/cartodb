@@ -43,7 +43,7 @@ module Carto
 
     def initialize(grants_json)
       grants_json ||= []
-      grants_json = JSON.parse(grants_json) unless grants_json.is_a?(Array)
+      grants_json = JSON.parse(grants_json, symbolize_names: true) unless grants_json.is_a?(Array)
       @granted_apis = []
       @table_permissions = {}
       grants_json.each { |grant| process_grant(grant) }
@@ -60,7 +60,7 @@ module Carto
     private
 
     def process_grant(grant)
-      type = grant['type']
+      type = grant[:type]
       case type
         when 'apis'
           process_apis_grant(grant)
@@ -73,27 +73,27 @@ module Carto
 
     def granted_apis_hash
       {
-        'type' => 'apis',
-        'apis' => granted_apis
+        type: 'apis',
+        apis: granted_apis
       }
     end
 
     def table_permissions_hash
       {
-        'type' => 'database',
-        'tables' => @table_permissions.values.map(&:to_hash)
+        type: 'database',
+        tables: @table_permissions.values.map(&:to_hash)
       }
     end
 
     def process_apis_grant(grant)
-      @granted_apis += grant['apis'].select { |api| ALLOWED_APIS.include?(api.downcase) }
+      @granted_apis += grant[:apis].select { |api| ALLOWED_APIS.include?(api.downcase) }
     end
 
     def process_database_grant(grant)
-      grant['tables'].each do |table|
-        table_id = "#{table['schema']}.#{table['name']}"
-        permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table['schema'], name: table['name'])
-        permissions + table['permissions']
+      grant[:tables].each do |table|
+        table_id = "#{table[:schema]}.#{table[:name]}"
+        permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table[:schema], name: table[:name])
+        permissions + table[:permissions]
       end
     end
   end

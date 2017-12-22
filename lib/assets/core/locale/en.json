@@ -958,7 +958,11 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}.",
+        "geometry-types": {
+          "point": "points",
+          "polygon,point": "points or polygons"
+        },
         "unknown-geometry-type": "unknown",
         "more-info": "More info",
         "option-types": {
@@ -1490,7 +1494,6 @@
     "published": "Published %{when}",
     "unpublished": "Unpublished map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
-    "button_add": "Add",
     "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
@@ -1633,6 +1636,10 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "add-layer": {
+        "label": "Add new layer",
+        "tooltip": "Add new layer to your map"
+      },
       "breadcrumb": {
         "layer-options": "Layer options",
         "basemap-options": "Basemap options"
@@ -1940,7 +1947,12 @@
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
-        "placeholder-text": "You have not added any analysis yet. Add an analysis to discover new things.",
+        "placeholder-text": "Analysis allow you to build reproducible workflows for analyzing and explaining your data.",
+        "add-analysis": {
+          "label": "Add new analysis",
+          "tooltip": "Add a new node to your analysis workflow"
+        },
+        "edit-analysis-tooltip": "Edit Analysis",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
@@ -2500,6 +2512,10 @@
       }
     },
     "widgets": {
+      "add-widget": {
+        "label": "Add new widget",
+        "tooltip": "Add new widget to your map"
+      },
       "breadcrumb": {
         "widget-options": "Widget options"
       },

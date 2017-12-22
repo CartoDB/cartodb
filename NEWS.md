@@ -106,6 +106,10 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Fix grammar errors in analysis description (#13258)
+* Fix hubspot dependency for static views (#13261)
+* Fix icons not showing (#13276)
+* Redesign add buttons (#13215)
 * Onboarding: center bounding box automatically when new datasets are added (#13245)
 * Stop building static pages on dev (#13188)
 * Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)
@@ -348,6 +352,7 @@ ion for time-series (#12670)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
+* Make new widgets appear on top (#13244)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 
 ### Internals

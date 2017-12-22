@@ -8,7 +8,8 @@ var AGGREGATION_DATA = {
   week: { unit: 'day', factor: 7 },
   month: { unit: 'month', factor: 1 },
   quarter: { unit: 'month', factor: 3 },
-  year: { unit: 'month', factor: 12 }
+  year: { unit: 'month', factor: 12 },
+  decade: { unit: 'month', factor: 120 }
 };
 
 var helper = {};

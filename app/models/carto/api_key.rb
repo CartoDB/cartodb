@@ -54,7 +54,7 @@ class Carto::ApiKey < ActiveRecord::Base
       self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
     end while self.class.exists?(db_role: db_role)
     self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
-    connection.run(
+    user_db_connection.run(
       "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
     )
   end
@@ -68,7 +68,7 @@ class Carto::ApiKey < ActiveRecord::Base
       read_schemas << tp.schema unless read_schemas.include?(tp.schema)
       write_schemas << tp.schema unless write_schemas.include?(tp.schema) || !tp.write?
       unless tp.permissions.empty?
-        connection.run(
+        user_db_connection.run(
           "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
         )
       end
@@ -93,8 +93,8 @@ class Carto::ApiKey < ActiveRecord::Base
     redis_client.hmset(redis_key, redis_hash_as_array)
   end
 
-  def connection
-    @connection ||= ::User[user.id].in_database(as: :superuser)
+  def user_db_connection
+    @user_db_connection ||= ::User[user.id].in_database(as: :superuser)
   end
 
   def redis_hash_as_array
@@ -110,33 +110,33 @@ class Carto::ApiKey < ActiveRecord::Base
   def revoke_privileges
     affected_schemas ||= []
     affected_schemas.each do |schema|
-      connection.run(
+      user_db_connection.run(
         "revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\""
       )
-      connection.run(
+      user_db_connection.run(
         "revoke usage on schema \"#{schema}\" from \"#{db_role}\""
       )
-      connection.run(
+      user_db_connection.run(
         "revoke execute on all functions in schema \"#{schema}\" from \"#{db_role}\""
       )
-      connection.run(
+      user_db_connection.run(
         "revoke usage, select on all sequences in schema \"#{schema}\" from \"#{db_role}\""
       )
     end
-    connection.run("revoke usage on schema \"cartodb\" from \"#{db_role}\"")
-    connection.run("revoke execute on all functions in schema \"cartodb\" from \"#{db_role}\"")
+    user_db_connection.run("revoke usage on schema \"cartodb\" from \"#{db_role}\"")
+    user_db_connection.run("revoke execute on all functions in schema \"cartodb\" from \"#{db_role}\"")
   end
 
   def grant_usage_for_cartodb
-    connection.run("grant usage on schema \"cartodb\" to \"#{db_role}\"")
-    connection.run("grant execute on all functions in schema \"cartodb\" to \"#{db_role}\"")
+    user_db_connection.run("grant usage on schema \"cartodb\" to \"#{db_role}\"")
+    user_db_connection.run("grant execute on all functions in schema \"cartodb\" to \"#{db_role}\"")
   end
 
   def grant_aux_write_privileges_for_schema(s)
-    connection.run("grant usage on schema \"#{s}\" to \"#{db_role}\"")
-    connection.run("grant execute on all functions in schema \"#{s}\" to \"#{db_role}\"")
-    connection.run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
-    connection.run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
-    connection.run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
+    user_db_connection.run("grant usage on schema \"#{s}\" to \"#{db_role}\"")
+    user_db_connection.run("grant execute on all functions in schema \"#{s}\" to \"#{db_role}\"")
+    user_db_connection.run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
+    user_db_connection.run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
+    user_db_connection.run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
   end
 end

@@ -23,10 +23,11 @@ class Carto::ApiKey < ActiveRecord::Base
 
   validates :name, presence: true
 
+  after_create :setup_db_role
   after_save :add_to_redis
   after_save :update_role_permissions
 
-  after_destroy :destroy_db_config
+  after_destroy :drop_db_role
   after_destroy :remove_from_redis
 
   validates :type, inclusion: { in: VALID_TYPES }
@@ -54,12 +55,15 @@ class Carto::ApiKey < ActiveRecord::Base
       self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
     end while self.class.exists?(db_role: db_role)
     self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+  end
+
+  def setup_db_role
     user_db_connection.run(
       "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
     )
   end
 
-  def destroy_db_config
+  def drop_db_role
     revoke_privileges(*affected_schemas(api_key_grants))
     user_db_connection.run("drop role \"#{db_role}\"")
   end

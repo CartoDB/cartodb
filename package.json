@@ -26,7 +26,7 @@
     "carto-zera": "1.0.1",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.9",
+    "cartodb.js": "CartoDB/cartodb.js#fallback-reference",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "d3-interpolate": "^1.1.6",

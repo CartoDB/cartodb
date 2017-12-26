@@ -17,8 +17,6 @@ class Carto::ApiKey < ActiveRecord::Base
   before_create :create_token
   before_create :create_db_config
 
-  after_destroy :destroy_db_config
-
   before_validation :serialize_grants
   serialize :grants, Carto::CartoJsonSymbolizerSerializer
   validates :grants, carto_json_symbolizer: true, json_schema: true
@@ -27,6 +25,9 @@ class Carto::ApiKey < ActiveRecord::Base
 
   after_save :add_to_redis
   after_save :update_role_permissions
+
+  after_destroy :destroy_db_config
+  after_destroy :remove_from_redis
 
   validates :type, inclusion: { in: VALID_TYPES }
 
@@ -96,9 +97,16 @@ class Carto::ApiKey < ActiveRecord::Base
     self.grants = api_key_grants.to_json
   end
 
+  def redis_key
+    "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
+  end
+
   def add_to_redis
-    redis_key = "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
     redis_client.hmset(redis_key, redis_hash_as_array)
+  end
+
+  def remove_from_redis
+    redis_client.del(redis_key)
   end
 
   def user_db_connection

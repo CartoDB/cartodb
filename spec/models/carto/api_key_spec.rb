@@ -96,5 +96,16 @@ describe Carto::ApiKey do
         db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 0
       end
     end
+
+    it 'removes the role from Redis' do
+      api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
+                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name)])
+
+      $users_metadata.hgetall(api_key.send(:redis_key)).should_not be_empty
+
+      api_key.destroy
+
+      $users_metadata.hgetall(api_key.send(:redis_key)).should be_empty
+    end
   end
 end

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.122.stylelint",
+  "version": "4.10.147.stylelint.01",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -23,11 +23,11 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
-    "carto-zera": "^1.0.0",
+    "carto-zera": "1.0.1",
     "cartocolor": "4.0.0",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#v0.4.23",
+    "cartodb-deep-insights.js": "git://github.com/CartoDB/deep-insights.js#v0.4.34",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.1",
+    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.9",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "html-webpack-plugin": "^2.30.1",
@@ -42,7 +42,8 @@
     "tangram": "cartodb/tangram#master",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
-    "webpack": "2.3.2"
+    "webpack": "2.3.2",
+    "whatwg-fetch": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",

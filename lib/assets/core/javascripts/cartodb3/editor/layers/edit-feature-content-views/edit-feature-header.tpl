@@ -7,7 +7,10 @@
     </button>
   </li>
 
-  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium"><span class="Editor-breadcrumbSep"> / </span> <%- _t('editor.edit-feature.edit', { featureType: featureType }) %></li>
+  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium">
+    <span class="Editor-breadcrumbSep"> / </span>
+    <%- breadcrumbLabel %>
+  </li>
 </ul>
 
 <div class="Editor-HeaderInfoEditor Editor-HeaderInfoEditor--layer">
@@ -16,6 +19,7 @@
       <span class="CDB-SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-tSpace--m u-rSpace--m u-upperCase" style="background-color: <%- bgColor %>;">
         <%- letter %>
       </span>
+
       <h2 class="Inline-editor">
         <div class="CDB-Text CDB-Size-huge is-light u-ellipsis">
           <%- layerName %>
@@ -25,8 +29,8 @@
 
     <div class="Editor-HeaderInfo-source u-flex">
       <p class="CDB-Text CDB-Size-small u-ellipsis">
-        <span class="CDB-Text is-semibold u-rSpace--s u-upperCase" style="color: <%- bgColor %>;"><%- source %></span>
         <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
       </p>
     </div>
+  </div>
 </div>

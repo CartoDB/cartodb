@@ -15,7 +15,7 @@ describe Carto::OrganizationMetadataExportService do
     @map, @table, @table_visualization, @visualization = create_full_visualization(@non_owner)
     share_visualization_with_user(@table_visualization, @owner)
 
-    @asset = FactoryGirl.create(:carto_asset, organization: @organization)
+    @asset = FactoryGirl.create(:organization_asset, organization: @organization)
 
     @group = FactoryGirl.create(:carto_group, organization: @organization)
     @group.add_user(@non_owner.username)
@@ -90,6 +90,8 @@ describe Carto::OrganizationMetadataExportService do
         source_users = @organization.users.map(&:attributes)
         source_groups = @organization.groups.map(&:attributes)
         source_group_users = @group.users.map(&:id)
+        source_assets = @organization.assets.map(&:attributes)
+        expect(source_assets).not_to be_empty
         source_notifications = @organization.notifications.map(&:attributes)
         source_received_notifications = @organization.notifications.map { |n|
           [n.id, n.received_notifications.map(&:attributes)]
@@ -98,6 +100,10 @@ describe Carto::OrganizationMetadataExportService do
         # Destroy, keeping the database
         clean_redis
         Table.any_instance.stubs(:remove_table_from_user_database)
+        @organization.notifications.each(&:destroy)
+        @organization.assets.each { |a| a.update_attribute(:storage_info, nil) } # Avoids remote deletion attempt
+        @organization.assets.each(&:delete)
+        @organization.assets.clear
         @organization.users.flat_map(&:visualizations).each(&:destroy)
         @organization.users.each(&:destroy)
         @organization.groups.each(&:destroy)
@@ -120,6 +126,11 @@ describe Carto::OrganizationMetadataExportService do
           compare_excluding_fields(g1.attributes, g2, EXCLUDED_ORG_META_DATE_FIELDS + EXCLUDED_ORG_META_ID_FIELDS)
         end
         expect(imported_organization.groups.first.users.map(&:id)).to eq source_group_users
+
+        expect(imported_organization.assets.length).to eq source_assets.length
+        imported_organization.assets.zip(source_assets).each do |ia, sa|
+          compare_excluding_fields(ia.attributes, sa, EXCLUDED_ASSETS_FIELDS)
+        end
 
         expect(imported_organization.notifications.length).to eq source_notifications.length
         imported_organization.notifications.zip(source_notifications).each do |i_n, s_n|
@@ -148,6 +159,7 @@ describe Carto::OrganizationMetadataExportService do
   EXCLUDED_ORG_META_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
   EXCLUDED_ORG_META_ID_FIELDS = ['id', 'organization_id'].freeze
   EXCLUDED_NOTIFICATIONS_FIELDS = ['id'].freeze
+  EXCLUDED_ASSETS_FIELDS = ['id'].freeze
 
   # DateTime comparisons fail if they're not stringified
   def stringify_fields(hash, fields)

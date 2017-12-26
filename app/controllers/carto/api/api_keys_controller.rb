@@ -8,13 +8,12 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
   def create
-    api_key = Carto::ApiKey.new(
+    api_key = Carto::ApiKey.create!(
       user_id: current_user.id,
       type: Carto::ApiKey::TYPE_REGULAR,
       name: params[:name],
       grants: params[:grants]
     )
-    api_key.save!
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)

@@ -106,6 +106,7 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Nothing else should be interactive when a dropdown is open (#13283)
 * Fix autostyling with category widget (using a numeric field) [Support #611](https://github.com/CartoDB/support/issues/611)
 * Fix grammar errors in analysis description (#13258)
 * Fix hubspot dependency for static views (#13261)

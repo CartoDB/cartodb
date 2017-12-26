@@ -103,6 +103,7 @@
       height: calc(100% - 2px);
       border: 2px solid $cBlueHover;
       border-radius: 4px;
+      pointer-events: none;
     }
   }
 
@@ -129,6 +130,7 @@
       height: calc(100% - 2px);
       border: 2px solid $cMainText;
       border-radius: 4px;
+      pointer-events: none;
     }
   }
 

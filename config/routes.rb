@@ -479,9 +479,6 @@ CartoDB::Application.routes.draw do
 
     # Permissions
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/perm/:id' => 'permissions#update', as: :api_v1_permissions_update
-
-    # Api Keys
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/api_keys' => 'api_keys#create', as: :api_v1_api_keys_create
   end
 
   scope module: 'api/json', defaults: { format: :json } do
@@ -581,6 +578,8 @@ CartoDB::Application.routes.draw do
       end
 
       resource :metrics, only: [:create]
+
+      resource :api_keys, only: [:create]
 
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }

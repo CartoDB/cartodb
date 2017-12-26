@@ -77,5 +77,24 @@ describe Carto::ApiKey do
         result[0]['count'].should eq '0'
       end
     end
+
+    api_key.destroy
+  end
+
+  describe '#destroy' do
+    it 'removes the role from DB' do
+      api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
+                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name)])
+
+      @user1.in_database(as: :superuser) do |db|
+        db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 1
+      end
+
+      api_key.destroy
+
+      @user1.in_database(as: :superuser) do |db|
+        db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 0
+      end
+    end
   end
 end

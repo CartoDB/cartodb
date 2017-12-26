@@ -17,6 +17,8 @@ class Carto::ApiKey < ActiveRecord::Base
   before_create :create_token
   before_create :create_db_config
 
+  after_destroy :destroy_db_config
+
   before_validation :serialize_grants
   serialize :grants, Carto::CartoJsonSymbolizerSerializer
   validates :grants, carto_json_symbolizer: true, json_schema: true
@@ -54,6 +56,11 @@ class Carto::ApiKey < ActiveRecord::Base
     user_db_connection.run(
       "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
     )
+  end
+
+  def destroy_db_config
+    revoke_privileges(*affected_schemas(api_key_grants))
+    user_db_connection.run("drop role \"#{db_role}\"")
   end
 
   def update_role_permissions
@@ -110,7 +117,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
   def revoke_privileges(read_schemas, write_schemas)
     schemas = read_schemas + write_schemas
-    schemas << 'cartodb' if write_schemas.present
+    schemas << 'cartodb' if write_schemas.present?
     schemas.uniq.each do |schema|
       user_db_connection.run(
         "revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\""

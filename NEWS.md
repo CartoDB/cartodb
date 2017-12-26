@@ -355,6 +355,7 @@ ion for time-series (#12670)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make new widgets appear on top (#13244)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
+* Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)

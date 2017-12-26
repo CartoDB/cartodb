@@ -11,7 +11,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
       grants: params[:grants]
     )
     api_key.save!
-    render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro)
+    render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     render_jsonp({ error: true, message: e.message }, 400)
   end

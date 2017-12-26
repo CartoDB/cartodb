@@ -16,7 +16,7 @@
   z-index: 10;
 }
 
-.CDB-Widget-tooltip:after {
+.CDB-Widget-tooltip::after {
   display: inline-block;
   position: absolute;
   bottom: -$baseSize / 2;

@@ -103,19 +103,19 @@
   margin-top: $baseSize;
   border-bottom: 1px solid transparent;
 
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     display: inline-block;
     position: relative;
     margin: 0;
     padding: 0;
     content: '';
   }
-  &:before {
+  &::before {
     width: 100%;
     height: $baseSize;
   }
-  &:after {
+  &::after {
     width: 100%;
     height: $baseSize / 4;
   }
@@ -141,24 +141,24 @@
 }
 .CDB-Widget-listButton--withBorder {
   padding: 7px $sMargin-section;
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     position: absolute;
     right: 24px;
     left: 24px;
     height: 1px;
     content: '';
   }
-  &:before {
+  &::before {
     top: -1px;
   }
-  &:after {
+  &::after {
     bottom: 0;
   }
 }
 .CDB-Widget-listButton--withBorder:hover {
-  &:before,
-  &:after {
+  &::before,
+  &::after {
     right: 0;
     left: 0;
   }

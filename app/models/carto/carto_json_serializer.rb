@@ -29,3 +29,11 @@ class CartoJsonSymbolizerValidator < ActiveModel::EachValidator
     end
   end
 end
+
+class JsonSchemaValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    schema = Carto::Definition.instance.load_from_file("lib/formats/#{record.class.to_s.underscore}/#{attribute}.json")
+    errors = JSON::Validator::fully_validate(schema, value.map(&:with_indifferent_access), strict: true)
+    record.errors[attribute] << errors.join(', ') if errors.any?
+  end
+end

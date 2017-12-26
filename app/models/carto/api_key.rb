@@ -19,7 +19,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
   before_validation :serialize_grants
   serialize :grants, Carto::CartoJsonSymbolizerSerializer
-  validates :grants, carto_json_symbolizer: true
+  validates :grants, carto_json_symbolizer: true, json_schema: true
 
   serialize :affected_schemas, Carto::CartoJsonSymbolizerSerializer
   validates :affected_schemas, carto_json_symbolizer: true

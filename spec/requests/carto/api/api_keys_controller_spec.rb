@@ -1,0 +1,118 @@
+require 'spec_helper_min'
+require 'support/helpers'
+require 'factories/carto_visualizations'
+
+describe Carto::Api::ApiKeysController do
+  include_context 'users helper'
+  before(:all) do
+    @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+  end
+
+  after(:all) do
+    @auth_api_feature_flag.destroy
+  end
+
+  describe '#create' do
+    before(:each) do
+      @table1 = create_table(user_id: @carto_user1.id)
+      @table2 = create_table(user_id: @carto_user1.id)
+    end
+
+    after(:each) do
+      @table2.destroy
+      @table1.destroy
+    end
+
+    def api_key_url(user)
+      api_keys_url(user_domain: user.username, api_key: user.api_key)
+    end
+
+    it 'creates a new API key' do
+      grants = [
+        {
+          "type" => "apis",
+          "apis" => ["sql", "maps"]
+        },
+        {
+          "type" => "database",
+          "tables" => [
+            {
+              "schema" => @carto_user1.database_schema,
+              "name" => @table1.name,
+              "permissions" => [
+                "insert",
+                "select",
+                "update",
+                "delete"
+              ]
+            },
+            {
+              "schema" => @carto_user1.database_schema,
+              "name" => @table2.name,
+              "permissions" => [
+                "select"
+              ]
+            }
+          ]
+        }
+      ]
+      name = 'wadus'
+      payload = {
+        name: name,
+        grants: grants
+      }
+      post_json api_key_url(@carto_user1), payload do |response|
+        response.status.should eq 201
+        api_key_response = response.body
+        api_key_response[:id].should_not be_empty
+        api_key_response[:name].should eq name
+        api_key_response[:user][:username].should eq @carto_user1.username
+        api_key_response[:type].should eq 'regular'
+        api_key_response[:token].should_not be_empty
+        api_key_response[:grants].should eq grants
+        api_key_response[:databaseConfig].should_not be_empty
+        api_key_response[:databaseConfig].should_not be_empty
+        api_key_response[:databaseConfig][:role].should_not be_empty
+        api_key_response[:databaseConfig][:password].should_not be_empty
+
+        Carto::ApiKey.find(api_key_response[:id]).destroy
+      end
+    end
+
+    it 'fails if grants is not a json array' do
+      post_json api_key_url(@carto_user1), name: 'wadus' do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /grants must be a nonempty array/
+      end
+      post_json api_key_url(@carto_user1), name: 'wadus', grants: "something" do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /grants must be a nonempty array/
+      end
+      post_json api_key_url(@carto_user1), name: 'wadus', grants: {} do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /grants must be a nonempty array/
+      end
+    end
+
+    it 'fails if permissions contains not valid entries' do
+      grants = [
+        {
+          'type' => 'database',
+          'tables' => [
+            'schema' => @carto_user1.database_schema,
+            'name' => @table1.name,
+            'permissions' => ['read']
+          ]
+        }
+      ]
+      post_json api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /permissions.*did not match one of the following values: insert, select, update, delete/
+      end
+    end
+  end
+end

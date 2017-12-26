@@ -117,8 +117,8 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Widget-listItem--fake {
     border-color: $loadingBkg;
   }
-  .CDB-Widget-listItem--fake:after,
-  .CDB-Widget-listItem--fake:before {
+  .CDB-Widget-listItem--fake::after,
+  .CDB-Widget-listItem--fake::before {
     background-color: $loadingBkg;
   }
   .CDB-Widget-listButton:hover {
@@ -127,16 +127,16 @@ $timeSliderBorder: rgba(#FFF, 1);
     }
   }
   .CDB-Widget-listButton--withBorder {
-    &:before {
+    &::before {
       background: transparent;
     }
-    &:after {
+    &::after {
       background: $elementBkg;
     }
   }
   .CDB-Widget-listButton--withBorder:hover {
-    &:before,
-    &:after {
+    &::after,
+    &::before {
       background: $elementBkg;
     }
   }
@@ -156,30 +156,30 @@ $timeSliderBorder: rgba(#FFF, 1);
     background: $elementBorder;
   }
 
-  .CDB-Shape-arrow:after,
-  .CDB-Shape-arrow:before {
+  .CDB-Shape-arrow::after,
+  .CDB-Shape-arrow::before {
     background-color: $link;
   }
   .CDB-Shape-arrow:hover {
-    &:after,
-    &:before {
+    &::after,
+    &::before {
       background-color: $linkHover;
     }
   }
 
   .CDB-Shape-lens {
-    &:after {
+    &::after {
       border-color: $link;
     }
-    &:before {
+    &::before {
       background: $link;
     }
   }
   .CDB-Shape-lens:hover {
-    &:after {
+    &::after {
       border-color: $linkHover;
     }
-    &:before {
+    &::before {
       background: $linkHover;
     }
   }
@@ -327,7 +327,7 @@ $timeSliderBorder: rgba(#FFF, 1);
     background: $blackBkg;
     color: $commonBkg;
   }
-  &.CDB-Widget-tooltip:after {
+  &.CDB-Widget-tooltip::after {
     border-top-color: $blackBkg;
   }
 }

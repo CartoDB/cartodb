@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "required": ["color"],
+  "additionalProperties": false,
+  "properties": {
+    "color": {
+      "type": "string",
+      "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$"
+    },
+    "top_label": { "type": "string" },
+    "bottom_label": { "type": "string" }
+  }
+}

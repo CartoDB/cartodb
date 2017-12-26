@@ -1,0 +1,30 @@
+{
+  "command": "ruby -rbundler/setup -r./zeus_plan -eZeus.go",
+
+  "plan": {
+    "boot": {
+      "default_bundle": {
+        "development_environment": {
+          "prerake": {
+            "rake": [],
+            "carto_resque": ["resque"]
+          },
+          "runner": ["r"],
+          "console": ["c"],
+          "server": ["s"],
+          "generate": ["g"],
+          "destroy": ["d"],
+          "dbconsole": ["dbm"],
+          "carto_user_dbconsole": ["dbd"]
+        },
+        "test_environment": {
+          "carto_test": {
+            "test_helper": {
+              "test": ["rspec", "testrb"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

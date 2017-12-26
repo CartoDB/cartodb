@@ -1,0 +1,14 @@
+<header class="Sessions-header">
+  <div class="u-inner">
+    <nav class="Navbar <%= align %>">
+      <div class="Navbar-header">
+        <div class="Navbar-title">
+          <%= render_organization_avatar %>
+        </div>
+        <% if !Cartodb.config[:cartodb_com_hosted].present? && @organization.present? %>
+          <div class="Navbar-text">Not part of <%= @organization.name %>? Go to <a class="Navbar-textLink" href="https://carto.com">carto.com</a></div>
+        <% end %>
+      </div>
+    </nav>
+  </div>
+</header>

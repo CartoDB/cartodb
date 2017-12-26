@@ -1,0 +1,16 @@
+<tr>
+  <td>
+    <% if @trending_visualizations.length > 0 %>
+      <ul style="padding-left: 17px;">
+        <% @trending_visualizations.each do |vis_id, map_data| %>
+          <%- public_url = "#{map_data['user_public_url']}#{CartoDB.path(self, 'public_visualizations_public_map', { id: vis_id })}" %>
+          <li style="margin: 0; font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+            <p style="margin: 8px 0;">Trending map <a href="<%= public_url %>" target="_blank" style="color: #1785FB"><%= map_data["visualization_name"] %></a> by <a href="mailto:<%= map_data["user_mail"] %>" target="_blank" style="color: #1785FB"><%= map_data["user"] %></a> with <strong><%= map_data["mapviews"] %> mapviews</strong>.</p>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p style="font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">No trending maps for today</p>
+    <% end %>
+  </td>
+</tr>

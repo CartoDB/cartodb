@@ -1,0 +1,36 @@
+<% content_for :title do %><%= @organization ? @organization.name : 'User' %> sign up<% end %>
+
+<% content_for :js do %>
+  <%= javascript_include_tag 'cdb.js', 'confirmation_templates.js', 'confirmation.js' %>
+  <script>
+    var user_creation_id = "<%= @user_creation_id %>";
+    var user_name = "<%= @user_name %>";
+    var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+    var user_url = "<%= @redirect_url %>";
+  </script>
+<% end %>
+
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-center Sessions--centered">
+          <div class="Sessions-logoContainer">
+            <picture class="Navbar-brand">
+              <% if @organization.present? %>
+                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+              <% else %>
+                <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+              <% end %>
+            </picture>
+          </div>
+
+          <div class="js-info">
+            <h1 class="Sessions-title u-tspace-m">Your account is being created</h1>
+            <p class="Sessions-description">It will take us some time, just a few seconds.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

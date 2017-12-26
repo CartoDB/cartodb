@@ -1,0 +1,27 @@
+.ApiKeysForm-container,
+.ApiKeysCTA-container {
+  margin-top: 25px;
+}
+.ApiKeysCTA-leftBox {
+  box-sizing: border-box;
+  width: 140px;
+}
+.ApiKeysCTA-rightBox {
+  box-sizing: border-box;
+  width: 440px;
+  padding: 15px;
+  border-radius: 4px;
+  background: #F9F9F9;
+}
+.ApiKeysCTA-list {
+  display: inline-block;
+  width: 100%;
+}
+.ApiKeysCTA-listItem {
+  min-width: 200px;
+  margin-top: 16px;
+  float: left;
+}
+.ApiKeysCTA-listIcon {
+  color: #9BC63B;
+}

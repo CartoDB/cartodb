@@ -1,0 +1,44 @@
+<% if @total_tables == 1 %>
+  <% if @errors.nil? %>
+    <%- message = "<p>Your dataset <strong>#{@dataset_name}</strong> was successfully imported</p>" %>
+  <% else %>
+     <%- message = "<p>There was some error while importing your dataset <strong>#{@files.first}</strong></p>" %>
+  <% end %>
+<% else %>
+  <% if @errors.nil? %>
+    <%- message = "<p><strong>#{@imported_tables}</strong> out of <strong>#{@total_tables}</strong> were successfully imported</p>" %>
+  <% else %>
+     <%- message = "<p><strong>#{@imported_tables}</strong> out of <strong>#{@total_tables}</strong> were successfully imported</p>" %>
+  <% end %>
+<% end %>
+
+<% if @errors.nil? %>
+  <%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
+<% else %>
+  <%= render partial: 'mailer_modules/warning_message', locals: { message: message } %>
+<% end %>
+
+<% if @errors.present? %>
+  <tr>
+    <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+      <p><strong><%= @errors['title'] %></strong></p>
+      <p><%= @errors['what_about'].html_safe %></p>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+      <p>Dataset files:</p>
+
+      <ul>
+        <% @files.each do |filename| %>
+          <li><strong>File name:</strong> <%= filename %></li>
+        <% end %>
+      </ul>
+    </td>
+  </tr>
+<% end %>
+
+<% if @imported_tables > 0 %>
+  <%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: "View your #{@imported_tables == 1 ? 'dataset' : 'datasets'}" } %>
+<% end %>

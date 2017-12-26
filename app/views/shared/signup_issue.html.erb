@@ -1,0 +1,44 @@
+<% content_for :title do %><%= @signup_source %> signup issue<% end %>
+
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-center Sessions--centered">
+          <div class="Sessions-logoContainer">
+            <picture class="Navbar-brand">
+              <% if @organization.present? %>
+                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+              <% else %>
+                <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+              <% end %>
+            </picture>
+          </div>
+
+          <% if @signup_errors %>
+            <div class="js-info">
+              <h1 class="Sessions-title u-tspace-m">Signup issues</h1>
+              <p class="Sessions-description">
+                <ul class="SessionErrors">
+                <% @signup_errors.keys.each do |key| %>
+                  <li class="SessionErrors-item">
+                    <%= key %> <%= @signup_errors[key].first %></li>
+                <% end %>
+                </ul>
+              </p>
+              <p class="Sessions-description Sessions-description--small">Please, <% if @organization.owner %><a href="mailto:<%= @organization.owner.email %>"><% end %>
+                contact the administrator of <%= @organization.name %><% if @organization.owner %></a><% end %> to begin your signup process.</p>
+            </div>
+          <% else %>
+            <div class="js-info">
+              <h1 class="Sessions-title u-tspace-m">Service temporarily unavailable</h1>
+              <p class="Sessions-description">Please, contact the administrator of <%= @organization.name %>
+              <% if @organization.owner %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>) <% end %>
+              to begin your signup process.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

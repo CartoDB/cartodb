@@ -1,0 +1,8 @@
+{
+  "testsFolder": "lib/assets/core/test/spec/cartodb3/",
+  "filesRegex": "spec\\.js$",
+  "replacements": [
+    ["lib/assets/core", "lib/assets"],
+    ["lib/assets/client", "lib/assets"]
+  ]
+}

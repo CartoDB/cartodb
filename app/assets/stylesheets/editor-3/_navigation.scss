@@ -1,0 +1,13 @@
+// Styles for navigations
+// --------------------------------------------------
+
+
+.Editor-buttonNavigation {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.Editor-buttonNavigation.is-hidden {
+  display: none;
+}

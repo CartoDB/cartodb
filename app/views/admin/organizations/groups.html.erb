@@ -1,0 +1,6 @@
+<% content_for :settings_body do %>
+  <div class="js-groups-content">
+    <%= render partial: 'admin/shared/loading', locals: { title: 'Loading assets' } %>
+  </div>
+<% end %>
+<%= render template: 'admin/organizations/_organization_settings', locals: { title: 'groups' } %>

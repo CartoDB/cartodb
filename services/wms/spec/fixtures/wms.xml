@@ -1,0 +1,657 @@
+<?xml version="1.0"?>
+<WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:esri_wms="http://www.esri.com/wms"
+xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.esri.com/wms http://basemap.nationalmap.gov/arcgis/services/USGSImageryTopo/MapServer/WMSServer?version=1.3.0&amp;service=WMS&amp;request=GetSchemaExtension">
+	<Service>
+		<Name>USGSImageryTopo WMS</Name>
+		<Title>USGSImageryTopo</Title>
+		<Abstract>WMS</Abstract>
+		<KeywordList><Keyword></Keyword></KeywordList>
+		<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://basemap.nationalmap.gov/arcgis/services/USGSImageryTopo/MapServer/WMSServer"/>
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>&gt;</ContactPerson>
+				<ContactOrganization>&gt;</ContactOrganization>
+			</ContactPersonPrimary>
+			<ContactPosition>&gt;</ContactPosition>
+			<ContactAddress>
+				<AddressType>&gt;</AddressType>
+				<Address></Address>
+				<City></City>
+				<StateOrProvince></StateOrProvince>
+				<PostCode></PostCode>
+				<Country></Country>
+			</ContactAddress>
+			<ContactVoiceTelephone></ContactVoiceTelephone>
+			<ContactFacsimileTelephone></ContactFacsimileTelephone>
+			<ContactElectronicMailAddress></ContactElectronicMailAddress>
+		</ContactInformation>
+		<Fees></Fees>
+		<AccessConstraints></AccessConstraints>
+		<MaxWidth>2048</MaxWidth>
+		<MaxHeight>2048</MaxHeight>
+	</Service>
+	<Capability>
+		<Request>
+			<GetCapabilities>
+				<Format>application/vnd.ogc.wms_xml</Format>
+				<Format>text/xml</Format>
+				<DCPType>
+					<HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://basemap.nationalmap.gov/arcgis/services/USGSImageryTopo/MapServer/WMSServer"/></Get></HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<GetMap>
+				<Format>image/bmp</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/tiff</Format>
+				<Format>image/png</Format>
+				<Format>image/png8</Format>
+				<Format>image/png24</Format>
+				<Format>image/png32</Format>
+				<Format>image/gif</Format>
+				<Format>image/svg+xml</Format>
+				<DCPType>
+					<HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://basemap.nationalmap.gov/arcgis/services/USGSImageryTopo/MapServer/WMSServer"/></Get></HTTP>
+				</DCPType>
+			</GetMap>
+			<GetFeatureInfo>
+				<Format>application/vnd.esri.wms_raw_xml</Format>
+				<Format>application/vnd.esri.wms_featureinfo_xml</Format>
+				<Format>application/vnd.ogc.wms_xml</Format>
+				<Format>text/xml</Format>
+				<Format>text/html</Format>
+				<Format>text/plain</Format>
+				<DCPType>
+					<HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://basemap.nationalmap.gov/arcgis/services/USGSImageryTopo/MapServer/WMSServer"/></Get></HTTP>
+				</DCPType>
+			</GetFeatureInfo>
+			<esri_wms:GetStyles>
+				<Format>application/vnd.ogc.sld+xml</Format>
+				<DCPType>
+					<HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://basemap.nationalmap.gov/arcgis/services/USGSImageryTopo/MapServer/WMSServer"/></Get></HTTP>
+				</DCPType>
+			</esri_wms:GetStyles>
+		</Request>
+		<Exception>
+			<Format>application/vnd.ogc.se_xml</Format>
+			<Format>application/vnd.ogc.se_inimage</Format>
+			<Format>application/vnd.ogc.se_blank</Format>
+			<Format>text/xml</Format>
+			<Format>XML</Format>
+		</Exception>
+		<Layer>
+			<Title>Layers</Title>
+			<CRS>CRS:84</CRS>
+			<CRS>EPSG:4326</CRS>
+			<CRS>EPSG:4269</CRS>
+			<CRS>EPSG:4267</CRS>
+			<CRS>EPSG:54004</CRS>
+			<CRS>EPSG:54008</CRS>
+			<CRS>EPSG:3785</CRS>
+			<CRS>EPSG:102113</CRS>
+			<CRS>EPSG:3857</CRS>
+			<CRS>EPSG:102100</CRS>
+			<CRS>EPSG:900913</CRS>
+			<CRS>EPSG:7250</CRS>
+			<CRS>EPSG:102016</CRS>
+			<CRS>EPSG:102017</CRS>
+			<CRS>EPSG:3571</CRS>
+			<CRS>EPSG:3572</CRS>
+			<CRS>EPSG:3573</CRS>
+			<CRS>EPSG:3574</CRS>
+			<CRS>EPSG:3575</CRS>
+			<CRS>EPSG:3576</CRS>
+			<CRS>EPSG:3338</CRS>
+			<EX_GeographicBoundingBox><westBoundLongitude>-179.999999999987</westBoundLongitude><eastBoundLongitude>179.999999999987</eastBoundLongitude><southBoundLatitude>-88.9999999999999</southBoundLatitude><northBoundLatitude>88.9999999999999</northBoundLatitude></EX_GeographicBoundingBox>
+			<BoundingBox CRS="CRS:84" minx="-179.999999999987" miny="-88.9999999999999" maxx="179.999999999987" maxy="88.9999999999999"/>
+			<BoundingBox CRS="EPSG:4326" minx="-88.9999999999999" miny="-179.999999999987" maxx="88.9999999999999" maxy="179.999999999987"/>
+			<BoundingBox CRS="EPSG:3857" minx="-57845181.481398" miny="-43671999.9717797" maxx="36550267.9771861" maxy="54010853.1992924"/>
+			<Layer queryable="1">
+				<Title>Level 15 - 1:18K - 24k QUAD </Title>
+				<Abstract>Level 15 - 1:18K - 24k QUAD </Abstract>
+				<MinScaleDenominator>17060.900298</MinScaleDenominator>
+				<MaxScaleDenominator>25564.419643</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Elevation (Line)</Title>
+					<Abstract>Elevation (Line)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 14 - 1:36k - Town QUAD</Title>
+				<Abstract>Level 14 - 1:36k - Town QUAD</Abstract>
+				<MinScaleDenominator>25565.364583</MinScaleDenominator>
+				<MaxScaleDenominator>51127.894345</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Elevation (Line)</Title>
+					<Abstract>Elevation (Line)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 13 - 1:72k - City</Title>
+				<Abstract>Level 13 - 1:72k - City</Abstract>
+				<MinScaleDenominator>51128.839286</MinScaleDenominator>
+				<MaxScaleDenominator>102255.788690</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Elevation (Line)</Title>
+					<Abstract>Elevation (Line)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 12 - 1:144k - Cities</Title>
+				<Abstract>Level 12 - 1:144k - Cities</Abstract>
+				<MinScaleDenominator>102256.733631</MinScaleDenominator>
+				<MaxScaleDenominator>204512.522321</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Elevation (Line)</Title>
+					<Abstract>Elevation (Line)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 11 - 1:288k - Metro</Title>
+				<Abstract>Level 11 - 1:288k - Metro</Abstract>
+				<MinScaleDenominator>204513.467262</MinScaleDenominator>
+				<MaxScaleDenominator>409025.044643</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Elevation (Line)</Title>
+					<Abstract>Elevation (Line)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 10 - 1:577k - County</Title>
+				<Abstract>Level 10 - 1:577k - County</Abstract>
+				<MinScaleDenominator>409025.989583</MinScaleDenominator>
+				<MaxScaleDenominator>818050.089286</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Elevation (Line)</Title>
+					<Abstract>Elevation (Line)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 9 - 1:1.15M - Counties</Title>
+				<Abstract>Level 9 - 1:1.15M - Counties</Abstract>
+				<MinScaleDenominator>818051.034226</MinScaleDenominator>
+				<MaxScaleDenominator>1636099.233631</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 8 - 1:2.3M - States</Title>
+				<Abstract>Level 8 - 1:2.3M - States</Abstract>
+				<MinScaleDenominator>1636100.178571</MinScaleDenominator>
+				<MaxScaleDenominator>3272198.467262</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Structure</Title>
+					<Abstract>Structure</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 7 - 1:4.6M - Region</Title>
+				<Abstract>Level 7 - 1:4.6M - Region</Abstract>
+				<MinScaleDenominator>3272199.412202</MinScaleDenominator>
+				<MaxScaleDenominator>6544397.879464</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 6 - 1:9.2M - Time Zone</Title>
+				<Abstract>Level 6 - 1:9.2M - Time Zone</Abstract>
+				<MinScaleDenominator>6544398.824405</MinScaleDenominator>
+				<MaxScaleDenominator>13088795.758929</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 5 - 1:18M - Continental US</Title>
+				<Abstract>Level 5 - 1:18M - Continental US</Abstract>
+				<MinScaleDenominator>13088796.703869</MinScaleDenominator>
+				<MaxScaleDenominator>26177591.517857</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 4 - 1:37M - Continent</Title>
+				<Abstract>Level 4 - 1:37M - Continent</Abstract>
+				<MinScaleDenominator>26177592.462798</MinScaleDenominator>
+				<MaxScaleDenominator>52355183.035714</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Transportation</Title>
+					<Abstract>Transportation</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Geographic Name</Title>
+					<Abstract>Geographic Name</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 3 - 1:73M - Hemisphere</Title>
+				<Abstract>Level 3 - 1:73M - Hemisphere</Abstract>
+				<MinScaleDenominator>52355183.980655</MinScaleDenominator>
+				<MaxScaleDenominator>104710365.126488</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Outline)</Title>
+					<Abstract>Hydrography (Outline)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 2 - 1:147M - World</Title>
+				<Abstract>Level 2 - 1:147M - World</Abstract>
+				<MinScaleDenominator>104710366.071429</MinScaleDenominator>
+				<MaxScaleDenominator>167962034.769345</MaxScaleDenominator>
+				<Layer queryable="1">
+					<Title>Elevation (Relief)</Title>
+					<Abstract>Elevation (Relief)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Fill)</Title>
+					<Abstract>Boundary (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+				</Layer>
+			</Layer>
+			<Layer queryable="1">
+				<Title>Level 0 and 1 - 1:584M and 1:292M Globe</Title>
+				<Abstract>Level 0 and 1 - 1:584M and 1:292M Globe</Abstract>
+				<CRS>CRS:84</CRS>
+				<CRS>EPSG:4326</CRS>
+				<CRS>EPSG:3857</CRS>
+				<EX_GeographicBoundingBox><westBoundLongitude>-179.999988541187</westBoundLongitude><eastBoundLongitude>179.999988541187</eastBoundLongitude><southBoundLatitude>-88.9999999999999</southBoundLatitude><northBoundLatitude>83.6041545451803</northBoundLatitude></EX_GeographicBoundingBox>
+				<BoundingBox CRS="CRS:84" minx="-179.999988541187" miny="-88.9999999999999" maxx="179.999988541187" maxy="83.6041545451803"/>
+				<BoundingBox CRS="EPSG:4326" minx="-88.9999999999999" miny="-179.999988541187" maxx="83.6041545451803" maxy="179.999988541187"/>
+				<BoundingBox CRS="EPSG:3857" minx="-20037507.0672" miny="-30240971.9584" maxx="20037507.0672" maxy="18398924.7227"/>
+				<MinScaleDenominator>167962035.714286</MinScaleDenominator>
+				<Layer queryable="1">
+					<Title>Hydrography (Fill)</Title>
+					<Abstract>Hydrography (Fill)</Abstract>
+				</Layer>
+				<Layer queryable="1">
+					<Title>Boundary (Outline)</Title>
+					<Abstract>Boundary (Outline)</Abstract>
+					<CRS>CRS:84</CRS>
+					<CRS>EPSG:4326</CRS>
+					<CRS>EPSG:3857</CRS>
+					<EX_GeographicBoundingBox><westBoundLongitude>-179.999988541187</westBoundLongitude><eastBoundLongitude>179.999988541187</eastBoundLongitude><southBoundLatitude>-88.9999999999999</southBoundLatitude><northBoundLatitude>83.6041545451803</northBoundLatitude></EX_GeographicBoundingBox>
+					<BoundingBox CRS="CRS:84" minx="-179.999988541187" miny="-88.9999999999999" maxx="179.999988541187" maxy="83.6041545451803"/>
+					<BoundingBox CRS="EPSG:4326" minx="-88.9999999999999" miny="-179.999988541187" maxx="83.6041545451803" maxy="179.999988541187"/>
+					<BoundingBox CRS="EPSG:3857" minx="-20037507.0672" miny="-30240971.9584" maxx="20037507.0672" maxy="18398924.7227"/>
+					<Layer queryable="1">
+						<Name>121</Name>
+						<Title>_</Title>
+						<Abstract>_</Abstract>
+						<CRS>CRS:84</CRS>
+						<CRS>EPSG:4326</CRS>
+						<CRS>EPSG:3857</CRS>
+						<EX_GeographicBoundingBox><westBoundLongitude>-179.999988541187</westBoundLongitude><eastBoundLongitude>179.999988541187</eastBoundLongitude><southBoundLatitude>-88.9999999999999</southBoundLatitude><northBoundLatitude>83.6041545451803</northBoundLatitude></EX_GeographicBoundingBox>
+						<BoundingBox CRS="CRS:84" minx="-179.999988541187" miny="-88.9999999999999" maxx="179.999988541187" maxy="83.6041545451803"/>
+						<BoundingBox CRS="EPSG:4326" minx="-88.9999999999999" miny="-179.999988541187" maxx="83.6041545451803" maxy="179.999988541187"/>
+						<BoundingBox CRS="EPSG:3857" minx="-20037507.0672" miny="-30240971.9584" maxx="20037507.0672" maxy="18398924.7227"/>
+						<Style>
+							<Name>default</Name>
+							<Title>121</Title>
+							<LegendURL width="32" height="16">
+								<Format>image/png</Format>
+								<OnlineResource xlink:href="http://basemap.nationalmap.gov/arcgis/services/USGSImageryTopo/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=121" xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+							</LegendURL>
+						</Style>
+					</Layer>
+				</Layer>
+			</Layer>
+		</Layer>
+	</Capability>
+</WMS_Capabilities>

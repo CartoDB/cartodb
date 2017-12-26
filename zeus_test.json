@@ -1,0 +1,17 @@
+{
+  "command": "ruby -rbundler/setup -r./zeus_plan -eZeus.go",
+
+  "plan": {
+    "boot": {
+      "default_bundle": {
+        "test_environment": {
+          "carto_test": {
+            "test_helper": {
+              "test": ["rspec", "testrb"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

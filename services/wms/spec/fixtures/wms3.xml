@@ -1,0 +1,219 @@
+<?xml version="1.0" standalone="no"?>
+<!-- The DTD (Document Type Definition) given here must correspond to the version number declared in the WMT_MS_Capabilities element below. -->
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://www2.demis.nl/WMS/capabilities_1_0_0.dtd" [
+
+ <!-- Output formats known to this server are defined here
+if necessary (only if a format not already listed in the WMT
+Capabilities DTD is needed).  To define a new format, place
+an entity definition for KnownFormats like the one below in
+the DOCTYPE declaration of your Capabilities XML, listing at
+minimum all of the formats you support and separating each
+by logical-OR (|) characters.  Then, define a new element
+for any formats not predefined by WMT.  For example, in the
+following list "SGI" is a server-specific format, while all
+the others are known WMT-wide.  Thus, SGI is included in the
+KnownFormats list and a new empty element <SGI/> is
+defined. -->
+<!ENTITY % KnownFormats " SGI | GIF | JPEG | PNG | WebCGM | SVG | GML.1
+ | WMS_XML | MIME | INIMAGE | PPM | BLANK " >
+<!ELEMENT SGI EMPTY> <!-- Silicon Graphics RGB Format -->
+
+ <!-- other vendor-specific elements defined here -->
+ <!ELEMENT VendorSpecificCapabilities (YMD)>
+ <!ELEMENT YMD (Title, Abstract)>
+ <!ATTLIST YMD required (0 | 1) "0">
+
+ ]>
+<!-- end of DOCTYPE declaration -->
+<!-- The version number listed in the WMT_MS_Capabilities element here must correspond to the DTD declared above.  See the WMT specification document for how to respond when a client requests a version number not implemented by the server. -->
+<WMT_MS_Capabilities version="1.0.0">
+	<Service>
+		<!-- The WMT-defined name for this type of service -->
+		<Name>GetMap</Name>
+		<!-- Human-readable title for pick lists -->
+		<Title>World Map</Title>
+		<!-- Narrative description providing additional information -->
+		<Abstract>None</Abstract>
+		<Keywords></Keywords>
+		<!-- Top-level address of service or service provider.  See also onlineResource attributes of <DCPType> children. -->
+		<OnlineResource>http://www2.demis.nl</OnlineResource>
+		<!-- Fees or access constraints imposed. -->
+		<Fees>none</Fees>
+		<AccessConstraints>none</AccessConstraints>
+	</Service>
+	<Capability>
+		<Request>
+			<Map>
+				<Format>
+					<GIF/>
+					<JPEG/>
+					<PNG/>
+					<BMP/>
+				</Format>
+				<DCPType>
+					<HTTP>
+						<!-- The URL here for HTTP GET requests includes only the prefix before the query string.-->
+						<Get onlineResource="http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap&amp;"/>
+					</HTTP>
+				</DCPType>
+			</Map>
+			<Capabilities>
+				<Format>
+					<WMS_XML/>
+				</Format>
+				<DCPType>
+					<HTTP>
+						<!-- The URL here for HTTP GET requests includes only the prefix before the query string.-->
+						<Get onlineResource="http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap&amp;"/>
+					</HTTP>
+				</DCPType>
+			</Capabilities>
+			<FeatureInfo>
+				<Format>
+					<MIME/>
+				</Format>
+				<DCPType>
+					<HTTP>
+						<!-- The URL here for HTTP GET requests includes only the prefix before the the query string.-->
+						<Get onlineResource="http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap&amp;"/>
+					</HTTP>
+				</DCPType>
+			</FeatureInfo>
+		</Request>
+		<Exception>
+			<Format>
+				<WMS_XML/>
+				<INIMAGE/>
+				<BLANK/>
+			</Format>
+		</Exception>
+		<Layer>
+			<Title>World Map</Title>
+			<Abstract/>
+			<SRS>EPSG:4326</SRS>
+			<LatLonBoundingBox minx="-180" miny="-90" maxx="180" maxy="90"/>
+			<BoundingBox SRS="EPSG:4326" minx="-184" miny="-90" maxx="180" maxy="90"/>
+			<Layer queryable="1">
+				<Name>Bathymetry</Name>
+				<Title>Bathymetry</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-90" maxx="180" maxy="90"/>
+				<ScaleHint min="0" max="14000"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Countries</Name>
+				<Title>Countries</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-90" maxx="180" maxy="85"/>
+				<ScaleHint min="0" max="14000"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Topography</Name>
+				<Title>Topography</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-90" maxx="180" maxy="90"/>
+				<ScaleHint min="0" max="14000"/>
+			</Layer>
+			<Layer queryable="0">
+				<Name>Hillshading</Name>
+				<Title>Hillshading</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-90" maxx="180" maxy="90"/>
+				<ScaleHint min="0" max="14000"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Builtup areas</Name>
+				<Title>Builtup areas</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-55" maxx="180" maxy="75"/>
+				<ScaleHint min="0" max="1400"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Coastlines</Name>
+				<Title>Coastlines</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-90" maxx="180" maxy="85"/>
+				<ScaleHint min="0" max="11200"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Waterbodies</Name>
+				<Title>Waterbodies</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-79.0616683959961" maxx="180" maxy="85"/>
+				<ScaleHint min="0" max="5600"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Inundated</Name>
+				<Title>Inundated</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-50" maxx="180" maxy="80"/>
+				<ScaleHint min="0" max="1400"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Rivers</Name>
+				<Title>Rivers</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-55" maxx="180" maxy="85"/>
+				<ScaleHint min="0" max="11200"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Streams</Name>
+				<Title>Streams</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-55" maxx="180" maxy="85"/>
+				<ScaleHint min="0" max="5600"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Railroads</Name>
+				<Title>Railroads</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-170" miny="-55" maxx="180" maxy="80"/>
+				<ScaleHint min="0" max="840"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Highways</Name>
+				<Title>Highways</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-175" miny="-55" maxx="180" maxy="75"/>
+				<ScaleHint min="0" max="700"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Roads</Name>
+				<Title>Roads</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-55" maxx="180" maxy="75"/>
+				<ScaleHint min="0" max="420"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Trails</Name>
+				<Title>Trails</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-50" maxx="180" maxy="80"/>
+				<ScaleHint min="0" max="280"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Borders</Name>
+				<Title>Borders</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-60" maxx="176" maxy="75"/>
+				<ScaleHint min="0" max="11200"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Cities</Name>
+				<Title>Cities</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-55" maxx="180" maxy="75"/>
+				<ScaleHint min="0" max="28000"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Settlements</Name>
+				<Title>Settlements</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-55" maxx="180" maxy="85"/>
+				<ScaleHint min="0" max="560"/>
+			</Layer>
+			<Layer queryable="0">
+				<Name>Spot elevations</Name>
+				<Title>Spot elevations</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-179.983093261719" miny="-89.83837890625" maxx="179.991439819336" maxy="83.5204086303711"/>
+				<ScaleHint min="0" max="280"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Airports</Name>
+				<Title>Airports</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-184" miny="-55" maxx="180" maxy="80"/>
+				<ScaleHint min="0" max="560"/>
+			</Layer>
+			<Layer queryable="1">
+				<Name>Ocean features</Name>
+				<Title>Ocean features</Title>
+				<BoundingBox SRS="EPSG:4326" minx="-180" miny="-62.9231796264648" maxx="179.999420166016" maxy="68.6906585693359"/>
+				<ScaleHint min="0" max="2800"/>
+			</Layer>
+		</Layer>
+	</Capability>
+</WMT_MS_Capabilities>
+

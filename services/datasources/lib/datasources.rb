@@ -1,0 +1,18 @@
+# encoding: utf-8
+
+require 'zlib'
+require_relative './datasources/base'
+require_relative './datasources/base_oauth'
+require_relative './datasources/base_file_stream'
+require_relative './datasources/base_direct_stream'
+require_relative './datasources/exceptions'
+require_relative './datasources/url/public_url'
+require_relative './datasources/url/dropbox'
+require_relative './datasources/url/gdrive'
+require_relative './datasources/url/instagram_oauth'
+require_relative './datasources/url/mailchimp'
+require_relative './datasources/url/arcgis'
+require_relative './datasources/search/twitter'
+require_relative './datasources/datasources_factory'
+require_relative './datasources/util/csv_file_dumper'
+require_relative './datasources/decorators/factory'

@@ -1,0 +1,3 @@
+<%- message = "<p style='margin-bottom: 0;'>Your colleague #{@visualization_owner_name} has stopped sharing the map <strong>#{@visualization_name}</strong> with you so it may dissapear from your dashboard." %>
+
+<%= render partial: 'mailer_modules/warning_message', locals: { message: message } %>

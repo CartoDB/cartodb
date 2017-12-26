@@ -1,0 +1,97 @@
+#!/bin/sh
+
+#
+# This script creates config/app_config.yml and config/database.yml
+# from the corresponding .sample files as input and performing
+# settings substitutions.
+#
+# It relies on a known format of the .yml.sample files which haven't
+# been made easier to parse to still let humans copy them manually and
+# do further editing or leave them as such to get the same setup as before
+# the introduction of this script.
+#
+# The script is a work in progress. Available switches are printed
+# by invoking with the --help switch. More switches will be added
+# as the need/request for them arises.
+#
+# --strk(2014-10-07)
+#
+
+STATUS="$0 $*"
+
+APPCONFIG=`dirname $0`/config/app_config.yml
+DBCONFIG=`dirname $0`/config/database.yml
+
+if [ -z "$PGPORT" ]; then
+  PGPORT=`grep -w "port:" ${DBCONFIG}.sample | head -1 | cut -d: -f2 | sed 's/^\s*//;s/\s*$//'`
+fi
+
+if [ -z "$PGUSER" ]; then
+  PGUSER=`grep -w "username:" ${DBCONFIG}.sample | head -1 | cut -d: -f2 | sed 's/^\s*//;s/\s*$//'`
+fi
+
+if [ -z "$SQLAPI_PORT" ]; then
+  SQLAPI_PORT=`cat ${APPCONFIG}.sample | grep -A10 sql_api: | grep port: | head -1 | cut -d: -f2 | sed 's/^\s*//;s/\s*$//'`
+fi
+
+if [ -z "$MAPAPI_PORT" ]; then
+  MAPAPI_PORT=`cat ${APPCONFIG}.sample | grep -A10 tiler: | grep port: | head -1 | cut -d: -f2 | sed 's/^\s*["'\'']\?//;s/["'\'']\?\s*$//'`
+fi
+
+#PGPORT=`node -e "console.log(require('${ENVEX}').postgres.port)"`
+
+usage() {
+  echo "Usage: $0 [OPTION]"
+  echo 
+  echo "Configuration:"
+  echo "  --help                        display this help and exit"
+  echo "  --with-pgport=NUM             access PostgreSQL server on TCP port NUM [$PGPORT]"
+  echo "  --with-pguser=STRING          access PostgreSQL as user STRING [$PGUSER]"
+  echo "  --with-mapapi-port=NUM        access MAP-API server on TCP port NUM [$MAPAPI_PORT]"
+  echo "  --with-sqlapi-port=NUM        access SQL-API server on TCP port NUM [$SQLAPI_PORT]"
+}
+
+while test -n "$1"; do
+  case "$1" in
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    --with-pgport=*)
+      PGPORT=`echo "$1" | cut -d= -f2`
+      ;;
+    --with-pguser=*)
+      PGUSER=`echo "$1" | cut -d= -f2`
+      ;;
+    --with-sqlapi-port=*)
+      SQLAPI_PORT=`echo "$1" | cut -d= -f2`
+      ;;
+    --with-mapapi-port=*)
+      MAPAPI_PORT=`echo "$1" | cut -d= -f2`
+      ;;
+    *)
+      echo "Unused option '$1'" >&2
+      #usage >&2
+      #exit 1
+  esac
+  shift
+done
+
+echo "PGPORT: $PGPORT"
+echo "PGUSER: $PGUSER"
+echo "SQLAPI_PORT: $SQLAPI_PORT"
+echo "MAPAPI_PORT: $MAPAPI_PORT"
+
+
+echo "Writing ${APPCONFIG}"
+# Relies on known values in the .sample file
+cat ${APPCONFIG}.sample | sed "s/8080/${SQLAPI_PORT}/;s/8181/${MAPAPI_PORT}/" > "${APPCONFIG}"
+
+echo "Writing ${DBCONFIG}"
+# Relies on known values in the .sample file
+cat ${DBCONFIG}.sample | sed "s/port: .*/port: ${PGPORT}/;s/username: .*/username: ${PGUSER}/" > "${DBCONFIG}"
+
+STATUSFILE=config.status
+echo "Writing ${STATUSFILE}"
+echo ${STATUS} > ${STATUSFILE} && chmod +x ${STATUSFILE}
+

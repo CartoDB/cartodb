@@ -1,0 +1,16 @@
+<%
+  flash_class = local_assigns[:message_class]
+  flash_container_class = "FlashMessage--#{flash_class}"
+  flash_message = local_assigns[:message]
+  flash_detail = local_assigns[:detail]
+%>
+<div class="CDB-Text FlashMessage <%= flash_container_class %>">
+  <div class="u-inner">
+    <p class="FlashMessage-info <%= flash_class %>">
+      <%= raw flash_message %>
+    </p>
+    <% if flash_detail %>
+        <p class="FlashMessage-detail <%= flash_class %>"><%= raw flash_detail %></p>
+    <% end %>
+  </div>
+</div>

@@ -40,6 +40,7 @@ module Carto
           id: @api_key.id,
           user: { username: @api_key.user.username },
           type: @api_key.type,
+          name: @api_key.name,
           token: @api_key.token,
           grants: grants_presenter.to_poro,
           databaseConfig: {

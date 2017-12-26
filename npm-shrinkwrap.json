@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.147",
+  "version": "4.10.147-staging",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -657,7 +657,7 @@
     },
     "debug": {
       "version": "3.1.0",
-      "from": "debug@>=3.0.1 <4.0.0",
+      "from": "debug@>=3.1.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/debug/-/debug-3.1.0.tgz"
     },
     "decamelize": {
@@ -858,19 +858,14 @@
       }
     },
     "eslint": {
-      "version": "4.13.1",
+      "version": "4.14.0",
       "from": "eslint@>=4.10.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/eslint/-/eslint-4.13.1.tgz",
+      "resolved": "https://registry.npmjs.org/eslint/-/eslint-4.14.0.tgz",
       "dependencies": {
         "concat-stream": {
           "version": "1.6.0",
           "from": "concat-stream@>=1.6.0 <2.0.0",
           "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz"
-        },
-        "estraverse": {
-          "version": "4.2.0",
-          "from": "estraverse@>=4.2.0 <5.0.0",
-          "resolved": "https://registry.npmjs.org/estraverse/-/estraverse-4.2.0.tgz"
         },
         "esutils": {
           "version": "2.0.2",
@@ -900,6 +895,11 @@
           "resolved": "https://registry.npmjs.org/estraverse/-/estraverse-4.2.0.tgz"
         }
       }
+    },
+    "eslint-visitor-keys": {
+      "version": "1.0.0",
+      "from": "eslint-visitor-keys@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz"
     },
     "espree": {
       "version": "3.5.2",
@@ -1229,9 +1229,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.5.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.7",
+      "version": "3.5.8",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.7.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.8.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",
@@ -2820,9 +2820,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.2.2",
-      "from": "uglify-js@>=3.2.0 <3.3.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.2.2.tgz",
+      "version": "3.3.2",
+      "from": "uglify-js@>=3.3.0 <3.4.0",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.2.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

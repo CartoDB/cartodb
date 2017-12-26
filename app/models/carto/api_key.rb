@@ -21,9 +21,6 @@ class Carto::ApiKey < ActiveRecord::Base
   serialize :grants, Carto::CartoJsonSymbolizerSerializer
   validates :grants, carto_json_symbolizer: true, json_schema: true
 
-  serialize :affected_schemas, Carto::CartoJsonSymbolizerSerializer
-  validates :affected_schemas, carto_json_symbolizer: true
-
   validates :name, presence: true
 
   after_save :add_to_redis
@@ -60,13 +57,10 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def update_role_permissions
-    revoke_privileges
+    revoke_privileges(*affected_schemas(Carto::ApiKeyGrants.new(grants_was))) if grants_was.present?
+    _, write_schemas = affected_schemas(api_key_grants)
 
-    read_schemas = []
-    write_schemas = []
     api_key_grants.table_permissions.each do |tp|
-      read_schemas << tp.schema unless read_schemas.include?(tp.schema)
-      write_schemas << tp.schema unless write_schemas.include?(tp.schema) || !tp.write?
       unless tp.permissions.empty?
         user_db_connection.run(
           "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
@@ -77,11 +71,18 @@ class Carto::ApiKey < ActiveRecord::Base
     write_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
 
     if !write_schemas.empty?
-      write_schemas << 'cartodb'
       grant_usage_for_cartodb
     end
+  end
 
-    update_column(:affected_schemas, (write_schemas + read_schemas).uniq.to_json)
+  def affected_schemas(api_key_grants)
+    read_schemas = []
+    write_schemas = []
+    api_key_grants.table_permissions.each do |tp|
+      read_schemas << tp.schema
+      write_schemas << tp.schema unless !tp.write?
+    end
+    [read_schemas.uniq, write_schemas.uniq]
   end
 
   def serialize_grants
@@ -107,9 +108,10 @@ class Carto::ApiKey < ActiveRecord::Base
     @redis_client ||= $users_metadata
   end
 
-  def revoke_privileges
-    affected_schemas ||= []
-    affected_schemas.each do |schema|
+  def revoke_privileges(read_schemas, write_schemas)
+    schemas = read_schemas + write_schemas
+    schemas << 'cartodb' if write_schemas.present
+    schemas.uniq.each do |schema|
       user_db_connection.run(
         "revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\""
       )

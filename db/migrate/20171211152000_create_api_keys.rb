@@ -13,7 +13,6 @@ migration(
       String      :db_role, null: false
       String      :db_password, null: false
       String      :grants, type: 'json'
-      String      :affected_schemas, type: 'json'
       DateTime    :created_at, null: false
       DateTime    :updated_at, null: false
     end

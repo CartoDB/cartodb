@@ -19,7 +19,7 @@ describe Carto::ApiKey do
     }
   end
 
-  def connection_from_api_key(api_key)
+  def with_connection_from_api_key(api_key)
     user = api_key.user
 
     options = ::SequelRails.configuration.environment_for(Rails.env).merge(
@@ -28,7 +28,12 @@ describe Carto::ApiKey do
       'password' => api_key.db_password,
       'host' => user.database_host
     )
-    ::Sequel.connect(options)
+    connection = ::Sequel.connect(options)
+    begin
+      yield connection
+    ensure
+      connection.disconnect
+    end
   end
 
   before(:each) do
@@ -45,11 +50,10 @@ describe Carto::ApiKey do
     api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
                                     name: 'full', grants: [grant(@table1.database_schema, @table1.name)])
 
-    connection = connection_from_api_key(api_key)
-    begin
+    with_connection_from_api_key(api_key) do |connection|
       begin
         connection.execute("select count(1) from #{@table2.name}")
-      rescue => e
+      rescue Sequel::DatabaseError => e
         failed = true
         e.message.should include "permission denied for relation #{@table2.name}"
       end
@@ -72,8 +76,6 @@ describe Carto::ApiKey do
       connection.execute("select count(1) from #{@table1.name}") do |result|
         result[0]['count'].should eq '0'
       end
-    ensure
-      connection.disconnect
     end
   end
 end

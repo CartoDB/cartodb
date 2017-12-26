@@ -29,7 +29,6 @@ All the api methods and objects are exposed through the public `carto` object.
     - `BoundingBox`: Constructor to build a BoundingBox filter
     - `BoundingBoxLeaflet`: Constructor to build a BoundingBoxLeaflet filter
 
-- `carto.events` : Enum with the events available in the client.
 - `carto.operation` : Enum with the operations available.
 - `carto.dataview.status` : Enum with the dataview statuses available.
 

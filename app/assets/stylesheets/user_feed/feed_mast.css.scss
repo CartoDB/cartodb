@@ -7,16 +7,18 @@ $sWidth: 4px;
 
 .FeedMast {
   position: absolute;
-  @include flex(0 0 $sWidth);
   top: 0;
+  flex: 0 0 $sWidth;
   width: $sWidth;
   height: 100%;
   margin-left: 29px;
   background: $cFeedMast;
 }
+
 .FeedMast.is-hidden {
   display: none;
 }
+
 .FeedMast-ball {
   position: absolute;
   left: -5px;
@@ -26,29 +28,31 @@ $sWidth: 4px;
   border-radius: 50%;
   background: #F9F9F9;
 }
+
 .FeedMast-ball.FeedMast-ball--top {
   top: -12px;
   background: none;
 }
+
 .FeedMast-ball.FeedMast-ball--bottom {
   bottom: 0;
   background: $cFeedMast;
 }
 
-@media only screen and (min-width: 521px) and (max-width: 899px)  {
-.FeedMast {
-    top: 0;
-    margin-left: -2px;
-    left: 50%;
+@media only screen and (min-width: 521px) and (max-width: 899px) {
+  .FeedMast {
     z-index: 0;
+    top: 0;
+    left: 50%;
+    margin-left: -2px;
   }
 }
 
 @media only screen and (max-width: 520px) {
-.FeedMast {
-    top: 0;
-    margin-left: -2px;
-    left: 50%;
+  .FeedMast {
     z-index: 0;
+    top: 0;
+    left: 50%;
+    margin-left: -2px;
   }
 }

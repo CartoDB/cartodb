@@ -71,8 +71,8 @@
 }
 
 .CDB-Chart-handleLine {
-  opacity: 0;
   stroke-width: 2;
+  opacity: 0;
 }
 
 .CDB-Chart-staticTips {
@@ -81,7 +81,7 @@
   margin-left: 8px;
 }
 
-@media (min-width:480px) and (max-width:759px) {
+@media (min-width: 480px) and (max-width: 759px) {
   .CDB-Chart-staticTips {
     display: block;
   }

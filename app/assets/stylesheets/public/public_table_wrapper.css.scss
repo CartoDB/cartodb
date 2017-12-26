@@ -4,7 +4,6 @@
  *
  */
 
-@import "compass/css3/opacity";
 @import "compass/css3/inline-block";
 @import "../old_common/vars";
 @import "../old_common/mixins";
@@ -15,97 +14,99 @@ html {
   line-height: 1;
 }
 
-body.public { /* Public table CSS */
+body.public {
+  min-width: inherit; /* Public table CSS */
 
   .pane_table {
     @include reset-table-cell();
     @include position(8px, calc(35% + 8px), 8px, 8px);
     z-index: 10;
-    border-radius: 3px;
     overflow: hidden;
+    border-radius: 3px;
+
     &.is-active {
-      background: #fff;
+      background: #FFF;
     }
   }
 
-  .pane_map { top: 0px; overflow-x: hidden; }
-
-  .panes .emptyTableContainer {
-    position:relative;
+  .pane_map {
+    top: 0;
+    overflow-x: hidden;
   }
 
-  min-width: inherit;
+  .panes .emptyTableContainer {
+    position: relative;
+  }
 
   .dialog {
-
-    position:relative;
+    position: relative;
     z-index: 10000;
 
     .block.modal.api {
-
       .content {
+        position: relative;
         padding: 0;
-        position:relative;
       }
 
       .inner {
-        padding: 28px 40px 0 40px;
-        position:relative;
+        position: relative;
+        padding: 28px 40px 0;
       }
 
       .shadow {
+        @extend .white-gradient-shadow-bottom;
         position: absolute;
-        height: 60px;
         bottom: 0;
         width: 100%;
-        @extend .white-gradient-shadow-bottom;
+        height: 60px;
       }
 
       code {
-        color: #666666;
+        color: #666;
         font-size: 13px;
         line-height: 120%;
       }
 
       .sample {
         padding: 23px 40px;
-        background: #F2F2F2;
         border-bottom: 1px solid #E5E5E5;
+        background: #F2F2F2;
 
         p {
+          color: #999;
           font-size: 13px;
-          color: #999999;
         }
-
       }
 
       h4 {
-        margin: 0 0 5px 0;
-        color: #666666;
-        text-transform: uppercase;
+        margin: 0 0 5px;
+        color: #666;
         font-family: $text-fonts;
-        font-size:11px;
+        font-size: 11px;
+        text-transform: uppercase;
       }
 
       .foot {
-
         padding: 38px;
 
         p {
-          float:left;
           width: 357px;
-          color: #666666;
+          padding: 5px 0;
+          float: left;
+          color: #666;
           font-size: 13px;
           line-height: 120%;
-          padding: 5px 0;
-          a { text-decoration: underline; }
+
+          a {
+            text-decoration: underline;
+          }
         }
       }
     }
   }
 
   div.separator.bottom {
-    display:none;
+    display: none;
     position: relative;
     width: 100%;
     border-top: 1px solid #E5E5E5;
@@ -116,8 +117,8 @@ body.public { /* Public table CSS */
   }
 
   div.table.public table tbody tr:hover {
-    background: inherit;
     border-top: 1px solid #ECECEC;
+    background: inherit;
 
     & + tr {
       border-top: 1px solid #ECECEC;
@@ -129,8 +130,8 @@ body.public { /* Public table CSS */
       label.interactuable .coloptions {
         line-height: 1;
 
-        &:after {
-          display:none;
+        &::after {
+          display: none;
         }
       }
 
@@ -141,41 +142,35 @@ body.public { /* Public table CSS */
   }
 
   div.table table tfoot.page_loader {
-    display:none;
+    display: none;
   }
 
   .navigation {
-
+    position: relative;
+    z-index: 100;
+    width: 100%;
     margin: auto;
     clear: both;
     overflow: hidden;
-
-    position:relative;
-    z-index: 100;
-    @include opacity(0);
-    width: 100%;
+    opacity: 0;
     text-align: center;
 
     ul {
-
+      @include clearfix();
       max-width: 1024px;
       margin: auto;
-      @include clearfix();
 
       li {
-
         display: inline-block;
-        list-style:none;
         margin: 0 1px 0 0;
+        list-style: none;
 
-        &:last-child { margin-left: $sMargin-group; }
+        &:last-child {
+          margin-left: $sMargin-group;
+        }
 
         a {
-          &:hover {
-
-          }
-
-          display:block;
+          display: block;
           width: 36px;
           height: 36px;
           border: 1px solid #636D72;
@@ -189,65 +184,66 @@ body.public { /* Public table CSS */
         }
 
         a.selected {
-          color: #fff;
-          border-color: #fff;
-          cursor:default;
+          border-color: #FFF;
+          color: #FFF;
+          cursor: default;
         }
-
       }
     }
   }
 
-  div.table table thead tr th>div p.auto {
-    @include opacity(0);
+  div.table table thead tr th > div p.auto {
+    opacity: 0;
   }
 
   .cartodb-map-data {
     position: relative;
-    top: 300px;
     z-index: 100;
+    top: 300px;
   }
 
   div.panes {
-    overflow-y:hidden;
+    clear: both;
     overflow-x: auto;
-    clear:both;
+    overflow-y: hidden;
 
-    div.shadow { display:none; }
+    div.shadow {
+      display: none;
+    }
 
     div.table table thead tr th > div > div {
-      position:relative;
+      position: relative;
     }
   }
 
   div.panes.panes_mobile {
-    top: 0px;
+    top: 0;
     overflow-x: hidden;
 
     .table.public {
-      background: #fff;
+      background: #FFF;
     }
 
     .Checkbox {
       position: absolute;
+      z-index: 30;
       top: 35px;
       right: 35px;
-      z-index: 30;
-      background-color: rgba(#000, .5);
       padding: 3px 5px;
       border-radius: 3px;
+      background-color: rgba(#000, 0.5);
     }
 
     .Checkbox-label {
-      color: #fff;
+      color: #FFF;
     }
 
     .table.public,
     .cartodb-map.public {
       @include position(15px, 15px, 60px, 15px);
       z-index: 10;
-      border-radius: 3px;
       overflow: hidden;
+      border-radius: 3px;
     }
   }
 }

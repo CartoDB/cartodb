@@ -1,7 +1,6 @@
 // Privacy toggler
 // --------------------------------------------------
 
-@import '../variables/mixins';
 @import '../variables/colors';
 
 .PrivacyToggler {
@@ -20,19 +19,23 @@
     text-decoration: none;
   }
 }
+
 .PrivacyToggler .CDB-IconFont {
   line-height: 20px;
 }
+
 .PrivacyToggler--PUBLIC,
 .PrivacyToggler--PUBLIC:hover {
   border-color: $cHighlight-positive;
   color: $cHighlight-positive;
 }
+
 .PrivacyToggler--PRIVATE,
 .PrivacyToggler--PRIVATE:hover {
   border-color: $cHighlight-negative;
   color: $cHighlight-negative;
 }
+
 .PrivacyToggler.is-disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
 }

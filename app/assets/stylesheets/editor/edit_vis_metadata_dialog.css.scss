@@ -2,7 +2,6 @@
 // dialog content styles
 // ---------------------------------------------
 
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
@@ -12,35 +11,37 @@ $width: 620px;
 .EditVisMetadata .Dialog-expandedSubContent {
   position: relative;
 
-  &:before,
-  &:after {
+  &::before,
+  &::after {
+    content: '';
     position: fixed;
+    z-index: 5;
     left: 50%;
     width: $width;
     height: 18px;
     margin-left: -310px;
-    content: '';
-    z-index: 5;
   }
 
-  &:before {
-    @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
+  &::before {
     top: 157px;
-    background-color: transparent!important;
+    background-color: transparent !important;
+    background-image: linear-gradient(to bottom, rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
   }
 
-  &:after {
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
+  &::after {
     bottom: 97px;
+    background-image: linear-gradient(to bottom, rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
   }
 }
+
 .EditVisMetadata-header {
-  @include flex-grow(1);
+  flex-grow: 1;
   min-height: 100px;
   max-height: 100px;
   padding: 28px 0;
   text-align: center;
 }
+
 .EditVisMetadata-markdown {
   position: absolute;
   right: 0;
@@ -48,6 +49,7 @@ $width: 620px;
   color: $cTypography-help;
   font-size: $sFontSize-small;
 }
+
 .EditVisMetadata-markdownIcon {
   margin-right: 10px;
   padding: 0 2px 2px 5px;
@@ -55,38 +57,46 @@ $width: 620px;
   background: #DCDCDC;
   color: #F9F9F9;
 }
+
 .EditVisMetadata-markdownIconText {
   font-size: 8px;
   font-weight: $sFontWeight-small;
 }
+
 .EditVisMetadata-markdownIconChar {
   font-size: $sFontSize-small;
   font-style: normal;
   line-height: normal;
 }
+
 .EditVisMetadata-privacyIndicator:hover {
   color: #777;
   text-decoration: underline;
 }
+
 .EditVisMetadata-formContent,
 .EditVisMetadata-formFooter {
   width: $width;
   margin: 0 auto;
 }
+
 .EditVisMetadata-formContent {
   position: relative;
   padding: 28px 0 120px;
 }
+
 .EditVisMetadata-formFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: #F9F9F9;
 }
+
 .EditVisMetadata .Dialog-stickyFooter {
-  left: 0;
   z-index: 10;
+  left: 0;
 }
+
 .EditVisMetadata-formFooter .Button {
   margin: 0;
 }

@@ -4,8 +4,8 @@
 .CDB-Dashboard-canvas {
   @include display-flex();
   @include justify-content(space-between, justify);
-  box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
   position: relative;
+  box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
   width: 100%;
   height: 100%; // fill content to the visible viewport, but add scroll for overflowing inline content (e.g. widgets)
   padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
@@ -13,6 +13,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 .CDB-Dashboard-mapWrapper {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -24,16 +25,18 @@
   @include flex-grow(1);
   position: relative;
 }
+
 .CDB-Map {
   position: absolute;
+  z-index: 1;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  border-radius: 4px;
   overflow: hidden;
-  z-index: 1;
+  border-radius: 4px;
 }
+
 .CDB-Dashboard-belowMap {
   margin-top: 8px;
 }
@@ -43,7 +46,6 @@
     margin-left: 56px;
   }
 }
-
 
 @media (max-width: 1200px) {
   .CDB-Dashboard-canvas {
@@ -55,20 +57,24 @@
   body {
     overflow: hidden; // Avoid scroll in small screens
   }
+
   .CDB-Dashboard-canvas {
     @include flex-direction(column);
     position: relative;
+    box-sizing: border-box;
     width: calc(100% - 8px);
     height: calc(100% - 8px);
     margin: $halfBaseSize;
     padding: 0;
+    overflow: hidden;
     border-radius: $halfBaseSize;
     box-shadow: 0 2px 4px 0 rgba($cMainBg, 0.12);
-    box-sizing: border-box;
-    overflow: hidden;
   }
+
   .CDB-Dashboard-canvas::after {
+    content: '';
     position: absolute;
+    z-index: 10;
     top: 0;
     right: 0;
     bottom: 0;
@@ -76,16 +82,17 @@
     border: 1px solid rgba($cMainBg, 0.16);
     border-radius: $halfBaseSize;
     pointer-events: none;
-    content: '';
-    z-index: 10;
   }
+
   .CDB-Dashboard-mapWrapper--withMenu {
     order: 1;
     margin-left: 0;
   }
+
   .CDB-Dashboard-belowMap {
     margin-top: 2px;
   }
+
   .CDB-Map {
     border-radius: 0;
     border-top-left-radius: $halfBaseSize;

@@ -368,6 +368,7 @@ ion for time-series (#12670)
 * Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
 * Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
 * Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
+* Merge Deep-insights project in Cartodb (#13284)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

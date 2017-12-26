@@ -1,0 +1,99 @@
+// Canvas for widgets
+// --------------------------------------------------
+
+.CDB-Widget-canvas {
+  position: relative;
+  width: $desktopLayout;
+  min-width: $desktopLayout;
+  max-width: $desktopLayout;
+  margin-left: $baseSize;
+  border-radius: $baseSize / 2;
+}
+.CDB-Widget-canvasInner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: visible;
+  border-radius: $baseSize / 2;
+}
+.CDB-Widget-canvasShadow {
+  display: none;
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 60px;
+  z-index: 1;
+  pointer-events: none;
+}
+.CDB-Widget-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
+  top: 0;
+  border-top-left-radius: $baseSize / 2;
+  border-top-right-radius: $baseSize / 2;
+}
+.CDB-Widget-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
+  bottom: 0;
+  border-bottom-left-radius: $baseSize / 2;
+  border-bottom-right-radius: $baseSize / 2;
+}
+.CDB-Widget-canvasShadow.is-visible {
+  display: block;
+}
+.CDB-Widget-canvas .ps-scrollbar-y-rail {
+  z-index: 3;
+}
+.CDB-Widget-canvas .ps-scrollbar-x-rail {
+  z-index: 3;
+}
+
+@media (max-width: 1300px) {
+  .CDB-Widget-canvas {
+    width: $mobileLayout;
+    min-width: $mobileLayout;
+    max-width: $mobileLayout;
+  }
+}
+
+// Widget media query
+@media (max-width: 759px)  {
+
+  .CDB-Map-canvas {
+    @include display-flex();
+    flex: 2;
+  }
+  .CDB-LayerWidgets-canvas {
+    @include display-flex();
+    @include flex-wrap(nowrap);
+    position: relative;
+  }
+  .CDB-Widget-canvas .simplebar-content {
+    @include display-flex();
+    @include flex-wrap(nowrap);
+  }
+  .CDB-Widget-canvasShadow.is-visible {
+    display: none;
+  }
+  .CDB-Widget-canvasInner {
+    @include display-flex();
+    position: relative;
+  }
+
+  .CDB-Widget-canvas,
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+    order: 3;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-height: 420px) {
+  .CDB-Widget-canvas {
+    display: none !important;
+  }
+}

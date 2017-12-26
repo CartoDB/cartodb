@@ -1,0 +1,94 @@
+// Dashboard canvas
+// --------------------------------------------------
+
+.CDB-Dashboard-canvas {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
+  position: relative;
+  width: 100%;
+  height: 100%; // fill content to the visible viewport, but add scroll for overflowing inline content (e.g. widgets)
+  padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
+  background: rgba(#F2F6F9, 1); // Canvas is out of widget themes
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.CDB-Dashboard-mapWrapper {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include flex-direction(column);
+  @include flex-grow(1);
+}
+
+.CDB-Map-canvas {
+  @include flex-grow(1);
+  position: relative;
+}
+.CDB-Map {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1;
+}
+.CDB-Dashboard-belowMap {
+  margin-top: 8px;
+}
+
+@media (min-width: 1200px) {
+  .CDB-Dashboard-mapWrapper--withMenu {
+    margin-left: 56px;
+  }
+}
+
+
+@media (max-width: 1200px) {
+  .CDB-Dashboard-canvas {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 759px) {
+  body {
+    overflow: hidden; // Avoid scroll in small screens
+  }
+  .CDB-Dashboard-canvas {
+    @include flex-direction(column);
+    position: relative;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    margin: $halfBaseSize;
+    padding: 0;
+    border-radius: $halfBaseSize;
+    box-shadow: 0 2px 4px 0 rgba($cMainBg, 0.12);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .CDB-Dashboard-canvas::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba($cMainBg, 0.16);
+    border-radius: $halfBaseSize;
+    pointer-events: none;
+    content: '';
+    z-index: 10;
+  }
+  .CDB-Dashboard-mapWrapper--withMenu {
+    order: 1;
+    margin-left: 0;
+  }
+  .CDB-Dashboard-belowMap {
+    margin-top: 2px;
+  }
+  .CDB-Map {
+    border-radius: 0;
+    border-top-left-radius: $halfBaseSize;
+    border-top-right-radius: $halfBaseSize;
+  }
+}

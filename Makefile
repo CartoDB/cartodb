@@ -76,6 +76,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
+	spec/models/carto/api_key_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/visualization/watcher_spec.rb \

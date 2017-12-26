@@ -2,8 +2,8 @@ require 'json'
 
 module Carto
   class TablePermissions
-    ALLOWED_PERMISSIONS = ['select', 'insert', 'update', 'delete', 'truncate', 'references', 'trigger'].freeze
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
+    ALLOWED_PERMISSIONS = (WRITE_PERMISSIONS + ['select', 'references', 'trigger']).freeze
 
     attr_reader :schema, :name, :permissions
 
@@ -39,6 +39,12 @@ module Carto
     def initialize(grants_json = [])
       @granted_apis = []
       @table_permissions = {}
+
+      # TODO: this should be removed when complete, previous json schema validation grants it
+      unless grants_json.present? && grants_json.is_a?(Array)
+        raise Carto::UnprocesableEntityError.new("grants must be a nonempty array")
+      end
+
       grants_json.each { |grant| process_grant(grant) }
     end
 
@@ -69,7 +75,7 @@ module Carto
       when 'database'
         process_database_grant(grant[:tables])
       else
-        raise InvalidArgument.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
+        raise Carto::UnprocesableEntityError.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
       end
     end
 

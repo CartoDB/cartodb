@@ -353,6 +353,7 @@ ion for time-series (#12670)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
+* Make all the widgets cards clickable in the Add widgets modal (#13134)
 * Make new widgets appear on top (#13244)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 

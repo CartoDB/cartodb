@@ -1,45 +1,46 @@
 /*
  * Dropdown styles, with a subtle blurry border, and a triangle "tick" popping out of the dropdown box to indicate where it is anchored.
  *
- * The tick is composed by two injected elements by :before and :after the .Dropdown's content.
- * :before injects a square box, rotated 45 degrees, which has a box-shadow attached to it.
- * :after injects a rectangle with same background as the dropdown content, which overlaps :before's content to.
+ * The tick is composed by two injected elements by ::before and ::after the .Dropdown's content.
+ * ::before injects a square box, rotated 45 degrees, which has a box-shadow attached to it.
+ * ::after injects a rectangle with same background as the dropdown content, which overlaps ::before's content to.
  *
- *            /\         <-- tick_x:before, the visible half of the rotated square
+ *            /\         <-- tick_x::before, the visible half of the rotated square
  *   ________/..\_____
- *  |      :      :   |  <-- tick_x:after, the rectangle covering the other half of :before
+ *  |      :      :   |  <-- tick_x::after, the rectangle covering the other half of ::before
  *  |      :......:   |
  *
  * The tick can be placed horizontally by .tick_left/center/right, or vertically by .tick_top/middle/bottom, in
  * combination with horizontal_left/right and vertical_top/bottom.
  */
-@import '../variables/mixins';
 @import '../variables/colors';
 
 .Dropdown {
   display: none;
   position: absolute;
+  z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
   border-radius: 4px;
   background: $cStructure-mainBkg;
+
   /* x-offset, y-offset, blur, size, color */
   box-shadow: 0 0 5px 1px rgba(#000, 0.2), 0 0 1px 0 rgba(#000, 0.3);
-  z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
 
-  &:before {
-    @include transform(rotate(45deg));
+  &::before {
+    content: ' ';
     display: block !important;
     position: absolute;
     width: 10px;
     height: 10px;
+    transform: rotate(45deg);
     background-color: $cStructure-mainBkg;
     box-shadow: 0 0 5px 1px rgba(black, 0.2);
-    content: ' ';
   }
-  &:after {
+
+  &::after {
+    content: ' ';
     display: block !important;
     position: absolute;
     background-color: $cStructure-mainBkg;
-    content: ' ';
   }
 
   // Tick for 12 possibilities
@@ -47,45 +48,54 @@
   &.tick_middle,
   &.tick_bottom {
     &.horizontal_left {
-      &:before {
+      &::before {
         left: -5px;
       }
-      &:after {
+
+      &::after {
         left: 0;
       }
     }
+
     &.horizontal_right {
-      &:before {
+      &::before {
         right: -5px;
       }
-      &:after {
+
+      &::after {
         right: 0;
       }
     }
-    &:after {
+
+    &::after {
       width: 10px;
       height: 22px;
     }
   }
 
-  &.tick_top:before {
+  &.tick_top::before {
     top: 12px;
   }
-  &.tick_top:after {
+
+  &.tick_top::after {
     top: 6px;
   }
-  &.tick_middle:before {
+
+  &.tick_middle::before {
     top: 50%;
     margin-top: -3px;
   }
-  &.tick_middle:after {
+
+  &.tick_middle::after {
     top: 50%;
     margin-top: -9px;
   }
-  &.tick_bottom:before {
+
+  &.tick_bottom::before {
     bottom: 12px;
   }
-  &.tick_bottom:after {
+
+  &.tick_bottom::after {
     bottom: 6px;
   }
 
@@ -93,45 +103,54 @@
   &.tick_center,
   &.tick_right {
     &.vertical_top {
-      &:before {
+      &::before {
         bottom: -5px;
       }
-      &:after {
+
+      &::after {
         bottom: 0;
       }
     }
+
     &.vertical_bottom {
-      &:before {
+      &::before {
         top: -5px;
       }
-      &:after {
+
+      &::after {
         top: 0;
       }
     }
-    &:after {
+
+    &::after {
       width: 22px;
       height: 10px;
     }
   }
 
-  &.tick_left:before {
+  &.tick_left::before {
     left: 12px;
   }
-  &.tick_left:after {
+
+  &.tick_left::after {
     left: 6px;
   }
-  &.tick_center:before {
+
+  &.tick_center::before {
     left: 50%;
     margin-left: -3px;
   }
-  &.tick_center:after {
+
+  &.tick_center::after {
     left: 50%;
     margin-left: -9px;
   }
-  &.tick_right:before {
+
+  &.tick_right::before {
     right: 12px;
   }
-  &.tick_right:after {
+
+  &.tick_right::after {
     right: 6px;
   }
 
@@ -143,6 +162,7 @@
     width: 105px !important;
   }
 }
+
 .Dropdown--withScroll {
   height: 100%;
   max-height: 300px;
@@ -156,80 +176,88 @@
 }
 
 .Dropdown > ul > li {
-
   &:first-child {
-    border-top: 0;
     margin-top: 0;
+    border-top: 0;
   }
+
   &:last-child {
     margin-bottom: 0;
   }
 }
 
 .Dropdown > ul > li > p {
-
   &:first-child {
     margin-top: 0;
   }
 }
+
 .Dropdown-content {
-  @include display-flex();
-  @include flex(1);
-  @include flex-direction(column);
+  display: flex;
   position: relative;
+  flex: 1;
+  flex-direction: column;
   min-height: 0;
   max-height: 300px;
 
   .ScrollView {
+    flex-basis: auto;
     margin: 0;
     padding: 0;
-    -webkit-flex-basis: auto;
-    flex-basis: auto;
 
     .ScrollView-wrapper {
       margin: 0;
       padding: 0;
     }
+
     .ScrollView-content {
       padding: 0;
     }
   }
+
   .ps-scrollbar-y-rail {
-    right: 6px !Important;
-    width: 4px !Important; // Resets standard scroll track color
-    background: #EEE;
     z-index: 3;
+    right: 6px !important;
+    width: 4px !important; // Resets standard scroll track color
+    background: #EEE;
   }
+
   .ps-scrollbar-y {
     right: 0 !important;
-    width: 4px !Important; // Resets standard scroll bar color
+    width: 4px !important; // Resets standard scroll bar color
     background: #AAA;
+
     &:hover {
       cursor: all-scroll;
       cursor: -webkit-grab;
     }
+
     &:active {
       cursor: -webkit-grabbing;
     }
   }
+
   .ps-scrollbar-x-rail {
-    height: 2px !Important; // Resets standard scroll track color
+    z-index: 3;
+    height: 2px !important; // Resets standard scroll track color
     border-top: 12px solid #FFF;
     border-bottom: 2px solid #FFF;
     background: #EEE;
-    z-index: 3;
   }
+
   .ps-scrollbar-x-rail .ps-scrollbar-x {
-    bottom: -1px !Important; // Resets standard scroll bar position
-    height: 4px !Important; // Resets standard scroll bar color
-    pointer-events: all;
+    bottom: -1px !important; // Resets standard scroll bar position
+    height: 4px !important; // Resets standard scroll bar color
     opacity: 0.6;
+    pointer-events: all;
   }
+
   .ps-container > .ps-scrollbar-x-rail,
   .ps-container > .ps-scrollbar-y-rail {
     opacity: 0.6;
   }
 }
+
 .Dropdown-content--withScroll {
   height: 100%;
   max-height: 288px;
@@ -244,27 +272,33 @@
   display: block !important;
   margin: 2px 15px !important;
 }
+
 .DropdownList--list {
-  padding: 0;
   margin: 0 16px !important;
+  padding: 0;
 }
+
 .DropdownList-item {
   display: block !important;
+  margin: 0 !important;
   padding: 16px;
-  margin: 0!important;
-  border-bottom: 1px solid $cStructure-mainLine;
   border-top: none;
+  border-bottom: 1px solid $cStructure-mainLine;
 }
+
 .DropdownList-item--verticalPadding {
-  padding: 16px 0
+  padding: 16px 0;
 }
+
 .DropdownList-item--noPadding {
   padding: 8px;
 }
+
 .DropdownList-item:last-child {
-  border-bottom: none;
   border-top: none;
+  border-bottom: none;
 }
+
 .Dropdown--public {
   width: 220px;
   box-shadow: 0 1px 3px rgba(#000, 0.2);
@@ -273,9 +307,9 @@
     margin: 12px 20px;
   }
 
-  &:before,
-  &:after {
-    background-color: #f9f9f9;
+  &::before,
+  &::after {
     content: ' ';
+    background-color: #F9F9F9;
   }
 }

@@ -358,6 +358,7 @@ ion for time-series (#12670)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 
 ### Internals
+* Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)

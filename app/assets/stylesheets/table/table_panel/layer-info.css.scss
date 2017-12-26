@@ -1,5 +1,5 @@
 
-  /**
+/**
    *  Layer info styles
    *
    *  Styles for layer info elements, like name,
@@ -7,134 +7,163 @@
    *
    */
 
-  
-  @import "compass/css3/border-radius";
-  @import "../../table/table-sprite";
-  @import "../../old_common/mixins";
-  @import "../../old_common/form-elements";
+@import "compass/css3/border-radius";
+@import "../../table/table-sprite";
+@import "../../old_common/mixins";
+@import "../../old_common/form-elements";
 
+// LOCAL VARS
+$corner_radius: 6px;
 
-  // LOCAL VARS
-  $corner_radius: 6px;
+// Layer info, as name, order, ... etc
+.layer-info {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  height: 67px;
+  border-bottom: 1px solid rgba(#999, 0.25);
+  border-top-left-radius: $corner_radius;
+  line-height: 62px;
 
+  div.left {
+    width: 82%;
+  }
 
-  // Layer info, as name, order, ... etc
-  .layer-info {
-    position:absolute;
-    top:0; right:0; bottom:auto; left:0;
-    line-height:62px;
-    height:67px;
-    @include border-top-left-radius($corner_radius);
-    border-bottom:1px solid rgba(#999999,0.25);
-    z-index:0;
+  div.right {
+    width: 45px;
+    margin-right: 20px;
+  }
 
+  // Layer info block
+  .info {
+    display: block;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100%;
+    padding-left: 24px;
+    text-align: left;
 
-    div.left {width:82%;}
-    div.right {width:45px; margin-right:20px;}
+    * {
+      display: inline-block;
+      letter-spacing: 0;
+      vertical-align: top;
+      vertical-align: middle;
+    }
 
-    
-    // Layer info block
-    .info {
-      display:block;
-      left:0!important;
-      top:0!important;
-      width: 100%;
-      text-align: left;
-      padding-left: 24px;
+    // Order element
+    .order {
+      width: 16px;
+      padding: 1px 0;
 
-      * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
+      border-radius: 2px;
+      background: #A9A9A9;
+      color: #ECECEC;
+      font: bold 11px $text-fonts;
+      line-height: 16px;
+      text-align: center;
+    }
 
-      // Order element
-      .order {
-        width:16px;
-        padding:1px 0;
-        line-height:16px;
-        text-align:center;
-        font:bold 11px $text-fonts;
-        color:#ECECEC;
-        background:#A9A9A9;
-        @include border-radius(2px);
+    // Layer name
+    .name {
+      width: auto;
+      max-width: 80%;
+      margin-left: 23px;
+      overflow: hidden;
+      color: #A9A9A9;
+      font: bold 17px $text-fonts;
+      line-height: 20px;
+
+      @include text-overflow();
+
+      i.synced {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin: 5px 0 0 4px;
+        vertical-align: top;
+
+        @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
       }
-
-      // Layer name
-      .name {
-        max-width:80%;
-        width:auto;
-        @include text-overflow();
-        overflow:hidden;
-        margin-left:23px;
-        font:bold 17px $text-fonts;
-        color:#A9A9A9;
-        line-height:20px;
-
-        i.synced {
-          @include inline-block();
-          vertical-align:top;
-          width:12px;
-          height:12px;
-          margin:5px 0 0 4px;
-          @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
-        }
-
-        &:hover {
-          cursor:pointer;
-          i.synced {
-            @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
-          }
-        }
-      }
-
-      // Layer info (second name?)
-      .name_info {
-        position:absolute;
-        @include display-flex();
-        top: 34px;
-        left: 67px;
-        overflow: hidden;
-        max-width: 80%;
-        width: auto;
-        font: normal 11px $text-fonts;
-        color: #AAA;
-        @include text-overflow();
-        line-height:15px;
-
-        a { margin-left: 5px }
-      }
-
 
       &:hover {
-        text-decoration:none;
-        cursor:pointer;
-        .name {color:#666;}
-        .order {background:#666;}
+        cursor: pointer;
+
+        i.synced {
+          @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
+        }
       }
     }
 
+    // Layer info (second name?)
+    .name_info {
 
-    // Layer name edition
-    @include default-input();
-    input.alias {
-      @include default-input();
-      position:absolute;
-      display:none;
-      top:7px;
-      left:57px;
-      padding:6px 9px;
-      font:bold 17px $text-fonts;
-      color:#787878;
+      display: flex;
+      position: absolute;
+      top: 34px;
+      left: 67px;
+      width: auto;
+      max-width: 80%;
+      overflow: hidden;
+      color: #AAA;
+      font: normal 11px $text-fonts;
+      line-height: 15px;
+
+      @include text-overflow();
+
+      a {
+        margin-left: 5px;
+      }
     }
 
+    &:hover {
+      text-decoration: none;
+      cursor: pointer;
 
-    // Remove button
-    .remove {
-      @include inline-block();
-      vertical-align:middle;
-      letter-spacing:0px;
-      width:13px;
-      height:13px;
-      margin-left:5px;
-      @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
-      &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
-      &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+      .name {
+        color: #666;
+      }
+
+      .order {
+        background: #666;
+      }
     }
   }
+
+  // Layer name edition
+  @include default-input();
+
+  input.alias {
+    @include default-input();
+    display: none;
+    position: absolute;
+    top: 7px;
+    left: 57px;
+    padding: 6px 9px;
+    color: #787878;
+    font: bold 17px $text-fonts;
+  }
+
+  // Remove button
+  .remove {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    margin-left: 5px;
+    letter-spacing: 0;
+    vertical-align: top;
+    vertical-align: middle;
+
+    @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+
+    &:hover {
+      @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);
+    }
+
+    &:active {
+      @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);
+    }
+  }
+}

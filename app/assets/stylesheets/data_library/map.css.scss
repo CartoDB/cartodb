@@ -1,5 +1,3 @@
-@import '../variables/mixins';
-
 // Data Library Header
 // --------------------------------------------------
 
@@ -11,10 +9,12 @@
   width: 100%;
   height: 100%;
 }
+
 .DataLibraryMap,
 .DataLibraryMap .leaflet-zoom-animated {
   background: #2E3C43 !important;
 }
+
 .DataLibrary-header {
   height: 450px;
 
@@ -32,18 +32,13 @@
     }
   }
 }
+
 .DataLibrary-gradient {
   display: none;
   position: relative;
+  z-index: 9;
   width: 100%;
   height: 100px;
   margin-top: -70px;
-  background: rgba(#000, 0.4);
-  background: -moz-linear-gradient(top, rgba(#000, 0.4) 0%, rgba(#000, 0) 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(#000, 0)), color-stop(100%, rgba(#000, 0)));
-  background: -webkit-linear-gradient(top, rgba(#000, 0.4) 0%, rgba(#000, 0) 100%);
-  background: -o-linear-gradient(top, rgba(#000, 0.4) 0%, rgba(#000, 0) 100%);
-  background: -ms-linear-gradient(top, rgba(#000, 0.4) 0%, rgba(#000, 0) 100%);
   background: linear-gradient(to bottom, rgba(#000, 0.4) 0%, rgba(#000, 0) 100%);
-  z-index: 9;
 }

@@ -9,11 +9,13 @@
   font-family: 'Open Sans';
   line-height: 40px;
 }
+
 .CDB-Widget-link {
   &:hover {
     text-decoration: underline;
   }
 }
+
 .CDB-Widget-buttonIcon--circle {
   width: $baseSize * 2;
   height: $baseSize * 2;
@@ -26,6 +28,7 @@
 .CDB-Widget-buttonIcon,
 .CDB-Widget-button {
   font-family: 'Open Sans';
+
   &:hover {
     cursor: pointer;
   }

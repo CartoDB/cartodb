@@ -1,6 +1,5 @@
 @import 'compass/css3/images';
 @import '../variables/colors';
-@import '../variables/mixins';
 @import '../variables/sizes';
 
 $sBorderCompensation: 2px;
@@ -15,62 +14,73 @@ $sEditButtonSize: 50px;
   border-radius: $sCard-borderRadius;
   background-color: $cStructure-mainBkg;
 }
+
 .DatasetCard-title {
   width: 100%; // required for child text-overflow to work as expected in FF
   margin: 0 0 3px;
 }
+
 .DatasetCard-content { // To position contentDetail at top of content, and contentFooter at bottom
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
-  @include flex-direction(column);
-  @include opacity(1);
-  @include transition(opacity, $opacityTransition);
+  display: flex;
   position: relative;
-  padding: 17px $sMargin-element 16px;
-  border-radius: $sCard-borderRadius;
   z-index: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px $sMargin-element 16px;
+  transition: opacity $opacityTransition;
+  border-radius: $sCard-borderRadius;
+  opacity: 1;
 }
+
 .DatasetCard-contentFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
-  @include flex-wrap(nowrap);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
 }
+
 .DatasetCard-contentFooter > *:not(:last-child) {
   margin-right: 20px;
 }
+
 .DatasetCard-contentBody {
   width: 100%;
 }
+
 .DatasetCard-contentBodyRow {
   margin-bottom: $sMargin-min;
 }
+
 .DatasetCard-contentBodyRow--flex {
-  @include display-flex();
-  @include justify-content(flex-start);
-  @include align-items(center);
-  @include flex-wrap(nowrap);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
 }
+
 .DatasetCard-contentBodyDetails--left {
-  @include display-flex();
+  display: flex;
 }
+
 .DatasetCard-contentBodyDetails--right {
-  @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(space-between, justify);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 100%;
 }
 
 // Animation function
-@include keyframes(pulsate) {
+@keyframes pulsate {
   0% {
     right: 100%;
   }
+
   50% {
     right: 0%;
   }
+
   100% {
     right: -100%;
   }

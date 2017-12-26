@@ -8,6 +8,7 @@
   margin-top: $baseSize * 2;
   border: 1px solid transparent; // border used for :hover, color set in theme
   border-radius: 4px;
+
   &:hover {
     cursor: pointer;
   }
@@ -19,6 +20,7 @@
   @include justify-content(center);
   @include align-items(center);
 }
+
 .CDB-Widget-controlButtonIcon {
   display: block;
   width: $baseSize;

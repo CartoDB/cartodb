@@ -34,20 +34,25 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Widget-textInput {
     color: $primary;
   }
+
   .CDB-Widget-link,
   .CDB-Widget-buttonIcon {
     border-color: $link;
+
     &:hover {
       border-color: $linkHover;
       color: $linkHover;
     }
   }
+
   .CDB-Widget-buttonIcon--circle {
     color: $cBlue;
   }
+
   .CDB-Widget-buttonIcon--circle.is-selected {
     background-color: $link;
     color: #FFF;
+
     &:hover {
       border-color: $linkHover;
       background: $linkHover;
@@ -56,6 +61,7 @@ $timeSliderBorder: rgba(#FFF, 1);
 
   .CDB-Widget-controlButton {
     background-color: $link;
+
     &:hover {
       border-color: $linkHover;
       background: $linkHover;
@@ -65,6 +71,7 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Widget-controlButton.is-disabled {
     opacity: 0.24;
     pointer-events: none;
+
     &:hover {
       border-color: $primary;
       background: $primary;
@@ -74,72 +81,89 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Widget-progressBar {
     background: $elementBkg;
   }
+
   .CDB-Widget-progressState {
     background-color: $highlighted;
   }
+
   .CDB-Widget-progressState--positive {
     background-color: $positive;
   }
+
   .CDB-Widget-progressState--negative {
     background-color: $negative;
   }
+
   .CDB-Widget-progressState--inactive {
     background-color: $elementBkg !important;
   }
+
   .CDB-Widget-progressState--pattern {
     background-color: $cMainBg;
     background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
   }
+
   .CDB-Widget-progressState.is-accepted {
     background-color: $cMainBg;
   }
+
   .CDB-Widget-dot--navigation {
     background: $elementBkg;
+
     &:hover {
       background: $elementBkgHover;
     }
   }
+
   .CDB-Widget-dot--navigation.is-selected {
     background: $secondary;
   }
 
-
   .CDB-Widget-listEdgeBorder {
     background: $elementBorder;
   }
+
   .CDB-Widget-listEdgeShadow {
     @include background-gradient($commonBkg, rgba($commonBkg, 0));
     background-color: transparent;
   }
+
   .CDB-Widget-listItemInner--withBorders {
     border-bottom: 1px solid $elementBorder;
   }
+
   .CDB-Widget-listItem--fake {
     border-color: $loadingBkg;
   }
+
   .CDB-Widget-listItem--fake::after,
   .CDB-Widget-listItem--fake::before {
     background-color: $loadingBkg;
   }
+
   .CDB-Widget-listButton:hover {
     .CDB-Widget-progressState:not(.is-accepted) {
       background: $cHighlightHover;
     }
   }
+
   .CDB-Widget-listButton--withBorder {
     &::before {
       background: transparent;
     }
+
     &::after {
       background: $elementBkg;
     }
   }
+
   .CDB-Widget-listButton--withBorder:hover {
     &::after,
     &::before {
       background: $elementBkg;
     }
   }
+
   .CDB-Widget-chartItem--fake,
   .CDB-Widget-timeSeriesTimeInfo--fake,
   .CDB-Widget-timeSeriesFakeControl,
@@ -151,7 +175,6 @@ $timeSliderBorder: rgba(#FFF, 1);
     border-top: 2px solid $negative;
   }
 
-
   .CDB-Shape-dot {
     background: $elementBorder;
   }
@@ -160,6 +183,7 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Shape-arrow::before {
     background-color: $link;
   }
+
   .CDB-Shape-arrow:hover {
     &::after,
     &::before {
@@ -171,14 +195,17 @@ $timeSliderBorder: rgba(#FFF, 1);
     &::after {
       border-color: $link;
     }
+
     &::before {
       background: $link;
     }
   }
+
   .CDB-Shape-lens:hover {
     &::after {
       border-color: $linkHover;
     }
+
     &::before {
       background: $linkHover;
     }
@@ -201,85 +228,107 @@ $timeSliderBorder: rgba(#FFF, 1);
   .CDB-Chart-bar--timeSeries {
     fill: $highlightedAlternative;
   }
+
   .CDB-Chart-bar--timeSeries.is-highlighted {
     fill: $darkHighlightedAlternative;
   }
+
   .CDB-Chart-shadowBar {
     fill: $lightHighlight;
   }
+
   .CDB-Chart-handleRect {
-    stroke: $link;
     stroke-width: 1;
+    stroke: $link;
     fill: $commonBkg;
   }
+
   .CDB-Chart-staticTip {
     background: $chartLine;
   }
+
   .CDB-Chart-staticTipText,
   .CDB-Chart-timeSliderTipText {
     font-weight: bold;
   }
+
   .CDB-Chart-staticTipText {
     color: $primary;
   }
+
   .CDB-Chart-timeSliderTip {
     fill: $primary;
   }
+
   .CDB-Chart-timeSliderTipText {
     fill: $chartLine;
   }
+
   .CDB-Chart-axisTipRect {
     fill: $chartLine;
   }
+
   .CDB-Chart-axisTipRect--inverted {
-    font-weight: bold;
     fill: $primary;
+    font-weight: bold;
   }
+
   .CDB-Chart-axisTipText {
-    font-weight: bold;
     fill: $primary;
+    font-weight: bold;
   }
+
   .CDB-Chart-axisTipText--inverted {
     stroke: $chartLine;
   }
+
   .CDB-Chart-handleLine {
     stroke: $link;
   }
+
   .CDB-Chart.CDB-Chart--mini {
     .CDB-Chart-bar {
       fill: $lightHighlight;
     }
+
     .CDB-Chart-bar.is-selected {
       fill: $chartMiniSelected;
     }
+
     .CDB-Chart-bar.is-filtered {
       fill: $lightHighlight;
     }
   }
+
   .CDB-Chart-line {
     stroke: $chartLine;
   }
+
   .CDB-Chart-line.CDB-Chart-line--bottom {
     stroke: $blackBkg;
   }
+
   .CDB-Chart-handleGrip {
     stroke: $chartHandleGrip;
   }
+
   .CDB-Chart-axis {
     fill: $chartAxis;
   }
+
   .CDB-Chart-axis.is-disabled {
     fill: rgba($chartAxis, 0.4);
   }
+
   .CDB-Chart-axis line {
     stroke: $chartLine;
   }
 
   // TimeSlider
   .CDB-TimeSlider {
-    fill: $primary;
     stroke-width: 1px;
     stroke: $timeSliderBorder;
+    fill: $primary;
   }
 
   .CDB-Dropdown {
@@ -298,6 +347,7 @@ $timeSliderBorder: rgba(#FFF, 1);
     &:hover {
       background: rgba($cHighlight, 0.16);
     }
+
     &.is-delete {
       color: $negative;
     }
@@ -312,9 +362,11 @@ $timeSliderBorder: rgba(#FFF, 1);
     .CDB-Widget-textSmaller--dark {
       color: $disabled;
     }
+
     .CDB-Widget-progressState {
       background-color: $disabled !important; // Preventing problems with inline colors
     }
+
     .CDB-Widget-progressState--pattern {
       background-color: rgba($disabled, 0.3) !important;
       background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.3) 1px, transparent 1px, transparent 2px) !important;
@@ -327,6 +379,7 @@ $timeSliderBorder: rgba(#FFF, 1);
     background: $blackBkg;
     color: $commonBkg;
   }
+
   &.CDB-Widget-tooltip::after {
     border-top-color: $blackBkg;
   }

@@ -1,83 +1,91 @@
-@import "../../variables/mixins";
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
-
 .CreateDialog-header {
+  min-height: 100px !important;
   max-height: 100px;
-  min-height: 100px!important;
 }
-.CreateDialog-header.with-separator { border-bottom: 1px solid $cStructure-mainLine }
+.CreateDialog-header.with-separator { border-bottom: 1px solid $cStructure-mainLine; }
+
 .CreateDialog-headerSteps {
   display: block;
   text-align: center;
 }
+
 .CreateDialog-headerStep {
   display: inline-block;
   width: auto;
   min-width: 130px;
   margin-right: 98px;
 }
-.CreateDialog-headerStep:last-child { margin-right: 0 }
+.CreateDialog-headerStep:last-child { margin-right: 0; }
 // TODO: this should be deprecated/removed by using standalone .LayoutIcon instead
 .CreateDialog-header .Dialog-headerIcon {
-  @include display-flex();
-  @include justify-content(center, center);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
   border-color: #CCC;
   line-height: 42px;
 }
+
 .CreateDialog-header .Dialog-headerIcon .CDB-IconFont {
   color: #CCC;
 }
+
 .CreateDialog-header .CDB-IconFont-add {
   font-size: 20px;
 }
+
 .CreateDialog-header .Dialog-headerTitle {
-  line-height: $sLineHeight-large;
-  font-size: $sFontSize-larger;
   color: $cTypography-help;
+  font-size: $sFontSize-larger;
+  line-height: $sLineHeight-large;
 }
+
 .CreateDialog-header .Dialog-headerText {
+  color: $cTypography-help;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
-  color: $cTypography-help;
 }
+
 .CreateDialog-header .Dialog-headerIconBadge {
   position: absolute;
   top: -8px;
   right: -8px;
   width: 15px;
   height: 15px;
-  line-height: $sLineHeight-smaller;
-  text-align: center;
   border: 1px solid #CCC;
   border-radius: 15px;
   background: white;
+  line-height: $sLineHeight-smaller;
+  text-align: center;
 }
+
 .CreateDialog-header .Dialog-headerIconBadge .CDB-IconFont {
+  margin-top: 1px;
   color: $cTypography-secondary;
   font-size: $sFontSize-smaller;
   vertical-align: top;
-  margin-top: 1px;
 }
+
 .CreateDialog-headerButton {
-  position: absolute;
   display: block;
-  left: 30px;
+  position: absolute;
+  z-index: 1;
   top: 40px;
+  left: 30px;
   width: 38px;
   height: 38px;
-  line-height: 38px;
   border: 1px solid #CCC;
+  border-radius: 40px;
   outline: none;
+  background: none;
+  color: #CCC;
   font-size: $sFontSize-largest;
   font-weight: $sFontWeight-lighter;
-  color: #CCC;
-  border-radius: 40px;
-  background: none;
-  z-index: 1;
+  line-height: 38px;
+
   &:hover {
     border: 1px solid #999;
     color: #999;
@@ -87,23 +95,27 @@
 // Step selected or selectable
 .CreateDialog-headerStep.is-selected,
 .CreateDialog-headerStep.is-selectable:hover {
-  .Dialog-headerIcon { border-color: $cIcons-active }
+  .Dialog-headerIcon { border-color: $cIcons-active; }
+
   .CDB-IconFont {
     color: $cIcons-active;
   }
+
   .Dialog-headerText,
   .Dialog-headerTitle {
     color: $cTypography-paragraphs;
   }
+
   .Dialog-headerIconBadge {
     border-color: $cHighlight-main;
     color: $cHighlight-positive;
   }
 }
+
 .CreateDialog-headerStep.CreateDialog-headerStep--single {
   .Dialog-headerText,
   .Dialog-headerTitle {
     color: $cTypography-paragraphs;
   }
 }
-.CreateDialog-headerStep.is-selectable:hover { cursor: pointer }
+.CreateDialog-headerStep.is-selectable:hover { cursor: pointer; }

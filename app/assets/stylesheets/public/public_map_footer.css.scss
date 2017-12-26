@@ -7,54 +7,51 @@
 @import "../old_common/vars";
 
 .cartodb-footer {
-  font-size:13px;
-  font-family: $text-fonts;
-  color: #999999;
-  background: #F6F6F6;
-  border-top: 1px solid #D1D1D1;
   padding: 40px 0;
+  border-top: 1px solid #D1D1D1;
+  background: #F6F6F6;
+  color: #999;
+  font-family: $text-fonts;
+  font-size: 13px;
 
   a {
-    font-size:13px;
     color: #2483B2;
+    font-size: 13px;
     text-decoration: none;
 
     &:hover {
-      text-decoration: underline;
       color: #333;
+      text-decoration: underline;
     }
   }
 
-  .embed-left-col .content { border-right: none }
+  .embed-left-col .content {
+    border-right: none;
+  }
 }
-
-
 
 // Hello media queries
 
 @media only screen and (max-width: 710px) {
-
-  div.cartodb-footer .inner .embed-left-col  {
-    text-align: center;
+  div.cartodb-footer .inner .embed-left-col {
     padding: 10px 0;
-  }
-
-  div.cartodb-footer .inner .embed-right-col  {
     text-align: center;
   }
 
+  div.cartodb-footer .inner .embed-right-col {
+    text-align: center;
+  }
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
-
-  div.cartodb-footer .inner .embed-left-col  {
-    float:left;
+  div.cartodb-footer .inner .embed-left-col {
     width: 50%;
+    float: left;
   }
 
-  div.cartodb-footer .inner .embed-right-col  {
-    float: right;
+  div.cartodb-footer .inner .embed-right-col {
     width: 50%;
-    text-align:right;
+    float: right;
+    text-align: right;
   }
 }

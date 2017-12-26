@@ -20,10 +20,12 @@
   margin-top: 29px;
   margin-right: $baseSize * 3;
 }
+
 .CDB-Widget-timeSeriesTimeInfo {
   margin-right: $baseSize;
   white-space: nowrap;
 }
+
 .CDB-Widget-timeSeriesTimeInfo--fake {
   width: 140px;
   height: $baseSize;
@@ -37,9 +39,11 @@
   height: 92px; // value to match real widget content height, to avoid "jumpy" behavior
   margin-top: 29px;
 }
+
 .CDB-Widget-timeSeriesFakeChart--torque {
   height: 89px; // value to match real widget content height, to avoid "jumpy" behavior
 }
+
 .CDB-Widget-timeSeriesFakeChartItem {
   @include flex-grow(1);
   display: inline-block;
@@ -50,6 +54,7 @@
   .CDB-Widget-timeSeriesFakeChart {
     height: $baseSize * 2;
   }
+
   .CDB-Widget-timeSeriesTimeInfo .CDB-Size-large {
     font-size: 12px;
     line-height: 16px;

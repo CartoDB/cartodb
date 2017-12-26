@@ -1,5 +1,5 @@
 
-  /**
+/**
    *  Layer panel sidebar styles.
    *
    *  - Menu for each layer panel.
@@ -7,166 +7,177 @@
    *
    */
 
-  @import "compass/css3/images";
-  @import "compass/css3/opacity";
-  @import "compass/css3/inline-block";
-  @import "../../table/table-sprite";
-  @import "../../old_common/mixins";
+@import "compass/css3/images";
+@import "compass/css3/inline-block";
+@import "../../table/table-sprite";
+@import "../../old_common/mixins";
 
+// Layer actions sidebar
+.layer-sidebar {
 
-  // Layer actions sidebar
-  .layer-sidebar {
-    position:absolute;
-    top:68px;
-    bottom:0;
-    left:0;
-    @include inline-block();
-    @include size(65px, auto);
-    letter-spacing:0;
-    @include border-left-radius(4px);
-    @include single-box-shadow( -4px, 0, 5px, 0, rgba(black,0.03), true);
-    z-index:6;
+  display: inline-block;
+  position: absolute;
+  z-index: 6;
+  top: 68px;
+  bottom: 0;
+  left: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  letter-spacing: 0;
+  vertical-align: top;
 
-    nav {
-      position:absolute;
-      left:0;
-      width:100%;
+  @include size(65px, auto);
+  @include single-box-shadow( -4px, 0, 5px, 0, rgba(black,0.03), true);
 
-      // Tools menu
-      &.tools {
-        top:0;
-        
-        a.has_errors {
-          position:relative;
+  nav {
+    position: absolute;
+    left: 0;
+    width: 100%;
 
+    // Tools menu
+    &.tools {
+      top: 0;
+
+      a.has_errors {
+        position: relative;
+
+        span.error {
+          content: '!';
+          position: absolute;
+          top: 19px;
+          left: 36px;
+          width: 8px;
+          height: 8px;
+          border-radius: 10px;
+          background: #EB2466;
+          box-shadow: rgba(#E5E5E5, 1) 0 0 0 1px;
+          color: white;
+          font-size: 8px;
+          line-height: 10px;
+        }
+
+        &.sql_mod {
           span.error {
-            content:'!';
-            position:absolute;
-            top:19px;
-            left:36px;
-            width:8px;
-            height:8px;
-            background:#EB2466;
-            @include border-radius(10px);
-            @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
-            color:white;
-            font-size:8px;
-            line-height:10px;
-          }
-
-          &.sql_mod {
-            span.error {top:20px; left:39px;}
-          }
-        }
-
-        a.applied {
-          span.run {
-            position:absolute;
-            top:32px;
-            left:39px;
-            width:8px;
-            height:8px;
-            background:#36D900;
-            @include background(linear-gradient(#36D900,#238C00));
-            @include border-radius(10px);
-            @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
-            color:white;
-            font-size:8px;
-            line-height:10px;
-
-            &:before {
-              content:'';
-              position:absolute;
-              top:2px;
-              left:3px;
-              width:0;
-              height:0;
-              border-bottom:2px solid transparent;
-              border-top:2px solid transparent;
-              border-left:2px solid white;
-            }
+            top: 20px;
+            left: 39px;
           }
         }
       }
 
-      // Edit menu
-      &.edit {
-        bottom:0;
-        a.merge_datasets {border-top:1px solid rgba(#999999,0.25);}
-      }
+      a.applied {
+        span.run {
+          position: absolute;
+          top: 32px;
+          left: 39px;
+          width: 8px;
+          height: 8px;
+          border-radius: 10px;
+          background: #36D900;
+          box-shadow: rgba(#E5E5E5, 1) 0 0 0 1px;
+          color: white;
+          font-size: 8px;
+          line-height: 10px;
 
-      a {
-        position:relative;
-        display:block;
-        width:100%;
-        height:60px;
-        @include text-indent();
-        border-bottom:1px solid rgba(#999999,0.25);
-        z-index:0;
-        @include opacity(0.75);
+          @include background(linear-gradient(#36D900,#238C00));
 
-        &.sql_mod        { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-        &.filters_mod    { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
-        &.cartocss_mod   { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
-        &.infowindow_mod { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
-        &.legends_mod    { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-663px);}
-
-        &.wizards_mod    {
-          @include table-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
-          &.selected:before, &.selected:after { border-right-color: #575757; }
-          &.selected:after {right:-1px;}
-        }
-
-        // tool buttons
-        &.add_row {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
-        &.add_column {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
-        &.merge_datasets {@include table-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
-
-        &.add_feature {
-          border-top:1px solid rgba(#999999,0.25);
-          @include table-sprite(table_icons, $offset-x:19px, $offset-y:-489px);
-        }
-
-        &:hover {
-          cursor:pointer;
-          @include opacity(1);
-        }
-
-        &.disabled {
-          @include opacity(0.15);
-          border-color:#999;
-        }
-
-        &.selected {
-          @include opacity(1);
-
-          &:before {
-            position:absolute;
-            content:'';
-            right:-1px;
-            top:50%;
-            margin:-7px 0 0 0;
-            width:0;
-            height:0;
-            border-top:7px solid transparent;
-            border-bottom:7px solid transparent;
-            border-right:7px solid white;
-            z-index:1;
-          }
-          &:after {
-            position:absolute;
-            content:'';
-            right:0;
-            top:50%;
-            margin:-7px 0 0 0;
-            width:0;
-            height:0;
-            border-top:7px solid transparent;
-            border-bottom:7px solid transparent;
-            border-right:7px solid #D0D0D0;
-            z-index:0;
+          &::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            width: 0;
+            height: 0;
+            border-top: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+            border-left: 2px solid white;
           }
         }
       }
     }
+
+    // Edit menu
+    &.edit {
+      bottom: 0;
+      a.merge_datasets { border-top: 1px solid rgba(#999, 0.25); }
+    }
+
+    a {
+      display: block;
+      position: relative;
+      z-index: 0;
+      width: 100%;
+      height: 60px;
+      border-bottom: 1px solid rgba(#999, 0.25);
+      opacity: 0.75;
+
+      @include text-indent();
+
+      &.sql_mod { @include table-sprite(table_icons, $offset-x: 20px, $offset-y: -3px); }
+      &.filters_mod { @include table-sprite(table_icons, $offset-x: 21px, $offset-y: -62px); }
+      &.cartocss_mod { @include table-sprite(table_icons, $offset-x: 21px, $offset-y: -549px); }
+      &.infowindow_mod { @include table-sprite(table_icons, $offset-x: 20px, $offset-y: -430px); }
+      &.legends_mod { @include table-sprite(table_icons, $offset-x: 20px, $offset-y: -663px); }
+
+      &.wizards_mod {
+        @include table-sprite(table_icons, $offset-x: 21px, $offset-y: -370px);
+
+        &.selected::before,
+        &.selected::after { border-right-color: #575757; }
+        &.selected::after { right: -1px; }
+      }
+
+      // tool buttons
+      &.add_row { @include table-sprite(table_icons, $offset-x: 22px, $offset-y: -307px); }
+      &.add_column { @include table-sprite(table_icons, $offset-x: 22px, $offset-y: -247px); }
+      &.merge_datasets { @include table-sprite(table_icons, $offset-x: 21px, $offset-y: -186px); }
+
+      &.add_feature {
+        border-top: 1px solid rgba(#999, 0.25);
+
+        @include table-sprite(table_icons, $offset-x: 19px, $offset-y: -489px);
+      }
+
+      &:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      &.disabled {
+        border-color: #999;
+        opacity: 0.15;
+      }
+
+      &.selected {
+        opacity: 1;
+
+        &::before {
+          content: '';
+          position: absolute;
+          z-index: 1;
+          top: 50%;
+          right: -1px;
+          width: 0;
+          height: 0;
+          margin: -7px 0 0 0;
+          border-top: 7px solid transparent;
+          border-right: 7px solid white;
+          border-bottom: 7px solid transparent;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          z-index: 0;
+          top: 50%;
+          right: 0;
+          width: 0;
+          height: 0;
+          margin: -7px 0 0 0;
+          border-top: 7px solid transparent;
+          border-right: 7px solid #D0D0D0;
+          border-bottom: 7px solid transparent;
+        }
+      }
+    }
   }
+}

@@ -9,18 +9,21 @@
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
 .OrganizationList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include flex-wrap(wrap);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
   margin-top: 1px; // makes the list not be overlapped by a .Filters block (so selected/hoevered item's border looks OK)
   padding-bottom: 30px;
-  width: 100%;
 }
+
 .OrganizationList--centered {
+  align-items: center;
+
+  justify-content: center;
   min-height: 300px;
-  @include justify-content(center, center);
-  @include align-items(center, center);
 }
+
 .OrganizationList-user {
   position: relative;
   width: 100%;
@@ -29,73 +32,85 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 // TODO: this is duplicated from .DatasetsList-item, can we consolidate these styles somehow?
 .OrganizationList-user.is-selectable:hover {
-  background-color: $cCard-hoverFill;
+  margin-top: -1px;
+  margin-right: -#{$sMargin-element};
+  margin-left: -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
   border: 1px $cCard-hoverBorder solid;
   border-radius: 4px;
-  margin-left: -#{$sMargin-element};
-  margin-right: -#{$sMargin-element};
-  margin-top: -1px;
-  padding: 0 $selectedItemPaddingOnSides;
+  background-color: $cCard-hoverFill;
 }
+
 .OrganizationList-user.is-selected {
-  background-color: $cCard-selectedFill;
+  margin-top: -1px; // to overlap border of prev element
+  margin-right: -#{$sMargin-element};
+  margin-left: -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
   border: 1px $cCard-selectedBorder solid;
   border-radius: 4px;
-  margin-left: -#{$sMargin-element};
-  margin-right: -#{$sMargin-element};
-  margin-top: -1px; // to overlap border of prev element
-  padding: 0 $selectedItemPaddingOnSides;
+  background-color: $cCard-selectedFill;
+
   &:hover {
-    background-color: $cCard-selectedFill;
     border: 1px $cCard-selectedBorder solid;
+    background-color: $cCard-selectedFill;
   }
 }
+
 .OrganizationList-userAvatar {
   width: 42px;
   height: 42px;
   margin-right: 20px;
 }
+
 .OrganizationList-userAvatar--img {
   border: 0;
 }
+
 .OrganizationList-userLink {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(flex-end);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
   padding: $sMargin-element 0;
-  text-decoration: none!important;
+  text-decoration: none !important;
 }
+
 .OrganizationList-userInfo {
-  @include display-flex();
-  @include flex-direction(row);
-  @include align-items(flex-end);
-  @include justify-content(space-between);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
   width: 100%;
 }
+
 .OrganizationList-userInfoName {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-content(space-between);
-  @include justify-content(space-between, start);
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  justify-content: space-between;
   max-width: 350px;
   height: 40px;
   padding: 1px 0;
 }
+
 .OrganizationList-userInfoSubtitle {
   color: $cTypography-secondary;
   font-size: 13px;
   font-weight: 300;
   line-height: 16px;
 }
+
 .OrganizationList-userInfoData {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
+  flex-direction: row;
 }
+
 .OrganizationList-userStats {
   width: 200px;
   margin-top: 10px;
+
   @include progress-bar(6px, 20px, false, 4px);
 }
+
 .OrganizationList-userLink:hover {
   cursor: pointer;
 
@@ -103,12 +118,14 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
     color: $cTypography-linkHover;
   }
 }
+
 .OrganizationList-userLink.is-disabled {
-  cursor: initial;
   opacity: 0.5;
+  cursor: initial;
 }
+
 .OrganizationList-paginator {
-  @include display-flex();
-  @include justify-content(flex-end, end);
+  display: flex;
+  justify-content: flex-end;
   padding: 30px 0;
 }

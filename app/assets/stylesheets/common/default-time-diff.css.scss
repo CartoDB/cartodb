@@ -2,16 +2,19 @@
 // --------------------------------------------------
 
 @import "../variables/colors";
-@import "../variables/mixins";
 @import "../variables/sizes";
 
 .DefaultTimeDiff {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
 }
+
 .DefaultTimeDiff-icon {
   margin-right: 5px;
-  font-size: $sFontSize-smallUpperCase;
   color: $cTypography-help;
+  font-size: $sFontSize-smallUpperCase;
 }
-.DefaultTimeDiff p { margin-left: 5px }
+
+.DefaultTimeDiff p {
+  margin-left: 5px;
+}

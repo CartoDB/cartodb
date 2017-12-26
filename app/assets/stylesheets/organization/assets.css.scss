@@ -1,4 +1,3 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 
 // Color variables
@@ -31,30 +30,31 @@ $actionBarHeight: 17px;
 
 .IconList {
   // scss-lint:disable Shorthand
-  @include display-flex;
-  @include flex-wrap(wrap);
+  display: flex;
   position: relative;
+  flex-wrap: wrap;
   margin: 0 -12px 0 0;
 }
 
 .IconList-item {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;
   margin-right: $iconMargin;
   margin-bottom: $iconMargin;
+  overflow: hidden;
   border: 1px solid $cForms-border;
   border-radius: 4px;
   background: $cStructure-mainBkg;
-  box-sizing: border-box;
-  overflow: hidden;
 
   &:last-child {
     margin-right: 0;
   }
+
   &:hover {
     border: 1px solid $cForms-hover;
     cursor: pointer;

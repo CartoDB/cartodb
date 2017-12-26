@@ -2,65 +2,93 @@
  * Styles for the CartoDB table
  */
 
-  @import "../old_common/vars";
-  @import "../old_common/form-elements";
-  @import "../table/table-sprite";
-  @import "../old_elements/progress-bar";
+@import "../old_common/vars";
+@import "../old_common/form-elements";
+@import "../table/table-sprite";
+@import "../old_elements/progress-bar";
 
-  @-webkit-keyframes highlight-fade {
-    0%   { background: none; }
-    20%   { background: #ECFCE5; }
-    80%   { background: #ECFCE5; }
-    100% { background: none; }
+@-webkit-keyframes highlight-fade {
+  0% {
+    background: none;
   }
 
-  @keyframes highlight-fade {
-    0%   { background: none; }
-    20%   { background: #ECFCE5; }
-    80%   { background: #ECFCE5; }
-    100% { background: none; }
+  20% {
+    background: #ECFCE5;
   }
 
-  // Table/vis options menu
-  .dropdown.table-options {
-    @include progress-bar(4px, 4px, true, 3px);
-    div.progress-bar { margin-top:10px }
+  80% {
+    background: #ECFCE5;
   }
+
+  100% {
+    background: none;
+  }
+}
+
+@keyframes highlight-fade {
+  0% {
+    background: none;
+  }
+
+  20% {
+    background: #ECFCE5;
+  }
+
+  80% {
+    background: #ECFCE5;
+  }
+
+  100% {
+    background: none;
+  }
+}
+
+// Table/vis options menu
+.dropdown.table-options {
+  @include progress-bar(4px, 4px, true, 3px);
+
+  div.progress-bar {
+    margin-top: 10px;
+  }
+}
 
 div.panes {
-  position:absolute;
-  top:78px;
-  right:0;
-  bottom:0;
-  left:0;
+  position: absolute;
+  top: 78px;
+  right: 0;
+  bottom: 0;
+  left: 0;
 
   // When table/layer is synced
-  &.synced {top:102px}
+  &.synced {
+    top: 102px;
+  }
 
   .emptyTableContainer {
-    position:fixed;
     display: inline-block;
-    width:100%;
+    position: fixed;
+    width: 100%;
+    transform-style: linear;
+    transition: text-indent 300ms;
     text-align: center;
-    @include transform-style("linear");
-    @include transition-property("text-indent");
-    @include transition-duration(300ms);
 
     .emptynessInfo {
+      display: inline-block;
       position: relative;
       top: 1.5em;
-      display: inline-block;
       width: 600px;
       height: 375px;
 
       &.emptyTableInfo {
         background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
       }
+
       &.emptyPublicTableInfo {
         position: absolute;
         left: 5%;
         background: image-url('layout/empty_public.png') no-repeat center 70px #FFF;
       }
+
       &.emptySQLInfo {
         background: image-url('layout/empty_sql.png') no-repeat 40px 0 #FFF;
       }
@@ -68,317 +96,328 @@ div.panes {
       h4 {
         margin-top: 8em;
         color: #333;
-        font-weight: bold;
-        font-size: 17px;
         font-family: $title-fonts;
-        text-indent:0;
+        font-size: 17px;
+        font-weight: bold;
+        text-indent: 0;
       }
 
       p {
-        margin: 1em auto;
         width: 325px;
+        margin: 1em auto;
         color: #999;
         font-size: 15px;
-        text-indent:0;
+        text-indent: 0;
 
-        a {text-decoration:underline;}
+        a {
+          text-decoration: underline;
+        }
       }
     }
   }
 }
 
 div.table {
-
   table {
-    position:relative;
-    z-index:1;
-    width:100%;
-    background:white;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    background: WHITE;
 
     // Table head
     thead {
-      width:100%;
-      height:60px;
+      width: 100%;
+      height: 60px;
 
       div.sqlview {
+        display: block;
         position: absolute;
+        z-index: 0;
         top: 55px;
         right: 0;
         left: 0;
-        display: block;
         width: 100%;
         height: 37px;
-        z-index:0;
 
         p {
-          position: fixed;
-          left: 50%;
           display: inline;
+          position: fixed;
+          z-index: 2;
+          left: 50%;
+          width: 100%;
           margin: 12px 0 0 -50%;
           padding: 12px 0;
-          width: 100%;
-          border-bottom: 1px solid #ccc;
+          transform-style: linear;
+          transition: text-indent 300ms;
+          border-bottom: 1px solid #CCC;
           background-color: #E5FAEA;
+          box-shadow: rgba(#000, 0.055) 0 3px 1px 0;
           color: #333;
-          color: #666666;
-          text-align: center;
-          font-size: 13px;
+          color: #666;
           font-family: $text-fonts;
-          text-indent:0;
-          z-index:2;
-          @include transform-style("linear");
-          @include transition-property("text-indent");
-          @include transition-duration(300ms);
-          @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
+          font-size: 13px;
+          text-align: center;
+          text-indent: 0;
         }
       }
 
       tr {
-        width:100%;
-        height:64px;
-        z-index:2;
+        z-index: 2;
+        width: 100%;
+        height: 64px;
         background: image-url('layout/thead_bkg.jpg') repeat 0 0;
 
         th {
-          position:relative;
+          position: relative;
           vertical-align: top;
 
           & > div {
-            position:relative;
-            display:block;
-            width:100%;
-            height:66px;
-            z-index:1;
+            display: block;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 66px;
 
             & > div {
-              position:fixed;
-              @include inline-block();
+              display: inline-block;
+              position: fixed;
+              z-index: 1;
               width: inherit;
-              height:41px;
-              margin:0;
-              padding:10px 0 15px;
+              height: 41px;
+              margin: 0;
+              padding: 10px 0 15px;
+              border-bottom: 1px solid #CCC;
               background: image-url('layout/thead_bkg.jpg') repeat 0 0;
-              border-bottom:1px solid #CCCCCC;
-              z-index:1;
+              vertical-align: top;
 
-              &:after {
-                position:absolute;
-                top:13px;
-                left:0px;
-                z-index:0;
-                width:1px;
-                height:42px;
-                background:rgba(#D9D9D9,0.5);
-                content:' ';
+              &::after {
+                content: ' ';
+                position: absolute;
+                z-index: 0;
+                top: 13px;
+                left: 0;
+                width: 1px;
+                height: 42px;
+                background: rgba(#D9D9D9, 0.5);
               }
             }
 
             label {
-              display:block;
-              padding:0 5px;
+              // Default and then replace it
+              @include default-input();
+              display: block;
+              padding: 0 5px;
 
               &.nonInteractuable {
                 padding: 10px 5px;
 
                 span {
-                  @include inline-block();
-                  margin:6px 0 5px 5px;
-                  color:#7C7C7C;
-
+                  display: inline-block;
+                  margin: 6px 0 5px 5px;
+                  color: #7C7C7C;
+                  vertical-align: top;
                 }
               }
 
               &.interactuable {
-                div, a {
-                  @include inline-block();
-                  margin:6px 0 5px 5px;
-                  color:#7C7C7C;
+                div,
+                a {
+                  display: inline-block;
+                  margin: 6px 0 5px 5px;
+                  color: #7C7C7C;
+                  vertical-align: top;
 
-
-                  &:after {
-                    @include inline-block();
-                    position:relative;
-                    left:2px;
-                    border-top:3px solid #7C7C7C;
-                    border-right:3px solid transparent;
-                    border-left:3px solid transparent;
-                    content:'';
+                  &::after {
+                    content: '';
+                    display: inline-block;
+                    position: relative;
+                    left: 2px;
+                    border-top: 3px solid #7C7C7C;
+                    border-right: 3px solid transparent;
+                    border-left: 3px solid transparent;
+                    vertical-align: top;
                   }
 
                   &:hover {
-                    color:#565656;
-                    text-decoration:none;
-                    &:after {border-top-color:#565656;}
+                    color: #565656;
+                    text-decoration: none;
+
+                    &::after {
+                      border-top-color: #565656;
+                    }
                   }
-
-
                 }
               }
-              a, div {
-                @include inline-block();
-                margin:6px 0 5px 5px;
-                color:#7C7C7C;
 
-                &:hover { text-decoration:none; }
+              a,
+              div {
+                display: inline-block;
+                margin: 6px 0 5px 5px;
+                color: #7C7C7C;
+                vertical-align: top;
+
+                &:hover {
+                  text-decoration: none;
+                }
 
                 span.geo {
-                  @include border-radius(2px);
-                  margin:0 0 0 3px;
-                  padding:1px 2px;
-                  border:1px solid #C17400;
-                  background:orange;
-                  color:white;
-                  text-decoration:uppercase;
-                  &:hover { cursor:pointer; }
+                  margin: 0 0 0 3px;
+                  padding: 1px 2px;
+                  border: 1px solid #C17400;
+                  border-radius: 2px;
+                  background: ORANGE;
+                  color: WHITE;
+                  text-decoration: uppercase;
+
+                  &:hover {
+                    cursor: pointer;
+                  }
                 }
               }
-              // Default and then replace it
-              @include default-input();
 
               input {
-                @include border-radius(3px);
-                margin:0;
-                padding:3px 4px;
-                border:1px solid #CCCCCC;
-                background:white;
-                color:#333333;
-                font:bold 13px $text-fonts;
+                margin: 0;
+                padding: 3px 4px;
+                border: 1px solid #CCC;
+                border-radius: 3px;
+                background: WHITE;
+                color: #333;
+                font: bold 13px $text-fonts;
               }
             }
 
             p {
+              padding: 0 10px;
               line-height: 20px;
-              padding:0 10px;
+
               a {
-                padding:0 10px 0 0;
-                color:#999999;
+                padding: 0 10px 0 0;
+                color: #999;
 
                 &.disabled {
-                  color: #666666;
+                  color: #666;
                 }
 
                 &:hover {
-                  position:relative;
-                  padding:0 10px 0 0;
-                  color:#666666;
-                  text-decoration:none;
+                  position: relative;
+                  padding: 0 10px 0 0;
+                  color: #666;
+                  text-decoration: none;
 
-                  &.own:after {
-                    position:absolute;
-                    right:0;
-                    margin:10px 0 0 5px;
-                    border-top:3px solid #7C7C7C;
-                    border-right:3px solid transparent;
-                    border-left:3px solid transparent;
-                    content:' ';
+                  &.own::after {
+                    content: ' ';
+                    position: absolute;
+                    right: 0;
+                    margin: 10px 0 0 5px;
+                    border-top: 3px solid #7C7C7C;
+                    border-right: 3px solid transparent;
+                    border-left: 3px solid transparent;
                   }
                 }
               }
 
               // Fake column name added to each th
-              &.auto {@include opacity(0); padding:0 25px 0 0;}
+              &.auto {
+                padding: 0 25px 0 0;
+                opacity: 0;
+              }
             }
           }
 
           &:first-child {
-            min-width:35px;
-            width:35px;
+            width: 35px;
+            min-width: 35px;
           }
 
           &:last-child {
-            @include transform-style("linear");
-            @include transition-property("padding-right");
-            @include transition-duration(500ms);
-            padding-right:62px;
+            padding-right: 62px;
+            transform-style: linear;
+            transition: padding-right 500ms;
           }
 
           // Column options
           div.dropdown {
-            width:147px!important;
+            width: 147px !important;
           }
         }
       }
 
       // Shadow
       div.shadow {
-        position:fixed;
-        left:0;
-        top:144px;
-        right:0;
-        width:100%;
-        height:10px;
+        position: fixed;
+        z-index: 0;
+        top: 144px;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 10px;
         background: image-url('layout/thead_shadow.png') repeat 0 0;
-
-        pointer-events:none;
-        z-index:0;
+        pointer-events: none;
       }
 
       // Horizontal movement
       &.horizontal {
         tr th > div > div {
-          position:absolute;
-          left:0;
-          top:0;
+          position: absolute;
+          top: 0;
+          left: 0;
         }
       }
     } // thead
 
     // Table body
     tbody {
-      width:100%;
-      border:none;
-      z-index:1;
+      z-index: 1;
+      width: 100%;
+      border: none;
 
-      tr.empty_table {}
-
-      tr.placeholder, tr.placeholder td {
-        border:1px solid #ECECEC;
+      tr.placeholder,
+      tr.placeholder td {
         height: 40px;
-        cursor:pointer;
+        border: 1px solid #ECECEC;
+        cursor: pointer;
 
         .addNewRow {
-          color: #e5e5e5;
-          vertical-align: middle;
+          color: #E5E5E5;
+          font-size: 22px;
+          font-weight: bolder;
           text-align: center;
-          font-weight:bolder;
-          font-size:22px;
+          vertical-align: middle;
         }
-
       }
 
       tr.placeholder.decoration {
         height: 15px;
-        border-bottom:0px;
+        border-bottom: 0;
 
         &:hover {
-          border-color:#ECECEC;
-          background:inherit;
+          border-color: #ECECEC;
+          background: inherit;
 
           & + tr {
-            border-top-color:#ECECEC;
+            border-top-color: #ECECEC;
           }
         }
       }
 
-      tr.placeholder.decoration td{
+      tr.placeholder.decoration td {
         height: 15px;
-        border-top:0px;
-        border-bottom:0px;
+        border-top: 0;
+        border-bottom: 0;
 
         &:hover {
-          border-color:#ECECEC;
-          border-top: 0px;
-          border-top-color:#ECECEC;
-          background:inherit;
+          border-top: 0;
+          border-color: #ECECEC;
+          border-top-color: #ECECEC;
+          background: inherit;
         }
       }
 
-
       tr {
-        width:100%;
+        width: 100%;
+        border-top: 1px solid #ECECEC;
         // z-index:0;
-        background:white;
-        border-top:1px solid #ECECEC;
+        background: WHITE;
 
         td {
           vertical-align: top;
@@ -397,17 +436,17 @@ div.table {
           }
 
           div.cell {
-            display:block;
+            display: block;
+            max-width: 280px;
+            min-height: 13px;
+            max-height: 26px;
+            padding: 15px 10px;
             overflow: hidden;
-            padding:15px 10px;
-            max-width:280px;
-            min-height:13px;
-            max-height:26px;
-            color:#666666;
+            border-left: 1px solid #ECECEC;
+            color: #666;
+            font-size: 13px;
             text-overflow: ellipsis;
             white-space: nowrap;
-            font-size:13px;
-            border-left:1px solid #ECECEC;
 
             &.disabled {
               color: #AAA;
@@ -421,82 +460,84 @@ div.table {
 
           // Different column types
           div.number {
-            color:#4DC964;
+            color: #4DC964;
           }
 
           &.rowHeader:first-child {
-
             & > div.row_header {
-              position:relative;
-              display:block;
-              height:100%;
-              overflow:visible;
+              display: block;
+              position: relative;
+              height: 100%;
+              overflow: visible;
 
-              &:before {
-                content:'';
-                position:absolute;
-                top:15px;
-                left:10px;
-                @include border-radius(3px);
-                background:#FAFAFA;
-                @include background(linear-gradient(#FAFAFA,#E8E8E8));
-                display:none;
-                padding:0;
-                width:12px;
-                height:12px;
-                border:1px solid #999999;
-                z-index:0;
+              &::before {
+                content: '';
+                display: none;
+                position: absolute;
+                z-index: 0;
+                top: 15px;
+                left: 10px;
+                width: 12px;
+                height: 12px;
+                padding: 0;
+                border: 1px solid #999;
+                border-radius: 3px;
+                background: #FAFAFA;
+
+                @include background(linear-gradient(#FAFAFA, #E8E8E8));
               }
 
-              &:after {
-                position:absolute;
-                display:none;
-                content:'';
-                top:21px;
-                left:15px;
-                width:0;
-                height:0;
-                border-top:3px solid #666666;
-                border-right:2px solid transparent;
-                border-left:2px solid transparent;
-                @include opacity(1);
-                z-index:0;
-                line-height:16px;
+              &::after {
+                content: '';
+                display: none;
+                position: absolute;
+                z-index: 0;
+                top: 21px;
+                left: 15px;
+                width: 0;
+                height: 0;
+                border-top: 3px solid #666;
+                border-right: 2px solid transparent;
+                border-left: 2px solid transparent;
+                opacity: 1;
+                line-height: 16px;
               }
 
-              &:hover:before {
-                background:#E8E8E8;
-                @include background(linear-gradient(#FAFAFA,#E3D3E3));
-                cursor:pointer;
+              &:hover::before {
+                @include background(linear-gradient(#FAFAFA, #E3D3E3));
+                background: #E8E8E8;
+                cursor: pointer;
               }
 
-              &:active:before {
-                background:#E3D3E3;
-                @include background(linear-gradient(#E3D3E3,#FAFAFA));
+              &:active::before {
+                @include background(linear-gradient(#E3D3E3, #FAFAFA));
+                background: #E3D3E3;
               }
             }
           }
 
           &:last-child {
-            @include transform-style("linear");
-            @include transition-property("padding-right");
-            @include transition-duration(500ms);
-            border-right:none;
-            padding-right:65px;
+            padding-right: 65px;
+            transform-style: linear;
+            transition: padding-right 500ms;
+            border-right: none;
           }
         }
 
         &:last-child {
-          border-bottom:1px solid #ECECEC;
+          border-bottom: 1px solid #ECECEC;
         }
 
         &:hover {
-          background:#E8F9EC;
-          border-color:#CCCCCC;
+          border-color: #CCC;
+          background: #E8F9EC;
 
-          & + tr {border-top-color:#CCCCCC;}
+          & + tr {
+            border-top-color: #CCC;
+          }
 
-          div.row_header:before, div.row_header:after {
+          div.row_header::before,
+          div.row_header::after {
             display: block !important;
           }
         }
@@ -506,16 +547,17 @@ div.table {
     // Sync table
     &.synced {
       tbody tr td div.cell {
-        color:rgba(#666666,.5);
+        color: rgba(#666, 0.5);
       }
+
       div.shadow {
-        top:144px;
+        top: 144px;
       }
     }
     // Visualization table
     &.vis {
       div.shadow {
-        top:144px;
+        top: 144px;
       }
     }
 
@@ -523,123 +565,163 @@ div.table {
 
     // Loaders
     tfoot {
-      padding:100px 0;
+      padding: 100px 0;
 
       &.sql_loader {
-
         div.float_info {
-          position:fixed;
-          @include inline-block();
-          left:50%;
-          top:50%;
-          width:240px;
-          height:36px;
-          margin:-100px 0 0 -120px;
-          padding:0;
-          vertical-align:top;
-          @include transform-style("linear");
-          @include transition-property("margin");
-          @include transition-duration(300ms);
+          display: inline-block;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          width: 240px;
+          height: 36px;
+          margin: -100px 0 0 -120px;
+          padding: 0;
+          transform-style: linear;
+          transition: margin 300ms;
+          vertical-align: top;
 
-          img {margin-left:101px;}
-          h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
+          img {
+            margin-left: 101px;
+          }
+
+          h5 {
+            display: block;
+            margin: 15px 0 0;
+            color: #7B7B7B;
+            font-size: 15px;
+            line-height: normal;
+            text-align: center;
+          }
         }
       }
 
       &.page_loader {
-        border:1px solid #ECECEC;
-        border-right:0;
-        border-left:0;
-        background:white;
-        z-index:-1;
+        z-index: -1;
+        border: 1px solid #ECECEC;
+        border-right: 0;
+        border-left: 0;
+        background: WHITE;
 
         th {
-          padding:70px 0;
+          padding: 70px 0;
         }
 
-
-        div.float_info, div.float_action {
-          position:fixed;
-          @include inline-block();
-          left:50%;
-          width:195px;
-          height:36px;
-          margin:0 0 0 -120px;
-          padding:0 0 0 45px;
+        div.float_info,
+        div.float_action {
+          display: inline-block;
+          position: fixed;
+          z-index: -10;
+          left: 50%;
+          width: 195px;
+          height: 36px;
+          margin: 0 0 0 -120px;
+          padding: 0 0 0 45px;
           background: image-url('layout/loading_page_static.png') no-repeat 0 0;
-          vertical-align:top;
-          z-index:-10;
+          vertical-align: top;
 
-          h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
-          p {display:block; font-size:13px;}
+          h5 {
+            display: block;
+            color: #7B7B7B;
+            font-size: 15px;
+            line-height: normal;
+          }
+
+          p {
+            display: block;
+            font-size: 13px;
+          }
         }
 
         div.float_action {
-          display:none;
-          background:white;
+          display: none;
+          background: WHITE;
         }
 
         &.up {
           th {
-            padding:20px 0;
+            padding: 20px 0;
           }
 
-          div.float_info, div.float_action {
-            top:285px;
+          div.float_info,
+          div.float_action {
+            top: 285px;
           }
         }
 
         &.down {
-          div.float_info, div.float_action {
-            bottom:65px;
+          div.float_info,
+          div.float_action {
+            bottom: 65px;
           }
         }
 
         &.active {
-          div.float_info {display:none;}
-          div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
+          div.float_info {
+            display: none;
+          }
+
+          div.float_action {
+            display: inline-block;
+            background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;
+            vertical-align: top;
+          }
         }
       }
 
       .loading img {
-        margin-top:30px;
+        margin-top: 30px;
       }
     } // tfoot
 
-
     &.displaced {
       // Last column of the table
-      tbody tr td:last-child, thead tr th:last-child {
-        border-right:none;
-        padding-right:600px;
+      tbody tr td:last-child,
+      thead tr th:last-child {
+        padding-right: 600px;
+        border-right: none;
       }
 
       // When a query is applied, the text should be moved some pixels
       div.sqlview p {
-        text-indent:-600px;
+        text-indent: -600px;
       }
 
       // When a query is applied, the loader should be moved some pixels
       tfoot.sql_loader div.float_info {
-        margin-left:-420px;
+        margin-left: -420px;
       }
 
       // When there is no results, move the block
       tfoot div.emptyTableContainer {
-        text-indent:-600px;
-        p, h4 {text-indent:0;}
+        text-indent: -600px;
+
+        p,
+        h4 {
+          text-indent: 0;
+        }
       }
 
       &.narrow {
-        tbody tr td:last-child, thead tr th:last-child {padding-right:450px;}
-        div.sqlview p {text-indent:-450px;}
-        tfoot.sql_loader div.float_info {margin-left:-380px;}
-        tfoot div.emptyTableContainer {text-indent:-450px;}
-      }
+        tbody tr td:last-child,
+        thead tr th:last-child {
+          padding-right: 450px;
+        }
 
+        div.sqlview p {
+          text-indent: -450px;
+        }
+
+        tfoot.sql_loader div.float_info {
+          margin-left: -380px;
+        }
+
+        tfoot div.emptyTableContainer {
+          text-indent: -450px;
+        }
+      }
     } // table.displaced
   } // table
-
 
   /* PAGINATION ZONE - CAUTION */
 
@@ -648,61 +730,71 @@ div.table {
 
   // Let's add some bottom spacing to show always when it's neccessary the pagination loader
   &.page_down {
-    padding-bottom:30px; // More space due to the thead height
+    padding-bottom: 30px; // More space due to the thead height
   }
 
   &.page_up {
-    padding-bottom:0;
-    padding-top:180px; // More space due to the thead height
+    padding-top: 180px; // More space due to the thead height
+    padding-bottom: 0;
+
     thead tr th div > div {
-      margin-top:-180px;
+      margin-top: -180px;
     }
+
     tbody tr:first-child {
-      border-top:1px solid #ECECEC;
+      border-top: 1px solid #ECECEC;
     }
+
     thead div.sqlview p {
-      margin-top:-168px;
+      margin-top: -168px;
     }
   }
 
   // public view
   &.public {
-    th:last-child, tr td:last-child {
-      padding-right:0;
+    th:last-child,
+    tr td:last-child {
+      padding-right: 0;
     }
   }
-
 } // div.table
 
-
-
 div.order_selector {
-  position:absolute;
-  top:-3px;
-  right:0;
+  position: absolute;
+  top: -3px;
+  right: 0;
+
   a.asc {
-    @include border-left-radius(2px);
     margin-right: 1px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
   }
+
   a.desc {
-    @include border-right-radius(2px);
     margin-right: 10px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
   }
-  a.asc, a.desc {
-    @include inline-block();
-    position:relative;
+
+  a.asc,
+  a.desc {
+    display: inline-block;
+    position: relative;
     margin-top: 13px;
-    padding:0;
-    padding: (21px - 9px)/2 8px;
+    padding: 0;
+    padding: (21px - 9px) / 2 8px;
     background-color: $button-bkg-color;
     color: #397DB9;
-    text-transform: uppercase;
-    font-weight: bold;
     font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+    vertical-align: top;
+
     &:hover {
       background-color: #397DB9;
       color: $button-bkg-color;
     }
+
     &.selected {
       background-color: #397DB9;
       color: $button-bkg-color;
@@ -713,18 +805,32 @@ div.order_selector {
 
 .iconClock {
   display: inline-block;
-  margin-right: 8px;
   width: 15px;
   height: 15px;
+  margin-right: 8px;
   background: image-url('layout/clock.png') no-repeat 0 0 transparent;
 }
 
-
 // Hello hacks for Firefox
 @-moz-document url-prefix() {
-  table { border-collapse: inherit; }
-  thead div.sqlview { z-index:1!important; }
-  thead tr th div { z-index:2!important; }
-  thead div.shadow { z-index:1!important }
-  tbody tr td { border-spacing:1px; border-bottom:1px solid #ECECEC; }
+  table {
+    border-collapse: inherit;
+  }
+
+  thead div.sqlview {
+    z-index: 1 !important;
+  }
+
+  thead tr th div {
+    z-index: 2 !important;
+  }
+
+  thead div.shadow {
+    z-index: 1 !important;
+  }
+
+  tbody tr td {
+    border-spacing: 1px;
+    border-bottom: 1px solid #ECECEC;
+  }
 }

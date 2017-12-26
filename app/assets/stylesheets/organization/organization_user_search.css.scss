@@ -6,17 +6,18 @@
 @import "../variables/sizes";
 
 .OrganizationSearch {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include flex-direction(row);
-
-  border-bottom: 1px solid $cStructure-darkGrey;
-  padding: 16px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   margin-top: -16px;
+  padding: 16px 0;
+  border-bottom: 1px solid $cStructure-darkGrey;
 }
+
 .OrganizationSearch-Form {
   position: relative;
 }
+
 .OrganizationSearch-Item {
   line-height: 30px;
 
@@ -25,18 +26,19 @@
     white-space: nowrap;
   }
 }
+
 .OrganizationSearch-FormButton {
   padding-right: 2px;
-  font-size: 14px;
-  color: $cTypography-headers;
-  background: transparent;
   border: none;
   outline: none;
+  background: transparent;
+  color: $cTypography-headers;
+  font-size: 14px;
 
   &::after {
     content: '';
-    position: relative;
     display: inline-block;
+    position: relative;
     top: 3px;
     left: 20px;
     width: 1px;
@@ -47,50 +49,53 @@
 
   > i {
     display: inline;
-    font-weight: bold;
     margin-right: 10px;
-    vertical-align: middle;
     margin-left: 1px;
-
+    font-weight: bold;
+    vertical-align: middle;
   }
 }
+
 .OrganizationSearch-FormButton--clean {
   position: absolute;
   top: 50%;
   right: 0;
   margin-top: -12px;
   border-radius: 100%;
+  outline: none;
+  background: transparent;
   color: $cNavButton-default;
   text-align: center;
-  background: transparent;
-  outline: none;
 
   &:hover {
     color: $cNavButton-active;
   }
 }
+
 .OrganizationSearch-FormInput {
   width: 220px;
   padding-left: 5px;
-  outline: none;
   border: none;
+  outline: none;
   background: none;
   font-size: 15px;
   font-weight: 300;
 
   &::-webkit-input-placeholder {
+    color: #DDD;
+    font-style: italic;
     font-weight: $sFontWeight-normal;
-    font-style:italic;
-    color:#DDD;
   }
+
   &::-moz-placeholder {
+    color: #DDD;
+    font-style: italic;
     font-weight: $sFontWeight-normal;
-    font-style:italic;
-    color:#DDD;
   }
+
   &:-ms-placeholder {
+    color: #DDD;
+    font-style: italic;
     font-weight: $sFontWeight-normal;
-    font-style:italic;
-    color:#DDD;
   }
 }

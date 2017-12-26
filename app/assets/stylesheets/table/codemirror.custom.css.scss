@@ -1,131 +1,150 @@
-
 @import "compass/css3/inline-block";
-@import "compass/css3/border-radius";
 @import "compass/css3/box-shadow";
 @import "../old_common/vars";
 
 /** customization of codemirror styles */
 .cm-s-default .cm-color {
-  color: black;
-  @include border-radius(2px);
-  &:hover { cursor:pointer }
+  border-radius: 2px;
+  color: BLACK;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
-.cm-s-default .cm-variable {color: #666666;}
-.cm-s-default .cm-keyword {color: #FF9900;}
-.cm-s-default .cm-atom {color: #FF9900;}
-.cm-s-default .cm-invalidchar {color: #f00;}
+
+.cm-s-default .cm-variable {
+  color: #666;
+}
+
+.cm-s-default .cm-keyword {
+  color: #F90;
+}
+
+.cm-s-default .cm-atom {
+  color: #F90;
+}
+
+.cm-s-default .cm-invalidchar {
+  color: #F00;
+}
+
 .CodeMirror-lines * {
-   color: #666666;
+  color: #666;
 }
 
 .CodeMirror {
-  position:absolute;
-  top:0;
-  bottom:80px;
-  left:0;
-  right:0;
-  height:auto;
-  display:block;
+  display: block;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 80px;
+  left: 0;
+  height: auto;
   padding: 8px 0;
-  line-height: 1em;
-  font-family: "Liberation Mono", monospace, "Courier New", "Arial";
   background: none;
-  z-index:1;
+  font-family: "Liberation Mono", monospace, "Courier New", "Arial";
+  line-height: 1em;
 }
 
 .CodeMirror-linenumber {
+  color: #666;
   font-size: 11px;
-  color: #666666;
 }
 
 .CodeMirror pre {
   padding-left: 25px;
 }
 
-
 /** line number bar background */
 .CodeMirror-gutters {
   border: none;
   background: none;
 }
+
 .CodeMirror-gutter {
   background: none;
 }
 
 .CodeMirror-gutter-elt {
   //background-color: white;
-  padding: 0 .2em .4em .4em;
+  padding: 0 0.2em 0.4em 0.4em;
 }
-
-.CodeMirror-code > div {
-}
-
 
 /** codemirror hints */
 
 .CodeMirror-hints {
-  position:absolute;
-  display:block;
-  width:200px;
-  top:-10px;
-  max-width:240px;
-  height:auto;
-  max-height:120px;
-  padding:0;
-  background:white;
-  z-index:1000!important;
-  @include border-radius(3px);
-  @include box-shadow(none);
-  border:1px solid #999999;
+  display: block;
+  position: absolute;
+  z-index: 1000 !important;
+  z-index: 20;
+  top: -10px;
+  width: 200px;
+  max-width: 240px;
+  height: auto;
+  max-height: 120px;
+  padding: 0;
   overflow-y: auto;
-  z-index:20;
+  border: 1px solid #999;
+  border-radius: 3px;
+  background: #FFF;
+  box-shadow: none;
 
   .CodeMirror-hint {
-    position:relative;
-    display:block;
-    border-top:1px solid rgba(#CCCCCC,0.35);
-    display:block;
-    line-height:35px;
-    padding:0 10px;
-    font-family:$text-fonts;
-    color:#2483B4;
-    margin:0;
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0 10px;
+    border-top: 1px solid rgba(#CCC, 0.35);
+    color: #2483B4;
+    font-family: $text-fonts;
+    line-height: 35px;
 
-    &:first-child {border-top:0; @include border-top-radius(2px)}
-    &:last-child {@include border-bottom-radius(2px)}
+    &:first-child {
+      border-top: 0;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
 
-    span.value, span.text {
-      display:block;
-      font-size:13px;
-      text-overflow:ellipsis;
-      overflow:hidden;
-      white-space:nowrap;
+    &:last-child {
+      border-bottom-right-radius: 2px;
+      border-bottom-left-radius: 2px;
+    }
+
+    span.value,
+    span.text {
+      display: block;
+      overflow: hidden;
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     span.value {
-      width:85%;
+      width: 85%;
     }
 
     span.type {
-      position:absolute;
-      top:8px; right:8px;
-      width:20px;
-      background:#CCCCCC;
-      @include border-radius(2px);
-      font-size:11px;
-      font-weight:bold;
-      color:white;
-      text-transform:uppercase;
-      text-align:center;
-      line-height:19px;
-      z-index:1;
+      position: absolute;
+      z-index: 1;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      border-radius: 2px;
+      background: #CCC;
+      color: WHITE;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 19px;
+      text-align: center;
+      text-transform: uppercase;
     }
   }
 
   .CodeMirror-hint-active {
-    color:#fff;
-    text-decoration:none;
-    background:#397DBA;
+    background: #397DBA;
+    color: #FFF;
+    text-decoration: none;
   }
 }
 

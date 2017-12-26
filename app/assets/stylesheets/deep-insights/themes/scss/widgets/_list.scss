@@ -87,7 +87,14 @@
 .CDB-Widget-listItemInner {
   margin: 0 $sMargin-section;
   padding: 4px 0;
+
+  &:hover {
+    .CDB-Widget-progressState::before {
+      background: rgba(0, 0, 0, 0.16);
+    }
+  }
 }
+
 .CDB-Widget-listItemInner--withBorders {
   padding: ($sMargin-element / 2) + 1 0;
 }

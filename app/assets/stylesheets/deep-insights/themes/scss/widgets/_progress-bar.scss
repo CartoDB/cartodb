@@ -8,8 +8,8 @@
   margin: $baseSize / 2 0;
   border-radius: $baseSize / 2;
 }
+
 .CDB-Widget-progressState {
-  // @include css3-prefix(animation, state-progress 600ms ease-out);
   position: absolute;
   top: 0;
   left: 0;
@@ -18,9 +18,20 @@
   max-width: 100%;
   height: $baseSize / 2;
   border-radius: $baseSize / 2;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 250ms ease-in-out;
+    background: transparent;
+    content: '';
+  }
 }
+
 .is-disabled .CDB-Widget-progressState {
-  // @include css3-prefix(animation, state-progress 0 ease-out);
   position: absolute;
   top: 0;
   left: 0;
@@ -35,6 +46,7 @@
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
+
 .CDB-Widget-progressState--negative {
   right: 0;
   left: auto;

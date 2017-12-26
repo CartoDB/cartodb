@@ -12,6 +12,7 @@
 
 .WidgetList-item {
   display: flex;
+  position: relative;
   flex: 0 0 304px;
   align-items: baseline;
   width: 304px;
@@ -19,17 +20,44 @@
   margin: 0 4px 8px;
   padding: $baseSize * 2;
   transition: border 200ms ease-in;
-  border: 2px solid transparent;
+  border: 1px solid $cMainLine;
   border-radius: $baseSize / 2;
   background: $cWhite;
+  cursor: pointer;
   box-sizing: border-box;
 
   &:hover {
-    border: 2px solid $cBlueHover;
+    transition: border 200ms ease-in;
+
+    &::after {
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cBlueHover;
+      border-radius: 4px;
+      content: '';
+      pointer-events: none;
+    }
   }
 
   &.is-selected {
-    border: 2px solid $cBlackHover;
+    &::after {
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cMainText;
+      border-radius: 4px;
+      content: '';
+      pointer-events: none;
+    }
   }
 }
 

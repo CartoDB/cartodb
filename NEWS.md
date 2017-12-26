@@ -104,8 +104,16 @@ ion for time-series (#12670)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
+* Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Fix autostyling with category widget (using a numeric field) [Support #611](https://github.com/CartoDB/support/issues/611)
+* Fix grammar errors in analysis description (#13258)
+* Fix hubspot dependency for static views (#13261)
+* Fix icons not showing (#13276)
+* Redesign add buttons (#13215)
+* Onboarding: center bounding box automatically when new datasets are added (#13245)
+* Stop building static pages on dev (#13188)
 * Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)
 * Fix like buttons (#13231)
 * Wayfinding: fix dialog footer (#13223)
@@ -346,6 +354,9 @@ ion for time-series (#12670)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
+* Make all the widgets cards clickable in the Add widgets modal (#13134)
+* Make new widgets appear on top (#13244)
+* Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 
 ### Internals
 * Use engine instead of visModel internally (#12992)
@@ -356,6 +367,8 @@ ion for time-series (#12670)
 * Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
 * Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
 * Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
+* Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
+* Merge Deep-insights project in Cartodb (#13284)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

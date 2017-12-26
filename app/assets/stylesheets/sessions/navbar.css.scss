@@ -17,8 +17,8 @@ $text-color: rgba(white, 0.5);
 }
 
 .Navbar-brand {
-  @include display-flex;
-  @include justify-content(center, center);
+  display: flex;
+  justify-content: center;
   max-width: 92px;
   height: 48px;
   margin: 0 auto;

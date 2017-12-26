@@ -36,11 +36,12 @@
   }
 
   input[type="text"] {
-    @include box-sizing(border-box);
-    @include inline-block();
+    display: inline-block;
+    box-sizing: border-box;
     width: 106px;
     margin: 0;
     padding: 14px 11px;
+    vertical-align: top;
   }
 
   label {
@@ -59,9 +60,9 @@
   }
 
   .attribution p.highlighted {
-    @include border-radius(2px);
     padding: 10px;
     border: 1px solid #CCC;
+    border-radius: 2px;
     background: #F1F1F1;
   }
 

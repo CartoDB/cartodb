@@ -3,7 +3,6 @@
 
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
-@import 'cdb-utilities/mixins';
 
 .Modal-listActions {
   margin-top: $baseSize * 4;
@@ -71,9 +70,9 @@
 
 /* animation analysis */
 .Analysis-animation {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 304px;
   height: 96px;
   overflow: hidden;

@@ -4,9 +4,9 @@
 
 // Upgrade element
 .UpgradeElement {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 20px;
   border: 1px solid #E0E0E0;
   border-radius: $sIcon-borderRadius;
@@ -25,9 +25,9 @@
 }
 
 .UpgradeElement-info {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .UpgradeElement-infoIcon {
@@ -44,15 +44,15 @@
 }
 
 .UpgradeElement-actions {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .UpgradeElement-trial {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .UpgradeElement-trialIcon,

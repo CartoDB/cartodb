@@ -103,10 +103,10 @@ $bannedColor: #E1A7A5;
   height: 40px;
   margin-top: 3px;
   margin-right: $sMargin-element;
+  transition: opacity $opacityTransition ease-in-out;
   border: none;
   opacity: 1;
 
-  @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
   @include geometry-type-icon(-160px);
 }
 

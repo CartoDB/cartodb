@@ -22,23 +22,26 @@
   }
 
   .row_count {
-    @include inline-block();
+    display: inline-block;
     color: #858585;
     font-size: 15px;
+    vertical-align: top;
     vertical-align: middle;
   }
 
   .download_options {
     @include clearfix();
-    @include inline-block();
+    display: inline-block;
     margin: 0 0 0 5px;
+    vertical-align: top;
     vertical-align: middle;
 
     .download {
-      @include inline-block();
+      display: inline-block;
       margin: 0 5px 0 3px;
       color: #858585;
       font-size: 15px;
+      vertical-align: top;
       vertical-align: middle;
 
       &::after {
@@ -50,9 +53,10 @@
     }
 
     .loading {
-      @include inline-block();
+      display: inline-block;
       color: #858585;
       font-size: 15px;
+      vertical-align: top;
       vertical-align: middle;
 
       img {
@@ -62,7 +66,7 @@
     }
 
     a {
-      @include inline-block();
+      display: inline-block;
       margin: 0;
       padding: 0 11px;
       font-family: 'Arial';
@@ -70,11 +74,13 @@
       line-height: 27px;
       text-shadow: none;
       text-transform: uppercase;
+      vertical-align: top;
     }
 
     h2 {
-      @include inline-block();
+      display: inline-block;
       line-height: normal;
+      vertical-align: top;
     }
   }
 

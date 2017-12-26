@@ -110,29 +110,31 @@ div.wizards_panel {
     width: 1050px;
     padding: 0 30px;
     border-bottom: 1px solid #E5E5E5;
-
+    box-shadow: rgba(#000, 0.05) 0 -4px 8px 0 inset;
     letter-spacing: -4px;
 
     @include position(0, 0, false, 0);
-    @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
     li {
+
+      display: inline-block;
       position: relative;
       margin: 0 12px 0 0;
       padding: 0;
+      transition: opacity 200ms ease-in;
       letter-spacing: 0;
+      vertical-align: top;
       word-space: 0; /* stylelint-disable-line */
-
-      @include inline-block();
 
       a {
         display: block;
         position: relative;
         margin: 30px 0;
+        border-radius: 3px;
+        opacity: 0.7;
+        box-shadow: 0 0 3px 4px rgba(black, 0.15);
 
         @include size(92px, 90px);
-        @include box-shadow(0 0 3px 4px rgba(black, 0.15));
-        @include border-radius(3px);
 
         .name {
           position: absolute;
@@ -140,22 +142,15 @@ div.wizards_panel {
           left: 0;
           width: 100%;
           padding: 8px 0;
-
           border-top: 1px solid #CCC;
+          border-radius: 0 0 3px 3px;
           background: #FFF;
           color: #397DBA;
           font-size: 11px;
-
           font-weight: bold;
-
           text-align: center;
           text-transform: uppercase;
-
-          @include border-radius(0 0 3px 3px);
         }
-
-        @include simple-transition(opacity, 200ms);
-        opacity: 0.7;
 
         // Wizard icons
         &.simple {
@@ -283,7 +278,8 @@ div.wizards_panel {
         }
 
         .form_combo {
-          @include inline-block();
+          display: inline-block;
+          vertical-align: top;
         }
 
         &.label_text { border: none; }
@@ -304,7 +300,7 @@ div.wizards_panel {
 
         // Text between fields like " - to - "
         span.field span.text {
-          @include inline-block();
+          display: inline-block;
           width: 43px;
           margin-left: 5px;
           line-height: 21px;
@@ -344,10 +340,10 @@ div.wizards_panel {
     div.colors_error {
       display: none;
       padding: 15px;
+
+      border-radius: $corner_radius;
       background: rgba(#FECBCB, 0.4);
       color: #666;
-
-      @include border-radius($corner_radius);
     }
   }
 }

@@ -1,4 +1,3 @@
-@import "../../variables/mixins";
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
@@ -22,9 +21,9 @@
 .CreateDialog-headerStep:last-child { margin-right: 0; }
 // TODO: this should be deprecated/removed by using standalone .LayoutIcon instead
 .CreateDialog-header .Dialog-headerIcon {
-  @include display-flex();
-  @include justify-content(center, center);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
   border-color: #CCC;
   line-height: 42px;

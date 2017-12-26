@@ -11,12 +11,12 @@
 @import "../table/table-sprite";
 
 .help-tip {
-  @include box-sizing(border-box);
   display: none;
   position: absolute;
   z-index: 10;
   top: 0;
   left: 0;
+  box-sizing: border-box;
   width: 100%;
   padding: 10px;
   border-bottom: 1px solid rgba(#DDD, 0.5);

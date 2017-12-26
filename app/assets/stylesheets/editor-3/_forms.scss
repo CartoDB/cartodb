@@ -1,13 +1,12 @@
 // Styles for Form Layout
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .Editor-formInner {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   min-height: $baseSize * 4;
   margin-top: $baseSize;
 }
@@ -23,8 +22,8 @@
 
 .Editor-formInput,
 .Editor-formLabel {
-  @include flex(1);
   position: relative;
+  flex: 1;
 }
 
 .Editor-formInput:focus {
@@ -105,7 +104,7 @@
 }
 
 .Editor-formSelect {
-  @include flex(1);
+  flex: 1;
 
   &.is-active {
     .CDB-InputText {
@@ -127,7 +126,7 @@
 }
 
 .Editor-checker {
-  @include align-items(flex-start);
+  align-items: flex-start;
   width: 100%;
 }
 
@@ -136,8 +135,8 @@
 }
 
 .Editor-checkerInput {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   width: 92px;
   min-height: 32px;
   margin-right: 12px;

@@ -8,12 +8,11 @@ $sWidth: 4px;
 .FeedMast {
   position: absolute;
   top: 0;
+  flex: 0 0 $sWidth;
   width: $sWidth;
   height: 100%;
   margin-left: 29px;
   background: $cFeedMast;
-
-  @include flex(0 0 $sWidth);
 }
 
 .FeedMast.is-hidden {

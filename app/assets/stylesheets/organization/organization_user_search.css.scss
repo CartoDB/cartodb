@@ -6,9 +6,9 @@
 @import "../variables/sizes";
 
 .OrganizationSearch {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include flex-direction(row);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   margin-top: -16px;
   padding: 16px 0;
   border-bottom: 1px solid $cStructure-darkGrey;

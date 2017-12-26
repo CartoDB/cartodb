@@ -1,5 +1,3 @@
-@import '../variables/mixins';
-
 // Public data dashboard content
 // --------------------------------------------------
 
@@ -19,7 +17,7 @@
 }
 
 .DataLibrary-columns * {
-  @include css3-prefix(box-sizing, border-box);
+  box-sizing: border-box;
 }
 
 .DataLibrary-text {

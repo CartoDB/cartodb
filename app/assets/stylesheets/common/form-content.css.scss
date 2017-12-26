@@ -52,14 +52,14 @@ $sLabel-width: 140px;
 }
 
 .Form-modal {
-  @include justify-content(center);
-  @include align-items(center);
+  align-items: center;
+  justify-content: center;
   width: 100%;
 }
 
 .Form-row {
-  @include display-flex();
-  @include justify-content(flex-start, start);
+  display: flex;
+  justify-content: flex-start;
   padding: 10px 0;
 }
 
@@ -68,13 +68,13 @@ $sLabel-width: 140px;
 }
 
 .Form-row.Form-row--centered {
-  @include justify-content(center);
+  justify-content: center;
 }
 
 .Form-row.Form-row--step {
-  @include justify-content(space-between, justify);
-  @include align-items(center);
   position: relative;
+  align-items: center;
+  justify-content: space-between;
   padding-top: 0;
   padding-bottom: $sMargin-group;
 
@@ -168,7 +168,7 @@ $sLabel-width: 140px;
 }
 
 .Form-label.Form-label--step {
-  @include flex-grow(1);
+  flex-grow: 1;
   line-height: normal;
 }
 
@@ -177,17 +177,17 @@ $sLabel-width: 140px;
 }
 
 .Form-rowData {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
   position: relative;
+  align-items: center;
+  justify-content: space-between;
   width: 380px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
   margin-right: $sMargin-element;
 }
 
 .Form-rowData.Form-rowData--alignLeft {
-  @include justify-content(flex-start, start);
+  justify-content: flex-start;
 }
 
 .Form-rowData--withLabel {
@@ -414,7 +414,6 @@ $sLabel-width: 140px;
 }
 
 .Form-inputError {
-  @include transition(margin, 200ms, ease-in-out);
   position: absolute;
   z-index: 1;
   top: 50%;
@@ -423,6 +422,7 @@ $sLabel-width: 140px;
   height: 38px;
   margin-top: -20px;
   padding: 0 12px;
+  transition: margin 200ms ease-in-out;
   border: 1px solid #CCC;
   border-radius: 4px;
   background: #FFF4F4;
@@ -580,15 +580,16 @@ $sLabel-width: 140px;
 }
 
 .Form-upload {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
-  @include background(image-url('layout/export-files.png') no-repeat 10px 10px #F3F3F3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 213px;
   height: 50px;
   padding: 0 10px 0 74px;
   border: 1px dashed $cStructure-mainLine;
   border-radius: 2px;
+
+  @include background(image-url('layout/export-files.png') no-repeat 10px 10px #F3F3F3);
 }
 
 .Form-upload.is-dropping {
@@ -669,7 +670,7 @@ $sLabel-width: 140px;
 }
 
 .Form-rowInfo {
-  @include display-flex();
+  display: flex;
   max-width: 380px;
   line-height: 40px;
 }
@@ -705,9 +706,9 @@ $sLabel-width: 140px;
 }
 
 .Form-footer {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: $sMargin-section 0;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;

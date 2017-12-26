@@ -3,8 +3,8 @@
 @import "../variables/sizes";
 
 .List {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
 }
 
 .List.List--selections {
@@ -15,13 +15,13 @@
 }
 
 .List-row {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
 
   // Makes sure prev border is overlapped but the is-selected one
   position: relative;
   box-sizing: content-box; // to make sure size is consistent w/ borders
+  align-items: center;
+  justify-content: space-between;
   margin-top: -2px;
   border: 1px solid transparent;
 }
@@ -42,10 +42,10 @@
 }
 
 .List-rowItem {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
   box-sizing: content-box; // to make sure size is consistent w/ borders
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   margin-right: $sMargin-element;
   margin-left: $sMargin-element;

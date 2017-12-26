@@ -9,13 +9,13 @@
 @import "../old_common/vars";
 
 div.dropdown {
-  @include border-radius(3px);
-  @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 1px);
   display: none;
   position: absolute;
   z-index: 50;
   border: none;
+  border-radius: 3px;
   background: WHITE;
+  box-shadow: rgba(#000, 0.2) 0 0 4px 1px;
 
   &::before {
     content: ' ';
@@ -99,7 +99,7 @@ div.dropdown {
 
   // With border
   &.border {
-    $after_color:  rgba(0, 0, 0, 0.35);
+    $after_color:  rgba(#000, 0.35);
     border: 1px solid $after_color;
 
     &::after {
@@ -192,13 +192,14 @@ div.dropdown {
   }
 
   ul {
-    @include inline-block();
+    display: inline-block;
     position: relative;
     width: 100%;
     margin: 0;
     padding: 0;
     overflow: visible;
     list-style: none;
+    vertical-align: top;
 
     li {
       display: block;
@@ -210,11 +211,13 @@ div.dropdown {
       }
 
       &:first-child {
-        @include border-top-radius(3px);
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
       }
 
       &:last-child {
-        @include border-bottom-radius(3px);
+        border-bottom-right-radius: 3px;
+        border-bottom-left-radius: 3px;
       }
 
       &:hover {

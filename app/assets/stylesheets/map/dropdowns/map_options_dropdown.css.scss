@@ -17,10 +17,10 @@ div.dropdown.map_options_dropdown {
     padding: 12px 15px;
 
     li {
-      @include display-flex();
-      @include justify-content(space-between, justify);
-      @include align-items(center, center);
+      display: flex;
       position: relative;
+      align-items: center;
+      justify-content: space-between;
       margin: 0;
       padding: 10px 0;
       border: none;
@@ -136,9 +136,8 @@ div.dropdown.map_options_dropdown {
 
       &,
       p {
+        transition: color 100ms ease-in;
         color: #B9B9B9;
-
-        @include simple-transition(color, 100ms);
       }
 
       &.inactive .form_switch {
@@ -154,10 +153,11 @@ div.dropdown.map_options_dropdown {
       &:hover { background: #FFF; }
 
       a {
-        @include inline-block();
+        display: inline-block;
         margin: 0;
         padding: 0;
         float: right;
+        vertical-align: top;
       }
     }
   }

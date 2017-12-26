@@ -88,8 +88,8 @@
 }
 
 .NotificationsDropdown-header {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
   background: none;
 }
 

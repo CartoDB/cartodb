@@ -8,15 +8,16 @@
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
 
+$width: 140px;
+
 .slides_panel {
-  @include simple-transition(left, 100ms);
-  $width: 140px;
   position: absolute;
   z-index: 1;
   top: 62px;
   bottom: 0;
   left: -$width;
   width: $width;
+  transition: left 100ms ease-in;
   background: #333 image-url('layout/noise.png') repeat 0 0;
 
   &.active {
@@ -52,10 +53,10 @@
       right: 7px;
       width: 5px;
       height: 100%;
+
+      transition: opacity 150ms ease-in;
       opacity: 0;
       background: none;
-
-      @include simple-transition(opacity, 150ms);
     }
 
     .jspVerticalBar * {
@@ -174,8 +175,8 @@
     }
 
     &.add {
-      @include simple-transition(background, 150ms);
       margin-bottom: 70px;
+      transition: background 150ms ease-in;
       background: rgba(#E8E8E8, 0.1);
 
       &.loading .count .spinner {
@@ -216,10 +217,12 @@
       width: 17px;
       height: 16px;
       padding: 3px;
+      transition: opacity 0.1s ease-in-out;
       border: 1px solid #FFF;
       border-radius: 90px;
       opacity: 0;
       background: #333;
+      box-shadow: 1px 1px 5px rgba(#000, 0.5);
       color: #FFF;
       font-family: "helvetica neue", "helvetica", arial;
       font-size: 10px;
@@ -227,9 +230,6 @@
       text-align: center;
       text-transform: uppercase;
       cursor: pointer;
-
-      @include box-shadow(1px 1px 5px rgba(#000, 0.5));
-      @include simple-transition(opacity, 0.1s, ease-in-out);
 
       &:hover {
         text-decoration: none;
@@ -263,6 +263,7 @@
       height: 43px;
       margin: auto;
       padding: 3px;
+      transition: background 150ms ease-in;
       border-radius: 200px;
       background: #D1D1D1;
       color: #FFF;
@@ -271,8 +272,6 @@
       line-height: normal;
       text-align: center;
       vertical-align: middle;
-
-      @include simple-transition(background, 150ms);
     }
   }
 
@@ -302,7 +301,8 @@
 
         a.radiobutton,
         .form {
-          @include inline-block();
+          display: inline-block;
+          vertical-align: top;
         }
       }
     }

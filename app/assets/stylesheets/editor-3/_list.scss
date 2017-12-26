@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 
 // TODO: remove editor
@@ -12,8 +11,8 @@ $sMargin-group: 28px; // To separate groups inside a section
 $cStructure-softLine: rgba(#000, 0.06);
 
 .List {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   font: normal 13px/20px "Lato", sans-serif;
 }
 
@@ -25,12 +24,12 @@ $cStructure-softLine: rgba(#000, 0.06);
 }
 
 .List-row {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
   // Makes sure prev border is overlapped but the is-selected one
   position: relative;
   box-sizing: content-box; // to make sure size is consistent w/ borders
+  align-items: center;
+  justify-content: space-between;
   margin-top: -2px;
   border: 1px solid transparent;
 }
@@ -51,10 +50,10 @@ $cStructure-softLine: rgba(#000, 0.06);
 }
 
 .List-rowItem {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
   box-sizing: content-box; // to make sure size is consistent w/ borders
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   margin-right: $sMargin-element;
   margin-left: $sMargin-element;

@@ -14,7 +14,7 @@
 }
 
 .ExportImageResult--url {
-  @include inline-block();
+  display: inline-block;
   width: auto;
   max-width: 400px;
   overflow: hidden;

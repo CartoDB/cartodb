@@ -1,4 +1,3 @@
-@import "../../../variables/mixins";
 @import "../../../variables/colors";
 @import "../../../variables/sizes";
 
@@ -18,12 +17,12 @@ $w: 780px;
 .ServiceList-items { display: block; }
 
 .ServiceList-item {
-  @include display-flex();
-  @include align-items(center, center);
-  @include transition(border, 200ms, ease-in);
+  display: flex;
   box-sizing: border-box;
+  align-items: center;
   margin-top: 16px;
   padding: 16px;
+  transition: border 200ms ease-in;
   border: 1px solid transparent;
   border-radius: 4px;
   background: #FFF;
@@ -41,9 +40,9 @@ $w: 780px;
 }
 
 .ServiceList-itemExt {
-  @include display-flex();
-  @include align-items(center, center);
-  @include justify-content(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 38px;
   min-width: 38px;
   height: 38px;
@@ -54,7 +53,7 @@ $w: 780px;
 }
 
 .ServiceList-itemInfo {
-  @include flex(1);
+  flex: 1;
 }
 
 .ServiceList-itemDescription {

@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
@@ -7,12 +6,12 @@
 }
 
 .AssetsList-recentInner {
-  @include display-flex;
+  display: flex;
   width: 1000px;
 }
 
 .AssetsList {
-  @include display-flex;
+  display: flex;
   position: relative;
 }
 
@@ -38,36 +37,36 @@
 }
 
 .AssetItem-icon {
-  @include align-items(center);
-  @include justify-content(center);
-  @include display-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
 }
 
 .AssetItem-label {
-  @include align-items(center);
-  @include justify-content(center);
-  @include display-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
 }
 
 .Modal-inner .AssetsList {
-  @include flex-wrap(wrap);
+  flex-wrap: wrap;
   margin: 0 -14px 20px;
 }
 
 .Modal-inner .AssetsList:last-child {
-  @include flex-wrap(wrap);
+  flex-wrap: wrap;
   margin: 0 -14px;
 }
 
 .AssetsList-item {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;

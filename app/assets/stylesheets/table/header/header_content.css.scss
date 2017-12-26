@@ -27,14 +27,15 @@ $text-shadow-color: rgba(black, 0.25);
 
     // Back button
     a.back {
-      @include inline-block();
+      display: inline-block;
       width: 14px;
       height: 13px;
       margin: 0;
+      opacity: 0.5;
+      vertical-align: top;
 
       @include table-sprite(back);
       @include text-indent();
-      opacity: 0.5;
 
       &:focus,
       &:hover {
@@ -46,11 +47,12 @@ $text-shadow-color: rgba(black, 0.25);
 
     // Vis type icon
     span.type {
-      @include inline-block();
+      display: inline-block;
       width: 23px;
       height: 18px;
       margin: 2px 0 0 12px;
       text-indent: -9999px;
+      vertical-align: top;
       vertical-align: middle;
       &.table { @include table-sprite(vis_type, $offset-y:0); }
       &.derived { @include table-sprite(vis_type, $offset-y:-18); }
@@ -112,9 +114,10 @@ $text-shadow-color: rgba(black, 0.25);
 
     // Clear view button type
     a.button_header {
-      margin: 3px 0 0 10px;
 
-      @include inline-block();
+      display: inline-block;
+      margin: 3px 0 0 10px;
+      vertical-align: top;
       &.clearview { display: none; }
     }
 
@@ -125,13 +128,14 @@ $text-shadow-color: rgba(black, 0.25);
       margin: 0 0 0 11px;
 
       p {
-        @include inline-block();
+        display: inline-block;
         width: auto;
         padding-left: 15px;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(#FFF, 0.5);
         font-size: 0.938em;
         font-style: italic;
         font-weight: 300;
+        vertical-align: top;
 
         &.public { margin-left: 116px; }
 
@@ -140,12 +144,12 @@ $text-shadow-color: rgba(black, 0.25);
         .link { text-decoration: underline; }
 
         a {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(#FFF, 0.5);
           font-style: normal;
           font-weight: 300;
 
           &:hover {
-            color: rgba(255, 255, 255, 1);
+            color: rgba(#FFF, 1);
             cursor: pointer;
           }
           &.disabled { opacity: 1; }
@@ -156,9 +160,9 @@ $text-shadow-color: rgba(black, 0.25);
 
   // Actions list
   ul.actions {
-    @include display-flex();
-    @include justify-content(flex-start, start);
-    @include align-items(center, center);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     height: 28px;
     margin: 0;
 
@@ -181,13 +185,13 @@ $text-shadow-color: rgba(black, 0.25);
       &.private:hover i { background-color: rgba(#F2ACAC, 1); }
 
       i {
-        @include inline-block();
+        display: inline-block;
         height: 20px;
         margin: 0;
+        transition: all 150ms ease-in;
+        border-radius: 3px;
         background: rgba(#EEE, 0.8) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
-
-        @include simple-transition(all, 150ms);
-        @include border-radius(3px);
+        vertical-align: top;
 
         &.disabled {
           opacity: 0.5;
@@ -215,18 +219,18 @@ $text-shadow-color: rgba(black, 0.25);
         border: 2px solid #FFF;
         border-radius: 30px;
         background: none;
+        box-shadow: none;
         color: #FFF;
         line-height: 20px;
         text-shadow: none;
 
-        @include box-shadow(none);
-
         span {
+
+          display: inline-block;
           padding: 1px 0;
           color: #FFF;
           font-size: 12px;
-
-          @include inline-block();
+          vertical-align: top;
         }
 
         &:hover {

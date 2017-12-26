@@ -11,11 +11,11 @@
 @import "../../variables/sizes";
 
 .LayoutIcon {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
   position: relative;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   width: $sIcon-layout;
   min-width: $sIcon-layout; // to no be deformed due to flex layout
   height: $sIcon-layout;

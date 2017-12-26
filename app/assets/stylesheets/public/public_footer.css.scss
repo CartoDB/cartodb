@@ -7,8 +7,8 @@
 @import "../old_common/mixins";
 
 footer {
-  @include box-sizing(border-box);
   display: block;
+  box-sizing: border-box;
   color: #999;
 
   p {

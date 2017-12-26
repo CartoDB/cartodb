@@ -15,10 +15,10 @@
 }
 
 .SideMenu-progress {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include flex-direction(row);
-  @include align-items(center, center);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   margin: 30px 0;
 }
 
@@ -37,8 +37,8 @@
 }
 
 .SideMenu-list {
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  align-items: center;
+  justify-content: space-between;
   margin: 25px 0;
 }
 
@@ -99,8 +99,8 @@
 }
 
 .SideMenu-helpSegment {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
+  flex-direction: row;
   padding: 15px;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
@@ -108,9 +108,9 @@
 }
 
 .SideMenu-helpSegment--paragraph {
-  @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(center);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin-left: 15px;
   color: $cTypography-paragraphs;
 }

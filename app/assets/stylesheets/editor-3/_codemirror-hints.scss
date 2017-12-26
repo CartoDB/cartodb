@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -14,7 +13,7 @@
   border: 1px solid #354148;
   border-radius: 2px;
   background: #27333A;
-  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 6px 0 rgba(#000, 0.16);
 }
 
 .CodeMirror-hint {
@@ -37,11 +36,11 @@
   }
 
   .has-letter::after {
-    @include transform(translateY(-50%));
     content: attr(data-type);
     position: absolute;
     top: 50%;
     right: $baseSize;
+    transform: translateY(-50%);
     color: #768085;
     font-family: 'Monaco', 'Monospace';
     letter-spacing: -0.5;

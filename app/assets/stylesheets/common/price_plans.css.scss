@@ -1,4 +1,3 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
@@ -23,14 +22,14 @@ $br: 4px;
 }
 
 .PricePlans-options {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 0 0 15px;
 }
 
 .PricePlans-yearly {
-  @include display-flex();
+  display: flex;
 }
 
 .PricePlans-yearlyText {
@@ -45,9 +44,8 @@ $br: 4px;
 }
 
 .PricePlans-list {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(top);
+  display: flex;
+  justify-content: space-between;
   padding: 0;
   border: 1px solid $cStructure-mainLine;
   border-radius: $br;
@@ -74,10 +72,9 @@ $br: 4px;
 }
 
 .PricePlans-itemHeader {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(top);
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   height: 85px;
   text-align: center;
 }

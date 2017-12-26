@@ -14,16 +14,19 @@
 
 // Layer actions sidebar
 .layer-sidebar {
+
+  display: inline-block;
   position: absolute;
   z-index: 6;
   top: 68px;
   bottom: 0;
   left: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
   letter-spacing: 0;
+  vertical-align: top;
 
-  @include inline-block();
   @include size(65px, auto);
-  @include border-left-radius(4px);
   @include single-box-shadow( -4px, 0, 5px, 0, rgba(black,0.03), true);
 
   nav {
@@ -45,13 +48,12 @@
           left: 36px;
           width: 8px;
           height: 8px;
+          border-radius: 10px;
           background: #EB2466;
+          box-shadow: rgba(#E5E5E5, 1) 0 0 0 1px;
           color: white;
           font-size: 8px;
           line-height: 10px;
-
-          @include border-radius(10px);
-          @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
         }
 
         &.sql_mod {
@@ -69,14 +71,14 @@
           left: 39px;
           width: 8px;
           height: 8px;
+          border-radius: 10px;
           background: #36D900;
+          box-shadow: rgba(#E5E5E5, 1) 0 0 0 1px;
           color: white;
           font-size: 8px;
           line-height: 10px;
 
           @include background(linear-gradient(#36D900,#238C00));
-          @include border-radius(10px);
-          @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
 
           &::before {
             content: '';
@@ -106,9 +108,9 @@
       width: 100%;
       height: 60px;
       border-bottom: 1px solid rgba(#999, 0.25);
+      opacity: 0.75;
 
       @include text-indent();
-      opacity: 0.75;
 
       &.sql_mod { @include table-sprite(table_icons, $offset-x: 20px, $offset-y: -3px); }
       &.filters_mod { @include table-sprite(table_icons, $offset-x: 21px, $offset-y: -62px); }

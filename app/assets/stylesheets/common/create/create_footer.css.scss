@@ -1,4 +1,3 @@
-@import "../../variables/mixins";
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
@@ -17,15 +16,14 @@
 }
 
 .CreateDialog-footerInner {
+  display: flex;
   position: relative;
+  align-items: baseline;
+  justify-content: space-between;
   min-height: 72px; // To have same consistent height regardless if the footer has buttons or not
   margin: 0 auto;
   padding: 16px 40px;
   background: $cStructure-grayBkg;
-
-  @include display-flex();
-  @include justify-content(space-between, space-between);
-  @include align-items(baseline, baseline);
 }
 
 @media (min-width: $sMedia-tablet) { .CreateDialog-footerInner { width: $sMedia-tablet; } }
@@ -56,8 +54,7 @@
 
 .CreateDialog-footerInner.is-centered {
   display: block;
-
-  @include justify-content(initial, initial);
+  justify-content: initial;
 }
 .CreateDialog-footerInfoIcon { margin-right: 8px; }
 
@@ -66,7 +63,7 @@
 }
 
 .CreateDialog-footerActions {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
 }
 .CreateDialog-footerActionsButton.is-separated { margin-right: 10px; }

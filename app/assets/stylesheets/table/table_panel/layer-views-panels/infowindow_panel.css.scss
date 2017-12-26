@@ -24,9 +24,8 @@
     position: relative;
     z-index: 2;
     padding: 10px 0 0 8px;
+    border-top-left-radius: 3px;
     background: image-url('layout/linen.png') repeat 0 0;
-
-    @include border-top-left-radius(3px);
 
     &::after {
       content: '';
@@ -40,16 +39,18 @@
     }
 
     li {
-      @include inline-block();
+      display: inline-block;
+      vertical-align: top;
 
       a {
-        @include inline-block();
+        display: inline-block;
         width: 99px;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
         background: white;
         line-height: 41px;
         text-align: center;
-
-        @include border-top-radius(3px);
+        vertical-align: top;
 
         &.selected {
           position: relative;
@@ -145,13 +146,13 @@
 
     z-index: 9;
     top: 112px;
+
+    box-sizing: border-box;
     width: 100%;
     padding: 9px 23px 3px 30px;
     border-top: 1px solid rgba(#DDD, 0.5);
     border-bottom: 1px solid rgba(#DDD, 0.5);
     background: #F6F6F6;
-
-    @include box-sizing(border-box);
 
     .tip {
       @include size(10px, 6px);
@@ -165,13 +166,14 @@
       overflow: hidden;
 
       li {
+
+        display: inline-block;
         min-width: 20px;
         margin: 0 15px 0 0;
         text-align: center;
+        vertical-align: top;
 
         a { margin: auto; }
-
-        @include inline-block();
 
         a { display: block; }
 
@@ -245,19 +247,18 @@
     bottom: 0;
     left: 0;
     padding: 20px 40px;
+    border-top-left-radius: 4px;
     background: rgba(white, 0.9);
     line-height: normal;
-
     text-align: center;
 
-    @include border-top-left-radius(4px);
-
     span.block-icon {
+      display: inline-block;
       position: relative;
       width: 111px;
       height: 110px;
+      vertical-align: top;
 
-      @include inline-block();
       @include table-sprite(block_icon);
     }
 
@@ -268,8 +269,9 @@
     }
 
     a {
-      @include inline-block();
+      display: inline-block;
       margin: 20px 0 0;
+      vertical-align: top;
     }
   }
 
@@ -282,9 +284,10 @@
       font-size: 15px;
 
       & > span {
-        @include inline-block();
+        display: inline-block;
         max-width: 50%;
         line-height: 16px;
+        vertical-align: top;
         vertical-align: middle;
         &:hover { cursor: all-scroll; }
       }
@@ -330,12 +333,13 @@
         margin-left: -15px !important;
         padding: 15px 15px 15px 20px;
         border: 1px solid #999;
+        border-radius: 3px;
         background-color: white;
+        box-shadow: rgba(#000, 0.1) 0 0 5px 2px;
         cursor: all-scroll;
 
-        @include box-shadow(rgba(0,0,0,0.1) 0 0 5px 2px);
         @include table-sprite(drag_points, $offset-y:23px, $offset-x:10px);
-        @include border-radius(3px);
+
         & > span { color: #999; }
       }
 

@@ -84,19 +84,19 @@ div.legends_panel {
     bottom: 0;
     left: 0;
     padding: 20px 40px;
+    border-top-left-radius: 4px;
     background: rgba(white, 0.9);
     line-height: normal;
-
     text-align: center;
 
-    @include border-top-left-radius(4px);
-
     span.block-icon {
+
+      display: inline-block;
       position: relative;
       width: 111px;
       height: 110px;
+      vertical-align: top;
 
-      @include inline-block();
       @include table-sprite(block_icon);
     }
 
@@ -107,8 +107,9 @@ div.legends_panel {
     }
 
     a {
-      @include inline-block();
+      display: inline-block;
       margin: 20px 0 0;
+      vertical-align: top;
     }
   }
 
@@ -158,13 +159,13 @@ div.legends_panel {
 
     z-index: 9;
     top: 59px;
+
+    box-sizing: border-box;
     width: 100%;
     padding: 9px 23px 3px 30px;
     border-top: 1px solid rgba(#DDD, 0.5);
     border-bottom: 1px solid rgba(#DDD, 0.5);
     background: #F6F6F6;
-
-    @include box-sizing(border-box);
 
     .tip {
       @include size(10px, 6px);
@@ -179,13 +180,14 @@ div.legends_panel {
       overflow: hidden;
 
       li {
+
+        display: inline-block;
         min-width: 20px;
         margin: 0 15px 0 0;
         text-align: center;
+        vertical-align: top;
 
         a { margin: auto; }
-
-        @include inline-block();
 
         a { display: block; }
 
@@ -257,14 +259,16 @@ div.legends_panel {
         ul li:hover .remove { opacity: 1; }
 
         ul li .remove {
+
+          display: inline-block;
           position: relative;
           top: 3px;
           margin-left: 5px;
           opacity: 0;
           letter-spacing: 0;
           vertical-align: middle;
+          vertical-align: top;
 
-          @include inline-block();
           @include size(13px,13px);
           @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
 
@@ -301,11 +305,12 @@ div.legends_panel {
         label.empty { font-style: italic; }
 
         label {
-          @include inline-block();
+          display: inline-block;
           max-width: 150px;
           overflow: hidden;
           line-height: 1.2;
           text-overflow: ellipsis;
+          vertical-align: top;
           white-space: nowrap;
         }
 
@@ -331,13 +336,13 @@ div.legends_panel {
 
     ul li {
       display: block;
+
+      box-sizing: border-box;
       width: 100%;
       height: 50px;
       padding: 13px 0;
       overflow: hidden;
       border-bottom: 1px solid rgba(#E5E5E5, 0.5);
-
-      @include box-sizing(border-box);
 
       &.title span.field {
         position: relative;
@@ -355,7 +360,8 @@ div.legends_panel {
       }
 
       .form_combo {
-        @include inline-block();
+        display: inline-block;
+        vertical-align: top;
       }
     }
   }
@@ -373,9 +379,10 @@ div.legends_panel {
       font-size: 15px;
 
       & > span {
-        @include inline-block();
+        display: inline-block;
         max-width: 50%;
         line-height: 16px;
+        vertical-align: top;
         vertical-align: middle;
 
         &:hover {

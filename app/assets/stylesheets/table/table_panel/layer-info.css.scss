@@ -25,9 +25,8 @@ $corner_radius: 6px;
   left: 0;
   height: 67px;
   border-bottom: 1px solid rgba(#999, 0.25);
+  border-top-left-radius: $corner_radius;
   line-height: 62px;
-
-  @include border-top-left-radius($corner_radius);
 
   div.left {
     width: 82%;
@@ -48,8 +47,9 @@ $corner_radius: 6px;
     text-align: left;
 
     * {
-      @include inline-block();
+      display: inline-block;
       letter-spacing: 0;
+      vertical-align: top;
       vertical-align: middle;
     }
 
@@ -57,13 +57,13 @@ $corner_radius: 6px;
     .order {
       width: 16px;
       padding: 1px 0;
+
+      border-radius: 2px;
       background: #A9A9A9;
       color: #ECECEC;
       font: bold 11px $text-fonts;
       line-height: 16px;
       text-align: center;
-
-      @include border-radius(2px);
     }
 
     // Layer name
@@ -79,7 +79,7 @@ $corner_radius: 6px;
       @include text-overflow();
 
       i.synced {
-        @include inline-block();
+        display: inline-block;
         width: 12px;
         height: 12px;
         margin: 5px 0 0 4px;
@@ -99,6 +99,8 @@ $corner_radius: 6px;
 
     // Layer info (second name?)
     .name_info {
+
+      display: flex;
       position: absolute;
       top: 34px;
       left: 67px;
@@ -109,7 +111,6 @@ $corner_radius: 6px;
       font: normal 11px $text-fonts;
       line-height: 15px;
 
-      @include display-flex();
       @include text-overflow();
 
       a {
@@ -147,11 +148,12 @@ $corner_radius: 6px;
 
   // Remove button
   .remove {
-    @include inline-block();
+    display: inline-block;
     width: 13px;
     height: 13px;
     margin-left: 5px;
     letter-spacing: 0;
+    vertical-align: top;
     vertical-align: middle;
 
     @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);

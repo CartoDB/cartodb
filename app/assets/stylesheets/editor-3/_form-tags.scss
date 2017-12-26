@@ -1,6 +1,5 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
-@import 'cdb-utilities/mixins';
 
 ul.tagit {
   margin-right: inherit;
@@ -111,11 +110,11 @@ ul.tagit input[type="text"] {
   }
 
   &::before {
-    @include transform(rotate(45deg));
+    transform: rotate(45deg);
   }
 
   &::after {
-    @include transform(rotate(-45deg));
+    transform: rotate(-45deg);
   }
 }
 

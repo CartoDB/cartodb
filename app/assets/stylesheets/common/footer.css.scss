@@ -196,16 +196,16 @@
 
 @media (min-width: $sMedia-tablet) {
   .Footer-list {
-    @include display-flex();
-    @include align-items(center);
+    display: flex;
+    align-items: center;
     width: 450px;
     padding: 0 $sMargin-element;
   }
 
   .Footer-inner {
-    @include display-flex();
-    @include justify-content(space-between, justify);
-    @include align-items(center);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin: 0 auto;
   }
 
@@ -217,11 +217,11 @@
   }
 
   .Footer-list--primary {
-    @include justify-content(flex-start, start);
+    justify-content: flex-start;
   }
 
   .Footer-list--secondary {
-    @include justify-content(flex-end, end);
+    justify-content: flex-end;
   }
 
   .Footer-listItem {

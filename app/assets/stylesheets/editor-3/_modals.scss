@@ -261,7 +261,7 @@
   z-index: 1;
   // In orden to change border by shadow, uncomment this
   // min-height: 5px; // to be able to show the shadow if no content inside.
-  // box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 3px 5px rgba(#000, 0.1);
   border-bottom: 1px solid $cMainLine;
 }
 

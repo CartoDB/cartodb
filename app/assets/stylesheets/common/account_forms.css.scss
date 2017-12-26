@@ -1,4 +1,3 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
@@ -7,9 +6,9 @@
 $sLabel-width: 140px;
 
 .FormAccount-Section {
-  @include display-flex();
-  @include flex-direction(row);
-  @include justify-content(space-between);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .FormAccount-container {
@@ -63,15 +62,15 @@ $sLabel-width: 140px;
 }
 
 .VerticalAligned--FormRow {
-  @include display-flex();
-  @include flex-direction(row);
-  @include justify-content(space-between);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .FormAccount-row {
-  @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(flex-start, start);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   margin: 0 0 32px;
 }
 
@@ -88,13 +87,13 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-row.FormAccount-row--centered {
-  @include justify-content(center);
+  justify-content: center;
 }
 
 .FormAccount-row.FormAccount-row--step {
-  @include justify-content(space-between, justify);
-  @include align-items(center);
   position: relative;
+  align-items: center;
+  justify-content: space-between;
   padding-top: 0;
   padding-bottom: $sMargin-group;
 
@@ -140,7 +139,7 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-row.has-label {
-  @include flex-direction(row);
+  flex-direction: row;
   // compensate for label width, to make the rowData appear as centered
   margin: 0;
   margin-left: -$sLabel-width;
@@ -183,7 +182,7 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-label.FormAccount-label--step {
-  @include flex-grow(1);
+  flex-grow: 1;
 }
 
 .FormAccount-rowPreview {
@@ -205,14 +204,14 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-rowData {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
   position: relative;
+  align-items: center;
 }
 
 .FormAccount-rowData.in-block {
-  @include flex-direction(column);
-  @include align-items(flex-start);
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .FormAccount-planTag {
@@ -223,7 +222,7 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-rowData.FormAccount-rowData--alignLeft {
-  @include justify-content(flex-start, start);
+  justify-content: flex-start;
 }
 
 .FormAccount-rowData--withLabel {
@@ -411,7 +410,6 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-inputError {
-  @include transition(top, 200ms, ease-in-out);
   position: absolute;
   z-index: 1;
   top: 0;
@@ -419,6 +417,7 @@ $sLabel-width: 140px;
   left: 0;
   height: 38px;
   padding: 0 12px;
+  transition: top 200ms ease-in-out;
   border: 1px solid #CCC;
   border-radius: 4px;
   background: #FFF4F4;
@@ -483,22 +482,22 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-row.FormAccount-rowHorizontal {
-  @include flex-direction(row);
-  @include justify-content(space-between, justify);
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .FormAccount-userRole {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(baseline, baseline);
-  @include justify-content(space-between, justify);
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: space-between;
   margin-top: 20px;
 }
 
 .FormAccount-avatarPreview {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
   position: relative;
+  flex-direction: row;
   width: 100px;
   height: 100px;
   overflow: hidden;
@@ -655,7 +654,7 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-rowInfo {
-  @include display-flex();
+  display: flex;
 
   &.FormAccount-rowInfo--marginLeft {
     width: 224px;
@@ -703,9 +702,9 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-footer {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: $sMargin-section 0 100px;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
@@ -713,11 +712,11 @@ $sLabel-width: 140px;
 // Allow to reorder items using the flex-order property. E.g. to have "positive" action being trigger on an implicit
 // form submit, but for the items to be rendered in a different order.
 .FormAccount-footerItemAsFirst {
-  @include flex-order(1);
+  order: 1;
 }
 
 .FormAccount-footerItemAsSecond {
-  @include flex-order(2);
+  order: 2;
 }
 
 .FormAccount-footer--noMarginBottom {
@@ -725,9 +724,9 @@ $sLabel-width: 140px;
 }
 
 .FormAccount-footerText {
-  @include display-flex();
-  @include flex-direction(row);
-  @include justify-content(flex-start);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;

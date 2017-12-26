@@ -25,13 +25,12 @@
     height: 16px;
     padding: 0 !important;
     border: none;
+    border-radius: 20px;
     background: #E5E5E5;
     color: white;
     font-size: 12px;
     line-height: 16px;
     text-align: center;
-
-    @include border-radius(20px);
 
     &:hover {
       background: #AAA;
@@ -70,11 +69,13 @@
     }
 
     a.next {
-      @include border-left-radius(0);
+      border-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+
       @include text-indent();
       @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
       @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
-      border-left: 0;
 
       &:hover,
       &:active {
@@ -84,7 +85,9 @@
     }
 
     a.back {
-      @include border-right-radius(0);
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+
       @include text-indent();
       @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
       @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);

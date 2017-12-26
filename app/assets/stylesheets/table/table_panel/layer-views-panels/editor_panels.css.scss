@@ -15,9 +15,10 @@
 // SQL PANEL & CARTO PANEL
 .sql_panel,
 .csseditor_panel {
-  @include inline-block();
+  display: inline-block;
   width: 100%;
   height: 100%;
+  vertical-align: top;
 
   // Position of the help tip
   .help-tip {

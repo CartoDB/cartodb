@@ -17,9 +17,9 @@ $cLocationRed: #F24440;
 $cWhite: #FFF;
 
 .Spinner {
-  @include animation(load8 1.1s infinite linear);
   position: relative;
   margin: 0 auto;
+  animation: load8 1.1s infinite linear;
   border-top: 2px solid #DDD;
   border-right: 2px solid #DDD;
   border-bottom: 2px solid #DDD;
@@ -47,42 +47,42 @@ $cWhite: #FFF;
   margin: -(36px / 2) 0 0  - (36px / 2);
 }
 
-@include keyframes(load8) {
+@keyframes load8 {
   0% {
-    @include css3-prefix(transform, rotate(0deg));
+    transform: rotate(0deg);
   }
 
   100% {
-    @include css3-prefix(transform, rotate(360deg));
+    transform: rotate(360deg);
   }
 }
 
 .Sessions {
-  @include display-flex;
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background-size: cover;
 }
 
 .Sessions-navy {
-  @include display-flex;
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background-color: $cNavyBlue;
   background-size: cover;
 }
 
 .Sessions-content {
-  @include display-flex;
-  @include flex-grow(1);
-  @include align-items(center, center);
-  @include justify-content(center, center);
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
   padding: 40px 0;
 }
 
 .Sessions-inner {
-  @include display-flex;
-  @include justify-content(space-between, space-between);
+  display: flex;
+  justify-content: space-between;
 }
 
 .Sessions .Sessions-title {
@@ -160,8 +160,8 @@ $cWhite: #FFF;
 }
 
 .Sessions-left {
-  @include display-flex;
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   width: 320px;
 }
 
@@ -470,7 +470,7 @@ $cWhite: #FFF;
 
 @media (max-width: $sLayout-width-l) {
   .Sessions-inner {
-    @include justify-content(center, center);
+    justify-content: center;
   }
 
   .Sessions-right {
@@ -490,7 +490,7 @@ $cWhite: #FFF;
 
 @media (max-width: $sLayout-width-l) {
   .Sessions-inner {
-    @include justify-content(center, center);
+    justify-content: center;
   }
 
   .Sessions-right {

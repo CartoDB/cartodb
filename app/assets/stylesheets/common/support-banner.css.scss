@@ -12,10 +12,10 @@
 }
 
 .SupportBanner-inner {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
   position: relative;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .SupportBanner-link {

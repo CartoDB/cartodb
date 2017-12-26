@@ -2,12 +2,11 @@
 // --------------------------------------------------
 
 @import "../variables/colors";
-@import "../variables/mixins";
 @import "../variables/sizes";
 
 .DefaultTimeDiff {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
 }
 
 .DefaultTimeDiff-icon {

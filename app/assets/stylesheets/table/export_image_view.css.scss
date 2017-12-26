@@ -1,4 +1,3 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 
 /**
@@ -12,12 +11,12 @@
 }
 
 .ExportImageView-Header {
-  @include transition(all, 200ms, ease-in-out);
   position: absolute;
   z-index: 105;
   top: -35px;
   width: 100%;
   height: 40px;
+  transition: all 200ms ease-in-out;
   text-align: center;
 }
 
@@ -59,12 +58,13 @@
 }
 
 .ExportImageView-Footer--inner {
-  @include transition(margin, 200ms, ease-in-out);
   $width: 360px;
   position: absolute;
   left: 50%;
   width: $width;
   margin-left: -$width / 2;
+
+  transition: margin 200ms ease-in-out;
   color: #9B9B9B;
 }
 
@@ -87,9 +87,9 @@
 }
 
 .ExportImage-formatList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
 }
 
@@ -126,18 +126,17 @@
 }
 
 .ExportHelper.ExportHelper--header {
-  @include transition(opacity, 500ms, ease-in-out);
   position: absolute;
   top: 0;
   left: 0;
   box-sizing: border-box;
   width: 100%;
   padding: 10px;
+  transition: opacity 500ms ease-in-out;
   background: rgba(#000, 0.75);
 }
 
 .ExportHelper.ExportHelper--attribution {
-  @include transition(opacity, 500ms, ease-in-out);
   position: absolute;
   top: auto;
   right: 0;
@@ -146,6 +145,7 @@
   box-sizing: border-box;
   width: auto;
   padding: 0 5px;
+  transition: opacity 500ms ease-in-out;
   background: rgba(#FFF, 0.75);
   font-size: 11px;
 }
@@ -260,15 +260,8 @@ $resizeHandlerSize: 8px;
     z-index: 104;
     width: $resizeHandlerSize;
     height: $resizeHandlerSize; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */
-    background: rgb(254, 254, 254);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(254, 254, 254, 1)), color-stop(100%, rgba(229, 229, 229, 1)));
-    background: -webkit-linear-gradient(top, rgba(254, 254, 254, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    background: -moz-linear-gradient(top, rgba(254, 254, 254, 1) 0%, rgba(229, 229, 229, 1) 100%);
     background: linear-gradient(to bottom, rgba(254, 254, 254, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    background: -o-linear-gradient(top, rgba(254, 254, 254, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    background: -ms-linear-gradient(top, rgba(254, 254, 254, 1) 0%, rgba(229, 229, 229, 1) 100%); /* Chrome10+,Safari5.1+ */ /* Opera 11.10+ */ /* IE10+ */ /* W3C */
     box-shadow: 1px 1px 2px rgba(#000, 0.5);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FEFEFE', endColorstr='#E5E5E5', GradientType=0); /* IE6-9 */
   }
 
   .ui-resizable-disabled .ui-resizable-handle,

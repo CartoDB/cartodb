@@ -12,7 +12,7 @@
 
 .ConnectDialog .Filters-separator { background: #DDD; }
 
-.ConnectDialog .Filters-row { @include justify-content(center, center); }
+.ConnectDialog .Filters-row { justify-content: center; }
 
 .ConnectDialog-footer {
   position: fixed;

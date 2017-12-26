@@ -18,7 +18,7 @@
 }
 
 .DatasetsPaginator .Pagination {
-  @include justify-content(flex-end, end);
+  justify-content: flex-end;
 }
 
 //Fix Pagination for add layer modal

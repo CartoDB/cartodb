@@ -1,10 +1,9 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .CustomRamp {
-  @include display-flex();
-  @include justify-content(space-between);
+  display: flex;
+  justify-content: space-between;
 }
 
 .CustomRamp-list {
@@ -12,7 +11,7 @@
 }
 
 .CustomRamp .CustomRamp-listOptions {
-  @include flex(1);
+  flex: 1;
 }
 
 .CustomRamp-clear {
@@ -30,9 +29,9 @@
 }
 
 .RampItem-secondaryContainer {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .RampItem-img {

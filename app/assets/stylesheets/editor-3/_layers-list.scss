@@ -1,7 +1,6 @@
 // Styles for Layer List
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
@@ -65,7 +64,7 @@
       border-top: 1px solid $cMainLine;
       border-bottom: 1px solid $cMainLine;
       background: $cThirdBackground;
-      background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
+      background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(#000, 0.08) 6px, rgba(#000, 0.08) 6px);
     }
 
     &:hover {

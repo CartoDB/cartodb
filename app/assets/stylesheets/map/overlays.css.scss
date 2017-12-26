@@ -37,11 +37,12 @@
 }
 
 .cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 span {
-  @include inline-block();
+  display: inline-block;
   width: 150px;
   float: left;
   overflow: hidden;
   text-overflow: ellipsis;
+  vertical-align: top;
   white-space: nowrap;
 }
 
@@ -57,16 +58,15 @@
 }
 
 .overlay-properties ul li .field.double-field .btn:first-child {
-  @include border-radius(3px 0 0 3px);
+  border-radius: 3px 0 0 3px;
 }
 
 .overlay-properties ul li .field.double-field .btn:last-child {
-  @include border-radius(0 3px 3px 0);
   border-left: none;
+  border-radius: 0 3px 3px 0;
 }
 
 .overlay-properties ul li .btn {
-  @include border-radius(3px);
   display: block;
   position: relative;
   width: auto;
@@ -75,6 +75,7 @@
   margin: 0;
   float: left;
   border: 1px solid #9E9E9E;
+  border-radius: 3px;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #FFF), color-stop(100%, #F2F2F2));
   background: -webkit-linear-gradient(#FFF, #F2F2F2);
   background: -moz-linear-gradient(#FFF, #F2F2F2);
@@ -251,9 +252,10 @@
 }
 
 .overlay-properties ul li {
-  @include inline-block();
+  display: inline-block;
   padding: 0 10px;
   border-right: 1px solid  rgba(217, 217, 217, 0.8);
+  vertical-align: top;
 }
 
 .overlay-properties ul li:last-child {
@@ -262,11 +264,12 @@
 }
 
 .overlay-properties ul li .field {
-  @include inline-block();
+  display: inline-block;
+  vertical-align: top;
 }
 
 .overlay-properties ul li .field .form-view {
-  @include inline-block();
+  display: inline-block;
   margin: 0 8px 0 0;
   vertical-align: top;
 }
@@ -294,13 +297,13 @@
 }
 
 .header.overlay-static {
-  @include border-radius(0);
-  @include simple-transition(background, 0.1s, ease-in-out);
   display: none;
   position: absolute;
   z-index: 1;
   width: 100%;
   max-width: inherit;
+  transition: background 0.1s ease-in-out;
+  border-radius: 0;
   background: rgba(#333, 0.5);
 
   .content:hover {
@@ -352,13 +355,13 @@
 }
 
 .overlay {
-  @include border-radius(3px);
-  @include simple-transition(background, 0.1s, ease-in-out);
   display: none;
   position: absolute !important; // !important required to work on IE10.
 
   z-index: 4;
   max-width: 800px;
+  transition: background 0.1s ease-in-out;
+  border-radius: 3px;
   background: rgba(#333, 0.5);
 
   &:hover {
@@ -377,14 +380,15 @@
     strong,
     em,
     span {
-      @include inline-block();
+      display: inline-block;
       margin-left: 3px;
+      vertical-align: top;
     }
   }
 
   /* Annotation Overlay */
   &.annotation {
-    @include border-radius(2px);
+    border-radius: 2px;
     $ballWidth: 6px;
 
     &.selected {
@@ -415,13 +419,13 @@
     }
 
     .stick .ball {
-      @include border-radius(2000px);
       position: absolute;
       top: 50%;
       left: -$ballWidth;
       width: $ballWidth;
       height: $ballWidth;
       margin-top: -$ballWidth / 2;
+      border-radius: 2000px;
       background: #333;
     }
   }
@@ -439,8 +443,8 @@
     }
 
     .content {
-      @include border-radius(3px);
       position: relative;
+      border-radius: 3px;
     }
 
     &.error .loader {
@@ -514,11 +518,11 @@
 
   &.editable {
     .text {
-      @include user-select(inherit);
-      @include simple-transition(padding, 100ms, ease-in);
       padding: 5px 9px;
+      transition: padding 100ms ease-in;
       border: 1px dashed #CCC;
       cursor: text !important;
+      user-select: inherit;
 
       .content {
         padding: 10px 10px 3px;
@@ -547,9 +551,9 @@
   }
 
   div.dropdown.properties_dropdown {
-    opacity: 0;
 
-    @include simple-transition(opacity, 0.1s, ease-in-out);
+    transition: opacity 0.1s ease-in-out;
+    opacity: 0;
 
     ul li > span:first-child {
       width: 63px;
@@ -573,6 +577,8 @@
   .close,
   .edit {
     position: absolute;
+
+    transition: opacity 0.1s ease-in-out;
     border: 1px solid #FFF;
     opacity: 0;
     background: #333;
@@ -582,17 +588,15 @@
     text-align: center;
     text-transform: uppercase;
     cursor: pointer;
-
-    @include simple-transition(opacity, 0.1s, ease-in-out);
   }
 
   .close {
-    @include border-radius(90px);
     top: -12px;
     left: -15px;
     width: 17px;
     height: 16px;
     padding: 3px;
+    border-radius: 90px;
     line-height: 16px;
 
     &:hover {
@@ -603,10 +607,10 @@
   /* edit button */
 
   .edit {
-    @include border-radius(20px);
     top: -12px;
     right: -15px;
     padding: 5px 18px 5px 11px;
+    border-radius: 20px;
     font-weight: 500;
     letter-spacing: 1px;
 
@@ -627,7 +631,7 @@
 // .overlay
 .overlay.editable .content {
   .text {
-    @include user-select(inherit);
+    user-select: inherit;
   }
 }
 
@@ -661,8 +665,7 @@
   }
 
   .text {
-    @include user-select(none);
-    @include simple-transition(padding, 0.05s, ease-in-out);
+    transition: padding 0.05s ease-in-out;
     color: #FFF;
     font-size: 20px;
     line-height: normal;
@@ -674,6 +677,7 @@
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     hyphens: auto;
+    user-select: none;
 
     em,
     i {
@@ -702,7 +706,6 @@ div.cartodb-timeslider {
 }
 
 div.cartodb-zoom .info {
-  @include border-radius(4px);
   display: block;
   position: absolute;
   z-index: 5;
@@ -710,10 +713,11 @@ div.cartodb-zoom .info {
   margin: 17px 0 0;
   padding: 8px 0 7px;
   border: 1px solid #999;
+  border-radius: 4px;
   background: WHITE;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  -webkit-box-shadow: rgba(#000, 0.2) 0 0 4px 2px;
+  -moz-box-shadow: rgba(#000, 0.2) 0 0 4px 2px;
+  box-shadow: rgba(#000, 0.2) 0 0 4px 2px;
   color: #858585;
   font: normal 13px "Helvetica", Arial;
   line-height: normal;
@@ -725,10 +729,10 @@ div.rule {
   z-index: 10;
   width: 1px;
   height: 100%;
+
+  transition: opacity 0.1s ease-in-out;
   opacity: 0;
   background: #AAA;
-
-  @include simple-transition(opacity, 0.1s, ease-in-out);
 
   &.horizontal {
     width: 100%;
@@ -740,7 +744,7 @@ div.dropdown.properties_dropdown {
   width: 204px;
 
   & > ul {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     padding: 10px;
 
     li {
@@ -753,10 +757,11 @@ div.dropdown.properties_dropdown {
       }
 
       span {
-        @include inline-block();
+        display: inline-block;
         margin-right: 20px;
         color: #BABABA;
         font-size: 13px;
+        vertical-align: top;
 
         &.handle {
           margin: 0;

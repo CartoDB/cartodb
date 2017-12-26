@@ -6,7 +6,6 @@
 //
 // --------------------------------------------------------------------------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -41,7 +40,6 @@
 }
 
 .UISlider .ui-slider-handle {
-  @include transition(transform 200ms);
   position: absolute;
   z-index: 3;
   top: 0;
@@ -50,6 +48,7 @@
   height: 10px;
   margin-top: -5px;
   margin-left: -5px;
+  transition: transform 200ms;
   border: 1px solid $cMainLine;
   border-radius: 50%;
   outline: none;

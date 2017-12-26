@@ -1,5 +1,4 @@
 @import 'cdb-variables/colors';
-@import 'cdb-utilities/mixins';
 
 .Form-InputFill.is-disabled {
   border-color: $cSecondaryLine;
@@ -70,6 +69,6 @@
 }
 
 .InputColor-modalHeader {
-  @include display-flex();
-  @include justify-content(space-between);
+  display: flex;
+  justify-content: space-between;
 }

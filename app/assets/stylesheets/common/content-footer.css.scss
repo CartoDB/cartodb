@@ -1,11 +1,10 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
 .ContentFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   margin: 0 auto;
   padding: $sMargin-group 0;
@@ -13,13 +12,13 @@
 
 /* REVIEW IF THIS CLASS IS NECESSARY */
 .ContentFooter-inner {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .ContentFooter-inner--paginationOnly {
-  @include justify-content(center);
+  justify-content: center;
 }
 
 .ContentFooter-lockedIcon {
@@ -34,7 +33,7 @@
   }
 
   .ContentFooter-inner--paginationOnly {
-    @include justify-content(flex-end, end);
+    justify-content: flex-end;
   }
 }
 
@@ -44,7 +43,7 @@
   }
 
   .ContentFooter-inner--paginationOnly {
-    @include justify-content(flex-end, end);
+    justify-content: flex-end;
   }
 }
 
@@ -54,30 +53,30 @@
   }
 
   .ContentFooter-inner--paginationOnly {
-    @include justify-content(flex-end, end);
+    justify-content: flex-end;
   }
 }
 
 @media only screen and (min-width: $sMedia-tablet) {
   .ContentFooter-inner--paginationOnly {
-    @include justify-content(flex-end, end);
+    justify-content: flex-end;
   }
 }
 
 @media (min-width: $sMedia-desktop) {
   .ContentFooter {
-    @include display-flex();
+    display: flex;
     width: $sLayout-width;
   }
 }
 
 @media (min-width: $sMedia-tablet) {
   .ContentFooter-inner {
-    @include flex-direction(row);
-    @include justify-content(space-between, justify);
+    flex-direction: row;
+    justify-content: space-between;
   }
 
   .ContentFooter-inner--paginationOnly {
-    @include justify-content(flex-end, end);
+    justify-content: flex-end;
   }
 }

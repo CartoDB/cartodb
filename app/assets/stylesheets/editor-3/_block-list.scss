@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -205,5 +204,6 @@
 
 .HorizontalBlockList-item-text,
 .HorizontalBlockList-item-icon {
-  @include inline-block();
+  display: inline-block;
+  vertical-align: top;
 }

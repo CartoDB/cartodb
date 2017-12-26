@@ -15,10 +15,10 @@
 .SettingsDropdown-item:last-child { margin-bottom: 0 !important; }
 
 .SettingsDropdown-sameline {
-  @include display-flex();
-  @include flex-wrap(nowrap);
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .SettingsDropdown-itemLink.SettingsDropdown-itemButtonLink {

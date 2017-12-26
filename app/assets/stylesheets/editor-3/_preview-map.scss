@@ -2,7 +2,6 @@
 // --------------------------------------------------
 
 @import 'cdb-variables/colors';
-@import 'cdb-utilities/mixins';
 
 .PreviewMap {
   position: absolute;
@@ -15,13 +14,13 @@
 }
 
 .PreviewMap-canvas {
-  @include transform(translateZ(0));
   position: absolute;
   top: 40px;
   right: 40px;
   bottom: 40px;
   left: 40px;
   overflow: hidden;
+  transform: translateZ(0);
   border-radius: 5px;
   background: $cWhite;
 }

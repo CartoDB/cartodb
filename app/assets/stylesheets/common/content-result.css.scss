@@ -76,19 +76,19 @@
   background: transparent;
 
   &::before {
-    @include animation(pulsate 1.5s linear infinite);
     content: '';
     display: block;
     position: absolute;
     right: 0;
     width: 600px;
     height: 2px;
+    animation: pulsate 1.5s linear infinite;
     background: rgba(black, 0.55);
   }
 }
 
 .ContentResult-icon {
-  @include inline-block();
+  display: inline-block;
   width: 38px;
   height: 38px;
   border: 1px solid $cStructure-mainLine;
@@ -96,6 +96,7 @@
   color: $cTypography-help;
   font-size: 22px;
   line-height: 36px;
+  vertical-align: top;
 }
 // Icon types
 .ContentResult-iconNegative {
@@ -138,7 +139,7 @@
   }
 }
 
-@include keyframes(pulsate) {
+@keyframes pulsate {
   0% {
     right: 100%;
   }

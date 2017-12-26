@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -64,7 +63,6 @@
 }
 
 .rangesliderHandle {
-  @include transition(transform 200ms);
   position: absolute;
   z-index: 3;
   top: 0;
@@ -72,6 +70,7 @@
   width: 10px;
   height: 10px;
   margin-top: -5px;
+  transition: transform 200ms;
   border: 1px solid $cBlue;
   border-radius: 50%;
   outline: none;

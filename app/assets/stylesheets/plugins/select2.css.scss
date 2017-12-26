@@ -1,5 +1,4 @@
 @import "compass/css3/box-shadow";
-@import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "../old_common/mixins";
 
@@ -8,8 +7,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 */
 
 .combo-wrapper {
-  @include border-radius(6px);
   padding: 12px;
+  border-radius: 6px;
   background: #F2F2F2;
 }
 
@@ -74,7 +73,7 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-container.select2-drop-above .select2-choice {
-  @include border-radius(4px);
+  border-radius: 4px;
   border-bottom-color: #AAA;
   background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #EEE), color-stop(0.9, white));
   background-image: -webkit-linear-gradient(center bottom, #EEE 0%, white 90%); /* stylelint-disable-line */
@@ -116,22 +115,22 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-drop {
-  @include border-radius(3px);
   position: absolute;
   z-index: 9999;
   top: 100%;
   width: 100%;
   margin-top: 5px;
   border: 1px solid #AAA;
+  border-radius: 3px;
   background: #FFF;
   color: #000;
 }
 
 .select2-drop.select2-drop-above {
-  @include border-radius(4px);
-  @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 5px);
   margin-top: -5px;
   border-top: 1px solid #AAA;
+  border-radius: 4px;
+  box-shadow: rgba(#000, 0.2) 0 0 5px;
 }
 
 .select2-container .select2-choice div {
@@ -190,13 +189,13 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-search input {
-  @include border-radius(3px);
   width: 100%;
   height: auto !important;
   min-height: 26px;
   margin: 0;
   padding: 4px 5px;
   border: 1px solid #AAA;
+  border-radius: 3px;
   outline: 0;
   background: #FFF;
   // background: url('select2.png') no-repeat 100% -22px, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
@@ -219,9 +218,9 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   font-size: 1em;
 
   &:focus {
-    @include box-shadow(rgba(0, 0, 0, 0.1) 0 0 2px 2px);
     border-color: #999;
     outline: none;
+    box-shadow: rgba(#000, 0.1) 0 0 2px 2px;
   }
 }
 
@@ -239,10 +238,10 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 .select2-container-active .select2-choices {
   border: 1px solid #999;
   outline: none;
-  -webkit-box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
-  -o-box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 0 5px  rgba(#000, 0.3);
+  -moz-box-shadow: 0 0 5px  rgba(#000, 0.3);
+  -o-box-shadow: 0 0 5px  rgba(#000, 0.3);
+  box-shadow: 0 0 5px  rgba(#000, 0.3);
 }
 
 .select2-dropdown-open .select2-choice {
@@ -448,10 +447,10 @@ disabled look for already selected choices in the results dropdown
 .select2-container-multi.select2-container-active .select2-choices {
   border: 1px solid #5897FB;
   outline: none;
-  -webkit-box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
-  -o-box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 5px  rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 0 5px  rgba(#000, 0.3);
+  -moz-box-shadow: 0 0 5px  rgba(#000, 0.3);
+  -o-box-shadow: 0 0 5px  rgba(#000, 0.3);
+  box-shadow: 0 0 5px  rgba(#000, 0.3);
 }
 
 .select2-container-multi .select2-choices li {
@@ -507,9 +506,9 @@ disabled look for already selected choices in the results dropdown
   background-image: -o-linear-gradient(top, #F4F4F4 20%, #F0F0F0 50%, #E8E8E8 52%, #EEE 100%);
   background-image: -ms-linear-gradient(top, #F4F4F4 20%, #F0F0F0 50%, #E8E8E8 52%, #EEE 100%);
   background-image: linear-gradient(top, #F4F4F4 20%, #F0F0F0 50%, #E8E8E8 52%, #EEE 100%); /* stylelint-disable-line */
-  -webkit-box-shadow: 0 0 2px #FFF inset, 0 1px 0  rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: 0 0 2px #FFF inset, 0 1px 0  rgba(0, 0, 0, 0.05);
-  box-shadow: 0 0 2px #FFF inset, 0 1px 0  rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: 0 0 2px #FFF inset, 0 1px 0  rgba(#000, 0.05);
+  -moz-box-shadow: 0 0 2px #FFF inset, 0 1px 0  rgba(#000, 0.05);
+  box-shadow: 0 0 2px #FFF inset, 0 1px 0  rgba(#000, 0.05);
   color: #333;
   line-height: 13px;
   cursor: default;
@@ -607,7 +606,8 @@ disabled look for already selected choices in the results dropdown
       border: 1px solid transparent !important;
 
       &:first-child {
-        @include border-left-radius(4px);
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
       }
 
       &:last-child {
@@ -638,13 +638,15 @@ disabled look for already selected choices in the results dropdown
     border-bottom: 1px solid rgba(black, 0.25);
 
     &:first-child {
-      @include border-left-radius(2px);
       border-left: 1px solid rgba(black, 0.25);
+      border-top-left-radius: 2px;
+      border-bottom-left-radius: 2px;
     }
 
     &:last-child {
-      @include border-right-radius(2px);
       border-right: 1px solid rgba(black, 0.25);
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
     }
   }
 }
@@ -659,12 +661,12 @@ disabled look for already selected choices in the results dropdown
   overflow: visible;
 
   span.type {
-    @include border-radius(2px);
     position: absolute;
     z-index: 1;
     top: 4px;
     right: 0;
     width: 20px;
+    border-radius: 2px;
     background: #CCC;
     color: WHITE;
     font-size: 11px;
@@ -675,10 +677,12 @@ disabled look for already selected choices in the results dropdown
   }
 
   span.value {
-    @include inline-block();
-    @include text-overflow();
+    display: inline-block;
     width: 85%;
     line-height: 22px;
+    vertical-align: top;
+
+    @include text-overflow();
   }
 }
 
@@ -695,7 +699,7 @@ disabled look for already selected choices in the results dropdown
   }
 
   .select2-result-label table {
-    @include border-radius(3px);
     border: 1px solid rgba(black, 0.25);
+    border-radius: 3px;
   }
 }

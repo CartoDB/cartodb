@@ -65,12 +65,11 @@ div.panes {
   }
 
   .emptyTableContainer {
-    @include transform-style("linear");
-    @include transition-property("text-indent");
-    @include transition-duration(300ms);
     display: inline-block;
     position: fixed;
     width: 100%;
+    transform-style: linear;
+    transition: text-indent 300ms;
     text-align: center;
 
     .emptynessInfo {
@@ -141,10 +140,6 @@ div.table {
         height: 37px;
 
         p {
-          @include transform-style("linear");
-          @include transition-property("text-indent");
-          @include transition-duration(300ms);
-          @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
           display: inline;
           position: fixed;
           z-index: 2;
@@ -152,8 +147,11 @@ div.table {
           width: 100%;
           margin: 12px 0 0 -50%;
           padding: 12px 0;
+          transform-style: linear;
+          transition: text-indent 300ms;
           border-bottom: 1px solid #CCC;
           background-color: #E5FAEA;
+          box-shadow: rgba(#000, 0.055) 0 3px 1px 0;
           color: #333;
           color: #666;
           font-family: $text-fonts;
@@ -181,7 +179,7 @@ div.table {
             height: 66px;
 
             & > div {
-              @include inline-block();
+              display: inline-block;
               position: fixed;
               z-index: 1;
               width: inherit;
@@ -190,6 +188,7 @@ div.table {
               padding: 10px 0 15px;
               border-bottom: 1px solid #CCC;
               background: image-url('layout/thead_bkg.jpg') repeat 0 0;
+              vertical-align: top;
 
               &::after {
                 content: ' ';
@@ -213,27 +212,30 @@ div.table {
                 padding: 10px 5px;
 
                 span {
-                  @include inline-block();
+                  display: inline-block;
                   margin: 6px 0 5px 5px;
                   color: #7C7C7C;
+                  vertical-align: top;
                 }
               }
 
               &.interactuable {
                 div,
                 a {
-                  @include inline-block();
+                  display: inline-block;
                   margin: 6px 0 5px 5px;
                   color: #7C7C7C;
+                  vertical-align: top;
 
                   &::after {
-                    @include inline-block();
                     content: '';
+                    display: inline-block;
                     position: relative;
                     left: 2px;
                     border-top: 3px solid #7C7C7C;
                     border-right: 3px solid transparent;
                     border-left: 3px solid transparent;
+                    vertical-align: top;
                   }
 
                   &:hover {
@@ -249,19 +251,20 @@ div.table {
 
               a,
               div {
-                @include inline-block();
+                display: inline-block;
                 margin: 6px 0 5px 5px;
                 color: #7C7C7C;
+                vertical-align: top;
 
                 &:hover {
                   text-decoration: none;
                 }
 
                 span.geo {
-                  @include border-radius(2px);
                   margin: 0 0 0 3px;
                   padding: 1px 2px;
                   border: 1px solid #C17400;
+                  border-radius: 2px;
                   background: ORANGE;
                   color: WHITE;
                   text-decoration: uppercase;
@@ -273,10 +276,10 @@ div.table {
               }
 
               input {
-                @include border-radius(3px);
                 margin: 0;
                 padding: 3px 4px;
                 border: 1px solid #CCC;
+                border-radius: 3px;
                 background: WHITE;
                 color: #333;
                 font: bold 13px $text-fonts;
@@ -327,10 +330,9 @@ div.table {
           }
 
           &:last-child {
-            @include transform-style("linear");
-            @include transition-property("padding-right");
-            @include transition-duration(500ms);
             padding-right: 62px;
+            transform-style: linear;
+            transition: padding-right 500ms;
           }
 
           // Column options
@@ -469,8 +471,6 @@ div.table {
               overflow: visible;
 
               &::before {
-                @include border-radius(3px);
-                @include background(linear-gradient(#FAFAFA, #E8E8E8));
                 content: '';
                 display: none;
                 position: absolute;
@@ -481,7 +481,10 @@ div.table {
                 height: 12px;
                 padding: 0;
                 border: 1px solid #999;
+                border-radius: 3px;
                 background: #FAFAFA;
+
+                @include background(linear-gradient(#FAFAFA, #E8E8E8));
               }
 
               &::after {
@@ -514,10 +517,9 @@ div.table {
           }
 
           &:last-child {
-            @include transform-style("linear");
-            @include transition-property("padding-right");
-            @include transition-duration(500ms);
             padding-right: 65px;
+            transform-style: linear;
+            transition: padding-right 500ms;
             border-right: none;
           }
         }
@@ -567,10 +569,7 @@ div.table {
 
       &.sql_loader {
         div.float_info {
-          @include inline-block();
-          @include transform-style("linear");
-          @include transition-property("margin");
-          @include transition-duration(300ms);
+          display: inline-block;
           position: fixed;
           top: 50%;
           left: 50%;
@@ -578,6 +577,8 @@ div.table {
           height: 36px;
           margin: -100px 0 0 -120px;
           padding: 0;
+          transform-style: linear;
+          transition: margin 300ms;
           vertical-align: top;
 
           img {
@@ -608,7 +609,7 @@ div.table {
 
         div.float_info,
         div.float_action {
-          @include inline-block();
+          display: inline-block;
           position: fixed;
           z-index: -10;
           left: 50%;
@@ -661,8 +662,9 @@ div.table {
           }
 
           div.float_action {
-            @include inline-block();
+            display: inline-block;
             background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;
+            vertical-align: top;
           }
         }
       }
@@ -763,18 +765,20 @@ div.order_selector {
   right: 0;
 
   a.asc {
-    @include border-left-radius(2px);
     margin-right: 1px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
   }
 
   a.desc {
-    @include border-right-radius(2px);
     margin-right: 10px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
   }
 
   a.asc,
   a.desc {
-    @include inline-block();
+    display: inline-block;
     position: relative;
     margin-top: 13px;
     padding: 0;
@@ -784,6 +788,7 @@ div.order_selector {
     font-size: 9px;
     font-weight: bold;
     text-transform: uppercase;
+    vertical-align: top;
 
     &:hover {
       background-color: #397DB9;

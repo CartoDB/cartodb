@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
@@ -9,8 +8,8 @@
 }
 
 .Metadata-label {
-  @include flex(0 0 auto);
   box-sizing: border-box;
+  flex: 0 0 auto;
   width: 140px;
   padding: $baseSize $baseSize * 2;
   text-align: right;
@@ -41,7 +40,7 @@
 
 // To be fixed in cartoassets
 .u-grow {
-  @include flex(1);
+  flex: 1;
 }
 
 .Markdown {

@@ -1,7 +1,6 @@
 // Styles for Dropdowns
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
@@ -11,12 +10,12 @@
 }
 
 .Editor-dropdown {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
   position: absolute;
   z-index: 100; // Lets treat it the same depth as CDB-Box-modal
   top: 40px;
   right: 0;
+  flex-direction: row;
 }
 
 .Editor-dropDownInfoText {
@@ -30,7 +29,7 @@
   max-width: 244px;
 
   &.is-visible {
-    @include display-flex();
+    display: flex;
   }
 }
 
@@ -93,14 +92,14 @@
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
-  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.16);
   white-space: normal;
 }
 
 .Editor-boxModal--darked {
   border: 1px solid rgba(30, 39, 44, 0.34);
   background: #263239;
-  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.36);
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.36);
 }
 
 .Editor-boxModalHeader {
@@ -109,8 +108,8 @@
 }
 
 .Editor-boxModalHeaderItem {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   padding: $baseSize + 4 $baseSize * 2;
   border-bottom: 1px solid $cMainLine;
 }

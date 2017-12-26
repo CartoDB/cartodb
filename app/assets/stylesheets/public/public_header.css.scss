@@ -13,7 +13,6 @@
 
 .cartodb-public-header {
   @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
-  @include box-shadow(none);
   display: block;
   position: relative;
   z-index: 10;
@@ -22,6 +21,7 @@
   margin: 0;
   padding: 0;
   border: none;
+  box-shadow: none;
   font-family: $text-fonts;
 }
 
@@ -64,9 +64,10 @@
   float: right;
 
   li {
-    @include inline-block();
+    display: inline-block;
     margin-left: 0;
     line-height: 64px;
+    vertical-align: top;
     vertical-align: middle;
 
     &:first-child a {
@@ -76,11 +77,10 @@
 
   // Options link
   a {
-    @include border-radius(50px);
-    @include transform-style("linear");
-    @include transition-property("background");
-    @include transition-duration(150ms);
     padding: 10px 18px;
+    transform-style: linear;
+    transition: background 150ms;
+    border-radius: 50px;
     color: WHITE;
     font-family: 'ProximaNova', Arial;
     font-size: 12px;
@@ -88,7 +88,7 @@
     text-transform: uppercase;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(#000, 0.1);
     }
   }
 
@@ -169,7 +169,7 @@
     }
 
     .options .account {
-      @include display-flex();
+      display: flex;
       padding: 8px 10px;
       font-size: 11px;
     }

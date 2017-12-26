@@ -37,7 +37,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(#000, 0.08);
     border-radius: $halfBaseSize;
     pointer-events: none;
   }
@@ -63,7 +63,7 @@
 }
 
 .Mosaic-item--dashed::before {
-  border: 1px dashed rgba(0, 0, 0, 0.08);
+  border: 1px dashed rgba(#000, 0.08);
 }
 
 .Mosaic-image {

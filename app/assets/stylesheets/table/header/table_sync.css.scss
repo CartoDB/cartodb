@@ -29,14 +29,14 @@ div.sync_info {
   }
 
   ul {
+
+    display: flex;
     position: relative;
     top: 0;
+    align-items: center;
+    justify-content: flex-start;
     height: 20px;
     margin-top: 0;
-
-    @include display-flex();
-    @include align-items(center, center);
-    @include justify-content(flex-start, start);
 
     li {
       position: relative;
@@ -54,22 +54,22 @@ div.sync_info {
           left: 0;
           width: 2px;
           height: 2px;
-          background: #365C82;
 
-          @include border-radius(3px);
+          border-radius: 3px;
+          background: #365C82;
         }
       }
     }
   }
 
   div.circle {
+
+    display: inline-block;
     position: relative;
     width: 10px;
     height: 10px;
     margin-top: 5px;
     vertical-align: top;
-
-    @include inline-block();
 
     span.point {
       position: absolute;
@@ -81,9 +81,9 @@ div.sync_info {
       margin: 0;
       padding: 0;
       border: 1px solid rgba(black, 0.5);
+      border-radius: 10px;
       text-shadow: none;
 
-      @include border-radius(10px);
       @include background(linear-gradient(#C9FF26,#41B200));
     }
 
@@ -94,11 +94,10 @@ div.sync_info {
       left: -2px;
       width: 8px;
       height: 8px;
+      animation: pulsate 1.5s ease-out infinite;
       border: 3px solid #BBB;
+      border-radius: 20px;
       opacity: 0;
-
-      @include animation(pulsate 1.5s ease-out infinite);
-      @include border-radius(20px);
     }
 
     &.syncing {
@@ -134,9 +133,9 @@ div.sync_info {
 }
 
 // Animation function
-@include keyframes(pulsate) {
+@keyframes pulsate {
   0% {
-    @include transform(scale(0.1, 0.1));
+    transform: scale(0.1, 0.1);
     opacity: 0;
   }
 
@@ -145,7 +144,7 @@ div.sync_info {
   }
 
   100% {
-    @include transform(scale(1.4, 1.4));
+    transform: scale(1.4, 1.4);
     opacity: 0;
   }
 }

@@ -7,8 +7,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 .PublicBody {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
@@ -17,8 +17,8 @@
 }
 
 .PublicBody-content {
-  @include display-flex();
-  @include flex-grow(1);
+  display: flex;
+  flex-grow: 1;
   margin-top: 120px;
 }
 

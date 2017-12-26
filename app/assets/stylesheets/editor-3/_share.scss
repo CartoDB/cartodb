@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -12,18 +11,18 @@
 }
 
 .Share-copy {
-  @include transform(translateY(-50%));
   position: absolute;
   top: 50%;
   right: 10px;
   padding-right: 0;
   padding-left: 0;
+  transform: translateY(-50%);
 }
 
 .Share-info {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 30px;
   padding: $baseSize * 4 0 0;
   text-align: center;
@@ -70,11 +69,11 @@
 }
 
 .Share-permission {
-  @include display-flex();
-  @include align-items(center);
-  @include transition(border 200ms ease-in);
+  display: flex;
+  align-items: center;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
+  transition: border 200ms ease-in;
   border: 1px solid $cWhite;
   border-radius: $halfBaseSize;
   background-color: $cWhite;
@@ -85,15 +84,15 @@
 }
 
 .Share-permissionInfo {
-  @include display-flex();
-  @include align-items(center);
-  @include flex(1 1 auto);
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
 }
 
 .Share-permissionIcon {
-  @include display-flex();
-  @include justify-content(center);
+  display: flex;
   box-sizing: border-box;
+  justify-content: center;
   width: 40px;
   min-width: 40px;
   height: 40px;
@@ -104,7 +103,7 @@
 }
 
 .Share-togglers {
-  @include display-flex();
+  display: flex;
 
   .Share-toggler.is-disabled {
     opacity: 0.4;

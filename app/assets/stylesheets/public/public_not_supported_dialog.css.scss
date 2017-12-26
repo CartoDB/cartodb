@@ -25,7 +25,7 @@
 }
 
 #not_supported_dialog h2 {
-  @include inline-block();
+  display: inline-block;
   width: 77px;
   margin: 30px 0 0;
   padding-bottom: 16px;

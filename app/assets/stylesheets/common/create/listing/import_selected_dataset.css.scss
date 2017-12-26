@@ -1,4 +1,3 @@
-@import '../../../variables/mixins';
 @import '../../../variables/colors';
 @import '../../../variables/sizes';
 
@@ -16,9 +15,9 @@ $br: 4px;
 }
 
 .DatasetSelected-item {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   padding: 20px;
 }
 
@@ -62,8 +61,8 @@ $br: 4px;
 }
 
 .DatasetSelected-syncOptions {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
   margin: 0 20px;
   padding-top: 20px;
   padding-bottom: 20px;
@@ -76,8 +75,8 @@ $br: 4px;
 }
 
 .DatasetSelected-syncOptionsList {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
 }
 
 .DatasetSelected-syncOptionsList--syncView {

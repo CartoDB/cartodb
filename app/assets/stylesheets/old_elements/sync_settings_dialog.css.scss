@@ -31,7 +31,8 @@
 
     & > p,
     & > div.interval-combo {
-      @include inline-block();
+      display: inline-block;
+      vertical-align: top;
       vertical-align: middle;
     }
 

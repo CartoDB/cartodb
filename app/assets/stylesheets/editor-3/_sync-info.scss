@@ -1,7 +1,6 @@
 // Sync info styles
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 
 .SyncInfo--separator {
@@ -22,7 +21,7 @@
 }
 
 .is-dark .SyncInfo--separator::after {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(#FFF, 0.08);
 }
 
 .SyncInfo-viewOptions {

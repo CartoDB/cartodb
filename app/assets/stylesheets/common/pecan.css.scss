@@ -12,7 +12,6 @@
 }
 
 .PecanMap-MapsList {
-  @include transition(margin, 150ms);
   display: block;
   position: relative;
   width: 5000px;
@@ -21,11 +20,12 @@
   padding: 0;
   clear: both;
   overflow: hidden;
+  transition: margin 150ms;
 }
 
 .PecanMap-MapsList.is--centered {
-  @include transition(none);
   margin: auto;
+  transition: none;
 }
 
 .MapCard-content--small {
@@ -59,10 +59,10 @@
 }
 
 .PecanMap-navigationButton {
-  @include transition(opacity, 150ms);
   position: absolute;
   top: 90px;
   padding: 0;
+  transition: opacity 150ms;
   line-height: 40px !important;
 }
 
@@ -80,8 +80,9 @@
 }
 
 .GalleryList-item.MapsList-item {
-  @include inline-block();
+  display: inline-block;
   margin: 0 20px 0 0;
+  vertical-align: top;
 
   &:last-child {
     margin: 0;
@@ -121,12 +122,13 @@
 }
 
 .CategoryList .CategoryList-item {
-  @include inline-block();
+  display: inline-block;
   width: 5px;
   height: 5px;
   margin: 0 2px 0 0;
   border-radius: 50%;
   background: #DDD;
+  vertical-align: top;
 }
 
 .CategoryList .CategoryList-item:last-child {

@@ -10,7 +10,7 @@ var REQUIRED_NPM_VERSION = '3.10.9';
 
 var DEVELOPMENT = 'development';
 
-var SHRINKWRAP_MODULES_TO_VALIDATE = [
+var PACKAGE_LOCK_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
@@ -98,14 +98,14 @@ module.exports = function (grunt) {
     grunt.log.writeln('');
   }
 
-  var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
-  if (duplicatedModules.length > 0) {
-    grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
-    grunt.log.fail('Duplicated dependencies found in npm-shrinkwrap.json file.');
-    grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
-    grunt.log.fail('#################################################');
-    process.exit(1);
-  }
+  // var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./package-lock.json'), PACKAGE_LOCK_MODULES_TO_VALIDATE);
+  // if (duplicatedModules.length > 0) {
+  //   grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
+  //   grunt.log.fail('Duplicated dependencies found in package-lock.json file.');
+  //   grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
+  //   grunt.log.fail('#################################################');
+  //   process.exit(1);
+  // }
 
   var ROOT_ASSETS_DIR = './public/assets/';
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';

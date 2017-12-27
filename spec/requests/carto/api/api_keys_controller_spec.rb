@@ -12,6 +12,12 @@ describe Carto::Api::ApiKeysController do
     @auth_api_feature_flag.destroy
   end
 
+  def api_key_url(user, id: nil)
+    options = { user_domain: user.username, api_key: user.api_key }
+    options[:id] = id if id
+    api_keys_url(options)
+  end
+
   describe '#create' do
     before(:each) do
       @table1 = create_table(user_id: @carto_user1.id)
@@ -21,10 +27,6 @@ describe Carto::Api::ApiKeysController do
     after(:each) do
       @table2.destroy
       @table1.destroy
-    end
-
-    def api_key_url(user)
-      api_keys_url(user_domain: user.username, api_key: user.api_key)
     end
 
     it 'creates a new API key' do
@@ -113,6 +115,38 @@ describe Carto::Api::ApiKeysController do
         error_response = response.body
         error_response[:errors].should match /permissions.*did not match one of the following values: insert, select, update, delete/
       end
+    end
+  end
+
+  describe '#destroy' do
+    it 'destroys the API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      delete_json api_key_url(@user1, id: api_key.id) do |response|
+        response.status.should eq 200
+        response.body[:id].should eq api_key.id
+      end
+
+      Carto::ApiKey.find_by_id(api_key.id).should be_nil
+    end
+
+    it 'returns 404 if API key is not a uuid or it doesn\'t exist' do
+      delete_json api_key_url(@user1, id: 'wadus') do |response|
+        response.status.should eq 404
+      end
+
+      delete_json api_key_url(@user1, id: random_uuid) do |response|
+        response.status.should eq 404
+      end
+    end
+
+    it 'returns 404 if the API key doesn\'t belong to that user' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      delete_json api_key_url(@user2, id: api_key.id) do |response|
+        response.status.should eq 404
+      end
+
+      Carto::ApiKey.find_by_id(api_key.id).should_not be_nil
+      api_key.destroy
     end
   end
 end

@@ -20,6 +20,7 @@
   border-radius: $baseSize / 2;
 
   &::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -27,7 +28,6 @@
     height: 100%;
     transition: all 250ms ease-in-out;
     background: transparent;
-    content: '';
   }
 }
 

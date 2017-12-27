@@ -2,7 +2,6 @@
 @import 'compass/css3/border-radius';
 @import 'compass/css3/inline-block';
 @import 'compass/css3/images';
-@import 'compass/css3/opacity';
 @import 'compass/css3/transform';
 @import '../../old_common/vars';
 @import '../../old_common/mixins';
@@ -10,130 +9,156 @@
 @import '../../old_elements/elements-sprite';
 
 div.dropdown.map_options_dropdown {
-
   ul {
 
     box-sizing: border-box;
-    margin: 0;
     width: 204px;
+    margin: 0;
     padding: 12px 15px;
 
     li {
-      @include display-flex();
-      @include justify-content(space-between, justify);
-      @include align-items(center, center);
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: space-between;
       margin: 0;
       padding: 10px 0;
-      border:none;
+      border: none;
+      border-bottom: 1px solid rgba(204, 204, 204, 0.35);
       font-size: 13px;
-      border-bottom: 1px solid rgba(204,204,204,0.35);
       cursor: default;
-      position:relative;
 
-      &:before {
+      &::before {
         content: '';
-        position:absolute;
+        position: absolute;
         top: 14px;
         width: 10px;
         height: 10px;
       }
 
-      &.title:before {
+      &.title::before {
         top: 12px;
-        width: 10px; height: 11px;
+        width: 10px;
+        height: 11px;
+
         @include map-sprite(map_options_title);
       }
 
-      &.description:before {
-        width: 11px; height: 11px;
+      &.description::before {
+        width: 11px;
+        height: 11px;
+
         @include map-sprite(map_options_description);
       }
 
-      &.search:before {
-        width: 11px; height: 11px;
+      &.search::before {
+        width: 11px;
+        height: 11px;
+
         @include map-sprite(map_options_search);
       }
 
-      &.fullscreen:before {
-        width: 11px; height: 12px;
+      &.fullscreen::before {
+        width: 11px;
+        height: 12px;
+
         @include map-sprite(map_options_fullscreen);
       }
 
-      &.share:before {
+      &.share::before {
         top: 12px;
-        width: 13px; height: 13px;
         left: -3px;
+        width: 13px;
+        height: 13px;
+
         @include map-sprite(map_options_share);
       }
 
-      &.zoom:before {
+      &.zoom::before {
         top: 11px;
-        width: 9px; height: 14px;
+        width: 9px;
+        height: 14px;
+
         @include map-sprite(map_options_zoom);
       }
 
-      &.scrollwheel:before {
+      &.scrollwheel::before {
         top: 10px;
         left: 2px;
-        width: 11px; height: 16px;
+        width: 11px;
+        height: 16px;
+
         @include map-sprite(map_options_scrollwheel);
       }
 
-      &.layer_selector:before {
-        width: 9px; height: 10px;
+      &.layer_selector::before {
+        width: 9px;
+        height: 10px;
+
         @include map-sprite(map_options_layer_selector);
       }
 
-      &.logo:before {
-        width: 9px; height: 10px;
+      &.logo::before {
+        width: 9px;
+        height: 10px;
+
         @include map-sprite(map_options_logo);
       }
 
-      &.legends:before {
-        width: 9px; height: 10px;
+      &.legends::before {
+        width: 9px;
+        height: 10px;
+
         @include map-sprite(map_options_legends);
       }
 
-      &:first-child { 
+      &:first-child {
         padding-top: 0;
-        &:before { top: 2px; }
+
+        &::before {
+          top: 2px;
+        }
       }
 
-      &:last-child { 
-        border:none;
+      &:last-child {
         padding-bottom: 0;
+        border: none;
       }
 
+      p {
+        margin-left: 17px;
+      }
 
-      p { margin-left: 17px; }
+      &.active,
+      &.active p {
+        color: #666;
+      }
 
-      &.active, &.active p { color: #666666; }
-      &, p { 
-        color: #b9b9b9;
-        @include simple-transition(color, 100ms);
+      &,
+      p {
+        transition: color 100ms ease-in;
+        color: #B9B9B9;
       }
 
       &.inactive .form_switch {
-
-        @include opacity(0.3);
+        opacity: 0.3;
 
         &:hover {
-          color:$link-color;
-          text-decoration:none;
-          cursor:default;
+          color: $link-color;
+          text-decoration: none;
+          cursor: default;
         }
-
       }
 
-      &:hover { background: #fff; }
+      &:hover { background: #FFF; }
 
       a {
-        @include inline-block();
-        float:right;
-        margin: 0 ;
+        display: inline-block;
+        margin: 0;
         padding: 0;
+        float: right;
+        vertical-align: top;
       }
-
     }
   }
 }

@@ -1,30 +1,31 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
 .Metadata-form {
+  box-sizing: border-box;
   width: 637px;
   margin-left: -140px;
-  box-sizing: border-box;
 }
 
 .Metadata-label {
-  @include flex(0 0 auto);
+  box-sizing: border-box;
+  flex: 0 0 auto;
   width: 140px;
   padding: $baseSize $baseSize * 2;
   text-align: right;
-  box-sizing: border-box;
 }
+
 .Metadata-label--auto {
   width: auto;
 }
+
 .Metadata-label--big {
   width: 168px;
 }
 
 .Metadata-textarea {
-  resize: none;
   height: 100px;
+  resize: none;
 }
 
 .Metadata-select {
@@ -39,7 +40,7 @@
 
 // To be fixed in cartoassets
 .u-grow {
-  @include flex(1);
+  flex: 1;
 }
 
 .Markdown {
@@ -47,9 +48,11 @@
   font-size: $sFontSize-small;
   text-align: right;
 }
+
 .Markdown-tooltip {
   cursor: pointer;
 }
+
 .Markdown-icon {
   margin-right: $baseSize;
   padding: 0 2px 2px 5px;
@@ -57,9 +60,11 @@
   background: $cMainLine;
   color: $cThirdBackground;
 }
+
 .Markdown-icon-text {
   font-size: $sFontSize-small - 2;
 }
+
 .Markdown-icon-char {
   font-size: $sFontSize-medium;
 }

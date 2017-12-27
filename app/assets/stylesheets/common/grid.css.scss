@@ -8,23 +8,23 @@
 // --------------------------------------------------
 
 .Grid {
-  @include display-flex();
+  display: flex;
 }
 
 .Grid-inner {
-  @include display-flex();
-  @include flex-wrap(wrap);
-  @include flex(1);
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
   margin-right: -20px;
   margin-left: -20px;
 }
 
 .Grid-inner--hcenter {
-  @include justify-content(center);
+  justify-content: center;
 }
 
 .Grid-inner--vcenter {
-  @include align-items(center);
+  align-items: center;
 }
 
 .Grid-inner--bottom {
@@ -32,8 +32,8 @@
 }
 
 .Grid-cell {
-  padding-left: 20px;
   padding-right: 20px;
+  padding-left: 20px;
 }
 
 .Grid-inner--nopadding {
@@ -41,14 +41,14 @@
   margin-left: -5px;
 
   > .Grid-cell {
-    padding-left: 5px;
     padding-right: 5px;
+    padding-left: 5px;
   }
 }
 
 .Grid-inner--between {
-  @include align-items(center);
-  @include justify-content(space-between);
+  align-items: center;
+  justify-content: space-between;
 }
 
 .Grid-inner--shortPadding {
@@ -62,106 +62,105 @@
 }
 
 .Grid-cell--col1 {
-  @include flex(0 0 8.3334%);
+  flex: 0 0 8.3334%;
   max-width: 8.3334%;
 }
 
 .Grid-cell--col2 {
-  @include flex(0 0 16.6667%);
+  flex: 0 0 16.6667%;
   max-width: 16.6667%;
 }
 
 .Grid-cell--5cols {
-  @include flex(0 0 20%);
+  flex: 0 0 20%;
   max-width: 20%;
 }
 
 .Grid-cell--col3 {
-  @include flex(0 0 25%);
+  flex: 0 0 25%;
   max-width: 25%;
 }
 
 .Grid-cell--col4 {
-  @include flex(0 0 33.3334%);
+  flex: 0 0 33.3334%;
   max-width: 33.3334%;
 }
 
 .Grid-cell--col5 {
-  @include flex(0 0 41.6665%);
+  flex: 0 0 41.6665%;
   max-width: 41.6665%;
 }
 
 .Grid-cell--col6 {
-  @include flex(0 0 50%);
+  flex: 0 0 50%;
   max-width: 50%;
 }
 
 .Grid-cell--col7 {
-  @include flex(0 0 58.3331%);
+  flex: 0 0 58.3331%;
   max-width: 58.331%;
 }
 
 .Grid-cell--col8 {
-  @include flex(0 0 66.6666%);
+  flex: 0 0 66.6666%;
   max-width: 66.6666%;
 }
 
 .Grid-cell--col9 {
-  @include flex(0 0 75%);
+  flex: 0 0 75%;
   max-width: 75%;
 }
 
 .Grid-cell--col10 {
-  @include flex(0 0 83.33%);
+  flex: 0 0 83.33%;
   max-width: 83.33%;
 }
 
 .Grid-cell--col11 {
-  @include flex(0 0 91.6666%);
+  flex: 0 0 91.6666%;
   max-width: 91.6666%;
 }
 
 .Grid-cell--col12 {
-  @include flex(100%);
+  flex: 100%;
   max-width: 100%;
 }
 
-
 @media (max-width: $sMedia-desktop) {
   .Grid-cell--col3--tablet {
-    @include flex(0 0 25%);
+    flex: 0 0 25%;
     max-width: 25%;
   }
 
   .Grid-cell--col6--tablet {
-    @include flex(0 0 50%);
+    flex: 0 0 50%;
     max-width: 50%;
   }
 
   .Grid-cell--col4--tablet {
-    @include flex(0 0 33.3334%);
+    flex: 0 0 33.3334%;
     max-width: 33.3334%;
   }
 
   .Grid-cell--col12--tablet {
-    @include flex(0 0 100%);
+    flex: 0 0 100%;
     max-width: 100%;
   }
 }
 
 @media (max-width: $sMedia-tablet) {
   .Grid-cell--col8--mobile {
-    @include flex(0 0 66.6666%);
+    flex: 0 0 66.6666%;
     max-width: 66.6666%;
   }
 
   .Grid-cell--col6--mobile {
-    @include flex(0 0 50%);
+    flex: 0 0 50%;
     max-width: 50%;
   }
 
   .Grid-cell--col12--mobile {
-    @include flex(0 0 100%);
+    flex: 0 0 100%;
     max-width: 100%;
   }
 }
@@ -169,7 +168,7 @@
 @media (max-width: $sMedia-mobile) {
   .Grid-cell--col12--small,
   .Grid-cell--col6--mobile {
-    @include flex(0 0 100%);
+    flex: 0 0 100%;
     max-width: 100%;
   }
 }

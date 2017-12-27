@@ -107,6 +107,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Nothing else should be interactive when a dropdown is open (#13283)
+* Fix hover in widgets (#13293)
 * Fix autostyling with category widget (using a numeric field) [Support #611](https://github.com/CartoDB/support/issues/611)
 * Fix grammar errors in analysis description (#13258)
 * Fix hubspot dependency for static views (#13261)
@@ -359,6 +360,7 @@ ion for time-series (#12670)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 
 ### Internals
+* Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
@@ -368,6 +370,8 @@ ion for time-series (#12670)
 * Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
 * Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
 * Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
+* Merge Deep-insights project in Cartodb (#13284)
+* Affected specs tasks now take into account multiple specs folders [PR #13295](https://github.com/CartoDB/cartodb/pull/13295)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

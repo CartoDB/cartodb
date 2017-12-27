@@ -4,7 +4,6 @@
 @import "_variables";
 @import "_mixins";
 @import "_helpers";
-
 $text-color: rgba(white, 0.5);
 
 .Navbar {
@@ -13,28 +12,32 @@ $text-color: rgba(white, 0.5);
   text-align: center;
 }
 
-.Navbar--left { text-align: left }
+.Navbar--left {
+  text-align: left;
+}
 
 .Navbar-brand {
-  height: 48px;
+  display: flex;
+  justify-content: center;
   max-width: 92px;
+  height: 48px;
   margin: 0 auto;
   margin-bottom: 40px;
-  @include display-flex;
-  @include justify-content(center, center);
 
   img {
     height: 100%;
   }
 }
 
-.Navbar-menu { float: right }
+.Navbar-menu {
+  float: right;
+}
 
 .Navbar-menuItem {
   position: relative;
-  float: left;
   margin: -20px 0 -20px 20px;
   padding: 20px 0;
+  float: left;
   color: #999;
 
   &:first-child {
@@ -44,7 +47,7 @@ $text-color: rgba(white, 0.5);
   &.is-selected {
     color: #333;
 
-    &:after {
+    &::after {
       content: "";
       display: block;
       position: absolute;
@@ -58,16 +61,19 @@ $text-color: rgba(white, 0.5);
 
 .Navbar-text {
   margin-top: 18px;
-  font-size: 16px;
   color: $text-color;
+  font-size: 16px;
 }
 
 .Navbar-textLink {
   color: $text-color;
   text-decoration: underline;
-  &:hover { color: white }
+
+  &:hover {
+    color: WHITE;
+  }
 }
 
 .Navbar-link {
-  color: #fff;
+  color: #FFF;
 }

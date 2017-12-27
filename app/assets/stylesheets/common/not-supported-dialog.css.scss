@@ -8,52 +8,60 @@
 
 .NotSupportedDialog {
   position: absolute;
-  width: 356px;
-  height: 213px;
+  z-index: 10000;
   top: 50%;
   left: 50%;
+  width: 356px;
+  height: 213px;
   margin-top: -107px;
   margin-left: -178px;
   padding: 0;
-  background-color: white;
-  text-align: center;
+  background-color: WHITE;
   color: $cTypography-paragraphs;
-  z-index: 10000;
+  text-align: center;
 }
+
 .NotSupportedDialog-title {
-  @include inline-block();
+  display: inline-block;
   width: 77px;
   margin: 30px 0 0;
   padding-bottom: 16px;
+  border-bottom: 1px solid $cStructure-mainLine;
   font-size: 13px;
   font-weight: bold;
-  border-bottom: 1px solid $cStructure-mainLine;
+  vertical-align: top;
 }
+
 .NotSupportedDialog-desc {
   display: block;
-  padding: 0 40px;
   margin: 12px 0 0;
+  padding: 0 40px;
   font-size: 15px;
 }
+
 .NotSupportedDialog-list {
+  display: block;
   position: absolute;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
-  display: block;
   margin: 0;
   padding: 0;
-  list-style: none;
   border-top: 1px solid $cStructure-mainLine;
+  list-style: none;
 }
+
 .NotSupportedDialog-item {
-  float: left;
   margin: 0;
   padding: 0;
+  float: left;
   border-right: 1px solid $cStructure-mainLine;
 
-  &.is-last { border: none }
+  &.is-last {
+    border: none;
+  }
 }
+
 .NotSupportedDialog-itemLink {
   display: block;
   width: 118px;
@@ -62,6 +70,15 @@
   line-height: 0;
   text-indent: -9999px;
 }
-.NotSupportedDialog-itemLink--Safari  { @include background(image-url('layout/safari.png') no-repeat center center) }
-.NotSupportedDialog-itemLink--Chrome  { @include background(image-url('layout/chrome.png') no-repeat center center) }
-.NotSupportedDialog-itemLink--Firefox { @include background(image-url('layout/firefox.png') no-repeat center center) }
+
+.NotSupportedDialog-itemLink--Safari {
+  @include background(image-url('layout/safari.png') no-repeat center center);
+}
+
+.NotSupportedDialog-itemLink--Chrome {
+  @include background(image-url('layout/chrome.png') no-repeat center center);
+}
+
+.NotSupportedDialog-itemLink--Firefox {
+  @include background(image-url('layout/firefox.png') no-repeat center center);
+}

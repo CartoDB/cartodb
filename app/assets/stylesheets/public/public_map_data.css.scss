@@ -7,22 +7,22 @@
 @import "../old_common/vars";
 
 .cartodb-map-data {
-  position:relative;
+  position: relative;
   width: 100%;
-  background:#fff;
+  background: #FFF;
 }
 
 .cartodb-map-data .inner {
   max-width: 1024px;
   margin: auto;
-  clear:both;
-  overflow:hidden;
   padding: 0 20px;
+  clear: both;
+  overflow: hidden;
 }
 
 .cartodb-map-data .no_script,
 .cartodb-map-data .dsq-brlink {
-  font-family: $text-fonts;
-  font-size:15px;
   color: #397DB8;
+  font-family: $text-fonts;
+  font-size: 15px;
 }

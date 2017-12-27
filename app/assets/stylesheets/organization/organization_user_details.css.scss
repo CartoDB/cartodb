@@ -6,57 +6,67 @@
 @import "../variables/sizes";
 
 .OrganizationUser-stats {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(flex-start, start);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   width: 940px;
   padding: 30px 0;
   border-bottom: 1px solid $cStructure-mainLine;
 }
+
 .OrganizationUser-stat {
   width: 120px;
   text-align: center;
 }
+
 .OrganizationUser-statIcon {
   width: 38px;
   height: 38px;
   border: 1px solid $cStructure-mainLine;
   border-radius: 4px;
-  text-align: center;
   line-height: 40px;
+  text-align: center;
 }
+
 .OrganizationUser-statInfo {
   display: block;
-  padding: 10px 0 0 0;
+  padding: 10px 0 0;
   text-align: center;
 }
+
 .OrganizationUser-statTitle {
   display: block;
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-normal;
-  font-style: normal;
   color: $cTypography-headers;
+  font-size: $sFontSize-large;
+  font-style: normal;
+  font-weight: $sFontWeight-normal;
 }
+
 .OrganizationUser-statLabel {
-  font-size: $sFontSize-normal;
   color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
 }
+
 .OrganizationUser-statIcon {
-  font-size: $sFontSize-largest;
   color: #D1D1D1;
+  font-size: $sFontSize-largest;
 }
+
 .CDB-IconFont-eye.OrganizationUser-statIcon {
-  line-height: 29px;
   font-size: 24px;
+  line-height: 29px;
 }
+
 .CDB-IconFont-marker.OrganizationUser-statIcon {
   font-size: 22px;
 }
+
 .CDB-IconFont-progressBar.OrganizationUser-statIcon {
-  line-height: 24px;
   font-size: 24px;
+  line-height: 24px;
 }
+
 .CDB-IconFont-twitter.OrganizationUser-statIcon {
-  line-height: 32px;
   font-size: 22px;
+  line-height: 32px;
 }

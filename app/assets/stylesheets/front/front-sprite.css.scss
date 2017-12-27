@@ -3,7 +3,7 @@
  */
 
 @import "compass/utilities/sprites/base";
- 
+
 // General Sprite Defaults
 // You can override them before you import this file.
 $front-sprite-base-class: ".front-sprite" !default;
@@ -11,41 +11,37 @@ $front-sprite-dimensions: false !default;
 $front-position: 0% !default;
 $front-spacing: 0 !default;
 $front-repeat: no-repeat !default;
- 
-$front-sprites: sprite-map("sprites/front/*.png",
-  $position: $front-position,
-  $spacing: $front-spacing,
-  $repeat: $front-repeat,
-  $readonly-spacing: 0);
- 
+$front-sprites: sprite-map("sprites/front/*.png", $position: $front-position, $spacing: $front-spacing, $repeat: $front-repeat, $readonly-spacing: 0);
+
 // All sprites should extend this class
 // The front-sprite mixin will do so for you.
 #{$front-sprite-base-class} {
   background: $front-sprites no-repeat;
 }
- 
+
 // Use this to set the dimensions of an element
 // based on the size of the original image.
 @mixin front-sprite-dimensions($name) {
-  @include sprite-dimensions($front-sprites, $name)
+  @include sprite-dimensions($front-sprites, $name);
 }
- 
+
 // Move the background position to display the sprite.
 @mixin front-sprite-position($name, $offset-x: 0, $offset-y: 0) {
-  @include sprite-position($front-sprites, $name, $offset-x, $offset-y)
+  @include sprite-position($front-sprites, $name, $offset-x, $offset-y);
 }
- 
+
 // Extends the sprite base class and set the background position for the desired sprite.
 // It will also apply the image dimensions if $dimensions is true.
 @mixin front-sprite($name, $dimensions: $front-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$front-sprite-base-class};
-  @include sprite($front-sprites, $name, $dimensions, $offset-x, $offset-y)
+
+  @include sprite($front-sprites, $name, $dimensions, $offset-x, $offset-y);
 }
- 
+
 @mixin front-sprites($sprite-names, $dimensions: $front-sprite-dimensions, $prefix: sprite-map-name($front-sprites)) {
-  @include sprites($front-sprites, $sprite-names, $front-sprite-base-class, $dimensions, $prefix)
+  @include sprites($front-sprites, $sprite-names, $front-sprite-base-class, $dimensions, $prefix);
 }
- 
+
 // Generates a class for each sprited image.
 @mixin all-front-sprites($dimensions: $front-sprite-dimensions, $prefix: sprite-map-name($front-sprites)) {
   @include front-sprites(favorite important photos readonly symbolic-link system unreadable, $dimensions, $prefix);

@@ -13,6 +13,7 @@
 .WidgetList-item {
   display: flex;
   position: relative;
+  box-sizing: border-box;
   flex: 0 0 304px;
   align-items: baseline;
   width: 304px;
@@ -24,12 +25,12 @@
   border-radius: $baseSize / 2;
   background: $cWhite;
   cursor: pointer;
-  box-sizing: border-box;
 
   &:hover {
     transition: border 200ms ease-in;
 
     &::after {
+      content: '';
       position: absolute;
       top: -1px;
       right: -1px;
@@ -39,13 +40,13 @@
       height: calc(100% - 2px);
       border: 2px solid $cBlueHover;
       border-radius: 4px;
-      content: '';
       pointer-events: none;
     }
   }
 
   &.is-selected {
     &::after {
+      content: '';
       position: absolute;
       top: -1px;
       right: -1px;
@@ -55,7 +56,6 @@
       height: calc(100% - 2px);
       border: 2px solid $cMainText;
       border-radius: 4px;
-      content: '';
       pointer-events: none;
     }
   }
@@ -102,11 +102,11 @@
 }
 
 .Widget-categoryFake {
+  box-sizing: border-box;
   height: 4px;
   margin-bottom: 16px;
   border-radius: 10px;
   background: $cSecondaryBackground;
-  box-sizing: border-box;
 }
 
 .Widget-categoryFakeText {
@@ -133,13 +133,13 @@
   border-bottom: 1px solid $cSecondaryLine;
 
   &::before {
+    content: '';
     position: absolute;
     top: 50%;
     right: 0;
     left: 0;
     height: 1px;
     background: $cSecondaryLine;
-    content: '';
   }
 }
 
@@ -154,9 +154,3 @@
   height: 20px;
   background: $cSecondaryLine;
 }
-
-
-
-
-
-

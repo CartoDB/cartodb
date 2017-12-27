@@ -1,0 +1,34 @@
+// Control button
+// ----------------------------------------------
+
+.CDB-Widget-controlButton {
+  width: $baseSize * 3;
+  min-width: $baseSize * 3; // to avoid the element to be "squashed" due to limited space in container
+  height: $baseSize * 3;
+  margin-top: $baseSize * 2;
+  border: 1px solid transparent; // border used for :hover, color set in theme
+  border-radius: 4px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+// The flex layout requires a separate element, because a <button> tag don't support flex in all browsers
+// see https://github.com/philipwalton/flexbugs#9-some-html-elements-cant-be-flex-containers for details
+.CDB-Widget-controlButtonContent {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+}
+
+.CDB-Widget-controlButtonIcon {
+  display: block;
+  width: $baseSize;
+  height: $baseSize;
+}
+
+@media (max-width: 960px) {
+  .CDB-Widget-controlButton {
+    margin-top: 0;
+  }
+}

@@ -1,7 +1,6 @@
 // Table styles
 // ----------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 @import 'vars';
@@ -23,24 +22,24 @@ $tableBorderColor: $cSecondaryLine;
 .Table {
   display: flex;
   position: absolute;
+  z-index: 2;
   top: $baseSize * 2;
   right: $baseSize * 2;
   bottom: $baseSize * 2;
   left: $baseSize * 2;
   flex-direction: column;
-  background: $cWhite;
-  z-index: 2;
   overflow-x: auto;
   overflow-y: hidden;
+  background: $cWhite;
 
   &::before {
+    content: '';
     position: absolute;
     top: 0;
     right: 0;
     left: 0;
     height: 65px;
     background: $cThirdBackground;
-    content: '';
   }
 
   &--relative {
@@ -73,9 +72,9 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 .Table-headItemWrapper {
+  box-sizing: border-box;
   width: $elementWidth;
   padding: $elementPadding;
-  box-sizing: border-box;
   text-align: left;
 
   &--short {
@@ -84,15 +83,16 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 .Table-headItemName {
+  box-sizing: border-box;
   height: auto;
   margin: 0;
   padding: 0;
   border: none;
   border-radius: 0;
   background: none;
-  box-sizing: border-box;
 
   &.is-active {
+    box-sizing: border-box;
     height: 28px;
     margin-top: -6px;
     margin-right: 0;
@@ -102,7 +102,6 @@ $tableBorderColor: $cSecondaryLine;
     border: 1px solid $cBlue;
     border-radius: 2px;
     background: $cWhite;
-    box-sizing: border-box;
   }
 }
 
@@ -123,12 +122,12 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 .Table-columnTypeMenu {
+  z-index: 20;
   top: 81px;
   left: 100%;
   min-width: 95px;
   max-width: 95px;
   margin-left: 4px;
-  z-index: 20;
 
   &--toLeft {
     right: 100%;
@@ -155,15 +154,14 @@ $tableBorderColor: $cSecondaryLine;
     flex-direction: column;
     height: calc(100vh - 175px);
     padding-bottom: 60px;
-    border-top: 1px solid $cMainLine;
     overflow-y: scroll;
+    border-top: 1px solid $cMainLine;
   }
 
   &--relative tbody {
     height: calc(100vh - 360px);
   }
 }
-
 
 .Table-row {
   height: 40px;
@@ -195,19 +193,18 @@ $tableBorderColor: $cSecondaryLine;
 
   &:hover::after,
   &.is-highlighted::after {
+    content: '';
     position: absolute;
     top: -1px;
     right: -1px;
     bottom: -1px;
     left: -1px;
     border: 1px solid $cBlueHover;
-    content: '';
     pointer-events: none;
   }
 }
 
 .Table-rowMenu {
-  width: 65px;
   z-index: 20;
 
   &--bottom {
@@ -216,6 +213,7 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 .Table-row:hover .Table-cellItem::before {
+  content: '';
   display: block;
   position: absolute;
   top: -1px;
@@ -225,22 +223,21 @@ $tableBorderColor: $cSecondaryLine;
   border-top: 1px solid rgba($cHighlight, 0.32);
   border-bottom: 1px solid rgba($cHighlight, 0.32);
   pointer-events: none;
-  content: '';
 }
 
 .Table-editor {
   position: absolute;
+  z-index: 5;
   min-width: 200px;
   padding: 10px;
-  z-index: 5;
 }
 
 .Table-cell {
+  box-sizing: border-box;
   align-items: center;
   width: $elementWidth;
   height: 40px;
   padding: 12px 14px;
-  box-sizing: border-box;
 
   .CDB-Shape-threePoints {
     display: none;
@@ -282,16 +279,16 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 .Table-paginator {
+  display: flex;
   position: fixed;
+  z-index: 10;
   right: calc(50% - 280px);
   bottom: 33px;
-  display: flex;
+  box-sizing: border-box;
   align-items: center;
   border-radius: $halfBaseSize;
   background: $cWhite;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
-  z-index: 10;
-  box-sizing: border-box;
+  box-shadow: 0 2px 4px 0 rgba(#000, 0.24);
 
   &--relative {
     position: absolute;
@@ -327,12 +324,12 @@ $tableBorderColor: $cSecondaryLine;
     border-bottom-left-radius: 4px;
 
     &::after {
+      content: '';
       position: absolute;
       right: 0;
       width: 1px;
       height: calc(100% - 4px);
       background: #F9F9F9;
-      content: '';
     }
   }
 
@@ -341,12 +338,12 @@ $tableBorderColor: $cSecondaryLine;
     border-bottom-right-radius: 4px;
 
     &::before {
+      content: '';
       position: absolute;
       left: -1px;
       width: 1px;
       height: calc(100% - 4px);
       background: $cThirdBackground;
-      content: '';
     }
   }
 }
@@ -397,6 +394,3 @@ $tableBorderColor: $cSecondaryLine;
     bottom: 17px;
   }
 }
-
-
-

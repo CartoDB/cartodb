@@ -12,17 +12,17 @@
 @import "../old_common/mixins";
 
 .cartodb-public-header {
-  position: relative;
-  display: block;
-  width:auto;
-  height: 67px;
-  margin:0;
-  padding:0;
   @include background(image-url('layout/gradient.jpg') repeat-x center center #429FDF);
-  border: none;
-  @include box-shadow(none);
-  font-family: $text-fonts;
+  display: block;
+  position: relative;
   z-index: 10;
+  width: auto;
+  height: 67px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  font-family: $text-fonts;
 }
 
 // Inner block
@@ -30,158 +30,155 @@
   width: auto;
   max-width: 1024px;
   margin: auto;
-  clear:both;
-  overflow:hidden;
   padding: 0 20px;
+  clear: both;
+  overflow: hidden;
 }
 
 // h1 reset style
-.cartodb-public-header h1 { margin:0 }
+.cartodb-public-header h1 {
+  margin: 0;
+}
 
 // Logo
 .cartodb-public-header .logo {
-  float:left;
+  @include background(image-url('layout/cartodb_logo_with_cartofante.png') no-repeat);
   display: block;
   width: 128px;
   height: 39px;
   margin: 14px 0;
-  line-height:67px;
+  float: left;
+  font-size: 0;
+  line-height: 67px;
+  line-height: 0;
   text-indent: -9999px;
-  line-height: 0px;
-  font-size: 0px;
   text-transform: uppercase;
-  @include background(image-url('layout/cartodb_logo_with_cartofante.png') no-repeat);
 }
 
 // Options
 .cartodb-public-header .options {
-  float: right;
   display: block;
   width: auto;
   height: 67px;
   margin: 0;
+  float: right;
 
   li {
-    @include inline-block();
-    vertical-align: middle;
+    display: inline-block;
+    margin-left: 0;
     line-height: 64px;
-    margin-left:0;
+    vertical-align: top;
+    vertical-align: middle;
 
-    &:first-child a { margin-left:0 }
+    &:first-child a {
+      margin-left: 0;
+    }
   }
 
   // Options link
   a {
-    padding:10px 18px;
-    font-size: 12px;
+    padding: 10px 18px;
+    transform-style: linear;
+    transition: background 150ms;
+    border-radius: 50px;
+    color: WHITE;
     font-family: 'ProximaNova', Arial;
-    text-transform: uppercase;
+    font-size: 12px;
     text-decoration: none;
-    color:white;
-    @include border-radius(50px);
-    @include transform-style("linear");
-    @include transition-property("background");
-    @include transition-duration(150ms);
+    text-transform: uppercase;
 
-    &:hover { background:rgba(0,0,0,.1) }
+    &:hover {
+      background: rgba(#000, 0.1);
+    }
   }
 
   // Options link with border
   a.border {
-    padding:8px 20px;
-    margin-left:10px;
-    border:2px solid white;
+    margin-left: 10px;
+    padding: 8px 20px;
+    border: 2px solid white;
 
     &:hover {
-      background:white;
-      color:#2E72A3;
+      background: WHITE;
+      color: #2E72A3;
     }
   }
 
   // Options with old font (editor font)
   a.editor {
-    padding:0 0 0 20px;
-    margin-left:10px;
-    border:none;
-    text-transform: none;
-    font-size:15px;
-    font-weight:300;
+    margin-left: 10px;
+    padding: 0 0 0 20px;
+    border: none;
     font-family: $text-fonts, Arial;
+    font-size: 15px;
+    font-weight: 300;
+    text-transform: none;
 
     &:hover {
-      background:none;
+      background: none;
+      color: WHITE;
       text-decoration: underline;
-      color:white;
     }
   }
 
   // Account link
   a.account {
-    position:relative;
-    padding:0 20px 0 0;
-    margin-left:20px;
+    position: relative;
+    margin-left: 20px;
+    padding: 0 20px 0 0;
 
     span.separator {
-      position:absolute;
-      top:50%;
-      right:12px;
-      margin-top:-6px;
-      width:1px;
-      height:14px;
-      background:#8FBADE;
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      width: 1px;
+      height: 14px;
+      margin-top: -6px;
+      background: #8FBADE;
     }
   }
 }
 
-
-
 /* Hello media queries */
 
-
-@media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
-only screen and (        min-device-pixel-ratio: 2),
-only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx) {
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
   .cartodb-public-header .logo {
-    @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat!important);
-    background-size: 128px 35px!important;
+    @include background(image-url('layout/cartodb_logo_with_cartofante@2x.png') no-repeat !important);
+    background-size: 128px 35px !important;
   }
 }
 
 @media only screen and (min-width: 351px) and (max-width: 710px) {
-  .options a.clone { display:none }
+  .options a.clone {
+    display: none;
+  }
 }
 
 /* iPhone portrait */
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) {
   .cartodb-public-header {
-
     .logo {
       width: 96px;
       height: 27px;
       margin: 19px 0 0;
-      background-size: 96px 27px!important;
+      background-size: 96px 27px !important;
     }
 
-    .options a { display:none }
+    .options a {
+      display: none;
+    }
 
     .options .account {
-      @include display-flex();
-      font-size:11px;
-      padding:8px 10px;
+      display: flex;
+      padding: 8px 10px;
+      font-size: 11px;
     }
 
     .options .login,
     .options .signup {
-      display:inline;
-      font-size:11px;
-      padding:8px 10px;
+      display: inline;
+      padding: 8px 10px;
+      font-size: 11px;
     }
   }
 }

@@ -1,330 +1,356 @@
 
-  /**
+/**
    *  Wizard panel styles.
    *
    *  - Default styles for any wizard.
    *
    */
 
-  @import "compass/css3/opacity";
-  @import "compass/css3/images";
-  @import "compass/css3/inline-block";
-  @import "../../../table/table-sprite";
-  @import "../../../old_common/vars";
-  @import "../../../old_common/mixins";
+@import "compass/css3/images";
+@import "compass/css3/inline-block";
+@import "../../../table/table-sprite";
+@import "../../../old_common/vars";
+@import "../../../old_common/mixins";
 
-  // LOCAL VARS
-  $corner_radius: 6px;
+// LOCAL VARS
+$corner_radius: 6px;
 
-  div.wizards_panel {
-    display:block;
-    width:100%;
-    overflow:hidden;
+div.wizards_panel {
+  display: block;
+  width: 100%;
+  overflow: hidden;
 
-    h3 {
-      padding-left: 30px;
+  h3 {
+    padding-left: 30px;
+  }
+
+  div.wizard_wrap {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    left: 0;
+    height: 149px;
+    overflow: hidden;
+
+    background: image-url('layout/linen.png');
+
+    &.left_shadow::before {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      pointer-events: none;
+
+      @include background(linear-gradient(left, rgba(#333, 0.7), rgba(#333,0)));
     }
 
-    div.wizard_wrap {
-      position:absolute;
-      overflow:hidden;
-      top:60px;
-      left:0;
-      right:0;
-      height:149px;
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 30px;
+      pointer-events: none;
 
-      background: image-url('layout/linen.png');
-
-      &.left_shadow:before {
-        content:'';
-        position:absolute;
-        top:0px;
-        bottom:0px;
-        left:0px;
-        width:30px;
-        pointer-events: none;
-        @include background(linear-gradient(left, rgba(#333, .7), rgba(#333,0)));
-        z-index:1;
-      }
-
-      &:after {
-        content:'';
-        position:absolute;
-        top:0px;
-        bottom:0px;
-        right:0px;
-        width:30px;
-        pointer-events: none;
-        @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, .7)));
-        z-index:1;
-      }
-
+      @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, 0.7)));
     }
+  }
 
-    div.wizard_arrows {
-      a {
-        position:absolute;
-        display:block;
-        top:55px;
-        width:43px;
-        height:43px;
-        z-index:10;
-        @include table-sprite(wizard-arrows);
+  div.wizard_arrows {
+    a {
+      display: block;
+      position: absolute;
+      z-index: 10;
+      top: 55px;
+      width: 43px;
+      height: 43px;
 
-        &.left {
-          left:8px;
-          &:hover {
-            @include table-sprite(wizard-arrows, $offset-y:-43px);
-          }
+      @include table-sprite(wizard-arrows);
+
+      &.left {
+        left: 8px;
+
+        &:hover {
+          @include table-sprite(wizard-arrows, $offset-y:-43px);
+        }
+      }
+
+      &.right {
+        @include table-sprite(wizard-arrows, $offset-x:-43px);
+        right: 8px;
+
+        &:hover {
+          @include table-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
+        }
+      }
+
+      &.disabled {
+        display: none;
+        opacity: 0;
+
+        &.left:hover {
+          @include table-sprite(wizard-arrows);
         }
 
-        &.right {
+        &.right:hover {
           @include table-sprite(wizard-arrows, $offset-x:-43px);
-          right:8px;
+        }
+      }
+    }
+  }
 
-          &:hover {
-            @include table-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
+  ul.vis_options {
+    display: block;
+    position: absolute;
+    width: 1050px;
+    padding: 0 30px;
+    border-bottom: 1px solid #E5E5E5;
+    box-shadow: rgba(#000, 0.05) 0 -4px 8px 0 inset;
+    letter-spacing: -4px;
+
+    @include position(0, 0, false, 0);
+
+    li {
+
+      display: inline-block;
+      position: relative;
+      margin: 0 12px 0 0;
+      padding: 0;
+      transition: opacity 200ms ease-in;
+      letter-spacing: 0;
+      vertical-align: top;
+      word-space: 0; /* stylelint-disable-line */
+
+      a {
+        display: block;
+        position: relative;
+        margin: 30px 0;
+        border-radius: 3px;
+        opacity: 0.7;
+        box-shadow: 0 0 3px 4px rgba(black, 0.15);
+
+        @include size(92px, 90px);
+
+        .name {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          padding: 8px 0;
+          border-top: 1px solid #CCC;
+          border-radius: 0 0 3px 3px;
+          background: #FFF;
+          color: #397DBA;
+          font-size: 11px;
+          font-weight: bold;
+          text-align: center;
+          text-transform: uppercase;
+        }
+
+        // Wizard icons
+        &.simple {
+          background: image-url('layout/wizard-simple.png') no-repeat;
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat; }
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-simple-polyline.png') no-repeat; }
+        }
+
+        &.intensity {
+          background: image-url('layout/wizard-intensity.png') no-repeat;
+        }
+
+        &.choropleth {
+          background: image-url('layout/wizard-choropleth.png') no-repeat;
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat; }
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-choropleth-polygon.png') no-repeat; }
+        }
+
+        &.color {
+          background: image-url('layout/wizard-color.png') no-repeat;
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat; }
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat; }
+        }
+
+        &.category {
+          background: image-url('layout/wizard-category.png') no-repeat;
+
+          &.polygon,
+          &.polygon-polygon { background: image-url('layout/wizard-category-polygon.png') no-repeat; }
+
+          &.line,
+          &.line-line { background: image-url('layout/wizard-category-polyline.png') no-repeat; }
+        }
+
+        &.bubble { background: image-url('layout/wizard-bubble.png') no-repeat; }
+        &.cluster { background: image-url('layout/wizard-cluster.png') no-repeat; }
+        &.density { background: image-url('layout/wizard-density-hex.png') no-repeat; }
+        &.torque { background: image-url('layout/wizard-torque.png') no-repeat; }
+        &.torque_cat { background: image-url('layout/wizard-torque-cat.png') no-repeat; }
+        &.torque_heat { background: image-url('layout/wizard-torque-heat.png') no-repeat; }
+
+        &:hover {
+          border-color: $cGray2;
+
+          opacity: 1;
+        }
+
+        &.selected {
+          border-color: $cGray2;
+
+          opacity: 1;
+
+          .name {
+            color: #333;
+          }
+
+          &::before,
+          &::after {
+            @include size(0);
+            content: '';
+            position: absolute;
+            z-index: 5;
+            bottom: 0;
+            left: 50%;
+            margin-left: -13px;
+            border-right: 10px solid transparent;
+            border-left: 10px solid transparent;
+          }
+
+          &::before {
+            z-index: 10;
+            bottom: -30px;
+            border-bottom: 10px solid white;
+          }
+
+          &::after {
+            bottom: -30px;
+            border-bottom: 10px solid $cGray4;
           }
         }
 
         &.disabled {
-          display:none;
-          @include opacity(0);
-
-          &.left:hover {
-            @include table-sprite(wizard-arrows);
-          }
-
-          &.right:hover {
-            @include table-sprite(wizard-arrows, $offset-x:-43px);
-          }
-        }
-      }
-    }
-
-    ul.vis_options {
-      position:absolute;
-      @include position(0, 0, false, 0);
-      display:block;
-      width:1050px;
-      padding:0 30px;
-
-      letter-spacing:-4px;
-      border-bottom:1px solid #E5E5E5;
-      @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
-
-      li {
-        position:relative;
-        @include inline-block();
-        padding:0;
-        margin:0 12px 0 0;
-        word-space: 0;
-        letter-spacing:0;
-
-        a {
-          position:relative;
-          display:block;
-          @include size(92px, 90px);
-          margin:30px 0;
-
-          @include box-shadow(0 0 3px 4px rgba(black, 0.15));
-          @include border-radius(3px);
-
-          .name {
-            position: absolute;
-            width: 100%;
-            padding: 8px 0;
-            left: 0;
-            bottom: 0;
-            background:#fff;
-
-            border-top: 1px solid #ccc;
-            @include border-radius(0 0 3px 3px);
-            text-transform: uppercase;
-
-            text-align:center;
-
-            font-weight:bold;
-            font-size:11px;
-            color: #397DBA;
-          }
-
-          @include simple-transition(opacity, 200ms);
-
-          @include opacity(.7);
-
-          // Wizard icons
-          &.simple {
-            background: image-url('layout/wizard-simple.png') no-repeat;
-            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat;}
-            &.line, &.line-line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
-          }
-
-          &.intensity {
-            background: image-url('layout/wizard-intensity.png') no-repeat;
-          }
-
-          &.choropleth {
-            background: image-url('layout/wizard-choropleth.png') no-repeat;
-            &.line, &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
-            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-choropleth-polygon.png') no-repeat;}
-          }
-
-          &.color {
-            background: image-url('layout/wizard-color.png') no-repeat;
-            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
-            &.line, &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
-          }
-
-          &.category {
-            background: image-url('layout/wizard-category.png') no-repeat;
-            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-category-polygon.png') no-repeat;}
-            &.line, &.line-line { background: image-url('layout/wizard-category-polyline.png') no-repeat;}
-          }
-
-          &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
-          &.cluster { background: image-url('layout/wizard-cluster.png') no-repeat;}
-          &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
-          &.torque  { background: image-url('layout/wizard-torque.png') no-repeat;}
-          &.torque_cat { background: image-url('layout/wizard-torque-cat.png') no-repeat;}
-          &.torque_heat { background: image-url('layout/wizard-torque-heat.png') no-repeat;}
+          display: none;
 
           &:hover {
-            border-color:$cGray2;
-            @include opacity(1);
+            border: 1px solid $cGray4;
           }
+        }
+      }
+    }
+  }
 
-          &.selected {
-            border-color:$cGray2;
+  div.forms {
+    ul {
+      width: 100%;
+      margin: 15px 0 0;
 
-            @include opacity(1);
+      li {
+        display: block;
+        width: 100%;
+        padding: 13px 0;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(#E5E5E5, 0.5);
 
-            .name {
-              color: #333;
-            }
+        & > span:first-child {
+          margin-top: 2px;
+          float: left;
+          color: #AAA;
+        }
 
-            &:before, &:after {
-              @include size(0);
-              position:absolute;
-              bottom: 0;
-              content: '';
-              left:50%;
-              margin-left:-13px;
-              border-left:10px solid transparent;
-              border-right:10px solid transparent;
-              z-index:5;
-            }
+        & > span:last-child {
+          float: right;
+        }
 
-            &:before {
-              bottom:-30px;
-              border-bottom:10px solid white;
-              z-index:10;
-            }
+        .form_combo {
+          display: inline-block;
+          vertical-align: top;
+        }
 
-            &:after {
-              bottom:-30px;
-              border-bottom:10px solid $cGray4;
-            }
-          }
+        &.label_text { border: none; }
+        &.label_text.border { border-bottom: 1px solid rgba(#E5E5E5, 0.5); }
+        &:last-child { border: none; }
 
-          &.disabled {
+        span.field > div {
+          margin-left: 5px;
+
+          &.form_hidden {
             display: none;
-            &:hover {
-              border:1px solid $cGray4;
-            }
+            margin: 0;
           }
+
+          // Removed left space for first combo
+          &:first-child { margin-left: 0 !important; }
+        }
+
+        // Text between fields like " - to - "
+        span.field span.text {
+          display: inline-block;
+          width: 43px;
+          margin-left: 5px;
+          line-height: 21px;
+          text-align: center;
+          vertical-align: top;
         }
       }
     }
 
-    div.forms {
-      ul {
-        width:100%;
-        margin:15px 0 0 0;
+    &.panel_content {
+      top: 212px;
+    }
 
-        li {
-          overflow:hidden;
-          display:block;
-          width:100%;
-          padding:13px 0;
-          border-bottom:1px solid rgba(#E5E5E5,0.5);
+    // Color wizard styles
+    ul.custom_colors,
+    ul.custom_categories {
+      margin: 0;
+      border-top: 1px solid rgba(#E5E5E5, 0.5);
 
-          & > span:first-child {
-            float:left;
-            margin-top:2px;
-            color:#AAA;
-          }
+      li.custom_color_item {
+        span {
+          max-width: 260px;
 
-          & > span:last-child {
-            float:right;
-          }
-
-          .form_combo {
-            @include inline-block();
-          }
-
-          &.label_text { border:none; }
-          &.label_text.border { border-bottom: 1px solid rgba(#E5E5E5,0.5); }
-          &:last-child {border:none;}
-
-          span.field > div {
-            margin-left:5px;
-
-            &.form_hidden {
-              margin:0;
-              display:none;
-            }
-
-            // Removed left space for first combo
-            &:first-child { margin-left:0!important }
-          }
-
-          // Text between fields like " - to - "
-          span.field span.text {
-            @include inline-block();
-            vertical-align:top;
-            width:43px;
-            margin-left:5px;
-            line-height:21px;
-            text-align:center;
-          }
+          @include text-overflow();
         }
-      }
-
-      &.panel_content {
-        top:212px;
-      }
-
-      // Color wizard styles
-      ul.custom_colors, ul.custom_categories {
-        margin:0;
-        border-top:1px solid rgba(#E5E5E5,0.5);
-        li.custom_color_item {
-          span {
-            max-width:260px;
-            @include text-overflow();
-          }
-        }
-      }
-      div.colors_loader {
-        display:none;
-        padding:15px 0 0 50px;
-        background:image-url("layout/loader.gif") no-repeat 0 15px;
-        border-top:1px solid rgba(#E5E5E5,0.5);
-        span {color:$cGray4;}
-      }
-      div.colors_error {
-        display:none;
-        padding:15px;
-        background:rgba(#FECBCB,0.4);
-        @include border-radius($corner_radius);
-        color:#666666;
       }
     }
+
+    div.colors_loader {
+      display: none;
+      padding: 15px 0 0 50px;
+      border-top: 1px solid rgba(#E5E5E5, 0.5);
+      background: image-url("layout/loader.gif") no-repeat 0 15px;
+      span { color: $cGray4; }
+    }
+
+    div.colors_error {
+      display: none;
+      padding: 15px;
+
+      border-radius: $corner_radius;
+      background: rgba(#FECBCB, 0.4);
+      color: #666;
+    }
   }
-  
-  /* Temporary hack for a Chrome v45 bug */
-  /* https://github.com/CartoDB/cartodb/issues/5368 */
-  .select2-result-label td.color { 
-     width: 10%;
-  }
+}
+
+/* Temporary hack for a Chrome v45 bug */
+
+/* https://github.com/CartoDB/cartodb/issues/5368 */
+.select2-result-label td.color {
+  width: 10%;
+}

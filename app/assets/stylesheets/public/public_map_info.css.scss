@@ -9,11 +9,10 @@
 @import "../old_common/vars";
 @import "../old_common/mixins";
 
-
 .cartodb-info {
-  background: #F6F6F6;
+  padding: 38px 0 36px;
   border-bottom: 1px solid #D1D1D1;
-  padding: 38px 0 36px 0;
+  background: #F6F6F6;
 }
 
 .user_details {
@@ -23,21 +22,21 @@
 // Table or vis details (title, description, ...)
 
 .cartodb-info .inner .details h1 {
-  font-family: 'ProximaNova-Semibold', $text-fonts2;
-  font-weight: normal;
-  font-size:27px;
-  color: #444444;
+  margin: 0 0 5px;
   padding: 0;
-  margin: 0 0 5px 0;
+  color: #444;
+  font-family: 'ProximaNova-Semibold', $text-fonts2;
+  font-size: 27px;
+  font-weight: normal;
   line-height: 110%;
 }
 
 .cartodb-info .inner .details p {
   margin: 0;
   padding: 0;
-  font-family: $text-fonts;
-  font-size:15px;
   color: #868686;
+  font-family: $text-fonts;
+  font-size: 15px;
   line-height: normal;
 }
 
@@ -46,25 +45,32 @@
 }
 
 .embed-left-col.details .content p.description {
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
 
-  strong { font-weight: bold; }
-  em { font-style: italic; }
+  strong {
+    font-weight: bold;
+  }
 
-  a { 
+  em {
+    font-style: italic;
+  }
+
+  a {
     color: #397DB8;
-    text-decoration:none;
+    text-decoration: none;
 
-    &:hover { text-decoration:underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
 .embed-left-col.details .content p.options a {
-  font-family: $text-fonts;
   color: #397DB8;
-  text-decoration: none;
+  font-family: $text-fonts;
   font-size: 15px;
   line-height: 120%;
+  text-decoration: none;
 
   &:hover {
     text-decoration: underline;
@@ -72,53 +78,56 @@
 }
 
 .user-options .button.grey.like {
-  @include inline-block();
-  position:relative;
-  padding:0 9px;
-  text-transform: uppercase;
+  display: inline-block;
+  position: relative;
+  padding: 0 9px;
+  font-family: 'Arial';
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 27px;
   text-shadow: none;
-  font-size:11px;
-  line-height:27px;
-  font-family:'Arial';
-  letter-spacing:0;
+  text-transform: uppercase;
+  vertical-align: top;
 }
+
 .user-options .button.grey.like .icon {
-  @include inline-block();
-  position:relative;
+  display: inline-block;
+  position: relative;
   top: -1px;
   width: 14px;
   height: 14px;
+  -webkit-transform: scale(0.7);
+  -ms-transform: scale(0.7);
+  transform: scale(0.7);
   background: image-url("layout/heart.png") no-repeat;
   background-size: 14px 14px;
-  -webkit-transform: scale(.7);
-  -ms-transform: scale(.7);
-  transform: scale(.7);
+  vertical-align: top;
 }
 
 .user-options .button.grey.like.is-highlighted .icon {
+  -webkit-transform: scale(0.7);
+  -ms-transform: scale(0.7);
+  transform: scale(0.7);
   background: image-url("layout/heart_highlighted.png") no-repeat;
   background-size: 14px 14px;
-  -webkit-transform: scale(.7);
-  -ms-transform: scale(.7);
-  transform: scale(.7);
 }
 
 .user-options .button.grey.like .icon.is-animated {
   -ms-animation-duration: 400ms;
   -webkit-animation-duration: 400ms;
   animation-duration: 400ms;
+  -webkit-animation-timing-function: ease-in;
+  animation-timing-function: ease-in;
   -webkit-animation-fill-mode: both;
   -ms-animation-fill-mode: both;
   animation-fill-mode: both;
-  animation-timing-function: ease-in;
-  -webkit-animation-timing-function: ease-in;
 }
 
 @-webkit-keyframes pulse {
   0% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 
   25% {
@@ -126,28 +135,31 @@
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   50% {
-    -webkit-transform: scale(.5);
-    -ms-transform: scale(.5);
-    transform: scale(.5);
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
   }
+
   75% {
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   100% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 }
 
 @keyframes pulse {
   0% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 
   25% {
@@ -155,20 +167,23 @@
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   50% {
-    -webkit-transform: scale(.5);
-    -ms-transform: scale(.5);
-    transform: scale(.5);
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
   }
+
   75% {
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
   }
+
   100% {
-    -webkit-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7);
   }
 }
 
@@ -181,21 +196,21 @@
 // User info
 
 .cartodb-info .inner .user {
-  text-align:right;
   padding: 2px 0;
+  text-align: right;
 }
 
 .cartodb-info .inner .user .avatar {
-  @include inline-block();
-  vertical-align: top;
+  display: inline-block;
   width: 46px;
   height: 46px;
-  background: #fff;
-  @include border-radius(100px);
+  border-radius: 100px;
+  background: #FFF;
+  vertical-align: top;
 }
 
 .cartodb-info .inner .user .content {
-  text-decoration:none;
+  text-decoration: none;
 
   &:hover .user-info h5 {
     text-decoration: underline;
@@ -203,83 +218,73 @@
 }
 
 .cartodb-info .inner .user .user-info {
-  @include inline-block();
-  vertical-align: top;
+  display: inline-block;
   margin: 5px 8px 0 0;
-  text-align:right;
+  text-align: right;
+  vertical-align: top;
 }
 
 .cartodb-info .inner .user h4,
 .cartodb-info .inner .user h5,
 .cartodb-info .inner .user .count {
-  margin: 0; padding: 0;
+  margin: 0;
+  padding: 0;
   font-family: 'ProximaNova-Semibold', $text-fonts2;
   font-weight: normal;
 }
 
 .cartodb-info .inner .user h4 {
-  margin: 0 0 6px 0;
+  margin: 0 0 6px;
+  color: #444;
   font-size: 17px;
-  color: #444444;
 }
 
 .cartodb-info .inner .user h5 {
-  font-size: 15px;
   color: #858585;
+  font-size: 15px;
 }
-
-
 
 // Hello media queries
 
 /* iPhone portrait */
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
-
-  .cartodb-map-data .cartodb-info { padding: 20px 0 }
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) {
+  .cartodb-map-data .cartodb-info {
+    padding: 20px 0;
+  }
 
   .cartodb-map-data .cartodb-info .inner .details h1 {
-    font-size:20px;
-    padding-right: 0px;
+    padding-right: 0;
+    font-size: 20px;
   }
 }
 
-
 @media only screen and (max-width: 710px) {
-
   .cartodb-map-data .cartodb-info .inner .details h1 {
     padding-right: 20px;
   }
 
   .cartodb-info .inner .user.embed-right-col {
-    float:right;
+    float: right;
     text-align: left;
   }
 
   .cartodb-info .inner .user.embed-right-col .user-info {
+    position: absolute;
+    left: 75px;
     float: right;
     text-align: left;
-    position:absolute;
-    left: 75px;
   }
 
   .cartodb-info .inner .details {
     margin-bottom: 30px;
   }
-
 }
 
-
 /* iPhone landscape */
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : landscape) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: landscape) {
   .cartodb-map-data .cartodb-info .inner .details h1 {
-    font-size:20px;
-    padding-right: 0px;
+    padding-right: 0;
+    font-size: 20px;
   }
 }
 
@@ -289,13 +294,13 @@ and (orientation : landscape) {
   }
 
   .inner .user.embed-right-col {
-    float: right;
     width: 200px;
+    float: right;
   }
 
   .inner .details.embed-left-col {
-    float:left;
     max-width: 70%;
+    float: left;
     border-right: 1px solid #D1D1D1;
   }
 

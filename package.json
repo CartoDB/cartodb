@@ -103,7 +103,7 @@
     "open": "0.0.5",
     "prettysize": "0.0.3",
     "raw-loader": "0.5.1",
-    "recursive-readdir": "2.1.1",
+    "recursive-readdir": "2.2.1",
     "semver": "4.3.6",
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",

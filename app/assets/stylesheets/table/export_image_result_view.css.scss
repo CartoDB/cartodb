@@ -3,7 +3,6 @@
  */
 
 @import "compass/css3/box-sizing";
-@import "compass/css3/opacity";
 @import "compass/css3/images";
 @import "compass/css3/transition";
 @import "old_common/form-elements";
@@ -11,15 +10,16 @@
 
 .StaticImageResponse--input {
   width: 100%;
-  outline:none;
+  outline: none;
 }
+
 .ExportImageResult--url {
-  @include inline-block();
+  display: inline-block;
   width: auto;
   max-width: 400px;
-  vertical-align: top;
-  text-overflow: ellipsis;
-  text-align: left;
-  white-space: nowrap;
   overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  vertical-align: top;
+  white-space: nowrap;
 }

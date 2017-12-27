@@ -1,36 +1,35 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .Card {
-  @include display-flex();
-  @include flex(1 0 0);
-  @include align-items(center);
-  @include justify-content(center);
-  @include flex-direction(column);
+  display: flex;
+  box-sizing: border-box;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: 205px;
   margin-right: $baseSize * 2;
   padding: 20px;
   border: 1px solid $cWhite;
   border-radius: $halfBaseSize;
   background-color: $cWhite;
-  box-sizing: border-box;
 
   &:last-child {
     margin-right: 0;
   }
 
   &.is-disabled {
-    @include justify-content(center);
+    justify-content: center;
     border: 1px solid rgba($cMainLine, 0.5);
     background-color: $cThirdBackground;
   }
 }
 
 .Card-icon {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 40px;
   height: 40px;
   border: 1px solid $cMainLine;
@@ -47,9 +46,9 @@
 }
 
 .Card--privacy {
-  @include display-flex;
-  @include flex-direction(column);
-  @include justify-content(flex-end);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   padding: 25px;
   cursor: pointer;
 

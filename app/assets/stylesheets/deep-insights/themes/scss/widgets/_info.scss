@@ -7,9 +7,11 @@
   @include align-items(center);
   width: 100%;
 }
+
 .CDB-Widget-infoDescription {
   margin-right: $sMargin-element;
   margin-left: $baseSize / 4;
+
   &:last-child {
     margin-right: 0;
   }

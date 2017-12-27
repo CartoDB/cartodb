@@ -1,5 +1,5 @@
+/* stylelint-disable */
 @import '../variables/colors';
-@import '../variables/mixins';
 @import '../variables/sizes';
 
 // Intermediate info for a view with minimal information on intermediate states.
@@ -8,15 +8,16 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 .IntermediateInfo {
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(center, center);
-  @include justify-content(center, center);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 360px;
   margin: 0 auto;
   text-align: center;
 }
+
 _:-ms-lang(x),
 .IntermediateInfo {
   padding-top: 100px;
@@ -30,6 +31,7 @@ _:-ms-lang(x),
 .IntermediateInfo-title--error {
   color: $cHighlight-negative;
 }
+
 .IntermediateInfo.IntermediateInfo--pullUp {
   margin-top: -50px;
   padding: 0 0 50px;

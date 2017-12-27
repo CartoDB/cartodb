@@ -5,29 +5,47 @@
 @import "../variables/sizes";
 @import "../variables/mixins";
 
-.DefaultEditInline {}
-.DefaultEditInline-form {}
 .DefaultEditInline-input {
-  border:none;
-  background:none;
+  border: none;
   outline: none;
+  background: none;
 }
 // It is not possible to be grouped :(
 .DefaultEditInline-input::-webkit-input-placeholder {
-  font-style: italic;
   color: $cTypography-link;
+  font-style: italic;
 }
-.DefaultEditInline-input:hover::-webkit-input-placeholder { color: $cTypography-linkHover }
-.DefaultEditInline-input:focus::-webkit-input-placeholder { color: transparent }
+
+.DefaultEditInline-input:hover::-webkit-input-placeholder {
+  color: $cTypography-linkHover;
+}
+
+.DefaultEditInline-input:focus::-webkit-input-placeholder {
+  color: transparent;
+}
+
 .DefaultEditInline-input::-moz-placeholder {
-  font-style: italic;
   color: $cTypography-link;
+  font-style: italic;
 }
-.DefaultEditInline-input:hover::-moz-placeholder { color: $cTypography-linkHover }
-.DefaultEditInline-input:focus::-moz-placeholder { color: transparent }
+
+.DefaultEditInline-input:hover::-moz-placeholder {
+  color: $cTypography-linkHover;
+}
+
+.DefaultEditInline-input:focus::-moz-placeholder {
+  color: transparent;
+}
+
 .DefaultEditInline-input:-ms-input-placeholder {
-  font-style: italic;
   color: $cTypography-link;
+  font-style: italic;
 }
-.DefaultEditInline-input:hover:-ms-input-placeholder { color: $cTypography-linkHover }
-.DefaultEditInline-input:focus:-ms-input-placeholder { color: transparent }
+
+.DefaultEditInline-input:hover:-ms-input-placeholder {
+  color: $cTypography-linkHover;
+}
+
+.DefaultEditInline-input:focus:-ms-input-placeholder {
+  color: transparent;
+}

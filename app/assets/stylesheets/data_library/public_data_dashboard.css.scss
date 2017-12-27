@@ -1,35 +1,40 @@
-@import '../variables/mixins';
-
 // Public data dashboard content
 // --------------------------------------------------
 
 .PublicBody--commercial {
   font-family: 'Open Sans', sans-serif;
 }
+
 .DataLibrary {
   margin: 0 auto;
   background: #F9F9F9;
 }
+
 .DataLibrary-inner {
   position: relative;
   min-height: 500px;
   padding-top: 81px;
 }
+
 .DataLibrary-columns * {
-  @include css3-prefix(box-sizing, border-box);
+  box-sizing: border-box;
 }
+
 .DataLibrary-text {
+  color: #636D72;
   font-size: 18px;
   line-height: 32px;
-  color: #636D72;
 }
+
 .Filters.Filters-datalibrary .Filters-orderItem:last-child {
   margin-right: 0;
 }
+
 .DataLibrary-more {
   margin-top: 40px;
   margin-bottom: 120px;
 }
+
 .DataLibrary-footer {
   padding-bottom: 120px;
 }

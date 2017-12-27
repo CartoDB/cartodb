@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.10.149",
+  "version": "4.10.150",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -108,6 +108,9 @@
     "shim-loader": "0.1.0",
     "source-map-support": "0.4.0",
     "stringify": "5.1.0",
+    "stylelint": "^8.2.0",
+    "stylelint-config-property-sort-order-smacss": "^2.0.0",
+    "stylelint-config-standard": "^17.0.0",
     "tpl-loader": "CartoDB/tpl-loader#master",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",
@@ -150,8 +153,10 @@
     "node": "6.9.2"
   },
   "scripts": {
+    "ci": "npm run lint:css && grunt test",
     "test": "grunt test",
     "lint": "eslint .",
+    "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
     "bump": "npm version patch",
     "bump:major": "npm version major",

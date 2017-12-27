@@ -4,19 +4,24 @@
 .CDB-IconFont--super::before {
   vertical-align: super;
 }
+
 .CDB-IconFont-play::before {
   vertical-align: 6px; // center it, super pushes it too high
-} 
+}
+
 .CDB-IconFont.CDB-IconFont--withLabel {
   margin-right: 5px;
 }
+
 .CDB-IconFont.CDB-IconFont--withLabel::before {
-  @include display-flex();
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
 }
+
 .CDB-IconFont.CDB-IconFont--small::before {
   font-size: 9px;
 }
+
 .CDB-IconFont.CDB-IconFont--big::before {
   font-size: 19px;
 }

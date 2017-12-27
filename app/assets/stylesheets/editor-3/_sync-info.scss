@@ -1,7 +1,6 @@
 // Sync info styles
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 
 .SyncInfo--separator {
@@ -11,17 +10,18 @@
   padding-bottom: 12px;
 
   &::after {
+    content: '';
     position: absolute;
     right: -24px;
     bottom: 0;
     left: -24px;
     height: 1px;
     background: rgba(#000, 0.08);
-    content: '';
   }
 }
+
 .is-dark .SyncInfo--separator::after {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(#FFF, 0.08);
 }
 
 .SyncInfo-viewOptions {
@@ -35,12 +35,15 @@
 .SyncInfo-message--success {
   color: #5FCC79;
 }
+
 .SyncInfo-message--failure {
   color: $cError;
 }
+
 .SyncInfo-message--syncing {
   color: #898989;
 }
+
 .SyncInfo-state {
   display: inline-block;
   width: 10px;
@@ -48,18 +51,22 @@
   border-radius: 100%;
   background: $cWhite;
 }
+
 .SyncInfo-state--small {
   width: 8px;
   height: 8px;
 }
+
 .SyncInfo-state--success {
   background: $cHighlight;
   color: $cHighlight;
 }
+
 .SyncInfo-state--failure {
   background: $cError;
   color: $cError;
 }
+
 .SyncInfo-state--syncing {
   background: #898989;
   color: #898989;

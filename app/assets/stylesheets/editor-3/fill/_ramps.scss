@@ -1,33 +1,39 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .CustomRamp {
-  @include display-flex();
-  @include justify-content(space-between);
+  display: flex;
+  justify-content: space-between;
 }
+
 .CustomRamp-list {
   border-top: 1px solid #DDD;
 }
+
 .CustomRamp .CustomRamp-listOptions {
-  @include flex(1);
+  flex: 1;
 }
+
 .CustomRamp-clear {
   $padding: $baseSize + 4;
   padding: $padding $padding $padding 0;
   color: $cBlue;
 }
+
 .RampItem-bar {
   width: 20px;
 }
+
 .RampItem-text {
   max-width: calc(100% - 30px);
 }
+
 .RampItem-secondaryContainer {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+
 .RampItem-img {
   min-width: 22px;
   margin-left: 10px;

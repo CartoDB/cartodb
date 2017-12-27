@@ -3,12 +3,12 @@
 
 .Btn {
   display: inline-block;
-  text-align: center;
-  white-space: nowrap;
+  transition: all 0.15s;
+  border-radius: 50px;
   font-weight: 400;
   line-height: 1;
-  border-radius: 50px;
-  transition: all .15s;
+  text-align: center;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: none;
@@ -21,13 +21,13 @@
 
   > span {
     display: block;
-    font-weight: 400;
     border-radius: 50px;
+    font-weight: 400;
   }
 }
 
 .Btn--background {
-  background: #fff;
+  background: #FFF;
 }
 
 .Btn--m {
@@ -57,50 +57,50 @@
 }
 
 .Btn--white {
-  color: #fff;
-  border-color: rgba(#fff, .3);
+  border-color: rgba(#FFF, 0.3);
+  color: #FFF;
 
   &:hover {
-    background: #fff;
+    background: #FFF;
     color: #333;
   }
 }
 
 .Btn--green {
-  color: #8EB83F;
   border-color: #8EB83F;
+  color: #8EB83F;
 
   &:hover {
     background: #8EB83F;
-    color: #fff;
+    color: #FFF;
   }
 
   &.is-highlight {
     background: #8EB83F;
-    color: #fff;
+    color: #FFF;
 
     &:hover {
-      background: #fff;
+      background: #FFF;
       color: #8EB83F;
     }
   }
 }
 
 .Btn--blue {
-  color: #397EB9;
   border-color: #397EB9;
+  color: #397EB9;
 
   &:hover {
     background: #397EB9;
-    color: #fff;
+    color: #FFF;
   }
 
   &.is-highlight {
     background: #397EB9;
-    color: #fff;
+    color: #FFF;
 
     &:hover {
-      background: #fff;
+      background: #FFF;
       color: #397EB9;
     }
   }

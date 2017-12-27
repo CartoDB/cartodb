@@ -1,23 +1,22 @@
 // Edit overlay
 // ----------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 
 .EditOverlay {
   position: absolute;
+  z-index: 4;
   top: 16px;
   right: 16px;
   height: auto;
   transition: all 0.2s;
-  text-align: center;
   opacity: 1;
-  z-index: 4;
+  text-align: center;
 
   &.is-hidden {
     height: 0;
-    opacity: 0;
     overflow: hidden;
+    opacity: 0;
   }
 }
 

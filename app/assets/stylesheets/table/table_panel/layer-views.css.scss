@@ -1,133 +1,152 @@
+/**
+  *  Layer panel views
+  *
+  *  Content of the layer panel (wizards, infowindow, legends, etc).
+  *
+  */
 
-  /**
-   *  Layer panel views
-   *
-   *  Content of the layer panel (wizards, infowindow, legends, etc).
-   *
-   */
+@import "compass/css3/images";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "../../table/table-sprite";
+@import "../../old_common/vars";
+@import "../../old_common/mixins";
 
-  @import "compass/css3/images";
-  @import "compass/css3/box-shadow";
-  @import "compass/css3/border-radius";
-  @import "compass/css3/inline-block";
-  @import "../../table/table-sprite";
-  @import "../../old_common/vars";
-  @import "../../old_common/mixins";
+// LOCAL VARS
+$corner_radius: 6px;
 
+// Layer actions view!
+.layer-views {
 
-  // LOCAL VARS
-  $corner_radius: 6px;
-  
+  display: inline-block;
+  position: absolute;
+  z-index: 5;
+  top: 60px;
+  right: 0;
+  bottom: 0;
+  left: 65px;
+  border: 1px solid #D0D0D0;
+  border-right: 0;
+  border-bottom: 0;
+  border-top-left-radius: $corner_radius;
+  background: white;
+  box-shadow: rgba(black, 0.07) 2px -1px 8px 0;
+  letter-spacing: 0;
+  vertical-align: top;
 
-  // Layer actions view!
-  .layer-views {
-    position:absolute;
-    top:60px;
-    right:0;
-    left:65px;
-    bottom:0;
-    @include inline-block();
-    background:white;
-    @include border-top-left-radius($corner_radius);
-    border:1px solid #D0D0D0;
-    border-right:0;
-    border-bottom:0;
-    @include box-shadow(rgba(black, 0.07) 2px -1px 8px 0);
-    letter-spacing:0;
-    z-index:5;
+  h3 {
+    padding: 22px 0 21px 30px;
+    border-bottom: 1px solid rgba(#999, 0.25);
+    color: #666;
+    font: normal 15px $text-fonts;
+    line-height: normal;
+  }
 
+  // For any
+  & > div {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+  }
 
-    h3 {
-      padding: 22px 0 21px 30px;
-      border-bottom:1px solid rgba(#999999,0.25);
-      font:normal 15px $text-fonts;
-      line-height:normal;
-      color: #666666;
+  // Panel content for absolute positioning
+  // and render with scrollbars if it is higher
+  // than the panel
+  .panel_content {
+    position: absolute;
+    top: 61px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+
+    .wrapper {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 0 30px 16px;
+      overflow: auto;
     }
 
-    // For any 
-    & > div {
-      @include inline-block();
-      width:100%;
-      height:100%;
+    div.content {
+      right: 30px !important;
+      left: 30px;
+      overflow-x: visible;
     }
 
-    // Panel content for absolute positioning
-    // and render with scrollbars if it is higher
-    // than the panel
-    .panel_content {
-      position:absolute;
-      top:61px;
-      left:0;
-      right:0;
-      bottom:0;
-      overflow:hidden;
-
-      .wrapper {
-        position:absolute;
-        top:0; left:0; bottom:0; right:0;
-        padding:0 30px 16px 30px;
-        overflow:auto;
-      }
-      
-      div.content {
-        left:30px;
-        right:30px!important;
-        overflow-x:visible;
-      }
-      
-      div.no_content {
-        margin:20px 0 0 0;
-        padding:20px;
-        border:1px solid #E6E6E6;
-        @include border-radius(4px);
-        color:#666666;
-        text-align:center;
-        line-height:18px;
-      }
-
-      span.scroll {
-        position:absolute;
-        left:0;
-        right:5px;
-        width:100%;
-        height:10px;
-        background:transparent;
-        padding:0;
-        margin:0;
-        @include border-radius(0);
-
-        &.top {top:-10px; @include box-shadow(rgba(0,0,0,0.1) 0 5px 20px 0);}
-        &.bottom {@include box-shadow(rgba(0,0,0,0.12) 0 -5px 20px 0); bottom:-10px;}
-      }
+    div.no_content {
+      margin: 20px 0 0;
+      padding: 20px;
+      border: 1px solid #E6E6E6;
+      border-radius: 4px;
+      color: #666;
+      line-height: 18px;
+      text-align: center;
     }
 
-    
-    // Draw lines separating editor lines number
-    // and show the white gradient
-    div.editor {
+    span.scroll {
+      position: absolute;
+      right: 5px;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      margin: 0;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
 
-      &:after, &:before {
-        position:absolute;
-        content:' ';
-        top:0; left:34px; bottom:0;
-        width:1px;
-        height:100%;
+      &.top {
+        top: -10px;
+        box-shadow: rgba(#000, 0.1) 0 5px 20px 0;
       }
-      
-      &:after { background:rgba($cGray4,0.50); }
-      &:before { left:36px; background:rgba(#509DD7,0.25); }
 
-      h3 { padding-left:22px }
-      
-      span.white-gradient {
-        position:absolute;
-        top:0;
-        left:0;
-        height:22px;
-        width:100%;
-        @include background(linear-gradient(top, white, rgba(white,0)));
-        z-index:10;
+      &.bottom {
+        bottom: -10px;
+        box-shadow: rgba(#000, 0.12) 0 -5px 20px 0;
       }
     }
   }
+
+  // Draw lines separating editor lines number
+  // and show the white gradient
+  div.editor {
+    &::after,
+    &::before {
+      content: ' ';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 34px;
+      width: 1px;
+      height: 100%;
+    }
+
+    &::after {
+      background: rgba($cGray4, 0.5);
+    }
+
+    &::before {
+      left: 36px;
+      background: rgba(#509DD7, 0.25);
+    }
+
+    h3 {
+      padding-left: 22px;
+    }
+
+    span.white-gradient {
+      position: absolute;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 22px;
+
+      @include background(linear-gradient(top, white, rgba(white,0)));
+    }
+  }
+}

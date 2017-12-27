@@ -1,4 +1,3 @@
-@import "../../variables/mixins";
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
@@ -17,44 +16,51 @@ $br: 10px;
   width: 140px;
   height: 10px;
 }
+
 .UISlider.ui-slider {
-  background: white;
   border-radius: $br;
+  background: white;
 }
-.UISlider.ui-slider:before {
+
+.UISlider.ui-slider::before {
   content: '';
   position: absolute;
-  left: 0;
+  z-index: 1;
   top: 0;
+  left: 0;
   width: 100%;
   height: 8px;
   border: 1px solid rgba(black, 0.1);
   border-radius: $br;
-  z-index: 1;
 }
+
 .UISlider .ui-slider-range-min {
   height: 10px;
-  background-color: #1181FB;
   border-radius: $br;
+  background-color: #1181FB;
 }
+
 .UISlider .ui-slider-handle {
   position: absolute;
-  outline:none;
-  width: 18px;
-  height: 18px;
+  z-index: 3;
   top: 5px;
   left: 2px;
-  margin-left: -9px;
+  width: 18px;
+  height: 18px;
   margin-top: -9px;
+  margin-left: -9px;
+  border-radius: 18px;
+  outline: none;
   background: white;
   box-shadow: rgba(black, 0.15) 0 0 0 1px;
-  border-radius: 18px;
-  z-index: 3;
 
   &.ui-state-active,
   &.ui-state-focus,
-  &.ui-state-hover { box-shadow: rgba(black, 0.3) 0 0 0 1px }
+  &.ui-state-hover { box-shadow: rgba(black, 0.3) 0 0 0 1px; }
 }
 
-.UISlider.ui-slider-disabled { @include opacity(0.6) }
-.UISlider.ui-slider-disabled .ui-slider-handle { cursor: default }
+.UISlider.ui-slider-disabled {
+  opacity: 0.6;
+}
+
+.UISlider.ui-slider-disabled .ui-slider-handle { cursor: default; }

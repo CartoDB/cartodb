@@ -13,22 +13,26 @@
 
 .CDB-Widget {
   position: relative;
-  width: $desktopLayout;
-  margin-bottom: 2px;
   // Due to line-heights, better to substract some pixels in the top
   box-sizing: border-box;
+  width: $desktopLayout;
+  margin-bottom: 2px;
 }
+
 .CDB-Widget-body {
   padding: ($sMargin-section - 4) 0;
 }
+
 .CDB-Widget .CDB-Loader {
   height: 1px;
 }
+
 .CDB-Widget--timeSeries {
   width: 100%; // override default width
   margin-bottom: 0;
   border-radius: $baseSize / 2;
 }
+
 .CDB-Widget-title {
   @include display-flex();
   @include justify-content(flex-start, start);
@@ -36,15 +40,18 @@
   position: relative;
   width: 100%;
 }
+
 .CDB-Widget-header,
 .CDB-Widget-footer,
 .CDB-Widget-content {
   margin-right: $sMargin-section;
   margin-left: $sMargin-section;
 }
+
 .CDB-Widget-content--histogram {
   margin-right: $sMargin-section - 4;
   margin-left: $sMargin-section - 4;
+
   .CDB-Widget-filter {
     margin-right: 4px;
     margin-left: 4px;
@@ -54,9 +61,11 @@
 .CDB-Widget-content {
   position: relative;
 }
+
 .CDB-Widget-content--noSidesMargin {
   margin-right: 0;
   margin-left: 0;
+
   .CDB-Widget-listItem--fake {
     margin-right: $sMargin-section;
     margin-left: $sMargin-section;
@@ -92,8 +101,8 @@
 .CDB-Widget-content--histogram,
 .CDB-Widget-content--timeSeries,
 .CDB-Widget-content--torqueTimeSeries, {
-  touch-action: none;
   -ms-touch-action: none;
+  touch-action: none;
 }
 
 .CDB-Widget-loader {
@@ -111,12 +120,13 @@
     width: $mobileLayout;
     min-width: $mobileLayout;
   }
+
   .CDB-Widget--timeSeries {
     width: 100%; // override default width
   }
 }
 
-@media (max-width:759px) {
+@media (max-width: 759px) {
   .CDB-Widget {
     @include flex(0 0 auto);
     width: auto;
@@ -125,49 +135,61 @@
     border-left-width: 1px;
     border-left-style: solid;
   }
+
   .CDB-Widget .CDB-Loader {
     height: 2px;
   }
+
   .CDB-Widget--timeSeries {
     height: auto;
     min-height: auto; // override default min-height
     max-height: auto;
     margin-bottom: 2px;
   }
+
   .CDB-Widget-timeSeriesTimeInfo {
     display: none;
   }
+
   .CDB-Widget-content.CDB-Widget-content--timeSeries {
     width: 100%;
   }
+
   .CDB-Widget-header,
   .CDB-Widget-footer,
   .CDB-Widget-content {
     margin-right: 12px;
     margin-left: 12px;
   }
+
   .CDB-Widget-content--noSidesMargin {
     margin-right: 0;
     margin-left: 0;
   }
+
   .CDB-Widget-content--histogram {
     @include display-flex();
     @include flex-direction(column);
     min-width: 232px;
   }
+
   .CDB-Widget-content--formula {
     min-width: 180px;
   }
+
   .CDB-Widget-title .CDB-Text {
     max-width: 190px;
     padding-right: 12px;
   }
+
   .CDB-Widget-canvasInner {
     border-radius: 0;
   }
+
   .CDB-Widget-list {
     max-width: 314px;
   }
+
   .CDB-Chart--histogram {
     margin-top: 12px;
   }

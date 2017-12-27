@@ -4,97 +4,100 @@
  *
  */
 
-@import "compass/css3/opacity";
 @import "../old_common/vars";
-
 
 .cartodb-body {
   padding: 30px 0;
 }
 
 .cartodb-body .comments .content p {
-  font-size: 17px;
+  color: #444;
   font-family: $text-fonts;
-  color: #444444;
+  font-size: 17px;
   line-height: normal;
 }
-
 
 // Map info
 
 .cartodb-body .inner .map-info {
-  position:relative;
+  position: relative;
   top: 8px;
 }
 
 .cartodb-body .inner .map-info h2 {
-  margin: 0 0 21px 0;
+  margin: 0 0 21px;
   padding: 0;
-  font-size: 17px;
+  color: #444;
   font-family: $text-fonts;
-  font-weight:bold;
-  color: #444444;
+  font-size: 17px;
+  font-weight: bold;
   line-height: normal;
 }
 
 .cartodb-body .inner .map-info ul {
-  list-style:none;
   margin: 0;
-  padding: 14px 0 0 0;
+  padding: 14px 0 0;
   border-top: 2px solid #EBEEF0;
+  list-style: none;
 }
 
 .cartodb-body .inner .map-info ul li {
-  clear:both;
-  overflow:hidden;
-  margin: 0 0 17px 0;
-  padding: 0 0 17px 0;
+  margin: 0 0 17px;
+  padding: 0 0 17px;
+  clear: both;
+  overflow: hidden;
   border-bottom: 1px solid #E4E4E4;
-  font-size: 15px;
   font-family: $text-fonts;
+  font-size: 15px;
 }
 
-.cartodb-body .inner .map-info ul li.private { color: #CCCCCC }
+.cartodb-body .inner .map-info ul li.private {
+  color: #CCC;
+}
 
 .cartodb-body .inner .map-info ul li a {
-  float:left;
   width: 200px;
-  font-family: $text-fonts;
+  float: left;
+  overflow: hidden;
   color: #397DB8;
-  text-decoration:none;
+  font-family: $text-fonts;
   font-size: 15px;
   line-height: 120%;
+  text-decoration: none;
+  text-overflow: ellipsis;
 
   /* Ellipsis */
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .cartodb-body .inner .map-info ul li .disabled {
+  opacity: 0.5;
   color: #333;
-  @include opacity(.5);
-  &:hover { text-decoration:none; color: #333; }
+
+  &:hover {
+    color: #333;
+    text-decoration: none;
+  }
 }
 
 .cartodb-body .inner .map-info ul li a:hover {
-  text-decoration: underline;
   color: #333;
+  text-decoration: underline;
 }
 
 .cartodb-body .inner .map-info ul li span {
-  position:relative;
+  position: relative;
   top: 4px;
-  float:right;
-  font-size: 11px;
-  color: #CCCCCC;
+  float: right;
+  color: #CCC;
   font-family: 'ProximaNova', $text-fonts2;
+  font-size: 11px;
   line-height: 120%;
 }
 
 .cartodb-body .inner .map-info ul li span.help {
-  font-family: 'ProximaNova', $text-fonts2;
   top: 3px;
+  font-family: 'ProximaNova', $text-fonts2;
 }
 
 .cartodb-body a {
@@ -103,36 +106,30 @@
   cursor: auto;
 }
 
-
-
 // Hello media queries
 
 @media only screen and (max-width: 710px) {
-
   div.cartodb-map-data .cartodb-body .inner .map-info {
     top: 0;
   }
-
 }
 
 /* iPhone portrait */
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) {
   div.cartodb-map-data .cartodb-body .inner .map-info {
     top: 0;
   }
 }
 
 /* iPhone landscape */
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : landscape) {
-  div.cartodb-map-data .cartodb-body .inner .map-info { top: 0 }
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: landscape) {
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
-  div.cartodb-map-data .cartodb-body .inner .map-info { top: 0 }
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
 }

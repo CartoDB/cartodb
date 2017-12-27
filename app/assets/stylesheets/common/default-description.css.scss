@@ -6,13 +6,15 @@
 @import "../variables/mixins";
 
 .DefaultDescription {
-  overflow-wrap: break-word;
   position: relative;
+  overflow-wrap: break-word;
 }
+
 .DefaultDescription > * {
   margin: 0;
   padding: 0;
 }
+
 .DefaultDescription--error {
   color: $cHighlight-negative;
 }

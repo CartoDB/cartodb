@@ -1,7 +1,6 @@
 // Styles for Layer List
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
@@ -12,15 +11,16 @@
 .Editor-ListLayer-item {
   @include regularBorder();
   position: relative;
+  box-sizing: border-box;
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
-  transition: opacity 2s ease-in,
-              border 0.2s ease-in;
+  transition:
+    opacity 2s ease-in,
+    border 0.2s ease-in;
   border-radius: $halfBaseSize;
   background: #FFF;
   cursor: pointer;
-  box-sizing: border-box;
 
   &:hover {
     border: 1px solid $cBlueHover;
@@ -54,7 +54,9 @@
     cursor: default;
 
     &::before {
+      content: '';
       position: absolute;
+      z-index: -1;
       top: -20px;
       right: -25px;
       bottom: -20px;
@@ -62,9 +64,7 @@
       border-top: 1px solid $cMainLine;
       border-bottom: 1px solid $cMainLine;
       background: $cThirdBackground;
-      background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
-      content: '';
-      z-index: -1;
+      background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(#000, 0.08) 6px, rgba(#000, 0.08) 6px);
     }
 
     &:hover {
@@ -96,11 +96,11 @@
   }
 
   &.ui-draggable-dragging:hover {
+    z-index: 1000;
     border: 1px solid rgba($cBlue, 0.48);
+    opacity: 0.8;
     box-shadow: 0 8px 16px rgba(#000, 0.16);
     cursor: move;
-    opacity: 0.8;
-    z-index: 1000;
   }
 
   &.last-child {
@@ -146,6 +146,7 @@
   transition: opacity 200ms ease-in;
   opacity: 0;
 }
+
 .Editor-ListLayer-media {
   display: flex;
   align-items: center;
@@ -210,13 +211,13 @@
   }
 
   &::before {
+    content: '';
     position: absolute;
     top: 0;
     bottom: 0;
     left: 20px;
     width: 1px;
     background: $cMainLine;
-    content: '';
   }
 }
 
@@ -237,12 +238,11 @@
   }
 
   &.ui-draggable-dragging {
-    // scss-lint:disable VendorPrefix
+    z-index: 1000;
     width: 100%;
     cursor: move;
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
-    z-index: 1000;
   }
 
   .Editor-ListAnalysis-innerItem {
@@ -251,6 +251,7 @@
 }
 
 .Editor-ListAnalysis-itemError {
+  content: ' ';
   display: block;
   position: absolute;
   top: -5px;
@@ -260,7 +261,6 @@
   border: 2px solid $cWhite;
   border-radius: 50px;
   background-color: $cError;
-  content: ' ';
 }
 
 .Editor-ListAnalysis-inner {
@@ -285,9 +285,9 @@
 .Editor-ListAnalysis-layer {
   @include regularBorder();
   padding-right: $baseSize;
+  transition: border 0.2s ease-in;
   border-radius: $halfBaseSize;
   background: $cThirdBackground;
-  transition: border 0.2s ease-in;
 
   &:hover {
     border: 1px solid $cBlueHover;
@@ -386,19 +386,19 @@
   opacity: 0;
 
   &.is-active {
-    background: $cSecondaryBackground;
     opacity: 1;
+    background: $cSecondaryBackground;
   }
 }
 
 .Editor-layerInfo {
   position: relative;
+  z-index: -1;
   margin-top: -10px;
   margin-bottom: 8px;
   padding: 8px;
-  border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
   background: rgba($cMainBg, 0.88);
   text-align: center;
-  z-index: -1;
 }

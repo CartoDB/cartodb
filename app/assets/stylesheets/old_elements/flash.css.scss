@@ -1,33 +1,37 @@
 
-  
-  /*
+
+/*
    * Flash message after a confirmation action
    */
 
+@import "../old_common/common-sprite";
+@import "../old_common/mixins";
 
-  @import "../old_common/common-sprite";
-  @import "../old_common/mixins";
+.flash {
+  position: relative;
+  padding: 22px 40px;
+  border-bottom: 1px solid rgba(#CCC, 0.5);
+  background: rgba(#FA9494, 0.15);
 
-  .flash {
-    position:relative;
-    padding:22px 40px;
-    background:rgba(#FA9494,0.15);
-    border-bottom:1px solid rgba(#CCCCCC,0.5);
+  &.success {
+    background: rgba(green, 0.1);
+  }
 
-    &.success {
-      background: rgba(green,0.1);
+  a.close {
+    @include common-sprite(close_grey);
+    @include text-indent();
+    position: absolute;
+    top: 24px;
+    right: 40px;
+    width: 13px;
+    height: 13px;
+
+    &:hover {
+      @include common-sprite(close_grey, $offset-y: -13px);
     }
 
-    a.close {
-      position:absolute;
-      right:40px;
-      top:24px;
-      width:13px;
-      height:13px;
-      @include common-sprite(close_grey);
-      @include text-indent();
-      
-      &:hover {@include common-sprite(close_grey, $offset-y: -13px);}
-      &:active {@include common-sprite(close_grey, $offset-y: -26px);}
+    &:active {
+      @include common-sprite(close_grey, $offset-y: -26px);
     }
   }
+}

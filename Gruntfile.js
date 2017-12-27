@@ -6,7 +6,7 @@ var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.
 var webpackTask = null;
 
 var REQUIRED_NODE_VERSION = '6.9.2';
-var REQUIRED_NPM_VERSION = '3.10.9';
+var REQUIRED_NPM_VERSION = '5.6.0';
 
 var DEVELOPMENT = 'development';
 

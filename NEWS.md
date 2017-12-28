@@ -102,12 +102,14 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
+* Add support for creating Auth API Keys (#13170)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
 * Remove card's hover state when hovering the dataset/node inside (#13316)
+* Use new header design in export as image view (#13306)
 * Don't show tooltip if analysis is selected or is new (#13299)
 * Fix logo alignment in small viewports (#13302)
 * Nothing else should be interactive when a dropdown is open (#13283)
@@ -362,6 +364,7 @@ ion for time-series (#12670)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
 * Make new widgets appear on top (#13244)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
+* Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

@@ -64,7 +64,6 @@ FactoryGirl.define do
   end
 
   factory :carto_user, class: Carto::User do
-
     username { unique_name('user') }
     email { unique_email }
 

@@ -549,6 +549,7 @@ CartoDB::Application.routes.draw do
 
   scope module: 'superadmin', defaults: { format: :json } do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
+    get '/superadmin/database_validation' => 'platform#database_validation'
     get '/superadmin/stats/total_users' => 'platform#total_users'
     get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'
     get '/superadmin/stats/total_datasets' => 'platform#total_datasets'

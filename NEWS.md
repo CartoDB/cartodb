@@ -103,10 +103,13 @@ ion for time-series (#12670)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Add support for creating Auth API Keys (#13170)
+* Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Don't show tooltip if analysis is selected or is new (#13299)
+* Fix logo alignment in small viewports (#13302)
 * Nothing else should be interactive when a dropdown is open (#13283)
 * Fix hover in widgets (#13293)
 * Fix autostyling with category widget (using a numeric field) [Support #611](https://github.com/CartoDB/support/issues/611)

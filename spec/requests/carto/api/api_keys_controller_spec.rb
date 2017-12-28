@@ -12,10 +12,9 @@ describe Carto::Api::ApiKeysController do
     @auth_api_feature_flag.destroy
   end
 
-  def api_key_url(user, id: nil)
+  def generate_api_key_url(user, id: nil)
     options = { user_domain: user.username, api_key: user.api_key }
-    options[:id] = id if id
-    api_keys_url(options)
+    id ? api_key_url(options.merge(id: id)) : api_keys_url(options)
   end
 
   describe '#create' do
@@ -63,7 +62,7 @@ describe Carto::Api::ApiKeysController do
         name: name,
         grants: grants
       }
-      post_json api_key_url(@carto_user1), payload do |response|
+      post_json generate_api_key_url(@carto_user1), payload do |response|
         response.status.should eq 201
         api_key_response = response.body
         api_key_response[:id].should_not be_empty
@@ -82,17 +81,17 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'fails if grants is not a json array' do
-      post_json api_key_url(@carto_user1), name: 'wadus' do |response|
+      post_json generate_api_key_url(@carto_user1), name: 'wadus' do |response|
         response.status.should eq 422
         error_response = response.body
         error_response[:errors].should match /grants must be a nonempty array/
       end
-      post_json api_key_url(@carto_user1), name: 'wadus', grants: "something" do |response|
+      post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: "something" do |response|
         response.status.should eq 422
         error_response = response.body
         error_response[:errors].should match /grants must be a nonempty array/
       end
-      post_json api_key_url(@carto_user1), name: 'wadus', grants: {} do |response|
+      post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: {} do |response|
         response.status.should eq 422
         error_response = response.body
         error_response[:errors].should match /grants must be a nonempty array/
@@ -110,7 +109,7 @@ describe Carto::Api::ApiKeysController do
           ]
         }
       ]
-      post_json api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
+      post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
         response.status.should eq 422
         error_response = response.body
         error_response[:errors].should match /permissions.*did not match one of the following values: insert, select, update, delete/
@@ -121,7 +120,7 @@ describe Carto::Api::ApiKeysController do
   describe '#destroy' do
     it 'destroys the API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      delete_json api_key_url(@user1, id: api_key.id) do |response|
+      delete_json generate_api_key_url(@user1, id: api_key.id) do |response|
         response.status.should eq 200
         response.body[:id].should eq api_key.id
       end
@@ -130,18 +129,18 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns 404 if API key is not a uuid or it doesn\'t exist' do
-      delete_json api_key_url(@user1, id: 'wadus') do |response|
+      delete_json generate_api_key_url(@user1, id: 'wadus') do |response|
         response.status.should eq 404
       end
 
-      delete_json api_key_url(@user1, id: random_uuid) do |response|
+      delete_json generate_api_key_url(@user1, id: random_uuid) do |response|
         response.status.should eq 404
       end
     end
 
     it 'returns 404 if the API key doesn\'t belong to that user' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      delete_json api_key_url(@user2, id: api_key.id) do |response|
+      delete_json generate_api_key_url(@user2, id: api_key.id) do |response|
         response.status.should eq 404
       end
 

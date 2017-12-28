@@ -108,6 +108,7 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Use new header design in export as image view (#13306)
 * Don't show tooltip if analysis is selected or is new (#13299)
 * Fix logo alignment in small viewports (#13302)
 * Nothing else should be interactive when a dropdown is open (#13283)

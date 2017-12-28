@@ -107,6 +107,7 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Fix logo alignment in small viewports (#13302)
 * Nothing else should be interactive when a dropdown is open (#13283)
 * Fix hover in widgets (#13293)
 * Fix autostyling with category widget (using a numeric field) [Support #611](https://github.com/CartoDB/support/issues/611)

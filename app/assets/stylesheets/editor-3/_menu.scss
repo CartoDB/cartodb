@@ -3,18 +3,15 @@
 @import 'vars';
 
 .EditorMenu {
+  display: flex;
   position: relative;
   flex: 0 0 72px;
+  flex-direction: column;
+  align-items: center;
   width: 72px;
   min-height: 450px;
   padding: 20px 0 $baseSize * 2;
   background: $cBlue;
-}
-
-.EditorMenu-navigation {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .EditorMenu-navigationItem {
@@ -53,12 +50,12 @@
 }
 
 .EditorMenu-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
   margin: 0 auto 48px;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
 
   .point {
     transform-origin: 50%;

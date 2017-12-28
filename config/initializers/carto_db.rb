@@ -8,15 +8,17 @@ module CartoDB
     CARTODB_REV = nil
   end
 
-  DEFAULT_DB_SCHEMA = 'public'
-  PUBLIC_DB_USER  = 'publicuser'
-  PUBLIC_DB_USER_PASSWORD  = 'publicuser'
-  TILE_DB_USER    = 'tileuser'
-  SRID            = 4326
+  DEFAULT_DB_SCHEMA = 'public'.freeze
+  PUBLIC_DB_USER = 'publicuser'.freeze
+  PUBLIC_DB_USER_PASSWORD = 'publicuser'.freeze
+  TILE_DB_USER = 'tileuser'.freeze
+  PG_ADMIN_USER = 'postgres'.freeze
+  SYSTEM_DB_USERS = [PG_ADMIN_USER, TILE_DB_USER, PUBLIC_DB_USER].freeze
+  SRID = 4326
 
-  SURROGATE_NAMESPACE_VISUALIZATION = 'rv'
-  SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'
-  SURROGATE_NAMESPACE_VIZJSON = 'rj'
+  SURROGATE_NAMESPACE_VISUALIZATION = 'rv'.freeze
+  SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'.freeze
+  SURROGATE_NAMESPACE_VIZJSON = 'rj'.freeze
 
   RESERVED_COLUMN_NAMES = %w(FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
 

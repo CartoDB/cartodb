@@ -222,9 +222,9 @@
       "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
-      "title": "Georeference",
+      "title": "Geocode",
       "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
-      "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
+      "description": "Geocoding data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
     },
     "centroid": {
       "title": "Calculating centroids from geometries",
@@ -325,8 +325,8 @@
       "short-title": "Connect with lines"
     },
     "georeference": {
-      "title": "Georeference",
-      "short-title": "Georeference"
+      "title": "Geocode",
+      "short-title": "Geocode"
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
@@ -984,7 +984,7 @@
             "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
           },
           "georeference": {
-            "title": "Georeference",
+            "title": "Geocode",
             "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "filter-intersection": {
@@ -1990,7 +1990,7 @@
           "analysis-type": {
             "routing": "Routing",
             "trade-area": "Trade area",
-            "georeference-street-address": "Georeference street address",
+            "georeference-street-address": "Geocode street address",
             "data-observatory-measure": "Data Observatory"
           }
         },
@@ -2128,7 +2128,7 @@
       },
       "georeference": {
         "no-geometry": "There's no geometry in your data, please georeference it.",
-        "georeference-button": "Georeference",
+        "georeference-button": "Geocode",
         "visualize": "Layer doesn't have geometry"
       },
       "max-layers-infowindow": {
@@ -2342,7 +2342,7 @@
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
           "placeholder-text": "There's no geometry in your data that could be styled.",
-          "georeference": "Georeference",
+          "georeference": "Geocode",
           "desc": "Change the visualization"
         },
         "unanimatable": {

@@ -44,6 +44,14 @@
     }
   }
 
+  &.is-hover {
+    &:hover {
+      &::after {
+        display: none;
+      }
+    }
+  }
+
   &.is-selected {
     &::after {
       content: '';

@@ -1,5 +1,6 @@
 shared_context 'users helper' do
   include_context 'database configuration'
+  include CartoDB::Factories
 
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
@@ -26,6 +27,8 @@ shared_context 'users helper' do
 end
 
 shared_context 'user helper' do
+  include CartoDB::Factories
+
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
     @carto_user = Carto::User.find(@user.id)

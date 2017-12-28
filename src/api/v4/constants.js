@@ -56,13 +56,21 @@ var status = {
  * @api
  */
 var timeAggregation = {
+  /** Auto */
   AUTO: 'auto',
+  /** Year */
   YEAR: 'year',
+  /** Quarter */
   QUARTER: 'quarter',
+  /** Month */
   MONTH: 'month',
+  /** Week */
   WEEK: 'week',
+  /** Day */
   DAY: 'day',
+  /** Hour */
   HOUR: 'hour',
+  /** Minute */
   MINUTE: 'minute'
 };
 

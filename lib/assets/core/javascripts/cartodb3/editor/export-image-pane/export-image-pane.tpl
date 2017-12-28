@@ -7,13 +7,15 @@
     </button>
   </li>
 
-  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium"><span class="Editor-breadcrumbSep"> / </span> <%- _t('editor.maps.export-image.title') %></li>
+  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium">
+    <span class="Editor-breadcrumbSep"> / </span> <%- _t('editor.maps.export-image.title') %>
+  </li>
 </ul>
 
 <div class="Editor-HeaderInfoEditor">
   <div class="Editor-HeaderInfo-inner Editor-HeaderInfo-inner--wide">
     <div class="Editor-HeaderInfo">
-      <div class="CDB-Text CDB-Size-huge is-light u-ellipsis js-title Inline-editor-text"><%- mapName %></div>
+      <div class="CDB-Text CDB-Size-huge is-light u-ellipsis"><%- mapName %></div>
     </div>
   </div>
 </div>

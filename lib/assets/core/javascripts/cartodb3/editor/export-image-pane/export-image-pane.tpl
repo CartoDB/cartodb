@@ -1,10 +1,21 @@
-<div class="Editor-HeaderInfoEditor Editor-HeaderInfo--noMargin">
-  <div class="u-rSpace--xl u-actionTextColor Editor-HeaderInfoEditorShape">
+<ul class="Editor-breadcrumb">
+  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium u-actionTextColor">
     <button class="js-back">
-      <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+      <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large u-rSpace"></i>
+
+      <span class="Editor-breadcrumbLink"><%- _t('back') %></span>
     </button>
+  </li>
+
+  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium"><span class="Editor-breadcrumbSep"> / </span> <%- _t('editor.maps.export-image.title') %></li>
+</ul>
+
+<div class="Editor-HeaderInfoEditor">
+  <div class="Editor-HeaderInfo-inner Editor-HeaderInfo-inner--wide">
+    <div class="Editor-HeaderInfo">
+      <div class="CDB-Text CDB-Size-huge is-light u-ellipsis js-title Inline-editor-text"><%- mapName %></div>
+    </div>
   </div>
-  <div class="CDB-Text CDB-Size-huge is-light u-ellipsis"><%- title %></div>
 </div>
 
 <div class="Editor-content js-content"></div>

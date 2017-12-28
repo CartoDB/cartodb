@@ -114,7 +114,6 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 .Table-columnMenu {
-  z-index: 10;
 
   .CustomList-list {
     max-height: none;
@@ -205,8 +204,6 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 .Table-rowMenu {
-  z-index: 20;
-
   &--bottom {
     margin-top: -200px;
   }

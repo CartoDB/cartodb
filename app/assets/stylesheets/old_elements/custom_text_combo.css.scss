@@ -1,79 +1,81 @@
 
-  /**
+/**
    *  Custom text combo styles
    *
    */
 
-  @import "compass/css3/opacity";
-  @import "../old_elements/elements-sprite";
-  @import "../old_common/mixins";
+@import "../old_elements/elements-sprite";
+@import "../old_common/mixins";
 
-  .select2-container:hover .select2-choice {
-    border-color: #7E7E7E!Important;
-  }
+.select2-container:hover .select2-choice {
+  border-color: #7E7E7E !important;
+}
 
-  // Choice
-  .form_custom_text_combo {
+// Choice
+.form_custom_text_combo {
 
-    // Select2 choice with option selected icon
+  // Select2 choice with option selected icon
 
-    .select2-container .select2-choice > div {
-      width:22px;
+  .select2-container .select2-choice > div {
+    width: 22px;
 
-      b {
-        @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:2px);
-        @include opacity(0.5);
+    b {
+      @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y: 2px);
+      opacity: 0.5;
 
-        &:after { display:none }
-        &:before {
-          left:0;
-          top:3px;
-          width:1px;
-          height:12px;
-          background:#CFCFCF;
-          border:0;
-        }
+      &::after {
+        display: none;
+      }
+
+      &::before {
+        top: 3px;
+        left: 0;
+        width: 1px;
+        height: 12px;
+        border: 0;
+        background: #CFCFCF;
       }
     }
-
-    .select2-container .select2-choice .combo-option-icon b {
-      @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:2px);
-      @include opacity(1);
-    }
-
-    .select2-container .select2-choice .free-text-icon b {
-      @include elements-sprite(custom_text_combo_icons, $offset-x:1px, $offset-y:-19px);
-      @include opacity(1);
-    }
-
   }
 
-   // Dropdown list
-  .custom_text_combo {
+  .select2-container .select2-choice .combo-option-icon b {
+    @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y: 2px);
+    opacity: 1;
+  }
 
-    .select2-text {
-      @include display-flex();
-      @include align-items(center, center);
-      @include justify-content(space-between, justify);
-      height:30px;
-      padding:0 7px;
-      border-top:1px solid #B5B4B4;
-    }
+  .select2-container .select2-choice .free-text-icon b {
+    @include elements-sprite(custom_text_combo_icons, $offset-x: 1px, $offset-y: -19px);
+    opacity: 1;
+  }
+}
 
-    .select2-input-free {
-      padding:0;
-      border:none;
-      font-size:13px;
-      font-family: Arial;
-      color:#397EB9;
-      outline:none;
-    }
+// Dropdown list
+.custom_text_combo {
+  .select2-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 30px;
+    padding: 0 7px;
+    border-top: 1px solid #B5B4B4;
+  }
 
-    .select2-icon {
-      width:13px;
-      height:12px;
-      @include elements-sprite(custom_text_combo_icons, $offset-x:-4px);
+  .select2-input-free {
+    padding: 0;
+    border: none;
+    outline: none;
+    color: #397EB9;
+    font-family: Arial;
+    font-size: 13px;
+  }
 
-      &.select2-text-icon { @include elements-sprite(custom_text_combo_icons, $offset-x:-4px, $offset-y:-23px) }
+  .select2-icon {
+    @include elements-sprite(custom_text_combo_icons, $offset-x: -4px);
+    width: 13px;
+    height: 12px;
+
+    &.select2-text-icon {
+      @include elements-sprite(custom_text_combo_icons, $offset-x: -4px, $offset-y: -23px);
     }
   }
+}

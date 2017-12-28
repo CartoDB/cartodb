@@ -9,129 +9,144 @@
 @import "../old_common/mixins";
 
 .extra_options {
-  float:left;
-  clear:both;
-  width:100%;
-  padding: 13px 0 0 0;
-  margin: 30px 0 0 0;
   @include clearfix();
-
-  &.disabled { display:none }
-
+  width: 100%;
+  margin: 30px 0 0;
+  padding: 13px 0 0;
+  float: left;
+  clear: both;
   border-top: 1px solid #E5E5E5;
 
+  &.disabled {
+    display: none;
+  }
+
   .row_count {
-    @include inline-block();
-    vertical-align: middle;
+    display: inline-block;
     color: #858585;
     font-size: 15px;
+    vertical-align: top;
+    vertical-align: middle;
   }
 
   .download_options {
     @include clearfix();
-    @include inline-block();
-    vertical-align: middle;
+    display: inline-block;
     margin: 0 0 0 5px;
+    vertical-align: top;
+    vertical-align: middle;
 
     .download {
-      @include inline-block();
-      vertical-align: middle;
+      display: inline-block;
+      margin: 0 5px 0 3px;
       color: #858585;
       font-size: 15px;
-      margin: 0 5px 0 3px;
+      vertical-align: top;
+      vertical-align: middle;
 
-      &:after {
+      &::after {
         content: '·';
         position: relative;
-        float: left;
         margin-right: 9px;
+        float: left;
       }
     }
 
     .loading {
-      @include inline-block();
-      vertical-align: middle;
+      display: inline-block;
       color: #858585;
       font-size: 15px;
-      img { margin: 0 5px 0 0; vertical-align: middle; }
+      vertical-align: top;
+      vertical-align: middle;
+
+      img {
+        margin: 0 5px 0 0;
+        vertical-align: middle;
+      }
     }
 
-    a { 
-      @include inline-block();
-      margin:0;
-      padding:0 11px;
-      text-transform: uppercase;
+    a {
+      display: inline-block;
+      margin: 0;
+      padding: 0 11px;
+      font-family: 'Arial';
+      font-size: 11px;
+      line-height: 27px;
       text-shadow: none;
-      font-family:'Arial';
-      font-size:11px;
-      line-height:27px;
+      text-transform: uppercase;
+      vertical-align: top;
     }
 
     h2 {
-      @include inline-block();
+      display: inline-block;
       line-height: normal;
+      vertical-align: top;
     }
   }
 
   .generating {
     display: block;
   }
-
 }
 
 .extra_options .user-options {
-  float:right;
+  float: right;
 }
 
 .extra_options .button.green.clone {
-  position:relative;
-  display:none;
-  padding:0 9px 0 28px;
-  text-transform: uppercase;
+  display: none;
+  position: relative;
+  padding: 0 9px 0 28px;
+  font-family: 'Arial';
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 27px;
   text-shadow: none;
-  font-size:11px;
-  line-height:27px;
-  font-family:'Arial';
-  letter-spacing:0;
+  text-transform: uppercase;
 
   i.clone-icon {
-    position:absolute;
-    left:10px;
-    top:7px;
-    width:14px;
-    height:13px;
     @include background(image-url('layout/clone-icon.png') no-repeat 0 0);
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    width: 14px;
+    height: 13px;
   }
 }
+
 .extra_options .button.grey.edit,
 .extra_options .button.grey.oneclick {
-  position:relative;
-  display:none;
-  padding:0 9px;
-  text-transform: uppercase;
+  display: none;
+  position: relative;
+  padding: 0 9px;
+  font-family: 'Arial';
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 27px;
   text-shadow: none;
-  font-size:11px;
-  line-height:27px;
-  font-family:'Arial';
-  letter-spacing:0;
+  text-transform: uppercase;
 }
-.extra_options .button.grey.oneclick { display: inline-block }
+
+.extra_options .button.grey.oneclick {
+  display: inline-block;
+}
 
 @media only screen and (max-width: 710px) {
   body.public-map .extra_options,
   body.public .extra_options {
-    
     .download_options {
-      display:block!important;
-      margin: 10px 0 20px 0!Important;
+      display: block !important;
+      margin: 10px 0 20px !important;
 
-      .download { display: none!important; }
+      .download {
+        display: none !important;
+      }
     }
 
     .user-options {
-      float:left!important;
-      width:100%;
-      margin-top:0px;
+      width: 100%;
+      margin-top: 0;
+      float: left !important;
     }
   }
 }
@@ -139,14 +154,17 @@
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
   body.public-map .extra_options,
   body.public .extra_options {
-    
     .download_options {
-      display:block!important;
-      margin: 10px 0 20px 0!Important;
+      display: block !important;
+      margin: 10px 0 20px !important;
 
-      .download { display: none!important; }
+      .download {
+        display: none !important;
+      }
     }
 
-    .user-options { margin-top:28px }
+    .user-options {
+      margin-top: 28px;
+    }
   }
 }

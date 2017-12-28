@@ -1,13 +1,13 @@
 // Styles for Header Editor
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
 .Editor-HeaderInfoEditor {
   display: flex;
 }
+
 .Editor-HeaderInfoEditor--layer {
   margin-bottom: 31px;
 }
@@ -37,22 +37,26 @@
 }
 
 .Editor-HeaderInfo-inner {
-  @include flex(1);
+  flex: 1;
   max-width: calc(100% - 32px);
 }
+
 .Editor-HeaderInfo-inner--wide {
   max-width: 100%;
 }
+
 .Editor-HeaderInfo-back {
   margin-top: 7px;
 }
+
 .Editor-HeaderInfo-title {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
+
 .Editor-HeaderInfo-titleText {
-  @include flex(1 0 auto);
   display: block;
+  flex: 1 0 auto;
   width: 0;
   margin-right: 20px;
 
@@ -61,36 +65,43 @@
     min-width: 40px;
   }
 }
+
 .Editor-HeaderInfo-details {
-  @include display-flex();
-  @include align-items(center);
-  @include flex(999);
+  display: flex;
+  flex: 999;
+  align-items: center;
 }
+
 .Editor-HeaderInfo-actions {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
+
 .Editor-HeaderInfo-actionsItem {
   margin-left: 4px;
 }
+
 .Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
 }
+
 .Editor-HeaderInfo-subtitle {
-  @include display-flex();
+  display: flex;
 }
+
 .Editor-HeaderInfo-link {
   font-weight: $sFontWeight-semibold;
 }
 
 .Editor-HeaderPad {
+  box-sizing: border-box;
   width: $baseSize * 3;
   min-width: $baseSize * 3;
   height: $baseSize * 3;
-  box-sizing: border-box;
 }
 
 .Editor-HeaderNumeration {
+  box-sizing: border-box;
   width: $baseSize * 3;
   min-width: $baseSize * 3;
   height: $baseSize * 3;
@@ -101,24 +112,24 @@
   font-size: $sFontSize-small;
   line-height: 23px;
   text-align: center;
-  box-sizing: border-box;
 }
 
 .Editor-headerLayerName {
-  @include flex(1);
+  flex: 1;
 }
 
 .Editor-HeaderInfo.is-dark {
   .Editor-HeaderInfo-titleText {
     color: $cWhite;
   }
+
   .CDB-IconFont-arrowPrev {
     color: $cWhite;
   }
 }
 
 .Editor-HeaderInfo-publishDate {
-  @include flex(1);
+  flex: 1;
 }
 
 .Editor-HeaderInfo-zoom {

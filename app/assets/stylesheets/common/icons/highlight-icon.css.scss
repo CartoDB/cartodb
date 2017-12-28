@@ -10,16 +10,17 @@
 // --------------------------------------------------
 .HighlightIcon {
   display: inline-block;
-  vertical-align: top;
   width: 20px;
   height: 20px;
-  text-align: center;
-  line-height: $sLineHeight-normal !important;
-  font-size: $sFontSize-normal;
-  color: white;
   border-radius: 20px;
+  color: white;
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal !important;
+  text-align: center;
+  vertical-align: top;
 }
+
 .HighlightIcon.HighlightIcon--warning {
-  background: #F6D35C;
   border: 1px solid #F2C000;
+  background: #F6D35C;
 }

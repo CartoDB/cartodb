@@ -7,85 +7,97 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
-
-@mixin supElement($size, $fs){
+@mixin supElement($size, $fs) {
   display: inline-block;
-  vertical-align: top;
   width: $size;
   height: $size;
+  border: 1px solid white;
+  border-radius: ($size + 2);
+  color: WHITE;
+  font-size: $fs;
   line-height: $size;
   text-align: center;
-  border: 1px solid white;
-  font-size: $fs;
-  color: white;
-  border-radius: ($size + 2);
+  vertical-align: top;
 }
 
 .OnBoarding {
   position: relative;
   width: 100%;
 }
+
 .OnBoarding-welcome {
   position: absolute;
+  z-index: 10;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(#384047, .8);
-  z-index: 10;
   overflow: hidden;
+  background: rgba(#384047, 0.8);
 }
+
 .OnBoarding-welcome--fixed {
   position: fixed;
   z-index: 1000;
 }
+
 .OnBoarding-welcomeContent {
   position: absolute;
+  z-index: 1001;
   top: 50%;
   left: 50%;
   width: 500px;
-  margin-left: -250px;
   margin-top: -170px;
-  z-index: 1001;
+  margin-left: -250px;
 }
+
 .OnBoarding-welcomeContent--wide {
   width: 800px;
   margin-left: -332px;
 }
+
 .OnBoarding-welcomeContentInner {
   position: absolute;
-  width: 404px;
+  z-index: 1000;
   top: 0;
   right: 0;
-  z-index: 1000;
+  width: 404px;
 }
+
 .OnBoarding-welcomeContentTitle,
 .OnBoarding-welcomeContentText {
   display: block;
+  color: WHITE;
   font-size: 16px;
   font-weight: $sFontWeight-lighter;
-  color: white;
   line-height: 22px;
 }
-.OnBoarding-welcomeContentTitle { font-weight: $sFontWeight-normal }
+
+.OnBoarding-welcomeContentTitle {
+  font-weight: $sFontWeight-normal;
+}
+
 .OnBoarding-welcomeContentTitle .is-highlighted,
 .OnBoarding-welcomeContentText .is-highlighted {
-  font-weight: $sFontWeight-normal;
   font-style: italic;
+  font-weight: $sFontWeight-normal;
 }
+
 .OnBoarding-welcomeContentSup {
   @include supElement(13px, 9px);
   margin: 4px 0 0 2px;
 }
+
 .OnBoarding-importAnimation {
   position: absolute;
-  background: image-url("layout/import_animation.gif") no-repeat center center;
-  width: 1050px;
-  height: 700px;
-  background-size: 60% 60%;
   top: -200px;
   left: -460px;
+  width: 1050px;
+  height: 700px;
+  background: image-url("layout/import_animation.gif") no-repeat center center;
+  background-size: 60% 60%;
 }
+
 .OnBoarding-fakeLink {
   position: absolute;
   right: 50%;
@@ -94,62 +106,76 @@
   box-shadow: 0 0 0 5px white;
 
   &:hover {
-    cursor: default;
     background-color: $cHighlight-positive;
+    cursor: default;
   }
 
-  &:before {
-    content: 'A';
+  &::before {
     @include supElement(20px, 11px);
+    content: 'A';
     position: absolute;
     top: -10px;
     left: -30px;
   }
 }
+
 .OnBoarding-fakeSection {
-  position: absolute;
-  left: 50%;
-  bottom: 30px;
-  margin-left: -245px;
   @include supElement(20px, 11px);
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  margin-left: -245px;
 }
+
 .OnBoarding-fakeSection--connect {
   top: 186px;
   margin-left: -402px;
 }
+
 .OnBoarding-fakeSection--datalibrary {
   top: 186px;
   margin-left: -280px;
 }
+
 .OnBoarding-fakeSection--datalibrary2 {
   top: 186px;
   margin-left: 120px;
 }
+
 .OnBoarding-fakeSection--scratch {
   top: 186px;
-  left: auto;
   right: 50%;
+  left: auto;
   margin: 0 -320px 0 0;
 }
+
 .OnBoarding-fakeSection--scratch2 {
   top: 186px;
-  left: auto;
   right: 50%;
+  left: auto;
   margin: 0 -340px 0 0;
 }
-.OnBoarding-welcomeContentMargin { margin-top: 30px }
+
+.OnBoarding-welcomeContentMargin {
+  margin-top: 30px;
+}
+
 .OnBoarding-map {
   width: 100%;
   height: 100%;
-  &:before {
+
+  &::before {
     content: '';
     position: absolute;
+    z-index: 1;
+    right: 0;
     bottom: 0;
     left: 0;
-    right: 0;
     height: 1px;
     background: rgba(black, 0.1);
-    z-index: 1;
   }
 }
-.OnBoarding-map .leaflet-control-attribution { display: none }
+
+.OnBoarding-map .leaflet-control-attribution {
+  display: none;
+}

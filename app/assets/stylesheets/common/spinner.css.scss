@@ -8,20 +8,22 @@
 .Spinner {
   position: relative;
   margin: 0 auto;
+  animation: load8 1.1s infinite linear;
   border-top: 2px solid $cStructure-mainLine;
   border-right: 2px solid $cStructure-mainLine;
   border-bottom: 2px solid $cStructure-mainLine;
   border-left: 2px solid $cHighlight-main;
-  @include animation(load8 1.1s infinite linear);
 }
+
 .Spinner,
-.Spinner:after {
+.Spinner::after {
   width: $sSpinner-default;
   height: $sSpinner-default;
   border-radius: 50%;
 }
+
 .Spinner--formIcon,
-.Spinner--formIcon:after {
+.Spinner--formIcon::after {
   position: absolute;
   width: $sSpinner-mini;
   height: $sSpinner-mini;
@@ -31,10 +33,15 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  margin: -($sSpinner-default / 2) 0 0 -($sSpinner-default / 2);
+  margin: -($sSpinner-default / 2) 0 0  - ($sSpinner-default / 2);
 }
 
-@include keyframes(load8) {
-  0% { @include css3-prefix(transform, rotate(0deg)) }
-  100% { @include css3-prefix(transform, rotate(360deg)) }
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

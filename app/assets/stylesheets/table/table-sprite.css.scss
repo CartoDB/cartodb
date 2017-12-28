@@ -8,8 +8,8 @@
 // You can override them before you import this file.
 $table-sprite-base-class: ".table-sprite" !default;
 $table-sprite-dimensions: false !default;
-
-$table-sprites: sprite-map("sprites/table/*.png",
+$table-sprites: sprite-map(
+  "sprites/table/*.png",
   $position:                              0%,
   $spacing:                               0,
   $repeat:                                no-repeat,
@@ -35,23 +35,24 @@ $table-sprites: sprite-map("sprites/table/*.png",
 // Use this to set the dimensions of an element
 // based on the size of the original image.
 @mixin table-sprite-dimensions($name) {
-  @include sprite-dimensions($table-sprites, $name)
+  @include sprite-dimensions($table-sprites, $name);
 }
 
 // Move the background position to display the sprite.
 @mixin table-sprite-position($name, $offset-x: 0, $offset-y: 0) {
-  @include sprite-position($table-sprites, $name, $offset-x, $offset-y)
+  @include sprite-position($table-sprites, $name, $offset-x, $offset-y);
 }
 
 // Extends the sprite base class and set the background position for the desired sprite.
 // It will also apply the image dimensions if $dimensions is true.
 @mixin table-sprite($name, $dimensions: $table-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$table-sprite-base-class};
-  @include sprite($table-sprites, $name, $dimensions, $offset-x, $offset-y)
+
+  @include sprite($table-sprites, $name, $dimensions, $offset-x, $offset-y);
 }
 
 @mixin table-sprites($sprite-names, $dimensions: $table-sprite-dimensions, $prefix: sprite-map-name($table-sprites)) {
-  @include sprites($table-sprites, $sprite-names, $table-sprite-base-class, $dimensions, $prefix)
+  @include sprites($table-sprites, $sprite-names, $table-sprite-base-class, $dimensions, $prefix);
 }
 
 // Generates a class for each sprited image.

@@ -3,23 +3,26 @@
 @import "../variables/mixins";
 @import "../variables/sizes";
 
-
-
 .MapviewsGraph {
-  position:absolute;
-  height: 25px;
+  position: absolute;
+  z-index: 2;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
-  padding: 22px 16px 0 16px;
-  background: -moz-linear-gradient(bottom,  rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0.0) 100%);
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,rgba(0,0,0,0.5)), color-stop(70%,rgba(0,0,0,0.1)), color-stop(100%,rgba(0,0,0,0.0)));
-  background: -webkit-linear-gradient(bottom,  rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0.0) 100%);
-  background: -o-linear-gradient(bottom,  rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.1) 70%,rgba(0,0,0,0.0) 100%);
-  background: -ms-linear-gradient(bottom,  rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.1) 70%,rgba(0,0,0,0.0) 100%);
-  background: linear-gradient(to top,  rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.1) 70%,rgba(0,0,0,0.0) 100%);
-  z-index: 2;
+  height: 25px;
+  padding: 22px 16px 0;
+  background: -moz-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%, rgba(#000, 0.5)), color-stop(70%, rgba(#000, 0.1)), color-stop(100%, rgba(#000, 0)));
+  background: -webkit-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: -o-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: -ms-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: linear-gradient(to top, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
 }
-.MapviewsGraph-bar { fill: rgba(white, 0.5) }
+
+.MapviewsGraph-bar {
+  fill: rgba(white, 0.5);
+}
 // Hack for positioning tooltip in the center
-.MapviewsGraph-tooltip { margin-left: 1px }
+.MapviewsGraph-tooltip {
+  margin-left: 1px;
+}

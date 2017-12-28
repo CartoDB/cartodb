@@ -1,5 +1,5 @@
 
-  /**
+/**
    *  Legends panel styles.
    *
    *  - Legend items block (sorting, draggable, etc).
@@ -7,324 +7,401 @@
    *
    */
 
-  @import "compass/css3/box-sizing";
-  @import "compass/css3/images";
-  @import "compass/css3/inline-block";
-  @import "compass/css3/opacity";
-  @import "../../../table/table-sprite";
-  @import "../../../old_common/form-elements";
-  @import "../../../old_common/mixins";
+@import "compass/css3/box-sizing";
+@import "compass/css3/images";
+@import "compass/css3/inline-block";
+@import "../../../table/table-sprite";
+@import "../../../old_common/form-elements";
+@import "../../../old_common/mixins";
 
+div.legends_panel {
+  display: block;
+  width: 100%;
+  overflow: auto;
 
-  div.legends_panel {
-    display:block;
-    width:100%;
+  .panel_content {
+    overflow: auto;
+  }
+
+  .panel_content .wrapper .content .fields li span { cursor: default; }
+
+  .panel_content .wrapper .content .fields {
+    position: relative;
+    z-index: 10;
+    background: #FFF;
+  }
+
+  .panel_content .wrapper { top: 29px; }
+
+  .header {
+    position: relative;
+    padding: 21px 30px 19px;
+    clear: both;
+    overflow: hidden;
+
+    h3 {
+      padding: 0 !important;
+      float: left;
+      border: 0;
+    }
+
+    .form_combo {
+      position: absolute;
+      right: 18px;
+    }
+  }
+
+  .all {
+    padding: 15px 0;
     overflow: auto;
 
-    .panel_content {
-      overflow: auto;
+    span.label {
+      margin-right: 12px;
+    }
+  }
+
+  .titlePane .fields li {
+    position: relative;
+
+    & > span:hover {
+      cursor: default;
+    }
+  }
+
+  // When custom html template is applied, blocked block should show up
+  // and overflow should be hidden
+  .titlePane.disabled .wrapper,
+  .fieldPane.disabled .wrapper {
+    overflow: hidden;
+  }
+
+  .blocked {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 20px 40px;
+    border-top-left-radius: 4px;
+    background: rgba(white, 0.9);
+    line-height: normal;
+    text-align: center;
+
+    span.block-icon {
+
+      display: inline-block;
+      position: relative;
+      width: 111px;
+      height: 110px;
+      vertical-align: top;
+
+      @include table-sprite(block_icon);
     }
 
-    .panel_content .wrapper .content .fields li span { cursor: default; }
-
-    .panel_content .wrapper .content .fields {
-      position:relative;
-      background:#fff;
-      z-index: 10;
-    }
-
-    .panel_content .wrapper { top: 29px; }
-
-    .header {
-      position:relative;
-      clear:both;
-      overflow:hidden;
-      padding: 21px 30px 19px 30px;
-
-      h3  {
-        float:left;
-        padding: 0!important;
-        border:0;
-      }
-
-      .form_combo  { position:absolute; right:18px; }
-    }
-
-    .all {
-      padding:15px 0;
-      overflow:auto;
-      span.label {margin-right:12px;}
-    }
-
-    .titlePane .fields li {
-      position:relative;
-      & > span:hover {cursor: default; }
-    }
-
-    // When custom html template is applied, blocked block should show up
-    // and overflow should be hidden
-    .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
-      overflow:hidden;
-    }
-
-    .blocked {
-      position:absolute;
-      top:0;
-      right:0;
-      left:0;
-      bottom:0;
-      display:none;
-      padding:20px 40px;
-      @include border-top-left-radius(4px);
-
-      text-align:center;
+    p {
+      margin: 30px 0 3px;
+      color: #999;
       line-height: normal;
-      background:rgba(white,0.9);
-      z-index:10;
-
-      span.block-icon {
-        position:relative;
-        @include inline-block();
-        width:111px;
-        height:110px;
-        @include table-sprite(block_icon);
-      }
-
-      p {
-        margin: 30px 0 3px 0;
-        line-height: normal;
-        color: #999999;
-      }
-
-      a {
-        @include inline-block();
-        margin:20px 0 0 0;
-      }
-
     }
 
-    // No content block
-    .no_content { display:none }
-
-    
-    &.editing_html {
-
-      .header h3 {
-        margin-left: 23px;
-      }
-
-      .menu {
-        li:first-child { margin-left: 23px; }
-        &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
-        &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
-      }
+    a {
+      display: inline-block;
+      margin: 20px 0 0;
+      vertical-align: top;
     }
+  }
 
-    .help-tip {
-      top:90px;
+  // No content block
+  .no_content {
+    display: none;
+  }
+
+  &.editing_html {
+    .header h3 {
+      margin-left: 23px;
     }
 
     .menu {
-      position: absolute;
-      @include box-sizing(border-box);
-      top: 59px;
-      width: 100%;
-      padding: 9px 23px 3px 30px;
-      background:#F6F6F6;
-      border-top: 1px solid rgba(#DDDDDD, .5);
-      border-bottom: 1px solid rgba(#DDDDDD, .5);
+      li:first-child { margin-left: 23px; }
 
-      z-index: 9;
-
-      .tip {
-        @include size(10px, 6px);
-        @include position(false, false, -1px, 33px);
-        @include background(sprite($table-sprites, infowindow_panel_white_tip) no-repeat);
-        z-index: 10;
+      &::after {
+        content: ' ';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 34px;
+        width: 1px;
+        height: 100%;
+        background: rgba($cGray4, 0.5);
       }
 
-      ul {
-
-        clear:both;
-        overflow:hidden;
-
-        li {
-          min-width: 20px;
-          text-align:center;
-
-          a { margin: auto; }
-
-          @include inline-block();
-          margin: 0 15px 0 0;
-
-          a { display: block; }
-
-          &.editor       { float: left; }
-
-          &.title_editor,
-          &.html_editor  { float: right; }
-
-          &.html_editor  { margin-right: 2px; }
-
-          /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
-          &.html_editor { position:relative; }
-
-          &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
-          &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
-          &.html_editor  a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
-
-          &.editor       a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
-          &.title_editor a.selected { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
-          &.html_editor  a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
-        }
-
-      }
-
-    }
-    div.forms {
-
-      &.panel_content {
-        top: 42px;
-        padding: 0 30px 16px 30px;
-        z-index: 9;
-
-        .footer {
-          margin: 14px 0 0 0;
-          text-align:center;
-
-          .add { font-size: 24px; }
-        }
-
-        .color {
-          .no_content { display: none; }
-        }
-
-        .custom, .choropleth {
-          ul li .input { top: 13px; }
-          ul li:hover .remove { @include opacity(1); }
-          ul li .remove {
-            position:relative;
-            top: 3px;
-            @include opacity(0);
-            @include inline-block();
-            vertical-align:middle;
-            @include size(13px,13px);
-            margin-left:5px;
-            letter-spacing:0px;
-            @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
-            &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
-            &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
-          }
-        }
-
-        .right {
-          position: absolute;
-          top: 12px;
-          right: 0;
-
-          .checkbox { float: left; position:relative; margin:8px 15px 0 0; }
-          .checkbox.disabled { cursor: pointer; }
-          .checkbox span { margin-right: 5px; }
-          .input { float: left; }
-        }
-
-        ul li {
-          color: #CCCCCC;
-          font-size: 15px;
-          position:relative;
-
-          label.empty { font-style: italic; }
-
-          label {
-            @include inline-block();
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
-            line-height: 1.2;
-          }
-
-          .input {
-            @include default-input();
-
-            .value { margin-right: 5px; }
-            .value.empty { color: #ccc; }
-
-            input {
-              font-size: 13px;
-              padding: 4px 7px;
-              width:150px;
-            }
-          }
-        }
-      }
-
-      ul {
-        width:100%;
-        margin:6px 0 0 0;
-      }
-
-      ul li {
-        overflow:hidden;
-        display:block;
-        width:100%;
-        padding:13px 0;
-        border-bottom:1px solid rgba(#E5E5E5,0.5);
-        height: 50px;
-        @include box-sizing(border-box);
-
-        &.title span.field { position:relative; top: 3px; }
-
-        & > span:first-child {
-          float:left;
-          margin-top:2px;
-          color:$cGray4;
-        }
-
-        & > span:last-child {
-          float:right;
-        }
-
-        .form_combo {
-          @include inline-block();
-        }
-
-      }
-    }
-
-
-    h3 {
-      padding-left: 30px;
-    }
-
-    .fields {
-
-      li {
-        padding:13px 0;
-        font-size: 15px;
-        color: $cGray4;
-        border-bottom:1px solid rgba(#999999,0.25);
-        overflow:hidden;
-
-        & > span {
-          @include inline-block();
-          vertical-align:middle;
-          max-width:50%;
-          line-height:16px;
-          &:hover {cursor:all-scroll;}
-        }
-
-        .form_combo {
-          float:right;
-          width:auto;
-
-          .select2-container {width:143px;}
-        }
-
-        .form_combo ~ span {
-          margin-top:3px;
-        }
-
+      &::before {
+        content: ' ';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 36px;
+        width: 1px;
+        height: 100%;
+        background: rgba(#509DD7, 0.25);
       }
     }
   }
+
+  .help-tip {
+    top: 90px;
+  }
+
+  .menu {
+    position: absolute;
+
+    z-index: 9;
+    top: 59px;
+
+    box-sizing: border-box;
+    width: 100%;
+    padding: 9px 23px 3px 30px;
+    border-top: 1px solid rgba(#DDD, 0.5);
+    border-bottom: 1px solid rgba(#DDD, 0.5);
+    background: #F6F6F6;
+
+    .tip {
+      @include size(10px, 6px);
+      @include position(false, false, -1px, 33px);
+      @include background(sprite($table-sprites, infowindow_panel_white_tip) no-repeat);
+      z-index: 10;
+    }
+
+    ul {
+
+      clear: both;
+      overflow: hidden;
+
+      li {
+
+        display: inline-block;
+        min-width: 20px;
+        margin: 0 15px 0 0;
+        text-align: center;
+        vertical-align: top;
+
+        a { margin: auto; }
+
+        a { display: block; }
+
+        &.editor { float: left; }
+
+        &.title_editor,
+        &.html_editor { float: right; }
+
+        &.html_editor { margin-right: 2px; }
+
+        /* &.html_editor::before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, 0.5); } */
+        &.html_editor {
+          position: relative;
+        }
+
+        &.editor a {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0);
+        }
+
+        &.title_editor a {
+          @include size(20px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0);
+        }
+
+        &.html_editor a {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px);
+        }
+
+        &.editor a.selected {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px);
+        }
+
+        &.title_editor a.selected {
+          @include size(20px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px);
+        }
+
+        &.html_editor a.selected {
+          @include size(17px, 17px);
+          @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px);
+        }
+      }
+    }
+  }
+
+  div.forms {
+    &.panel_content {
+      z-index: 9;
+      top: 42px;
+      padding: 0 30px 16px;
+
+      .footer {
+        margin: 14px 0 0;
+        text-align: center;
+
+        .add { font-size: 24px; }
+      }
+
+      .color {
+        .no_content { display: none; }
+      }
+
+      .custom,
+      .choropleth {
+        ul li .input { top: 13px; }
+        ul li:hover .remove { opacity: 1; }
+
+        ul li .remove {
+
+          display: inline-block;
+          position: relative;
+          top: 3px;
+          margin-left: 5px;
+          opacity: 0;
+          letter-spacing: 0;
+          vertical-align: middle;
+          vertical-align: top;
+
+          @include size(13px,13px);
+          @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+
+          &:hover {
+            @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);
+          }
+
+          &:active {
+            @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);
+          }
+        }
+      }
+
+      .right {
+        position: absolute;
+        top: 12px;
+        right: 0;
+
+        .checkbox {
+          position: relative;
+          margin: 8px 15px 0 0;
+          float: left;
+        }
+        .checkbox.disabled { cursor: pointer; }
+        .checkbox span { margin-right: 5px; }
+        .input { float: left; }
+      }
+
+      ul li {
+        position: relative;
+        color: #CCC;
+        font-size: 15px;
+
+        label.empty { font-style: italic; }
+
+        label {
+          display: inline-block;
+          max-width: 150px;
+          overflow: hidden;
+          line-height: 1.2;
+          text-overflow: ellipsis;
+          vertical-align: top;
+          white-space: nowrap;
+        }
+
+        .input {
+          @include default-input();
+
+          .value { margin-right: 5px; }
+          .value.empty { color: #CCC; }
+
+          input {
+            width: 150px;
+            padding: 4px 7px;
+            font-size: 13px;
+          }
+        }
+      }
+    }
+
+    ul {
+      width: 100%;
+      margin: 6px 0 0;
+    }
+
+    ul li {
+      display: block;
+
+      box-sizing: border-box;
+      width: 100%;
+      height: 50px;
+      padding: 13px 0;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(#E5E5E5, 0.5);
+
+      &.title span.field {
+        position: relative;
+        top: 3px;
+      }
+
+      & > span:first-child {
+        margin-top: 2px;
+        float: left;
+        color: $cGray4;
+      }
+
+      & > span:last-child {
+        float: right;
+      }
+
+      .form_combo {
+        display: inline-block;
+        vertical-align: top;
+      }
+    }
+  }
+
+  h3 {
+    padding-left: 30px;
+  }
+
+  .fields {
+    li {
+      padding: 13px 0;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(#999, 0.25);
+      color: $cGray4;
+      font-size: 15px;
+
+      & > span {
+        display: inline-block;
+        max-width: 50%;
+        line-height: 16px;
+        vertical-align: top;
+        vertical-align: middle;
+
+        &:hover {
+          cursor: all-scroll;
+        }
+      }
+
+      .form_combo {
+        width: auto;
+        float: right;
+
+        .select2-container {
+          width: 143px;
+        }
+      }
+
+      .form_combo ~ span {
+        margin-top: 3px;
+      }
+    }
+  }
+}

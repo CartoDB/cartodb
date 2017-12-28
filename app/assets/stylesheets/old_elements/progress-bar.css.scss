@@ -1,5 +1,5 @@
 
-  /**
+/**
    *  Progress element styles
    *
    *  It needs:
@@ -7,86 +7,93 @@
    *  - Border radius of the element.
    *  - If it needs a white gradient over it.
    *  - If bars needs a min width.
-   *  
+   *
    */
 
-  @import "compass/css3/border-radius";
-  @import "compass/css3/images";
-  @import "../old_common/mixins";
+@import "compass/css3/border-radius";
+@import "compass/css3/images";
+@import "../old_common/mixins";
 
+@mixin progress-bar($h, $r, $grad, $min) {
+  div.progress-bar {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: $h;
+    overflow: hidden;
+    border-radius: $r;
+    background: #E5E5E5;
 
-  @mixin progress-bar($h, $r, $grad, $min) {
+    .bar-3,
+    .bar-2,
+    .bar-1,
+    .bar-0 {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: $r;
 
-    div.progress-bar {
-      position:relative;
-      display:block;
-      width:100%;
-      height: $h;
-      @include border-radius($r);
-      background:#E5E5E5;
-      overflow:hidden;
-
-      .bar-3,
-      .bar-2,
-      .bar-1,
-      .bar-0 {
-        position:absolute;
-        top:0;
-        bottom:0;
-        @if $min {
-          min-width:$min;
-        }
-        @include border-radius($r);
-
-        @if $grad {
-          &:after {
-            position:absolute;
-            content: '';
-            @include position(0,0,0,0);
-            width:100%;
-            @include background(linear-gradient(left,rgba(#FFF,0.30),rgba(#FFF,0)))
-          }
-        }
+      @if $min {
+        min-width: $min;
       }
 
-      // Blue dark
-      .bar-3 {
-        @include background(linear-gradient(#2C6E9C,#245D8C));
-        z-index:3;
-      }
-
-      // Blue light
-      .bar-2 {
-        @include background(linear-gradient(#419EDE,#3486C9));
-        z-index:2;
-      }
-
-      // Grey light
-      .bar-1 {
-        background:#E5E5E5;
-        z-index:1;
-        &:after { display:none }
-        &:before {
-          position:absolute;
+      @if $grad {
+        &::after {
+          @include position(0, 0, 0, 0);
+          @include background(linear-gradient(left, rgba(#FFF, 0.3), rgba(#FFF, 0)));
           content: '';
-          @include position(0,0,0,auto);
-          border-right:1px solid white;
+          position: absolute;
+          width: 100%;
         }
-      }
-
-      // image pattern
-      .bar-0 {
-        @include background(image-url("layout/unassigned_bkg.png") repeat-x left 0);
-        z-index:0;
-        &:after { display:none }
-      }
-
-      // Danger and caution background
-      .danger {
-        @include background(linear-gradient(#FF5255,#CB2828))
-      }
-      .caution {
-        @include background(linear-gradient(#F8B85C,#F49000))
       }
     }
+
+    // Blue dark
+    .bar-3 {
+      @include background(linear-gradient(#2C6E9C, #245D8C));
+      z-index: 3;
+    }
+
+    // Blue light
+    .bar-2 {
+      @include background(linear-gradient(#419EDE, #3486C9));
+      z-index: 2;
+    }
+
+    // Grey light
+    .bar-1 {
+      z-index: 1;
+      background: #E5E5E5;
+
+      &::after {
+        display: none;
+      }
+
+      &::before {
+        @include position(0, 0, 0, auto);
+        content: '';
+        position: absolute;
+        border-right: 1px solid white;
+      }
+    }
+
+    // image pattern
+    .bar-0 {
+      @include background(image-url("layout/unassigned_bkg.png") repeat-x left 0);
+      z-index: 0;
+
+      &::after {
+        display: none;
+      }
+    }
+
+    // Danger and caution background
+    .danger {
+      @include background(linear-gradient(#FF5255, #CB2828));
+    }
+
+    .caution {
+      @include background(linear-gradient(#F8B85C, #F49000));
+    }
   }
+}

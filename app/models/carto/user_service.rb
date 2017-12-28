@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require_dependency 'carto/db/connection'
 
 module Carto
   class UserService

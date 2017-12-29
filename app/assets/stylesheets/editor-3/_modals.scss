@@ -1,8 +1,7 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-
-/* WIP*/
+/* WIP */
 .Dialog.is-white {
   background: $cWhite;
 }
@@ -10,6 +9,7 @@
 .Filters-typeItem {
   display: flex; /* todo when create new layout */
 }
+
 .DatasetsList-itemMeta {
   align-items: baseline; /* todo when create new layout */
 }
@@ -63,34 +63,38 @@
 .ModalBlockList-item-headerTitle {
   flex: 1;
 }
+
 .ModalBlockList-item-headerSubTitle {
   width: 100px; /* fix naming depending the rest of designs */
 }
 
 .ModalBlockList {
   display: flex;
-  flex-wrap: wrap;
   box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .ModalBlockList-item {
   display: flex;
   position: relative;
+  box-sizing: border-box;
   flex-direction: column;
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
+  overflow: hidden;
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
   cursor: pointer;
-  box-sizing: border-box;
 
   &:hover {
     transition: border 200ms ease-in;
 
     &::after {
+      content: '';
       position: absolute;
+      z-index: 10000;
       top: -1px;
       right: -1px;
       bottom: -1px;
@@ -99,8 +103,7 @@
       height: calc(100% - 2px);
       border: 2px solid $cBlueHover;
       border-radius: 4px;
-      content: '';
-      z-index: 10000;
+      pointer-events: none;
     }
   }
 
@@ -116,7 +119,9 @@
 
   &.is-selected {
     &::after {
+      content: '';
       position: absolute;
+      z-index: 10000;
       top: -1px;
       right: -1px;
       bottom: -1px;
@@ -125,8 +130,7 @@
       height: calc(100% - 2px);
       border: 2px solid $cMainText;
       border-radius: 4px;
-      content: '';
-      z-index: 10000;
+      pointer-events: none;
     }
   }
 
@@ -170,9 +174,9 @@
 }
 
 .ModalDataset-itemInfoTitle {
+  box-sizing: border-box;
   max-width: 50%;
   padding-right: 24px;
-  box-sizing: border-box;
 }
 
 .Carousel-Navigation.is-disabled {
@@ -226,6 +230,7 @@
   flex: 0 0 auto;
   padding: $baseSize * 3 0;
 }
+
 .Dialog-contentWrapper--withBreadcrumbs .Publish-modalHeader {
   padding-top: 0;
 }
@@ -253,11 +258,11 @@
 .Publish-modalMenu,
 .Publish-modalShadow {
   position: relative;
+  z-index: 1;
   // In orden to change border by shadow, uncomment this
   // min-height: 5px; // to be able to show the shadow if no content inside.
-  // box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 3px 5px rgba(#000, 0.1);
   border-bottom: 1px solid $cMainLine;
-  z-index: 1;
 }
 
 .Publish-modalShare {

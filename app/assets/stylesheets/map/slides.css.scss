@@ -1,8 +1,6 @@
 @import "compass/css3/box-shadow";
-@import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "compass/css3/images";
-@import "compass/css3/opacity";
 @import "compass/css3/transform";
 @import "../old_common/fonts";
 @import "../old_common/vars";
@@ -10,83 +8,164 @@
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
 
+$width: 140px;
+
 .slides_panel {
+  position: absolute;
+  z-index: 1;
+  top: 62px;
+  bottom: 0;
+  left: -$width;
+  width: $width;
+  transition: left 100ms ease-in;
+  background: #333 image-url('layout/noise.png') repeat 0 0;
 
   &.active {
     left: 0;
   }
 
-  @include simple-transition(left, 100ms);
-
-  $width: 140px;
-  width: $width;
-  position:absolute;
-  top: 62px;
-  left: -$width;
-  bottom: 0;
-  z-index: 1;
-  background: #333 image-url('layout/noise.png') repeat 0 0;
-
   .scrollpane {
-    padding-top: 20px;
-    height: 100%;
-    top: 0px;
+    position: absolute;
+    top: 0;
     bottom: 0;
-    position:absolute;
-    /*overflow: hidden;*/
-    outline:none;
     width: 100%;
+    height: 100%;
+    padding-top: 20px;
 
-    &:hover .jspVerticalBar { @include opacity(1); }
+    outline: none;
 
-    .jspContainer { /*overflow: hidden;*/ position: relative; }
-    .jspPane { position: absolute; }
-    .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
-    .jspVerticalBar * { margin: 0; padding: 0; }
-    .jspCap { display: none; }
-    .jspTrack { background: none; position: relative; }
-    .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
-    .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
-    .jspVerticalBar .jspArrow { height: 10px; }
-    .jspVerticalBar .jspArrow:focus { outline: none; }
-    .jspCorner { background: #eeeef4; float: left; height: 100%; }
+    &:hover .jspVerticalBar {
+      opacity: 1;
+    }
+
+    .jspContainer {
+      position: relative;
+    }
+
+    .jspPane {
+      position: absolute;
+    }
+
+    .jspVerticalBar {
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      right: 7px;
+      width: 5px;
+      height: 100%;
+
+      transition: opacity 150ms ease-in;
+      opacity: 0;
+      background: none;
+    }
+
+    .jspVerticalBar * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .jspCap {
+      display: none;
+    }
+
+    .jspTrack {
+      position: relative;
+      background: none;
+    }
+
+    .jspDrag {
+      position: relative;
+      top: 0;
+      left: 0;
+      border-radius: 5px;
+      background: rgba(#BBB, 0.5);
+      cursor: pointer;
+    }
+
+    .jspArrow {
+      display: block;
+      background: none;
+      text-indent: -20000px;
+      cursor: pointer;
+    }
+
+    .jspVerticalBar .jspArrow {
+      height: 10px;
+    }
+
+    .jspVerticalBar .jspArrow:focus {
+      outline: none;
+    }
+
+    .jspCorner {
+      height: 100%;
+      float: left;
+      background: #EEEEF4;
+    }
   }
 
   .slide_view {
-
+    display: block;
+    position: relative;
+    box-sizing: border-box;
+    width: 104px;
+    height: 63px;
+    margin: 0 auto 29px;
+    padding: 11px;
+    border-radius: 2px;
+    background: #EEE;
+    background: -moz-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #EEE), color-stop(100%, #E5E5E5));
+    background: -webkit-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: -o-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: -ms-linear-gradient(top, #EEE 0%, #E5E5E5 100%);
+    background: linear-gradient(to bottom, #EEE 0%, #E5E5E5 100%);
     text-align: center;
+    text-decoration: none;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEE', endColorstr='#E5E5E5', GradientType=0);
 
     &.ui-sortable-helper {
-      width: 104px!Important;
-      height: 63px!Important;
+      width: 104px !important;
+      height: 63px !important;
       margin-left: 20px;
       cursor: move;
     }
 
     &.fake {
-      margin: 0 auto 15px auto;
-      pointer-events: none;
+      margin: 0 auto 15px;
       cursor: default;
+      pointer-events: none;
     }
+
     &.fake a.close,
     &.fake a.info {
       display: none;
     }
-    &.fake:hover .count { 
-      background: rgba(#000, .1);
+
+    &.fake:hover .count {
+      background: rgba(#000, 0.1);
     }
 
-    &.active:hover .count { background: #AAC6DF; }
+    &.active:hover .count {
+      background: #AAC6DF;
+    }
 
-    &:hover .count { background: #BBBBBB; }
-    &:hover .close { @include opacity(1); }
+    &:hover .count {
+      background: #BBB;
+    }
 
-    &.active { 
-      .count { background: #BECFDE; }
+    &:hover .close {
+      opacity: 1;
+    }
 
-      &:before {
+    &.active {
+      .count {
+        background: #BECFDE;
+      }
+
+      &::before {
         content: '';
-        position:absolute;
+        position: absolute;
         top: -3px;
         left: -3px;
         width: 109px;
@@ -96,21 +175,25 @@
     }
 
     &.add {
-      background: rgba(#E8E8E8, .1);
-      @include simple-transition(background, 150ms);
-
       margin-bottom: 70px;
+      transition: background 150ms ease-in;
+      background: rgba(#E8E8E8, 0.1);
 
-      &.loading .count .spinner { display: block; }
-      &.loading .count .icon { display: none; }
+      &.loading .count .spinner {
+        display: block;
+      }
+
+      &.loading .count .icon {
+        display: none;
+      }
 
       &:hover {
-        background: rgba(#E8E8E8, .08);
+        background: rgba(#E8E8E8, 0.08);
       }
 
       .count {
         padding: 0;
-        background: rgba(#000, .1);
+        background: rgba(#000, 0.1);
       }
 
       .count .spinner {
@@ -118,134 +201,110 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        margin-left: -15px;
-        margin-top: -15px;
         width: 30px;
         height: 30px;
+        margin-top: -15px;
+        margin-left: -15px;
         background: image-url('layout/tail-spin.svg') no-repeat 50% 50%;
         background-size: 30px;
       }
-
-
     }
 
     .close {
-
-      cursor: pointer;
-
       position: absolute;
       top: -12px;
       right: -11px;
-
-      height: 16px;
       width: 17px;
+      height: 16px;
       padding: 3px;
-
-      line-height: 16px;
-
-      @include box-shadow(1px 1px 5px rgba(#000, .5));
-
-      color: #fff;
-      border: 1px solid #fff;
+      transition: opacity 0.1s ease-in-out;
+      border: 1px solid #FFF;
+      border-radius: 90px;
+      opacity: 0;
       background: #333;
-      font-size: 10px;
+      box-shadow: 1px 1px 5px rgba(#000, 0.5);
+      color: #FFF;
       font-family: "helvetica neue", "helvetica", arial;
+      font-size: 10px;
+      line-height: 16px;
       text-align: center;
       text-transform: uppercase;
+      cursor: pointer;
 
-      @include opacity(0);
-      @include simple-transition(opacity, .10s, ease-in-out);
-
-      @include border-radius(90px);
-
-      &:hover { text-decoration:none; }
-
+      &:hover {
+        text-decoration: none;
+      }
     }
 
     .info {
       position: relative;
       top: 14px;
-      margin: auto;
+      box-sizing: border-box;
       height: 16px;
+      margin: auto;
       padding: 4px 6px;
+      border-radius: 2px;
       background: #333;
-      @include border-radius(2px);
-      @include box-sizing(border-box);
-
+      color: #9CA0A3;
+      font-size: 9px;
       line-height: 80%;
       text-align: center;
-
-      text-transform: uppercase;
-      font-size:9px;
-      color: #9CA0A3;
       text-decoration: none;
+      text-transform: uppercase;
 
       &:hover {
-        color:#666;
+        color: #666;
       }
-
     }
 
     .count {
-      @include box-sizing(border-box);
-      margin: auto;
-      padding: 3px;
+      box-sizing: border-box;
       width: 43px;
       height: 43px;
-
-      @include border-radius(200px);
+      margin: auto;
+      padding: 3px;
+      transition: background 150ms ease-in;
+      border-radius: 200px;
       background: #D1D1D1;
-      line-height: normal;
-      vertical-align: middle;
-      text-align: center;
-      color: #fff;
-      font-weight: bold;
+      color: #FFF;
       font-size: 31px;
-      @include simple-transition(background, 150ms);
-
+      font-weight: bold;
+      line-height: normal;
+      text-align: center;
+      vertical-align: middle;
     }
-
-    display: block;
-    width: 104px;
-    height: 63px;
-    margin: 0 auto 29px auto;
-    position: relative;
-    padding: 11px;
-
-    @include box-sizing(border-box);
-    @include border-radius(2px);
-    text-decoration:none;
-
-    background: #eeeeee;
-    background: -moz-linear-gradient(top, #eeeeee 0%, #e5e5e5 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#e5e5e5));
-    background: -webkit-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
-    background: -o-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
-    background: -ms-linear-gradient(top, #eeeeee 0%,#e5e5e5 100%);
-    background: linear-gradient(to bottom, #eeeeee 0%,#e5e5e5 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e5e5e5',GradientType=0 );
   }
 
   .dropdown.slide_transition_dropdown {
-
     width: 150px;
 
     ul li {
-
       padding: 10px;
       text-align: left;
 
-      a { padding: 0; }
-      a.radiobutton span.radio { margin: 1px 7px 0 0!Important; }
+      a {
+        padding: 0;
+      }
+
+      a.radiobutton span.radio {
+        margin: 1px 7px 0 0 !important;
+      }
 
       &.seconds {
-        .form { text-align: center; }
-        a.radiobutton { margin: 0 3px 0 0; }
-        a.radiobutton, .form {
-          @include inline-block();
+        .form {
+          text-align: center;
+        }
+
+        a.radiobutton {
+          margin: 0 3px 0 0;
+        }
+
+        a.radiobutton,
+        .form {
+          display: inline-block;
+          vertical-align: top;
         }
       }
     }
   }
-
 }

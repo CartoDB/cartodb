@@ -1,15 +1,14 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .Tag {
   display: inline-block;
+  box-sizing: border-box;
   height: 16px;
   padding: 0 4px;
   border-radius: $halfBaseSize / 2;
   background-color: $cThirdBackground;
   color: $cAltText;
-  box-sizing: border-box;
   line-height: 14px;
 
   &.is-disabled {
@@ -17,8 +16,8 @@
   }
 
   &.is-pointed {
-    user-select: none;
     cursor: pointer;
+    user-select: none;
   }
 
   &--big {
@@ -39,10 +38,10 @@
 .Tag-fill {
   height: auto;
   padding: 5px 12px;
+  transition: background 0.1s ease-in;
   border-radius: $halfBaseSize;
   background-color: $cThirdBackground;
   color: $cWhite;
-  transition: background 0.1s ease-in;
 
   &--yellow {
     background: #FFB927;

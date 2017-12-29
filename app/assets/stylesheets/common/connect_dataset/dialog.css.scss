@@ -2,46 +2,49 @@
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
+.ConnectDialog .Dialog-content { width: 100%; }
 
-
-.ConnectDialog {
-
-}
-.ConnectDialog .Dialog-content { width: 100% }
 .Dialog-body.ConnectDialog-body {
-  padding: 0;
   min-height: 700px;
+  padding: 0;
   background: $cStructure-grayBkg;
 }
-.ConnectDialog .Filters-separator { background: #DDD }
-.ConnectDialog .Filters-row { @include justify-content(center, center) }
+
+.ConnectDialog .Filters-separator { background: #DDD; }
+
+.ConnectDialog .Filters-row { justify-content: center; }
+
 .ConnectDialog-footer {
   position: fixed;
+  z-index: 1;
   bottom: 0;
   left: 50%;
   margin-left: -470px;
   border: none;
   text-align: center;
-  z-index: 1;
 }
+
 .ConnectDialog-footerInfo {
+  color: $cTypography-secondary;
   font-size: $sFontSize-larger;
   font-weight: $sFontWeight-lighter;
-  color: $cTypography-secondary;
 }
+
 .ConnectDialog-footerInfoIcon {
   display: inline-block;
-  vertical-align: top;
   width: 20px;
   height: 20px;
   margin-right: 10px;
-  text-align: center;
-  line-height: 20px!important;
-  font-size: $sFontSize-normal;
-  color: white;
-  background: #F6D35C;
   border: 1px solid #F2C000;
   border-radius: 20px;
+  background: #F6D35C;
+  color: white;
+  font-size: $sFontSize-normal;
+  line-height: 20px !important;
+  text-align: center;
+  vertical-align: top;
 }
-.ConnectDialog-footerButton { display: none }
-.ConnectDialog-footerButton.is-enabled { display: inline-block }
+
+.ConnectDialog-footerButton { display: none; }
+
+.ConnectDialog-footerButton.is-enabled { display: inline-block; }

@@ -1,23 +1,26 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
 .AssetsList-recent {
   overflow: hidden;
 }
+
 .AssetsList-recentInner {
-  @include display-flex;
+  display: flex;
   width: 1000px;
 }
+
 .AssetsList {
-  @include display-flex;
+  display: flex;
   position: relative;
 }
+
 .AssetListItem.Carousel-item {
   width: 40px;
   min-width: 40px;
   height: 40px;
 }
+
 .AssetsList-inner {
   display: block;
   position: relative;
@@ -34,49 +37,50 @@
 }
 
 .AssetItem-icon {
-  @include align-items(center);
-  @include justify-content(center);
-  @include display-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
 }
 
 .AssetItem-label {
-  @include align-items(center);
-  @include justify-content(center);
-  @include display-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
 }
 
 .Modal-inner .AssetsList {
-  @include flex-wrap(wrap);
+  flex-wrap: wrap;
   margin: 0 -14px 20px;
 }
 
 .Modal-inner .AssetsList:last-child {
-  @include flex-wrap(wrap);
+  flex-wrap: wrap;
   margin: 0 -14px;
 }
 
 .AssetsList-item {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;
   margin-bottom: 16px;
   margin-left: 16px;
+  overflow: hidden;
   border: 1px solid $cSecondaryLine;
   border-radius: 4px;
   background: $cThirdBackground;
-  box-sizing: border-box;
-  overflow: hidden;
 
   &:last-child {
     margin-right: 0;
   }
+
   &:hover {
     border: 1px solid $cMainLine;
     cursor: pointer;

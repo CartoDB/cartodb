@@ -2,24 +2,33 @@
 
 // Overrides rules defines in the table/**/*.scss files, to not have to carry them all over
 .table th {
-  text-align: left;
   font-weight: normal;
+  text-align: left;
 }
-div.table table thead tr th>div label { line-height: 0.8 }
-div.table table thead tr th>div p.auto { padding-right: 38px }
+
+div.table table thead tr th > div label {
+  line-height: 0.8;
+}
+
+div.table table thead tr th > div p.auto {
+  padding-right: 38px;
+}
+
 .header_content div.left h1 a.title {
+  font-family: 'Lato', sans-serif;
   font-size: 20px;
   font-weight: $sFontWeight-bold;
-  font-family: 'Lato', sans-serif;
 }
+
 .header_content div.left div.metadata p a {
   font-size: 15px;
   font-weight: $sFontWeight-lighter;
 }
+
 div.vis_navigation nav a.tab {
   padding-top: 3px;
   padding-bottom: 3px;
-  font-weight: $sFontWeight-bold
+  font-weight: $sFontWeight-bold;
 }
 
 div.table table tbody tr td div.cell,
@@ -31,10 +40,15 @@ div.dropdown ul li a,
 .infowindow_panel .fields li.drag_field {
   line-height: 1;
 }
-.CodeMirror { font-size: 15px }
 
-div.legends_panel div.forms.panel_content .right .checkbox { margin-top:11px; line-height:1 }
+.CodeMirror {
+  font-size: 15px;
+}
 
+div.legends_panel div.forms.panel_content .right .checkbox {
+  margin-top: 11px;
+  line-height: 1;
+}
 
 // New dialogs
 .Dialog-headerTitle,

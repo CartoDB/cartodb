@@ -9,18 +9,17 @@
    */
 
   @import "compass/css3/box-sizing";
-  @import "compass/css3/opacity";
   @import "compass/css3/images";
   @import "compass/css3/inline-block";
   @import "compass/css3/transform";
   @import "../../../old_common/common-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
-  
+
 
   div.filters_panel {
-    width:100%;
-    @include box-sizing(border-box);
+    width: 100%;
+    box-sizing: border-box;
 
     h3 { padding-left:30px; }
 
@@ -28,20 +27,20 @@
 
       pointer-events: none;
 
-      &.top    { @include opacity(0); @include position(61px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
-      &.bottom { @include opacity(1); @include position(false, false, 0px, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
+      &.top    { opacity: 0; @include position(61px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
+      &.bottom { opacity: 1; @include position(false, false, 0px, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
 
       @include size(100%, 30px);
 
     }
 
     .content {
-      position:relative;
+      position: relative;
 
-      text-align:center;
+      text-align: center;
 
       .chooser {
-        display:none;
+        display: none;
         @include position(85px, false, false, 0);
         @include size(100%, 200px);
 
@@ -49,13 +48,13 @@
         z-index: 100;
 
         .applied_query {
-          display:none;
+          display: none;
 
           .clear {
-            width:234px;
+            width: 234px;
             background: rgba(#FFEFBF, .5);
             padding: 14px;
-            @include border-radius(5px);
+            border-radius: 5px;
 
             font-size: 15px;
             a { color:  #666; text-decoration:underline; }
@@ -79,12 +78,12 @@
 
         .form_combo {
           margin: 0 auto 0 auto;
-          display:block;
+          display: block;
           width: 200px;
 
           background: #f2f2f2;
           padding: 10px;
-          @include border-radius(5px);
+          border-radius: 5px;
 
           & > div { text-align: left; }
 
@@ -96,15 +95,15 @@
       overflow: auto;
       outline: none;
 
-      &:hover .jspVerticalBar { @include opacity(1); }
+      &:hover .jspVerticalBar { opacity: 1; }
 
       .jspContainer { overflow: hidden; position: relative; }
       .jspPane { position: absolute; }
-      .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
+      .jspVerticalBar   { transition: opacity 150ms ease-in; opacity: 0; position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
       .jspVerticalBar * { margin: 0; padding: 0; }
       .jspCap { display: none; }
       .jspTrack { background: none; position: relative; }
-      .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+      .jspDrag { background: rgba(#BBB, .5); border-radius: 5px; position: relative; top: 0; left: 0; cursor: pointer;}
       .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
       .jspVerticalBar .jspArrow { height: 10px; }
       .jspVerticalBar .jspArrow:focus { outline: none; }
@@ -113,7 +112,7 @@
     }
 
     .get_sql {
-      @include box-sizing(border-box);
+      box-sizing: border-box;
       position: absolute;
       padding: 20px 30px;
       @include size(100%, 61px);
@@ -124,20 +123,20 @@
       z-index: 10000;
 
       a {
-        float:right;
-        font-size:13px;
+        float: right;
+        font-size: 13px;
         text-decoration: underline;
       }
     }
 
     .add_filter {
-      display:none;
-      position:relative;
+      display: none;
+      position: relative;
       width: 385px;
       margin: 0 0 40px 0;
 
       & > a.add {
-        position:relative;
+        position: relative;
         top: 15px;
         padding: 15px;
         color: #6A9DCA;
@@ -145,12 +144,11 @@
       }
 
       .combo {
+        box-shadow: inset 0px 4px 4px #EDEDED;
 
-        @include box-shadow(inset 0px 4px 4px #EDEDED);
-
-        display:none;
-        @include box-sizing(border-box);
-        position:relative;
+        display: none;
+        box-sizing: border-box;
+        position: relative;
         top: 0;
         padding: 24px;
 
@@ -159,14 +157,16 @@
 
         .remove {
           margin: 0 0 0 7px;
-          @include inline-block();
+          display: inline-block;
+    vertical-align: top;
           @include size(13px);
           @include common-sprite(close_grey);
           &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
 
         .form_combo {
-          @include inline-block();
+          display: inline-block;
+    vertical-align: top;
           text-align: left;
           span { color: #666666 }
         }
@@ -175,31 +175,25 @@
     }
 
     ul.filters {
-      position:relative;
-
+      position: relative;
       width: 385px;
       margin: 0;
 
       .filter { // generic styles for all the filters
-        position:relative;
-
+        position: relative;
         padding: 15px 0 0 0;
-
         border-bottom: 1px solid rgba(#999999, .25);
-        @include box-shadow(0px 4px 4px #EDEDED);
-
-        text-align:left;
+        box-shadow: 0px 4px 4px #EDEDED;
+        text-align: left;
 
         .header {
-          position:relative;
+          position: relative;
           padding: 5px 0;
           margin: 0;
           width: 340px;
-
-          text-align:left;
-
-          clear:both;
-          overflow:hidden;
+          text-align: left;
+          clear: both;
+          overflow: hidden;
 
           .hidden { display: none; }
 
@@ -214,16 +208,16 @@
 
         &.date .range { clear:both; margin: 6px 0 0 0; }
 
-        &:hover .remove { @include opacity(1); }
+        &:hover .remove { opacity: 1; }
 
         .remove {
           float: right;
-          display:block;
-          @include opacity(0);
+          display: block;
+          opacity: 0;
 
           @include size(13px);
           @include position(21px, 30px, false, false);
-          @include simple-transition(opacity, 150ms);
+          transition: opacity 150ms ease-in;
           @include common-sprite(close_grey);
 
           &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
@@ -234,7 +228,7 @@
     // Selection filter
     ul.filters .filter.selection {
 
-      &:hover .scroll .jspVerticalBar { @include opacity(1); }
+      &:hover .scroll .jspVerticalBar { opacity: 1; }
 
       .header {
 
@@ -251,14 +245,14 @@
       }
 
       .header, .items {
-        @include box-sizing(border-box);
+        box-sizing: border-box;
       }
 
       .header .title .controllers {
 
         &.hidden { display: none; }
 
-        float:left;
+        float: left;
 
         li {
           color: #4DC964;
@@ -266,7 +260,7 @@
           a {
             vertical-align: top;
             color: #4DC964;
-            font-size:13px;
+            font-size: 13px;
 
             &.selected { display:none; }
           }
@@ -275,7 +269,7 @@
       } // controllers
 
       .fields {
-        position:relative;
+        position: relative;
         margin: 0 0 20px 0;
 
         &.only, &.empty { margin: 0 0 15px 0; }
@@ -296,14 +290,14 @@
       }
 
       .input_field {
-        @include box-sizing(border-box);
+        box-sizing: border-box;
         @include position(0, false, false, 0);
         @include size(323px, 40px);
-        display:none;
+        display: none;
         padding: 0;
         margin: 0 0 0 30px;
 
-        @include border-radius(4px);
+        border-radius: 4px;
         border: 1px solid #B7B7B7;
 
         .apply {
@@ -313,60 +307,60 @@
           background: #E7E7E7;
           @include background(linear-gradient(top, rgba(#F9F9F9, 0), rgba(#E7E7E7, .7)));
           color: #555;
-          font:bold 11px $text-fonts2;
-          line-height:normal;
-          text-shadow:0 1px 0 white;
+          font: bold 11px $text-fonts2;
+          line-height: normal;
+          text-shadow: 0 1px 0 white;
           background:#F9F9F9; // IE
           @include background(linear-gradient(#F9F9F9,#EBEBEB));
-          @include border-radius(5px);
-          border:1px solid #B0B0B0;
-          letter-spacing:-1px;
-          @include transform-style("linear");
-          @include transition-property("box-shadow,border");
-          @include transition-duration(250ms);
+          border-radius: 5px;
+          border: 1px solid #B0B0B0;
+          letter-spacing: -1px;
+          transform-style: linear;
+          transition-property: box-shadow, border;
+          transition-duration: 250ms;
 
           // Hover
           &:hover {
             background:#DEDEDE; // IE
             @include background(linear-gradient(#F9F9F9,#E1E1E1));
-            text-decoration:none;
-            cursor:pointer;
+            text-decoration: none;
+            cursor: pointer;
           }
           // Active
           &:active {
-            border-color:#ACACAC;
+            border-color: #ACACAC;
             background:#D3D3D3; // IE
             @include background(linear-gradient(#F9F9F9,#E1E1E1));
-            @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0);
+            box-shadow: rgba(#FFF, 0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0;
           }
 
         }
 
         input {
-          @include box-sizing(border-box);
+          box-sizing: border-box;
           @include size(275px, 39px);
-          max-width:100%;
-          max-height:39px;
+          max-width: 100%;
+          max-height: 39px;
           padding: 11px;
-          border:none;
+          border: none;
           font-family: $text-fonts;
-          font-size:13px;
-          background:none;
-          outline:none;
+          font-size: 13px;
+          background: none;
+          outline: none;
           resize: none;
         }
       } // textarea
 
       .data {
-        position:relative;
+        position: relative;
 
         .items { display:none;}
         .white-gradient-shadow {
 
           pointer-events: none;
 
-          &.top    { @include opacity(0); @include position(0, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 10; }
-          &.bottom { @include opacity(0); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
+          &.top    { opacity: 0; @include position(0, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 10; }
+          &.bottom { opacity: 0; @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
 
           @include size(100%, 30px);
 
@@ -378,23 +372,24 @@
 
 
       .options {
-        position:relative;
+        position: relative;
         width: 325px;
         margin: 2px 0 0 30px;
         padding: 0;
-        clear:both;
-        overflow:hidden;
+        clear: both;
+        overflow: hidden;
         z-index: 100;
-        background:#fff;
+        background: #fff;
 
         .view_mode {
 
-          float:left;
+          float: left;
 
           .switch { // small switch
-            @include inline-block();
+            display: inline-block;
+    vertical-align: top;
             @include size(21px, 12px);
-            margin:2px 0 0 0;
+            margin: 2px 0 0 0;
 
             span.handle {
               @include position(0, false, false, 9px);
@@ -407,9 +402,10 @@
           }
 
           label {
-            @include inline-block();
-            font-size:13px;
-            color:#999999;
+            display: inline-block;
+    vertical-align: top;
+            font-size: 13px;
+            color: #999999;
             cursor: pointer;
           }
         }
@@ -423,30 +419,31 @@
         }
 
         .btn {
-          @include inline-block();
+          display: inline-block;
+    vertical-align: top;
           @include size(25px, 21px);
-          background:#f1f1f1;
+          background: #f1f1f1;
           margin-right: -3px;
 
-          @include simple-transition(opacity, 100ms);
+          transition: opacity 100ms ease-in;
 
           $radius: 3px;
 
           &.disabled {
-            @include opacity(.5);
+            opacity: 0.5;
             cursor: default;
 
             &:active { background-position: 50% 9px!important; }
           }
 
           &.up   {
-            @include border-radius($radius 0 0 $radius);
+            border-radius: $radius 0 0 $radius;
             background: #f1f1f1 image-url('sprites/table/filters_scroll_up.png') no-repeat 50% 9px;
             &:active { background-position: 50% 10px;  }
           }
 
           &.down {
-            @include border-radius(0 $radius $radius 0);
+            border-radius: 0 $radius $radius 0;
             background: #f1f1f1 image-url('sprites/table/filters_scroll_down.png') no-repeat 50% 9px;
             &:active { background-position: 50% 10px;  }
           }
@@ -454,20 +451,20 @@
       }
 
       .items {
-        text-align:left;
+        text-align: left;
         margin: 0 0 0 30px;
         padding: 0;
         width: 325px;
 
         li {
-          clear:both;
-          overflow:hidden;
+          clear: both;
+          overflow: hidden;
 
-          position:relative;
+          position: relative;
           padding: 10px 0 10px 15px;
           margin: 0;
           color: #666666;
-          font-size:13px;
+          font-size: 13px;
           border-top: 1px solid rgba(#999, .25);
 
           cursor: pointer;
@@ -490,38 +487,37 @@
 
             background: #fff;
             border: none;
-            @include border-radius(200px);
+            border-radius: 200px;
             @include scale(0);
-            @include simple-transition(scale, 220ms);
+            transition: scale 220ms ease-in;
           }
 
           &:after {
-            @include opacity(1);
+            opacity: 1;
             @include position(15px, false, false, 0);
             content: '';
             @include size(7px);
 
             background: none;
             border: 1px solid #82D992;
-            @include border-radius(200px);
-            @include simple-transition(opacity, 220ms);
+            border-radius: 200px;
+            transition: opacity 220ms ease-in;
           }
 
-          &.selected:after  { @include opacity(0); }
+          &.selected:after  { opacity: 0; }
           &.selected:before { background: #82D992; @include scale(1); }
           &.selected .value { background: #82D992; color:#fff; }
 
           .value {
-            position:absolute;
+            position: absolute;
             top: 10px; right: 0;
-            font-size:10px;
+            font-size: 10px;
             padding: 2px 4px;
-            border:1px solid #82D992;
-            background:#fff;
-            @include border-radius(2px);
-            color:#82D992;
-
-            @include simple-transition(background-color, 100ms);
+            border: 1px solid #82D992;
+            background: #fff;
+            border-radius: 2px;
+            color: #82D992;
+            transition: background-color 100ms ease-in;
           }
         }
       }
@@ -530,13 +526,14 @@
     // Histogram filter
     ul.filters .filter.histogram {
 
-      text-align:center;
+      text-align: center;
 
       .empty  { display:none; }
 
       .loading   { display:block; }
 
-      .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
+      .hist { margin: auto; position: relative; display: inline-block;
+    vertical-align: top; bottom: -3px; }
       .background.bar { fill: #E5E5E5; }
       .foreground.bar { fill: #4DC964; fill-opacity: .3; }
       .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }

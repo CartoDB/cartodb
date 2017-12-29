@@ -1,22 +1,22 @@
 
-  /**
+/**
    *  Tooltip trails object
    */
 
-  @import "compass/css3/border-radius";
+@import "compass/css3/border-radius";
 
-  div.tooltip-trails {
-    position:absolute;
-    display:none;
-    top:0;
-    left:0;
-    max-width:234px;
-    padding:12px;
-    background:#FCF3DB;
-    border:1px solid #B3AF9C;
-    @include border-radius(3px);
-    font-size:13px;
-    color:#666666;
-    letter-spacing:0;
-    z-index:1000;
-  }
+div.tooltip-trails {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  max-width: 234px;
+  padding: 12px;
+  border: 1px solid #B3AF9C;
+  border-radius: 3px;
+  background: #FCF3DB;
+  color: #666;
+  font-size: 13px;
+  letter-spacing: 0;
+}

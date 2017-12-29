@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Back button support (#13115)
 * Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)
 * Add Grunt tasks to generate static files (#13130)
@@ -108,6 +109,7 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Rename Georeference to Geocode (#13315)
 * Use new header design in export as image view (#13306)
 * Don't show tooltip if analysis is selected or is new (#13299)
 * Fix logo alignment in small viewports (#13302)
@@ -366,6 +368,7 @@ ion for time-series (#12670)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
+* Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

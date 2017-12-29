@@ -3,6 +3,7 @@
 require_dependency 'carto/db/view'
 require_dependency 'carto/db/function'
 require_dependency 'carto/db/trigger'
+require_dependency 'carto/db/role'
 
 module Carto
   module Db
@@ -38,12 +39,14 @@ module Carto
           and table_catalog = '#{@database_name}'
         }
 
-        @conn[query].all.map do |t|
+        execute_query(@conn, query).map do |t|
+          t = t.deep_symbolize_keys
           Trigger.new(
             database_name: t[:table_catalog],
             database_schema: t[:table_schema],
             table_name: t[:table_name],
-            trigger_name: t[:tgname])
+            trigger_name: t[:tgname]
+          )
         end
       end
 
@@ -70,12 +73,14 @@ module Carto
              and rolname = '#{owner_role}'
           group by ns.nspname, pc.relname;
         }
-        @conn[query].all.map do |t|
+        execute_query(@conn, query).map do |v|
+          v = v.deep_symbolize_keys
           View.new(
             database_name: @database_name,
-            database_schema: t[:schemaname],
-            name: t[:matviewname],
-            relkind: relkind)
+            database_schema: v[:schemaname],
+            name: v[:matviewname],
+            relkind: relkind
+          )
         end
       end
 
@@ -92,13 +97,33 @@ module Carto
                 AND n.nspname = '#{schema}'
                 AND rolname = '#{owner_role}'
         }
-        @conn[query].all.map do |t|
+        execute_query(@conn, query).map do |f|
+          f = f.deep_symbolize_keys
           Function.new(
             database_name: @database_name,
-            database_schema: [:nspname],
-            name: t[:proname],
-            argument_data_types: t[:argument_data_types])
+            database_schema: f[:nspname],
+            name: f[:proname],
+            argument_data_types: f[:argument_data_types]
+          )
         end
+      end
+
+      def roles
+        execute_query(@conn, "SELECT usename from pg_user").map do |r|
+          r = r.deep_symbolize_keys
+          Role.new(database_name: @database_name, name: r[:usename])
+        end
+      end
+
+      private
+
+      def execute_query(conn, query)
+        activerecord_connection?(conn) ? conn.select_all(query) : conn[query].all
+      end
+
+      def activerecord_connection?(conn)
+        ## Right now we have two kind of connections from Sequel and from AR
+        conn.is_a? ActiveRecord::ConnectionAdapters::AbstractAdapter
       end
 
     end

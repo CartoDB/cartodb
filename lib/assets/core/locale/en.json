@@ -526,7 +526,7 @@
     "geocoding": {
       "geocoding-error-details": {
         "close": "close",
-        "description": "There was a problem georeferencing your data",
+        "description": "There was a problem geocoding your data",
         "title": "Geocoding Error",
         "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with your username and the following code:",
         "view-dataset": "view dataset"
@@ -545,7 +545,7 @@
       "geocoding-no-result-details": {
         "close": "close",
         "description": "These rows contained empty values or perhaps we just didn't know what the values meant. We encourage you to take a look and try again.",
-        "title": "No rows were georeferenced",
+        "title": "No rows were geocoded",
         "view-dataset": "view dataset"
       }
     },
@@ -1122,7 +1122,7 @@
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
             "state-selected-sync": "You can choose when to sync the file.",
-            "state-selected-instagram": "A map containing all your georeferenced photos will be created",
+            "state-selected-instagram": "A map containing all your geocoded photos will be created",
             "state-selected-no-sync": "Sync options are not available.",
             "supported": "supported",
             "try-again": "Try again"
@@ -2127,7 +2127,7 @@
         }
       },
       "georeference": {
-        "no-geometry": "There's no geometry in your data, please georeference it.",
+        "no-geometry": "There's no geometry in your data, please geocode it.",
         "georeference-button": "Geocode",
         "visualize": "Layer doesn't have geometry"
       },

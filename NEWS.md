@@ -364,6 +364,8 @@ ion for time-series (#12670)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
 * Make new widgets appear on top (#13244)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
+* Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
+* Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

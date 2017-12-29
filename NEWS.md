@@ -110,6 +110,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Remove card's hover state when hovering the dataset/node inside (#13316)
+* Rename Georeference to Geocode (#13315)
 * Use new header design in export as image view (#13306)
 * Don't show tooltip if analysis is selected or is new (#13299)
 * Fix logo alignment in small viewports (#13302)
@@ -367,6 +368,8 @@ ion for time-series (#12670)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
+* Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
+* Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

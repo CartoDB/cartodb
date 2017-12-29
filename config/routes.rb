@@ -61,6 +61,8 @@ CartoDB::Application.routes.draw do
         end
       end
 
+      match '/builder/:id/*other', to: 'visualizations#show', via: :get
+
       resources :datasets, path: '/dataset', only: :show, constraints: { id: /[0-z\.\-]+/ }
     end
 

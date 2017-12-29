@@ -367,6 +367,7 @@ ion for time-series (#12670)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
+* Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 
 ### Internals

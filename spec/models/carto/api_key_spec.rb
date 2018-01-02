@@ -132,9 +132,9 @@ describe Carto::ApiKey do
                         symbolize_names: true)
     expect do
       Carto::ApiKey.create!(user_id: @user1.id,
-                                      type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'irrelevant',
-                                      grants: grants)
+                            type: Carto::ApiKey::TYPE_REGULAR,
+                            name: 'irrelevant',
+                            grants: grants)
     end.to raise_error(Carto::EmptyGrantedApisError)
   end
 end

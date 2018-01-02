@@ -21,6 +21,8 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)
+  rescue Carto::EmptyGrantedApisError
+    raise Carto::UnprocesableEntityError.new("You must grant at least one api")
   end
 
   def destroy

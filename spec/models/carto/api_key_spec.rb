@@ -108,4 +108,31 @@ describe Carto::ApiKey do
       $users_metadata.hgetall(api_key.send(:redis_key)).should be_empty
     end
   end
+
+  it 'fails when creating without api_grants' do
+    expect do
+      Carto::ApiKey.create!(user_id: @user1.id,
+                                      type: Carto::ApiKey::TYPE_REGULAR,
+                                      name: 'irrelevant',
+                                      grants: JSON.parse('[
+      {
+        "type": "database",
+        "tables": [{
+          "name": "something",
+          "schema": "public",
+          "permissions": [
+            "select"
+          ]
+        },
+        {
+        	"name": "another",
+        	"schema": "public",
+        	"permissions": ["insert", "update", "select"]
+        }
+        ]
+      }
+    ]', symbolize_names: true)
+      )
+    end.to raise_error(Carto::EmptyGrantedApisError)
+  end
 end

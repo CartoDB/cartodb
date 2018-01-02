@@ -1,6 +1,8 @@
 require 'json'
 
 module Carto
+  class EmptyGrantedApisError < StandardError; end
+
   class TablePermissions
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
     ALLOWED_PERMISSIONS = (WRITE_PERMISSIONS + ['select', 'references', 'trigger']).freeze
@@ -46,6 +48,8 @@ module Carto
       end
 
       grants_json.each { |grant| process_grant(grant) }
+
+      raise EmptyGrantedApisError.new if @granted_apis.empty?
     end
 
     def table_permissions

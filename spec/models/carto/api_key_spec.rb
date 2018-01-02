@@ -110,11 +110,8 @@ describe Carto::ApiKey do
   end
 
   it 'fails when creating without api_grants' do
-    expect do
-      Carto::ApiKey.create!(user_id: @user1.id,
-                                      type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'irrelevant',
-                                      grants: JSON.parse('[
+    grants = JSON.parse('
+    [
       {
         "type": "database",
         "tables": [{
@@ -131,8 +128,13 @@ describe Carto::ApiKey do
         }
         ]
       }
-    ]', symbolize_names: true)
-      )
+    ]',
+                        symbolize_names: true)
+    expect do
+      Carto::ApiKey.create!(user_id: @user1.id,
+                                      type: Carto::ApiKey::TYPE_REGULAR,
+                                      name: 'irrelevant',
+                                      grants: grants)
     end.to raise_error(Carto::EmptyGrantedApisError)
   end
 end

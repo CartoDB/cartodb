@@ -19,6 +19,13 @@ describe Carto::ApiKey do
     }
   end
 
+  def apis(apis = ['maps', 'sql'])
+    {
+      type: 'apis',
+      apis: apis
+    }
+  end
+
   def with_connection_from_api_key(api_key)
     user = api_key.user
 
@@ -48,7 +55,7 @@ describe Carto::ApiKey do
 
   it 'can grant insert, select, update delete to a database role' do
     api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                    name: 'full', grants: [grant(@table1.database_schema, @table1.name)])
+                                    name: 'full', grants: [grant(@table1.database_schema, @table1.name), apis])
 
     with_connection_from_api_key(api_key) do |connection|
       begin
@@ -84,7 +91,7 @@ describe Carto::ApiKey do
   describe '#destroy' do
     it 'removes the role from DB' do
       api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name)])
+                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name), apis])
 
       @user1.in_database(as: :superuser) do |db|
         db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 1
@@ -99,7 +106,7 @@ describe Carto::ApiKey do
 
     it 'removes the role from Redis' do
       api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name)])
+                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name), apis])
 
       $users_metadata.hgetall(api_key.send(:redis_key)).should_not be_empty
 

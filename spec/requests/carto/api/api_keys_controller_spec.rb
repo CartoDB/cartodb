@@ -107,6 +107,10 @@ describe Carto::Api::ApiKeysController do
             'name' => @table1.name,
             'permissions' => ['read']
           ]
+        },
+        {
+          'type' => 'apis',
+          'apis' => ['maps', 'sql']
         }
       ]
       post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|

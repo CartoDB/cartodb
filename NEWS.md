@@ -110,6 +110,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix ScrollView margin (#13310)
+* Use zoomToData only if the layer is created from a dataset (#13309)
 * Rename Georeference to Geocode (#13315)
 * Use new header design in export as image view (#13306)
 * Don't show tooltip if analysis is selected or is new (#13299)

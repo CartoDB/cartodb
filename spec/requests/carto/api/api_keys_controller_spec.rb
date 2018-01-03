@@ -84,17 +84,17 @@ describe Carto::Api::ApiKeysController do
       post_json generate_api_key_url(@carto_user1), name: 'wadus' do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /grants must be a nonempty array/
+        error_response[:errors].should match /Attribute should be an array/
       end
       post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: "something" do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /grants must be a nonempty array/
+        error_response[:errors].should match /Attribute should be an array/
       end
       post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: {} do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /grants must be a nonempty array/
+        error_response[:errors].should match /Attribute should be an array/
       end
     end
 

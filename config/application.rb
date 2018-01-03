@@ -68,7 +68,7 @@ module CartoDB
       config.js
       app.js
       cdb.js
-      carto_node.js
+      carto_api_client.js
       embed.js
       dashboard_templates.js
       dashboard_deps.js

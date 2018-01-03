@@ -322,7 +322,6 @@ module.exports = function (grunt) {
     'cdb',
     'copy:js_cartodb',
     'setConfig:env.browserify_watch:true',
-    'npm-carto-node',
     'run_browserify',
     'concat:js',
     'jst'
@@ -357,14 +356,12 @@ module.exports = function (grunt) {
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
-  registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
 
   /**
    * `grunt dev`
    */
 
   grunt.registerTask('dev', [
-    'npm-carto-node',
     'pre',
     'npm-start'
   ]);
@@ -388,7 +385,6 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('build', [
-    'npm-carto-node',
     'pre',
     'copy:js',
     'exorcise',
@@ -397,7 +393,6 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [
-    'npm-carto-node',
     'npm-build-static'
   ]);
 

@@ -100,7 +100,7 @@ module Carto
         deletion_password_confirmation = params[:deletion_password_confirmation]
 
         if user.needs_password_confirmation? && !user.validate_old_password(deletion_password_confirmation)
-          render_jsonp({ message: "Error deleting user: #{PASSWORD_DOES_NOT_MATCH_MESSAGE}" }, 400) and return
+          render_jsonp({ message: "Error deleting user: #{PASSWORD_DOES_NOT_MATCH_MESSAGE}", errors: user.errors }, 400) and return
         end
 
         user.destroy_account

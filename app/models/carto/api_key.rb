@@ -3,7 +3,7 @@ require 'securerandom'
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
-    record.errors[attribute] = ['apis type has to be present'] if value.select { |v| v[:type] == 'apis'}.empty?
+    record.errors[attribute] = ['apis type has to be present'] if value.select { |v| v[:type] == 'apis' }.empty?
   end
 end
 

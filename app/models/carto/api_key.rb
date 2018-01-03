@@ -17,7 +17,6 @@ class Carto::ApiKey < ActiveRecord::Base
   before_create :create_token
   before_create :create_db_config
 
-  before_validation :serialize_grants
   serialize :grants, Carto::CartoJsonSymbolizerSerializer
   validates :grants, carto_json_symbolizer: true, json_schema: true
 

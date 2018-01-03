@@ -49,6 +49,13 @@ module Carto
     end
   end
 
+  class EmptyGrantedApisError < CartoError
+    def initialize
+      super('You must grant at least one api', 422)
+    end
+  end
+
+
   module ControllerHelper
     include Carto::UUIDHelper
 

@@ -1,8 +1,6 @@
 require 'json'
 
 module Carto
-  class EmptyGrantedApisError < StandardError; end
-
   class TablePermissions
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
     ALLOWED_PERMISSIONS = (WRITE_PERMISSIONS + ['select', 'references', 'trigger']).freeze

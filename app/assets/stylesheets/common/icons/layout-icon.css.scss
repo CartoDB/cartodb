@@ -11,31 +11,35 @@
 @import "../../variables/sizes";
 
 .LayoutIcon {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
   position: relative;
-  min-width: $sIcon-layout; // to no be deformed due to flex layout
-  width: $sIcon-layout;
-  height: $sIcon-layout;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: $sIcon-layout;
+  min-width: $sIcon-layout; // to no be deformed due to flex layout
+  height: $sIcon-layout;
   border: 1px solid $cIcons-default;
   border-radius: $sIcon-borderRadius;
-  font-size: 22px;
   color: $cIcons-default;
+  font-size: 22px;
 }
+
 .LayoutIcon--positive {
   border-color: $cHighlight-positive;
   color: $cHighlight-positive;
 }
+
 .LayoutIcon--negative {
   border-color: $cHighlight-negative;
   color: $cHighlight-negative;
 }
+
 .LayoutIcon--warning {
   border-color: $cHighlight-alert4;
   color: $cHighlight-alert4;
 }
+
 .LayoutIcon--darkGrey {
   border-color: $cStructure-darkLine;
   color: $cIcons-active;

@@ -9,71 +9,81 @@
 @import "../old_common/vars";
 
 #not_supported_dialog {
-  position:absolute;
-  width:356px;
-  height:213px;
-  top:50%;
-  left:50%;
-  margin-top:-107px;
-  margin-left:-178px;
-  padding:0;
-  background-color:#FFF;
-  text-align:center;
-  font-family:$text-fonts2;
-  color:#666666;
-  z-index:10000;
+  position: absolute;
+  z-index: 10000;
+  top: 50%;
+  left: 50%;
+  width: 356px;
+  height: 213px;
+  margin-top: -107px;
+  margin-left: -178px;
+  padding: 0;
+  background-color: #FFF;
+  color: #666;
+  font-family: $text-fonts2;
+  text-align: center;
 }
 
 #not_supported_dialog h2 {
-  @include inline-block();
-  width:77px;
-  margin:30px 0 0;
-  padding-bottom:16px;
-  font-size:13px;
-  font-weight:bold;
-  border-bottom:1px solid #D9D9D9;
-  vertical-align:top;
+  display: inline-block;
+  width: 77px;
+  margin: 30px 0 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #D9D9D9;
+  font-size: 13px;
+  font-weight: bold;
+  vertical-align: top;
 }
 
 #not_supported_dialog p {
-  display:block;
-  padding:0 40px;
-  margin:12px 0 0;
-  font-size:15px;
+  display: block;
+  margin: 12px 0 0;
+  padding: 0 40px;
+  font-size: 15px;
 }
 
 #not_supported_dialog ul {
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  display:block;
-  margin:0;
-  padding:0;
-  list-style:none;
-  border-top:1px solid #D9D9D9;
+  display: block;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #D9D9D9;
+  list-style: none;
 }
 
 #not_supported_dialog ul li {
-  float:left;
-  margin:0;
-  padding:0;
-  border-right:1px solid #D9D9D9;
+  margin: 0;
+  padding: 0;
+  float: left;
+  border-right: 1px solid #D9D9D9;
 
-  &.last { border:none }
+  &.last {
+    border: none;
+  }
 }
 
 #not_supported_dialog ul li a {
-  display:block;
-  width:118px;
-  height:74px;
-  background-repeat:no-repeat;
-  background-position:center center;
-  font-size:0;
-  line-height:0;
-  text-indent:-9999px;
+  display: block;
+  width: 118px;
+  height: 74px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  font-size: 0;
+  line-height: 0;
+  text-indent: -9999px;
 
-  &.safari  { @include background(image-url('layout/safari.png')); }
-  &.chrome  { @include background(image-url('layout/chrome.png')); }
-  &.firefox { @include background(image-url('layout/firefox.png')); }
+  &.safari {
+    @include background(image-url('layout/safari.png'));
+  }
+
+  &.chrome {
+    @include background(image-url('layout/chrome.png'));
+  }
+
+  &.firefox {
+    @include background(image-url('layout/firefox.png'));
+  }
 }

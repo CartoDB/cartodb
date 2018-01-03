@@ -5,7 +5,8 @@
 /lib/assets/javascripts
 /lib/assets/node_modules
 /lib/assets/test
-/lib/build
+/lib/build/*
+!/lib/build/tasks
 /lib/carto
 /lib/cartodb
 /lib/importer

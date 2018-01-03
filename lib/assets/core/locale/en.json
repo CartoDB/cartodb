@@ -222,9 +222,9 @@
       "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
-      "title": "Georeference",
+      "title": "Geocode",
       "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
-      "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
+      "description": "Geocoding data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
     },
     "centroid": {
       "title": "Calculating centroids from geometries",
@@ -325,8 +325,8 @@
       "short-title": "Connect with lines"
     },
     "georeference": {
-      "title": "Georeference",
-      "short-title": "Georeference"
+      "title": "Geocode",
+      "short-title": "Geocode"
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
@@ -526,7 +526,7 @@
     "geocoding": {
       "geocoding-error-details": {
         "close": "close",
-        "description": "There was a problem georeferencing your data",
+        "description": "There was a problem geocoding your data",
         "title": "Geocoding Error",
         "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with your username and the following code:",
         "view-dataset": "view dataset"
@@ -545,7 +545,7 @@
       "geocoding-no-result-details": {
         "close": "close",
         "description": "These rows contained empty values or perhaps we just didn't know what the values meant. We encourage you to take a look and try again.",
-        "title": "No rows were georeferenced",
+        "title": "No rows were geocoded",
         "view-dataset": "view dataset"
       }
     },
@@ -961,6 +961,7 @@
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}.",
         "geometry-types": {
           "point": "points",
+          "point,polygon": "points or polygons",
           "polygon,point": "points or polygons"
         },
         "unknown-geometry-type": "unknown",
@@ -983,7 +984,7 @@
             "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
           },
           "georeference": {
-            "title": "Georeference",
+            "title": "Geocode",
             "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "filter-intersection": {
@@ -1121,7 +1122,7 @@
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
             "state-selected-sync": "You can choose when to sync the file.",
-            "state-selected-instagram": "A map containing all your georeferenced photos will be created",
+            "state-selected-instagram": "A map containing all your geocoded photos will be created",
             "state-selected-no-sync": "Sync options are not available.",
             "supported": "supported",
             "try-again": "Try again"
@@ -1698,7 +1699,7 @@
         "add-layer": "Add layer",
         "geocode-text": "To show data on this map, geocode your layer.",
         "geocode": "Geocode",
-        "geocode-tooltip": "Geocode to visualize on the map"
+        "geocode-tooltip": "To show data on this map, geocode your layer."
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1989,7 +1990,7 @@
           "analysis-type": {
             "routing": "Routing",
             "trade-area": "Trade area",
-            "georeference-street-address": "Georeference street address",
+            "georeference-street-address": "Geocode street address",
             "data-observatory-measure": "Data Observatory"
           }
         },
@@ -2126,8 +2127,8 @@
         }
       },
       "georeference": {
-        "no-geometry": "There's no geometry in your data, please georeference it.",
-        "georeference-button": "Georeference",
+        "no-geometry": "There's no geometry in your data, please geocode it.",
+        "georeference-button": "Geocode",
         "visualize": "Layer doesn't have geometry"
       },
       "max-layers-infowindow": {
@@ -2341,7 +2342,7 @@
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
           "placeholder-text": "There's no geometry in your data that could be styled.",
-          "georeference": "Georeference",
+          "georeference": "Geocode",
           "desc": "Change the visualization"
         },
         "unanimatable": {

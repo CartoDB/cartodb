@@ -5,11 +5,12 @@
 //
 // --------------------------------------------------
 .DefaultTitle {
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-larger;
-  line-height: 20px;
   color: $cTypography-paragraphs;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+  line-height: 20px;
 }
+
 .DefaultTitle.is-disabled {
   color: rgba($cTypography-paragraphs, 0.4);
 }

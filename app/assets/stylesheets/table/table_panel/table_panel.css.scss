@@ -13,45 +13,48 @@
 $corner_radius: 6px;
 
 .table_panel {
-  position:fixed;
-  right:-537px;
-  top:64px;
-  bottom:0px;
-  width:600px;
-  padding-top:25px;
-  background:white;
-  letter-spacing:-4px;
-  border:1px solid rgba(black,0.4);
-  border-bottom:0;
-  border-right:0;
-  background:#EDEDED;
-  @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
-  @include border-top-left-radius($corner_radius);
-  z-index:20;
-
+  position: fixed;
+  z-index: 20;
+  top: 64px;
+  right: -537px;
+  bottom: 0;
+  width: 600px;
+  padding-top: 25px;
+  border: 1px solid rgba(black, 0.4);
+  border-right: 0;
+  border-bottom: 0;
+  border-top-left-radius: $corner_radius;
+  background: white;
+  background: #EDEDED;
+  box-shadow: rgba(black, 0.15) 0 0 2px 2px;
+  letter-spacing: -4px;
 
   .layer_panel {
-    position:relative;
-    width:100%;
-    height:100%;
-    margin-top:-25px;
-    background:#EDEDED;
-    border-top:1px solid #999999;
-    @include border-top-left-radius($corner_radius);
-    @include box-shadow(rgba(black,0.1) 0 -10px 20px 0);
-    @include transform-style("linear");
-    @include transition-property("padding,margin");
-    @include transition-duration(250ms);
-    z-index:1;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    margin-top: -25px;
+    transform-style: linear;
+    transition-property: padding, margin;
+    transition-duration: 250ms;
+    border-top: 1px solid #999;
+    border-top-left-radius: $corner_radius;
+    background: #EDEDED;
+    box-shadow: rgba(black, 0.1) 0 -10px 20px 0;
 
-    &:hover {padding-bottom:15px}
-    &:first-child {margin-top:0;}
-    &:last-child:hover {margin-top:-38px}
+    &:hover {
+      padding-bottom: 15px;
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child:hover {
+      margin-top: -38px;
+    }
   }
-
-
-
-
 
   ////////////////////////////////
   // ANIMATIONS FOR LAYER_PANEL //
@@ -59,84 +62,94 @@ $corner_radius: 6px;
 
   // Sorting
   .layer_panel.ui-sortable-placeholder {
-    visibility: visible!important;
+    visibility: visible !important;
 
-    &:after {
-      content:'';
-      position:absolute;
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 0;
       top: 10px;
-      left: 10px;
       right: 10px;
       bottom: 0;
-      border:2px dashed #AAA;
-      @include border-top-left-radius(3px);
-      z-index:0;
+      left: 10px;
+      border: 2px dashed #AAA;
+      border-top-left-radius: 3px;
     }
 
-    &:before {
-      content:'Drop your layer here';
-      position:absolute;
-      top:25px;
-      left:0;
-      right:0;
-      bottom:0;
-      width:100%;
-      text-align: center;
-      font:bold 17px $text-fonts;
-      color:#CDCDCD;
-      line-height:20px;
+    &::before {
+      content: 'Drop your layer here';
+      position: absolute;
+      z-index: 1;
+      top: 25px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      color: #CDCDCD;
+      font: bold 17px $text-fonts;
       letter-spacing: 0;
-      z-index:1;
+      line-height: 20px;
+      text-align: center;
     }
   }
 
   // Active layer
   .layer_panel.active {
-    margin-bottom:20px;
-    padding-bottom:0;
+    margin-bottom: 20px;
+    padding-bottom: 0;
 
     .layer-info .info {
-      .order {background:#666666;}
-      .name_info {color:#999;}
-      .name { color:#666; }
+      .order {
+        background: #666;
+      }
+
+      .name_info {
+        color: #999;
+      }
+
+      .name {
+        color: #666;
+      }
     }
 
     &:hover {
-      margin-bottom:20px;
-      padding-bottom:0;
-      margin-top:-25px;
+      margin-top: -25px;
+      margin-bottom: 20px;
+      padding-bottom: 0;
     }
   }
 
   // Active layer in visualization
   .layer_panel.active.vis {
     .layer-info {
-      .info .name:hover { color:#454545 }
+      .info .name:hover {
+        color: #454545;
+      }
     }
   }
 
   // Opened layer in visualization
   &.opened .layer_panel.active.vis {
     .layer-info {
-      line-height:46px;
+      line-height: 46px;
     }
   }
 
   &.opened .layer_panel.vis {
     .layer-info {
-      line-height:46px;
+      line-height: 46px;
     }
   }
 
   // Only hover state for visualizations, not for table view,
   // due to it is not possible drag layers in table view.
   &.ui-sortable .layer_panel.active .layer-info .info:hover {
-    cursor:move;
+    cursor: move;
+
     .order {
       @include table-sprite(layer_move_icon);
-      background-color:none;
-      text-indent:-9999px;
+      background-color: none;
+      text-indent: -9999px;
     }
   }
-
 }

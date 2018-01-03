@@ -68,6 +68,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :received_notifications, inverse_of: :user
 
+  has_many :api_keys, inverse_of: :user
+
   delegate [
       :database_username, :database_password, :in_database,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
@@ -495,7 +497,7 @@ class Carto::User < ActiveRecord::Base
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
     auth_token = Carto::User.select(:auth_token).find(id).auth_token
 
-    auth_token || generate_auth_token
+    auth_token || generate_and_save_auth_token
   end
 
   def notifications_for_category(category)

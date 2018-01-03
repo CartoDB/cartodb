@@ -1,7 +1,6 @@
 // Custom list styles
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -9,11 +8,11 @@
 .CustomList-inner {
   display: none;
   position: absolute;
+  z-index: 100;
   top: 36px;
   right: 0;
   min-width: 246px;
   max-width: 272px;
-  z-index: 100;
 }
 
 .CustomList-inner {
@@ -65,9 +64,9 @@
 
 .CustomList-messageText {
   max-width: 100%;
-  white-space: normal;
   overflow: auto;
   word-break: break-word;
+  white-space: normal;
 }
 
 .CustomList-item {
@@ -93,7 +92,7 @@
 .CDB-ListDecoration-item {
   min-height: 41px;
 
-  &:last-type-of {
+  &:last-of-type {
     border-bottom: 0;
   }
 

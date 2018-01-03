@@ -1,55 +1,72 @@
-  
-  /**
+
+/**
    * Autocomplete UI plugin css
    */
 
-  @import "compass/css3/border-radius";
-  @import "compass/css3/opacity";
-  @import "../old_common/vars";
+@import "compass/css3/border-radius";
+@import "../old_common/vars";
 
-  ul.ui-autocomplete {
-    position:absolute;
-    display:block;
-    width:108px;
-    top:-10px;
-    max-width:140px;
-    height:auto;
-    max-height:120px;
-    background:white;
-    z-index:1000!important;
-    @include border-radius(3px);
-    border:1px solid #999999;
-    overflow-y: auto;
+ul.ui-autocomplete {
+  display: block;
+  position: absolute;
+  z-index: 1000 !important;
+  top: -10px;
+  width: 108px;
+  max-width: 140px;
+  height: auto;
+  max-height: 120px;
+  overflow-y: auto;
+  border: 1px solid #999;
+  border-radius: 3px;
+  background: WHITE;
 
-    li {
-      display:block;
-      border-top:1px solid rgba(#CCCCCC,0.35);
+  li {
+    display: block;
+    border-top: 1px solid rgba(#CCC, 0.35);
+
+    a {
+      display: block;
+      padding: 0 10px;
+      overflow: hidden;
+      font-size: 13px;
+      line-height: 35px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &:first-child {
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+    }
+
+    &:last-child {
+      border-bottom-right-radius: 3px;
+      border-bottom-left-radius: 3px;
+    }
+
+    &:hover {
+      background: #F7F7F7;
 
       a {
-        display:block;
-        line-height:35px;
-        padding:0 10px;
-        font-size:13px;
-        text-overflow:ellipsis;
-        overflow:hidden;
-        white-space:nowrap;
-      }
-
-      &:first-child {@include border-top-radius(3px)}
-      &:last-child {@include border-bottom-radius(3px)}
-
-      &:hover {
-        background:#F7F7F7;
-        a {color:#333333; text-decoration:none}
-      }
-
-      &.disabled {
-        background:white;
-        a {@include opacity(0.4); color:$link-color; text-decoration:none}
-      }
-
-      & a.ui-active-hover, & a#ui-active-menuitem {
-        color:#333333; text-decoration:none
+        color: #333;
+        text-decoration: none;
       }
     }
+
+    &.disabled {
+      background: WHITE;
+
+      a {
+        opacity: 0.4;
+        color: $link-color;
+        text-decoration: none;
+      }
+    }
+
+    & a.ui-active-hover,
+    & a#ui-active-menuitem {
+      color: #333;
+      text-decoration: none;
+    }
   }
+}

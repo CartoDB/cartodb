@@ -12,6 +12,8 @@
 
 .WidgetList-item {
   display: flex;
+  position: relative;
+  box-sizing: border-box;
   flex: 0 0 304px;
   align-items: baseline;
   width: 304px;
@@ -19,17 +21,43 @@
   margin: 0 4px 8px;
   padding: $baseSize * 2;
   transition: border 200ms ease-in;
-  border: 2px solid transparent;
+  border: 1px solid $cMainLine;
   border-radius: $baseSize / 2;
   background: $cWhite;
-  box-sizing: border-box;
+  cursor: pointer;
 
   &:hover {
-    border: 2px solid $cBlueHover;
+    transition: border 200ms ease-in;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cBlueHover;
+      border-radius: 4px;
+      pointer-events: none;
+    }
   }
 
   &.is-selected {
-    border: 2px solid $cBlackHover;
+    &::after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cMainText;
+      border-radius: 4px;
+      pointer-events: none;
+    }
   }
 }
 
@@ -74,11 +102,11 @@
 }
 
 .Widget-categoryFake {
+  box-sizing: border-box;
   height: 4px;
   margin-bottom: 16px;
   border-radius: 10px;
   background: $cSecondaryBackground;
-  box-sizing: border-box;
 }
 
 .Widget-categoryFakeText {
@@ -105,13 +133,13 @@
   border-bottom: 1px solid $cSecondaryLine;
 
   &::before {
+    content: '';
     position: absolute;
     top: 50%;
     right: 0;
     left: 0;
     height: 1px;
     background: $cSecondaryLine;
-    content: '';
   }
 }
 
@@ -126,9 +154,3 @@
   height: 20px;
   background: $cSecondaryLine;
 }
-
-
-
-
-
-

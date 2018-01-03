@@ -33,12 +33,12 @@
 .u-txt-right { text-align: right; }
 .u-tupper { text-transform: uppercase; }
 
-.u-valign:before {
-  display: inline-block;
-  vertical-align: middle;
+.u-valign::before {
   content: "";
+  display: inline-block;
   height: 100%;
   margin-left: -5px;
+  vertical-align: middle;
 }
 
 .u-vspace-xl { margin-bottom: 60px; }

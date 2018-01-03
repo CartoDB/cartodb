@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require_dependency 'carto/db/connection'
 
 module Carto
   class UserService
@@ -157,97 +158,17 @@ module Carto
       @user.crypted_password + database_username
     end
 
-    def in_database(options = {}, &block)
-      if options[:statement_timeout]
-        in_database.execute(%Q{ SET statement_timeout TO #{options[:statement_timeout]} })
-      end
-
-      configuration = get_db_configuration_for(options[:as])
-
-      connection = $pool.fetch(configuration) do
-        get_database(options, configuration)
-      end
-
-      if block_given?
-        yield(connection)
-      else
-        connection
-      end
-    ensure
-      if options[:statement_timeout]
-        in_database.execute(%Q{ SET statement_timeout TO DEFAULT })
-      end
-    end
-
-    # NOTE: Must not live inside another model as AR internally uses model name as key for its internal connection cache
-    # and establish_connection would override the model's connection
-    def get_database(options, configuration)
-      resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new(
-          configuration, get_connection_name(options[:as])
-        )
-      conn = ActiveRecord::Base.connection_handler.establish_connection(
-          get_connection_name(options[:as]), resolver.spec
-        ).connection
-
-      unless options[:as] == :cluster_admin
-        conn.execute(%Q{ SET search_path TO #{@user.db_service.build_search_path} })
-      end
-      conn
-    end
-
-    def get_connection_name(kind = :user_model)
-      kind.to_s
-    end
-
-    def connection(options = {})
-    configuration = get_db_configuration_for(options[:as])
-
-    $pool.fetch(configuration) do
-      get_database(options, configuration)
-    end
-  end
-
-    def get_db_configuration_for(user_type = nil)
-      logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
-
-      # TODO: proper AR config when migration is complete
-      base_config = ::SequelRails.configuration.environment_for(Rails.env)
-      config = {
-        orm:      'ar',
-        adapter:  "postgresql",
-        logger:   logger,
-        host:     @user.database_host,
-        username: base_config['username'],
-        password: base_config['password'],
-        database: @user.database_name,
-        port:     base_config['port'],
-        encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding']
-      }
-
-      case user_type
-        when :superuser
-          config    # Nothing needed, default
-        when :cluster_admin
-          config.merge({
-              database: 'postgres'
-            })
-        when :public_user
-          config.merge({
-              username: CartoDB::PUBLIC_DB_USER,
-              password: CartoDB::PUBLIC_DB_USER_PASSWORD
-            })
-        when :public_db_user
-          config.merge({
-              username: database_public_username,
-              password: CartoDB::PUBLIC_DB_USER_PASSWORD
-            })
+    def in_database(options = {})
+      options[:username] = @user.database_username
+      options[:password] = @user.database_password
+      options[:user_schema] = @user.database_schema
+      Carto::Db::Connection.connect(@user.database_host, @user.database_name, options) do |_, connection|
+        if block_given?
+          yield(connection)
         else
-          config.merge({
-              username: database_username,
-              password: database_password,
-            })
+          connection
+        end
       end
     end
-
   end
 end

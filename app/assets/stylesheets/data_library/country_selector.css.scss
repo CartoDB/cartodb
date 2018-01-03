@@ -20,6 +20,7 @@
     display: none;
   }
 }
+
 .CountrySelector-button {
   @include country-selector-button();
   display: inline-block;
@@ -32,6 +33,7 @@
   text-align: center;
   vertical-align: middle;
 }
+
 .CountrySelector-button:hover {
   border-color: $cNavButton-active;
 
@@ -39,16 +41,19 @@
     color: $cNavButton-active;
   }
 }
+
 .CountrySelector-text {
   display: inline-block;
   color: #FFF;
   font-size: $sFontSize-large;
   line-height: 40px;
 }
+
 .CountrySelector-text,
 .CountrySelector-button {
   pointer-events: auto;
 }
+
 .CountrySelector-inner {
   pointer-events: none;
 }

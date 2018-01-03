@@ -2,17 +2,19 @@
 // --------------------------------------------------
 
 .onboardingNotification {
+  box-sizing: border-box;
   width: 100%;
   padding: 12px;
   color: #FFF;
   text-align: center;
-  box-sizing: border-box;
 }
+
 .onboardingNotification-link {
   color: #FFF;
   text-decoration: underline;
   cursor: pointer;
 }
+
 .onboardingNotification-closeButton {
   position: absolute;
   right: 12px;

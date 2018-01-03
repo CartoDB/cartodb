@@ -13,6 +13,11 @@ describe Carto::Api::UsersController do
     @headers = { 'CONTENT_TYPE' => 'application/json' }
   end
 
+  before(:each) do
+    ::User.any_instance.stubs(:create_in_central).returns(true)
+    ::User.any_instance.stubs(:update_in_central).returns(true)
+  end
+
   describe 'me' do
     it 'contains hubspot_form_ids in config' do
       CartoDB::Hubspot.any_instance.stubs(:enabled?).returns(true)
@@ -239,7 +244,6 @@ describe Carto::Api::UsersController do
     let(:url_options) do
       {
         user_domain: @user.username,
-        user_id: @user.id,
         api_key: @user.api_key
       }
     end

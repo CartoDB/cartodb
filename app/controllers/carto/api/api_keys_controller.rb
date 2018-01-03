@@ -10,7 +10,6 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
-  rescue_from Carto::EmptyGrantedApisError, with: :rescue_from_carto_error
 
   def create
     api_key = Carto::ApiKey.create!(

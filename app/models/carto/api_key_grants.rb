@@ -37,7 +37,6 @@ module Carto
     attr_reader :granted_apis
 
     def initialize(grants_json = [])
-      @granted_apis = []
       @table_permissions = {}
 
       # TODO: this should be removed when complete, previous json schema validation grants it
@@ -47,7 +46,7 @@ module Carto
 
       grants_json.each { |grant| process_grant(grant) }
 
-      raise EmptyGrantedApisError.new if @granted_apis.empty?
+      raise EmptyGrantedApisError.new unless granted_apis
     end
 
     def table_permissions
@@ -73,6 +72,7 @@ module Carto
       type = grant[:type]
       case type
       when 'apis'
+        @granted_apis ||= []
         @granted_apis += generate_apis_grant(grant[:apis])
       when 'database'
         process_database_grant(grant[:tables])
@@ -82,6 +82,7 @@ module Carto
     end
 
     def generate_apis_grant(grant)
+      grant ||= []
       grant.select { |api| ALLOWED_APIS.include?(api.downcase) }
     end
 

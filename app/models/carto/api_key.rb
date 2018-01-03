@@ -1,5 +1,12 @@
 require 'securerandom'
 
+class ApiKeyGrantsValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
+    record.errors[attribute] = ['apis type has to be present'] if value.select { |v| v[:type] == 'apis'}.empty?
+  end
+end
+
 class Carto::ApiKey < ActiveRecord::Base
 
   include Carto::AuthTokenGenerator
@@ -18,7 +25,7 @@ class Carto::ApiKey < ActiveRecord::Base
   before_create :create_db_config
 
   serialize :grants, Carto::CartoJsonSymbolizerSerializer
-  validates :grants, carto_json_symbolizer: true, json_schema: true
+  validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
 
   validates :name, presence: true
 

@@ -54,7 +54,7 @@ module Carto
       super('You must grant at least one api', 422)
     end
   end
-  
+
   module ControllerHelper
     include Carto::UUIDHelper
 

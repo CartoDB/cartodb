@@ -142,6 +142,6 @@ describe Carto::ApiKey do
                             type: Carto::ApiKey::TYPE_REGULAR,
                             name: 'irrelevant',
                             grants: grants)
-    end.to raise_error(Carto::EmptyGrantedApisError)
+    end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Grants ["apis type has to be present"]')
   end
 end

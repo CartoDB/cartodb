@@ -38,17 +38,17 @@ class Carto::ApiKey < ActiveRecord::Base
     @api_key_grants ||= ::Carto::ApiKeyGrants.new(grants)
   end
 
-  private
-
-  PASSWORD_LENGTH = 40
-
-  REDIS_KEY_PREFIX = 'api_keys:'.freeze
-
   def create_token
     begin
       self.token = generate_auth_token
     end while self.class.exists?(token: token)
   end
+
+  private
+
+  PASSWORD_LENGTH = 40
+
+  REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
   def create_db_config
     begin

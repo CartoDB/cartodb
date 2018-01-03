@@ -1737,7 +1737,7 @@
         "data": "Data",
         "analyses": "Analysis",
         "style": "Style",
-        "infowindow": "Pop-up",
+        "popups": "Pop-up",
         "legends": "Legend"
       },
       "infowindow-menu-tab-pane-labels": {

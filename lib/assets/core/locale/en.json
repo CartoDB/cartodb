@@ -2244,7 +2244,8 @@
       },
       "menu-tab-pane-labels": {
         "color": "color",
-        "size": "size"
+        "size": "size",
+        "size-disabled": "Style your layer by value to enable this type of legend"
       },
       "messages": {
         "custom-legend": {

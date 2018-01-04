@@ -40,13 +40,8 @@ module Carto
       @grants_json = grants_json
       @table_permissions = {}
       @granted_apis = []
-      @errors = {}
 
       grants_json.each { |grant| process_grant(grant) }
-    end
-
-    def errors
-      @errors
     end
 
     def table_permissions
@@ -63,15 +58,10 @@ module Carto
       type = grant[:type]
       case type
       when 'apis'
-        @granted_apis += generate_apis_grant(grant[:apis])
+        @granted_apis += grant[:apis]
       when 'database'
         process_database_grant(grant[:tables])
       end
-    end
-
-    def generate_apis_grant(grant)
-      grant ||= []
-      grant.select { |api| ALLOWED_APIS.include?(api.downcase) }
     end
 
     def process_database_grant(grant)

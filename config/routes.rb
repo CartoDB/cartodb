@@ -568,7 +568,7 @@ CartoDB::Application.routes.draw do
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
     scope 'v3/' do
       # Front/back split
-      get 'me' => 'users#me', as: :api_v3_users_me
+      get 'me' => 'users#me', as: :api_v3_users_me, via: [:get, :options]
       put 'me' => 'users#update_me', as: :api_v3_users_update_me
       delete 'me' => 'users#delete_me', as: :api_v3_users_delete_me
 

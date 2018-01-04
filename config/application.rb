@@ -6,6 +6,8 @@ require "action_controller/railtie"
 #require "sequel-rails/railtie"
 require "action_mailer/railtie"
 require "active_record"
+require 'rack'
+require 'rack/cors'
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
@@ -193,6 +195,16 @@ module CartoDB
 
     custom_app_views_paths.reverse.each do |custom_views_path|
       config.paths['app/views'].unshift(custom_views_path)
+    end
+
+    config.middleware.use "Rack::Cors" do
+      allow do
+        origins ([Cartodb.get_config[:account_host]] + Cartodb.get_config(:cors_enabled_hosts) || []).compact
+        resource '*',
+          :credentials => true,
+          :headers => :any,
+          :methods => [:get, :post, :delete, :put, :options]
+      end
     end
   end
 end

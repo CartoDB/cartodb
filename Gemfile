@@ -84,6 +84,8 @@ gem 'net-telnet'
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 
+gem 'rack-cors', :require => 'rack/cors'
+
 group :test do
   gem 'simplecov', '0.13.0', require: false
   gem 'simplecov-json'

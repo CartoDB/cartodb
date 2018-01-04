@@ -120,7 +120,6 @@ class ApplicationController < ActionController::Base
   def allow_cross_domain_access
     if !request.headers['origin'].blank? && check_cors_headers_for_whitelisted_referer
       common_cors_headers
-      response.headers['Access-Control-Allow-Credentials'] = 'true'
     elsif !Rails.env.production? && !Rails.env.staging?
       development_cors_headers
     end
@@ -128,14 +127,16 @@ class ApplicationController < ActionController::Base
 
   def common_cors_headers
     response.headers['Access-Control-Allow-Origin'] = request.headers['origin']
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, PUT, POST, DELETE, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
   end
 
   def development_cors_headers
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = request.headers['origin']
     response.headers['Access-Control-Allow-Methods'] = '*'
     response.headers['Access-Control-Allow-Headers'] = '*'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
   end
 
   def check_cors_headers_for_whitelisted_referer

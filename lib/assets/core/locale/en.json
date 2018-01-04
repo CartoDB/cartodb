@@ -2068,7 +2068,6 @@
         "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
-        "placeholder-geometry": "There's no geometry in your data to add a popup.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
@@ -2341,7 +2340,6 @@
           "title-label-point": "Style",
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
-          "placeholder-text": "There's no geometry in your data that could be styled.",
           "georeference": "Geocode",
           "desc": "Change the visualization"
         },

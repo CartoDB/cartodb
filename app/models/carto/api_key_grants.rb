@@ -38,10 +38,8 @@ module Carto
 
     def initialize(grants_json = [])
       @grants_json = grants_json
-      @table_permissions = {}
-      @granted_apis = []
-
-      grants_json.each { |grant| process_grant(grant) }
+      @granted_apis = process_granted_apis(grants_json)
+      @table_permissions = process_table_permissions(grants_json)
     end
 
     def table_permissions
@@ -54,22 +52,23 @@ module Carto
 
     private
 
-    def process_grant(grant)
-      type = grant[:type]
-      case type
-      when 'apis'
-        @granted_apis += grant[:apis]
-      when 'database'
-        process_database_grant(grant[:tables])
-      end
+    def process_granted_apis(grants_json)
+      grants_json.find { |v| v[:type] == 'apis' }[:apis]
     end
 
-    def process_database_grant(grant)
-      grant.each do |table|
+    def process_table_permissions(grants_json)
+      table_permissions = {}
+
+      databases = grants_json.find { |v| v[:type] == 'database'}
+      return table_permissions unless databases.present?
+
+      databases[:tables].each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
-        permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table[:schema], name: table[:name])
+        permissions = table_permissions[table_id] ||= TablePermissions.new(schema: table[:schema], name: table[:name])
         permissions.merge!(table[:permissions])
       end
+
+      table_permissions
     end
   end
 end

@@ -163,7 +163,7 @@ describe Carto::ApiKey do
                                   name: 'irrelevant',
                                   grants: grants)
       api_key.valid?.should be_false
-      api_key.errors.full_messages.should include 'Grants apis type has to be present'
+      api_key.errors.full_messages.should include 'Grants only one apis section is allowed'
     end
   end
 end

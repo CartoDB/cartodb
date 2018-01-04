@@ -3,8 +3,7 @@ require 'securerandom'
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
-    record.errors[attribute] << 'apis type has to be present' unless value.any? { |v| v[:type] == 'apis' }
-    record.errors[attribute] << 'only one apis section is allowed' if value.count { |v| v[:type] == 'apis' } > 1
+    record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
     record.errors[attribute] << 'only one database section is allowed' if value.count { |v| v[:type] == 'database' } > 1
   end
 end

@@ -11,8 +11,8 @@
 
   var MOVE_OFFSET = 6;
 
-  function maybeCall(thing, ctx) {
-    return (typeof thing == 'function') ? (thing.call(ctx)) : thing;
+  function maybeCall(thing, ctx, argument) {
+    return (typeof thing == 'function') ? (thing.call(ctx, argument)) : thing;
   };
 
   function isElementInDOM(ele) {
@@ -52,7 +52,7 @@
 
             var actualWidth = $tip[0].offsetWidth,
             actualHeight = $tip[0].offsetHeight,
-            gravity = maybeCall(this.options.gravity, this.$element[0]);
+            gravity = maybeCall(this.options.gravity, this.$element[0], $tip[0]);
 
             var tp;
             switch (gravity.charAt(0)) {

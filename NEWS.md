@@ -112,6 +112,7 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
+* Remove card's hover state when hovering the dataset/node inside (#13316)
 * Data Observatory analysis is not working (CartoDB/support#1239)
 * Use zoomToData only if the layer is created from a dataset (#13309)
 * Rename Georeference to Geocode (#13315)

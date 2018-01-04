@@ -4,6 +4,8 @@ require 'factories/carto_visualizations'
 
 describe Carto::Api::ApiKeysController do
   include_context 'users helper'
+  include HelperMethods
+
   before(:all) do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
   end

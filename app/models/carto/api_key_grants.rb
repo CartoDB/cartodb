@@ -59,7 +59,7 @@ module Carto
     def process_table_permissions(grants_json)
       table_permissions = {}
 
-      databases = grants_json.find { |v| v[:type] == 'database'}
+      databases = grants_json.find { |v| v[:type] == 'database' }
       return table_permissions unless databases.present?
 
       databases[:tables].each do |table|

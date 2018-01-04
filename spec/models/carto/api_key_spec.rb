@@ -6,7 +6,8 @@ require 'support/helpers'
 describe Carto::ApiKey do
   include_context 'users helper'
 
-  def database_grant(database_schema = 'wadus', table_name = 'wadus', permissions: ['insert', 'select', 'update', 'delete'])
+  def database_grant(database_schema = 'wadus', table_name = 'wadus',
+                     permissions: ['insert', 'select', 'update', 'delete'])
     {
       type: "database",
       tables: [
@@ -54,8 +55,8 @@ describe Carto::ApiKey do
   end
 
   it 'can grant insert, select, update delete to a database role' do
-    api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                    name: 'full', grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
+    api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                                    grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
     with_connection_from_api_key(api_key) do |connection|
       begin
@@ -90,8 +91,8 @@ describe Carto::ApiKey do
 
   describe '#destroy' do
     it 'removes the role from DB' do
-      api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'full', grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
+      api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                                      grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
       @user1.in_database(as: :superuser) do |db|
         db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 1
@@ -105,8 +106,8 @@ describe Carto::ApiKey do
     end
 
     it 'removes the role from Redis' do
-      api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'full', grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
+      api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                                      grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
       $users_metadata.hgetall(api_key.send(:redis_key)).should_not be_empty
 
@@ -130,9 +131,9 @@ describe Carto::ApiKey do
     it 'fails with several database sections' do
       two_apis_grant = [apis_grant, database_grant, database_grant]
       api_key = Carto::ApiKey.new(user_id: @user1.id,
-                                 type: Carto::ApiKey::TYPE_REGULAR,
-                                 name: 'x',
-                                 grants: two_apis_grant)
+                                  type: Carto::ApiKey::TYPE_REGULAR,
+                                  name: 'x',
+                                  grants: two_apis_grant)
       api_key.valid?.should be_false
       api_key.errors.full_messages.should include 'Grants only one database section is allowed'
     end

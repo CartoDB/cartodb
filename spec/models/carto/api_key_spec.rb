@@ -6,7 +6,7 @@ require 'support/helpers'
 describe Carto::ApiKey do
   include_context 'users helper'
 
-  def grant(database_schema, table_name, permissions: ['insert', 'select', 'update', 'delete'])
+  def database_grant(database_schema = 'wadus', table_name = 'wadus', permissions: ['insert', 'select', 'update', 'delete'])
     {
       type: "database",
       tables: [
@@ -19,7 +19,7 @@ describe Carto::ApiKey do
     }
   end
 
-  def apis(apis = ['maps', 'sql'])
+  def apis_grant(apis = ['maps', 'sql'])
     {
       type: 'apis',
       apis: apis
@@ -55,7 +55,7 @@ describe Carto::ApiKey do
 
   it 'can grant insert, select, update delete to a database role' do
     api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                    name: 'full', grants: [grant(@table1.database_schema, @table1.name), apis])
+                                    name: 'full', grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
     with_connection_from_api_key(api_key) do |connection|
       begin
@@ -91,7 +91,7 @@ describe Carto::ApiKey do
   describe '#destroy' do
     it 'removes the role from DB' do
       api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name), apis])
+                                      name: 'full', grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
       @user1.in_database(as: :superuser) do |db|
         db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 1
@@ -106,7 +106,7 @@ describe Carto::ApiKey do
 
     it 'removes the role from Redis' do
       api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                      name: 'full', grants: [grant(@table1.database_schema, @table1.name), apis])
+                                      name: 'full', grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
       $users_metadata.hgetall(api_key.send(:redis_key)).should_not be_empty
 
@@ -117,7 +117,27 @@ describe Carto::ApiKey do
   end
 
   describe 'validations' do
-    it 'fails when creating without api_grants' do
+    it 'fails with several apis sections' do
+      two_apis_grant = [apis_grant, apis_grant, database_grant]
+      api_key = Carto::ApiKey.new(user_id: @user1.id,
+                                  type: Carto::ApiKey::TYPE_REGULAR,
+                                  name: 'x',
+                                  grants: two_apis_grant)
+      api_key.valid?.should be_false
+      api_key.errors.full_messages.should include 'Grants only one apis section is allowed'
+    end
+
+    it 'fails with several database sections' do
+      two_apis_grant = [apis_grant, database_grant, database_grant]
+      api_key = Carto::ApiKey.new(user_id: @user1.id,
+                                 type: Carto::ApiKey::TYPE_REGULAR,
+                                 name: 'x',
+                                 grants: two_apis_grant)
+      api_key.valid?.should be_false
+      api_key.errors.full_messages.should include 'Grants only one database section is allowed'
+    end
+
+    it 'fails when creating without apis grants' do
       grants = JSON.parse('
     [
       {
@@ -138,12 +158,12 @@ describe Carto::ApiKey do
       }
     ]',
                           symbolize_names: true)
-      expect do
-        Carto::ApiKey.create!(user_id: @user1.id,
-                              type: Carto::ApiKey::TYPE_REGULAR,
-                              name: 'irrelevant',
-                              grants: grants)
-      end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Grants ["apis type has to be present"]')
+      api_key = Carto::ApiKey.new(user_id: @user1.id,
+                                  type: Carto::ApiKey::TYPE_REGULAR,
+                                  name: 'irrelevant',
+                                  grants: grants)
+      api_key.valid?.should be_false
+      api_key.errors.full_messages.should include 'Grants apis type has to be present'
     end
   end
 end

@@ -103,13 +103,17 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
-* Add support for creating Auth API Keys (#13170)
+* Auth API
+  * Keys creation (#13170)
+  * Keys destruction (#13171)
+  * Token regeneration (#13321)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 
 ### Bug fixes / enhancements
 * Remove card's hover state when hovering the dataset/node inside (#13316)
+* Data Observatory analysis is not working (CartoDB/support#1239)
 * Use zoomToData only if the layer is created from a dataset (#13309)
 * Rename Georeference to Geocode (#13315)
 * Use new header design in export as image view (#13306)

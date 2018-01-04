@@ -121,6 +121,50 @@ describe Carto::Api::ApiKeysController do
         error_response[:errors].should match /permissions.*did not match one of the following values: insert, select, update, delete/
       end
     end
+
+    it 'fails if database does not exist' do
+      grants = [
+        {
+          'type' => 'database',
+          'tables' => [
+            'schema' => @carto_user1.database_schema,
+            'name' => 'wadus',
+            'permissions' => ['select']
+          ]
+        },
+        {
+          'type' => 'apis',
+          'apis' => ['maps', 'sql']
+        }
+      ]
+      post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /relation \"public.wadus\" does not exist/
+      end
+    end
+
+    it 'fails if schema does not exist' do
+      grants = [
+        {
+          'type' => 'database',
+          'tables' => [
+            'schema' => 'wadus',
+            'name' => @table1.name,
+            'permissions' => ['select']
+          ]
+        },
+        {
+          'type' => 'apis',
+          'apis' => ['maps', 'sql']
+        }
+      ]
+      post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /schema \"wadus\" does not exist/
+      end
+    end
   end
 
   describe '#destroy' do

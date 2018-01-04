@@ -198,4 +198,26 @@ describe Carto::Api::ApiKeysController do
       api_key.destroy
     end
   end
+
+  describe '#regenerate' do
+    before(:all) do
+      @api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+    end
+
+    after(:all) do
+      @api_key.destroy
+    end
+
+    it 'regenerates the token' do
+      old_token = @api_key.token
+      options = { user_domain: @user1.username, api_key: @user1.api_key, id: @api_key.id }
+      post_json regenerate_api_key_token_url(options) do |response|
+        response.status.should eq 200
+        response.body[:token].should_not be_nil
+        response.body[:token].should_not eq old_token
+        @api_key.reload
+        response.body[:token].should eq @api_key.token
+      end
+    end
+  end
 end

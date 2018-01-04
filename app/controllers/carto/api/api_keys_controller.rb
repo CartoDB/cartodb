@@ -2,11 +2,11 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   include Carto::ControllerHelper
   include Carto::UUIDHelper
 
-  ssl_required :create, :destroy
+  ssl_required :create, :destroy, :regenerate_token
 
   before_filter :api_authorization_required
   before_filter :check_feature_flag
-  before_filter :load_api_key, only: [:destroy]
+  before_filter :load_api_key, only: [:destroy, :regenerate_token]
 
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
@@ -26,6 +26,12 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   def destroy
     @api_key.destroy
+    render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)
+  end
+
+  def regenerate_token
+    @api_key.create_token
+    @api_key.save!
     render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)
   end
 

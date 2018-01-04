@@ -32,12 +32,24 @@ end
 
 class JsonSchemaValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
+    return unless value
+
+    value_for_json = prepare_for_json(value)
+
     schema = Carto::Definition.instance.load_from_file("lib/formats/#{record.class.to_s.underscore}/#{attribute}.json")
-    unless value.is_a?(Array)
-      record.errors[attribute] << 'Attribute should be an array'
-      return
-    end
-    errors = JSON::Validator::fully_validate(schema, value.map(&:with_indifferent_access), strict: true)
+    errors = JSON::Validator::fully_validate(schema, value_for_json, strict: true)
     record.errors[attribute] << errors.join(', ') if errors.any?
+  end
+
+  private
+
+  def prepare_for_json(value)
+    if value.is_a? Hash
+      value.with_indifferent_access
+    elsif value.respond_to? :map
+      value.map { |v| prepare_for_json(v) }
+    else
+      value
+    end
   end
 end

@@ -116,8 +116,9 @@ describe Carto::ApiKey do
     end
   end
 
-  it 'fails when creating without api_grants' do
-    grants = JSON.parse('
+  describe 'validations' do
+    it 'fails when creating without api_grants' do
+      grants = JSON.parse('
     [
       {
         "type": "database",
@@ -136,12 +137,13 @@ describe Carto::ApiKey do
         ]
       }
     ]',
-                        symbolize_names: true)
-    expect do
-      Carto::ApiKey.create!(user_id: @user1.id,
-                            type: Carto::ApiKey::TYPE_REGULAR,
-                            name: 'irrelevant',
-                            grants: grants)
-    end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Grants ["apis type has to be present"]')
+                          symbolize_names: true)
+      expect do
+        Carto::ApiKey.create!(user_id: @user1.id,
+                              type: Carto::ApiKey::TYPE_REGULAR,
+                              name: 'irrelevant',
+                              grants: grants)
+      end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Grants ["apis type has to be present"]')
+    end
   end
 end

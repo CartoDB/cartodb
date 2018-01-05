@@ -52,6 +52,11 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
     render_jsonp(metadata,200)
   end
+
+  def show
+    render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)
+  end
+
   private
 
   def check_feature_flag

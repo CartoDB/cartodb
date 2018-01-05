@@ -150,4 +150,35 @@ describe Carto::Api::ApiKeysController do
       api_key.destroy
     end
   end
+
+  describe '#show' do
+    it 'returns requested API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      get_json generate_api_key_url(@user1, id: api_key.id) do |response|
+        response.status.should eq 200
+        response.body[:id].should eq api_key.id
+      end
+    end
+
+    it 'returns 404 if the API key does not exist' do
+      get_json generate_api_key_url(@user1, id: 'wadus') do |response|
+        response.status.should eq 404
+      end
+    end
+
+    it 'returns 404 if the API key does not belong to the user' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      get_json generate_api_key_url(@user2, id: api_key.id) do |response|
+        response.status.should eq 404
+      end
+    end
+
+    it 'returns 401 if api_key is not provided' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      @user1.api_key = nil
+      get_json generate_api_key_url(@user1, id: api_key.id) do |response|
+        response.status.should eq 401
+      end
+    end
+  end
 end

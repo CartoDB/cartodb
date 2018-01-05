@@ -22,6 +22,12 @@
   background: #FFF;
   cursor: pointer;
 
+  &.is-hover {
+    &:hover {
+      @include regularBorder();
+    }
+  }
+
   &:hover {
     border: 1px solid $cBlueHover;
 

@@ -5,7 +5,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
 
-  ssl_required :create, :destroy, :regenerate_token
+  ssl_required :create, :destroy, :regenerate_token, :show, :index
 
   before_filter :api_authorization_required
   before_filter :check_feature_flag

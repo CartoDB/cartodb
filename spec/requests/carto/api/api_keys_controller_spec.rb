@@ -15,7 +15,7 @@ describe Carto::Api::ApiKeysController do
   end
 
   def generate_api_key_url(user, id: nil, options: {})
-    options.merge!({ user_domain: user.username, api_key: user.api_key })
+    options.merge!(user_domain: user.username, api_key: user.api_key)
     id ? api_key_url(options.merge(id: id)) : api_keys_url(options)
   end
 
@@ -197,14 +197,17 @@ describe Carto::Api::ApiKeysController do
 
     it 'returns 401 if api_key is not provided' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      @user1.api_key = nil
-      get_json generate_api_key_url(@user1, id: api_key.id) do |response|
+      get_json generate_api_key_url(Carto::User.new, id: api_key.id) do |response|
         response.status.should eq 401
       end
     end
   end
 
   describe '#index' do
+    before :all do
+      Carto::User.find(@user1.id).api_keys.each(&:destroy)
+    end
+
     before :each do
       @apikey1 = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
       @apikey2 = FactoryGirl.create(:api_key_apis, user_id: @user1.id)

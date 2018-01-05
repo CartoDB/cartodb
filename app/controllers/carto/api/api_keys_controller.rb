@@ -38,25 +38,25 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def index
-    result = []
     page, per_page, order = page_per_page_order_params
 
     api_keys = Carto::User.find(current_viewer.id).api_keys
-    api_keys.limit(per_page).offset((page - 1) * per_page).order(order).each do |api_key|
-      result << api_key_links(api_key)
-    end
+    filtered_api_keys = api_keys.limit(per_page).offset((page - 1) * per_page).order(order)
+
+    result = filtered_api_keys.map { |api_key| json_for_api_key(api_key) }
 
     last_page = (api_keys.count / per_page.to_f).ceil
 
-    metadata = metadata_with_first_page(api_keys.count, result.count)
+    metadata = metadata(api_keys.count, result.count)
 
+    metadata[:_links][:first] = first_page_link
     metadata[:_links][:prev] = prev_page_link if page > 1
     metadata[:_links][:next] = next_page_link if last_page > page
     metadata[:_links][:last] = last_page_link(last_page)
 
     metadata[:result] = result
 
-    render_jsonp(metadata,200)
+    render_jsonp(metadata, 200)
   end
 
   def show
@@ -76,26 +76,26 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     end
   end
 
-  def metadata_with_first_page(api_keys_count, total_count)
-    _, per_page, order = page_per_page_order_params
+  def metadata(api_keys_count, total_count)
     {
       total: api_keys_count,
       count: total_count,
-      _links: {
-        first: {
-          href: api_keys_url(page: 1, per_page: per_page, order: order)
-        }
-      }
+      _links: {}
     }
   end
 
-  def api_key_links(api_key)
+  def json_for_api_key(api_key)
     {
       id: api_key.id,
       _links: {
         self: api_key_url(id: api_key.id)
       }
     }
+  end
+
+  def first_page_link
+    _, per_page, order = page_per_page_order_params
+    { href: api_keys_url(page: 1, per_page: per_page, order: order) }
   end
 
   def next_page_link

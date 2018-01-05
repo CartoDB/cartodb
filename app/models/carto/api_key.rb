@@ -24,6 +24,7 @@ class Carto::ApiKey < ActiveRecord::Base
   validates :name, presence: true
 
   after_create :setup_db_role
+  after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
   after_save :add_to_redis
   after_save :update_role_permissions
 
@@ -38,17 +39,17 @@ class Carto::ApiKey < ActiveRecord::Base
     @api_key_grants ||= ::Carto::ApiKeyGrants.new(grants)
   end
 
-  private
-
-  PASSWORD_LENGTH = 40
-
-  REDIS_KEY_PREFIX = 'api_keys:'.freeze
-
   def create_token
     begin
       self.token = generate_auth_token
     end while self.class.exists?(token: token)
   end
+
+  private
+
+  PASSWORD_LENGTH = 40
+
+  REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
   def create_db_config
     begin
@@ -101,7 +102,7 @@ class Carto::ApiKey < ActiveRecord::Base
     self.grants = api_key_grants.to_json
   end
 
-  def redis_key
+  def redis_key(token = self.token)
     "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
   end
 
@@ -109,8 +110,8 @@ class Carto::ApiKey < ActiveRecord::Base
     redis_client.hmset(redis_key, redis_hash_as_array)
   end
 
-  def remove_from_redis
-    redis_client.del(redis_key)
+  def remove_from_redis(key = redis_key)
+    redis_client.del(key)
   end
 
   def user_db_connection

@@ -1,6 +1,21 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+@mixin fakeBorder() {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
 .WidgetList {
   display: flex;
   flex-wrap: wrap;
@@ -30,33 +45,37 @@
     transition: border 200ms ease-in;
 
     &::after {
-      content: '';
-      position: absolute;
-      top: -1px;
-      right: -1px;
-      bottom: -1px;
-      left: -1px;
-      width: calc(100% - 2px);
-      height: calc(100% - 2px);
+      @include fakeBorder();
       border: 2px solid $cBlueHover;
-      border-radius: 4px;
-      pointer-events: none;
+    }
+  }
+
+  &.is-hover {
+    &:hover {
+      &::after {
+        display: none;
+      }
     }
   }
 
   &.is-selected {
     &::after {
-      content: '';
-      position: absolute;
-      top: -1px;
-      right: -1px;
-      bottom: -1px;
-      left: -1px;
-      width: calc(100% - 2px);
-      height: calc(100% - 2px);
+      @include fakeBorder();
       border: 2px solid $cMainText;
-      border-radius: 4px;
-      pointer-events: none;
+    }
+
+    &:hover {
+      &::after {
+        border: 2px solid $cMainText;
+      }
+    }
+
+    &.is-hover {
+      &:hover {
+        &::after {
+          display: block;
+        }
+      }
     }
   }
 }

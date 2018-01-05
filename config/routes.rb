@@ -582,7 +582,7 @@ CartoDB::Application.routes.draw do
 
       resource :metrics, only: [:create]
 
-      resources :api_keys, only: [:create, :destroy], constraints: { id: /[^\/]+/ }
+      resources :api_keys, only: [:create, :destroy, :index], constraints: { id: /[^\/]+/ }
 
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }

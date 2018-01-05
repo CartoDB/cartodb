@@ -204,25 +204,6 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
-    desc 'Replace the routing_provider, isolines_provider and geocoder_provider service providers'
-    task :replace_service_providers, [:provider_source_name, :provider_target_name] => :environment do |_, args|
-      PROVIDERS = ['routing_provider', 'isolines_provider', 'geocoder_provider'].freeze
-
-      def update_provider(provider_type, provider_source_name, provider_target_name)
-        ::User.where(provider_type.to_sym => provider_source_name).each do |user|
-          begin
-            user.send(provider_type + '=', provider_target_name)
-            user.save
-          end
-        end
-      end
-
-      PROVIDERS.each do |provider|
-        update_provider(provider, args[:provider_source_name], args[:provider_target_name])
-        puts '%s updated from "%s" to "%s"' % [provider, args[:provider_source_name], args[:provider_target_name]]
-      end
-    end
-
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################

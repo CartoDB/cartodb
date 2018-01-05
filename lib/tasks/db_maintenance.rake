@@ -219,7 +219,7 @@ namespace :cartodb do
 
       PROVIDERS.each do |provider|
         update_provider(provider, args[:provider_source_name], args[:provider_target_name])
-        puts '%{provider} updated from "%{source}" to "%{target}"' % {provider: provider, source: args[:provider_source_name], target: args[:provider_target_name]}
+        puts '%s updated from "%s" to "%s"' %[provider, args[:provider_source_name], args[:provider_target_name]]
       end
     end
 

@@ -10,7 +10,6 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
-  rescue_from Sequel::DatabaseError, with: :rescue_from_database_error
 
   def create
     api_key = Carto::ApiKey.create!(
@@ -33,12 +32,6 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     @api_key.create_token
     @api_key.save!
     render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)
-  end
-
-  def rescue_from_database_error(error)
-    rescue_from_carto_error(
-      Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'unexpected error')
-    )
   end
 
   private

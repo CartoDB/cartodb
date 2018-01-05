@@ -110,6 +110,7 @@ ion for time-series (#12670)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
+* Added Mapbox services providers (#cartodb-platform/3835)
 
 ### Bug fixes / enhancements
 * Remove card's hover state when hovering the dataset/node inside (#13316)

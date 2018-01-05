@@ -205,7 +205,7 @@ namespace :cartodb do
     end
 
     desc 'Replace the routing_provider, isolines_provider and geocoder_provider service providers'
-    task :replace_service_providers, [:provider_source_name, :provider_target_name] => :environment do |task_name, args|
+    task :replace_service_providers, [:provider_source_name, :provider_target_name] => :environment do |_, args|
       PROVIDERS = ['routing_provider', 'isolines_provider', 'geocoder_provider'].freeze
 
       def update_provider(provider_type, provider_source_name, provider_target_name)
@@ -219,6 +219,7 @@ namespace :cartodb do
 
       PROVIDERS.each do |provider|
         update_provider(provider, args[:provider_source_name], args[:provider_target_name])
+        puts '%{provider} updated from "%{source}" to "%{target}"' % {provider: provider, source: args[:provider_source_name], target: args[:provider_target_name]}
       end
     end
 

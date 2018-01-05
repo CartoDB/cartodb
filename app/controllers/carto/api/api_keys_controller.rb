@@ -35,7 +35,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     result = []
     page, per_page, order = page_per_page_order_params
 
-    api_keys = Carto::User.find(current_user.id).api_keys
+    api_keys = Carto::User.find(current_viewer.id).api_keys
     api_keys.limit(per_page).offset((page - 1) * per_page).order(order).each do |api_key|
       result << api_key_links(api_key)
     end

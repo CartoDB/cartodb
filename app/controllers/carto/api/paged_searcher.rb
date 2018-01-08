@@ -16,13 +16,14 @@ module Carto
           total: total_count,
           count: result.count,
           result: result,
-          _links: {}
+          _links: {
+            first: { href: yield(page: 1, per_page: per_page, order: order) },
+            last: { href: yield(page: last_page, per_page: per_page, order: order) }
+          }
         }
 
-        metadata[:_links][:first] = { href: yield(page: 1, per_page: per_page, order: order) }
         metadata[:_links][:prev] = { href: yield(page: page - 1, per_page: per_page, order: order) } if page > 1
         metadata[:_links][:next] = { href: yield(page: page + 1, per_page: per_page, order: order) } if last_page > page
-        metadata[:_links][:last] = { href: yield(page: last_page, per_page: per_page, order: order) }
         metadata
       end
     end

@@ -204,7 +204,6 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
-
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################

@@ -53,7 +53,7 @@ module Carto
     private
 
     def process_granted_apis(grants_json)
-      grants_json.find { |v| v[:type] == 'apis' }[:apis]
+      grants_json.find { |v| v[:type] == 'apis' }[:apis] || []
     end
 
     def process_table_permissions(grants_json)

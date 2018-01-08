@@ -82,6 +82,44 @@ describe Carto::Api::ApiKeysController do
       end
     end
 
+    it 'creates allows empty apis grants' do
+      grants = [
+        {
+          "type" => "apis",
+        },
+        {
+          "type" => "database",
+          "tables" => [
+            {
+              "schema" => @carto_user1.database_schema,
+              "name" => @table1.name,
+              "permissions" => []
+            }
+          ]
+        }
+      ]
+      name = 'wadus'
+      payload = {
+        name: name,
+        grants: grants
+      }
+      post_json generate_api_key_url(@carto_user1), payload do |response|
+        response.status.should eq 201
+        api_key_response = response.body
+        api_key_response[:id].should_not be_empty
+        api_key_response[:name].should eq name
+        api_key_response[:user][:username].should eq @carto_user1.username
+        api_key_response[:type].should eq 'regular'
+        api_key_response[:token].should_not be_empty
+        api_key_response[:databaseConfig].should_not be_empty
+        api_key_response[:databaseConfig].should_not be_empty
+        api_key_response[:databaseConfig][:role].should_not be_empty
+        api_key_response[:databaseConfig][:password].should_not be_empty
+
+        Carto::ApiKey.find(api_key_response[:id]).destroy
+      end
+    end
+
     it 'fails if grants is not a json array' do
       post_json generate_api_key_url(@carto_user1), name: 'wadus' do |response|
         response.status.should eq 422

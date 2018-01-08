@@ -86,6 +86,7 @@ describe Carto::Api::ApiKeysController do
       grants = [
         {
           "type" => "apis",
+          "apis" => []
         },
         {
           "type" => "database",

@@ -53,7 +53,9 @@ module Carto
     private
 
     def process_granted_apis(grants_json)
-      grants_json.find { |v| v[:type] == 'apis' }[:apis] || []
+      apis = grants_json.find { |v| v[:type] == 'apis' }[:apis]
+      raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
+      apis
     end
 
     def process_table_permissions(grants_json)

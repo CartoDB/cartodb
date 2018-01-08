@@ -47,7 +47,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
     last_page = (api_keys.count / per_page.to_f).ceil
 
-    args = {result: result, last_page: last_page, total_count: api_keys.count}
+    args = { result: result, last_page: last_page, total_count: api_keys.count }
     result = paged_result(args) { |params| api_keys_url(params) }
 
     render_jsonp(result, 200)
@@ -72,10 +72,8 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   def json_for_api_key(api_key)
     Carto::Api::ApiKeyPresenter.new(api_key).to_poro.merge(
-      {
-        _links: {
-          self: api_key_url(id: api_key.id)
-        }
+      _links: {
+        self: api_key_url(id: api_key.id)
       }
     )
   end

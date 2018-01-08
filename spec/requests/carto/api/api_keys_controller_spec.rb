@@ -15,11 +15,11 @@ describe Carto::Api::ApiKeysController do
   end
 
   def generate_api_key_url(user, id: nil, options: {})
-    req_params = request_params(options, user, id)
+    req_params = request_params(options, user)
     id ? api_key_url(req_params.merge(id: id)) : api_keys_url(req_params)
   end
 
-  def request_params(options, user, id)
+  def request_params(options, user)
     options.merge(user_domain: user.username, api_key: user.api_key)
   end
 
@@ -213,7 +213,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     before :all do
-      @apikeys= [
+      @apikeys = [
         FactoryGirl.create(:api_key_apis, user_id: @user1.id),
         FactoryGirl.create(:api_key_apis, user_id: @user1.id),
         FactoryGirl.create(:api_key_apis, user_id: @user1.id),
@@ -272,7 +272,7 @@ describe Carto::Api::ApiKeysController do
         response.body[:_links][:next][:href].should match /page=2/
         response.body[:_links][:last][:href].should match /page=2/
         response.body[:result].size.should eq 3
-        3.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id}
+        3.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id }
       end
 
       get_json generate_api_key_url(@user1, id: nil, options: { per_page: 10 }) do |response|

@@ -45,12 +45,16 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
     result = filtered_api_keys.map { |api_key| json_for_api_key(api_key) }
 
-    last_page = (api_keys.count / per_page.to_f).ceil
-
-    args = { result: result, last_page: last_page, total_count: api_keys.count }
-    result = paged_result(args) { |params| api_keys_url(params) }
-
-    render_jsonp(result, 200)
+    render_jsonp(
+      paged_result(
+        result: result,
+        total_count: api_keys.count,
+        page: page,
+        per_page: per_page,
+        order: order
+      ) { |params| api_keys_url(params) },
+      200
+    )
   end
 
   def show

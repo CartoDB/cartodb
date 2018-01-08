@@ -15,8 +15,12 @@ describe Carto::Api::ApiKeysController do
   end
 
   def generate_api_key_url(user, id: nil, options: {})
-    options.merge!(user_domain: user.username, api_key: user.api_key)
-    id ? api_key_url(options.merge(id: id)) : api_keys_url(options)
+    req_params = request_params(options, user, id)
+    id ? api_key_url(req_params.merge(id: id)) : api_keys_url(req_params)
+  end
+
+  def request_params(options, user, id)
+    options.merge(user_domain: user.username, api_key: user.api_key)
   end
 
   describe '#create' do
@@ -208,12 +212,18 @@ describe Carto::Api::ApiKeysController do
       Carto::User.find(@user1.id).api_keys.each(&:destroy)
     end
 
-    before :each do
-      @apikey1 = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      @apikey2 = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      @apikey3 = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      @apikey4 = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      @apikey5 = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+    before :all do
+      @apikeys= [
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      ]
+    end
+
+    after :all do
+      @apikeys.each(&:destroy)
     end
 
     it 'paginates correcty' do
@@ -226,8 +236,8 @@ describe Carto::Api::ApiKeysController do
         response.body[:_links][:next][:href].should match /page=2/
         response.body[:_links][:last][:href].should match /page=3/
         response.body[:result].size.should eq 2
-        response.body[:result][0]['id'].should eq @apikey1.id
-        response.body[:result][1]['id'].should eq @apikey2.id
+        response.body[:result][0]['id'].should eq @apikeys[0].id
+        response.body[:result][1]['id'].should eq @apikeys[1].id
       end
 
       get_json generate_api_key_url(@user1, id: nil, options: { per_page: 2, page: 2 }) do |response|
@@ -239,8 +249,8 @@ describe Carto::Api::ApiKeysController do
         response.body[:_links][:next][:href].should match /page=3/
         response.body[:_links][:last][:href].should match /page=3/
         response.body[:result].size.should eq 2
-        response.body[:result][0]['id'].should eq @apikey3.id
-        response.body[:result][1]['id'].should eq @apikey4.id
+        response.body[:result][0]['id'].should eq @apikeys[2].id
+        response.body[:result][1]['id'].should eq @apikeys[3].id
       end
 
       get_json generate_api_key_url(@user1, id: nil, options: { per_page: 2, page: 3 }) do |response|
@@ -251,7 +261,7 @@ describe Carto::Api::ApiKeysController do
         expect(response.body[:_links].keys).not_to include(:next)
         response.body[:_links][:last][:href].should match /page=3/
         response.body[:result].size.should eq 1
-        response.body[:result][0]['id'].should eq @apikey5.id
+        response.body[:result][0]['id'].should eq @apikeys[4].id
       end
 
       get_json generate_api_key_url(@user1, id: nil, options: { per_page: 3 }) do |response|
@@ -262,9 +272,7 @@ describe Carto::Api::ApiKeysController do
         response.body[:_links][:next][:href].should match /page=2/
         response.body[:_links][:last][:href].should match /page=2/
         response.body[:result].size.should eq 3
-        response.body[:result][0]['id'].should eq @apikey1.id
-        response.body[:result][1]['id'].should eq @apikey2.id
-        response.body[:result][2]['id'].should eq @apikey3.id
+        3.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id}
       end
 
       get_json generate_api_key_url(@user1, id: nil, options: { per_page: 10 }) do |response|
@@ -275,11 +283,7 @@ describe Carto::Api::ApiKeysController do
         expect(response.body[:_links].keys).not_to include(:prev)
         expect(response.body[:_links].keys).not_to include(:next)
         response.body[:result].size.should eq 5
-        response.body[:result][0]['id'].should eq @apikey1.id
-        response.body[:result][1]['id'].should eq @apikey2.id
-        response.body[:result][2]['id'].should eq @apikey3.id
-        response.body[:result][3]['id'].should eq @apikey4.id
-        response.body[:result][4]['id'].should eq @apikey5.id
+        5.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id }
       end
     end
 

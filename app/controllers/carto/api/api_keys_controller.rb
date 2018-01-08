@@ -41,7 +41,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     page, per_page, order = page_per_page_order_params
 
     api_keys = Carto::User.find(current_viewer.id).api_keys
-    filtered_api_keys = api_keys.limit(per_page).offset((page - 1) * per_page).order(order)
+    filtered_api_keys =  Carto::PagedModel.paged_association(api_keys, page, per_page, order)
 
     result = filtered_api_keys.map { |api_key| json_for_api_key(api_key) }
 

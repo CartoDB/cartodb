@@ -212,7 +212,7 @@ class ApplicationController < ActionController::Base
   end
 
   def api_authorization_required
-    authenticate!(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    authenticate!(:auth_api, :api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
     validate_session(current_user)
   end
 

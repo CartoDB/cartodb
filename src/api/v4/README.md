@@ -12,7 +12,7 @@ but can be used from different files. (Public only for developers).
 
 All the api methods and objects are exposed through the public `carto` object.
 
-- `carto.client` : The main object used in a carto.js app
+- `carto.client` : The main object used in a CARTO.js app
 - `carto.source`: Namespace for the sources.
     - `Dataset`: Get all the data from a table
     - `SQL`: Get the data from a custom SQL query
@@ -29,7 +29,6 @@ All the api methods and objects are exposed through the public `carto` object.
     - `BoundingBox`: Constructor to build a BoundingBox filter
     - `BoundingBoxLeaflet`: Constructor to build a BoundingBoxLeaflet filter
 
-- `carto.events` : Enum with the events available in the client.
 - `carto.operation` : Enum with the operations available.
 - `carto.dataview.status` : Enum with the dataview statuses available.
 
@@ -41,7 +40,7 @@ All the api methods and objects are exposed through the public `carto` object.
 const carto = require('cartojs');
 ```
 
-### Loading carto.js from a CDN
+### Loading CARTO.js from a CDN
 
 ```javascript
 window.carto; // All the api is available here

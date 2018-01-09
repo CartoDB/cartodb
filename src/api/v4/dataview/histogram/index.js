@@ -14,8 +14,11 @@ var parseHistogramData = require('./parse-data.js');
  * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
  *
  * @fires dataChanged
- * @fires binsChanged
+ * @fires columnChanged
+ * @fires statusChanged
  * @fires error
+ *
+ * @fires binsChanged
  *
  * @constructor
  * @extends carto.dataview.Base
@@ -56,7 +59,7 @@ Histogram.prototype.DEFAULTS = {
 };
 
 /**
- * Return the resulting data
+ * Return the resulting data.
  *
  * @return {carto.dataview.HistogramData}
  * @api
@@ -73,7 +76,7 @@ Histogram.prototype.getData = function () {
 };
 
 /**
- * Set number of bins
+ * Set the number of bins.
  *
  * @param {number} bins
  * @fires binsChanged
@@ -87,7 +90,7 @@ Histogram.prototype.setBins = function (bins) {
 };
 
 /**
- * Return the current number of bins
+ * Return the current number of bins.
  *
  * @return {number} Current number of bins
  * @api

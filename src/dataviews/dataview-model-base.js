@@ -364,12 +364,10 @@ module.exports = Model.extend({
   },
 
   _parseError: function (response) {
-    var error = response && response.statusText;
-    if (response && response.responseJSON) {
-      var errors = parseWindshaftErrors(response.responseJSON, 'dataview');
-      if (errors.length > 0) {
-        error = errors[0];
-      }
+    var error = {};
+    var errors = parseWindshaftErrors(response, 'dataview');
+    if (errors.length > 0) {
+      error = errors[0];
     }
     return error;
   }

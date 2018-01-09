@@ -15,8 +15,11 @@ var parseFormulaData = require('./parse-data.js');
  * @param {carto.operation} [options.operation] - The operation to apply to the data
  *
  * @fires dataChanged
- * @fires operationChanged
+ * @fires columnChanged
+ * @fires statusChanged
  * @fires error
+ *
+ * @fires operationChanged
  *
  * @constructor
  * @extends carto.dataview.Base

@@ -1,6 +1,6 @@
 {
   "name": "cartodb.js",
-  "version": "4.0.0-beta.4",
+  "version": "4.0.0-beta.10",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -8,8 +8,7 @@
   },
   "author": {
     "name": "CARTO",
-    "url": "https://carto.com/",
-    "email": "wadus@carto.com"
+    "url": "https://carto.com/"
   },
   "contributors": [
     "Javier Álvarez <jmedina@carto.com>",

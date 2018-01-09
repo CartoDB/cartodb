@@ -597,6 +597,34 @@ describe('dataviews/dataview-model-base', function () {
       });
     });
   });
+
+  describe('._parseError', function () {
+    var source;
+    var dataview;
+
+    beforeEach(function () {
+      source = MockFactory.createAnalysisModel({ id: 'a0' });
+
+      dataview = new DataviewModelBase({
+        source: source
+      }, {
+        map: this.map,
+        engine: engineMock
+      });
+    });
+
+    it('should pass the response directly to the parser and get the first returned error', function () {
+      var response = {
+        responseJSON: {
+          errors: ['an error']
+        }
+      };
+
+      var error = dataview._parseError(response);
+
+      expect(error.message).toEqual('an error');
+    });
+  });
 });
 
 function sharedTestsForAnalysisEvents () {

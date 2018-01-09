@@ -81,11 +81,9 @@ Client.prototype.addLayer = function (layer, opts) {
 };
 
 /**
- * Add multiple layers to the client. Note the hierarchal order of layers.
- * Use this method instead multiple calls to **addLayer** to improve performance.
+ * Add multiple layers to the client at once.
  *
- * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the first layer. Alternatively, client.addLayer(A); client.addLayer(B);
- * @param {object} opts
+ * @param {carto.layer.Base[]} - An array with the layers to be added. Note that ([A, B]) displays B as the top layer.
  *
  * @fires error
  * @fires success
@@ -103,12 +101,8 @@ Client.prototype.addLayer = function (layer, opts) {
  * @returns {Promise} A promise that will be fulfilled when the layers are added
  * @api
  */
-Client.prototype.addLayers = function (layers, opts) {
-  opts = opts || {};
+Client.prototype.addLayers = function (layers) {
   layers.forEach(this._addLayer, this);
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 
@@ -139,8 +133,7 @@ Client.prototype.removeLayer = function (layer, opts) {
 };
 
 /**
- * Remove multiple layer from the client.
- * Use this method instead multiple calls to **removeLayer** to improve performance.
+ * Remove multiple layers from the client.
  * 
  * @example
  * // Remove multiple layers from the client
@@ -154,7 +147,6 @@ Client.prototype.removeLayer = function (layer, opts) {
  *
  *
  * @param {carto.layer.Base[]} - An array with the layers to be removed
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -162,17 +154,13 @@ Client.prototype.removeLayer = function (layer, opts) {
  * @returns {Promise} A promise that will be fulfilled when the layers are removed
  * @api
  */
-Client.prototype.removeLayers = function (layers, opts) {
-  opts = opts || {};
+Client.prototype.removeLayers = function (layers) {
   layers.forEach(this._removeLayer, this);
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 
 /**
- * Get all the {@link carto.layer.Base|layers} from the client
+ * Get all the {@link carto.layer.Base|layers} from the client.
  * 
  * @example
  * // Get all layers from the client
@@ -228,7 +216,6 @@ Client.prototype.addDataview = function (dataview, opts) {
  *  }):
  * 
  * @param {carto.dataview.Base[]} - An array with the dataviews to be added
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -236,12 +223,8 @@ Client.prototype.addDataview = function (dataview, opts) {
  * @returns {Promise} A promise that will be fulfilled when the dataviews are added
  * @api
  */
-Client.prototype.addDataviews = function (dataviews, opts) {
-  opts = opts || {};
+Client.prototype.addDataviews = function (dataviews) {
   dataviews.forEach(this._addDataview, this);
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 
@@ -259,7 +242,6 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  *  }):
  *
  * @param {carto.dataview.Base} - The dataview array to be removed
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -267,18 +249,14 @@ Client.prototype.addDataviews = function (dataviews, opts) {
  * @returns {Promise} A promise that will be fulfilled when the dataview is removed
  * @api
  */
-Client.prototype.removeDataview = function (dataview, opts) {
-  opts = opts || {};
+Client.prototype.removeDataview = function (dataview) {
   this._dataviews.splice(this._dataviews.indexOf(dataview));
   this._engine.removeDataview(dataview.$getInternalModel());
-  if (opts.reload === false) {
-    return Promise.resolve();
-  }
   return this._reload();
 };
 
 /**
- * Get all the dataviews from the client
+ * Get all the dataviews from the client.
  * 
  * @example
  * // Get all the dataviews from the client
@@ -303,8 +281,8 @@ Client.prototype.getDataviews = function () {
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
  *  
- * @returns {L.TileLayer} A Leaflet layer that groups all the layers:
- * {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer}
+ * @returns A {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer} layer that groups all the layers.
+ * 
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
@@ -329,7 +307,7 @@ Client.prototype.getLeafletLayer = function () {
  * // Add googlemaps MapType to a google map
  * googleMap.overlayMapTypes.push(client.getGoogleMapsMapType(googleMap));
  * 
- * @param {google.maps.Map} - The native google map where the carto layer is going to be added
+ * @param {google.maps.Map} - The native Google Maps map where the CARTO layers will be displayed.
  *
  * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
  * {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType}

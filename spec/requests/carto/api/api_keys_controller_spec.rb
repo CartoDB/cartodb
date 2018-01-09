@@ -419,7 +419,7 @@ describe Carto::Api::ApiKeysController do
 
     def json_headers_with_auth
       http_json_headers.merge(
-        { 'Authorization' => 'Basic ' + Base64.encode64("#{@user1.username}:#{@master_api_key.token}") }
+        'Authorization' => 'Basic ' + Base64.encode64("#{@user1.username}:#{@master_api_key.token}")
       )
     end
 
@@ -446,7 +446,7 @@ describe Carto::Api::ApiKeysController do
           name: name,
           grants: grants
         }
-        post_json generate_api_key_url(@carto_user1), payload, json_headers_with_auth  do |response|
+        post_json generate_api_key_url(@carto_user1), payload, json_headers_with_auth do |response|
           response.status.should eq 201
           Carto::ApiKey.find(response.body[:id]).destroy
         end
@@ -495,7 +495,7 @@ describe Carto::Api::ApiKeysController do
 
     describe 'without header auth should fail' do
       it 'creates api_key' do
-        post_json generate_api_key_url(@carto_user1)  do |response|
+        post_json generate_api_key_url(@carto_user1) do |response|
           response.status.should eq 401
         end
       end
@@ -510,7 +510,6 @@ describe Carto::Api::ApiKeysController do
       it 'regenerates the token' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
         api_key.save!
-        old_token = api_key.token
         options = { user_domain: @user1.username, id: api_key.id }
         post_json regenerate_api_key_token_url(options), {} do |response|
           response.status.should eq 401

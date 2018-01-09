@@ -294,10 +294,10 @@ Warden::Strategies.add(:user_creation) do
 end
 
 Warden::Strategies.add(:auth_api) do
-  HEADER_RE = /basic\s(\w+)/i.freeze
+  HEADER_RE = /basic\s(\w+)/i
 
   def valid?
-    (HEADER_RE =~ request.headers['Authorization']) == 0
+    (HEADER_RE =~ request.headers['Authorization']).zero?
   end
 
   # We don't want to store a session and send a response cookie
@@ -307,14 +307,14 @@ Warden::Strategies.add(:auth_api) do
 
   def authenticate!
     auth_header = request.headers['Authorization']
-    return fail! unless auth_header && (HEADER_RE =~ auth_header) == 0
+    return fail! unless auth_header && (HEADER_RE =~ auth_header).zero?
 
     decoded_auth = Base64.decode64($1)
-    user_name, api_token = decoded_auth.split(':')
+    user_name, token = decoded_auth.split(':')
     return fail! unless user_name == CartoDB.extract_subdomain(request)
 
     user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    return fail! unless Carto::ApiKey.where(user_id: user_id, type: Carto::ApiKey::TYPE_MASTER, token: api_token).exists?
+    return fail! unless Carto::ApiKey.where(user_id: user_id, type: Carto::ApiKey::TYPE_MASTER, token: token).exists?
 
     success!(::User[user_id])
   rescue

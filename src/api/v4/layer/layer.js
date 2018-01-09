@@ -110,11 +110,7 @@ Layer.prototype.setStyle = function (style, opts) {
       this._style = style;
       this.trigger('styleChanged', this);
     }.bind(this))
-    .catch(function (err) {
-      var error = new CartoError(err);
-      this.trigger(EVENTS.ERROR, error);
-      return Promise.reject(error);
-    }.bind(this));
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -167,11 +163,7 @@ Layer.prototype.setSource = function (source) {
       this._source = source;
       this.trigger('sourceChanged', this);
     }.bind(this))
-    .catch(function (err) {
-      var error = new CartoError(err);
-      this.trigger(EVENTS.ERROR, error);
-      return Promise.reject(error);
-    }.bind(this));
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -194,7 +186,7 @@ Layer.prototype.getSource = function () {
 Layer.prototype.setFeatureClickColumns = function (columns) {
   var prevColumns = this._featureClickColumns;
   _checkColumns(columns);
-  if (prevColumns === columns) {
+  if (_areColumnsTheSame(columns, prevColumns)) {
     return Promise.resolve();
   }
   // If layer is not instantiated just store the new status
@@ -208,11 +200,7 @@ Layer.prototype.setFeatureClickColumns = function (columns) {
     .then(function () {
       this._featureClickColumns = columns;
     }.bind(this))
-    .catch(function (err) {
-      var error = new CartoError(err);
-      this.trigger(EVENTS.ERROR, error);
-      return Promise.reject(error);
-    }.bind(this));
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -235,7 +223,7 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
 Layer.prototype.setFeatureOverColumns = function (columns) {
   var prevColumns = this._featureOverColumns;
   _checkColumns(columns);
-  if (prevColumns === columns) {
+  if (_areColumnsTheSame(columns, prevColumns)) {
     return Promise.resolve();
   }
   // If layer is not instantiated just store the new status
@@ -249,11 +237,7 @@ Layer.prototype.setFeatureOverColumns = function (columns) {
     .then(function () {
       this._featureOverColumns = columns;
     }.bind(this))
-    .catch(function (err) {
-      var error = new CartoError(err);
-      this.trigger(EVENTS.ERROR, error);
-      return Promise.reject(error);
-    }.bind(this));
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -433,6 +417,16 @@ function _checkColumns (columns) {
  */
 function _isStyleError (windshaftError) {
   return windshaftError.message && windshaftError.message.indexOf('style') >= 0;
+}
+
+function _rejectAndTriggerError (err) {
+  var error = new CartoError(err);
+  this.trigger(EVENTS.ERROR, error);
+  return Promise.reject(error);
+}
+
+function _areColumnsTheSame (newColumns, oldColumns) {
+  return newColumns.length === oldColumns.length && _.isEmpty(_.difference(newColumns, oldColumns));
 }
 
 /**

@@ -4,6 +4,8 @@ require 'factories/carto_visualizations'
 
 describe Carto::Api::ApiKeysController do
   include_context 'users helper'
+  include HelperMethods
+
   before(:all) do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
   end
@@ -80,21 +82,60 @@ describe Carto::Api::ApiKeysController do
       end
     end
 
+    it 'creates allows empty apis grants' do
+      grants = [
+        {
+          "type" => "apis",
+          "apis" => []
+        },
+        {
+          "type" => "database",
+          "tables" => [
+            {
+              "schema" => @carto_user1.database_schema,
+              "name" => @table1.name,
+              "permissions" => []
+            }
+          ]
+        }
+      ]
+      name = 'wadus'
+      payload = {
+        name: name,
+        grants: grants
+      }
+      post_json generate_api_key_url(@carto_user1), payload do |response|
+        response.status.should eq 201
+        api_key_response = response.body
+        api_key_response[:id].should_not be_empty
+        api_key_response[:name].should eq name
+        api_key_response[:user][:username].should eq @carto_user1.username
+        api_key_response[:type].should eq 'regular'
+        api_key_response[:token].should_not be_empty
+        api_key_response[:databaseConfig].should_not be_empty
+        api_key_response[:databaseConfig].should_not be_empty
+        api_key_response[:databaseConfig][:role].should_not be_empty
+        api_key_response[:databaseConfig][:password].should_not be_empty
+
+        Carto::ApiKey.find(api_key_response[:id]).destroy
+      end
+    end
+
     it 'fails if grants is not a json array' do
       post_json generate_api_key_url(@carto_user1), name: 'wadus' do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /grants must be a nonempty array/
+        error_response[:errors].should match /grants has to be an array/
       end
       post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: "something" do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /grants must be a nonempty array/
+        error_response[:errors].should match /grants has to be an array/
       end
       post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: {} do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /grants must be a nonempty array/
+        error_response[:errors].should match /grants has to be an array/
       end
     end
 
@@ -107,12 +148,60 @@ describe Carto::Api::ApiKeysController do
             'name' => @table1.name,
             'permissions' => ['read']
           ]
+        },
+        {
+          'type' => 'apis',
+          'apis' => ['maps', 'sql']
         }
       ]
       post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
         response.status.should eq 422
         error_response = response.body
         error_response[:errors].should match /permissions.*did not match one of the following values: insert, select, update, delete/
+      end
+    end
+
+    it 'fails if database does not exist' do
+      grants = [
+        {
+          'type' => 'database',
+          'tables' => [
+            'schema' => @carto_user1.database_schema,
+            'name' => 'wadus',
+            'permissions' => ['select']
+          ]
+        },
+        {
+          'type' => 'apis',
+          'apis' => ['maps', 'sql']
+        }
+      ]
+      post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /relation \"public.wadus\" does not exist/
+      end
+    end
+
+    it 'fails if schema does not exist' do
+      grants = [
+        {
+          'type' => 'database',
+          'tables' => [
+            'schema' => 'wadus',
+            'name' => @table1.name,
+            'permissions' => ['select']
+          ]
+        },
+        {
+          'type' => 'apis',
+          'apis' => ['maps', 'sql']
+        }
+      ]
+      post_json generate_api_key_url(@carto_user1), name: 'wadus', grants: grants do |response|
+        response.status.should eq 422
+        error_response = response.body
+        error_response[:errors].should match /schema \"wadus\" does not exist/
       end
     end
   end

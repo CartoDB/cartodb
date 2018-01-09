@@ -124,7 +124,7 @@ class Carto::ApiKey < ActiveRecord::Base
   def db_run(query)
     db_connection.run(query)
   rescue Sequel::DatabaseError => e
-    Rollbar.warn('Error running SQL command', e)
+    CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
     raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
   end
 

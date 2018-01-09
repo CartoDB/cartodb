@@ -37,15 +37,9 @@ module Carto
     attr_reader :granted_apis
 
     def initialize(grants_json = [])
-      @granted_apis = []
-      @table_permissions = {}
-
-      # TODO: this should be removed when complete, previous json schema validation grants it
-      unless grants_json.present? && grants_json.is_a?(Array)
-        raise Carto::UnprocesableEntityError.new("grants must be a nonempty array")
-      end
-
-      grants_json.each { |grant| process_grant(grant) }
+      @grants_json = grants_json
+      @granted_apis = process_granted_apis(grants_json)
+      @table_permissions = process_table_permissions(grants_json)
     end
 
     def table_permissions
@@ -53,42 +47,30 @@ module Carto
     end
 
     def to_json
-      [
-        {
-          type: 'apis',
-          apis: granted_apis
-        },
-        {
-          type: 'database',
-          tables: @table_permissions.values.map(&:to_json)
-        }
-      ]
+      @grants_json
     end
 
     private
 
-    def process_grant(grant)
-      type = grant[:type]
-      case type
-      when 'apis'
-        @granted_apis += generate_apis_grant(grant[:apis])
-      when 'database'
-        process_database_grant(grant[:tables])
-      else
-        raise Carto::UnprocesableEntityError.new("Only 'apis' and 'database' grants are supported. '#{type}' given")
-      end
+    def process_granted_apis(grants_json)
+      apis = grants_json.find { |v| v[:type] == 'apis' }[:apis]
+      raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
+      apis
     end
 
-    def generate_apis_grant(grant)
-      grant.select { |api| ALLOWED_APIS.include?(api.downcase) }
-    end
+    def process_table_permissions(grants_json)
+      table_permissions = {}
 
-    def process_database_grant(grant)
-      grant.each do |table|
+      databases = grants_json.find { |v| v[:type] == 'database' }
+      return table_permissions unless databases.present?
+
+      databases[:tables].each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
-        permissions = @table_permissions[table_id] ||= TablePermissions.new(schema: table[:schema], name: table[:name])
+        permissions = table_permissions[table_id] ||= TablePermissions.new(schema: table[:schema], name: table[:name])
         permissions.merge!(table[:permissions])
       end
+
+      table_permissions
     end
   end
 end

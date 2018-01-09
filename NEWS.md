@@ -107,9 +107,11 @@ ion for time-series (#12670)
   * Keys creation (#13170)
   * Keys destruction (#13171)
   * Token regeneration (#13321)
+  * Keys listing (#13327)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
+* Added Mapbox services providers (#cartodb-platform/3835)
 
 ### Bug fixes / enhancements
 * Consolidate DeepInsight components in Builder (#13271)
@@ -376,6 +378,7 @@ ion for time-series (#12670)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
+* Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 
 ### Internals

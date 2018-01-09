@@ -1,3 +1,5 @@
+require 'base64'
+
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/email_cleaner'
 
@@ -288,5 +290,34 @@ Warden::Strategies.add(:user_creation) do
     else
       fail!
     end
+  end
+end
+
+Warden::Strategies.add(:auth_api) do
+  HEADER_RE = /basic\s(\w+)/i.freeze
+
+  def valid?
+    (HEADER_RE =~ request.headers['Authorization']) == 0
+  end
+
+  # We don't want to store a session and send a response cookie
+  def store?
+    false
+  end
+
+  def authenticate!
+    auth_header = request.headers['Authorization']
+    return fail! unless auth_header && (HEADER_RE =~ auth_header) == 0
+
+    decoded_auth = Base64.decode64($1)
+    user_name, api_token = decoded_auth.split(':')
+    return fail! unless user_name == CartoDB.extract_subdomain(request)
+
+    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
+    return fail! unless Carto::ApiKey.where(user_id: user_id, type: Carto::ApiKey::TYPE_MASTER, token: api_token).exists?
+
+    success!(::User[user_id])
+  rescue
+    fail!
   end
 end

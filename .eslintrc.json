@@ -3,7 +3,8 @@
   "env": {
     "es6": true,
     "browser": true,
-    "jasmine": true
+    "jasmine": true,
+    "sinon": true
   },
   "globals": {
     "_t": true,

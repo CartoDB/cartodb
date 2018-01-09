@@ -20,7 +20,8 @@ module CartoDB
       :geocoder_here,
       :geocoder_google,
       :geocoder_cache,
-      :geocoder_mapzen
+      :geocoder_mapzen,
+      :geocoder_mapbox
     ]
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)

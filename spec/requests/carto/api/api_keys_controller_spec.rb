@@ -14,9 +14,13 @@ describe Carto::Api::ApiKeysController do
     @auth_api_feature_flag.destroy
   end
 
-  def generate_api_key_url(user, id: nil)
-    options = { user_domain: user.username, api_key: user.api_key }
-    id ? api_key_url(options.merge(id: id)) : api_keys_url(options)
+  def generate_api_key_url(user, id: nil, options: {})
+    req_params = request_params(options, user)
+    id ? api_key_url(req_params.merge(id: id)) : api_keys_url(req_params)
+  end
+
+  def request_params(options, user)
+    options.merge(user_domain: user.username, api_key: user.api_key)
   end
 
   describe '#create' do
@@ -256,6 +260,136 @@ describe Carto::Api::ApiKeysController do
         response.body[:token].should_not eq old_token
         @api_key.reload
         response.body[:token].should eq @api_key.token
+      end
+    end
+  end
+
+  describe '#show' do
+    it 'returns requested API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      get_json generate_api_key_url(@user1, id: api_key.id) do |response|
+        response.status.should eq 200
+        response.body[:id].should eq api_key.id
+      end
+    end
+
+    it 'returns 404 if the API key does not exist' do
+      get_json generate_api_key_url(@user1, id: 'wadus') do |response|
+        response.status.should eq 404
+      end
+    end
+
+    it 'returns 404 if the API key does not belong to the user' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      get_json generate_api_key_url(@user2, id: api_key.id) do |response|
+        response.status.should eq 404
+      end
+    end
+
+    it 'returns 401 if api_key is not provided' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      get_json generate_api_key_url(Carto::User.new, id: api_key.id) do |response|
+        response.status.should eq 401
+      end
+    end
+  end
+
+  describe '#index' do
+    before :all do
+      Carto::User.find(@user1.id).api_keys.each(&:destroy)
+    end
+
+    before :all do
+      @apikeys = [
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
+        FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      ]
+    end
+
+    after :all do
+      @apikeys.each(&:destroy)
+    end
+
+    it 'paginates correcty' do
+      get_json generate_api_key_url(@user1, id: nil, options: { per_page: 2 }) do |response|
+        response.status.should eq 200
+        response.body[:total].should eq 5
+        response.body[:count].should eq 2
+        expect(response.body[:_links].keys).not_to include(:prev)
+        response.body[:_links][:first][:href].should match /page=1/
+        response.body[:_links][:next][:href].should match /page=2/
+        response.body[:_links][:last][:href].should match /page=3/
+        response.body[:result].size.should eq 2
+        response.body[:result][0]['id'].should eq @apikeys[0].id
+        response.body[:result][1]['id'].should eq @apikeys[1].id
+      end
+
+      get_json generate_api_key_url(@user1, id: nil, options: { per_page: 2, page: 2 }) do |response|
+        response.status.should eq 200
+        response.body[:total].should eq 5
+        response.body[:count].should eq 2
+        response.body[:_links][:first][:href].should match /page=1/
+        response.body[:_links][:prev][:href].should match /page=1/
+        response.body[:_links][:next][:href].should match /page=3/
+        response.body[:_links][:last][:href].should match /page=3/
+        response.body[:result].size.should eq 2
+        response.body[:result][0]['id'].should eq @apikeys[2].id
+        response.body[:result][1]['id'].should eq @apikeys[3].id
+      end
+
+      get_json generate_api_key_url(@user1, id: nil, options: { per_page: 2, page: 3 }) do |response|
+        response.status.should eq 200
+        response.body[:total].should eq 5
+        response.body[:count].should eq 1
+        response.body[:_links][:first][:href].should match /page=1/
+        expect(response.body[:_links].keys).not_to include(:next)
+        response.body[:_links][:last][:href].should match /page=3/
+        response.body[:result].size.should eq 1
+        response.body[:result][0]['id'].should eq @apikeys[4].id
+      end
+
+      get_json generate_api_key_url(@user1, id: nil, options: { per_page: 3 }) do |response|
+        response.status.should eq 200
+        response.body[:total].should eq 5
+        response.body[:count].should eq 3
+        response.body[:_links][:first][:href].should match /page=1/
+        response.body[:_links][:next][:href].should match /page=2/
+        response.body[:_links][:last][:href].should match /page=2/
+        response.body[:result].size.should eq 3
+        3.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id }
+      end
+
+      get_json generate_api_key_url(@user1, id: nil, options: { per_page: 10 }) do |response|
+        response.status.should eq 200
+        response.body[:total].should eq 5
+        response.body[:count].should eq 5
+        response.body[:_links][:first][:href].should match /page=1/
+        expect(response.body[:_links].keys).not_to include(:prev)
+        expect(response.body[:_links].keys).not_to include(:next)
+        response.body[:result].size.should eq 5
+        5.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id }
+      end
+    end
+
+    it 'returns empty list if the API key does not belong to the user' do
+      get_json generate_api_key_url(@user2) do |response|
+        response.status.should eq 200
+        response.body[:total].should eq 0
+        response.body[:count].should eq 0
+        response.body[:_links][:first][:href].should match /page=1/
+        expect(response.body[:_links].keys).not_to include(:prev)
+        expect(response.body[:_links].keys).not_to include(:next)
+        response.body[:result].size.should eq 0
+      end
+    end
+
+    it 'returns 401 if api_key is not provided' do
+      @user1.api_key = nil
+      get_json generate_api_key_url(@user1) do |response|
+        response.status.should eq 401
       end
     end
   end

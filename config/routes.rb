@@ -582,7 +582,7 @@ CartoDB::Application.routes.draw do
 
       resource :metrics, only: [:create]
 
-      resources :api_keys, only: [:create, :destroy], constraints: { id: /[^\/]+/ }
+      resources :api_keys, only: [:create, :destroy, :index, :show], constraints: { id: /[^\/]+/ }
       scope 'api_keys/:id/token' do
         post 'regenerate' => 'api_keys#regenerate_token', as: :regenerate_api_key_token
       end

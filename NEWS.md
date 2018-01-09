@@ -113,6 +113,7 @@ ion for time-series (#12670)
 * Added Mapbox services providers (#cartodb-platform/3835)
 
 ### Bug fixes / enhancements
+* Show tooltips only if the target element is visible (#12098)
 * Remove card's hover state when hovering the dataset/node inside (#13316)
 * Data Observatory analysis is not working (CartoDB/support#1239)
 * Use zoomToData only if the layer is created from a dataset (#13309)

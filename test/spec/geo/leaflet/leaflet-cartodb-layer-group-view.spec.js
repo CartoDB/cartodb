@@ -4,19 +4,14 @@ var LeafletCartoDBLayerGroupView = require('../../../../src/geo/leaflet/leaflet-
 
 describe('leaflet-cartodb-layer-group-view', function () {
   /**
-   * Helper function used to get a google map and a container in the shared tests.
+   * Helper function used to get a map in the shared tests.
    */
-  function setUp () {
+  function createNativeMap (container) {
     // Create a leaflet map inside a container
-    var container = document.createElement('div');
     container.setAttribute('id', 'map');
     container.style.height = '200px';
     document.body.appendChild(container);
-    var leafletMap = L.map('map').setView([47.84808037632246, 14.2822265625], 4);
-    return {
-      container: container,
-      nativeMap: leafletMap
-    };
+    return L.map('map').setView([47.84808037632246, 14.2822265625], 4);
   }
 
   /**
@@ -51,5 +46,5 @@ describe('leaflet-cartodb-layer-group-view', function () {
     type: 'mouseMove'
   };
 
-  cartoLayerGroupViewTests(setUp, LeafletCartoDBLayerGroupView, getTileUrl, event);
+  cartoLayerGroupViewTests(createNativeMap, LeafletCartoDBLayerGroupView, getTileUrl, event);
 });

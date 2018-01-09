@@ -4,11 +4,10 @@ var cartoLayerGroupViewTests = require('../shared-tests-for-carto-layer-group');
 
 describe('gmaps-cartodb-layer-group-view', function () {
   /**
-   * Helper function used to get a google map and a container in the shared tests.
+   * Helper function used to get a google map in the shared tests.
    */
-  function setUp () {
+  function createNativeMap (container) {
     // Create a leaflet map inside a container
-    var container = document.createElement('div');
     container.setAttribute('id', 'map');
     container.style.height = '200px';
     document.body.appendChild(container);
@@ -16,10 +15,7 @@ describe('gmaps-cartodb-layer-group-view', function () {
       zoom: 4,
       center: { lat: 47.84808037632246, lng: 14.2822265625 }
     });
-    return {
-      container: container,
-      nativeMap: googleMap
-    };
+    return googleMap;
   }
 
   /**
@@ -41,5 +37,5 @@ describe('gmaps-cartodb-layer-group-view', function () {
     pixel: { x: 243, y: 274 }
   };
 
-  cartoLayerGroupViewTests(setUp, GoogleCartoDBLayerGroupClass, getTileUrl, event);
+  cartoLayerGroupViewTests(createNativeMap, GoogleCartoDBLayerGroupClass, getTileUrl, event);
 });

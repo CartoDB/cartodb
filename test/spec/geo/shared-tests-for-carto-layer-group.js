@@ -2,7 +2,7 @@ var CartoDBLayer = require('../../../src/geo/map/cartodb-layer.js');
 var LayersCollection = require('../../../src/geo/map/layers.js');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group.js');
 
-module.exports = function (setUp, CartoLayerGroupViewClass, getTileUrl, event) {
+module.exports = function (createNativeMap, CartoLayerGroupViewClass, getTileUrl, event) {
   var nativeMap;
   var container;
   var cartoDbLayer0;
@@ -22,9 +22,8 @@ module.exports = function (setUp, CartoLayerGroupViewClass, getTileUrl, event) {
   };
 
   beforeEach(function () {
-    var data = setUp();
-    nativeMap = data.nativeMap;
-    container = data.container;
+    container = document.createElement('div');
+    nativeMap = createNativeMap(container);
 
     cartoDbLayer0 = new CartoDBLayer({}, { engine: engineMock });
     cartoDbLayer1 = new CartoDBLayer({}, { engine: engineMock });
@@ -94,7 +93,7 @@ module.exports = function (setUp, CartoLayerGroupViewClass, getTileUrl, event) {
         mapModel: mapModelMock
       });
 
-      expect(layerGroupView.interaction.length).toEqual(2);
+      expect(layerGroupView.interaction.length).toEqual(2); // 2 interactive layers
     });
 
     it('should enable interaction when there are interactive layers ', function () {

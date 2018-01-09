@@ -46,12 +46,12 @@ function _createBins (data, maxFreq) {
     /**
       * @typedef {object} carto.dataview.BinItem
       * @property {number} index - Number indicating the bin order
-      * @property {number} start - Starting point of the bin
-      * @property {number} end - Ending point of the bin
-      * @property {number} min - Only appears if freq > 0
-      * @property {number} max - Only appears if freq > 0
-      * @property {number} avg - Only appears if freq > 0
-      * @property {number} freq - The number of the times the element appears in the data
+      * @property {number} start - The lower limit of the bin
+      * @property {number} end - The higher limit of the bin
+      * @property {number} min - The minimal value appearing in the bin. Only appears if freq > 0
+      * @property {number} max - The minimal value appearing in the bin. Only appears if freq > 0
+      * @property {number} avg - The average value of the elements for this bin. Only appears if freq > 0
+      * @property {number} freq - Number of elements in the bin
       * @property {number} normalized - Normalized frequency with respect to the whole data
       * @api
       */

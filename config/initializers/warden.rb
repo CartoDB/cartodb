@@ -297,7 +297,8 @@ Warden::Strategies.add(:auth_api) do
   HEADER_RE = /basic\s(\w+)/i
 
   def valid?
-    (HEADER_RE =~ request.headers['Authorization']).zero?
+    pos = HEADER_RE =~ request.headers['Authorization']
+    pos && pos.zero?
   end
 
   # We don't want to store a session and send a response cookie
@@ -307,8 +308,7 @@ Warden::Strategies.add(:auth_api) do
 
   def authenticate!
     auth_header = request.headers['Authorization']
-    return fail! unless auth_header && (HEADER_RE =~ auth_header).zero?
-
+    HEADER_RE =~ auth_header
     decoded_auth = Base64.decode64($1)
     user_name, token = decoded_auth.split(':')
     return fail! unless user_name == CartoDB.extract_subdomain(request)

@@ -79,7 +79,6 @@
       .actions li:hover {
         cursor: pointer;
       }
-
     </style>
   </head>
   <body>
@@ -88,12 +87,12 @@
       <h2>Click on the markers</h2>
       <div class="container">
         <ul class="actions">
-          <li onclick="setMoreData()">
-            <input type="radio" name="style" value="01"   id="red">
+          <li>
+            <input id="red" type="radio" name="style" onclick="setMoreData()">
             <label for="red">More data</label>
           </li>
-          <li onclick="setLessData()">
-            <input type="radio" name="style" value="02" id="green" checked>
+          <li>
+            <input id="green" type="radio" name="style" onclick="setLessData()" checked>
             <label for="green">Less data</label>
           </li>
         </ul>
@@ -123,7 +122,7 @@
         }
       `);
       const layer = new carto.layer.Layer(source, style, {
-        featureOverColumns: ['name']
+        featureClickColumns: ['name']
       });
 
       client.addLayer(layer);
@@ -144,11 +143,11 @@
       });
 
       function setMoreData() {
-        layer.setFeatureOverColumns(['name', 'pop_max', 'pop_min']);
+        layer.setFeatureClickColumns(['name', 'pop_max', 'pop_min']);
       }
 
       function setLessData() {
-        layer.setFeatureOverColumns(['name']);
+        layer.setFeatureClickColumns(['name']);
         document.getElementById('content').innerHTML = '';
       }
     </script>

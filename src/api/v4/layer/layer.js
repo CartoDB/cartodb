@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Base = require('./base');
 var CartoDBLayer = require('../../../geo/map/cartodb-layer');
 var SourceBase = require('../source/base');
@@ -9,15 +10,15 @@ var metadataParser = require('./metadata/parser');
 
 /**
  * Represents a layer Object.
- * 
- * A layer is the primary way to visualize geospatial data. 
- * 
+ *
+ * A layer is the primary way to visualize geospatial data.
+ *
  * To create a layer a {@link carto.source.Base|source} and {@link carto.style.Base|styles}
  * are required:
- * 
+ *
  * - The {@link carto.source.Base|source} is used to know **what** data will be displayed in the Layer.
  * - The {@link carto.style.Base|style} is used to know **how** to draw the data in the Layer.
- * 
+ *
  * A layer alone won't do too much. In order to get data from the CARTO server you must add the Layer to a {@link carto.Client|client}.
  *
  * ```
@@ -109,11 +110,7 @@ Layer.prototype.setStyle = function (style, opts) {
       this._style = style;
       this.trigger('styleChanged', this);
     }.bind(this))
-    .catch(function (err) {
-      var error = new CartoError(err);
-      this.trigger(EVENTS.ERROR, error);
-      return Promise.reject(error);
-    }.bind(this));
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -166,11 +163,7 @@ Layer.prototype.setSource = function (source) {
       this._source = source;
       this.trigger('sourceChanged', this);
     }.bind(this))
-    .catch(function (err) {
-      var error = new CartoError(err);
-      this.trigger(EVENTS.ERROR, error);
-      return Promise.reject(error);
-    }.bind(this));
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -191,12 +184,23 @@ Layer.prototype.getSource = function () {
  * @api
  */
 Layer.prototype.setFeatureClickColumns = function (columns) {
-  this._featureClickColumns = columns;
-  if (this._internalModel) {
-    this._internalModel.infowindow.update(_getInteractivityFields(columns));
+  var prevColumns = this._featureClickColumns;
+  _checkColumns(columns);
+  if (_areColumnsTheSame(columns, prevColumns)) {
+    return Promise.resolve();
   }
-
-  return this;
+  // If layer is not instantiated just store the new status
+  if (!this._internalModel) {
+    this._featureClickColumns = columns;
+    return Promise.resolve();
+  }
+  // Update the internalModel and return a promise
+  this._internalModel.infowindow.fields.set(_getInteractivityFields(columns).fields, { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      this._featureClickColumns = columns;
+    }.bind(this))
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -217,12 +221,23 @@ Layer.prototype.getFeatureClickColumns = function (columns) {
  * @api
  */
 Layer.prototype.setFeatureOverColumns = function (columns) {
-  this._featureOverColumns = columns;
-  if (this._internalModel) {
-    this._internalModel.tooltip.update(_getInteractivityFields(columns));
+  var prevColumns = this._featureOverColumns;
+  _checkColumns(columns);
+  if (_areColumnsTheSame(columns, prevColumns)) {
+    return Promise.resolve();
   }
-
-  return this;
+  // If layer is not instantiated just store the new status
+  if (!this._internalModel) {
+    this._featureOverColumns = columns;
+    return Promise.resolve();
+  }
+  // Update the internalModel and return a promise
+  this._internalModel.tooltip.fields.set(_getInteractivityFields(columns).fields, { silent: true });
+  return this._engine.reload()
+    .then(function () {
+      this._featureOverColumns = columns;
+    }.bind(this))
+    .catch(_rejectAndTriggerError.bind(this));
 };
 
 /**
@@ -391,11 +406,27 @@ function _checkSource (source) {
   }
 }
 
+function _checkColumns (columns) {
+  if (_.any(columns, function (item) { return !_.isString(item); })) {
+    throw new CartoValidationError('layer', 'nonValidColumns');
+  }
+}
+
 /**
  * Return true when a windshaft error is because a styling error.
  */
 function _isStyleError (windshaftError) {
   return windshaftError.message && windshaftError.message.indexOf('style') >= 0;
+}
+
+function _rejectAndTriggerError (err) {
+  var error = new CartoError(err);
+  this.trigger(EVENTS.ERROR, error);
+  return Promise.reject(error);
+}
+
+function _areColumnsTheSame (newColumns, oldColumns) {
+  return newColumns.length === oldColumns.length && _.isEmpty(_.difference(newColumns, oldColumns));
 }
 
 /**

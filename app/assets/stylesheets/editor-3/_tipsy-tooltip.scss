@@ -12,6 +12,7 @@
 
 .tipsy-inner {
   display: inline-block;
+  max-width: 234px;
   padding: $baseSize;
   border-radius: $halfBaseSize;
   background: rgba($cMainBg, 0.8);

@@ -115,6 +115,8 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Don't show the publish modal when the user clicks on the privacy button (#13366)
+* Show layer name in delete layer modal (#13363)
+* Show tooltips only if the target element is visible (#12098)
 * Consolidate DeepInsight components in Builder (#13271)
 * Unify tooltip style (#13194)
 * Remove card's hover state when hovering the dataset/node inside (#13316)
@@ -188,6 +190,7 @@ ion for time-series (#12670)
 * Safe check for destination DB on user import (CartoDB/cartodb-central/issues/1945)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
+* Do not check shared entities in force deletion (#13352)
 * User destroy order should be Central, local (#CartoDB/cartodb-central/issues/1929)
 * Delete all external sources within one transaction (#13129).
 * NoMethodError: undefined method `has_feature_flag?` for nil:NilClass at visualizations controller (#13145).

@@ -294,10 +294,8 @@ Warden::Strategies.add(:user_creation) do
 end
 
 Warden::Strategies.add(:auth_api) do
-  HEADER_RE = /basic\s(\w+)/i
-
   def valid?
-    pos = HEADER_RE =~ request.headers['Authorization']
+    pos = /basic\s\w+/i =~ request.headers['Authorization']
     pos && pos.zero?
   end
 
@@ -308,8 +306,8 @@ Warden::Strategies.add(:auth_api) do
 
   def authenticate!
     auth_header = request.headers['Authorization']
-    HEADER_RE =~ auth_header
-    decoded_auth = Base64.decode64($1)
+    /basic\s(?<auth>\w+)/i =~ auth_header
+    decoded_auth = Base64.decode64(auth)
     user_name, token = decoded_auth.split(':')
     return fail! unless user_name == CartoDB.extract_subdomain(request)
 

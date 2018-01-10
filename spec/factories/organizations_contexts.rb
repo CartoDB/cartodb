@@ -54,8 +54,8 @@ shared_context 'organization with users helper' do
 
     @org_user_owner = @helper.create_owner(@organization)
 
-    @org_user_1 = @helper.create_test_user(@organization.name + '-1', @organization)
-    @org_user_2 = @helper.create_test_user(@organization.name + '-2', @organization)
+    @org_user_1 = @helper.create_test_user(unique_name('user'), @organization)
+    @org_user_2 = @helper.create_test_user(unique_name('user'), @organization)
 
     @organization.reload
 

@@ -271,6 +271,7 @@ describe Carto::Api::ApiKeysController do
         response.status.should eq 200
         response.body[:id].should eq api_key.id
       end
+      api_key.destroy
     end
 
     it 'returns 404 if the API key does not exist' do
@@ -284,6 +285,7 @@ describe Carto::Api::ApiKeysController do
       get_json generate_api_key_url(user_req_params(@user2), id: api_key.id) do |response|
         response.status.should eq 404
       end
+      api_key.destroy
     end
 
     it 'returns 401 if api_key is not provided' do
@@ -291,6 +293,7 @@ describe Carto::Api::ApiKeysController do
       get_json generate_api_key_url(user_req_params(Carto::User.new), id: api_key.id) do |response|
         response.status.should eq 401
       end
+      api_key.destroy
     end
   end
 
@@ -504,6 +507,7 @@ describe Carto::Api::ApiKeysController do
           response.status.should eq 401
           Carto::ApiKey.find(api_key.id).should be
         end
+        api_key.destroy
       end
 
       it 'regenerate the token' do

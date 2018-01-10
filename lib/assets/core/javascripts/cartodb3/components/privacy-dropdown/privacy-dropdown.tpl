@@ -1,5 +1,5 @@
 <div class="Privacy-dropdown">
-  <button class="Privacy-dropdownTrigger Tag Tag-fill Tag-fill--<%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-toggle">
+  <<%- privacyDOMElement %> class="Privacy-dropdownTrigger Tag Tag-fill Tag-fill--<%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-toggle">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon CDB-LoaderIcon--small u-flex">
         <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">
@@ -9,7 +9,7 @@
     <% } else { %>
       <%- privacy %>
     <% } %>
-  </button>
+  </<%- privacyDOMElement %>>
 
   <div class="js-dialog"></div>
 </div>

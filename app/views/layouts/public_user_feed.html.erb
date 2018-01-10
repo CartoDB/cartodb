@@ -62,7 +62,7 @@
       };
       </script>
 
-    <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
+    <%= javascript_include_tag 'common', 'user_feed' %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>
     <%= insert_hubspot() %>

@@ -114,6 +114,7 @@ ion for time-series (#12670)
 * Added Mapbox services providers (#cartodb-platform/3835)
 
 ### Bug fixes / enhancements
+* Add routing to analyses nodes (#13364)
 * Show tooltips only if the target element is visible (#12098)
 * Consolidate DeepInsight components in Builder (#13271)
 * Unify tooltip style (#13194)

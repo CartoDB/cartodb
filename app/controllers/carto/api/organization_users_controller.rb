@@ -126,7 +126,7 @@ module Carto
 
         force_destroy = params[:force].present?
 
-        if @user.has_shared_entities? && !force_destroy
+        if !force_destroy && @user.has_shared_entities?
           error_message = "Can't delete @user. 'Has shared entities"
           render_jsonp(error_message, 410 ) and return
         end

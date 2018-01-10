@@ -448,8 +448,8 @@ describe Carto::Api::ApiKeysController do
 
       it 'destroys the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-        delete_json generate_api_key_url(user_req_params(@user1), id: api_key.id),
-                                         {}, json_headers_with_auth do |response|
+        params = user_req_params(@user1)
+        delete_json generate_api_key_url(params, id: api_key.id), {}, json_headers_with_auth do |response|
           response.status.should eq 200
           response.body[:id].should eq api_key.id
         end

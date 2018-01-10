@@ -43,6 +43,20 @@ CartoCSS.prototype.getContent = function () {
  *
  * @param {string} newContent - A string containing the new cartocss/turbocarto style
  * @return {Promise<string>} A promise that will be resolved once the cartocss/turbocarto is updated
+ * @example
+ * // Get the cartoCSS from an exiting layer
+ * let cartoCSS = layer.getStyle();
+ * // Update the cartoCSS content, remember this method is asynchronous!
+ * cartoCSS.setContent(`
+ *  #layer {
+ *    marker-fill: blue;
+ *  }`)
+ *  .then(() => {
+ *    console.log('cartoCSS was updated'); 
+ *  })
+ *  .catch(() => {
+ *    console.error('Error updating the cartoCSS for the layer');
+ *  });
  * @api
  */
 CartoCSS.prototype.setContent = function (newContent) {

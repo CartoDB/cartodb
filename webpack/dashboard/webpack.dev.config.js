@@ -14,7 +14,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  'user-feed': resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js')
+  'user_feed': resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js')
 };
 
 module.exports = env => {
@@ -75,7 +75,16 @@ module.exports = env => {
       .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
     module: {
       rules: [
-
+        {
+          test: /\.tpl$/,
+          use: 'tpl-loader',
+          include: [
+            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard'),
+            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
+            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
+          ]
+        }
       ]
     },
 

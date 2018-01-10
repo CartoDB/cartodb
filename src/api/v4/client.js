@@ -58,7 +58,6 @@ _.extend(Client.prototype, Backbone.Events);
  * Add a layer to the client.
  *
  * @param {carto.layer.Base} - The layer to be added
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -76,8 +75,8 @@ _.extend(Client.prototype, Backbone.Events);
  * @returns {Promise} - A promise that will be fulfilled when the layer is added
  * @api
  */
-Client.prototype.addLayer = function (layer, opts) {
-  return this.addLayers([layer], opts);
+Client.prototype.addLayer = function (layer) {
+  return this.addLayers([layer]);
 };
 
 /**
@@ -120,7 +119,6 @@ Client.prototype.addLayers = function (layers) {
  * });
  *
  * @param {carto.layer.Base} - The layer to be removed
- * @param {object} opts
  *
  * @fires error
  * @fires success
@@ -128,8 +126,8 @@ Client.prototype.addLayers = function (layers) {
  * @returns {Promise} A promise that will be fulfilled when the layer is removed
  * @api
  */
-Client.prototype.removeLayer = function (layer, opts) {
-  return this.removeLayers([layer], opts);
+Client.prototype.removeLayer = function (layer) {
+  return this.removeLayers([layer]);
 };
 
 /**
@@ -198,8 +196,8 @@ Client.prototype.getLayers = function () {
  * @returns {Promise} - A promise that will be fulfilled when the dataview is added
  * @api
  */
-Client.prototype.addDataview = function (dataview, opts) {
-  return this.addDataviews([dataview], opts);
+Client.prototype.addDataview = function (dataview) {
+  return this.addDataviews([dataview]);
 };
 
 /**

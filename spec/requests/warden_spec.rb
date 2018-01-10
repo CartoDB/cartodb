@@ -19,7 +19,6 @@ describe 'Warden :auth_api Strategy' do
     @auth_api_feature_flag.destroy
   end
 
-
   it 'authenticates with header' do
     get_json generate_api_key_url, {}, http_json_headers.merge(
       'Authorization' => 'Basic ' + Base64.encode64("#{@user1.username}:#{@master_api_key.token}")

@@ -37,7 +37,9 @@ var parseHistogramData = require('./parse-data.js');
  * // Add a bounding box filter, so the data will change when the map is moved.
  * var bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
  * // Set up a callback to render the histogram data every time new data is obtained.
- *  histogram.on('dataChanged', renderData);
+ *  histogram.on('dataChanged', histogramData => {
+ *    console.log(histogramData);
+ *  });
  * // Add the histogram to the client
  * client.addDataview(histogram);
  * @example

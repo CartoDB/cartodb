@@ -26,7 +26,7 @@ var metadataParser = require('./metadata/parser');
  * const layer = new carto.layer.Layer(source, style);
  *```
  *
- * @param {object} source - The source where the layer will fetch the data
+ * @param {carto.source.Base} source - The source where the layer will fetch the data
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
@@ -40,6 +40,13 @@ var metadataParser = require('./metadata/parser');
  * // Create a layer with no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
  * @example
+ * const citiesSource = new carto.source.SQL('SELECT * FROM cities');
+ * const citiesStyle = new carto.style.CartoCSS(`
+ *   #layer {
+ *     marker-fill: #FABADA;
+ *     marker-width: 10;
+ *   }
+ * `);
  * // Create a layer indicating what columns will be included in the featureOver event.
  * new carto.layer.Layer(citiesSource, citiesStyle, {
  *   featureOverColumns: [ 'name' ]

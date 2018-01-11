@@ -111,6 +111,7 @@
     "stylelint": "^8.2.0",
     "stylelint-config-property-sort-order-smacss": "^2.0.0",
     "stylelint-config-standard": "^17.0.0",
+    "svg-inline-loader": "^0.8.0",
     "tpl-loader": "CartoDB/tpl-loader#master",
     "uglify-js": "2.7.x",
     "watchify": "3.7.0",

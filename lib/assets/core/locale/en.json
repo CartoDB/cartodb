@@ -2153,7 +2153,10 @@
       }
     },
     "data": {
-      "no-geometry-data": "Your dataset doesn't contain any geometry data.",
+      "no-geometry-data": {
+        "message": "This layer is empty. Add data to start working.",
+        "action-message": "Click the blue bottom on the bottom right to add points (%{pointIcon}), lines (%{lineIcon}) or polygon (%{polygonIcon})."
+      },
       "stats": {
         "add-widget": "Add as a widget",
         "edit": "EDIT",

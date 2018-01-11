@@ -100,10 +100,10 @@ class Carto::ApiKey < ActiveRecord::Base
     end
   end
 
-  def affected_schemas(api_key_grants)
+  def affected_schemas(api_key_grants, from_db: false)
     read_schemas = []
     write_schemas = []
-    api_key_grants.table_permissions.each do |tp|
+    api_key_grants.table_permissions(from_db: from_db).each do |tp|
       read_schemas << tp.schema
       write_schemas << tp.schema unless !tp.write?
     end

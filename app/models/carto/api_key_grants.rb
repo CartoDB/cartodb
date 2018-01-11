@@ -26,6 +26,11 @@ module Carto
       @permissions += permissions.reject { |p| @permissions.include?(p) }
     end
 
+    def << (permission)
+      down_permission = permission.downcase
+      @permissions << down_permission if !@permissions.include?(down_permission) && ALLOWED_PERMISSIONS.include?(down_permission)
+    end
+
     def write?
       !(@permissions & WRITE_PERMISSIONS).empty?
     end
@@ -44,8 +49,12 @@ module Carto
       @table_permissions = process_table_permissions(grants_json)
     end
 
-    def table_permissions
-      @table_permissions.values
+    def table_permissions(from_db: false)
+      if from_db
+        table_permissions_from_db
+      else
+        @table_permissions.values
+      end
     end
 
     def to_json
@@ -73,6 +82,32 @@ module Carto
       end
 
       table_permissions
+    end
+
+    def table_permissions_from_db
+      permissions = {}
+      roles_from_db.each do |line|
+        permission_key = "#{line[:schema]}.#{line[:table_name]}"
+        table_permission = permissions[permission_key] || permissions[permission_key] = TablePermissions.new(schema: line[:schema],
+                                                                                                             name: line[:table_name]
+        )
+        table_permission << line[:permission]
+      end
+      permissions.values
+    end
+
+    def roles_from_db
+      query = %{
+        SELECT
+          table_schema as schema,
+          table_name,
+          privilege_type as permission
+        FROM
+          information_schema.role_table_grants
+        WHERE
+          grantee = '#{@db_role}'
+      }
+      @db_connection.fetch(query).all
     end
   end
 end

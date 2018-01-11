@@ -80,8 +80,10 @@ class Carto::ApiKey < ActiveRecord::Base
 
   def update_role_permissions
     if grants_was.present?
-      api_key_grants = Carto::ApiKeyGrants.new(db_connection: db_connection, db_role: db_role, grants_json: grants_was)
-      revoke_privileges(*affected_schemas(api_key_grants, from_db: true))
+      revoke_privileges(*affected_schemas(
+        Carto::ApiKeyGrants.new(db_connection: db_connection, db_role: db_role, grants_json: grants_was),
+        from_db: true)
+      )
     end
     _, write_schemas = affected_schemas(api_key_grants)
 

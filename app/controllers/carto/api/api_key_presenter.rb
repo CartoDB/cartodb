@@ -16,7 +16,7 @@ module Carto
           },
           {
             type: 'database',
-            tables: @api_key_grants.table_permissions.map do |p|
+            tables: @api_key_grants.table_permissions(from_db: true).map do |p|
               {
                 schema: p.schema,
                 name: p.name,

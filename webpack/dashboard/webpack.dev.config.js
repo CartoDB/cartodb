@@ -76,14 +76,44 @@ module.exports = env => {
     module: {
       rules: [
         {
+          test: /\.js$/,
+          loader: 'shim-loader',
+          include: [
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
+          ],
+          options: {
+            shim: {
+              'wax.cartodb.js': {
+                exports: 'wax'
+              },
+              'html-css-sanitizer': {
+                exports: 'html'
+              },
+              'lzma': {
+                exports: 'LZMA'
+              }
+            }
+          }
+        },
+        {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [
             resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
             resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard'),
-            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
-            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
+        },
+        {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          include: [
+            resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
+            resolve(__dirname, '../../', 'node_modules/tangram.cartodb')
+          ],
+          options: {
+            presets: ['env']
+          }
         }
       ]
     },

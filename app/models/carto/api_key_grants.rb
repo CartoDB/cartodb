@@ -36,7 +36,9 @@ module Carto
 
     attr_reader :granted_apis
 
-    def initialize(grants_json = [])
+    def initialize(db_connection:, db_role:, grants_json: [])
+      @db_connection = db_connection
+      @db_role = db_role
       @grants_json = grants_json
       @granted_apis = process_granted_apis(grants_json)
       @table_permissions = process_table_permissions(grants_json)

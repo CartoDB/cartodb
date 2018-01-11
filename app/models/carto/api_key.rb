@@ -43,7 +43,9 @@ class Carto::ApiKey < ActiveRecord::Base
   attr_writer :redis_client
 
   def api_key_grants
-    @api_key_grants ||= ::Carto::ApiKeyGrants.new(grants)
+    @api_key_grants ||= ::Carto::ApiKeyGrants.new(db_connection: db_connection,
+                                                  db_role: db_role,
+                                                  grants_json: grants)
   end
 
   def create_token
@@ -77,7 +79,10 @@ class Carto::ApiKey < ActiveRecord::Base
   end
 
   def update_role_permissions
-    revoke_privileges(*affected_schemas(Carto::ApiKeyGrants.new(grants_was))) if grants_was.present?
+    if grants_was.present?
+      api_key_grants = Carto::ApiKeyGrants.new(db_connection: db_connection, db_role: db_role, grants_json: grants_was)
+      revoke_privileges(*affected_schemas(api_key_grants, from_db: true))
+    end
     _, write_schemas = affected_schemas(api_key_grants)
 
     api_key_grants.table_permissions.each do |tp|

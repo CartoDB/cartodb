@@ -15,6 +15,7 @@ module Carto
           @mapviews = hash[:mapviews]
           @action = hash[:action]
           @analysis = hash[:analysis]
+          @layer_properties = hash[:layer_properties]
         end
 
         def to_hash
@@ -27,6 +28,7 @@ module Carto
           properties.merge!(trending_map_properties) if @mapviews
           properties.merge!(analysis_properties) if @analysis
           properties.merge!(widget_properties) if @widget
+          properties.merge!(layer_properties) if @layer_properties
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage
@@ -110,6 +112,17 @@ module Carto
 
         def event_properties
           { creation_time: now }
+        end
+
+        def layer_properties
+          {
+            empty: @layer_properties[:empty],
+            format: @layer_properties[:format],
+            layer_id: @layer_properties[:layer_id],
+            source: @layer_properties[:source],
+            visible: @layer_properties[:visible],
+            table_name: @layer_properties[:table_name]
+          }
         end
 
         def days_with_decimals(time_object)

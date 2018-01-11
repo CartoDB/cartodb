@@ -6,6 +6,14 @@ describe Carto::Api::ApiKeysController do
   include_context 'users helper'
   include HelperMethods
 
+  def response_grants_should_include_source_table_permissions(reponse_grants, table_permissions)
+    table_permissions.each do |stp|
+      response_tables = reponse_grants.find {|grant| grant['type'] == 'database'}['tables']
+      response_permissions_for_table = response_tables.find {|rtp| rtp['schema'] == stp['schema'] && rtp['name'] == stp['name']}['permissions']
+      response_permissions_for_table.sort.should eq stp['permissions'].sort
+    end
+  end
+
   before(:all) do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
   end
@@ -76,7 +84,8 @@ describe Carto::Api::ApiKeysController do
         api_key_response[:user][:username].should eq @carto_user1.username
         api_key_response[:type].should eq 'regular'
         api_key_response[:token].should_not be_empty
-        api_key_response[:grants].should eq grants
+        response_grants_should_include_source_table_permissions(api_key_response[:grants],
+                                                                grants.find {|grant| grant['type'] == 'database'}['tables'])
         api_key_response[:databaseConfig].should_not be_empty
         api_key_response[:databaseConfig].should_not be_empty
         api_key_response[:databaseConfig][:role].should_not be_empty

@@ -628,6 +628,10 @@ class Carto::User < ActiveRecord::Base
     state == STATE_LOCKED
   end
 
+  def period_end_date
+    self[:period_end_date].utc
+  end
+
   private
 
   def set_database_host

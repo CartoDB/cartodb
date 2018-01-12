@@ -373,8 +373,6 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('dashboard', [
-    'clean',
-    'copy:tangram',
     'js_dashboard',
     'css',
     'manifest',

@@ -35,7 +35,7 @@ module Carto
       @permissions += permissions.reject { |p| @permissions.include?(p) }
     end
 
-    def <<(permission)
+    def add!(permission)
       down_permission = permission.downcase
       if !@permissions.include?(down_permission) && ALLOWED_PERMISSIONS.include?(down_permission)
         @permissions << down_permission
@@ -97,7 +97,7 @@ module Carto
         unless permissions[permission_key]
           permissions[permission_key] = Carto::TablePermissions.new(schema: line[:schema], name: line[:table_name])
         end
-        permissions[permission_key] << line[:permission]
+        permissions[permission_key].add!(line[:permission])
       end
       permissions.values
     end

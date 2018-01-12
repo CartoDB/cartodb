@@ -7,8 +7,12 @@ describe Superadmin::PlatformController do
   before(:all) do
     @dbhost = 'platform_controller_spec.localhost'
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    @user1 = FactoryGirl.create(:valid_user, database_host: @dbhost)
-    @user2 = FactoryGirl.create(:valid_user, database_host: @dbhost)
+    @user1 = FactoryGirl.create(:valid_user)
+    @user2 = FactoryGirl.create(:valid_user)
+    [@user1, @user2].each do |u|
+      u.database_host = @dbhost
+      u.save
+    end
   end
 
   after(:all) do

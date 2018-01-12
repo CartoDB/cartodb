@@ -37,16 +37,16 @@ describe Carto::Api::ApiKeysController do
     it 'creates a new API key' do
       grants = [
         {
-          "type" => "apis",
-          "apis" => ["sql", "maps"]
+          type: "apis",
+          apis: ["sql", "maps"]
         },
         {
-          "type" => "database",
-          "tables" => [
+          type: "database",
+          tables: [
             {
-              "schema" => @carto_user1.database_schema,
-              "name" => @table1.name,
-              "permissions" => [
+              schema: @carto_user1.database_schema,
+              name: @table1.name,
+              permissions: [
                 "insert",
                 "select",
                 "update",
@@ -54,9 +54,9 @@ describe Carto::Api::ApiKeysController do
               ]
             },
             {
-              "schema" => @carto_user1.database_schema,
-              "name" => @table2.name,
-              "permissions" => [
+              schema: @carto_user1.database_schema,
+              name: @table2.name,
+              permissions: [
                 "select"
               ]
             }
@@ -326,8 +326,8 @@ describe Carto::Api::ApiKeysController do
         response.body[:_links][:next][:href].should match /page=2/
         response.body[:_links][:last][:href].should match /page=3/
         response.body[:result].size.should eq 2
-        response.body[:result][0]['id'].should eq @apikeys[0].id
-        response.body[:result][1]['id'].should eq @apikeys[1].id
+        response.body[:result][0][:id].should eq @apikeys[0].id
+        response.body[:result][1][:id].should eq @apikeys[1].id
       end
 
       get_json generate_api_key_url(user_req_params(@user1).merge(per_page: 2, page: 2), id: nil) do |response|
@@ -339,8 +339,8 @@ describe Carto::Api::ApiKeysController do
         response.body[:_links][:next][:href].should match /page=3/
         response.body[:_links][:last][:href].should match /page=3/
         response.body[:result].size.should eq 2
-        response.body[:result][0]['id'].should eq @apikeys[2].id
-        response.body[:result][1]['id'].should eq @apikeys[3].id
+        response.body[:result][0][:id].should eq @apikeys[2].id
+        response.body[:result][1][:id].should eq @apikeys[3].id
       end
 
       get_json generate_api_key_url(user_req_params(@user1).merge(per_page: 2, page: 3), id: nil) do |response|
@@ -351,7 +351,7 @@ describe Carto::Api::ApiKeysController do
         expect(response.body[:_links].keys).not_to include(:next)
         response.body[:_links][:last][:href].should match /page=3/
         response.body[:result].size.should eq 1
-        response.body[:result][0]['id'].should eq @apikeys[4].id
+        response.body[:result][0][:id].should eq @apikeys[4].id
       end
 
       get_json generate_api_key_url(user_req_params(@user1).merge(per_page: 3), id: nil) do |response|
@@ -362,7 +362,7 @@ describe Carto::Api::ApiKeysController do
         response.body[:_links][:next][:href].should match /page=2/
         response.body[:_links][:last][:href].should match /page=2/
         response.body[:result].size.should eq 3
-        3.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id }
+        3.times { |n| response.body[:result][n][:id].should eq @apikeys[n].id }
       end
 
       get_json generate_api_key_url(user_req_params(@user1).merge(per_page: 10), id: nil) do |response|
@@ -373,7 +373,7 @@ describe Carto::Api::ApiKeysController do
         expect(response.body[:_links].keys).not_to include(:prev)
         expect(response.body[:_links].keys).not_to include(:next)
         response.body[:result].size.should eq 5
-        5.times { |n| response.body[:result][n]['id'].should eq @apikeys[n].id }
+        5.times { |n| response.body[:result][n][:id].should eq @apikeys[n].id }
       end
     end
 

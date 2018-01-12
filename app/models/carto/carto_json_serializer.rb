@@ -19,7 +19,11 @@ module Carto
       elsif value.is_a?(Array)
         value.map { |v| hash(v, symbolize: symbolize) }
       else
-        JSON.parse(value, symbolize_names: symbolize)
+        begin
+          JSON.parse(value, symbolize_names: symbolize)
+        rescue
+          value
+        end
       end
     end
   end

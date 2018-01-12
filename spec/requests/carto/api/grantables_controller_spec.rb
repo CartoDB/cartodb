@@ -110,7 +110,11 @@ describe Carto::Api::GrantablesController do
         search_strings = ['%', '___'] # % and _ are special characters in LIKE operator matchers
 
         search_strings.each do |q|
-          get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { q: q }, @headers do |response|
+          get_json api_v1_grantables_index_url(
+            user_domain: @org_user_owner.username,
+            organization_id: @carto_organization.id,
+            api_key: @org_user_owner.api_key
+          ), { q: q }, @headers do |response|
             response.status.should == 200
             response.body[:grantables].length.should == 0
             response.body[:total_entries].should == 0

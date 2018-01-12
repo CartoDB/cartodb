@@ -10,7 +10,12 @@
   @include display-flex();
   @include flex-direction(column);
   min-height: 100vh;
+
+  @media (max-width: 759px) {
+    overflow-y: visible;
+  }
 }
+
 .PublicBody--grey {
   background: #F9F9F9;
 }

@@ -89,15 +89,25 @@ module Carto
     end
 
     def table_permissions_from_db
-      permissions = {}
-      roles_from_db.each do |line|
-        permission_key = "#{line[:schema]}.#{line[:table_name]}"
-        unless permissions[permission_key]
-          permissions[permission_key] = Carto::TablePermissions.new(schema: line[:schema], name: line[:table_name])
-        end
-        permissions[permission_key].add!(line[:permission])
+      query = %{
+        select
+          table_schema,
+          table_name,
+          string_agg(lower(privilege_type),',') privilege_types
+        from
+          information_schema.role_table_grants
+        where
+          grantee = '#{db_role}'
+        group by
+          table_schema,
+          table_name;
+        }
+      db_connection.fetch(query).all.map do |line|
+        TablePermissions.new(schema:line[:table_schema],
+                             name: line[:table_name],
+                             permissions:line[:privilege_types].split(','))
       end
-      permissions.values
+
     end
 
     def create_token
@@ -238,20 +248,6 @@ module Carto
       db_run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
       db_run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
       db_run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
-    end
-
-    def roles_from_db
-      query = %{
-          SELECT
-            table_schema as schema,
-            table_name,
-            privilege_type as permission
-          FROM
-            information_schema.role_table_grants
-          WHERE
-            grantee = '#{db_role}'
-        }
-      db_connection.fetch(query).all
     end
   end
 end

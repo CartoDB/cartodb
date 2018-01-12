@@ -44,7 +44,7 @@ module Carto
         private
 
         def get_database(options, configuration)
-          resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new([])
+          resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new([])
           conn = ActiveRecord::Base.connection_handler.establish_connection(
             get_connection_name(options[:as]), resolver.spec(configuration)
           ).connection

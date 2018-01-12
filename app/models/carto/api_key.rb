@@ -76,7 +76,7 @@ module Carto
     end
 
     def table_permissions
-      @table_permissions = process_table_permissions unless @table_permissions
+      @table_permissions ||= process_table_permissions
       @table_permissions.values
     end
 
@@ -95,11 +95,10 @@ module Carto
           table_name;
         }
       db_connection.fetch(query).all.map do |line|
-        TablePermissions.new(schema:line[:table_schema],
+        TablePermissions.new(schema: line[:table_schema],
                              name: line[:table_name],
-                             permissions:line[:privilege_types].split(','))
+                             permissions: line[:privilege_types].split(','))
       end
-
     end
 
     def create_token
@@ -128,8 +127,8 @@ module Carto
 
       databases[:tables].each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
-        permissions = table_permissions[table_id] ||= Carto::TablePermissions.new(schema: table[:schema], name: table[:name])
-        permissions.merge!(table[:permissions])
+        table_permissions[table_id] ||= Carto::TablePermissions.new(schema: table[:schema], name: table[:name])
+        table_permissions[table_id].merge!(table[:permissions])
       end
 
       table_permissions

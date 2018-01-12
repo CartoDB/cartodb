@@ -120,6 +120,6 @@ In the `cartodb/config/app_config.yml` file, enable the desired dataservices:
 
 Execute the rake tasks to update all the users and organizations:
 
-`bundle exec rake cartodb:db:configure_geocoder_extension_for_organizations['', true]`
+``bundle exec rake cartodb:db:configure_geocoder_extension_for_organizations['', true]``
 
-`bundle exec rake cartodb:db:configure_geocoder_extension_for_non_org_users['', true]`
+``bundle exec rake cartodb:db:configure_geocoder_extension_for_non_org_users['', true]``

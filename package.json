@@ -42,7 +42,6 @@
     "postcss-strip-inline-comments": "0.1.5",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
-    "svg-inline-loader": "^0.8.0",
     "tangram": "cartodb/tangram#master",
     "tinycolor2": "^1.4.1",
     "torque.js": "CartoDB/torque#master",

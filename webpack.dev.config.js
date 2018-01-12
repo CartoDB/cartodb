@@ -125,13 +125,6 @@ module.exports = env => {
           options: {
             presets: ['es2015']
           }
-        },
-        {
-          test: /\.svg$/,
-          loader: 'svg-inline-loader',
-          options: {
-            removeSVGTagAttrs: false
-          }
         }
       ]
     },

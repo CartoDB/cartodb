@@ -122,13 +122,6 @@ module.exports = env => {
             resolve(__dirname, 'lib/assets/core/javascripts/deep-insights'),
             resolve(__dirname, 'node_modules/cartodb.js')
           ]
-        },
-        {
-          test: /\.svg$/,
-          loader: 'svg-inline-loader',
-          options: {
-            removeSVGTagAttrs: false
-          }
         }
       ]
     },

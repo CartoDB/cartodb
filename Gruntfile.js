@@ -350,7 +350,6 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js',
     'css',
-    'copy:icons_cartodb3',
     'manifest'
   ]);
 
@@ -433,7 +432,6 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js_editor',
     'jasmine:cartodbui',
-    'copy:icons_cartodb3',
     'js_builder',
     'affected:all',
     'bootstrap_webpack_builder_specs',
@@ -447,7 +445,6 @@ module.exports = function (grunt) {
    * `grunt affected_specs --specs=all` compile all Builder specs.
    */
   grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
-    'copy:icons_cartodb3',
     'js_builder',
     'affected',
     'bootstrap_webpack_builder_specs',

@@ -53,7 +53,8 @@ var PathBase = GeometryBase.extend({
     this.points.add(point, { at: at });
   },
 
-  removePoint: function (point) {
+  removePoint: function (latlng) {
+    var point = this.points.findWhere({ latlng });
     this.points.remove(point);
   }
 });

@@ -12,6 +12,10 @@ var events = {
    */
   FEATURE_CLICKED: 'featureClicked',
   /**
+   * A feature has been clicked twice, fired every time the user clicks twice on a feature.
+   */
+  FEATURE_DBLCLICKED: 'featureDblclicked',
+  /**
    * The mouse is over a feature, fired every time the user moves over a feature.
    */
   FEATURE_OVER: 'featureOver',

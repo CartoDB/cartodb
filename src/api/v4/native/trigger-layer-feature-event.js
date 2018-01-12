@@ -37,6 +37,14 @@ module.exports = function (eventName, internalEvent, layers) {
      * @type {carto.layer.FeatureEvent}
      * @api
      */
+    /**
+
+     * Fired when user clicks twice on a feature.
+     *
+     * @event featureDblclicked
+     * @type {carto.layer.FeatureEvent}
+     * @api
+     */
 
     /**
      * Fired when user moves the mouse over a feature.

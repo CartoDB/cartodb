@@ -40,6 +40,7 @@ var LeafletLayer = L.TileLayer.extend({
         nativeLayer: this
       });
       this._internalView.on('featureClick', this._onFeatureClick, this);
+      this._internalView.on('featureDblclick', this._onFeatureDblclick, this);
       this._internalView.on('featureOver', this._onFeatureOver, this);
       this._internalView.on('featureOut', this._onFeatureOut, this);
       this._internalView.on('featureError', this._onFeatureError, this);
@@ -51,6 +52,7 @@ var LeafletLayer = L.TileLayer.extend({
   removeFrom: function (map) {
     if (this._internalView) {
       this._internalView.off('featureClick');
+      this._internalView.off('featureDblclick');
       this._internalView.off('featureOver');
       this._internalView.off('featureOut');
       this._internalView.off('featureError');
@@ -69,6 +71,10 @@ var LeafletLayer = L.TileLayer.extend({
 
   _onFeatureClick: function (internalEvent) {
     triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, internalEvent, this._layers);
+  },
+
+  _onFeatureDblclick: function (internalEvent) {
+    triggerLayerFeatureEvent(Layer.events.FEATURE_DBLCLICKED, internalEvent, this._layers);
   },
 
   _onFeatureOver: function (internalEvent) {

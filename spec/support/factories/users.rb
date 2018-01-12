@@ -111,7 +111,7 @@ module CartoDB
     end
 
     def create_owner(organization)
-      org_user_owner = create_test_user(unique_name('user'))
+      org_user_owner = create_test_user(organization.name + '-admin')
       user_org = CartoDB::UserOrganization.new(organization.id, org_user_owner.id)
       user_org.promote_user_to_admin
       organization.reload

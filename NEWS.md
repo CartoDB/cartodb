@@ -116,6 +116,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Update pop up when applying HTML changes (#1263)
+* Rollback make new widgets appear on top (#13244)
 * Show quota alert in georeference city analysis (#13354)
 * Show layer name in delete layer modal (#13363)
 * Show tooltips only if the target element is visible (#12098)

@@ -12,7 +12,6 @@ module Carto
 
   class TablePermissions
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
-    ALLOWED_PERMISSIONS = (WRITE_PERMISSIONS + ['select', 'references', 'trigger']).freeze
 
     attr_reader :schema, :name, :permissions
 
@@ -31,13 +30,12 @@ module Carto
     end
 
     def merge!(permissions)
-      permissions = permissions.map { |p| p.downcase if ALLOWED_PERMISSIONS.include?(p.downcase) }
-      @permissions += permissions.reject { |p| @permissions.include?(p) }
+      @permissions += permissions.map { |p| p.downcase unless @permissions.include?(p) }
     end
 
     def add!(permission)
       down_permission = permission.downcase
-      if !@permissions.include?(down_permission) && ALLOWED_PERMISSIONS.include?(down_permission)
+      if !@permissions.include?(down_permission)
         @permissions << down_permission
       end
     end

@@ -21,14 +21,6 @@ module Carto
       @permissions = permissions
     end
 
-    def to_json
-      {
-        'schema' => @schema,
-        'name' => @name,
-        'permissions' => @permissions
-      }
-    end
-
     def merge!(permissions)
       @permissions += permissions.map { |p| p.downcase unless @permissions.include?(p) }
     end

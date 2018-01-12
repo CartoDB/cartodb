@@ -224,15 +224,16 @@ module Carto
       Carto::RedisExportService.new.remove_redis_from_json_export(File.read(organization_redis_file))
       organization = load_organization_from_directory(meta_path)
 
-      user_list = get_user_list(meta_path)
-      user_list.map do |user_path|
-        Carto::UserMetadataExportService.new.rollback_import_from_directory(user_path)
+      user_list = organization.non_owner_users + [organization.owner]
+      user_list.map do |user|
+        Carto::UserMetadataExportService.new.rollback_import_from_directory("#{meta_path}/user_#{user.id}")
       end
       return unless Carto::Organization.exists?(organization.id)
 
       organization = Carto::Organization.find(organization.id)
       organization.groups.delete
       organization.notifications.delete
+      organization.assets.map(&:delete)
       organization.users.delete
       organization.delete
     end

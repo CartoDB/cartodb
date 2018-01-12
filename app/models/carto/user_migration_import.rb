@@ -26,8 +26,10 @@ module Carto
     validates :exported_file, presence: true
     validates :json_file, presence: true
     validate :valid_org_import
+    validate :valid_dry_settings
 
     def run_import
+      raise errors.full_messages.join(', ') unless valid?
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -64,9 +66,25 @@ module Carto
       end
     end
 
+    def valid_dry_settings
+      errors.add(:dry, 'dry cannot be true while import_metadata is true') if import_metadata && dry
+    end
+
     def import(service, package)
+      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+      raise "DB already exists at DB host" if import_job.db_exists?
+
       imported = do_import_metadata(package, service) if import_metadata?
-      do_import_data(package, service)
+
+      begin
+        do_import_data(import_job)
+      rescue => e
+        log.append('=== Error importing data. Rollback! ===')
+        rollback_import_data(package)
+        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
+        raise e
+      end
+
       import_visualizations(imported, package, service) if import_metadata?
     end
 
@@ -88,16 +106,10 @@ module Carto
       imported
     end
 
-    def do_import_data(package, service)
+    def do_import_data(import_job)
       log.append('=== Importing data ===')
-      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
       begin
         import_job.run!
-      rescue => e
-        log.append('=== Error importing data. Rollback! ===')
-        rollback_import_data(package)
-        service.rollback_import_from_directory(package.meta_dir) if import_metadata?
-        raise e
       ensure
         import_job.terminate_connections
       end
@@ -167,14 +179,14 @@ module Carto
         into_org_name: nil,
         mode: :import,
         logger: log.logger,
-        import_job_logger: log.logger
+        import_job_logger: log.logger,
+        update_metadata: !dry
       }
     end
 
     def set_defaults
       self.log = Carto::Log.create(type: 'user_migration_import') unless log
       self.state = STATE_PENDING unless state
-
       save
     end
   end

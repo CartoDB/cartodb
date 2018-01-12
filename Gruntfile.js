@@ -244,7 +244,9 @@ module.exports = function (grunt) {
 
     var builderFiles = [
       'js_cartodb3',
-      'js_test_cartodb3'
+      'js_test_cartodb3',
+      'js_deep_insights',
+      'js_test_deep_insights'
     ];
     var otherFiles = [
       'app',
@@ -320,6 +322,7 @@ module.exports = function (grunt) {
     'cdb',
     'copy:js_cartodb',
     'setConfig:env.browserify_watch:true',
+    'npm-carto-node',
     'run_browserify',
     'concat:js',
     'jst'
@@ -328,7 +331,9 @@ module.exports = function (grunt) {
   grunt.registerTask('js_builder', [
     'copy:locale',
     'copy:js_cartodb3',
-    'copy:js_test_cartodb3'
+    'copy:js_test_cartodb3',
+    'copy:js_deep_insights',
+    'copy:js_test_deep_insights'
   ]);
 
   grunt.registerTask('js', [
@@ -350,12 +355,16 @@ module.exports = function (grunt) {
 
   registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
+  registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
+  registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
+  registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
 
   /**
    * `grunt dev`
    */
 
   grunt.registerTask('dev', [
+    'npm-carto-node',
     'pre',
     'npm-start'
   ]);
@@ -378,14 +387,18 @@ module.exports = function (grunt) {
     'uglify'
   ]);
 
-  registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
-
   grunt.registerTask('build', [
+    'npm-carto-node',
     'pre',
     'copy:js',
     'exorcise',
     'uglify',
     'npm-build'
+  ]);
+
+  grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [
+    'npm-carto-node',
+    'npm-build-static'
   ]);
 
   /**

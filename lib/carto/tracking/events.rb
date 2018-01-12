@@ -4,6 +4,7 @@ require_dependency 'carto/tracking/formats/internal'
 require_dependency 'carto/tracking/services/segment'
 require_dependency 'carto/tracking/services/hubspot'
 require_dependency 'carto/tracking/validators/visualization'
+require_dependency 'carto/tracking/validators/layer'
 require_dependency 'carto/tracking/validators/user'
 require_dependency 'carto/tracking/validators/widget'
 
@@ -212,6 +213,105 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :widget_id
+      end
+
+      class DownloadedLayer < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::Layer
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :layer_id, :format,
+                            :source, :visible, :table_name
+      end
+
+      class StyledByValue < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :attribute, :attribute_type
+      end
+
+      class DraggedNode < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
+
+      class CreatedLayer < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::Layer
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :layer_id
+      end
+
+      class ChangedDefaultGeometry < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
+
+      class AggregatedGeometries < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :previus_type, :type
+      end
+
+      class UsedAdvancedMode < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :type
+      end
+
+      # Models a generic event for segment.
+      class SegmentEvent < Event
+        include Carto::Tracking::Services::Segment
+
+        attr_reader :name
+
+        private_class_method :new
+
+        # Just pass any hash at `properties` and it will be sent to Segment.
+        def self.build(name, reporter_id, properties)
+          new(name, reporter_id, properties) if EVENTS.include?(name)
+        end
+
+        private
+
+        EVENTS = ['WebGL stats'].freeze
+
+        def initialize(name, reporter_id, properties)
+          @name = name
+          @properties = properties
+          @format = SegmentFormat.new(@properties)
+          @reporter = Carto::User.where(id: reporter_id).first
+        end
+      end
+
+      class SegmentFormat < Carto::Tracking::Formats::Internal
+        def to_segment
+          data = super
+          data[:data_properties] = to_hash
+          data
+        end
       end
     end
   end

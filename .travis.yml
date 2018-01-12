@@ -10,12 +10,8 @@ addons:
 install:
   - npm install
 
-before_script:
-  - npm install -g npm@3.10.9
-  - npm install -g grunt-cli
-
 script:
-  - grunt test
+  - npm run ci
 
 notifications:
   email:

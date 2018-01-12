@@ -22,6 +22,7 @@ require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/email_cleaner'
+require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
 
 class User < Sequel::Model
@@ -122,6 +123,9 @@ class User < Sequel::Model
   DEFAULT_MAX_CONCURRENT_IMPORT_COUNT = 3
 
   COMMON_DATA_ACTIVE_DAYS = 31
+
+  STATE_ACTIVE = 'active'.freeze
+  STATE_LOCKED = 'locked'.freeze
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -420,7 +424,7 @@ class User < Sequel::Model
         end
       end
 
-      if has_shared_entities? && !@force_destroy
+      if !@force_destroy && has_shared_entities?
         raise CartoDB::SharedEntitiesError.new('Cannot delete user, has shared entities')
       end
 
@@ -429,9 +433,11 @@ class User < Sequel::Model
 
     begin
       # Remove user data imports, maps, layers and assets
-      delete_external_data_imports
-      delete_external_sources
-      Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+      ActiveRecord::Base.transaction do
+        delete_external_data_imports
+        delete_external_sources
+        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+      end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.
       # Kept in order to support old data.
@@ -806,6 +812,18 @@ class User < Sequel::Model
       upgraded_at + TRIAL_DURATION_DAYS.days
     else
       nil
+    end
+  end
+
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      return nil unless deletion_date
+      (deletion_date.to_date - Date.today).to_i
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Something went wrong calculating the number of remaining days for account deletion')
+      return nil
     end
   end
 
@@ -1504,6 +1522,10 @@ class User < Sequel::Model
     account_url(request_protocol) + '/plan'
   end
 
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
+  end
+
   # Special url that goes to Central if active
   def upgrade_url(request_protocol)
     cartodb_com_hosted? ? '' : (account_url(request_protocol) + '/upgrade')
@@ -1664,6 +1686,21 @@ class User < Sequel::Model
     frontend_version || CartoDB::Application.frontend_version
   end
 
+  def active?
+    state == STATE_ACTIVE
+  end
+
+  def locked?
+    state == STATE_LOCKED
+  end
+
+  # Central will request some data back to cartodb (quotas, for example), so the user still needs to exist.
+  # Corollary: multithreading is needed for deletion to work.
+  def destroy_account
+    delete_in_central
+    destroy
+  end
+
   private
 
   def common_data_outdated?
@@ -1775,7 +1812,7 @@ class User < Sequel::Model
       return true
     end
 
-    organization.whitelisted_email_domains.include?(email.split('@')[1])
+    Carto::EmailDomainValidator.validate_domain(email, organization.whitelisted_email_domains)
   end
 
   def created_via

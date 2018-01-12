@@ -326,6 +326,7 @@ defaults: &defaults
       callback_url:         'https://carto.com'
     # google_plus:
       # client_id: ''
+      # client_secret: ''
       # cookie_policy: 'single_host_origin'
       # cookie_policy: 'https://cartodb-staging.com'
     github:
@@ -711,6 +712,8 @@ test:
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
     body: ""
+  session_domain:     '.localhost.lan'
+  subdomainless_urls: false
 
 staging:
   <<: *defaults

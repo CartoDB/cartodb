@@ -20,11 +20,9 @@ FactoryGirl.define do
     builder_enabled        nil # Most tests still assume editor
 
     trait :admin_privileges do
-
       username 'Admin'
       email 'admin@example.com'
       admin true
-
     end
 
     trait :private_tables do
@@ -44,17 +42,21 @@ FactoryGirl.define do
       mobile_max_private_users 20000
     end
 
-    factory :user_with_private_tables, traits: [:enabled, :private_tables]
-    factory :admin, traits: [:admin]
+    trait :locked do
+      state 'locked'
+    end
 
-    factory :valid_user do
-      username { unique_name('user') }
-      email { unique_email }
+    trait :valid do
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
       salt 'kkkkkkkkk'
       crypted_password 'kkkkkkkkk'
     end
+
+    factory :user_with_private_tables, traits: [:enabled, :private_tables]
+    factory :admin, traits: [:admin]
+    factory :valid_user, traits: [:valid]
+    factory :locked_user, traits: [:valid, :locked]
 
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
@@ -62,7 +64,6 @@ FactoryGirl.define do
   end
 
   factory :carto_user, class: Carto::User do
-
     username { unique_name('user') }
     email { unique_email }
 
@@ -88,6 +89,12 @@ FactoryGirl.define do
       ::User.where(id: carto_user.id).first.after_create
       CartoDB::UserModule::DBService.any_instance.unstub
     end
+
+    trait :locked do
+      state 'locked'
+    end
+
+    factory :carto_locked_user, traits: [:locked]
   end
 
 end

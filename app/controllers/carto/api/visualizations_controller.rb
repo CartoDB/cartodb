@@ -26,14 +26,14 @@ module Carto
         :notify_watching, :list_watching, :add_like, :remove_like
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
+      skip_before_filter :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :is_liked, :add_like,
                                                              :remove_like, :notify_watching, :list_watching,
-                                                             :static_map]
+                                                             :static_map, :show]
 
       # :update and :destroy are correctly handled by permission check on the model
       before_filter :ensure_user_can_create, only: [:create]
 
-      before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :add_like,
+      before_filter :optional_api_authorization, only: [:show, :index, :vizjson2, :vizjson3, :is_liked, :add_like,
                                                         :remove_like, :notify_watching, :list_watching, :static_map]
 
       before_filter :id_and_schema_from_params
@@ -48,15 +48,28 @@ module Carto
                                                                          :destroy, :google_maps_static_image]
 
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
-      before_filter :ensure_visualization_is_viewable, only: [:add_like, :remove_like]
+      before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
+      rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
+      rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
       def show
-        fetch_related_canonical_visualizations = params[:fetch_related_canonical_visualizations] == 'true'
-        render_jsonp(to_json(@visualization,
-                             fetch_related_canonical_visualizations: fetch_related_canonical_visualizations))
+        presenter = VisualizationPresenter.new(
+          @visualization, current_viewer, self,
+          related_canonical_visualizations: params[:fetch_related_canonical_visualizations] == 'true',
+          show_user: params[:fetch_user] == 'true',
+          show_user_basemaps: params[:show_user_basemaps] == 'true',
+          show_liked: params[:show_liked] == 'true',
+          show_likes: params[:show_likes] == 'true',
+          show_permission: params[:show_permission] == 'true',
+          show_stats: params[:show_stats] == 'true',
+          show_auth_tokens: params[:show_auth_tokens] == 'true',
+          password: params[:password]
+        )
+
+        render_jsonp(::JSON.dump(presenter.to_poro))
       rescue => e
         CartoDB::Logger.error(exception: e)
         head(404)
@@ -369,8 +382,12 @@ module Carto
           raise Carto::LoadError.new('Visualization does not exist', 404)
         end
 
-        if !@visualization.is_viewable_by_user?(current_viewer)
-          raise Carto::LoadError.new('Visualization not viewable', 403)
+        if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
+          if @visualization.password_protected?
+            raise Carto::ProtectedVisualizationLoadError.new(@visualization)
+          else
+            raise Carto::LoadError.new('Visualization not viewable', 403)
+          end
         end
       end
 
@@ -384,7 +401,7 @@ module Carto
         raise Carto::LoadError.new('Visualization not editable', 403) unless @visualization.is_owner?(current_viewer)
       end
 
-      def ensure_visualization_is_viewable
+      def ensure_visualization_is_likeable
         return(head 403) unless current_viewer && @visualization.is_viewable_by_user?(current_viewer)
       end
 
@@ -422,17 +439,6 @@ module Carto
           response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
           response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
         end
-      end
-
-      def to_json(visualization, fetch_related_canonical_visualizations: false)
-        ::JSON.dump(to_hash(visualization,
-                            fetch_related_canonical_visualizations: fetch_related_canonical_visualizations))
-      end
-
-      def to_hash(visualization, fetch_related_canonical_visualizations: false)
-        # TODO: previous controller uses public_fields_only option which I don't know if is still used
-        VisualizationPresenter.new(visualization, current_viewer, self,
-                                   related_canonical_visualizations: fetch_related_canonical_visualizations).to_poro
       end
 
       def carto_referer?

@@ -1547,9 +1547,9 @@ describe User do
 
       it 'deletes temporary analysis tables' do
         db = @org_user_2.in_database
-        db.run('CREATE TABLE analysis_123 (a int)')
+        db.run('CREATE TABLE analysis_cd60938c7b_2ad1345b134ed3cd363c6de651283be9bd65094e (a int)')
         db.run(%{INSERT INTO cdb_analysis_catalog (username, cache_tables, node_id, analysis_def)
-                 VALUES ('#{@org_user_2.username}', '{analysis_123}', 'a0', '{}')})
+                 VALUES ('#{@org_user_2.username}', '{analysis_cd60938c7b_2ad1345b134ed3cd363c6de651283be9bd65094e}', 'a0', '{}')})
         @org_user_2.destroy
 
         db = @org_user_owner.in_database

@@ -488,6 +488,8 @@ class DataImport < Sequel::Model
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
+    return true unless new_table_name
+
     sanitize_columns(new_table_name)
 
     self.update(table_names: new_table_name, service_name: nil)
@@ -511,6 +513,12 @@ class DataImport < Sequel::Model
     save
 
     taken_names = Carto::Db::UserSchema.new(current_user).table_names
+
+    if taken_names.include?(name) && collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_SKIP
+      log.append("Table with name #{name} already exists. Skipping")
+      return
+    end
+
     table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)
     # current_user.db_services.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
@@ -689,15 +697,23 @@ class DataImport < Sequel::Model
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       runner.set_importer_stats_host_info(Socket.gethostname)
-      registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
+      registrar = CartoDB::TableRegistrar.new(current_user, ::Table)
       quota_checker = CartoDB::QuotaChecker.new(current_user)
-      database      = current_user.in_database
+      database = current_user.in_database
       destination_schema = current_user.database_schema
       public_user_roles = current_user.db_service.public_user_roles
       overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
-      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
-                                                       overviews_creator,
-                                                       destination_schema, public_user_roles)
+      importer = CartoDB::Connector::Importer.new(
+        runner: runner,
+        table_registrar: registrar,
+        quota_checker: quota_checker,
+        database: database,
+        data_import_id: id,
+        overviews_creator: overviews_creator,
+        destination_schema: destination_schema,
+        public_user_roles: public_user_roles,
+        collision_strategy: collision_strategy
+      )
     end
 
     [importer, runner, datasource_provider, manual_fields]
@@ -729,9 +745,14 @@ class DataImport < Sequel::Model
     public_user_roles = current_user.db_service.public_user_roles
     overviews_creator = CartoDB::Importer2::Overviews.new(connector, current_user)
     importer = CartoDB::Connector::Importer.new(
-      connector, registrar, quota_checker, database, id,
-      overviews_creator,
-      destination_schema, public_user_roles
+      runner: connector,
+      table_registrar: registrar,
+      quota_checker: quota_checker,
+      database: database,
+      data_import_id: id,
+      overviews_creator: overviews_creator,
+      destination_schema: destination_schema,
+      public_user_roles: public_user_roles
     )
     [importer, connector, nil, nil]
   end

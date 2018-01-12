@@ -1,76 +1,82 @@
-
 @import "compass/css3/box-sizing";
 @import "../old_common/vars";
 @import "../old_common/form-elements";
 
 .floating.edit_name_dialog.markdown {
-
   height: 62px;
 
   .input_field {
-    width: 100%;
     position: absolute;
-    width: 289px;
-    margin: 0 3px 0 0;
     top: 5px;
-    left: 5px;
     right: 65px;
     bottom: 5px;
-    font-size: 15px;
-    color: #333333;
-    border: 1px solid #000;
-    line-height: normal;
-    @include border-radius(4px);
+    left: 5px;
+    width: 100%;
+    width: 289px;
+    margin: 0 3px 0 0;
     padding: 8px 10px;
-    background:#fff;
+    border: 1px solid #000;
+    border-radius: 4px;
+    background: #FFF;
+    color: #333;
+    font-size: 15px;
+    line-height: normal;
 
     .hint {
-      border-top: 1px solid #ccc;
-      margin: 7px 0 0 0;
+      margin: 7px 0 0;
       padding: 4px 3px 0 0;
+      border-top: 1px solid #CCC;
+      color: #CCC;
       font-size: 12px;
       text-align: right;
-      color: #ccc;
 
-      strong { margin-right: 3px; }
-      em { margin-right: 3px; font-style: italic; }
+      strong {
+        margin-right: 3px;
+      }
 
+      em {
+        margin-right: 3px;
+        font-style: italic;
+      }
     }
 
     input {
-      @include box-sizing(border-box);
-      position:relative;
-      top: 0; left: 0; bottom: 0; right: 0;
-      border:none;
+      position: relative;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      box-sizing: border-box;
+      width: 100%;
       margin: 0;
       padding: 0;
-      width: 100%;
-      background:none;
-      @include border-radius(0);
+      border: none;
+      border-radius: 0;
+      background: none;
     }
-
   }
 
-  input, textarea {
+  input,
+  textarea {
     height: 19px;
   }
-
 }
 
 .edit_text_dialog {
-  position:absolute!important;
+  position: absolute !important;
+  z-index: 0 !important;
+  max-width: 500px;
+  max-height: 500px;
   padding: 11px;
-  @include box-shadow(rgba(black, 0.17) 0 0 6px 1px);
-  @include border-radius(4px);
-  @include background(linear-gradient(#FEFEFE, #F4F4F4));
   border: 1px solid #B7B7B7;
-  max-width:500px;
-  max-height:500px;
-  z-index:0!important;
+  border-radius: 4px;
+  box-shadow: rgba(black, 0.17) 0 0 6px 1px;
+
+  @include background(linear-gradient(#FEFEFE, #F4F4F4));
 
   a.button {
     margin-top: 9px;
-    padding: 6px 15px!important;
+    padding: 6px 15px !important;
     letter-spacing: 0;
   }
 
@@ -88,114 +94,139 @@
 
   a.link {
     margin-top: 19px;
+    margin-right: 3px;
     font-size: 13px;
     text-decoration: underline;
     text-transform: lowercase;
-    margin-right: 3px;
   }
 
-  input, textarea {
-    position:relative;
-    display:block;
-    max-width:500px - 22;
+  input,
+  textarea {
+    display: block;
+    position: relative;
+
+    box-sizing: border-box;
     width: 100%;
-    max-height:500px - 60;
-    margin: 0!important;
+    max-width: 500px - 22;
+    max-height: 500px - 60;
+    margin: 0 !important;
     padding: 10px;
+    border: 1px solid #C0C1C2;
+    border-radius: 4px;
+    background: #FFF;
+    color: #666;
     font-family: $text-fonts;
     font-size: 15px;
-    color: #666666;
-    border: 1px solid #C0C1C2;
-    background: #FFF;
-    @include border-radius(4px);
-    @include box-sizing(border-box);
 
     &:focus {
-      outline:none;
-      border-color:#999999;
+      border-color: #999;
+      outline: none;
     }
   }
-
 
   // Edit date dialog
   div.field.date {
     div.date_field {
-      display:table;
-      width:281px;
+      display: table;
+      width: 281px;
       letter-spacing: -4px;
       word-spacing: -4px;
 
-      .select2-container {width:100px!important;}
-      
+      .select2-container {
+        width: 100px !important;
+      }
+
       & > div.column {
-        @include inline-block();
+        display: inline-block;
+        margin-right: 4px;
         letter-spacing: 0;
+        vertical-align: top;
         word-spacing: 0;
-        margin-right:4px;
 
         label {
-          display:block;
-          padding:0;
-          margin:0 0 3px;
-          font:normal 12px $text-fonts;
-          color:#DDD;
+          display: block;
+          margin: 0 0 3px;
+          padding: 0;
+          color: #DDD;
+          font: normal 12px $text-fonts;
         }
 
         div.form_spinner {
-          background:white;
-          &.disabled {border-color:#DDDDDD!important;}
-        }
+          background: WHITE;
 
-        &.day_field {width:46px;}
-        &.month_field {width:101px;}
-        &.year_field {width:54px;}
-        &.time_field {
-          width:66px;
-          @include default-input();
-          input {
-            border-color:#9E9E9E;
-            width:59px;
-            padding:2px 3px;
-            font-size:13px;
-            // Actions
-            &.error {border-color:rgba(red,0.5);}
-            &[readonly] {background:#f4f4f4; border-color:#DDDDDD;}
+          &.disabled {
+            border-color: #DDD !important;
           }
         }
 
-        &:last-child {margin-right:0;}
-      }      
+        &.day_field {
+          width: 46px;
+        }
+
+        &.month_field {
+          width: 101px;
+        }
+
+        &.year_field {
+          width: 54px;
+        }
+
+        &.time_field {
+          @include default-input();
+          width: 66px;
+
+          input {
+            width: 59px;
+            padding: 2px 3px;
+            border-color: #9E9E9E;
+            font-size: 13px;
+            // Actions
+            &.error {
+              border-color: rgba(red, 0.5);
+            }
+
+            &[readonly] {
+              border-color: #DDD;
+              background: #F4F4F4;
+            }
+          }
+        }
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
     }
 
-
-    // .select2-container {width:100px!important;}
+    // .select2-container {width:100px !important;}
 
     // form > div {
-    //   letter-spacing:-4px;
+    //   letter-spacing: -4px;
     // }
 
     // div.field {
-    //   @include inline-block();
-    //   margin-right:4px;
+    //   display: inline-block;
+    vertical-align: top;
+    //   margin-right: 4px;
     //   letter-spacing:0;
 
     //   * {letter-spacing:0;}
     //   label {display:block; margin:0 0 5px; font:bold 10px $text-fonts; color:#999999;}
     //   div.form_spinner {
-    //     background:white;
-    //     &.disabled {border-color:#DDDDDD!important;}
+    //     background: white;
+    //     &.disabled {border-color:#DDDDDD !important;}
     //   }
 
     //   &:last-child {margin-right:0;}
     // }
 
     // input.time {
-    //   width:54px;
-    //   padding:0 5px;
-    //   height:19px;
-    //   font-size:13px;
-    //   line-height:19px;
-    //   border-color:#9E9E9E;
+    //   width: 54px;
+    //   padding: 0 5px;
+    //   height: 19px;
+    //   font-size: 13px;
+    //   line-height: 19px;
+    //   border-color: #9E9E9E;
     //   &.error {border-color:rgba(red,0.5);}
     //   &[disabled] {border-color:#DDDDDD;}
     // }
@@ -204,85 +235,113 @@
   // Edit boolean dialog
   div.field.boolean {
     nav {
-      display:block;
-      border:1px solid #CCCCCC;
-      @include border-radius(4px);
-      background:white;
-      padding:10px 5px 12px 20px;
+      display: block;
       min-width: 205px;
+      padding: 10px 5px 12px 20px;
+      border: 1px solid #CCC;
+      border-radius: 4px;
+      background: WHITE;
+
       a {
-        @include inline-block(); width:65px; font-weight:normal; font-size:13px;
-        span.radio {margin-top:0!important;}
-        &:hover {text-decoration:none;}
+        display: inline-block;
+        width: 65px;
+        font-size: 13px;
+        font-weight: normal;
+        vertical-align: top;
+
+        span.radio {
+          margin-top: 0 !important;
+        }
+
+        &:hover {
+          text-decoration: none;
+        }
       }
     }
   }
 
-
   // Edit number dialog
   div.field.number {
-    input.error {border-color:rgba(red,0.5);}
+    input.error {
+      border-color: rgba(red, 0.5);
+    }
   }
 
   // Edit geometry dialog
   div.field.geometry {
-    textarea.error, input.error {border-color:rgba(red,0.5);}
+    textarea.error,
+    input.error {
+      border-color: rgba(red, 0.5);
+    }
 
     .selector {
       display: none;
       width: 100%;
-      margin-bottom:7px;
+      margin-bottom: 7px;
     }
 
     .switches label {
-      font-size: 13px;
       color: #AAA;
+      font-size: 13px;
     }
 
     div.loader {
-      display:block;
-      width:100%;
-      height:50px;
-      background:image-url("layout/loader_gray.gif") no-repeat center center transparent;
+      display: block;
+      width: 100%;
+      height: 50px;
+      background: image-url("layout/loader_gray.gif") no-repeat center center transparent;
     }
-    div.rest {display:none;}
-    div.point {
-      position:relative;
-      display:none;
-      width:auto;
-      max-width:322px;
-      height:30px;
-      margin:0;
 
-      & > span, & > p {
-        position:relative;
-        @include inline-block();
-        margin:0;
+    div.rest {
+      display: none;
+    }
+
+    div.point {
+      display: none;
+      position: relative;
+      width: auto;
+      max-width: 322px;
+      height: 30px;
+      margin: 0;
+
+      & > span,
+      & > p {
+        display: inline-block;
+        position: relative;
+        margin: 0;
+        vertical-align: top;
       }
 
       input {
-        display:block;
-        height:31px;
-        width:105px;
-        padding:5px 5px 5px 36px;
-        margin:0;
-        font-size:15px;
-        line-height:19px;
-        text-align:right;
-        &.error {border-color:rgba(red,0.5);}
+        display: block;
+        width: 105px;
+        height: 31px;
+        margin: 0;
+        padding: 5px 5px 5px 36px;
+        font-size: 15px;
+        line-height: 19px;
+        text-align: right;
+
+        &.error {
+          border-color: rgba(red, 0.5);
+        }
       }
 
-      p {width:17px; text-align:center; font-size:20px;}
+      p {
+        width: 17px;
+        font-size: 20px;
+        text-align: center;
+      }
 
       label {
-        position:absolute;
-        top:6px;
-        left:8px;
-        font-style:italic;
-        color:#AAAAAA; 
-        font-size:13px;
-        pointer-events:none;
-        z-index:10;
+        position: absolute;
+        z-index: 10;
+        top: 6px;
+        left: 8px;
+        color: #AAA;
+        font-size: 13px;
+        font-style: italic;
+        pointer-events: none;
       }
     }
   }
@@ -291,124 +350,136 @@
     display: none;
   }
 }
+
 .floating.edit_name_dialog {
-  min-width:280px;
-  height:37px;
+  @include background(linear-gradient(rgba(black, 0.5), rgba(#212121, 0.5)));
+  min-width: 280px;
+  height: 37px;
   padding: 5px;
-  @include background(linear-gradient(rgba(black, 0.5), rgba(#212121,0.5)));
-  @include border-radius(4px);
-  @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
+  border-radius: 4px;
+
+  box-shadow: rgba(#000, 0.12) 0 0 2px 2px;
 
   .content {
+    display: inline-block;
     float: left;
-    @include inline-block();
+    vertical-align: top;
   }
 
   input {
-    position:absolute;
-    top:5px;
-    left:5px;
-    right:65px;
-    bottom:5px;
-    font-size: 15px;
-    color: #333333;
-    border: 1px solid #000;
-    padding: 8px 10px;
-    line-height:normal;
-    @include border-radius(4px);
+    position: absolute;
+    top: 5px;
+    right: 65px;
+    bottom: 5px;
+    left: 5px;
     margin: 0 3px 0 0;
+    padding: 8px 10px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    color: #333;
+    font-size: 15px;
+    line-height: normal;
+
     &:focus {
-      outline:none;
+      outline: none;
     }
   }
 
   a.ok {
     padding: 9px 15px !important;
     border: 1px solid #000 !important;
+    border-radius: 4px;
     font-size: 15px !important;
     font-weight: bold !important;
-    letter-spacing:0;
-    @include border-radius(4px);
+    letter-spacing: 0;
 
     &:active {
-      border-color:#ACACAC;
-      background:#D3D3D3; // IE
-      @include background(linear-gradient(#F9F9F9,#E1E1E1));
-      @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset);
+      @include background(linear-gradient(#F9F9F9, #E1E1E1));
+      border-color: #ACACAC;
+      background: #D3D3D3; // IE
+      box-shadow: rgba(#FFF, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
     }
   }
 
   &.tags-dialog {
-    height:auto;
+    height: auto;
 
     ul {
-      position:relative;
-      @include inline-block();
-      min-height:24px;
-      max-height:300px!important;
-      min-width:215px;
-      max-width:400px;
-      margin:0 3px 0 0;
-      padding:4px 4px 1px 4px;
-      background:white;
+      display: inline-block;
+      position: relative;
+      min-width: 215px;
+      max-width: 400px;
+      min-height: 24px;
+      max-height: 300px !important;
+      margin: 0 3px 0 0;
+      padding: 4px 4px 1px;
       border: 1px solid #000;
-      @include border-radius(4px);
+
+      border-radius: 4px;
+      background: WHITE;
+      vertical-align: top;
 
       li.tagit-choice {
-        margin:0 3px 3px 0;
-        padding:0;
-        background:#4086C3;
-        border:1px solid #2B5B85;
-        @include border-radius(3px);
-        font:normal 11px "Arial";
-        color:#FFFFFF;
+        margin: 0 3px 3px 0;
+        padding: 0;
+        border: 1px solid #2B5B85;
+        border-radius: 3px;
+        background: #4086C3;
+        color: #FFF;
+        font: normal 11px "Arial";
 
         span.tagit-label {
-          @include inline-block();
-          padding:0px 5px;
-          border-right:1px solid #2B5B85;
-          line-height:19px;
+          display: inline-block;
+          padding: 0 5px;
+          border-right: 1px solid #2B5B85;
+          line-height: 19px;
+          vertical-align: top;
         }
 
         a.tagit-close {
-          position:relative;
-          @include inline-block();
-          width:auto;
-          height:100%;
-          margin:0;
-          line-height:19px;
+          display: inline-block;
+          position: relative;
+          width: auto;
+          height: 100%;
+          margin: 0;
+          line-height: 19px;
+          vertical-align: top;
 
           &:hover {
-            span.text-icon {color:white;}
-            text-decoration:none;
+            text-decoration: none;
+
+            span.text-icon {
+              color: WHITE;
+            }
           }
 
           span.text-icon {
-            display:block;
-            margin:0;
-            padding:0 5px 0px 7px;
-            line-height:19px;
-            color:#1F4362;
+            display: block;
+            margin: 0;
+            padding: 0 5px 0 7px;
+            color: #1F4362;
+            line-height: 19px;
           }
         }
       }
 
       li.tagit-new {
-        padding:0;
-        margin-top:0;
-        margin-bottom:0;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 0;
 
         input {
-          @include inline-block();
-          position:relative;
-          top:0;
-          right:auto;
-          left:auto;
-          bottom:auto;
-          margin:3px 0 3px 5px;
-          padding:0;
-          font-size:13px;
-          line-height:15px;
+          display: inline-block;
+          position: relative;
+          top: 0;
+          right: auto;
+          bottom: auto;
+          left: auto;
+          margin: 3px 0 3px 5px;
+          padding: 0;
+          font-size: 13px;
+          line-height: 15px;
+          vertical-align: top;
         }
       }
     }
@@ -416,19 +487,17 @@
     a.ok {
       padding: 6px 15px !important;
       border: 1px solid #000 !important;
+      border-radius: 4px;
       font-size: 15px !important;
       font-weight: bold !important;
-      letter-spacing:0;
-      @include border-radius(4px);
+      letter-spacing: 0;
 
       &:active {
-        border-color:#ACACAC;
-        background:#D3D3D3; // IE
-        @include background(linear-gradient(#F9F9F9,#E1E1E1));
-        @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset);
+        @include background(linear-gradient(#F9F9F9, #E1E1E1));
+        border-color: #ACACAC;
+        background: #D3D3D3; // IE
+        box-shadow: rgba(#FFF, 0) 0 0 1px 0, rgba(130, 126, 111, 0.6) 0 1px 3px 0 inset;
       }
     }
   }
 }
-
-

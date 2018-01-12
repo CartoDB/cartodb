@@ -1,5 +1,16 @@
 {
   "feedback": "Give us feedback!",
+  "back": "Back",
+  "back-to-dashboard": "Back to the dashboard",
+  "edit-map": "Edit map",
+  "map-settings": "Map options",
+  "more-options": "More options",
+  "change-privacy": "Change map privacy",
+  "sql-applied": "SQL query applied",
+  "data-source": "Data source",
+  "edit-analysis": "Edit analysis",
+  "add-analysis": "Add new analysis node",
+  "back-layers": "Back to the Layers list",
   "user": {
     "you": "You"
   },
@@ -42,7 +53,7 @@
       "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
-      "title": "Edit pane",
+      "title": "Edit mode",
       "description": "Manage all the components of your map: add layers and widgets, import datasets, customize analyses, and change styles."
     },
     "map": {
@@ -50,14 +61,14 @@
       "description": "Your map reflects changes instantly."
     },
     "widgets": {
-      "title": "Widgets pane",
+      "title": "Widgets list",
       "description": "The widgets you add to your map appear directly on your visualization."
     },
     "skip": "skip",
     "next": "next"
   },
   "data-onboarding": {
-    "title": "Welcome to the layer pane",
+    "title": "Welcome to the Layers list",
     "description": "Analyze, style, and enhance your data with pop-ups and&nbsp;legends.",
     "take-tour": "Take the tour",
     "edit-layer": "Edit layer",
@@ -91,8 +102,7 @@
       "item4": "Some analysis queries add calculated results to columns in your dataset."
     },
     "done": "Done",
-    "add-analysis": "Add analysis",
-    "never-show-message": "Don't show me this again."
+    "add-analysis": "Add analysis"
   },
   "style-onboarding": {
     "title": "Style this map!",
@@ -112,7 +122,6 @@
     },
     "take-tour": "Take the tour",
     "style-layer": "Style layer",
-    "never-show-message": "Don't show me this again.",
     "exit": "Exit tour",
     "next": "Next"
   },
@@ -128,7 +137,6 @@
     "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
     "learn-more": "Learn more",
-    "never-show-message": "Don't show me this again.",
     "no-new-columns": "No new columns were created.",
     "geometries-updated": "The geometries in your table were updated",
     "new-column-added": "A new column has been added to your dataset.",
@@ -214,9 +222,9 @@
       "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
-      "title": "Georeference",
+      "title": "Geocode",
       "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
-      "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
+      "description": "Geocoding data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
     },
     "centroid": {
       "title": "Calculating centroids from geometries",
@@ -317,8 +325,8 @@
       "short-title": "Connect with lines"
     },
     "georeference": {
-      "title": "Georeference",
-      "short-title": "Georeference"
+      "title": "Geocode",
+      "short-title": "Geocode"
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
@@ -518,7 +526,7 @@
     "geocoding": {
       "geocoding-error-details": {
         "close": "close",
-        "description": "There was a problem georeferencing your data",
+        "description": "There was a problem geocoding your data",
         "title": "Geocoding Error",
         "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with your username and the following code:",
         "view-dataset": "view dataset"
@@ -537,7 +545,7 @@
       "geocoding-no-result-details": {
         "close": "close",
         "description": "These rows contained empty values or perhaps we just didn't know what the values meant. We encourage you to take a look and try again.",
-        "title": "No rows were georeferenced",
+        "title": "No rows were geocoded",
         "view-dataset": "view dataset"
       }
     },
@@ -950,7 +958,12 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}.",
+        "geometry-types": {
+          "point": "points",
+          "point,polygon": "points or polygons",
+          "polygon,point": "points or polygons"
+        },
         "unknown-geometry-type": "unknown",
         "more-info": "More info",
         "option-types": {
@@ -971,7 +984,7 @@
             "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
           },
           "georeference": {
-            "title": "Georeference",
+            "title": "Geocode",
             "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "filter-intersection": {
@@ -1004,7 +1017,7 @@
           },
           "filter-by-node-column": {
             "title": "Filter by layer",
-            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
+            "desc": "Filter your layer depending on a second layer such that widgets will affect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",
@@ -1051,13 +1064,14 @@
           "create-empty-map": "Create empty map",
           "create-empty-dataset": "Create empty dataset",
           "create-empty-addLayer": "Add an empty layer",
-          "dataset-pluralize": "Dataset |||| Datasets"
+          "your-datasets": "Your datasets"
         },
         "create-loading-title": "Creating an empty dataset…",
         "adding-new-layer": "Adding new layer…",
         "add-layer-error": "Could not add layer",
         "imports": {
           "ask-for-demo": "ask for demo",
+          "contact-us": "Contact us",
           "connector": "connector",
           "demo-email-title": "I am interested in the %{name} connector",
           "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
@@ -1108,7 +1122,7 @@
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
             "state-selected-sync": "You can choose when to sync the file.",
-            "state-selected-instagram": "A map containing all your georeferenced photos will be created",
+            "state-selected-instagram": "A map containing all your geocoded photos will be created",
             "state-selected-no-sync": "Sync options are not available.",
             "supported": "supported",
             "try-again": "Try again"
@@ -1166,7 +1180,7 @@
             "state-selected": "Campaign selected."
           },
           "salesforce": {
-            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CARTO or mantain your CARTO maps in sync with your %{brand} data.",
+            "fallback-desc": "Contact us to learn more about %{brand} integration",
             "input-placeholder": "Paste your %{brand} URL here"
           }
         },
@@ -1285,7 +1299,9 @@
     },
     "undo-redo": {
       "clear": "CLEAR",
-      "apply": "APPLY"
+      "apply": "APPLY",
+      "undo": "Undo",
+      "redo": "Redo"
     },
     "table": {
       "columns": {
@@ -1479,12 +1495,40 @@
     "published": "Published %{when}",
     "unpublished": "Unpublished map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
-    "button_add": "Add",
     "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
       "body": "Errors found in your SQL query. %{action} before continuing.",
       "label": "Fix them"
+    },
+    "messages": {
+      "layer-hidden": {
+        "title": "Layer hidden",
+        "body": "This layer is hidden. Changes won't be shown until you make it visible.",
+        "show": "Show"
+      },
+      "generic-error": {
+        "title": "Some tiles were not displayed",
+        "body": "If the problem persists check our docs or contact us."
+      },
+      "interactivity": {
+        "title": "Interactivity error",
+        "body": "Looks like you are over your account limits and the interactivity of your map could be affected.",
+        "try_to": " Try to:",
+        "cta": {
+          "label": "Upgrade account",
+          "url": "https://carto.com/pricing/"
+        }
+      },
+      "limit": {
+        "title": "Some tiles might not be working correctly",
+        "body": "Looks like you are over your account limits when trying to render some of your tiles.",
+        "try_to": " Try to:",
+        "cta": {
+          "label": "Upgrade account",
+          "url": "https://carto.com/pricing/"
+        }
+      }
     },
     "settings": {
       "menu-tab-pane-labels": {
@@ -1568,7 +1612,7 @@
           "title": "Ready to Download"
         },
         "error": {
-          "title": "An error occured while exporting your map",
+          "title": "An error occurred while exporting your map",
           "desc": "Please try again. If the problem persists, please contact support"
         }
       },
@@ -1580,11 +1624,7 @@
     },
     "tab-pane": {
       "layers": {
-        "title-label": "Layers (%{count}/%{maxCount})",
-        "georeference": {
-          "title": "Layer not georeferenced",
-          "body": "The layer <span class='CDB-Text is-semibold'>%{name}</span> include non-georeferenced data."
-        }
+        "title-label": "Layers (%{count}/%{maxCount})"
       },
       "elements": {
         "title-label": "Elements"
@@ -1597,6 +1637,14 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "add-layer": {
+        "label": "Add new layer",
+        "tooltip": "Add new layer to your map"
+      },
+      "breadcrumb": {
+        "layer-options": "Layer options",
+        "basemap-options": "Basemap options"
+      },
       "errors": {
         "broken-node": "Broken node",
         "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"
@@ -1643,12 +1691,15 @@
       },
       "layer": {
         "animated": "Animated",
-        "heatmap": "Pixel",
+        "heatmap": "Heatmap",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
-        "add-layer": "Add layer"
+        "add-layer": "Add layer",
+        "geocode-text": "To show data on this map, geocode your layer.",
+        "geocode": "Geocode",
+        "geocode-tooltip": "To show data on this map, geocode your layer."
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1686,7 +1737,7 @@
         "data": "Data",
         "analyses": "Analysis",
         "style": "Style",
-        "infowindow": "Pop-up",
+        "popups": "Pop-up",
         "legends": "Legend"
       },
       "infowindow-menu-tab-pane-labels": {
@@ -1694,7 +1745,7 @@
         "hover": "Hover"
       },
       "analysis-form": {
-        "admin-region": "Admin. Region",
+        "admin-region": "Administrative Regions",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
         "aggregate-by-help": "Will calculate aggregate values for each centroid",
@@ -1802,8 +1853,8 @@
         "georeference": {
           "postal-code-help": "Select a column with postal codes",
           "admin-region-help": "Select a column with region names",
-          "admin-region-extended-help": "Specify an admin. region or select a column with region names",
-          "admin-region": "Admin. Regions",
+          "admin-region-extended-help": "Specify an administrative region or select a column with region names",
+          "admin-region": "Administrative Regions",
           "city-help": "Select a column with city names",
           "city-extended-help": "Specify a city or select a column with city names",
           "city": "Cities",
@@ -1817,7 +1868,7 @@
           "ip-address-column": "IP Address",
           "ip-address-help": "Select a column with IP addresses",
           "ip-address": "IP Addresses",
-          "long-lat": "Longitude and Latitude",
+          "long-lat": "Latitude and Longitude",
           "postal-code": "Postal Codes",
           "select-a-country": "Select a country column",
           "select-admin": "Select a region column",
@@ -1860,11 +1911,13 @@
         "linked-layer": "Filter by layer",
         "loading": "loading…",
         "longitude": "Longitude",
+        "max-or-equal": "Max or equal",
         "max": "Max",
         "measure-by": "Measure by",
         "meters": "m",
         "method": "Method",
         "miles": "mi",
+        "min-or-equal": "Min or equal",
         "min": "Min",
         "mode": "Mode",
         "more-info": "More info",
@@ -1895,7 +1948,12 @@
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
-        "placeholder-text": "You have not added any analysis yet. Add an analysis to discover new things.",
+        "placeholder-text": "Analysis allow you to build reproducible workflows for analyzing and explaining your data.",
+        "add-analysis": {
+          "label": "Add new analysis",
+          "tooltip": "Add a new node to your analysis workflow"
+        },
+        "edit-analysis-tooltip": "Edit Analysis",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
@@ -1932,7 +1990,8 @@
           "analysis-type": {
             "routing": "Routing",
             "trade-area": "Trade area",
-            "georeference-street-address": "Georeference street address",
+            "georeference-street-address": "Geocode street address",
+            "georeference-cities": "Geocode cities",
             "data-observatory-measure": "Data Observatory"
           }
         },
@@ -1962,6 +2021,9 @@
         "spatial-markov-trend-desc": "select a column for each time period",
         "spatial-markov-trend-time-columns": "Input columns",
         "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
+        "sampling-form-model": {
+          "help": "% of data to show"
+        },
         "state": "State",
         "target": "Target",
         "target-layer": "Target layer",
@@ -1996,8 +2058,10 @@
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
         "workflow": "Your workflow",
-        "write-max-value": "Write max value",
+        "write-min-or-equal-value": "Write min or equal value",
+        "write-max-or-equal-value": "Write max or equal value",
         "write-min-value": "Write min value",
+        "write-max-value": "Write max value",
         "yes": "Yes"
       },
       "infowindow": {
@@ -2005,11 +2069,13 @@
         "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
-        "placeholder-geometry": "There's no geometry in your data to add a popup.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
-          "window-size": "Window size",
+          "size": {
+            "label": "Window size",
+            "help": "Change Pop-Up width"
+          },
           "header-color": "Header color",
           "none": "None",
           "custom": "Custom",
@@ -2018,9 +2084,17 @@
           "infowindow_color": "Color",
           "infowindow_header_with_image": "Image"
         },
+        "tooltips": {
+          "none": "No Pop-Up applied",
+          "infowindow_light": "Pop-Up Light",
+          "infowindow_dark": "Pop-Up Dark",
+          "infowindow_color": "Pop-Up with header color",
+          "infowindow_header_with_image": "Pop-Up with header image"
+        },
         "items": {
           "title-label": "Show items",
-          "description": "Add items"
+          "description": "Add items",
+          "help": "Change text field"
         }
       },
       "tooltip": {
@@ -2041,7 +2115,9 @@
         "between": "Between",
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
-        "is-less-than": "Is less than"
+        "is-greater-or-equal-than": "Is greater or equal than",
+        "is-less-than": "Is less than",
+        "is-less-or-equal-than": "Is less or equal than"
       },
       "notifier": {
         "center-map": {
@@ -2051,8 +2127,8 @@
         }
       },
       "georeference": {
-        "manually-add": "Please georeference or manually add data to visualize.",
-        "georeference-button": "Georeference",
+        "no-geometry": "There's no geometry in your data, please geocode it.",
+        "georeference-button": "Geocode",
         "visualize": "Layer doesn't have geometry"
       },
       "max-layers-infowindow": {
@@ -2085,12 +2161,14 @@
         "top-cat": "% in top 10 cat.",
         "trues": "% true",
         "null": "% null",
-        "number-of": "%{geometry} count",
-        "geometry-fallback": "features"
+        "feature-count": "feature count",
+        "geometry-fallback": "features",
+        "help": "Edit widget"
       },
       "data-toggle": {
         "values": "VALUES",
-        "cartocss": "SQL"
+        "cartocss": "SQL",
+        "tooltip": "Switch to SQL view"
       },
       "code-mirror": {
         "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
@@ -2119,7 +2197,8 @@
       "apply": "APPLY",
       "html-toggle": {
         "values": "VALUES",
-        "html": "HTML"
+        "html": "HTML",
+        "tooltip": "Switch to HTML view"
       },
       "code-mirror": {
         "save": "CMD + S to apply your html.",
@@ -2131,13 +2210,8 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
           "accept": "CONTINUE"
-        },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes will not be shown until you make it visible.",
-          "show": "SHOW"
         }
       }
     },
@@ -2158,7 +2232,8 @@
       "no-geometry-data": "There's no geometry in your data to add a legend.",
       "data-toggle": {
         "values": "VALUES",
-        "html": "HTML"
+        "html": "HTML",
+        "tooltip": "Switch to HTML view"
       },
       "code-mirror": {
         "save": "CMD + S to apply your html.",
@@ -2170,7 +2245,8 @@
       },
       "menu-tab-pane-labels": {
         "color": "color",
-        "size": "size"
+        "size": "size",
+        "size-disabled": "Style your layer by value to enable this type of legend"
       },
       "messages": {
         "custom-legend": {
@@ -2178,15 +2254,26 @@
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "Delete custom html"
         },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden. Changes won't be shown until you make it visible.",
-          "show": "SHOW"
-        },
         "legends-disabled": {
           "title": "LEGENDS DISABLED",
           "body": "The legends setting is disabled. Changes made will not be shown until you enable legends.",
           "show": "ENABLE"
+        }
+      },
+      "tooltips": {
+        "style": {
+          "none": "No Legend applied",
+          "bubble": "Bubble Legend",
+          "category": "Category Legend",
+          "torque": "Torque Legend",
+          "choropleth": "Choropleth Legend",
+          "custom_choropleth": "Custom Choropleth Legend",
+          "custom": "Custom Legend"
+        },
+        "item": {
+          "fill": "Change item color",
+          "title": "Change text item",
+          "remove": "Remove item"
         }
       },
       "types": {
@@ -2205,7 +2292,10 @@
           "subtitle": "Add items"
         },
         "add": "Add item",
-        "title": "Title",
+        "title": {
+          "label": "Title",
+          "help": "Change legend title"
+        },
         "fill": "Fill",
         "by-size": "By Size",
         "by-color": "By Color",
@@ -2224,11 +2314,11 @@
     "style": {
       "types": {
         "none": "-",
-        "simple": "none",
+        "simple": "points",
         "hexabins": "hexbins",
         "squares": "squares",
-        "regions": "Adm. Regions",
-        "heatmap": "pixel",
+        "regions": "Administrative Regions",
+        "heatmap": "heatmap",
         "animation": "animated"
       },
       "style-form": {
@@ -2237,14 +2327,22 @@
         },
         "aggregation": {
           "title-label": "Aggregation Options",
-          "desc": "Configure how the aggregation works"
+          "desc": "Configure how the aggregation works",
+          "tooltips": {
+            "none": "-",
+            "simple": "By Points",
+            "hexabins": "By Hexbins",
+            "squares": "By Squares",
+            "regions": "By Administrative Regions",
+            "heatmap": "Heatmap",
+            "animation": "Animated"
+          }
         },
         "properties": {
           "title-label-point": "Style",
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
-          "placeholder-text": "There's no geometry in your data that could be styled.",
-          "georeference": "Georeference",
+          "georeference": "Geocode",
           "desc": "Change the visualization"
         },
         "unanimatable": {
@@ -2258,7 +2356,8 @@
       },
       "style-toggle": {
         "values": "VALUES",
-        "cartocss": "CARTOCSS"
+        "cartocss": "CARTOCSS",
+        "tooltip": "Switch to CartoCSS view"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -2271,16 +2370,30 @@
           "continue": "CONTINUE",
           "clear": "CLEAR"
         },
-        "layer-hidden": {
-          "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes won't be shown until you make it visible.",
-          "show": "SHOW"
-        },
         "torque-exists": {
           "title": "TORQUE LAYER",
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will use the default style.",
           "continue": "CONTINUE",
           "cancel": "CANCEL"
+        }
+      },
+      "tooltips": {
+        "blending": "Layer Color and Alpha Blending Modes",
+        "line": "line",
+        "polygon": "polygon",
+        "simple": "point",
+        "squares": "square",
+        "hexabins": "hexbin",
+        "regions": "region",
+        "animation": "point",
+        "heatmap": "heatmap",
+        "fill": {
+          "size": "Change the %{type} size",
+          "color": "Change the %{type} color"
+        },
+        "stroke": {
+          "size": "Change the %{type} stroke size",
+          "color": "Change the %{type} stroke color"
         }
       },
       "components": {
@@ -2317,15 +2430,22 @@
           }
         },
         "aggregation-fill": "Color",
-        "aggregation-value": "Operation",
+        "aggregation-value": {
+          "label": "Operation",
+          "help": "Change the operation"
+        },
         "aggregation-size": {
           "label": "Size",
-          "help": "In pixels"
+          "label-help": "In pixels",
+          "help": "Change the %{type} size"
         },
-        "aggregation-dataset": "Admin. level",
+        "aggregation-dataset": {
+          "label": "Adm. level",
+          "help": "Groups points by polygon boundaries based on world admininstrative levels"
+        },
         "labels-enabled": {
           "label": "labels",
-          "not-with-animated": "It won't be available with animations"
+          "not-with-animated": "Not available with animations"
         },
         "labels-attribute": {
           "label": "column",
@@ -2357,14 +2477,15 @@
         "animated-enabled": {
           "label": "animated",
           "already-one-torque": "There is already a torque layer in your map",
-          "not-with-labels": "It won't be available with labels"
+          "not-with-labels": "Not available with labels"
         },
         "animated-attribute": {
           "label": "column",
           "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
-          "error": "There was an error fetching node schema..."
+          "error": "There was an error fetching node schema...",
+          "help": "The column from your dataset that drives the animation"
         },
         "animated-overlap": {
           "label": "overlap",
@@ -2373,13 +2494,32 @@
             "false": "None"
           }
         },
-        "animated-trails": "trails",
-        "animated-resolution": "resolution",
-        "animated-steps": "steps",
-        "animated-duration": "duration"
+        "animated-trails": {
+          "label": "trails",
+          "help": "Specifies how a pixel is rendered in the frames"
+        },
+        "animated-resolution": {
+          "label": "resolution",
+          "help": "Defines the width and height of each Torque cell, in pixels"
+        },
+        "animated-steps": {
+          "label": "steps",
+          "help": "The number of animation steps/frames in your animation"
+        },
+        "animated-duration": {
+          "label": "duration",
+          "help": "The length of time for your animation, in seconds."
+        }
       }
     },
     "widgets": {
+      "add-widget": {
+        "label": "Add new widget",
+        "tooltip": "Add new widget to your map"
+      },
+      "breadcrumb": {
+        "widget-options": "Widget options"
+      },
       "no-geometry-data": "Your dataset lacks geometry data, it is not possible to add a widget.",
       "options": {
         "remove": "Delete...",
@@ -2451,6 +2591,10 @@
         }
       }
     },
+    "context-switcher": {
+      "map": "Map",
+      "data": "Data"
+    },
     "edit-feature": {
       "features": {
         "point": "point",
@@ -2479,7 +2623,10 @@
       "custom-sql": "layers with custom SQL applied",
       "aggregated": "layers with aggregated styles",
       "sync": "read only layers",
-      "disabled": "Feature editing is disabled for %{disabledLayerType}. To edit data, export this layer and import it as a new layer."
+      "disabled": "Feature editing is disabled for %{disabledLayerType}. To edit data, export this layer and import it as a new layer.",
+      "add-point": "Add point",
+      "add-line": "Add line",
+      "add-polygon": "Add polygon"
     }
   },
   "notifications": {
@@ -2533,6 +2680,14 @@
       "alter-loading": "Modifying table…",
       "alter-success": "Modification applied",
       "applying": "Applying query…",
+      "429": {
+        "body": "You are over platform's limits. Please %{link} to know more details",
+        "link": "contact us",
+        "href": "mailto:support@carto.com"
+      },
+      "unknown": {
+        "body": "There was an error in the SQL query"
+      },
       "error": {
         "body": "%{body} %{error}",
         "title": "Error in SQL query:"

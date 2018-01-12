@@ -1,4 +1,3 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 
 /**
@@ -10,27 +9,31 @@
   width: 100%;
   height: 100%;
 }
+
 .ExportImageView-Header {
-  @include transition(all, 200ms, ease-in-out);
   position: absolute;
+  z-index: 105;
   top: -35px;
   width: 100%;
   height: 40px;
+  transition: all 200ms ease-in-out;
   text-align: center;
-  z-index: 105;
 }
+
 .ExportImageView-Header--inner {
   position: absolute;
   left: 50%;
   width: 400px;
   margin-left: -200px;
 }
+
 .ExportImageView--help {
   position: relative;
   color: rgba(#FFF, 0.4);
   font-size: 13px;
   text-align: center;
 }
+
 .ExportImageView-Header .Button {
   position: absolute;
   top: 0;
@@ -40,26 +43,31 @@
   -ms-user-select: none;
   user-select: none;
 }
+
 .ExportImageView.is-small .ButtonClose {
   top: 30px;
   right: -70px;
 }
+
 .ExportImageView-Footer {
   position: absolute;
+  z-index: 105;
   bottom: -20px;
   width: 100%;
   text-align: center;
-  z-index: 105;
 }
+
 .ExportImageView-Footer--inner {
-  @include transition(margin, 200ms, ease-in-out);
   $width: 360px;
   position: absolute;
   left: 50%;
   width: $width;
   margin-left: -$width / 2;
+
+  transition: margin 200ms ease-in-out;
   color: #9B9B9B;
 }
+
 .ExportImageView-dimensions {
   display: inline-block;
   padding: 3px 5px;
@@ -68,6 +76,7 @@
   color: #9B9B9B;
   font-size: 12px;
 }
+
 .ExportImageView-dimensions input {
   width: 20px;
   border: none;
@@ -76,12 +85,14 @@
   color: #FFF;
   font-weight: normal;
 }
+
 .ExportImage-formatList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
 }
+
 .ExportImage-formatItem {
   margin: 0 20px 0 0;
 }
@@ -90,10 +101,12 @@
   .CanvasExport {
     border: none;
   }
+
   .CanvasExport .ExportHelper.ExportHelper--header,
   .CanvasExport .ExportHelper.ExportHelper--attribution {
     opacity: 0.6;
   }
+
   .CanvasExport.ui-resizable > div.ui-resizable-handle,
   .ExportImageView-Header,
   .ExportImageView-Footer,
@@ -113,37 +126,39 @@
 }
 
 .ExportHelper.ExportHelper--header {
-  @include transition(opacity, 500ms, ease-in-out);
   position: absolute;
   top: 0;
   left: 0;
+  box-sizing: border-box;
   width: 100%;
   padding: 10px;
-  box-sizing: border-box;
+  transition: opacity 500ms ease-in-out;
   background: rgba(#000, 0.75);
 }
+
 .ExportHelper.ExportHelper--attribution {
-  @include transition(opacity, 500ms, ease-in-out);
   position: absolute;
   top: auto;
   right: 0;
   bottom: 0;
   left: auto;
+  box-sizing: border-box;
   width: auto;
   padding: 0 5px;
-  box-sizing: border-box;
+  transition: opacity 500ms ease-in-out;
   background: rgba(#FFF, 0.75);
   font-size: 11px;
 }
+
 .ExportHelper.ExportHelper--legend {
   display: inline-block;
   position: absolute;
   top: auto;
   right: 0;
   left: auto;
+  box-sizing: border-box;
   width: auto;
   padding: 0 5px;
-  box-sizing: border-box;
 }
 
 .ExportHelperTitle {
@@ -151,6 +166,7 @@
   font-size: 15px;
   font-weight: bold;
 }
+
 .ExportHelperDescription {
   color: #FFF;
   font-size: 13px;
@@ -160,6 +176,7 @@
 .Button--advancedExport {
   color: #FFF;
   text-decoration: underline;
+
   &:hover {
     color: $cTypography-linkHover;
     text-decoration: underline;
@@ -185,106 +202,119 @@
     text-transform: none;
   }
 }
+
 .Button--micro.Button--negative {
   padding: 2px 5px 2px 6px;
   border: 1px solid #FFF;
   border-radius: 5px;
   background: #000;
+
   span {
     color: #FFF;
   }
-  &:before {
+
+  &::before {
+    content: '\d7';
     position: relative;
     left: -1px;
-    content: '\d7';
   }
 }
-
 $resizeHandlerSize: 8px;
 
 .CanvasExport {
   position: absolute;
   border: 1px dashed #FFF;
+
   &.draggable {
-    cursor: move;
     z-index: 1000000000;
+    cursor: move;
   }
 }
+
 .CanvasExport.is-small .ExportImageView-Header {
   opacity: 0;
 }
+
 .CanvasExport.is-top .ExportImageView-Header {
   margin-top: 50px; //compensate for header
 }
+
 .CanvasExport.is-bottom .ExportImageView-Footer--inner {
   margin-top: -72px; //compensate for footer
 }
+
 .CanvasExport.draggable .ExportHelper.ExportHelper--header,
 .CanvasExport.draggable .ExportHelper.ExportHelper--attribution,
 .CanvasExport.draggable .ExportHelper.ExportHelper--legend {
   opacity: 0.2;
 }
+
 .CanvasExport {
-  .ui-resizable { position: relative; }
-  .ui-resizable-handle {
-    position: absolute;
-    width: $resizeHandlerSize;
-    height: $resizeHandlerSize;
-    display: block;
-    box-shadow: 1px 1px 2px rgba(#000000, 0.5);
-    background: rgb(254,254,254); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(254,254,254,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,254,254,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom, rgba(254,254,254,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
-    z-index: 104;
+  .ui-resizable {
+    position: relative;
   }
+
+  .ui-resizable-handle {
+    display: block;
+    position: absolute;
+    z-index: 104;
+    width: $resizeHandlerSize;
+    height: $resizeHandlerSize; /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */
+    background: linear-gradient(to bottom, rgba(254, 254, 254, 1) 0%, rgba(229, 229, 229, 1) 100%);
+    box-shadow: 1px 1px 2px rgba(#000, 0.5);
+  }
+
   .ui-resizable-disabled .ui-resizable-handle,
   .ui-resizable-autohide .ui-resizable-handle {
     display: none;
   }
+
   .ui-resizable-n {
     top: -5px;
     left: 50%;
     margin-left: -4px;
     cursor: ns-resize;
   }
+
   .ui-resizable-s {
     bottom: -5px;
     left: 50%;
     margin-left: -4px;
     cursor: ns-resize;
   }
+
   .ui-resizable-e {
     top: 50%;
     right: -5px;
     margin-top: -4px;
     cursor: ew-resize;
   }
+
   .ui-resizable-w {
     top: 50%;
     left: -5px;
     margin-top: -4px;
     cursor: ew-resize;
   }
+
   .ui-resizable-se {
     right: -4px;
     bottom: -4px;
     cursor: nwse-resize;
   }
+
   .ui-resizable-sw {
     bottom: -4px;
     left: -4px;
     cursor: nesw-resize;
   }
+
   .ui-resizable-nw {
     top: -4px;
     left: -4px;
     cursor: nwse-resize;
   }
+
   .ui-resizable-ne {
     top: -4px;
     right: -4px;
@@ -300,12 +330,15 @@ $resizeHandlerSize: 8px;
 .Form-rowLabel.Form-rowLabel--export {
   width: 45px;
 }
+
 .RadioButton.RadioButton--export {
   cursor: pointer;
 }
+
 .FormatChooser-format.is-selected {
   color: #CCC;
   cursor: normal;
+
   &:hover {
     background: #FFF;
     color: #CCC;

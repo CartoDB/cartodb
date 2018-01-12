@@ -1,37 +1,35 @@
-
-
-  /**
+/**
    * Table header styles
    */
 
-  @import "compass/css3/box-shadow";
-  @import "compass/css3/images";
-  @import "../../old_common/mixins";
-  @import "../../old_common/vars";
-  
-  header.vis {
-    position:fixed;
-    left:0;
-    top:0;
-    min-width:960px;
-    height:68px;
-    padding: 11px 0 0 0;
-    overflow:visible;
-    border-bottom: 1px solid rgba(#333333, 0.8);
-    @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
-    z-index:2;
+@import "compass/css3/box-shadow";
+@import "compass/css3/images";
+@import "../../old_common/mixins";
+@import "../../old_common/vars";
 
-    .inner {
-      width:auto;
-      height: 100%;
-    }
+header.vis {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  min-width: 960px;
+  height: 68px;
+  padding: 11px 0 0;
+  overflow: visible;
+  border-bottom: 1px solid rgba(#333, 0.8);
+  box-shadow: rgba(#000, 0.09) 0 -5px 3px 0 inset;
 
-
-    /* TABLE HEADER TYPES */
-    
-    // Synced visualization
-    &.synced { height:90px }
-
-    // Public visualization
-
+  .inner {
+    width: auto;
+    height: 100%;
   }
+
+  /* TABLE HEADER TYPES */
+
+  // Synced visualization
+  &.synced {
+    height: 90px;
+  }
+
+  // Public visualizatio
+}

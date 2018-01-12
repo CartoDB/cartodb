@@ -2,52 +2,61 @@
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
-.BreadcrumbsDropdown { width: 260px }
-.BreadcrumbsDropdown--compact { width: 120px }
+.BreadcrumbsDropdown { width: 260px; }
+.BreadcrumbsDropdown--compact { width: 120px; }
+
 .BreadcrumbsDropdown-list {
   display: block;
   width: 100%;
-  margin: 0!important;
+  margin: 0 !important;
 }
+
 .BreadcrumbsDropdown-listItem {
   display: block;
-  margin-top: 0!important;
+  margin-top: 0 !important;
   padding: 16px;
 }
+
 .BreadcrumbsDropdown-listItem.is-dark {
-  background: $cStructure-grayBkg;
   border-radius: 0 0 2px 2px;
+  background: $cStructure-grayBkg;
 }
+
 .BreadcrumbsDropdown-listItem.is-first {
   border-radius: 2px;
 }
+
 .BreadcrumbsDropdown-options {
   display: inline-block;
   vertical-align: top;
 }
+
 .BreadcrumbsDropdown-icon {
   width: 20px;
 }
-.BreadcrumbsDropdown-options {}
+
 .BreadcrumbsDropdown-optionsItem {
   display: block;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
 }
-.BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px }
+.BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px; }
+
 .BreadcrumbsDropdown-optionsItem.is-selected {
   color: $cTypography-linkSelected;
+
   &:hover {
     text-decoration: none;
     cursor: default;
   }
 }
+
 .BreadcrumbsDropdown-lockIcon {
   width: 20px;
   height: 20px;
   border-radius: 2px;
   background: $cIcons-default;
-  font-weight: $sFontWeight-lighter;
-  font-size: $sFontSize-smaller;
   color: white;
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-lighter;
 }

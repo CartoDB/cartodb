@@ -9,7 +9,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  builder_embed: './lib/assets/core/javascripts/cartodb3/public_editor.js',
+  builder_embed: ['whatwg-fetch', './lib/assets/core/javascripts/cartodb3/public_editor.js'],
   dataset: './lib/assets/core/javascripts/cartodb3/dataset.js',
   builder: './lib/assets/core/javascripts/cartodb3/editor.js'
 };
@@ -110,8 +110,8 @@ module.exports = env => {
           use: 'tpl-loader',
           include: [
             resolve(__dirname, 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, 'node_modules/cartodb.js'),
-            resolve(__dirname, 'node_modules/cartodb-deep-insights.js')
+            resolve(__dirname, 'lib/assets/core/javascripts/deep-insights'),
+            resolve(__dirname, 'node_modules/cartodb.js')
           ]
         },
         {
@@ -119,8 +119,8 @@ module.exports = env => {
           use: 'raw-loader',
           include: [
             resolve(__dirname, 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, 'node_modules/cartodb.js'),
-            resolve(__dirname, 'node_modules/cartodb-deep-insights.js')
+            resolve(__dirname, 'lib/assets/core/javascripts/deep-insights'),
+            resolve(__dirname, 'node_modules/cartodb.js')
           ]
         }
       ]

@@ -3,6 +3,8 @@ require_dependency 'helpers/avatar_helper'
 module FrontendConfigHelper
   include AvatarHelper
 
+  UPGRADE_LINK_ACCOUNT = 'PERSONAL30'.freeze
+
   def frontend_config_hash(user = current_user)
     config = {
       app_assets_base_url:        app_assets_base_url,
@@ -42,6 +44,7 @@ module FrontendConfigHelper
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
       config[:hubspot_token] = CartoDB::Hubspot::instance.token
       config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe
+      config[:hubspot_form_ids] = CartoDB::Hubspot::instance.form_ids
     end
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
@@ -71,10 +74,20 @@ module FrontendConfigHelper
       config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
     end
 
+    if CartoDB.account_host.present? && show_account_update_url(user)
+      config[:account_update_url] = "#{CartoDB.account_host}"\
+                                    "#{CartoDB.account_path}/"\
+                                    "#{user.username}/update_payment"
+    end
+
     config
   end
 
   def frontend_config
     frontend_config_hash.to_json
+  end
+
+  def show_account_update_url(user)
+    user && user.account_type.casecmp(UPGRADE_LINK_ACCOUNT).zero?
   end
 end

@@ -4,24 +4,27 @@
 @import "../../variables/progress-bar";
 @import 'cdb-variables/colors';
 
-
 .SettingsDropdown {
   min-width: 220px;
 }
+
 .SettingsDropdown-item:first-child {
-  margin-top: 0!important;
-  padding-top: 0!important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
-.SettingsDropdown-item:last-child { margin-bottom: 0!important }
+.SettingsDropdown-item:last-child { margin-bottom: 0 !important; }
+
 .SettingsDropdown-sameline {
-  @include display-flex();
-  @include flex-wrap(nowrap);
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
 }
+
 .SettingsDropdown-itemLink.SettingsDropdown-itemButtonLink {
   color: $cTypography-link;
 }
+
 .SettingsDropdown-itemLink.SettingsDropdown-itemButtonLink:hover {
   color: $cTypography-linkHover;
   text-decoration: none;
@@ -29,22 +32,26 @@
 
 .SettingsDropdown-itemLink:hover {
   text-decoration: none;
-  .SettingsDropdown-itemLinkText { text-decoration: underline }
+  .SettingsDropdown-itemLinkText { text-decoration: underline; }
 }
 
 .SettingsDropdown-accountType {
-  background: $cThirdBackground;
   padding: 2px 8px;
+  background: $cThirdBackground;
 }
+
 .SettingsDropdown-email {
   margin-top: 3px !important;
 }
+
 .SettingsDropdown-progressBar {
   position: relative;
+
   @include progress-bar(6px, 9px, true, false);
 }
-.SettingsDropdown-progressBar.is--inAlert div.progress-bar span { background: $cHighlight-caution!important }
-.SettingsDropdown-progressBar.is--inDanger div.progress-bar span { background: $cHighlight-negative!important }
+.SettingsDropdown-progressBar.is--inAlert div.progress-bar span { background: $cHighlight-caution !important; }
+.SettingsDropdown-progressBar.is--inDanger div.progress-bar span { background: $cHighlight-negative !important; }
+
 .SettingsDropdown-itemLink--public {
   display: inline-block;
   transition: color 0.2s ease;

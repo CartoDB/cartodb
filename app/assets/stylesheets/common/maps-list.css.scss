@@ -1,4 +1,3 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
@@ -7,32 +6,40 @@
 //
 // --------------------------------------------------
 .MapsList {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center);
-  @include flex-wrap(wrap);
+  display: flex;
   position: relative;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
   width: $sLayout-width + $sMargin-element;
   margin: 4px auto 0;
-  padding-left: $sMargin-elementInline;
   padding-right: $sMargin-elementInline;
+  padding-left: $sMargin-elementInline;
 }
+
 .MapsList-footer {
   // To match the MapsList size above, with its margin+padding
-  width: $sLayout-width + $sMargin-element + 2*$sMargin-elementInline;
+  width: $sLayout-width + $sMargin-element + 2 * $sMargin-elementInline;
 }
+
 .MapsList--centerItems {
-  @include justify-content(center, center);
+  justify-content: center;
 }
-.MapsList.is-hidden { display: none }
+
+.MapsList.is-hidden {
+  display: none;
+}
+
 .MapsList.is-bottom {
   margin-bottom: 120px;
 }
+
 .MapsList-item {
   position: relative;
   width: 300px;
-  margin: 20px 10px 0 10px;
+  margin: 20px 10px 0;
 }
+
 .MapsList-item--wRightMargins {
   margin: 0 20px 0 0;
 }
@@ -41,17 +48,20 @@
   margin-top: 0;
   margin-bottom: 0;
 }
+
 .MapsList .MapsList-item.MapsList-item--fake {
-  @include opacity(0.6);
+  opacity: 0.6;
 }
 
 @media only screen and (max-width: $sMedia-mobile) {
   .MapsList {
     padding: 0;
   }
+
   .MapsList .MapsList-item.MapsList-item--fake {
     display: none;
   }
+
   .MapsList .MapsList-item {
     margin: 10px auto;
   }
@@ -59,11 +69,12 @@
 
 @media only screen and (max-width: $sMedia-tablet) {
   .MapsList {
-    @include flex-direction(row);
-    @include justify-content(flex-start);
+    flex-direction: row;
+    justify-content: flex-start;
   }
+
   .MapsList .MapsList-item.MapsList-item--fake {
-    display: none!Important;
+    display: none !important;
   }
 }
 
@@ -75,13 +86,15 @@
 
 @media only screen and (max-width: 984px) {
   .MapsList {
+    justify-content: center;
     width: 640px;
     padding: 0;
-    @include justify-content(center);
   }
+
   .MapsList .MapsList-item.MapsList-item--fake {
     display: block;
   }
+
   .MapsList .MapsList-item {
     margin: 10px auto;
   }
@@ -89,13 +102,15 @@
 
 @media only screen and (max-width: 663px) {
   .MapsList {
+    justify-content: center;
     width: 100%;
     padding: 0;
-    @include justify-content(center);
   }
+
   .MapsList .MapsList-item.MapsList-item--fake {
     display: block;
   }
+
   .MapsList .MapsList-item {
     margin: 10px auto;
   }

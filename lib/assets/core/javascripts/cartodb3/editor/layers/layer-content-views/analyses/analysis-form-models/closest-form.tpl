@@ -1,6 +1,6 @@
 <form>
   <div class="Editor-HeaderInfo">
-    <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
+    <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">1</div>
     <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="source,target">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.find-nearest.title') %></h2>
@@ -12,7 +12,7 @@
   </div>
 
   <div class="Editor-HeaderInfo">
-    <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
+    <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
     <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="responses,category">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.find-nearest.define-params') %></h2>

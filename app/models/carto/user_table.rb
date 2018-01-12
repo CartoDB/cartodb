@@ -202,6 +202,11 @@ module Carto
       automatic_geocodings.first
     end
 
+    def is_owner?(user)
+      return false unless user
+      user_id == user.id
+    end
+
     private
 
     def default_privacy_value
@@ -214,11 +219,6 @@ module Carto
 
     def fully_qualified_name
       "\"#{user.database_schema}\".#{name}"
-    end
-
-    def is_owner?(user)
-      return false unless user
-      user_id == user.id
     end
 
     def affected_visualizations

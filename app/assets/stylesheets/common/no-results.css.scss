@@ -2,9 +2,12 @@
 @import "../variables/sizes";
 
 .NoResults {
-  font-size: $sFontSize-normal;
-  line-height: $sLineHeight-normal;
   color: $cTypography-help;
+  font-size: $sFontSize-normal;
   font-style: italic;
-  &:hover { text-decoration: none }
+  line-height: $sLineHeight-normal;
+
+  &:hover {
+    text-decoration: none;
+  }
 }

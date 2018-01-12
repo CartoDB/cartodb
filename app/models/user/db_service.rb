@@ -22,7 +22,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.20.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.22.0'.freeze
       ODBC_FDW_VERSION = '0.2.0'.freeze
 
       def initialize(user)
@@ -408,7 +408,7 @@ module CartoDB
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
             unless @user.database_schema == SCHEMA_PUBLIC
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
-              drop_analysis_cache
+              drop_analysis_cache(@user)
               drop_all_functions_from_schema(@user.database_schema)
 
               cascade_drop = force_destroy ? 'CASCADE' : ''
@@ -537,7 +537,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.19.2'
+          cdb_extension_target_version = '0.20.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -835,14 +835,19 @@ module CartoDB
         end
       end
 
-      def drop_analysis_cache
-        list_sql = "SELECT DISTINCT unnest(cache_tables) FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
-        delete_sql = "DELETE FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
-        @user.in_database(as: :superuser) do |database|
-          database.fetch(list_sql).map(:unnest).each do |cache_table_name|
-            database.run("DROP TABLE #{cache_table_name}")
+      def drop_analysis_cache(user)
+        # Filtering this query by tableowner should be enough but for security reasons I've added an additional
+        # filter by schema. Also we have add a regexp to matches the current analysis tables name format to avoid
+        # deleting user tables in the process (https://github.com/CartoDB/camshaft/blob/0.59.4/lib/node/node.js#L344-L348)
+        cache_tables_sql = "SELECT tablename FROM pg_tables WHERE schemaname = '#{user.database_schema}' and tableowner = '#{user.database_username}' and tablename ~* '^analysis_[0-9a-z]{10}_[0-9a-z]{40}$';"
+        delete_analysis_metadata_sql = "DELETE FROM cdb_analysis_catalog WHERE username = '#{user.username}'"
+        user.in_database(as: :superuser) do |database|
+          database.transaction do
+            database.fetch(cache_tables_sql).map(:tablename).each do |cache_table_name|
+              database.run(%{DROP TABLE "#{user.database_schema}"."#{cache_table_name}"})
+            end
+            database.run(delete_analysis_metadata_sql)
           end
-          database.run(delete_sql)
         end
       end
 

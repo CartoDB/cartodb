@@ -1,29 +1,30 @@
-<div class="Editor-HeaderInfoEditor">
-  <div class="u-rSpace--xl u-actionTextColor js-back Editor-HeaderInfoEditorShape">
-    <button>
-      <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
-    </button>
-  </div>
+<ul class="Editor-breadcrumb">
+  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium u-actionTextColor">
+    <button class="js-back">
+      <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large u-rSpace"></i>
 
+      <span class="Editor-breadcrumbLink"><%- _t('back') %></span>
+    </button>
+  </li>
+
+  <li class="Editor-breadcrumbItem CDB-Text CDB-Size-medium"><span class="Editor-breadcrumbSep"> / </span> <%- _t('editor.layers.breadcrumb.layer-options') %></li>
+</ul>
+
+<div class="Editor-HeaderInfoEditor Editor-HeaderInfoEditor--layer">
   <div class="Editor-HeaderInfo-inner u-ellipsis">
     <div class="Editor-HeaderInfo-title u-bSpace js-header">
       <span class="CDB-SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-tSpace--m u-rSpace--m u-upperCase" style="background-color: <%- bgColor %>;">
         <%- letter %>
       </span>
     </div>
-    <div class="u-flex u-ellipsis">
-      <% if (isTableSource) { %>
-        <div class="CDB-Shape CDB-Size-medium u-rSpace">
-          <ul class="CDB-Shape-Dataset is-small is-grey">
-            <li class="CDB-Shape-DatasetItem"></li>
-            <li class="CDB-Shape-DatasetItem"></li>
-          </ul>
-        </div>
-        <p class="CDB-Text CDB-Size-medium u-ellipsis">
+
+    <% if (isTableSource) { %>
+      <div class="Editor-HeaderInfo-source u-flex">
+        <p class="CDB-Text CDB-Size-small u-ellipsis">
           <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
         </p>
-      <% } %>
-    </div>
+      </div>
+    <% } %>
   </div>
 
   <ul class="u-flex u-tSpace-xl">

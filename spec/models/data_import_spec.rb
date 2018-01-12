@@ -21,6 +21,31 @@ describe DataImport do
     @user.destroy
   end
 
+  it "raises an 1014 error when strategy is set to skip and there's already a table with that name" do
+    table1 = create_table(user_id: @user.id)
+    table1.insert_row!(name: 1.0)
+    table1.insert_row!(name: 2.0)
+    query = "select * from #{table1.name}"
+    data_import = DataImport.create(
+      user_id: @user.id,
+      table_name: 'target_table',
+      from_query: query
+    )
+    data_import.run_import!
+    data_import.state.should eq 'complete'
+    data_import = DataImport.create(
+      user_id: @user.id,
+      table_name: 'target_table',
+      from_query: query,
+      collision_strategy: 'skip'
+    )
+
+    data_import.run_import!
+
+    data_import.state.should eq 'complete'
+    data_import.error_code.should eq 1022
+  end
+
   it 'raises an 8004 error when merging tables
   through columns with different types' do
     table1 = create_table(user_id: @user.id)
@@ -59,6 +84,126 @@ describe DataImport do
 
     data_import.run_import!
     data_import.error_code.should == 2011
+  end
+
+  it 'should overwrite dataset if collision_strategy is set to overwrite' do
+    carto_user = Carto::User.find(@user.id)
+    carto_user.visualizations.count.should eq 1
+
+    data_import = create_import(overwrite: false, truncated: false)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+    user_tables_should_be_registered
+
+    data_import = create_import(overwrite: false, truncated: false)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 3
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon_1'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+    user_tables_should_be_registered
+
+    data_import = create_import(overwrite: true, truncated: true)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 3
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
+  end
+
+  it 'should raise an exception if overwriting with missing data' do
+    carto_user = Carto::User.find(@user.id)
+    carto_user.visualizations.count.should eq 1
+
+    data_import = create_import(overwrite: false, truncated: true)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
+
+    data_import = create_import(overwrite: true, truncated: true, incomplete_schema: true)
+    expect { data_import.run_import! }.to raise_error(::CartoDB::Importer2::IncompatibleSchemas)
+    data_import.log.entries.should match(/Exception: Incompatible Schemas/)
+  end
+
+  describe 'organization behaviour' do
+    include_context 'organization with users helper'
+
+    it 'should overwrite even in users with hyphens in the schema name' do
+      carto_user = Carto::User.find(@org_user_owner.id)
+      expect(carto_user.username).to include '-' # Fixture check
+
+      data_import = create_import(user: @org_user_owner, overwrite: false, truncated: false)
+      data_import.run_import!
+      carto_user.reload
+      carto_user.visualizations.count.should eq 1
+      data_import.state.should eq 'complete'
+      data_import.table_name.should eq 'walmart_latlon'
+      data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+      user_tables_should_be_registered
+
+      data_import = create_import(user: @org_user_owner, overwrite: true, truncated: true)
+      data_import.run_import!
+      carto_user.reload
+      carto_user.visualizations.count.should eq 1
+      data_import.state.should eq 'complete'
+      data_import.table_name.should eq 'walmart_latlon'
+      data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+      user_tables_should_be_registered
+    end
+  end
+
+  it 'should not raise exceptions if overwriting with more data' do
+    carto_user = Carto::User.find(@user.id)
+    carto_user.visualizations.count.should eq 1
+
+    data_import = create_import(overwrite: false, truncated: true, incomplete_schema: true)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
+
+    data_import = create_import(overwrite: true, truncated: true, incomplete_schema: false)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+    user_tables_should_be_registered
+  end
+
+  def user_tables_should_be_registered
+    Carto::GhostTablesManager.new(@user.id).user_tables_synced_with_db?.should eq(true), "Tables not properly registered"
+  end
+
+  def create_import(user: @user, overwrite:, truncated:, incomplete_schema: false)
+    DataImport.create(
+      user_id: user.id,
+      data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
+      data_type: "file",
+      table_name: 'walmart_latlon',
+      state: "pending",
+      success: false,
+      updated_at: Time.now,
+      created_at: Time.now,
+      original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+      cartodbfy_time: 0.0,
+      collision_strategy: overwrite ? 'overwrite' : nil
+    )
   end
 
   it 'raises a meaningful error if over storage quota' do

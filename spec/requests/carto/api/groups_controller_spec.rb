@@ -17,10 +17,17 @@ describe Carto::Api::GroupsController do
     before(:all) do
       @org_user_1_json = {
         "id" => @org_user_1.id,
+        "name" => @org_user_1.name,
+        "last_name" => @org_user_1.last_name,
         "username" => @org_user_1.username,
         "avatar_url" => @org_user_1.avatar_url,
         "base_url" => @org_user_1.public_url,
-        "viewer" => false
+        "disqus_shortname" => @org_user_1.disqus_shortname,
+        "viewer" => @org_user_1.viewer,
+        "org_admin" => false,
+        "org_user" => true,
+        "remove_logo" => @org_user_1.remove_logo?,
+        "google_maps_query_string" => @org_user_1.google_maps_query_string
       }
 
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)

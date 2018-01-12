@@ -13,7 +13,25 @@ describe Carto::Api::UsersController do
     @headers = { 'CONTENT_TYPE' => 'application/json' }
   end
 
+  before(:each) do
+    ::User.any_instance.stubs(:create_in_central).returns(true)
+    ::User.any_instance.stubs(:update_in_central).returns(true)
+  end
+
   describe 'me' do
+    it 'contains hubspot_form_ids in config' do
+      CartoDB::Hubspot.any_instance.stubs(:enabled?).returns(true)
+      CartoDB::Hubspot.any_instance.stubs(:token).returns('something')
+
+      get_json api_v3_users_me_url, @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body).to have_key(:config)
+        expect(response.body[:config]).to have_key(:hubspot_form_ids)
+      end
+      CartoDB::Hubspot.any_instance.unstub(:enabled?)
+      CartoDB::Hubspot.any_instance.unstub(:token)
+    end
+
     it 'returns a hash with current user info' do
       user = @organization.owner
       carto_user = Carto::User.where(id: user.id).first
@@ -31,6 +49,7 @@ describe Carto::Api::UsersController do
         expect(response.body[:can_change_password]).to eq(true)
         expect(response.body[:plan_name]).to eq('Free')
         expect(response.body[:services]).to eq(user.get_oauth_services)
+        expect(response.body[:google_sign_in]).to eq(user.google_sign_in)
       end
     end
 
@@ -225,7 +244,6 @@ describe Carto::Api::UsersController do
     let(:url_options) do
       {
         user_domain: @user.username,
-        user_id: @user.id,
         api_key: @user.api_key
       }
     end

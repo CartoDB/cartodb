@@ -1,15 +1,15 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .Notifier {
-  @include css3-prefix(hyphens, auto);
   position: relative;
+  flex: 0 0 auto;
   margin: 0 -25px 0 -24px;
+  overflow: hidden;
   border-top: 1px solid $cSecondaryLine;
   word-wrap: break-word;
+  hyphens: auto;
   overflow-wrap: break-word;
-  overflow: hidden;
 
   &.is-dark {
     border-color: #3A484E;
@@ -19,12 +19,11 @@
   &:empty {
     display: none;
   }
+
   .CDB-Loader {
     height: 1px;
   }
-
 }
-
 
 .Notifier-inner {
   position: relative;
@@ -43,12 +42,15 @@
     &::before {
       background: #3A484E;
     }
+
     &.Notifier-item--success::before {
       background: #9DE0AD;
     }
+
     &.Notifier-item--error::before {
       background: #F15743;
     }
+
     &.Notifier-item--warning::before {
       background: #F5A623;
     }
@@ -56,27 +58,31 @@
 }
 
 .Notifier-item {
-  @include display-flex();
+  display: flex;
   position: relative;
   margin: 0 $baseSize * 3;
   padding-top: 20px;
   padding-bottom: 20px;
   color: $cSecondaryText;
+
   &::before {
+    content: '';
     position: absolute;
     top: -1px;
     right: 0;
     left: 0;
     height: 1px;
     background: $cSecondaryLine;
-    content: '';
   }
+
   &.Notifier-item--success::before {
     background: #9DE0AD;
   }
+
   &.Notifier-item--error::before {
     background: #F15743;
   }
+
   &.Notifier-item--warning::before {
     background: #F5A623;
   }
@@ -88,12 +94,14 @@
   padding: 20px $baseSize * 3;
   background: rgba(#9DE0AD, 0.12);
 }
+
 .Notifier-item--error {
   margin-right: 0;
   margin-left: 0;
   padding: 20px $baseSize * 3;
   background: rgba(#F15743, 0.12);
 }
+
 .Notifier-item--warning {
   margin-right: 0;
   margin-left: 0;
@@ -112,12 +120,13 @@
 .Notifier .CDB-Loader {
   display: none;
 }
+
 .Notifier .CDB-Loader.is-visible {
   display: block;
 }
 
 .Notifier-info {
-  @include flex(1);
+  flex: 1;
   min-width: 0; // To prevent firefox screw up
   padding-right: $baseSize * 2;
 }

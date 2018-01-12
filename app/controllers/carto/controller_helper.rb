@@ -2,12 +2,13 @@ require_dependency 'carto/uuidhelper'
 
 module Carto
   class CartoError < StandardError
-    attr_reader :message, :status, :user_message
+    attr_reader :message, :status, :user_message, :errors_cause
 
-    def initialize(message, status, user_message = message)
+    def initialize(message, status, user_message: message, errors_cause: nil)
       @message = message
       @status = status
       @user_message = user_message
+      @errors_cause = errors_cause
     end
 
     def self.with_full_messages(active_record_exception)
@@ -28,9 +29,18 @@ module Carto
   end
 
   class LoadError < CartoError
-    def initialize(message, status = 404)
-      super(message, status)
+    def initialize(message, status = 404, errors_cause: nil)
+      super(message, status, errors_cause: errors_cause)
     end
+  end
+
+  class ProtectedVisualizationLoadError < LoadError
+    def initialize(visualization)
+      @visualization = visualization
+      super('Visualization not viewable', 403, errors_cause: 'privacy_password')
+    end
+
+    attr_reader :visualization
   end
 
   class UnprocesableEntityError < CartoError
@@ -54,10 +64,33 @@ module Carto
     def rescue_from_carto_error(error)
       message = error.message
       status = error.status
+      errors_cause = error.errors_cause
 
       respond_to do |format|
         format.html { render text: message, status: status }
-        format.json { render json: { errors: message }, status: status }
+        format.json { render json: { errors: message, errors_cause: errors_cause }, status: status }
+      end
+    end
+
+    def rescue_from_protected_visualization_load_error(error)
+      message = error.message
+      status = error.status
+
+      respond_to do |format|
+        format.html { render text: message, status: status }
+        format.json {
+          errors_cause = error.errors_cause
+
+          visualization = error.visualization
+          visualization_info = {
+            privacy: visualization.privacy,
+            user: {
+              google_maps_query_string: visualization.user.google_maps_query_string
+            }
+          }
+          render json: { errors: message, errors_cause: errors_cause, visualization: visualization_info },
+                 status: status
+        }
       end
     end
 

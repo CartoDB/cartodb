@@ -5,85 +5,97 @@
 //  </div>
 // --------------------------------------------------
 
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
 .UserAvatar {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
+
 .UserAvatar.is-in-list {
   margin-left: $sMargin-min;
 }
-.UserAvatar.is-error:before {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+
+.UserAvatar.is-error::before {
+  content: 'x';
+  display: flex;
   position: absolute;
   top: -8px;
   right: -8px;
+  align-items: center;
+  justify-content: center;
   width: 16px;
   height: 16px;
   border-radius: 30px;
   background-color: $cHighlight-negative;
-  color: #FFFFFF;
+  color: #FFF;
   font-size: $sFontSize-smallUpperCase;
   text-align: center;
-  content: 'x';
 }
+
 .UserAvatar-img {
   border-right: 0;
   border-left: 0;
-  background: #FFFFFF;
+  background: #FFF;
 }
+
 .UserAvatar-img--no-src {
   background-image: image-url('avatars/avatar_ghost_red.png');
 }
+
 .UserAvatar-img--textReplacement {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid $cTypography-link;
   font-size: $sFontSize-small;
+
   &:hover {
     border-color: $cTypography-link;
   }
 }
+
 .UserAvatar-img.is-error {
   border-radius: $sAvatar-borderRadius;
   border-color: $cHighlight-negative;
 }
+
 .UserAvatar-img--large {
   width: $sAvatar-public;
   height: $sAvatar-public;
   border-radius: $sAvatar-borderRadius;
   background-size: $sAvatar-public;
 }
+
 .UserAvatar-img--big {
   width: $sAvatar-big;
   height: $sAvatar-big;
   border-radius: $sAvatar-borderRadius;
   background-size: $sAvatar-big;
 }
+
 .UserAvatar-img--medium-large {
   width: $sAvatar-medium;
   height: $sAvatar-medium;
   border-radius: $sAvatar-borderRadius;
   background-size: $sAvatar-medium;
 }
+
 .UserAvatar-img--medium {
   width: $sAvatar-default;
   height: $sAvatar-default;
   border-radius: $sAvatar-borderRadius;
   background-size: $sAvatar-default;
 }
+
 .UserAvatar-img--small {
   width: $sAvatar-small;
   height: $sAvatar-small;
   border-radius: $sAvatar-borderRadiusSmall;
   background-size: $sAvatar-small;
 }
+
 .UserAvatar-img--smaller {
   width: $sAvatar-meta;
   height: $sAvatar-meta;
@@ -94,16 +106,17 @@
 // to just show [...], used in delete items for example
 // Example usage: <div class="UserAvatar"><span class="UserAvatar--moreItems../div>
 .UserAvatar-moreItems {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(baseline);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
   border-radius: $sAvatar-borderRadius;
+  box-shadow: 0 0 0 1px $cIcons-default inset; // use box-shadow to get border inside of the box
   color: $cIcons-default;
   font-size: 26px;
   font-weight: $sFontWeight-normal;
   line-height: 26px;
-  box-shadow: 0 0 0 1px $cIcons-default inset; // use box-shadow to get border inside of the box
 }
-.UserAvatar-moreItems:before {
+
+.UserAvatar-moreItems::before {
   content: '...';
 }

@@ -23,22 +23,28 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-ul { list-style: none }
+ul {
+  list-style: none;
+}
 
 a {
-  text-decoration: none;
   color: #1181FB;
+  text-decoration: none;
+
   &:hover {
     text-decoration: underline;
   }
 }
 
-i { font-style: normal }
+i {
+  font-style: normal;
+}
 
 button {
   border: 0;
   background: transparent;
 }
+
 button:focus {
   outline: none;
 }

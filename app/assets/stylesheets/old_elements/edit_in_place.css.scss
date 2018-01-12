@@ -1,15 +1,14 @@
 
-  /*
+/*
    *  Edit in place element styles.
-   * 
-   *  - Edit value 
+   *
+   *  - Edit value
    */
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/transform";
+@import "compass/css3/inline-block";
+@import "compass/css3/transform";
 
-
-  /*
+/*
     <div class="input edit_in_place">
       <input type="text" value="" />
       <div class="value  empty">
@@ -18,49 +17,50 @@
     </div>
   */
 
+.edit_in_place {
+  .value {
+    position: relative;
+    z-index: 100;
+    margin: 4px 5px 0 0;
+    padding: 0 5px 3px;
+    transform: skew(-25deg);
+    background: rgba(#FFDC73, 0.3);
+    color: #666;
+    font-size: 15px;
 
-  .edit_in_place {
-
-    .value {
-      position:relative;
-      padding: 0 5px 3px 5px;
-      margin:4px 5px 0 0;
-      color: #666666;
-      font-size:15px;
-      z-index: 100;
-
-      @include transform(skew(-25deg));
-      background: rgba(#FFDC73, .3);
-
-      &:hover {
-        background: rgba(#FFDC73, .5);
-      }
-
-      span {
-        @include inline-block();
-        padding:1px;
-
-        @include transform(skew(25deg));
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px;
-      }
-
-      &.empty { font-style: italic; }
+    &:hover {
+      background: rgba(#FFDC73, 0.5);
     }
 
-    &.disabled .value {
-      color: #AAA;
-      background: rgba(gray, .1);
-      &:hover {
-        background: rgba(gray, .1);
-      }
+    span {
+      display: inline-block;
+      max-width: 150px;
+      padding: 1px;
+      overflow: hidden;
+
+      transform: skew(25deg);
+      text-overflow: ellipsis;
+      vertical-align: top;
+      white-space: nowrap;
     }
 
-    input {
-      position:relative;
-      z-index: 100;
-      display:none;
+    &.empty {
+      font-style: italic;
     }
   }
+
+  &.disabled .value {
+    background: rgba(gray, 0.1);
+    color: #AAA;
+
+    &:hover {
+      background: rgba(gray, 0.1);
+    }
+  }
+
+  input {
+    display: none;
+    position: relative;
+    z-index: 100;
+  }
+}

@@ -1,6 +1,5 @@
 // scss-lint:disable NestingDepth
 
-@import '../variables/mixins';
 @import '../variables/colors';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
@@ -12,7 +11,7 @@ $cBackgroundColor: #2E3C43;
 $sHighlightHeight: 64;
 
 .LayerOnboarding {
-  @include display-flex();
+  display: flex;
   height: 100%;
   pointer-events: auto;
 }
@@ -26,13 +25,13 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-contentWrapper {
-  @include flex(1);
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  z-index: 5;
+  flex: 1;
+  align-items: center;
   height: 100%;
   background: rgba($cBackgroundColor, 0.88);
   pointer-events: all;
-  z-index: 5;
 }
 
 .LayerOnboarding-headerTitle {
@@ -43,20 +42,21 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-body {
-  @include transition(top 0.3s ease-in-out, left 0.3s ease-in-out);
   position: absolute;
   top: 32px;
   left: 380px;
+  transition: top 0.3s ease-in-out, left 0.3s ease-in-out;
 }
 
 .LayerOnboarding-contentBody {
   display: none;
 }
+
 .LayerOnboarding-contentBody.is-step0 {
   display: block;
+  z-index: 20;
   width: 0;
   margin: 0 80px;
-  z-index: 20;
 }
 
 .LayerOnboarding-footer,
@@ -66,8 +66,8 @@ $sHighlightHeight: 64;
 
 .LayerOnboarding-footer .LayerOnboarding-footerButtons,
 .LayerOnboarding-contentWrapper .LayerOnboarding-step p {
-  @include opacity(1);
-  @include transition(opacity, 200ms, ease-in-out, 1s);
+  transition: opacity 200ms ease-in-out 1s;
+  opacity: 1;
 }
 
 .LayerOnboarding-header,
@@ -89,9 +89,9 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-description {
-  @include transition(width, 100ms, ease-in-out);
   width: $sRegularDescriptionWidth;
   margin-bottom: $sMargin-elementInline;
+  transition: width 100ms ease-in-out;
   color: #FFF;
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-normal;
@@ -108,38 +108,34 @@ $sHighlightHeight: 64;
 
 .LayerOnboarding-toolbarOverlay,
 .LayerOnboarding-pads {
-  @include transition(width, 300ms, ease-in-out);
-  height: 100%;
   z-index: 10;
+  height: 100%;
+  transition: width 300ms ease-in-out;
 }
 
 .LayerOnboarding-padTop,
 .LayerOnboarding-padMiddle,
 .LayerOnboarding-padBottom {
-  @include transition(height, 300ms, ease-in-out);
   display: block;
   width: 100%;
+  transition: height 300ms ease-in-out;
 }
 
 .LayerOnboarding-toolbarOverlay,
 .LayerOnboarding-padTop,
 .LayerOnboarding-padBottom {
-  @include opacity(0.88);
+  opacity: 0.88;
   background: $cBackgroundColor;
 }
 
 .LayerOnboarding-padMiddle {
-  @include opacity(1);
   position: relative;
+  opacity: 1;
   background: transparent;
 }
 
 .LayerOnboarding-padBottom {
   position: relative;
-}
-
-.LayerOnboarding-forgetLabel {
-  cursor: pointer;
 }
 
 // Analysis tab
@@ -153,8 +149,9 @@ $sHighlightHeight: 64;
 }
 
 .LayerOnboarding-contentWrapper--analysis {
-  @include justify-content(center);
+  justify-content: center;
 }
+
 .LayerOnboarding-description--analysis {
   width: $sBigDescriptionWidth;
 }

@@ -1,0 +1,43 @@
+// Default styles for form elements within widget
+// --------------------------------------------------
+
+.CDB-Widget-form {
+  height: $baseSize * 3;
+}
+
+.CDB-Widget-textInput {
+  border: none;
+  outline: none;
+}
+
+.CDB-Widget-textInput::-webkit-input-placeholder {
+  font-weight: 400;
+}
+
+.CDB-Widget-textInput::-moz-input-placeholder {
+  font-weight: 400;
+}
+
+.CDB-Widget-textInput::-ms-input-placeholder {
+  font-weight: 400;
+}
+
+.CDB-Widget-checkbox {
+  display: inline;
+  width: $baseSize;
+  min-width: $baseSize;
+  max-width: $baseSize;
+  height: $baseSize;
+  margin-top: $baseSize / 4;
+  border: 1px solid transparent;
+  border-radius: $baseSize / 4;
+  vertical-align: top;
+}
+
+.CDB-Widget-checkbox.is-checked {
+  width: $baseSize + 2;
+  min-width: $baseSize + 2;
+  max-width: $baseSize + 2;
+  height: $baseSize + 2;
+  border: 0;
+}

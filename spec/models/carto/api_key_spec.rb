@@ -213,7 +213,7 @@ describe Carto::ApiKey do
       sql = "grant SELECT on table \"#{@table2.database_schema}\".\"#{@table2.name}\" to \"#{api_key.db_role}\""
       @user1.in_database(as: :superuser).run(sql)
 
-      table_permission = api_key.table_permissions(from_db: true).find do |tp|
+      table_permission = api_key.table_permissions_from_db.find do |tp|
         tp.schema == @table2.database_schema && tp.name == @table2.name
       end
       table_permission.should be
@@ -235,7 +235,7 @@ describe Carto::ApiKey do
       sql = "drop table #{@table1.name}"
       @user1.in_database(as: :superuser).run(sql)
 
-      table_permission = api_key.table_permissions(from_db: true).find do |tp|
+      table_permission = api_key.table_permissions_from_db.find do |tp|
         tp.schema == @table2.database_schema && tp.name == @table2.name
       end
       table_permission.should be_nil

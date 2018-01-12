@@ -85,8 +85,7 @@ module Carto
       @granted_apis ||= process_granted_apis
     end
 
-    def table_permissions(from_db: false)
-      return table_permissions_from_db if from_db
+    def table_permissions
       @table_permissions = process_table_permissions unless @table_permissions
       @table_permissions.values
     end
@@ -150,14 +149,14 @@ module Carto
     end
 
     def drop_db_role
-      revoke_privileges(*affected_schemas)
+      revoke_privileges(*affected_schemas(table_permissions))
       db_run("drop role \"#{db_role}\"")
     end
 
     def update_role_permissions
-      revoke_privileges(*affected_schemas(from_db: true)) if grants_was.present?
+      revoke_privileges(*affected_schemas(table_permissions_from_db)) if grants_was.present?
 
-      _, write_schemas = affected_schemas
+      _, write_schemas = affected_schemas(table_permissions)
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
@@ -174,10 +173,10 @@ module Carto
       end
     end
 
-    def affected_schemas(from_db: false)
+    def affected_schemas(table_permissions)
       read_schemas = []
       write_schemas = []
-      table_permissions(from_db: from_db).each do |tp|
+      table_permissions.each do |tp|
         read_schemas << tp.schema
         write_schemas << tp.schema unless !tp.write?
       end

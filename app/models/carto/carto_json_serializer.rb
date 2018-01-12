@@ -14,8 +14,10 @@ module Carto
     end
 
     def self.hash(value, symbolize: false)
-      if value.is_a?(Hash) || value.is_a?(Array)
+      if value.is_a?(Hash)
         symbolize ? value.deep_symbolize_keys : value
+      elsif value.is_a?(Array)
+        value.map { |v| hash(v, symbolize: symbolize) }
       else
         JSON.parse(value, symbolize_names: symbolize)
       end

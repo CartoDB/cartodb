@@ -89,10 +89,7 @@ describe Carto::Api::ApiKeysController do
         request_table_permissions = grants.find { |grant| grant['type'] == 'database' }['tables']
         response_grants_should_include_request_permissions(api_key_response[:grants], request_table_permissions)
 
-        api_key_response[:databaseConfig].should_not be_empty
-        api_key_response[:databaseConfig].should_not be_empty
-        api_key_response[:databaseConfig][:role].should_not be_empty
-        api_key_response[:databaseConfig][:password].should_not be_empty
+        api_key_response[:databaseConfig].should_not be
 
         Carto::ApiKey.find(api_key_response[:id]).destroy
       end
@@ -128,10 +125,7 @@ describe Carto::Api::ApiKeysController do
         api_key_response[:user][:username].should eq @carto_user1.username
         api_key_response[:type].should eq 'regular'
         api_key_response[:token].should_not be_empty
-        api_key_response[:databaseConfig].should_not be_empty
-        api_key_response[:databaseConfig].should_not be_empty
-        api_key_response[:databaseConfig][:role].should_not be_empty
-        api_key_response[:databaseConfig][:password].should_not be_empty
+        api_key_response[:databaseConfig].should_not be
 
         Carto::ApiKey.find(api_key_response[:id]).destroy
       end

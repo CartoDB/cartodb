@@ -43,10 +43,6 @@ module Carto
           name: @api_key.name,
           token: @api_key.token,
           grants: grants_presenter.to_poro,
-          databaseConfig: {
-            role: @api_key.db_role,
-            password: @api_key.db_password
-          },
           createdAt: @api_key.created_at.to_s,
           updatedAt: @api_key.updated_at.to_s
         }

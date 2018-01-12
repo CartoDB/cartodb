@@ -41,13 +41,10 @@ module Carto
   class ApiKeyGrants
     ALLOWED_APIS = ['sql', 'maps'].freeze
 
-    attr_reader :granted_apis
-
     def initialize(db_connection:, db_role:, grants_json: [])
       @db_connection = db_connection
       @db_role = db_role
       @grants_json = grants_json
-      @granted_apis = process_granted_apis(grants_json)
       @table_permissions = process_table_permissions(grants_json)
     end
 
@@ -64,12 +61,6 @@ module Carto
     end
 
     private
-
-    def process_granted_apis(grants_json)
-      apis = grants_json.find { |v| v[:type] == 'apis' }[:apis]
-      raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
-      apis
-    end
 
     def process_table_permissions(grants_json)
       table_permissions = {}

@@ -48,6 +48,10 @@ class Carto::ApiKey < ActiveRecord::Base
                                                   grants_json: grants)
   end
 
+  def granted_apis
+    @granted_apis ||= process_granted_apis
+  end
+
   def create_token
     begin
       self.token = generate_auth_token
@@ -59,6 +63,12 @@ class Carto::ApiKey < ActiveRecord::Base
   PASSWORD_LENGTH = 40
 
   REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
+  def process_granted_apis
+    apis = grants.find { |v| v[:type] == 'apis' }[:apis]
+    raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
+    apis
+  end
 
   def create_db_config
     begin
@@ -140,7 +150,7 @@ class Carto::ApiKey < ActiveRecord::Base
 
   def redis_hash_as_array
     hash = ['user', user.username, 'type', type, 'dbRole', db_role, 'dbPassword', db_password]
-    api_key_grants.granted_apis.each { |api| hash += ["grants_#{api}", true] }
+    granted_apis.each { |api| hash += ["grants_#{api}", true] }
     hash
   end
 

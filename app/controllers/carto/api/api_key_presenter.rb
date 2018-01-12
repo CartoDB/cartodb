@@ -2,26 +2,6 @@ require 'json'
 
 module Carto
   module Api
-    class ApiKeyGrantsPresenter
-      def initialize(api_key_grants)
-        @api_key_grants = api_key_grants
-      end
-
-      def to_poro
-        return {} unless @api_key_grants
-        {
-          type: 'database',
-          tables: @api_key_grants.table_permissions(from_db: true).map do |p|
-            {
-              schema: p.schema,
-              name: p.name,
-              permissions: p.permissions
-            }
-          end
-        }
-      end
-    end
-
     class ApiKeyPresenter
       def initialize(api_key)
         @api_key = api_key
@@ -29,7 +9,6 @@ module Carto
 
       def to_poro
         return {} unless @api_key
-        grants_presenter = ApiKeyGrantsPresenter.new(@api_key.api_key_grants)
         {
           id: @api_key.id,
           user: { username: @api_key.user.username },
@@ -41,7 +20,16 @@ module Carto
               type: 'apis',
               apis: @api_key.granted_apis
             },
-            grants_presenter.to_poro
+            {
+              type: 'database',
+              tables: @api_key.table_permissions(from_db: true).map do |p|
+                {
+                  schema: p.schema,
+                  name: p.name,
+                  permissions: p.permissions
+                }
+              end
+            }
           ],
           createdAt: @api_key.created_at.to_s,
           updatedAt: @api_key.updated_at.to_s

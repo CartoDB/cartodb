@@ -26,9 +26,11 @@ module Carto
       @permissions += permissions.reject { |p| @permissions.include?(p) }
     end
 
-    def << (permission)
+    def <<(permission)
       down_permission = permission.downcase
-      @permissions << down_permission if !@permissions.include?(down_permission) && ALLOWED_PERMISSIONS.include?(down_permission)
+      if !@permissions.include?(down_permission) && ALLOWED_PERMISSIONS.include?(down_permission)
+        @permissions << down_permission
+      end
     end
 
     def write?
@@ -88,10 +90,10 @@ module Carto
       permissions = {}
       roles_from_db.each do |line|
         permission_key = "#{line[:schema]}.#{line[:table_name]}"
-        table_permission = permissions[permission_key] || permissions[permission_key] = TablePermissions.new(schema: line[:schema],
-                                                                                                             name: line[:table_name]
-        )
-        table_permission << line[:permission]
+        unless permissions[permission_key]
+          permissions[permission_key] = TablePermissions.new(schema: line[:schema], name: line[:table_name])
+        end
+        permissions[permission_key] << line[:permission]
       end
       permissions.values
     end

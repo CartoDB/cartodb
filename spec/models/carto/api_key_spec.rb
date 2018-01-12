@@ -92,7 +92,11 @@ describe Carto::ApiKey do
   describe '#destroy' do
     it 'removes the role from DB' do
       api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                                      grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
+                                      grants: [
+                                        database_grant(@table1.database_schema,
+                                                       @table1.name),
+                                        apis_grant
+                                      ])
 
       @user1.in_database(as: :superuser) do |db|
         db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 1
@@ -203,15 +207,16 @@ describe Carto::ApiKey do
                                   grants: [
                                     database_grant('public', @table1.name),
                                     apis_grant(['maps', 'sql'])
-                                  ]
-      )
+                                  ])
 
       api_key.save!
 
       sql = "grant SELECT on table \"#{@table2.database_schema}\".\"#{@table2.name}\" to \"#{api_key.db_role}\""
       @user1.in_database(as: :superuser).run(sql)
 
-      table_permission = api_key.api_key_grants.table_permissions(from_db: true).find { |tp| tp.schema == @table2.database_schema && tp.name == @table2.name }
+      table_permission = api_key.api_key_grants.table_permissions(from_db: true).find do |tp|
+        tp.schema == @table2.database_schema && tp.name == @table2.name
+      end
       table_permission.should be
       table_permission.permissions.should include('select')
     end

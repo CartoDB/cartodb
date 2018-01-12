@@ -82,8 +82,7 @@ class Carto::ApiKey < ActiveRecord::Base
     if grants_was.present?
       revoke_privileges(*affected_schemas(
         Carto::ApiKeyGrants.new(db_connection: db_connection, db_role: db_role, grants_json: grants_was),
-        from_db: true)
-      )
+        from_db: true))
     end
     _, write_schemas = affected_schemas(api_key_grants)
 

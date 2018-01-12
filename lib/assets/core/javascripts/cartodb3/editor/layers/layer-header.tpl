@@ -29,7 +29,7 @@
 
   <ul class="u-flex u-tSpace-xl">
     <% if (!hasGeometry) { %>
-      <li class="Editor-HeaderInfo-actionsItem CDB-Shape js-nogeometrylayer">
+      <li class="Editor-HeaderInfo-noGeometry js-nogeometrylayer">
         <svg width="12px" height="12px" viewBox="0 0 500 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <title>icon-font_114_Warning</title>
           <defs></defs>

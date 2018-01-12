@@ -200,7 +200,7 @@ describe Carto::ApiKey do
   end
 
   describe '#table_permission' do
-    it ':from_db loads newly created grants for role' do
+    it 'with :from_db loads newly created grants for role' do
       api_key = Carto::ApiKey.new(user_id: @user1.id,
                                   type: Carto::ApiKey::TYPE_REGULAR,
                                   name: 'wadus',
@@ -208,7 +208,6 @@ describe Carto::ApiKey do
                                     database_grant('public', @table1.name),
                                     apis_grant(['maps', 'sql'])
                                   ])
-
       api_key.save!
 
       sql = "grant SELECT on table \"#{@table2.database_schema}\".\"#{@table2.name}\" to \"#{api_key.db_role}\""
@@ -219,6 +218,29 @@ describe Carto::ApiKey do
       end
       table_permission.should be
       table_permission.permissions.should include('select')
+
+      api_key.destroy
+    end
+
+    it 'with :from_db doesn\'t show removed table' do
+      api_key = Carto::ApiKey.new(user_id: @user1.id,
+                                  type: Carto::ApiKey::TYPE_REGULAR,
+                                  name: 'wadus',
+                                  grants: [
+                                    database_grant('public', @table1.name),
+                                    apis_grant(['maps', 'sql'])
+                                  ])
+      api_key.save!
+
+      sql = "drop table #{@table1.name}"
+      @user1.in_database(as: :superuser).run(sql)
+
+      table_permission = api_key.api_key_grants.table_permissions(from_db: true).find do |tp|
+        tp.schema == @table2.database_schema && tp.name == @table2.name
+      end
+      table_permission.should be_nil
+
+      api_key.destroy
     end
   end
 end

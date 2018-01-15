@@ -6,7 +6,6 @@ module CartoDB
   class TableRelator
     INTERFACE = %w{
       synchronization
-      serialize_synchronization
       row_count_and_size
       related_templates
     }
@@ -50,10 +49,6 @@ module CartoDB
     def synchronization
       return nil unless synchronization_record && !synchronization_record.empty?
       CartoDB::Synchronization::Member.new(synchronization_record.first)
-    end
-
-    def serialize_synchronization
-      (synchronization || {}).to_hash
     end
 
     def row_count_and_size

@@ -26,7 +26,7 @@ module Carto
           non_dependent_visualizations: @table.partially_dependent_visualizations.map do |v|
             VisualizationPresenter.new(v, @current_viewer, @context).to_summarized_poro
           end,
-          synchronization: @table.serialize_synchronization
+          synchronization: SynchronizationPresenter.new(@table.synchronization).to_poro
         }
       end
 

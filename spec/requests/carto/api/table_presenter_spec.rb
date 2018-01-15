@@ -1,5 +1,4 @@
 require 'spec_helper_min'
-#require 'support/factories/table'
 
 describe Carto::Api::TablePresenter do
   include CartoDB::Factories

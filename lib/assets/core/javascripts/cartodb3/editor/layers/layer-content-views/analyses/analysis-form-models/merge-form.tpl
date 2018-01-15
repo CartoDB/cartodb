@@ -10,7 +10,7 @@
       </div>
     </div>
   </div>
-    <div class="Editor-HeaderInfo <%- right_source ? '' : 'is-disabled' %> ">
+    <div class="Editor-HeaderInfo <%- right_source ? '' : 'is-disabled' %>">
       <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
       <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="left_source_column,right_source_column">
         <div class="Editor-HeaderInfo-title u-bSpace--m">
@@ -19,7 +19,7 @@
         <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--xl"><%- _t('editor.layers.analysis-form.choose-similar-columns') %></p>
       </div>
     </div>
-    <div class="Editor-HeaderInfo <%- hasLeftAndRightSourceColumns ? '' : 'is-disabled' %> ">
+    <div class="Editor-HeaderInfo <%- hasLeftAndRightSourceColumns ? '' : 'is-disabled' %>">
       <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
       <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="source_geometry_selector,left_source_columns,right_source_columns">
         <div class="Editor-HeaderInfo-title u-bSpace--m">

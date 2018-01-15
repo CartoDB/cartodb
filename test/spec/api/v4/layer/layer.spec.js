@@ -1,6 +1,6 @@
 var carto = require('../../../../../src/api/v4');
 
-describe('api/v4/layer', function () {
+fdescribe('api/v4/layer', function () {
   var source;
   var style;
 
@@ -51,6 +51,11 @@ describe('api/v4/layer', function () {
       expect(function () {
         new carto.layer.Layer(source, {}); // eslint-disable-line
       }).toThrowError('The given object is not a valid style. See "carto.style.Base".');
+    });
+
+    it('should allow custom layer id as an option', function () {
+      var layer = new carto.layer.Layer(source, style, { id: 'fake_id' });
+      expect(layer.getId()).toEqual('fake_id');
     });
   });
 

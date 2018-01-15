@@ -4,7 +4,6 @@ require_relative '../../app/models/carto/helpers/auth_token_generator'
 require_relative '../../app/models/carto/carto_json_serializer.rb'
 require_relative '../../app/models/carto/api_key'
 
-
 namespace :carto do
   namespace :api_key do
     def rename_api_keys_for_user_id(user_id)

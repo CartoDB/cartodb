@@ -77,9 +77,6 @@ function Layer (source, style, options) {
   this._visible = true;
   this._featureClickColumns = options.featureClickColumns || [];
   this._featureOverColumns = options.featureOverColumns || [];
-  if (options.id) {
-    this._id = options.id;
-  }
 }
 
 Layer.prototype = Object.create(Base.prototype);

@@ -88,7 +88,7 @@ describe('api/v4/client', function () {
     });
   });
 
-  fdescribe('.addLayer', function () {
+  describe('.addLayer', function () {
     var source;
     var style;
     var layer;

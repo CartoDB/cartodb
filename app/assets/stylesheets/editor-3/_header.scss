@@ -20,6 +20,11 @@
   &.is-block {
     display: block;
   }
+
+  &.is-disabled {
+    opacity: 0.24;
+    pointer-events: none;
+  }
 }
 
 .Editor-HeaderInfo--noMargin {

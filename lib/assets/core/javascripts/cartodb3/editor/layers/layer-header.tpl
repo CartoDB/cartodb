@@ -28,8 +28,8 @@
   </div>
 
   <ul class="u-flex u-tSpace-xl">
-    <% if (!hasGeometry) { %>
-      <li class="Editor-HeaderInfo-noGeometry js-nogeometrylayer"></li>
+    <% if (isEmpty) { %>
+      <li class="Editor-HeaderInfo-noGeometry js-emptylayer"></li>
     <% } %>
     <li class="u-rSpace">
       <button class="Editor-HeaderInfo-zoom CDB-Shape js-zoom">

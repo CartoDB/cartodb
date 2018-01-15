@@ -115,6 +115,7 @@ ion for time-series (#12670)
 * Added Mapbox services providers (#cartodb-platform/3835)
 
 ### Bug fixes / enhancements
+* Redirect to login from static pages if there is no user (#13277)
 * Fix popup content in time series widget (#1269)
 * Update pop up when applying HTML changes (#1263)
 * Rollback make new widgets appear on top (#13244)

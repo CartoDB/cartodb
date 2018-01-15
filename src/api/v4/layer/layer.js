@@ -62,6 +62,8 @@ var metadataParser = require('./metadata/parser');
  * @api
  */
 function Layer (source, style, options) {
+  Base.apply(this, arguments);
+
   options = options || {};
 
   _checkSource(source);
@@ -75,8 +77,9 @@ function Layer (source, style, options) {
   this._visible = true;
   this._featureClickColumns = options.featureClickColumns || [];
   this._featureOverColumns = options.featureOverColumns || [];
-
-  Base.apply(this, arguments);
+  if (options.id) {
+    this._id = options.id;
+  }
 }
 
 Layer.prototype = Object.create(Base.prototype);

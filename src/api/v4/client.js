@@ -56,6 +56,7 @@ _.extend(Client.prototype, Backbone.Events);
 
 /**
  * Add a layer to the client.
+ * If the layer id already exists in the client this method will throw an error.
  *
  * @param {carto.layer.Base} - The layer to be added
  *

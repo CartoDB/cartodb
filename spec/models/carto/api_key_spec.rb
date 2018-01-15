@@ -199,8 +199,8 @@ describe Carto::ApiKey do
     end
   end
 
-  describe '#table_permission' do
-    it 'with :from_db loads newly created grants for role' do
+  describe '#table_permission_from_db' do
+    it 'loads newly created grants for role' do
       api_key = Carto::ApiKey.new(user_id: @user1.id,
                                   type: Carto::ApiKey::TYPE_REGULAR,
                                   name: 'wadus',
@@ -222,7 +222,7 @@ describe Carto::ApiKey do
       api_key.destroy
     end
 
-    it 'with :from_db doesn\'t show removed table' do
+    it 'doesn\'t show removed table' do
       api_key = Carto::ApiKey.new(user_id: @user1.id,
                                   type: Carto::ApiKey::TYPE_REGULAR,
                                   name: 'wadus',

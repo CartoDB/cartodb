@@ -46,6 +46,12 @@
   &--yellow {
     background: #FFB927;
 
+    &.is-disabled {
+      &:hover {
+        background: #FFB927;
+      }
+    }
+
     &:hover {
       background: darken(#FFB927, 8%);
     }
@@ -53,6 +59,12 @@
 
   &--orange {
     background: $cAlert;
+
+    &.is-disabled {
+      &:hover {
+        background: $cAlert;
+      }
+    }
 
     &:hover {
       background: darken($cAlert, 8%);
@@ -62,6 +74,12 @@
   &--orange-dark {
     background: $cPassword;
 
+    &.is-disabled {
+      &:hover {
+        background: $cPassword;
+      }
+    }
+
     &:hover {
       background: darken($cPassword, 8%);
     }
@@ -69,6 +87,12 @@
 
   &--red {
     background: $cError;
+
+    &.is-disabled {
+      &:hover {
+        background: $cError;
+      }
+    }
 
     &:hover {
       background: darken($cError, 8%);
@@ -78,6 +102,12 @@
   &--blue {
     background: $cBlue;
 
+    &.is-disabled {
+      &:hover {
+        background: $cBlue;
+      }
+    }
+
     &:hover {
       background: darken($cBlue, 8%);
     }
@@ -85,6 +115,12 @@
 
   &--green {
     background: $cPublic;
+
+    &.is-disabled {
+      &:hover {
+        background: $cPublic;
+      }
+    }
 
     &:hover {
       background: darken($cPublic, 8%);

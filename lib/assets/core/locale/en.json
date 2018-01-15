@@ -2155,7 +2155,7 @@
     "data": {
       "no-geometry-data": {
         "message": "This layer is empty. Add data to start working.",
-        "action-message": "Click the blue bottom on the bottom right to add points (%{pointIcon}), lines (%{lineIcon}) or polygon (%{polygonIcon})."
+        "action-message": "Click the blue button on the bottom right to add points (%{pointIcon}), lines (%{lineIcon}) or polygon (%{polygonIcon})."
       },
       "stats": {
         "add-widget": "Add as a widget",

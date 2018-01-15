@@ -88,7 +88,7 @@ describe('api/v4/client', function () {
     });
   });
 
-  describe('.addLayer', function () {
+  fdescribe('.addLayer', function () {
     var source;
     var style;
     var layer;
@@ -129,6 +129,13 @@ describe('api/v4/client', function () {
       expect(function () {
         client.addLayer([]);
       }).toThrowError('The given object is not a layer.');
+    });
+
+    it('should throw a descriptive error when two layers with the same id are added', function () {
+      expect(function () {
+        client.addLayer(layer);
+        client.addLayer(new carto.layer.Layer(source, style, { id: layer.getId() }));
+      }).toThrowError('A layer with the same ID already exists in the client.');
     });
   });
 

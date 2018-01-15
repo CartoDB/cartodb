@@ -59,10 +59,6 @@ describe Admin::PagesController do
 
       get "/u/#{@org_user_name}", {}, JSON_HEADER
 
-      uri = URI.parse(last_request.url)
-      uri.host.should == "#{@org_name}.localhost.lan"
-      uri.path.should == "/u/#{@org_user_name}"
-
       last_response.status.should == 302
 
       follow_redirect!

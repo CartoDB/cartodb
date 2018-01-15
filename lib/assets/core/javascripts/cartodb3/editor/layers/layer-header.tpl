@@ -29,7 +29,7 @@
 
   <ul class="u-flex u-tSpace-xl">
     <% if (isEmpty) { %>
-      <li class="Editor-HeaderInfo-noGeometry js-emptylayer"></li>
+      <li class="Editor-HeaderInfo-emptyLayer js-emptylayer"></li>
     <% } %>
     <li class="u-rSpace">
       <button class="Editor-HeaderInfo-zoom CDB-Shape js-zoom">

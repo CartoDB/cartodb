@@ -68,7 +68,7 @@
           <% } %>
         </li>
         <% if (isEmpty) { %>
-          <li class="Editor-HeaderInfo-noGeometry js-emptylayer"></li>
+          <li class="Editor-HeaderInfo-emptyLayer js-emptylayer"></li>
         <% } %>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">

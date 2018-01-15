@@ -22,7 +22,7 @@ module Carto
     end
 
     def merge!(permissions)
-      @permissions += permissions.map { |p| p.downcase unless @permissions.include?(p) }
+      @permissions += permissions.select { |p| p.downcase unless @permissions.include?(p) }
     end
 
     def add!(permission)
@@ -76,8 +76,8 @@ module Carto
     end
 
     def table_permissions
-      @table_permissions ||= process_table_permissions
-      @table_permissions.values
+      @table_permissions_cache ||= process_table_permissions
+      @table_permissions_cache.values
     end
 
     def table_permissions_from_db
@@ -153,7 +153,7 @@ module Carto
     end
 
     def update_role_permissions
-      revoke_privileges(*affected_schemas(table_permissions_from_db)) if grants_was.present?
+      revoke_privileges(*affected_schemas(table_permissions_from_db))
 
       _, write_schemas = affected_schemas(table_permissions)
 

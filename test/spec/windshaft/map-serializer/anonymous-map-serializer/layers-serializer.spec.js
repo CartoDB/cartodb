@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../../src/geo/map/plain-layer');
@@ -8,7 +7,7 @@ var GMapsBaseLayer = require('../../../../../src/geo/map/gmaps-base-layer');
 var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
 var MockFactory = require('../../../../helpers/mockFactory');
 
-fdescribe('layers-serializer', function () {
+describe('layers-serializer', function () {
   describe('.serialize', function () {
     var engineMock;
     var sourceMock;

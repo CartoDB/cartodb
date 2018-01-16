@@ -12,44 +12,10 @@
     <style>
       body { margin: 0; padding: 0; }
       #map { position: absolute; height: 100%; width: 100%; }
-      #controls {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 200px;
-        z-index: 500;
-      }
-      #controls h2 {
-        font: 300 12px/16px 'Open Sans';
-        background: rgba(0, 0, 0, 0.64);
-        border-radius: 4px;
-        padding: 8px 12px;
-        color: #fff;
-      }
-      .container {
-        padding: 8px 12px;
-        background: white;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        color: #2E3C43;
-        margin-top: 12px;
-      }
-      #content h3 {
-        font: 400 16px/22px 'Open Sans';
-        margin-bottom: 4px;
-      }
-      #content p {
-        font: 400 12px/16px 'Open Sans';
-      }
     </style>
   </head>
   <body>
     <div id="map"></div>
-    <!-- <div id="controls">
-      <h2>Click on the markers</h2>
-      <div id="content">
-      </div>
-    </div> -->
     <script>
       const map = L.map('map').setView([30, 0], 3);
 
@@ -75,7 +41,7 @@
       
       // Aggregation option
       const aggregation = new carto.layer.Aggregation({
-        threshold: 1000,
+        threshold: 1,
         resolution: 4,
         placement: 'point-sample',
         columns: {
@@ -90,15 +56,6 @@
 
       client.addLayer(layer);
       client.getLeafletLayer().addTo(map);
-      
-      layer.on('featureClicked', featureEvent => {
-        let content = '';
-        content += `<div class="container">`;
-        content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
-        content += `<p>${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
-        content += `</div>`;
-        document.getElementById('content').innerHTML = content;
-      });
     </script>
   </body>
 </html>

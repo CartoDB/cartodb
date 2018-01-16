@@ -1,6 +1,6 @@
 var Aggregation = require('../../../../../src/api/v4/layer/aggregation');
 
-fdescribe('layer-aggregation', function () {
+describe('layer-aggregation', function () {
   var options;
   beforeEach(function () {
     options = {

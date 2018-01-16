@@ -30,26 +30,30 @@ var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
  * @param {number} opts.resolution - The cell-size of the spatial aggregation grid [more info]{@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#resolution}
  * @param {string} opts.placement - The kind of [aggregated geometry]{@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement} generated
  * @param {object} opts.columns - The new columns are computed by a applying an aggregate function to all the points in each group
- * @param {string} opts.columns.aggregatedFunction - The Function used to aggregate the points: avg (average), min (minimum), max (maximum) and mode (the most frequent value in the group)
+ * @param {string} opts.columns.aggregatedFunction - The Function used to aggregate the points: avg (average), sum, min (minimum), max (maximum) and mode (the most frequent value in the group)
  * @param {string} opts.columns.aggregatedColumn - The name of the original column to be aggregated.
  * 
  * @example
  * // Create a layer with aggregated data.
  * const aggregationOptions = {
- *   // Always apply aggregation
+ *   // CARTO applies aggregation if your dataset has more than threshold rows. In this case, more than 1 row.
  *   threshold: 1,
- *   // 
+ *   // Defines the cell-size of the aggregation grid. In this case, 1x1 pixel. 
  *   resolution: 1,
- *   // New points will be displayed at the center of the grid
+ *   // Where the new point will be placed. In this case, at the center of the grid.
  *   placement: 'point-grid',
+ *   // Here we define the aggregated columns that we want to obtain.
  *   columns: {
- *     // The key is the name of the new generated column
- *     agg_population: {
- *     // Points will display the average of the aggregated data.
- *     aggregateFunction: 'avg',
- *     // The column to be aggregated
- *     aggregatedColumn: 'population'
- *    },
+ *     // Each property key is the name of the new generated column
+ *     avg_population: {
+ *       // The aggregated column will contain the average of the original data.
+ *       aggregateFunction: 'avg',
+ *       // The column to be aggregated
+ *       aggregatedColumn: 'population'
+ *     }, {
+ *     min_population: {
+ *       aggregateFunction: 'min',
+ *       aggregatedColumn: 'population
  *   }
  * };
  * const aggregation = new Aggregation(options);

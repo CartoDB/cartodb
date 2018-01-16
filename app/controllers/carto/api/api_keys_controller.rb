@@ -73,16 +73,16 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def load_api_key
-    id = params[:id]
-    if !is_uuid?(id) || !(@api_key = Carto::ApiKey.where(id: id).where(user_id: current_viewer.id).first)
-      raise Carto::LoadError.new("API key not found: #{id}")
+    name = params[:id]
+    if !(@api_key = Carto::ApiKey.where(user_id: current_viewer.id).where(name: name).first)
+      raise Carto::LoadError.new("API key not found: #{name}")
     end
   end
 
   def json_for_api_key(api_key)
     Carto::Api::ApiKeyPresenter.new(api_key).to_poro.merge(
       _links: {
-        self: api_key_url(id: api_key.id)
+        self: api_key_url(id: api_key.name)
       }
     )
   end

@@ -97,11 +97,15 @@ describe Carto::Api::OrganizationUsersController do
 
   before(:each) do
     @old_soft_limits = soft_limits(@organization.owner)
+    @old_whitelisted_email_domains = @organization.whitelisted_email_domains
   end
 
   after(:each) do
     set_soft_limits(@organization.owner, @old_soft_limits)
     @organization.owner.save
+
+    @organization.whitelisted_email_domains = @old_whitelisted_email_domains
+    @organization.save
   end
 
   describe 'user creation' do
@@ -219,8 +223,6 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.username.should eq username
       last_user_created.email.should eq email
-      @organization.whitelisted_email_domains = old_whitelisted_email_domains
-      @organization.save
     end
 
     it 'assigns soft_geocoding_limit to false by default' do

@@ -1992,6 +1992,7 @@
             "routing": "Routing",
             "trade-area": "Trade area",
             "georeference-street-address": "Geocode street address",
+            "georeference-cities": "Geocode cities",
             "data-observatory-measure": "Data Observatory"
           }
         },

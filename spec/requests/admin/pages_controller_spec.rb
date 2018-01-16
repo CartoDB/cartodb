@@ -52,6 +52,24 @@ describe Admin::PagesController do
       user.delete
     end
 
+    it 'redirects_to dashboard if organization user is logged in' do
+      user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
+
+      login_as(user, scope: user.username)
+
+      get "/u/#{@org_user_name}", {}, JSON_HEADER
+
+      last_response.status.should == 302
+
+      follow_redirect!
+
+      uri = URI.parse(last_request.url)
+      uri.host.should == "#{@org_name}.localhost.lan"
+      uri.path.should == "/u/#{@org_user_name}/dashboard"
+
+      user.delete
+    end
+
     it 'redirects if it is an org user but gets called without organization' do
       user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
 
@@ -344,6 +362,8 @@ describe Admin::PagesController do
 
     if org_user
       org = mock
+      org.stubs(name: @org_name)
+      user.stubs(organization: org)
       Organization.stubs(:where).with(name: @org_name).returns([org])
       Organization.stubs(:where).with(name: @org_user_name).returns([org])
       ::User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)

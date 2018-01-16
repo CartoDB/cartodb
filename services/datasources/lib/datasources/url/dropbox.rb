@@ -210,7 +210,8 @@ module CartoDB
           # Any call would do, we just want to see if communicates or refuses the token
           @client.get_current_account
           true
-        rescue DropboxApi::Errors::HttpError
+        rescue DropboxApi::Errors::HttpError => ex
+          CartoDB::Logger.debug(message: 'Invalid Dropbox token', exception: ex, user: @user)
           false
         end
 

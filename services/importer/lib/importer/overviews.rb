@@ -26,7 +26,7 @@ module CartoDB
                              Cartodb.get_config(:overviews, 'tolerance_px') ||
                              DEFAULT_TOLERANCE_PX
         @importer_stats = CartoDB::Stats::Importer.instance # TODO: delegate to @runner?
-        @logger            = options[:log]
+        @logger = options[:log]
       end
 
       attr_reader :user, :min_rows, :schema

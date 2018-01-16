@@ -522,16 +522,16 @@ class DataImport < Sequel::Model
     table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)
 
     current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
-        if overwrite_strategy?
-          begin
-            overwrite_table_from_query(table_name, name, query, current_user)
-            self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
-          ensure
-            table_name = nil
-          end
-        else
-          user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
+      if overwrite_strategy?
+        begin
+          overwrite_table_from_query(table_name, name, query, current_user)
+          results.push CartoDB::Importer2::Result.new(success: true, error: nil)
+        ensure
+          table_name = nil
         end
+      else
+        user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
+      end
     end
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"
@@ -548,12 +548,12 @@ class DataImport < Sequel::Model
   def overwrite_table_from_query(new_table_name, overwrite_table_name, query, user)
     database            = user.in_database
     destination_schema  = user.database_schema
-    overviews_creator   = CartoDB::Importer2::Overviews.new(nil, user, options = {log: log})
+    overviews_creator   = CartoDB::Importer2::Overviews.new(nil, user, { log: log })
     table_setup         = ::Carto::Importer::TableSetup.new(
-                            user: user,
-                            overviews_creator: overviews_creator,
-                            log: log
-                          )
+                              user: user,
+                              overviews_creator: overviews_creator,
+                              log: log
+                            )
     index_statements    = table_setup.generate_index_statements(destination_schema, overwrite_table_name)
 
     database.transaction do
@@ -564,8 +564,9 @@ class DataImport < Sequel::Model
         database.execute(%{
           ALTER TABLE "#{destination_schema}"."#{new_table_name}" RENAME TO "#{overwrite_table_name}"
         })
-      rescue => e
-        log.append "Unable to replace #{overwrite_table_name} with #{new_table_name}. Rollingback transaction and dropping #{new_table_name}: #{e}"
+      rescue Sequel::DatabaseError => exception
+        log.append "Unable to replace #{overwrite_table_name} with #{new_table_name}"
+        log.append "Rollingback transaction and dropping #{new_table_name}: #{e}"
         drop(database, "\"#{destination_schema}\".\"#{new_table_name}\"")
         raise e
       end
@@ -581,7 +582,7 @@ class DataImport < Sequel::Model
   def drop(database, table_name)
     Carto::OverviewsService.new(database).delete_overviews table_name
     database.execute(%(DROP TABLE #{table_name}))
-  rescue => exception
+  rescue Sequel::DatabaseError => exception
     log("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
     self
   end

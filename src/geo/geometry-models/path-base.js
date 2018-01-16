@@ -15,6 +15,7 @@ var PathBase = GeometryBase.extend({
     }
 
     this.points.on('change', this._triggerChangeEvent, this);
+    this.points.on('remove', this._triggerChangeEvent, this);
   },
 
   getCoordinates: function () {
@@ -63,7 +64,6 @@ var PathBase = GeometryBase.extend({
 
   removePoint: function (point) {
     this.points.remove(point);
-    this._triggerChangeEvent();
   }
 });
 

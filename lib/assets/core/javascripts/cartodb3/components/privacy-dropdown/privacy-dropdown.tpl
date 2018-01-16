@@ -1,5 +1,5 @@
 <div class="Privacy-dropdown">
-  <<%- privacyDOMElement %> class="Privacy-dropdownTrigger Tag Tag-fill Tag-fill--<%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-tooltip <% if (hasWriteAccess) { %>js-toggle<% } else { %>is-disabled is-pointed<% } %>">
+  <<%- privacyDOMElement %> class="Privacy-dropdownTrigger Tag Tag-fill Tag-fill--<%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-tooltip <% if (isOwner) { %>js-toggle<% } else { %>is-disabled is-pointed<% } %>">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon CDB-LoaderIcon--small u-flex">
         <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">

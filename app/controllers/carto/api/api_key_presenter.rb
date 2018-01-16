@@ -37,9 +37,9 @@ module Carto
         return {} unless @api_key
         grants_presenter = ApiKeyGrantsPresenter.new(@api_key.api_key_grants)
         {
+          name: @api_key.name,
           user: { username: @api_key.user.username },
           type: @api_key.type,
-          name: @api_key.name,
           token: @api_key.token,
           grants: grants_presenter.to_poro,
           databaseConfig: {

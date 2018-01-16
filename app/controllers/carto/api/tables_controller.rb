@@ -16,7 +16,7 @@ module Carto
 
       def show
         table = @user_table.service
-        render_jsonp(table.public_values({ request: request }, current_user).merge(schema: table.schema(reload: true)))
+        render_jsonp(TablePresenter.new(table, current_user, self).to_poro.merge(schema: table.schema(reload: true)))
       end
 
       # Very basic controller method to simply make blank tables
@@ -35,7 +35,7 @@ module Carto
         table.import_from_query = params[:from_query] if params[:from_query]
 
         if table.valid? && table.save
-          render_jsonp(table.public_values(request: request), 200, location: "/tables/#{table.id}")
+          render_jsonp(TablePresenter.new(table, current_user, self).to_poro, 200, location: "/tables/#{table.id}")
 
           table_visualization = table.table_visualization
           if table_visualization
@@ -69,12 +69,12 @@ module Carto
           longitude_column = params[:longitude_column] == 'nil' ? nil : params[:longitude_column].try(:to_sym)
           table.georeference_from!(latitude_column: latitude_column, longitude_column: longitude_column)
           table.update_bounding_box
-          render_jsonp(table.public_values(request: request).merge(warnings: warnings))
+          render_jsonp(TablePresenter.new(table, current_user, self).to_poro.merge(warnings: warnings))
           return
         end
 
         if @user_table.save
-          render_jsonp(table.public_values(request: request).merge(warnings: warnings))
+          render_jsonp(TablePresenter.new(table, current_user, self).to_poro.merge(warnings: warnings))
         else
           render_jsonp({ errors: table.errors.full_messages }, 400)
         end

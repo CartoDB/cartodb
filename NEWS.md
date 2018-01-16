@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Fix marker bugs (#1207)
 * Back button support (#13115)
 * Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)

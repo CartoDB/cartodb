@@ -22,7 +22,7 @@ module Carto
     end
 
     def merge!(permissions)
-      @permissions += permissions.select { |p| p.downcase unless @permissions.include?(p) }
+      @permissions += permissions.reject { |p| @permissions.include?(p.downcase) }
     end
 
     def add!(permission)

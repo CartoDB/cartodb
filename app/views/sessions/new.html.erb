@@ -9,7 +9,7 @@
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
-      <div class="Sessions-notloggedin is-active"ss>
+      <div class="Sessions-notloggedin is-active">
         <div class="u-inner">
           <div class="Sessions-left">
             <div class="Sessions-logoContainer">
@@ -77,6 +77,9 @@
                 <% end %>
               <% end %>
               <% if @oauth_configs.any? %>
+                <div class="Sessions-field Sessions-oauthHeader">
+                  <p>OR LOG IN WITH:</p>
+                </div>
                 <div class="Sessions-field Sessions-oauthContainer">
                   <% @oauth_configs.each do |config| %>
                     <%= render partial: config.button_template, locals: { config: config } %>

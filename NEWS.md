@@ -172,6 +172,7 @@ ion for time-series (#12670)
 * Remove back arrow and add a tooltip to editor logo (#13067)
 + Track user events (#13051)
 * Fix dashboard redirections (#12775)
+* Fix Dropbox reconnection on token expiration (#13410)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
 * Documentation, fixed spelling and grammar in en.json

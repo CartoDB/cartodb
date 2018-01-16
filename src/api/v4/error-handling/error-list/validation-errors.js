@@ -174,5 +174,47 @@ module.exports = {
       messageRegex: /invalidBoundsObject/,
       friendlyMessage: 'Bounds object is not valid. Use a carto.filter.Bounds object'
     }
+  },
+  aggregation: {
+    'threshold-required': {
+      messageRegex: /thresholdRequired/,
+      friendlyMessage: 'Aggregation threshold is required.'
+    },
+    'invalid-threshold': {
+      messageRegex: /invalidThreshold/,
+      friendlyMessage: 'Aggregation threshold must be a positive integer value.'
+    },
+    'resolution-required': {
+      messageRegex: /resolutionRequired/,
+      friendlyMessage: 'Aggregation resolution is required.'
+    },
+    'invalid-resolution': {
+      messageRegex: /invalidResolution/,
+      friendlyMessage: 'Aggregation resolution must be 0.5, 1 or powers of 2 up to 256 (2, 4, 8, 16, 32, 64, 128, 256).'
+    },
+    'placement-required': {
+      messageRegex: /placementRequired/,
+      friendlyMessage: 'Aggregation placement is required'
+    },
+    'invalid-placement': {
+      messageRegex: /invalidPlacement/,
+      friendlyMessage: 'Aggregation placement is not valid. Must be one of these values: `point-sample`, `point-grid`, `centroid`'
+    },
+    'column-function-required': {
+      messageRegex: /columnFunctionRequired(.+)$/,
+      friendlyMessage: 'Aggregation function for column $1 is required.'
+    },
+    'invalid-column-function': {
+      messageRegex: /invalidColumnFunction(.+)$/,
+      friendlyMessage: 'Aggregation function for column $1 is not valid. Use carto.aggregation.function'
+    },
+    'column-aggregated-column-required': {
+      messageRegex: /columnAggregatedColumnRequired(.+)$/,
+      friendlyMessage: 'Column to be aggregated to $1 is required.'
+    },
+    'invalid-column-aggregated-column': {
+      messageRegex: /invalidColumnAggregatedColumn(.+)$/,
+      friendlyMessage: 'Column to be aggregated to $1 must be a string.'
+    }
   }
 };

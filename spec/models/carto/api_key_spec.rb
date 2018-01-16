@@ -208,12 +208,12 @@ describe Carto::ApiKey do
   describe '#table_permission_from_db' do
     it 'loads newly created grants for role' do
       api_key = Carto::ApiKey.create!(user_id: @user1.id,
-                                  type: Carto::ApiKey::TYPE_REGULAR,
-                                  name: 'wadus',
-                                  grants: [
-                                    database_grant('public', @table1.name),
-                                    apis_grant(['maps', 'sql'])
-                                  ])
+                                      type: Carto::ApiKey::TYPE_REGULAR,
+                                      name: 'wadus',
+                                      grants: [
+                                        database_grant('public', @table1.name),
+                                        apis_grant(['maps', 'sql'])
+                                      ])
 
       sql = "grant SELECT on table \"#{@table2.database_schema}\".\"#{@table2.name}\" to \"#{api_key.db_role}\""
       @user1.in_database(as: :superuser).run(sql)

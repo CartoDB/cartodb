@@ -22,7 +22,8 @@ module Carto
     end
 
     def merge!(permissions)
-      @permissions += permissions.reject { |p| @permissions.include?(p.downcase) }
+      down_permissions = permissions.map(&:downcase)
+      @permissions += down_permissions.reject { |p| @permissions.include?(p) }
     end
 
     def write?

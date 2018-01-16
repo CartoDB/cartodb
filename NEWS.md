@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add routing to widgets
+* When editing a widget, disable the other ones (#13374)
 * Back button support (#13115)
 * Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)
@@ -109,6 +111,7 @@ ion for time-series (#12670)
   * Token regeneration (#13321)
   * Keys listing (#13327)
   * Header authentication (#13329)
+  * Keep API Key permissions up to date when tables change (#13333)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)

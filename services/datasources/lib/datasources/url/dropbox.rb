@@ -207,9 +207,11 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
-        # Any call would do, we just want to see if communicates or refuses the token
-          raise "Current account not found" unless @client.get_current_account
+          # Any call would do, we just want to see if communicates or refuses the token
+          @client.get_current_account
           true
+        rescue DropboxApi::Errors::HttpError
+          false
         end
 
         # Revokes current set token

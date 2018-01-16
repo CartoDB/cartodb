@@ -25,13 +25,6 @@ module Carto
       @permissions += permissions.reject { |p| @permissions.include?(p.downcase) }
     end
 
-    def add!(permission)
-      down_permission = permission.downcase
-      if !@permissions.include?(down_permission)
-        @permissions << down_permission
-      end
-    end
-
     def write?
       !(@permissions & WRITE_PERMISSIONS).empty?
     end

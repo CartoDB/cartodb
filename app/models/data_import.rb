@@ -548,13 +548,13 @@ class DataImport < Sequel::Model
   def overwrite_table_from_query(new_table_name, overwrite_table_name, query, user)
     database            = user.in_database
     destination_schema  = user.database_schema
-    overviews_creator   = CartoDB::Importer2::Overviews.new(nil, user, { log: log })
-    table_setup         = ::Carto::Importer::TableSetup.new(
-                              user: user,
-                              overviews_creator: overviews_creator,
-                              log: log
-                            )
-    index_statements    = table_setup.generate_index_statements(destination_schema, overwrite_table_name)
+    overviews_creator   = CartoDB::Importer2::Overviews.new(nil, user, log: log)
+    table_setup = ::Carto::Importer::TableSetup.new(
+      user: user,
+      overviews_creator: overviews_creator,
+      log: log
+    )
+    index_statements = table_setup.generate_index_statements(destination_schema, overwrite_table_name)
 
     database.transaction do
       begin
@@ -566,7 +566,7 @@ class DataImport < Sequel::Model
         })
       rescue Sequel::DatabaseError => exception
         log.append "Unable to replace #{overwrite_table_name} with #{new_table_name}"
-        log.append "Rollingback transaction and dropping #{new_table_name}: #{e}"
+        log.append "Rollingback transaction and dropping #{new_table_name}: #{exception}"
         drop(database, "\"#{destination_schema}\".\"#{new_table_name}\"")
         raise e
       end

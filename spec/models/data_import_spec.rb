@@ -116,6 +116,23 @@ describe DataImport do
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
     user_tables_should_be_registered
+
+    data_import = create_import(overwrite: true, truncated: false, from_query: 'select * from walmart_latlon limit 1')
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 3
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 1
+    user_tables_should_be_registered
+  end
+
+  it 'should raise an error if overwriting with non existent table in query' do
+    data_import = create_import(overwrite: true, truncated: false, from_query: 'select * from walmart_latlon_wtf limit 1')
+    data_import.run_import!
+    data_import.state.should eq 'failure'
+    data_import.error_code.should eq 8003
+    data_import.log.entries.should match(/relation.*does not exist/)
   end
 
   it 'should raise an exception if overwriting with missing data' do
@@ -190,20 +207,37 @@ describe DataImport do
     Carto::GhostTablesManager.new(@user.id).user_tables_synced_with_db?.should eq(true), "Tables not properly registered"
   end
 
-  def create_import(user: @user, overwrite:, truncated:, incomplete_schema: false)
-    DataImport.create(
-      user_id: user.id,
-      data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
-      data_type: "file",
-      table_name: 'walmart_latlon',
-      state: "pending",
-      success: false,
-      updated_at: Time.now,
-      created_at: Time.now,
-      original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
-      cartodbfy_time: 0.0,
-      collision_strategy: overwrite ? 'overwrite' : nil
-    )
+  def create_import(user: @user, overwrite:, truncated:, incomplete_schema: false, from_query: '')
+    if from_query.empty?
+      DataImport.create(
+        user_id: user.id,
+        data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
+        data_type: "file",
+        table_name: 'walmart_latlon',
+        state: "pending",
+        success: false,
+        updated_at: Time.now,
+        created_at: Time.now,
+        original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+        cartodbfy_time: 0.0,
+        collision_strategy: overwrite ? 'overwrite' : nil
+      )
+    else
+      DataImport.create(
+        user_id: user.id,
+        data_source: from_query,
+        from_query: from_query,
+        data_type: "query",
+        table_name: 'walmart_latlon',
+        state: "pending",
+        success: false,
+        updated_at: Time.now,
+        created_at: Time.now,
+        original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+        cartodbfy_time: 0.0,
+        collision_strategy: overwrite ? 'overwrite' : nil
+      )
+    end
   end
 
   it 'raises a meaningful error if over storage quota' do

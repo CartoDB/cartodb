@@ -116,6 +116,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Don't show the publish modal when the user clicks on the privacy button (#13366)
+* Logged in organization user gets redirected to dashboard [#11832](https://github.com/CartoDB/cartodb/issues/11832)
 * Redirect to login from static pages if there is no user (#13277)
 * Fix popup content in time series widget (#1269)
 * Update pop up when applying HTML changes (#1263)

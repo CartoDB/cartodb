@@ -116,6 +116,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Redirect to login from static pages if there is no user (#13277)
+* Add support for collision_strategy=overwrite when creating a dataset from a query (#13139)
 * Fix popup content in time series widget (#1269)
 * Update pop up when applying HTML changes (#1263)
 * Rollback make new widgets appear on top (#13244)

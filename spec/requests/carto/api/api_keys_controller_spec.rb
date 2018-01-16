@@ -208,6 +208,38 @@ describe Carto::Api::ApiKeysController do
         error_response[:errors].should match /schema \"wadus\" does not exist/
       end
     end
+
+    it 'fails if there\'s already an apikey with given name' do
+      grants = [
+        {
+          'type' => 'database',
+          'tables' => [
+            'schema' => @table1.database_schema,
+            'name' => @table1.name,
+            'permissions' => ['select']
+          ]
+        },
+        {
+          'type' => 'apis',
+          'apis' => ['maps', 'sql']
+        }
+      ]
+
+      post_json generate_api_key_url(user_req_params(@carto_user1)), name: 'wadus', grants: grants do |response|
+        response.status.should eq 201
+        api_key_response = response.body
+        api_key_response[:id].should_not be_empty
+        api_key_response[:name].should eq 'wadus'
+      end
+
+      post_json generate_api_key_url(user_req_params(@carto_user1)), name: 'wadus', grants: grants do |response|
+        response.status.should eq 422
+        api_key_response = response.body
+        api_key_response[:errors].should match /Duplicate API Key name: wadus/
+      end
+
+      Carto::ApiKey.where(name: 'wadus').each(&:destroy)
+    end
   end
 
   describe '#destroy' do
@@ -303,13 +335,8 @@ describe Carto::Api::ApiKeysController do
     end
 
     before :all do
-      @apikeys = [
-        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
-        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
-        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
-        FactoryGirl.create(:api_key_apis, user_id: @user1.id),
-        FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      ]
+      @apikeys = []
+      5.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user1.id) }
     end
 
     after :all do

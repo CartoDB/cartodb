@@ -182,7 +182,7 @@ module.exports = {
     },
     'invalid-threshold': {
       messageRegex: /invalidThreshold/,
-      friendlyMessage: 'Aggregation threshold must be a positive integer value.'
+      friendlyMessage: 'Aggregation threshold must be an integer value greater than 0.'
     },
     'resolution-required': {
       messageRegex: /resolutionRequired/,
@@ -194,7 +194,7 @@ module.exports = {
     },
     'placement-required': {
       messageRegex: /placementRequired/,
-      friendlyMessage: 'Aggregation placement is required'
+      friendlyMessage: 'Aggregation placement is required.'
     },
     'invalid-placement': {
       messageRegex: /invalidPlacement/,
@@ -202,19 +202,19 @@ module.exports = {
     },
     'column-function-required': {
       messageRegex: /columnFunctionRequired(.+)$/,
-      friendlyMessage: 'Aggregation function for column $1 is required.'
+      friendlyMessage: "Aggregation function for column '$0' is required."
     },
     'invalid-column-function': {
       messageRegex: /invalidColumnFunction(.+)$/,
-      friendlyMessage: 'Aggregation function for column $1 is not valid. Use carto.aggregation.function'
+      friendlyMessage: "Aggregation function for column '$0' is not valid. Use carto.aggregation.function"
     },
     'column-aggregated-column-required': {
       messageRegex: /columnAggregatedColumnRequired(.+)$/,
-      friendlyMessage: 'Column to be aggregated to $1 is required.'
+      friendlyMessage: "Column to be aggregated to '$0' is required."
     },
     'invalid-column-aggregated-column': {
       messageRegex: /invalidColumnAggregatedColumn(.+)$/,
-      friendlyMessage: 'Column to be aggregated to $1 must be a string.'
+      friendlyMessage: "Column to be aggregated to '$0' must be a string."
     }
   }
 };

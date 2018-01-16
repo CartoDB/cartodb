@@ -1,41 +1,47 @@
 var _ = require('underscore');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 
+// Taken from https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#columns
 var VALID_OPERATIONS = {
   avg: true,
   sum: true,
   min: true,
-  max: true
+  max: true,
+  mode: true
 };
 
+// Taken from https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement
 var VALID_PLACEMENTS = {
   'point-sample': true,
   'point-grid': true,
   'centroid': true
 };
 
+var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
+
 function Aggregation (opts) {
-  if (!opts.threshold) {
-    throw new Error('Aggregation must have a threshold.');
+  if (!_.isFinite(opts.threshold)) {
+    throw _getValidationError('thresholdRequired');
   }
 
   if (!_.isFinite(opts.threshold) || opts.threshold < 1 || Math.floor(opts.threshold) !== opts.threshold) {
-    throw new Error('Aggregation.threshold must have be a positive integer.');
+    throw _getValidationError('invalidThreshold');
   }
 
-  if (!opts.resolution) {
-    throw new Error();
+  if (!_.isFinite(opts.resolution)) {
+    throw _getValidationError('resolutionRequired');
   }
 
-  if (!_.isFinite(opts.resolution) || opts.resolution < 1 || opts.resolution > 16) {
-    throw new Error();
+  if (!_.contains(VALID_RESOLUTIONS, opts.resolution)) {
+    throw _getValidationError('invalidResolution');
   }
 
   if (!opts.placement) {
-    throw new Error();
+    throw _getValidationError('placementRequired');
   }
 
   if (!VALID_PLACEMENTS[opts.placement]) {
-    throw new Error();
+    throw _getValidationError('invalidPlacement');
   }
 
   _checkColumns(opts.columns);
@@ -44,7 +50,7 @@ function Aggregation (opts) {
     threshold: opts.threshold,
     resolution: opts.resolution,
     placement: opts.placement,
-    columns: opts.column
+    columns: opts.columns
   };
 }
 
@@ -54,25 +60,29 @@ function _checkColumns (columns) {
   }
 
   Object.keys(columns).forEach(function (key) {
-    _checkColumn(columns[key]);
+    _checkColumn(columns, key);
   });
 }
 
-function _checkColumn (column) {
-  if (!column.aggregated_column) {
-    throw new Error('aggregate column is not defined');
+function _checkColumn (columns, key) {
+  if (!columns[key].aggregatedColumn) {
+    throw _getValidationError('columnAggregatedColumnRequired' + key);
   }
 
-  if (!_.isString(column.aggregated_column)) {
-    throw new Error('aggregate column is not a string');
+  if (!_.isString(columns[key].aggregatedColumn)) {
+    throw _getValidationError('invalidColumnAggregatedColumn' + key);
   }
 
-  if (!column.aggregate_function) {
-    throw new Error('af is not defined');
+  if (!columns[key].aggregateFunction) {
+    throw _getValidationError('columnFunctionRequired' + key);
   }
 
-  if (!VALID_OPERATIONS[column.aggregate_function]) {
-    throw new Error('af is not a valid funcion');
+  if (!VALID_OPERATIONS[columns[key].aggregateFunction]) {
+    throw _getValidationError('invalidColumnFunction' + key);
   }
+}
+
+function _getValidationError (code) {
+  return new CartoValidationError('aggregation', code);
 }
 module.exports = Aggregation;

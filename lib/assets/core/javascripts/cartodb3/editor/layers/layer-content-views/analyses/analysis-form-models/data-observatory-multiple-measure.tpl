@@ -11,8 +11,7 @@
     </div>
   </div>
 
-  <% if (fields) { %>
-  <div class="Editor-HeaderInfo">
+  <div class="Editor-HeaderInfo <%- hasArea ? '' : 'is-disabled' %>">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
         <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="<%- fields %>">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
@@ -21,5 +20,4 @@
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.data-observatory.parameters.description') %></p>
     </div>
   </div>
-  <% } %>
 </form>

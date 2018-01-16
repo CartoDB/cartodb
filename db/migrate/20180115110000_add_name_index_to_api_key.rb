@@ -5,12 +5,14 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     alter_table :api_keys do
-      add_index [:name, :user_id], unique: true
+      drop_index :user_id
+      add_index [:user_id, :name], unique: true
     end
   end,
   Proc.new do
     alter_table :api_keys do
-      drop_index [:name, :user_id]
+      drop_index [:user_id, :name]
+      add_index :user_id
     end
   end
 )

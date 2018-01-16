@@ -170,7 +170,7 @@ class Organization < Sequel::Model
   def destroy_non_owner_users
     non_owner_users.each do |user|
       user.ensure_nonviewer
-      user.shared_entities.map(&:entity).each(&:delete)
+      user.shared_entities.map(&:entity).uniq.each(&:delete)
       user.destroy_cascade
     end
   end

@@ -42,6 +42,7 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/builder/public/embeds_controller_spec.rb \
 	spec/requests/carto/builder/visualizations_controller_spec.rb \
 	spec/requests/visualizations_controller_helper_spec.rb \
+	spec/requests/warden_spec.rb \
 	spec/models/map_spec.rb \
 	spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
@@ -267,6 +268,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/static_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/users_controller_spec.rb \
+	spec/requests/carto/api/table_presenter_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \

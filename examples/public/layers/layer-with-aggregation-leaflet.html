@@ -72,26 +72,25 @@
           marker-line-color: #FFFFFF;
         }
       `);
-      const aggregation = {
+      
+      // Aggregation option
+      const aggregation = new carto.layer.Aggregation({
         threshold: 1000,
         resolution: 4,
         placement: 'point-sample',
         columns: {
-          'population': {
-            aggregate_function: 'sum',
-            aggregated_column: 'pop_max'
+          population: {
+            aggregateFunction: 'sum',
+            aggregatedColumn: 'pop_max'
           }
         }
-      };
-      const layer = new carto.layer.Layer(source, style, { aggregation });
+      });
 
-      // const layer = new carto.layer.Layer(source, style, {
-      //   featureClickColumns: ['pop_max']
-      // });
+      const layer = new carto.layer.Layer(source, style, { aggregation });
 
       client.addLayer(layer);
       client.getLeafletLayer().addTo(map);
-ni
+      
       layer.on('featureClicked', featureEvent => {
         let content = '';
         content += `<div class="container">`;

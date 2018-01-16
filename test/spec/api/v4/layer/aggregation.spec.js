@@ -28,7 +28,14 @@ fdescribe('layer-aggregation', function () {
       expect(aggregation.threshold).toEqual(options.threshold);
       expect(aggregation.resolution).toEqual(options.resolution);
       expect(aggregation.placement).toEqual(options.placement);
-      expect(aggregation.columns).toEqual(options.columns);
+      expect(aggregation.columns.fake_name_0).toEqual({
+        aggregate_function: 'sum',
+        aggregated_column: 'fake_column_0'
+      });
+      expect(aggregation.columns.fake_name_1).toEqual({
+        aggregate_function: 'avg',
+        aggregated_column: 'fake_column_1'
+      });
     });
 
     describe('errors', function () {

@@ -90,7 +90,7 @@ function Aggregation (opts) {
     threshold: opts.threshold,
     resolution: opts.resolution,
     placement: opts.placement,
-    columns: opts.columns
+    columns: _transformColumns(opts.columns)
   };
 }
 
@@ -125,4 +125,22 @@ function _checkColumn (columns, key) {
 function _getValidationError (code) {
   return new CartoValidationError('aggregation', code);
 }
+
+// Windshaft uses snake_case for column parameters
+function _transformColumns (columns) {
+  var returnValue = {};
+  Object.keys(columns).forEach(function (key) {
+    returnValue[key] = _columnToSnakeCase(columns[key]);
+  });
+  return returnValue;
+}
+
+// Windshaft uses snake_case for column parameters
+function _columnToSnakeCase (column) {
+  return {
+    aggregate_function: column.aggregateFunction,
+    aggregated_column: column.aggregatedColumn
+  };
+}
+
 module.exports = Aggregation;

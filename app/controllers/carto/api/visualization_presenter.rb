@@ -128,6 +128,17 @@ module Carto
         }
       end
 
+      # For dependent visualizations
+      def to_summarized_poro
+        {
+          id:          @visualization.id,
+          name:        @visualization.name,
+          updated_at:  @visualization.updated_at,
+          permission:  permission.slice(:id, :owner),
+          auth_tokens: auth_tokens
+        }
+      end
+
       # Ideally this should go at a lower level, as relates to url generation, but at least centralize logic here
       # INFO: For now, no support for non-org users, as intended use is for sharing urls
       def privacy_aware_map_url(additional_params = {}, action = 'public_visualizations_show_map')

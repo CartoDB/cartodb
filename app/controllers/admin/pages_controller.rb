@@ -201,7 +201,7 @@ class Admin::PagesController < Admin::AdminController
   def index_subdomainfull
     if current_user && current_viewer && current_user.id == current_viewer.id
       # username.carto.com should redirect to the user dashboard in the maps view if the user is logged in
-      redirect_to CartoDB.url(self, 'dashboard')
+      redirect_to CartoDB.url(self, 'dashboard', {}, current_user)
     else
       # Asummes either current_user nil or at least different from current_viewer
       # username.carto.com should redirect to the public user feeds view if the username is not the user's username

@@ -13,10 +13,19 @@
 
 .CDB-Widget {
   position: relative;
-  // Due to line-heights, better to substract some pixels in the top
   box-sizing: border-box;
   width: $desktopLayout;
   margin-bottom: 2px;
+
+  &.is-disabled {
+    opacity: 0.24;
+    pointer-events: none;
+
+    // Needed to disable SVG interaction
+    * {
+      pointer-events: none;
+    }
+  }
 }
 
 .CDB-Widget-body {

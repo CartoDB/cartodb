@@ -38,7 +38,7 @@ describe('layers-serializer', function () {
         'options': {
           'cartocss': 'cartoCSS1',
           'cartocss_version': '2.0',
-          'interactivity': [ 'cartodb_id' ],
+          'interactivity': ['cartodb_id'],
           'source': { id: 'a1' }
         }
       }];
@@ -120,6 +120,38 @@ describe('layers-serializer', function () {
       var actual = LayersSerializer.serialize(layersCollection);
       var expected = [];
       expect(actual).toEqual(expected);
+    });
+
+    fdescribe('zoom options', function () {
+      it('should serialize a cartodb layer with propper zoom options', function () {
+        var cartoDBLayer = new CartoDBLayer({
+          id: 'l1',
+          source: sourceMock,
+          cartocss: 'cartoCSS1',
+          cartocss_version: '2.0',
+          minzoom: 5,
+          maxzoom: 9
+        },
+        {
+          engine: engineMock
+        });
+        layersCollection.reset([cartoDBLayer]);
+
+        var actual = LayersSerializer.serialize(layersCollection);
+        var expected = [{
+          'id': 'l1',
+          'type': 'mapnik',
+          'options': {
+            'cartocss': 'cartoCSS1',
+            'cartocss_version': '2.0',
+            'interactivity': ['cartodb_id'],
+            'source': { id: 'a1' },
+            'minzoom': 5,
+            'maxzoom': 9
+          }
+        }];
+        expect(actual).toEqual(expected);
+      });
     });
   });
 });

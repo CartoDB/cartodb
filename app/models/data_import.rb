@@ -488,7 +488,7 @@ class DataImport < Sequel::Model
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
-    return true unless new_table_name and not overwrite_strategy?
+    return true unless new_table_name && !overwrite_strategy?
 
     sanitize_columns(new_table_name)
 

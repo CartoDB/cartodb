@@ -446,7 +446,7 @@
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
-      "short-title": "Data Observatory",
+      "short-title": "Enrich from Data observatory",
       "age-and-gender": "Age and Gender",
       "boundaries": "Boundaries",
       "education": "Education",
@@ -1905,15 +1905,15 @@
             "add": "Add new measurement"
           },
           "header": {
-            "title": "Select region",
-            "description": "For augmenting your layer"
+            "title": "Select a region",
+            "description": "Region must match your geometry location"
           },
           "parameters": {
             "title": "Select measurements",
-            "description": "Pick up to 10 measurements"
+            "description": "Contextual data to augment your layer"
           },
           "source": {
-            "label": "Source"
+            "label": "Base layer"
           },
           "region": {
             "label": "Region",
@@ -2107,7 +2107,7 @@
             "trade-area": "Trade area",
             "georeference-street-address": "Geocode street address",
             "georeference-cities": "Geocode cities",
-            "data-observatory-measure": "Data Observatory"
+            "data-observatory-measure": "Enrich from Data Observatory"
           }
         },
         "public_transport": "Public transport",

@@ -61,7 +61,7 @@ CartoDBLayerGroupViewBase.prototype = {
           event = event || {};
           // TODO: zera has an .on('error', () => { }) callback that should be used here
           if (event.errors != null) {
-            self._manageInteractivityErrors(o);
+            self._manageInteractivityErrors(event);
           }
           event.layer = layerIndexInLayerGroup;
           self._manageOffEvents(self.nativeMap, event);

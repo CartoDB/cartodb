@@ -102,8 +102,8 @@ module.exports = env => {
           use: 'tpl-loader',
           include: [
             resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
-            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
+            resolve(__dirname, '../../', 'lib/assets/core/javascripts/deep-insights'),
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
         },
         {
@@ -111,8 +111,8 @@ module.exports = env => {
           use: 'raw-loader',
           include: [
             resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, '../../', 'node_modules/cartodb.js'),
-            resolve(__dirname, '../../', 'node_modules/cartodb-deep-insights.js')
+            resolve(__dirname, '../../', 'lib/assets/core/javascripts/deep-insights'),
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
         },
         {

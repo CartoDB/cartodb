@@ -1,20 +1,40 @@
 var _ = require('underscore');
 var CartoValidationError = require('../error-handling/carto-validation-error');
 
-// Taken from https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#columns
-var VALID_OPERATIONS = {
-  avg: true,
-  sum: true,
-  min: true,
-  max: true,
-  mode: true
+/**
+ * List of possible aggregation operations.
+ * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#columns } for more info.
+ * @enum {string} carto.layer.Aggregation.operation
+ * @memberof carto.layer.Aggregation
+ * @api
+ */
+var OPERATIONS = {
+  /** The new point will contain the average value of the or the aggregated ones */
+  AVG: 'avg',
+  /** The new point will contain the sum of the aggregated values */
+  SUM: 'sum',
+  /** The new point will contain the minimal value existing the aggregated features */
+  MIN: 'min',
+  /** The new point will contain the maximun value existing the aggregated features */
+  MAX: 'max',
+  /** The new point will contain the mode of the aggregated values */
+  MODE: 'mode'
 };
 
-// Taken from https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement
-var VALID_PLACEMENTS = {
-  'point-sample': true,
-  'point-grid': true,
-  'centroid': true
+/**
+ * List of possible aggregation feature placements.
+ * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement } for more info.
+ * @enum {string} carto.layer.Aggregation.placement
+ * @memberof carto.layer.Aggregation
+ * @api
+ */
+var PLACEMENTS = {
+  /** The new point will be placed at a random sample of the aggregated points */
+  SAMPLE: 'point-sample',
+  /** The new point will be placed at the center of the aggregation grid cells */
+  GRID: 'point-grid',
+  /** The new point will be placed at averaged coordinated of the grouped points */
+  CENTROID: 'centroid'
 };
 
 var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
@@ -41,19 +61,19 @@ var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
  *   // Defines the cell-size of the aggregation grid. In this case, 1x1 pixel. 
  *   resolution: 1,
  *   // Where the new point will be placed. In this case, at the center of the grid.
- *   placement: 'point-grid',
+ *   placement: 'carto.layer.Aggregation.placement.GRID
  *   // Here we define the aggregated columns that we want to obtain.
  *   columns: {
  *     // Each property key is the name of the new generated column
  *     avg_population: {
  *       // The aggregated column will contain the average of the original data.
- *       aggregateFunction: 'avg',
+ *       aggregateFunction: carto.layer.Aggregation.operation.AVG,
  *       // The column to be aggregated
  *       aggregatedColumn: 'population'
  *     }, {
  *     min_population: {
- *       aggregateFunction: 'min',
- *       aggregatedColumn: 'population
+ *       aggregateFunction: carto.layer.Aggregation.operation.MIN,
+ *       aggregatedColumn: 'population'
  *   }
  * };
  * const aggregation = new Aggregation(options);
@@ -84,7 +104,7 @@ function Aggregation (opts) {
     throw _getValidationError('placementRequired');
   }
 
-  if (!VALID_PLACEMENTS[opts.placement]) {
+  if (!_.contains(_.values(PLACEMENTS), opts.placement)) {
     throw _getValidationError('invalidPlacement');
   }
 
@@ -97,6 +117,10 @@ function Aggregation (opts) {
     columns: _transformColumns(opts.columns)
   };
 }
+
+Aggregation.operation = OPERATIONS;
+
+Aggregation.placement = PLACEMENTS;
 
 function _checkColumns (columns) {
   if (!columns) {
@@ -121,7 +145,7 @@ function _checkColumn (columns, key) {
     throw _getValidationError('columnFunctionRequired' + key);
   }
 
-  if (!VALID_OPERATIONS[columns[key].aggregateFunction]) {
+  if (!_.contains(_.values(OPERATIONS), columns[key].aggregateFunction)) {
     throw _getValidationError('invalidColumnFunction' + key);
   }
 }

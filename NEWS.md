@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add routing to widgets
+* When editing a widget, disable the other ones (#13374)
 * Back button support (#13115)
 * Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)
@@ -109,12 +111,16 @@ ion for time-series (#12670)
   * Token regeneration (#13321)
   * Keys listing (#13327)
   * Header authentication (#13329)
+  * Keep API Key permissions up to date when tables change (#13333)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 * Added Mapbox services providers (#cartodb-platform/3835)
 
 ### Bug fixes / enhancements
+* Add auth tokens to dependent visualizations (#13394)
+* Logged in organization user gets redirected to dashboard [#11832](https://github.com/CartoDB/cartodb/issues/11832)
+* Redirect to login from static pages if there is no user (#13277)
 * Fix popup content in time series widget (#1269)
 * Update pop up when applying HTML changes (#1263)
 * Rollback make new widgets appear on top (#13244)
@@ -253,6 +259,7 @@ ion for time-series (#12670)
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
+* Optimize shared entities check (#13353)
 * Fix CORS for local images in legends (#12647)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)

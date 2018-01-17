@@ -167,7 +167,6 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_oauth_config
-    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
     @oauth_configs = [google_plus_config, github_config].compact
   end
 

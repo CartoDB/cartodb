@@ -111,9 +111,6 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
       var eventType = zeraEvent.e.type.toLowerCase();
 
       switch (eventType) {
-        case 'dblclick':
-          this._onFeatureDblclicked(latlng, containerPoint, zeraEvent.data, zeraEvent.layer);
-          break;
         case 'mousemove':
           this._onFeatureOver(latlng, containerPoint, zeraEvent.data, zeraEvent.layer);
           break;
@@ -127,19 +124,6 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
       var layerModel = this.model.getLayerInLayerGroupAt(layer);
       if (layerModel) {
         this.trigger('featureClick', {
-          layer: layerModel,
-          layerIndex: layer,
-          latlng: [latlon.lat, latlon.lng],
-          position: containerPoint,
-          feature: data
-        });
-      }
-    },
-
-    _onFeatureDblclicked: function (latlon, containerPoint, data, layer) {
-      var layerModel = this.model.getLayerInLayerGroupAt(layer);
-      if (layerModel) {
-        this.trigger('featureDblclick', {
           layer: layerModel,
           layerIndex: layer,
           latlng: [latlon.lat, latlon.lng],

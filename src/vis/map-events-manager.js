@@ -13,7 +13,6 @@ MapModelEventsManager.prototype.start = function (cartoDBLayerGroupView) {
   this._cartoDBLayerGroupView = cartoDBLayerGroupView;
   this._cartoDBLayerGroupView.on('featureOver', this._onFeatureOver, this);
   this._cartoDBLayerGroupView.on('featureClick', this._onFeatureClick, this);
-  this._cartoDBLayerGroupView.on('featureDblclick', this._onFeatureDblclick, this);
   this._cartoDBLayerGroupView.on('featureOut', this._onFeatureOut, this);
   this._cartoDBLayerGroupView.on('featureError', this._onFeatureError, this);
 };
@@ -22,7 +21,6 @@ MapModelEventsManager.prototype.stop = function () {
   if (this._cartoDBLayerGroupView) {
     this._cartoDBLayerGroupView.off('featureOver', this._onFeatureOver, this);
     this._cartoDBLayerGroupView.off('featureClick', this._onFeatureClick, this);
-    this._cartoDBLayerGroupView.off('featureDblclick', this._onFeatureDblclick, this);
     this._cartoDBLayerGroupView.off('featureOut', this._onFeatureOut, this);
     this._cartoDBLayerGroupView.off('featureError', this._onFeatureError, this);
     delete this._cartoDBLayerGroupView;
@@ -38,12 +36,6 @@ MapModelEventsManager.prototype._onFeatureOver = function (event) {
 MapModelEventsManager.prototype._onFeatureClick = function (event) {
   if (this._mapModel.isFeatureInteractivityEnabled()) {
     this._mapModel.trigger('featureClick', event);
-  }
-};
-
-MapModelEventsManager.prototype._onFeatureDblclick = function (event) {
-  if (this._mapModel.isFeatureInteractivityEnabled()) {
-    this._mapModel.trigger('featureDblclick', event);
   }
 };
 

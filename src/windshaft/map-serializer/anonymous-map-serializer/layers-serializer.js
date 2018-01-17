@@ -77,6 +77,14 @@ function optionsForMapnikLayer (layerModel) {
     };
   }
 
+  if (isFinite(layerModel.get('minzoom'))) {
+    options.minzoom = layerModel.get('minzoom');
+  }
+
+  if (isFinite(layerModel.get('maxzoom'))) {
+    options.maxzoom = layerModel.get('maxzoom');
+  }
+
   return {
     id: layerModel.get('id'),
     type: MAPNIK_LAYER_TYPE,

@@ -122,7 +122,7 @@ describe('layers-serializer', function () {
       expect(actual).toEqual(expected);
     });
 
-    fdescribe('zoom options', function () {
+    describe('zoom options', function () {
       it('should serialize a cartodb layer with propper zoom options', function () {
         var cartoDBLayer = new CartoDBLayer({
           id: 'l1',

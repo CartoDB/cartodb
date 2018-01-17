@@ -42,14 +42,14 @@ feature "Sessions" do
       visit login_path
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => 'blablapassword'
-      click_link_or_button 'Login'
+      click_link_or_button 'Log in'
 
       page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
       page.should have_css("[@data-content='Your account or your password is not ok']")
 
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => @user.email.split('@').first
-      click_link_or_button 'Login'
+      click_link_or_button 'Log in'
       page.should be_dashboard
     end
 
@@ -105,7 +105,7 @@ feature "Sessions" do
 
       visit '/login'
 
-      page.should have_content("Login")
+      page.should have_content("Log in")
     end
   end
 
@@ -163,7 +163,7 @@ feature "Sessions" do
   def send_login_form(user)
     fill_in 'email', :with => user.email
     fill_in 'password', :with => user.username
-    click_link_or_button 'Login'
+    click_link_or_button 'Log in'
   end
 
   def be_dashboard

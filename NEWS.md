@@ -191,6 +191,7 @@ ion for time-series (#12670)
 * Supporting text-placement for labels (CartoDB/support#13015)
 * Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
+* Update styles for oauth buttons (#13412)
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.
 * Show map options when selecting a map in search view

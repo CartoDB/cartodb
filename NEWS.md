@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add routing to widgets
+* When editing a widget, disable the other ones (#13374)
 * Back button support (#13115)
 * Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)
@@ -109,6 +111,7 @@ ion for time-series (#12670)
   * Token regeneration (#13321)
   * Keys listing (#13327)
   * Header authentication (#13329)
+  * Keep API Key permissions up to date when tables change (#13333)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
@@ -116,6 +119,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Don't show the publish modal when the user clicks on the privacy button (#13366)
+* Add auth tokens to dependent visualizations (#13394)
 * Logged in organization user gets redirected to dashboard [#11832](https://github.com/CartoDB/cartodb/issues/11832)
 * Redirect to login from static pages if there is no user (#13277)
 * Fix popup content in time series widget (#1269)
@@ -126,6 +130,7 @@ ion for time-series (#12670)
 * Show tooltips only if the target element is visible (#12098)
 * Consolidate DeepInsight components in Builder (#13271)
 * Unify tooltip style (#13194)
+* Correctly log ogr2ogr generic errors (#13401)
 * Remove card's hover state when hovering the dataset/node inside (#13316)
 * Data Observatory analysis is not working (CartoDB/support#1239)
 * Use zoomToData only if the layer is created from a dataset (#13309)
@@ -174,6 +179,7 @@ ion for time-series (#12670)
 * Remove back arrow and add a tooltip to editor logo (#13067)
 + Track user events (#13051)
 * Fix dashboard redirections (#12775)
+* Fix Dropbox reconnection on token expiration (#13410)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
 * Documentation, fixed spelling and grammar in en.json

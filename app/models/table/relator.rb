@@ -5,10 +5,7 @@ require_relative '../visualization/member'
 module CartoDB
   class TableRelator
     INTERFACE = %w{
-      serialize_fully_dependent_visualizations
-      serialize_partially_dependent_visualizations
       synchronization
-      serialize_synchronization
       row_count_and_size
       related_templates
     }
@@ -16,14 +13,6 @@ module CartoDB
     def initialize(db, table)
       @db     = db
       @table  = table
-    end
-
-    def serialize_fully_dependent_visualizations
-      table.fully_dependent_visualizations.map { |object| preview_for(object) }
-    end
-
-    def serialize_partially_dependent_visualizations
-      table.partially_dependent_visualizations.map { |object| preview_for(object) }
     end
 
     def dependent_visualizations
@@ -36,27 +25,30 @@ module CartoDB
         .map  { |attributes| Visualization::Member.new(attributes) }
     end
 
-    def preview_for(object)
+    def preview_for(visualization)
       data = {
-        id:         object.id,
-        name:       object.name,
-        updated_at: object.updated_at
+        id:         visualization.id,
+        name:       visualization.name,
+        updated_at: visualization.updated_at
       }
-      if object[:permission_id].present? && !object.permission.nil?
-        data[:permission] = CartoDB::PermissionPresenter.new(object.permission).to_poro.select do |key, _val|
+      if visualization[:permission_id].present? && !visualization.permission.nil?
+        data[:permission] = CartoDB::PermissionPresenter.new(visualization.permission).to_poro.select do |key, _val|
           [:id, :owner].include?(key)
         end
       end
+      data[:auth_tokens] = if visualization.password_protected?
+                             visualization.get_auth_tokens
+                           elsif visualization.is_privacy_private?
+                             visualization.user.get_auth_tokens
+                           else
+                             []
+                           end
       data
     end
 
     def synchronization
       return nil unless synchronization_record && !synchronization_record.empty?
       CartoDB::Synchronization::Member.new(synchronization_record.first)
-    end
-
-    def serialize_synchronization
-      (synchronization || {}).to_hash
     end
 
     def row_count_and_size

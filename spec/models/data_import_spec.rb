@@ -117,6 +117,7 @@ describe DataImport do
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
     user_tables_should_be_registered
 
+    # overwriting from a sql is a different case needs to be tackled -> https://github.com/CartoDB/cartodb/issues/13139
     data_import = create_import(overwrite: true, truncated: false, from_query: 'select * from walmart_latlon limit 1')
     data_import.run_import!
     carto_user.reload

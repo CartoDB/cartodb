@@ -17,6 +17,7 @@ namespace :carto do
       end
     end
 
+    # This should only be used for development, before CartoDB/cartodb/pull/13396 migration
     desc 'Rename Api Keys to avoid name collisions within the same user'
     task :rename do
       Carto::ApiKey.uniq.pluck(:user_id).each { |user_id| rename_api_keys_for_user_id(user_id) }

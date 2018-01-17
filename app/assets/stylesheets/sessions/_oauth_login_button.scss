@@ -1,4 +1,10 @@
 @import 'compass/css3/border-radius';
+@font-face {
+  font-family: 'Roboto Medium';
+  font-style: normal;
+  font-weight: 500;
+  src: url(font-files("Roboto-Medium.woff")) format('woff');
+}
 
 .Sessions-oauthHeader {
   padding-top: 16px;
@@ -38,7 +44,7 @@
   border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 0.5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto Medium', sans-serif;
 
   &:hover {
     text-decoration: none;

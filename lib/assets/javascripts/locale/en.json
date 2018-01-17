@@ -484,12 +484,12 @@
       }
     },
     "merge": {
-      "title": "Add Columns from 2nd Dataset",
+      "title": "Add Columns from second Dataset",
       "short-title": "Add Columns"
     },
     "filter-by-node-column": {
       "title": "Link Second Layer",
-      "short-title": "Link Layer"
+      "short-title": "Link Second Layer"
     },
     "centroid": {
       "title": "Centroid from geometries",
@@ -1938,6 +1938,7 @@
             "label": "Boundaries"
           }
         },
+        "data-type": "Data type",
         "define-columns": "Define column to find similarities with",
         "define-reference-and-target": "Define reference and target layers",
         "define-two-layers": "Define two layers",
@@ -1964,9 +1965,10 @@
         "enter-longitude": "Enter longitude",
         "filter": "Filter",
         "filter-aggregate": "Aggregate your results",
-        "filter-column": "Filter column",
+        "filter-column": "Target column",
         "geometry-from": "Geometry from",
         "georeference": {
+          "description": "Geocode to get location coordinates",
           "postal-code-help": "Select a column with postal codes",
           "admin-region-help": "Select a column with region names",
           "admin-region-extended-help": "Specify an administrative region or select a column with region names",
@@ -2014,16 +2016,17 @@
         "intersect-help": "Only keep the rows matching your target data (Inner Join).",
         "join-type": "Join Type",
         "keep-data": "Select the data you want to keep",
-        "key-columns": "Key columns",
-        "key-columns-desc": "Choose similar columns to relate them",
+        "key-columns": "Choose a shared column",
+        "key-columns-desc": "Columns must have the same type of data",
         "kilometers": "km",
         "latitude": "Latitude",
         "line-sequential": "Sequential",
         "line-source-to-target": "To Source",
         "line-to-single-point": "To Single Point",
         "link-layer": "Link to col.",
-        "link-layer-desc": "Specify a second layer to filter by",
-        "linked-layer": "Filter by layer",
+        "link-layer-step-one-title": "Select a layer",
+        "link-layer-desc": "This layer's widgets will link both",
+        "linked-layer": "Target layer",
         "loading": "loading…",
         "longitude": "Longitude",
         "max-or-equal": "Max or equal",
@@ -2060,7 +2063,7 @@
         "order-by": "Order by",
         "order-results": "Order your results",
         "output-data": "Output data",
-        "parameters": "Parameters",
+        "parameters": "Define your parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
         "placeholder-text": "Analysis allow you to build reproducible workflows for analyzing and explaining your data.",
@@ -2130,9 +2133,9 @@
         "show": "Show",
         "significance": "Significance",
         "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
-        "source": "Source",
+        "source": "Base layer",
         "source-col": "Source col.",
-        "source-column": "Source column",
+        "source-column": "Base column",
         "source-data": "Source data",
         "spatial-markov-trend-desc": "select a column for each time period",
         "spatial-markov-trend-time-columns": "Input columns",

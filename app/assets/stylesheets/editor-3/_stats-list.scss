@@ -1,21 +1,24 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .StatsList-item.is-hidden {
   display: none;
 }
+
 .StatsList-item {
-  @include display-flex;
-  margin: 0 0 $baseSize * 3;
+  display: flex;
   box-sizing: border-box;
+  margin: 0 0 $baseSize * 3;
 }
+
 .StatsList-header {
   margin-top: 1px;
 }
+
 .StatsList-arrow {
-  @include transform(rotate(90deg));
+  transform: rotate(90deg);
 }
+
 .StatsList-tag {
   margin-top: 1px;
 }
@@ -23,6 +26,7 @@
 .StatsList-style.is-hidden {
   display: none;
 }
+
 .Data-loaderContainer {
   position: relative;
   margin-top: -18px;

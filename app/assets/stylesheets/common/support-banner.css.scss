@@ -6,25 +6,35 @@
 @import "../variables/colors";
 
 .SupportBanner {
-  display:block;
-  width:100%;
+  display: block;
+  width: 100%;
   padding: $sMargin-element 0 $sMargin-section;
 }
+
 .SupportBanner-inner {
-  position:relative;
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
 }
+
 .SupportBanner-link {
   display: block;
 }
-.SupportBanner-info { width: 640px }
+
+.SupportBanner-info {
+  width: 640px;
+}
+
 .SupportBanner-infoDescription {
   margin-top: 4px;
 }
+
 .SupportBanner-infoDescriptionLink {
-  text-decoration: underline;
   color: $cTypography-secondary;
-  &:hover { color: $cTypography-paragraphs }
+  text-decoration: underline;
+
+  &:hover {
+    color: $cTypography-paragraphs;
+  }
 }

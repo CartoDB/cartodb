@@ -30,17 +30,17 @@
 
 .Carousel-item {
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;
   margin-right: 8px;
+  overflow: hidden;
   border: 1px solid $cSecondaryLine;
   border-radius: 4px;
   background: $cThirdBackground;
-  box-sizing: border-box;
-  overflow: hidden;
 
   &:last-child {
     margin-right: 0;
@@ -65,12 +65,13 @@
 .Carousel-shadow {
   display: block;
   position: absolute;
+  z-index: 80;
   top: 0;
+  box-sizing: border-box;
   width: 30px;
   height: $baseSize * 7;
   transition: opacity, 400ms;
   opacity: 0;
-  z-index: 80;
   pointer-events: none;
 
   &.is-visible {

@@ -244,7 +244,9 @@ module.exports = function (grunt) {
 
     var builderFiles = [
       'js_cartodb3',
-      'js_test_cartodb3'
+      'js_test_cartodb3',
+      'js_deep_insights',
+      'js_test_deep_insights'
     ];
     var otherFiles = [
       'app',
@@ -329,7 +331,9 @@ module.exports = function (grunt) {
   grunt.registerTask('js_builder', [
     'copy:locale',
     'copy:js_cartodb3',
-    'copy:js_test_cartodb3'
+    'copy:js_test_cartodb3',
+    'copy:js_deep_insights',
+    'copy:js_test_deep_insights'
   ]);
 
   grunt.registerTask('js_dashboard', [

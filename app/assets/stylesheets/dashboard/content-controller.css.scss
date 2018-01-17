@@ -5,18 +5,20 @@
 // --------------------------------------------------
 
 .ContentController {
-  position: relative;
   display: block;
+  position: relative;
   min-height: 600px;
   margin: 0 auto;
   padding-top: 80px;
   -moz-font-smoothing: antialiased;
   -webkit-font-smoothing: antialiased;
 }
+
 .ContentController.on-boarding {
   min-height: initial;
   padding-top: 0;
 }
+
 .OnpremiseVersion,
 .Hosted {
   .is-hidden {

@@ -115,6 +115,31 @@ describe Synchronization::Member do
 
         member.run
       end
+
+      it 'fails to overwrite tables with views' do
+        url = 'https://wadus.com/guess_country.csv'
+
+        path = fake_data_path('guess_country.csv')
+        stub_download(url: url, filepath: path, content_disposition: false)
+
+        attrs = random_attributes(user_id: @user2.id).merge(service_item_id: url, url: url, name: 'guess_country')
+        member = Synchronization::Member.new(attrs).store
+
+        DataImport.create(
+          user_id: @user2.id,
+          data_source: fake_data_path('guess_country.csv'),
+          synchronization_id: member.id,
+          service_name: 'public_url',
+          service_item_id: url,
+          updated_at: Time.now
+        ).run_import!
+
+        @user2.in_database.execute('CREATE VIEW wadus AS SELECT * FROM guess_country')
+
+        member.run
+        expect(member.state).to eq 'failure'
+        expect(member.error_code).to eq 2013
+      end
     end
   end
 

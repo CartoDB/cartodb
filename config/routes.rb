@@ -61,6 +61,8 @@ CartoDB::Application.routes.draw do
         end
       end
 
+      match '/builder/:id/*other', to: 'visualizations#show', via: :get
+
       resources :datasets, path: '/dataset', only: :show, constraints: { id: /[0-z\.\-]+/ }
     end
 
@@ -549,6 +551,7 @@ CartoDB::Application.routes.draw do
 
   scope module: 'superadmin', defaults: { format: :json } do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
+    get '/superadmin/database_validation' => 'platform#database_validation'
     get '/superadmin/stats/total_users' => 'platform#total_users'
     get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'
     get '/superadmin/stats/total_datasets' => 'platform#total_datasets'
@@ -578,6 +581,11 @@ CartoDB::Application.routes.draw do
       end
 
       resource :metrics, only: [:create]
+
+      resources :api_keys, only: [:create, :destroy, :index, :show], constraints: { id: /[^\/]+/ }
+      scope 'api_keys/:id/token' do
+        post 'regenerate' => 'api_keys#regenerate_token', as: :regenerate_api_key_token
+      end
 
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }

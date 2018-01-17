@@ -1,184 +1,247 @@
 
-  /*
+/*
    * Dropdown for CartoDB
    */
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/box-shadow";
-  @import "compass/css3/border-radius";
-  @import "compass/css3/opacity";
-  @import "../old_common/vars";
+@import "compass/css3/inline-block";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "../old_common/vars";
 
-  div.dropdown {
-    position:absolute;
-    display:none;
-    background:white;
-    @include border-radius(3px);
-    border:none;
-    @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
-    z-index:50;
+div.dropdown {
+  display: none;
+  position: absolute;
+  z-index: 50;
+  border: none;
+  border-radius: 3px;
+  background: WHITE;
+  box-shadow: rgba(#000, 0.2) 0 0 4px 1px;
 
-    &:before {
-      content:' ';
-      position:absolute;
-      display:block!important;
-      width:0;
-      height:0;
-      z-index:10;
+  &::before {
+    content: ' ';
+    display: block !important;
+    position: absolute;
+    z-index: 10;
+    width: 0;
+    height: 0;
+  }
+
+  // Tick for 12 possibilities
+  &.tick_top,
+  &.tick_middle,
+  &.tick_bottom {
+    &.horizontal_left {
+      &::before {
+        left: -5px;
+        border-top: 6px solid transparent;
+        border-right: 6px solid white;
+        border-bottom: 6px solid transparent;
+      }
+    }
+
+    &.horizontal_right {
+      &::before {
+        right: -5px;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 6px solid white;
+      }
+    }
+  }
+
+  &.tick_top::before {
+    top: 12px;
+  }
+
+  &.tick_middle::before {
+    left: 50%;
+    margin-left: -3px;
+  }
+
+  &.tick_bottom::before {
+    bottom: 12px;
+  }
+
+  &.tick_left,
+  &.tick_center,
+  &.tick_right {
+    &.vertical_top {
+      &::before {
+        bottom: -5px;
+        border-top: 6px solid white;
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+      }
+    }
+
+    &.vertical_bottom {
+      &::before {
+        top: -5px;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid white;
+        border-left: 6px solid transparent;
+      }
+    }
+  }
+
+  &.tick_left::before {
+    left: 12px;
+  }
+
+  &.tick_center::before {
+    left: 50%;
+    margin-left: -3px;
+  }
+
+  &.tick_right::before {
+    right: 12px;
+  }
+
+  // With border
+  &.border {
+    $after_color:  rgba(#000, 0.35);
+    border: 1px solid $after_color;
+
+    &::after {
+      content: ' ';
+      display: block !important;
+      position: absolute;
+      z-index: 1;
+      width: 0;
+      height: 0;
     }
 
     // Tick for 12 possibilities
-    &.tick_top, &.tick_middle, &.tick_bottom {
+    &.tick_top,
+    &.tick_middle,
+    &.tick_bottom {
       &.horizontal_left {
-        &:before {
-          left:-5px;
-          border-right:6px solid white;
-          border-top:6px solid transparent;
-          border-bottom:6px solid transparent;
+        &::after {
+          left: -6px;
+          border-top: 6px solid transparent;
+          border-right: 6px solid $after_color;
+          border-bottom: 6px solid transparent;
         }
       }
+
       &.horizontal_right {
-        &:before {
-          right:-5px;
-          border-left:6px solid white;
-          border-top:6px solid transparent;
-          border-bottom:6px solid transparent;
+        &::after {
+          right: -6px;
+          border-top: 6px solid transparent;
+          border-bottom: 6px solid transparent;
+          border-left: 6px solid $after_color;
         }
       }
     }
 
-    &.tick_top:before {top:12px;}
-    &.tick_middle:before {left:50%; margin-left:-3px;}
-    &.tick_bottom:before {bottom:12px;}
+    &.tick_top::after {
+      top: 12px;
+    }
 
+    &.tick_middle::after {
+      left: 50%;
+      margin-top: -3px;
+    }
 
-    &.tick_left, &.tick_center, &.tick_right {
+    &.tick_bottom::after {
+      bottom: 12px;
+    }
+
+    &.tick_left,
+    &.tick_center,
+    &.tick_right {
       &.vertical_top {
-        &:before {
-          bottom:-5px;
-          border-top:6px solid white;
-          border-left:6px solid transparent;
-          border-right:6px solid transparent;
+        &::after {
+          bottom: -6px;
+          border-top: 6px solid $after_color;
+          border-right: 6px solid transparent;
+          border-left: 6px solid transparent;
         }
       }
+
       &.vertical_bottom {
-        &:before {
-          top:-5px;
-          border-bottom:6px solid white;
-          border-left:6px solid transparent;
-          border-right:6px solid transparent;
+        &::after {
+          top: -6px;
+          border-right: 6px solid transparent;
+          border-bottom: 6px solid $after_color;
+          border-left: 6px solid transparent;
         }
       }
     }
 
-    &.tick_left:before {left:12px;}
-    &.tick_center:before {left:50%; margin-left:-3px;}
-    &.tick_right:before {right:12px;}
-
-
-
-    // With border
-    &.border {
-      $after_color: rgba(0,0,0,0.35);
-      border:1px solid $after_color;
-
-      &:after {
-        content:' ';
-        position:absolute;
-        display:block!important;
-        width:0;
-        height:0;
-        z-index:1;
-      }
-
-      // Tick for 12 possibilities
-      &.tick_top, &.tick_middle, &.tick_bottom {
-        &.horizontal_left {
-          &:after {
-            left:-6px;
-            border-right:6px solid $after_color;
-            border-top:6px solid transparent;
-            border-bottom:6px solid transparent;
-          }
-        }
-        &.horizontal_right {
-          &:after {
-            right:-6px;
-            border-left:6px solid $after_color;
-            border-top:6px solid transparent;
-            border-bottom:6px solid transparent;
-          }
-        }
-      }
-
-      &.tick_top:after {top:12px;}
-      &.tick_middle:after {left:50%; margin-top:-3px;}
-      &.tick_bottom:after {bottom:12px;}
-
-
-      &.tick_left, &.tick_center, &.tick_right {
-        &.vertical_top {
-          &:after {
-            bottom:-6px;
-            border-top:6px solid $after_color;
-            border-left:6px solid transparent;
-            border-right:6px solid transparent;
-          }
-        }
-        &.vertical_bottom {
-          &:after {
-            top:-6px;
-            border-bottom:6px solid $after_color;
-            border-left:6px solid transparent;
-            border-right:6px solid transparent;
-          }
-        }
-      }
-
-      &.tick_left:after {left:12px;}
-      &.tick_center:after {left:50%; margin-left:-3px;}
-      &.tick_right:after {right:12px;}
+    &.tick_left::after {
+      left: 12px;
     }
 
-    &.short {
-      width:164px!important;
+    &.tick_center::after {
+      left: 50%;
+      margin-left: -3px;
     }
 
-    &.tiny {
-      width:105px!important;
-    }
-
-    ul {
-      position:relative;
-      @include inline-block();
-      width:100%;
-      margin:0;
-      padding:0;
-      list-style:none;
-      overflow:visible;
-
-      li {
-        display:block;
-        border-top:1px solid rgba(#CCCCCC,0.35);
-
-        a {
-          display:block;
-          padding:13px 13px 15px 13px;
-        }
-
-        &:first-child {@include border-top-radius(3px)}
-        &:last-child {@include border-bottom-radius(3px)}
-
-        &:hover {
-          background:#F7F7F7;
-          a {color:#333333; text-decoration:none}
-        }
-
-        &.disabled {
-          background:white;
-          a {@include opacity(0.4); color:$link-color; text-decoration:none; &:hover {cursor:default;}}
-        }
-      }
-
+    &.tick_right::after {
+      right: 12px;
     }
   }
+
+  &.short {
+    width: 164px !important;
+  }
+
+  &.tiny {
+    width: 105px !important;
+  }
+
+  ul {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    list-style: none;
+    vertical-align: top;
+
+    li {
+      display: block;
+      border-top: 1px solid rgba(#CCC, 0.35);
+
+      a {
+        display: block;
+        padding: 13px 13px 15px;
+      }
+
+      &:first-child {
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+      }
+
+      &:last-child {
+        border-bottom-right-radius: 3px;
+        border-bottom-left-radius: 3px;
+      }
+
+      &:hover {
+        background: #F7F7F7;
+
+        a {
+          color: #333;
+          text-decoration: none;
+        }
+      }
+
+      &.disabled {
+        background: WHITE;
+
+        a {
+          opacity: 0.4;
+          color: $link-color;
+          text-decoration: none;
+
+          &:hover {
+            cursor: default;
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,7 +2,6 @@
 @import "../variables/sizes";
 @import "../variables/colors";
 @import "../variables/progress-bar";
-
 $sIcon: 70px;
 $sWidth: 681px;
 
@@ -10,11 +9,18 @@ $sWidth: 681px;
   // Should match the width as the .Filters-row container has with the current set of tabs,
   // so the content is aligned width the filters' item
   width: $sWidth;
-  margin-left: auto;
   margin-right: auto;
+  margin-left: auto;
 }
-.Georeference-contentItem { margin-top: $sMargin-section }
-.Georeference-geometryIcon { position: relative }
+
+.Georeference-contentItem {
+  margin-top: $sMargin-section;
+}
+
+.Georeference-geometryIcon {
+  position: relative;
+}
+
 .Georeference-geometryIconImg {
   display: block;
   width: $sIcon;
@@ -22,68 +28,89 @@ $sWidth: 681px;
   border: 1px solid $cStructure-mainLine;
   border-radius: 50px;
 }
-.Georeference-geometryIconImg.Georeference-geometryIconImg--point { @include background(image-url("layout/georeference_points2.png") repeat center center) }
+
+.Georeference-geometryIconImg.Georeference-geometryIconImg--point {
+  @include background(image-url("layout/georeference_points2.png") repeat center center);
+}
+
 .Georeference-geometryIconFont {
   width: $sIcon;
   height: $sIcon;
-  font-size: $sIcon;
   color: $cTypography-link;
+  font-size: $sIcon;
 }
+
 .Georeference-geometryIconHighlightIcon {
   position: absolute;
   top: 0;
   right: 0;
 }
+
 .Georeference-geometryIconMarker {
-  position: absolute;
   display: block;
+  position: absolute;
   width: 9px;
   height: 9px;
-  background-color: $cTypography-link;
   border: 1px solid #979797;
   border-radius: 50px;
+  background-color: $cTypography-link;
+
   &.Georeference-geometryIconMarker--a {
-    left: 32px;
     top: 15px;
+    left: 32px;
   }
+
   &.Georeference-geometryIconMarker--b {
-    left: 24px;
     top: 39px;
+    left: 24px;
   }
+
   &.Georeference-geometryIconMarker--c {
-    left: 58px;
     top: 43px;
+    left: 58px;
   }
- }
-.Georeference-geometryIconImg.u-disabled .Georeference-geometryIconMarker { background-color: #DDD }
+}
+
+.Georeference-geometryIconImg.u-disabled .Georeference-geometryIconMarker {
+  background-color: #DDD;
+}
 
 .Georeference-preFooter {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: $sWidth;
-  margin-left: auto;
   margin-right: auto;
+  margin-left: auto;
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
   border-top: 1px solid $cStructure-mainLine;
 }
+
 .Georeference-estimation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 410px; // to keep quota info on 2 lines
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
-  & > *:not(:last-child) { margin-right: $sMargin-elementInline }
+
+  & > *:not(:last-child) {
+    margin-right: $sMargin-elementInline;
+  }
 }
+
 .Georeference-quota {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
   width: 210px;
   height: 40px; // to match .Georeference-estimation
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(flex-end, end);
-  @include justify-content(space-between, justify);
-  & > *:not(:last-child) { margin-bottom: 8px }
+
+  & > *:not(:last-child) {
+    margin-bottom: 8px;
+  }
 }
+
 .Georeference-progressBar {
   @include progress-bar(6px, 9px, true, false);
   position: relative;
@@ -92,14 +119,18 @@ $sWidth: 681px;
   div.progress-bar {
     // Override the defaults from mixin
     background: #EEE;
-    box-shadow: inset 0 1px 0 0 rgba(0,0,0, 0.05);
+    box-shadow: inset 0 1px 0 0  rgba(#000, 0.05);
   }
 }
+
 .Georeference-upgradeFooter {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
   text-align: left;
-  & > *:not(:last-child) { margin-right: $sMargin-elementInline }
+
+  & > *:not(:last-child) {
+    margin-right: $sMargin-elementInline;
+  }
 }

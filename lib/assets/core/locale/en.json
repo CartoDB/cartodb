@@ -222,9 +222,9 @@
       "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
-      "title": "Georeference",
+      "title": "Geocode",
       "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
-      "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
+      "description": "Geocoding data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
     },
     "centroid": {
       "title": "Calculating centroids from geometries",
@@ -325,8 +325,8 @@
       "short-title": "Connect with lines"
     },
     "georeference": {
-      "title": "Georeference",
-      "short-title": "Georeference"
+      "title": "Geocode",
+      "short-title": "Geocode"
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
@@ -526,7 +526,7 @@
     "geocoding": {
       "geocoding-error-details": {
         "close": "close",
-        "description": "There was a problem georeferencing your data",
+        "description": "There was a problem geocoding your data",
         "title": "Geocoding Error",
         "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with your username and the following code:",
         "view-dataset": "view dataset"
@@ -545,7 +545,7 @@
       "geocoding-no-result-details": {
         "close": "close",
         "description": "These rows contained empty values or perhaps we just didn't know what the values meant. We encourage you to take a look and try again.",
-        "title": "No rows were georeferenced",
+        "title": "No rows were geocoded",
         "view-dataset": "view dataset"
       }
     },
@@ -958,7 +958,12 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}.",
+        "geometry-types": {
+          "point": "points",
+          "point,polygon": "points or polygons",
+          "polygon,point": "points or polygons"
+        },
         "unknown-geometry-type": "unknown",
         "more-info": "More info",
         "option-types": {
@@ -979,7 +984,7 @@
             "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
           },
           "georeference": {
-            "title": "Georeference",
+            "title": "Geocode",
             "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "filter-intersection": {
@@ -1117,7 +1122,7 @@
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
             "state-selected-sync": "You can choose when to sync the file.",
-            "state-selected-instagram": "A map containing all your georeferenced photos will be created",
+            "state-selected-instagram": "A map containing all your geocoded photos will be created",
             "state-selected-no-sync": "Sync options are not available.",
             "supported": "supported",
             "try-again": "Try again"
@@ -1490,7 +1495,6 @@
     "published": "Published %{when}",
     "unpublished": "Unpublished map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
-    "button_add": "Add",
     "button_publish": "Publish",
     "unpublished-changes": "Unpublished changes",
     "error-query": {
@@ -1633,6 +1637,10 @@
       "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
+      "add-layer": {
+        "label": "Add new layer",
+        "tooltip": "Add new layer to your map"
+      },
       "breadcrumb": {
         "layer-options": "Layer options",
         "basemap-options": "Basemap options"
@@ -1691,7 +1699,7 @@
         "add-layer": "Add layer",
         "geocode-text": "To show data on this map, geocode your layer.",
         "geocode": "Geocode",
-        "geocode-tooltip": "Geocode to visualize on the map"
+        "geocode-tooltip": "To show data on this map, geocode your layer."
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1729,7 +1737,7 @@
         "data": "Data",
         "analyses": "Analysis",
         "style": "Style",
-        "infowindow": "Pop-up",
+        "popups": "Pop-up",
         "legends": "Legend"
       },
       "infowindow-menu-tab-pane-labels": {
@@ -1940,7 +1948,12 @@
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
-        "placeholder-text": "You have not added any analysis yet. Add an analysis to discover new things.",
+        "placeholder-text": "Analysis allow you to build reproducible workflows for analyzing and explaining your data.",
+        "add-analysis": {
+          "label": "Add new analysis",
+          "tooltip": "Add a new node to your analysis workflow"
+        },
+        "edit-analysis-tooltip": "Edit Analysis",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
@@ -1977,7 +1990,8 @@
           "analysis-type": {
             "routing": "Routing",
             "trade-area": "Trade area",
-            "georeference-street-address": "Georeference street address",
+            "georeference-street-address": "Geocode street address",
+            "georeference-cities": "Geocode cities",
             "data-observatory-measure": "Data Observatory"
           }
         },
@@ -2055,7 +2069,6 @@
         "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
-        "placeholder-geometry": "There's no geometry in your data to add a popup.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
@@ -2114,8 +2127,8 @@
         }
       },
       "georeference": {
-        "no-geometry": "There's no geometry in your data, please georeference it.",
-        "georeference-button": "Georeference",
+        "no-geometry": "There's no geometry in your data, please geocode it.",
+        "georeference-button": "Geocode",
         "visualize": "Layer doesn't have geometry"
       },
       "max-layers-infowindow": {
@@ -2232,7 +2245,8 @@
       },
       "menu-tab-pane-labels": {
         "color": "color",
-        "size": "size"
+        "size": "size",
+        "size-disabled": "Style your layer by value to enable this type of legend"
       },
       "messages": {
         "custom-legend": {
@@ -2328,8 +2342,7 @@
           "title-label-point": "Style",
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
-          "placeholder-text": "There's no geometry in your data that could be styled.",
-          "georeference": "Georeference",
+          "georeference": "Geocode",
           "desc": "Change the visualization"
         },
         "unanimatable": {
@@ -2500,6 +2513,10 @@
       }
     },
     "widgets": {
+      "add-widget": {
+        "label": "Add new widget",
+        "tooltip": "Add new widget to your map"
+      },
       "breadcrumb": {
         "widget-options": "Widget options"
       },

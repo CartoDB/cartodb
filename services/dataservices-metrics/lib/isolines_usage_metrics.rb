@@ -18,7 +18,8 @@ module CartoDB
 
     VALID_SERVICES = [
       :here_isolines,
-      :mapzen_isolines
+      :mapzen_isolines,
+      :mapbox_isolines
     ]
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)

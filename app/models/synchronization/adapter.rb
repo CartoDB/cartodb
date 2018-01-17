@@ -8,6 +8,7 @@ module CartoDB
       STATEMENT_TIMEOUT = (1.hour * 1000).freeze
       DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze
+      OVERWRITE_ERROR = 2013
 
       attr_accessor :table
 
@@ -23,6 +24,7 @@ module CartoDB
           overviews_creator: overviews_creator,
           log: runner.log
         )
+        @error_code = nil
       end
 
       def run(&tracker)
@@ -78,12 +80,13 @@ module CartoDB
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
       rescue => exception
+        @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 
         # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
         result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
                                                             .compact.to_h
-        CartoDB::Logger.error(message: 'Error in sync cartodbfy',
+        CartoDB::Logger.error(message: 'Error in sync overwrite',
                               exception: exception,
                               user: user,
                               table: table_name,
@@ -283,8 +286,6 @@ module CartoDB
 
       def drop(table_name)
         database.execute(%Q(DROP TABLE "#{user.database_schema}"."#{table_name}"))
-      rescue
-        self
       end
 
       def exists?(table_name)
@@ -296,7 +297,7 @@ module CartoDB
       end
 
       def error_code
-        runner.results.map(&:error_code).compact.first
+        @error_code || runner.results.map(&:error_code).compact.first
       end
 
       def runner_log_trace

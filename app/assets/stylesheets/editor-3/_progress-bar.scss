@@ -10,10 +10,11 @@ $height: $baseSize / 2;
 .Progress {
   width: 100%;
   height: $height;
+  overflow: hidden;
   border-radius: $border-radius;
   background: rgba($cMainLine, 0.5);
-  overflow: hidden;
 }
+
 .Progress-bar {
   min-width: 3px;
   max-width: 100%;
@@ -21,9 +22,11 @@ $height: $baseSize / 2;
   border-radius: $border-radius;
   background: $cHighlight;
 }
+
 .Progress-bar--caution {
   background: $cError;
 }
+
 .Progress-bar--alert {
   background: $cAlert;
 }

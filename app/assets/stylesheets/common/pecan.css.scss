@@ -6,107 +6,131 @@
   width: 940px;
   margin: auto;
   padding: 40px 0;
-  overflow: hidden;
   clear: both;
-  border-top: 1px solid #ddd;
+  overflow: hidden;
+  border-top: 1px solid #DDD;
 }
 
 .PecanMap-MapsList {
-  position: relative;
   display: block;
-  margin: 0;
-  padding: 0;
+  position: relative;
   width: 5000px;
   height: 247px;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
   clear: both;
-  @include transition(margin, 150ms);
+  overflow: hidden;
+  transition: margin 150ms;
 }
+
 .PecanMap-MapsList.is--centered {
   margin: auto;
-  @include transition(none);
+  transition: none;
 }
+
 .MapCard-content--small {
   height: 35px;
   padding-top: 18px; // 'Hack' to leave title in the best position
 }
+
 .PecanMap-MapsList .DefaultTitle,
 .PecanMap-MapsList .DefaultTitle a {
-  font-weight: 300;
   color: #999;
+  font-weight: 300;
 }
+
 .PecanMap-MapsList .DefaultTitle strong {
+  color: #666;
   font-weight: normal;
+}
+
+.PecanMap-MapsList .DefaultTitle a:hover {
   color: #666;
 }
-.PecanMap-MapsList .DefaultTitle a:hover { color: #666 }
 
 .PecanMap-navigation {
-  position:absolute;
-  width: 940px;
+  position: absolute;
   z-index: 100000;
+  width: 940px;
 }
+
 .PecanMap-navigation.is-hidden {
-  display:none;
+  display: none;
 }
+
 .PecanMap-navigationButton {
   position: absolute;
   top: 90px;
   padding: 0;
-  line-height: 40px!important;
-  @include transition(opacity, 150ms);
+  transition: opacity 150ms;
+  line-height: 40px !important;
 }
-.PecanMap-navigationButton--prev { left: -80px }
-.PecanMap-navigationButton--next { right: -80px }
+
+.PecanMap-navigationButton--prev {
+  left: -80px;
+}
+
+.PecanMap-navigationButton--next {
+  right: -80px;
+}
+
 .PencaMap-navigationButton.is-disabled:hover {
-   border-color: #ccc;
-   color: #ccc;
+  border-color: #CCC;
+  color: #CCC;
 }
 
 .GalleryList-item.MapsList-item {
-  @include inline-block();
+  display: inline-block;
   margin: 0 20px 0 0;
+  vertical-align: top;
 
   &:last-child {
     margin: 0;
   }
 }
+
 .Pecan-TorqueWirzardIcon {
+  @include background(image-url('layout/pecan_torque_wizard.png') center center);
   position: absolute;
+  z-index: 10;
   top: 49px;
   left: 50%;
   width: 84px;
   height: 84px;
   margin-left: -42px;
-  @include background(image-url('layout/pecan_torque_wizard.png') center center);
-  z-index: 10;
 }
+
 .PecanCard-footer {
   position: relative;
   margin: 0;
   padding: 0;
   border-top: 0;
 }
+
 .NullCount {
+  color: #999;
   font-size: 11px;
   font-style: italic;
-  color: #999999;
-  line-height:0;
+  line-height: 0;
 }
+
 .CategoryList {
-  float:left;
-  padding: 0;
   margin: 0;
-  line-height:0;
+  padding: 0;
+  float: left;
+  line-height: 0;
 }
+
 .CategoryList .CategoryList-item {
-  @include inline-block();
+  display: inline-block;
   width: 5px;
   height: 5px;
-  background:#ddd;
-  border-radius: 50%;
   margin: 0 2px 0 0;
+  border-radius: 50%;
+  background: #DDD;
+  vertical-align: top;
 }
+
 .CategoryList .CategoryList-item:last-child {
   margin: 0;
 }

@@ -10,10 +10,9 @@ module Carto
       def to_poro
         return {} unless @api_key
         {
-          id: @api_key.id,
+          name: @api_key.name,
           user: { username: @api_key.user.username },
           type: @api_key.type,
-          name: @api_key.name,
           token: @api_key.token,
           grants: [
             {

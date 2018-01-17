@@ -6,7 +6,7 @@
     </div>
     <div class="u-bSpace--xl u-flex u-alignCenter">
       <div class="js-dropdown u-rSpace--m"></div>
-      <% if (!isSimple) { %>
+      <% if (isInsideOrg) { %>
         <div class="js-share-users"></div>
       <% } %>
       <p class="Editor-HeaderInfo-publishDate u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><%- published %></p>

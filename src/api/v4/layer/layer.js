@@ -78,6 +78,7 @@ function Layer (source, style, options) {
   this._visible = true;
   this._featureClickColumns = options.featureClickColumns || [];
   this._featureOverColumns = options.featureOverColumns || [];
+  this._aggregation = options.aggregation || {};
 }
 
 Layer.prototype = Object.create(Base.prototype);
@@ -337,7 +338,10 @@ Layer.prototype._createInternalModel = function (engine) {
     visible: this._visible,
     infowindow: _getInteractivityFields(this._featureClickColumns),
     tooltip: _getInteractivityFields(this._featureOverColumns)
-  }, { engine: engine });
+  }, {
+    engine: engine,
+    aggregation: this._aggregation
+  });
 
   internalModel.on('change:meta', function (layer, data) {
     var rules = data.cartocss_meta.rules;

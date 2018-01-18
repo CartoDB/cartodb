@@ -68,19 +68,19 @@
 // Widget media query
 @media (max-width: 759px) {
   .CDB-Map-canvas {
-    @include display-flex();
+    display: flex;
     flex: 2;
   }
 
   .CDB-LayerWidgets-canvas {
-    @include display-flex();
-    @include flex-wrap(nowrap);
     position: relative;
+    display: flex;
+    flex-wrap: nowrap;
   }
 
   .CDB-Widget-canvas .simplebar-content {
-    @include display-flex();
-    @include flex-wrap(nowrap);
+    display: flex;
+    flex-wrap: nowrap;
   }
 
   .CDB-Widget-canvasShadow.is-visible {
@@ -88,7 +88,7 @@
   }
 
   .CDB-Widget-canvasInner {
-    @include display-flex();
+    display: flex;
     position: relative;
   }
 

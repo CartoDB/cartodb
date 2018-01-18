@@ -21,7 +21,9 @@
     <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-small"></i>
   </div>
 
-  <div class="CDB-Text CDB-Size-medium js-analysis-name">
+  <div class="VerticalRadioList-label CDB-Text CDB-Size-medium js-analysis-name">
     <%- name %>
   </div>
+
+  <%= linkContent %>
 </div>

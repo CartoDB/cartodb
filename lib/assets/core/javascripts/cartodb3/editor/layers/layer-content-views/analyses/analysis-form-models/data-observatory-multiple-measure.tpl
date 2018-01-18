@@ -6,7 +6,7 @@
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.data-observatory.header.title') %></h2>
       </div>
       <div class="Editor-HeaderInfo-subtitle u-bSpace--m">
-        <%= linkContent %><p class="CDB-Text CDB-FontSize-small u-upperCase u-altTextColor"><%- _t('editor.layers.analysis-form.data-observatory.header.description') %></p>
+        <p class="CDB-Text CDB-FontSize-small u-upperCase u-altTextColor"><%- _t('editor.layers.analysis-form.data-observatory.header.description') %></p>
       </div>
     </div>
   </div>

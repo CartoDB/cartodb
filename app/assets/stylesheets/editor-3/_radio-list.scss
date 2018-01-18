@@ -38,9 +38,14 @@
   display: flex;
 }
 
+.VerticalRadioList-label {
+  flex: 1;
+}
+
 .VerticalRadioList-itemInner {
   display: flex;
   align-items: center;
+  width: 100%;
 
   > * {
     line-height: 1;

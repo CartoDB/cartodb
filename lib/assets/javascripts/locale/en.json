@@ -2046,15 +2046,14 @@
         "find-nearest": {
           "categorized": "Per group",
           "categorized-help": "Calculate results per each category of the chosen column",
-          "criteria": "Select the target point layer",
-          "define-params": "Define your parameters",
-          "define-params-desc": "Define and categorize the number of results",
+          "criteria": "Target can be a layer or a dataset",
           "input": "input",
           "max-results": "max results",
           "modal-desc": "Select points from second dataset nearest to the geometries in current layer.",
           "modal-title": "Find Nearest",
           "target": "target",
-          "title": "Nearest"
+          "title": "Select your points",
+          "workflow-title": "Find Nearest"
         },
         "neighbors": "Neighbors",
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",

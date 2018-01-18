@@ -309,16 +309,7 @@ $maxLegendContainerHeight: 300px;
   width: 100px;
   height: 100px;
 }
-.Bubble-list::before {
-  position: absolute;
-  right: 50%;
-  bottom: 0;
-  width: 140px;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.08);
-  content: '';
-  visibility: visible;
-}
+
 .Bubble-item {
   @include opacity(0.5);
   @include transform(translateX(-50%));
@@ -330,7 +321,7 @@ $maxLegendContainerHeight: 300px;
 .Bubble-container {
   @include display-flex();
   max-height: 100px;
-  padding-top: 3px;
+  padding-top: 10px;
   padding-bottom: 8px;
 }
 .Bubble-itemCircle {
@@ -344,36 +335,51 @@ $maxLegendContainerHeight: 300px;
   box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
-.Bubble-item::before {
-  position: absolute;
-  top: 5px;
-  right: 50%;
-  width: 140px;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.08);
-  content: '';
-}
+
 .Bubble-list--custom::before,
 .Bubble-item--custom::before {
   visibility: hidden;
 }
+
 .Bubble-numbers {
   position: relative;
+  width: 100%;
 }
+
 .Bubble-numbersItem {
   position: absolute;
-  margin-bottom: -11px; /* to review */
+  margin-bottom: -6px;
   padding-right: $baseSize * 2;
-  background: rgba(#FFF, 0.8);
   z-index: 10;
+  width: 100%;
+
   &:last-child {
     background: #FFF;
   }
+
+  &::after {
+    position: absolute;
+    bottom: 5px;
+    width: calc(100% + 35px);
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+    content: '';
+    visibility: visible;
+    z-index: -1;
+    left: 0;
+  }
 }
+
+.Bubble-numbersItem-value {
+  padding-right: 8px;
+  background: white;
+}
+
 .Bubble-inner {
   @include display-flex();
   position: relative;
 }
+
 .Bubble-average {
   @include transform(translateY(50%));
   display: block;
@@ -382,6 +388,7 @@ $maxLegendContainerHeight: 300px;
   white-space: nowrap;
   z-index: 1000;
 }
+
 .Bubble-average::after {
   display: block;
   position: absolute;

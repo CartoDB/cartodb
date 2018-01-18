@@ -81,6 +81,10 @@ module.exports = {
     'non-matching-server-url': {
       messageRegex: /serverURLDoesntMatchUsername/,
       friendlyMessage: "serverUrl doesn't match the username."
+    },
+    'duplicated-layer-id': {
+      messageRegex: /duplicatedLayerId/,
+      friendlyMessage: 'A layer with the same ID already exists in the client.'
     }
   },
   dataview: {

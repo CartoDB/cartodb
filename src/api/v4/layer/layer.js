@@ -32,6 +32,7 @@ var metadataParser = require('./metadata/parser');
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
  * @param {carto.layer.Aggregation} [options.aggregation={}] - Specify {@link carto.layer.Aggregation|aggregation } options
+ * @param {string} [options.id] - An unique identifier for the layer
  * @fires metadataChanged
  * @fires featureClicked
  * @fires featureOut
@@ -63,6 +64,8 @@ var metadataParser = require('./metadata/parser');
  * @api
  */
 function Layer (source, style, options) {
+  Base.apply(this, arguments);
+
   options = options || {};
 
   _checkSource(source);
@@ -77,8 +80,6 @@ function Layer (source, style, options) {
   this._featureClickColumns = options.featureClickColumns || [];
   this._featureOverColumns = options.featureOverColumns || [];
   this._aggregation = options.aggregation || {};
-
-  Base.apply(this, arguments);
 }
 
 Layer.prototype = Object.create(Base.prototype);

@@ -9,7 +9,7 @@
         <p class="CDB-Text CDB-FontSize-small u-upperCase u-altTextColor"><%- _t('editor.layers.analysis-form.georeference.description') %></p>
       </div>
       <div class="u-tSpace-xl CDB-Text CDB-Fieldset">
-        <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.source') %></p>
+        <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.base-layer') %></p>
         <div class="Editor-formInput u-ellipsis" data-editors="source"></div>
       </div>
       <div class="u-tSpace-xl CDB-Text CDB-Fieldset">

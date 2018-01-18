@@ -516,7 +516,7 @@
       "short-title": "Bounding Circle"
     },
     "area-of-influence": {
-      "title": "Create Travel/Distance Buffers",
+      "title": "Create Travel or Distance Buffers",
       "short-title": "Buffer"
     },
     "filter-intersection": {
@@ -2137,7 +2137,6 @@
         "show": "Show",
         "significance": "Significance",
         "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
-        "source": "Base layer",
         "source-col": "Source col.",
         "source-column": "Base column",
         "spatial-markov-trend-desc": "select a column for each time period",

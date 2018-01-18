@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Fix marker bugs (#1207)
 * Add routing to widgets
 * When editing a widget, disable the other ones (#13374)
 * Back button support (#13115)
@@ -111,13 +112,17 @@ ion for time-series (#12670)
   * Token regeneration (#13321)
   * Keys listing (#13327)
   * Header authentication (#13329)
+  * Keep API Key permissions up to date when tables change (#13333)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
+* Updates Dataservices API client default version to `0.23.0`
 * Added Mapbox services providers (#cartodb-platform/3835)
+* Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
 * Improve onboarding for when user adds an empty layer (#11876)
+* Don't show the publish modal when the user clicks on the privacy button (#13366)
 * Add auth tokens to dependent visualizations (#13394)
 * Logged in organization user gets redirected to dashboard [#11832](https://github.com/CartoDB/cartodb/issues/11832)
 * Redirect to login from static pages if there is no user (#13277)
@@ -129,6 +134,7 @@ ion for time-series (#12670)
 * Show tooltips only if the target element is visible (#12098)
 * Consolidate DeepInsight components in Builder (#13271)
 * Unify tooltip style (#13194)
+* Correctly log ogr2ogr generic errors (#13401)
 * Remove card's hover state when hovering the dataset/node inside (#13316)
 * Data Observatory analysis is not working (CartoDB/support#1239)
 * Use zoomToData only if the layer is created from a dataset (#13309)
@@ -177,6 +183,7 @@ ion for time-series (#12670)
 * Remove back arrow and add a tooltip to editor logo (#13067)
 + Track user events (#13051)
 * Fix dashboard redirections (#12775)
+* Fix Dropbox reconnection on token expiration (#13410)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
 * Documentation, fixed spelling and grammar in en.json
@@ -188,6 +195,7 @@ ion for time-series (#12670)
 * Supporting text-placement for labels (CartoDB/support#13015)
 * Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
+* Update styles for oauth buttons (#13412)
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.
 * Show map options when selecting a map in search view

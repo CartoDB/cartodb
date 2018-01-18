@@ -12,8 +12,9 @@ var Backbone = require('backbone');
  * @memberof carto.layer
  * @api
  */
-function Base () {
-  this._id = Base.$generateId();
+function Base (source, layer, options) {
+  options = options || {};
+  this._id = options.id || Base.$generateId();
 }
 
 _.extend(Base.prototype, Backbone.Events);

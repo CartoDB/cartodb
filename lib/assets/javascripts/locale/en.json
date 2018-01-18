@@ -1888,7 +1888,7 @@
         "choose-similar-columns": "Choose similar columns to relate them",
         "centroid-desc": "Group or weight your centroids",
         "city": "City",
-        "clusters-num": "# of clusters",
+        "clusters-num": "Clusters",
         "closeness": "Closeness",
         "column": "Column",
         "concave-hull": "Concave Hull",

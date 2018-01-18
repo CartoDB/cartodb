@@ -78,6 +78,14 @@ function optionsForMapnikLayer (layerModel) {
     };
   }
 
+  if (isFinite(layerModel.get('minzoom'))) {
+    options.minzoom = layerModel.get('minzoom');
+  }
+
+  if (isFinite(layerModel.get('maxzoom'))) {
+    options.maxzoom = layerModel.get('maxzoom');
+  }
+
   if (!_.isEmpty(layerModel.aggregation)) {
     _.extend(options, {
       aggregation: layerModel.aggregation

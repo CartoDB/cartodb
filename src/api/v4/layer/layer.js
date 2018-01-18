@@ -78,6 +78,8 @@ function Layer (source, style, options) {
   this._visible = true;
   this._featureClickColumns = options.featureClickColumns || [];
   this._featureOverColumns = options.featureOverColumns || [];
+  this._minzoom = options.minzoom || 0;
+  this._maxzoom = options.maxzoom || undefined;
   this._aggregation = options.aggregation || {};
 }
 
@@ -337,7 +339,9 @@ Layer.prototype._createInternalModel = function (engine) {
     cartocss: this._style.getContent(),
     visible: this._visible,
     infowindow: _getInteractivityFields(this._featureClickColumns),
-    tooltip: _getInteractivityFields(this._featureOverColumns)
+    tooltip: _getInteractivityFields(this._featureOverColumns),
+    minzoom: this._minzoom,
+    maxzoom: this._maxzoom
   }, {
     engine: engine,
     aggregation: this._aggregation

@@ -500,7 +500,7 @@
       "short-title": "Create Polygons"
     },
     "convex-hull": {
-      "title": "Convex Hull",
+      "title": "Create Polygons from Points",
       "short-title": "Convex Hull"
     },
     "concave-hull": {

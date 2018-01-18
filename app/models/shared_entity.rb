@@ -32,6 +32,10 @@ module CartoDB
       self.updated_at = Time.now
     end
 
+    def entity
+      @entity ||= CartoDB::Visualization::Member.new(id: entity_id).fetch
+    end
+
   end
 
 end

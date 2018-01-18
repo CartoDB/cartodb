@@ -32,8 +32,14 @@
   }
 }
 
-.Share-with.is-hidden {
-  display: none;
+.Share-with {
+  &.is-hidden {
+    display: none;
+  }
+
+  &.is-pointer {
+    cursor: pointer;
+  }
 }
 
 .Share-user {

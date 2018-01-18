@@ -131,6 +131,7 @@ $buttonColor: #636D72;
   @include transition(width, 100ms ease-in);
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 32px;
   height: 100%;
   overflow: hidden;

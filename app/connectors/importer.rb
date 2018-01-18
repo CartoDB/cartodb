@@ -85,7 +85,12 @@ module CartoDB
         overwrite = overwrite_strategy? && taken_names.include?(name)
 
         if overwrite
-          overwrite_register(result,name)
+          raise ::CartoDB::Importer2::IncompatibleSchemas.new unless compatible_schemas_for_overwrite?(name)
+          move_to_schema(result, result.table_name, ORIGIN_SCHEMA, @destination_schema)
+          overwrite_register(result, name) do
+            drop("\"#{@destination_schema}\".\"#{name}\"")
+            rename(result, result.table_name, name, @destination_schema)
+          end
         else
           new_register(name, result)
         end
@@ -265,27 +270,13 @@ module CartoDB
         @data_import ||= DataImport[@data_import_id]
       end
 
-      def overwrite_register(result, name, from_query: nil)
-        if from_query.nil?
-          raise ::CartoDB::Importer2::IncompatibleSchemas.new unless compatible_schemas_for_overwrite?(name)
-          move_to_schema(result, result.table_name, ORIGIN_SCHEMA, @destination_schema)
-        end
-
+      def overwrite_register(result, name)
         index_statements = @table_setup.generate_index_statements(@destination_schema, name)
 
         database.transaction do
           log("Replacing #{name} with #{result.table_name}")
           begin
-            if from_query.nil?
-              drop("\"#{@destination_schema}\".\"#{name}\"")
-              rename(result, result.table_name, name, @destination_schema)
-            else
-              database.execute(%{CREATE TABLE #{result.table_name} AS #{from_query}})
-              drop("\"#{@destination_schema}\".\"#{name}\"")
-              database.execute(%{
-                ALTER TABLE "#{@destination_schema}"."#{result.table_name}" RENAME TO "#{name}"
-              })
-            end
+            yield(database, @destination_schema)
           rescue => e
             log("Unable to replace #{name} with #{result.table_name}. Rollingback transaction and dropping #{result.table_name}: #{e}")
             drop("\"#{@destination_schema}\".\"#{result.table_name}\"")

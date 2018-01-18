@@ -542,12 +542,17 @@ class DataImport < Sequel::Model
   end
 
   def overwrite_table_from_query(new_table_name, overwrite_table_name, query)
-    importer, = new_importer_runner(nil, nil, nil)
+    importer = new_importer_with_unused_runner
     importer.overwrite_register(
       CartoDB::Importer2::Result.new(tables: [new_table_name]),
-      overwrite_table_name,
-      from_query: query
-    )
+      overwrite_table_name
+    ) do |database, schema|
+      database.execute(%{CREATE TABLE #{new_table_name} AS #{query}})
+      importer.drop("\"#{schema}\".\"#{overwrite_table_name}\"")
+      database.execute(%{
+        ALTER TABLE "#{schema}"."#{new_table_name}" RENAME TO "#{overwrite_table_name}"
+      })
+    end
   end
 
   def overwrite_strategy?
@@ -703,7 +708,7 @@ class DataImport < Sequel::Model
 
       unp = CartoDB::Importer2::Unp.new(Cartodb.config[:importer], Cartodb.config[:ogr2ogr])
 
-      importer, runner = new_importer_runner(downloader, unp, post_import_handler)
+      importer, runner = new_importer_with_runner(downloader, unp, post_import_handler)
     end
 
     [importer, runner, datasource_provider, manual_fields]
@@ -751,7 +756,7 @@ class DataImport < Sequel::Model
   # This methods returns an array with two elements:
   # * importer: the new importer (nil if download errors detected)
   # * runner: the runner that the importer uses
-  def new_importer_runner(downloader, unpacker, post_import_handler)
+  def new_importer_with_runner(downloader, unpacker, post_import_handler)
     runner = CartoDB::Importer2::Runner.new(
       pg: pg_options,
       downloader: downloader,
@@ -784,6 +789,15 @@ class DataImport < Sequel::Model
     )
 
     [importer, runner]
+  end
+
+  # Create an Importer object with a runner that it's not able to fetch data.
+  # This method is useful when you just need some logic from the Importer class
+  # This methods returns an array with two elements:
+  # * importer: the new importer (nil if download errors detected)
+  def new_importer_with_unused_runner
+    importer, runner = new_importer_with_runner(nil, nil, nil)
+    importer
   end
 
   # Run importer, store results and return success state.

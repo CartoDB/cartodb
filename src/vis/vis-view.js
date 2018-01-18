@@ -66,6 +66,17 @@ var Vis = View.extend({
     });
 
     this.$el.append(this._legendsView.render().$el);
+
+    var embedLegends = $('.js-embed-legends');
+
+    if (embedLegends.length) {
+      this._embedLegendsView = new LegendsView({
+        layersCollection: this.model.map.layers,
+        settingsModel: this.settingsModel
+      });
+
+      embedLegends.append(this._embedLegendsView.render().$el);
+    }
   },
 
   _cleanLegendsView: function () {

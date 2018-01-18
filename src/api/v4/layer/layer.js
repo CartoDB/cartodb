@@ -31,8 +31,6 @@ var metadataParser = require('./metadata/parser');
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
- * @param {number} [options.minzoom=0 - The minimal zoom the layer will be rendered
- * @param {number} [options.maxzoom=undefined - The max zoom the layer will be rendered
  * @fires metadataChanged
  * @fires featureClicked
  * @fires featureOut

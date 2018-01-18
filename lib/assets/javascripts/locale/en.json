@@ -2123,7 +2123,7 @@
         "right": "Right",
         "sampling": "Sampling",
         "sampling-desc": "Select a sample of the data",
-        "sampling-rate": "% of data ",
+        "sampling-rate": "Percent of data ",
         "search-by-column-name": "Search by column name",
         "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",

@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var LayerTypes = require('../../../geo/map/layer-types.js');
 
 var DEFAULT_CARTOCSS_VERSION = '2.1.0';
@@ -83,6 +84,12 @@ function optionsForMapnikLayer (layerModel) {
 
   if (isFinite(layerModel.get('maxzoom'))) {
     options.maxzoom = layerModel.get('maxzoom');
+  }
+
+  if (!_.isEmpty(layerModel.aggregation)) {
+    _.extend(options, {
+      aggregation: layerModel.aggregation
+    });
   }
 
   return {

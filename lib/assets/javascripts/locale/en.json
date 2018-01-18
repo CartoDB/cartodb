@@ -1863,7 +1863,6 @@
       "analysis-form": {
         "admin-region": "Administrative Regions",
         "aggregate": "Aggregate",
-        "aggregate-by": "Aggregate by",
         "aggregate-by-help": "Will calculate aggregate values for each centroid",
         "aggregate-column": "Aggregate column",
         "all-to-all": "All to all",
@@ -1887,6 +1886,7 @@
         "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
         "choose-similar-columns": "Choose similar columns to relate them",
+        "centroid-desc": "Group or weight your centroids",
         "city": "City",
         "clusters-num": "# of clusters",
         "column": "Column",

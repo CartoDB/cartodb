@@ -1945,8 +1945,6 @@
         "define-how-connect-points": "Define how to connect your points",
         "define-two-layers": "Define two layers",
         "delete-btn": "Delete",
-        "denominator": "Denominator",
-        "denominator-help": "A column to normalize the target column",
         "deprecated-sql-function": {
           "choose-function": "Choose the function to run on this node",
           "choose-function-small": "Choose function",
@@ -1965,6 +1963,7 @@
         "distance": "Distance",
         "enter-latitude": "Enter latitude",
         "enter-longitude": "Enter longitude",
+        "enable-normalize": "Enable Normalize",
         "filter": "Filter",
         "filter-aggregate": "Aggregate your results",
         "filter-column": "Target column",
@@ -2041,6 +2040,7 @@
         "min-or-equal": "Min or equal",
         "min": "Min",
         "mode": "Mode",
+        "moran-desc": "Find spatially clustered values and outliers",
         "more-info": "Info",
         "find-nearest": {
           "categorized": "Per group",
@@ -2058,6 +2058,8 @@
         "neighbors": "Neighbors",
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",
+        "normalize": "Normalize",
+        "normalize-help": "A column to normalize the target column",
         "should-match": "Column types should match",
         "numerator": "Target column",
         "numerator-help": "Measure spatial autocorrelation of this column",

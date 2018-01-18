@@ -3,6 +3,6 @@
 </header>
 <div class="js-tabs"></div>
 <div class="CDB-Embed-content">
-  <div class="js-map" id="map"></div>
-  <div class="js-legends"></div>
+  <div class="js-embed-map" id="map"></div>
+  <div class="CDB-Embed-legends js-embed-legends js-embed-legends-container"></div>
 </div>

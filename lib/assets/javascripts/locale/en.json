@@ -2029,6 +2029,7 @@
         "linked-layer": "Target layer",
         "loading": "loading…",
         "longitude": "Longitude",
+        "markov-desc": "One for each time period",
         "max-or-equal": "Max or equal",
         "max": "Max",
         "measure-by": "Measure by",
@@ -2130,6 +2131,7 @@
         "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",
         "select-type-placeholder": "Select a type",
+        "select-columns": "Select columns",
         "select-data-source": "Select a data source",
         "select-layer": "Select a layer",
         "select-second-source": "Select a second data source to join",
@@ -2141,8 +2143,8 @@
         "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
         "source-col": "Base col.",
         "source-column": "Base column",
-        "spatial-markov-trend-desc": "select a column for each time period",
-        "spatial-markov-trend-time-columns": "Input columns",
+        "spatial-markov-trend-desc": "One for each time period",
+        "spatial-markov-trend-time-columns": "Base columns",
         "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
         "sampling-form-model": {
           "help": "% of data to show"

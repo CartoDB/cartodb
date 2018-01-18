@@ -1,4 +1,5 @@
 @import 'compass/css3/border-radius';
+
 @font-face {
   font-family: 'Roboto Medium';
   font-style: normal;
@@ -8,8 +9,8 @@
 
 .Sessions-oauthHeader {
   padding-top: 16px;
-  font-weight: 600;
   font-size: 12px;
+  font-weight: 600;
 }
 
 .Sessions-oauthContainer {
@@ -26,29 +27,27 @@
 }
 
 .Sessions-oauthButton {
+  flex: 1;
   width: 100%;
   min-width: 156px;
   max-width: 320px;
   height: 40px;
-  line-height: 40px;
-  flex: 1;
-
-  transition: all .15s;
-
   padding-left: 52px;
-  vertical-align: text-bottom;
+  transition: all 0.15s;
 
-  background: #FFF;
-  color: #757575;
   @include border-radius(4px);
   border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #FFF;
   box-shadow: 0 0.5px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
+  color: #757575;
   font-family: 'Roboto Medium', sans-serif;
+  line-height: 40px;
+  vertical-align: text-bottom;
+  cursor: pointer;
 
   &:hover {
+    box-shadow: 0 0 3px 3px rgba(66, 133, 244, 0.3);
     text-decoration: none;
-    box-shadow: 0 0 3px 3px rgba(66, 133, 244, 0.3)
   }
 }
 

@@ -44,10 +44,16 @@ var PathBase = GeometryBase.extend({
   },
 
   _createPoint: function (latlng) {
-    return new Point({
+    var point = new Point({
       latlng: latlng,
       editable: this.isEditable()
     });
+
+    point.once('dblclick', function (event) {
+      this.removePoint(point);
+    }, this);
+
+    return point;
   },
 
   addPoint: function (point, options) {

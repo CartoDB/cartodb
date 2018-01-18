@@ -796,7 +796,7 @@ class DataImport < Sequel::Model
   # This methods returns an array with two elements:
   # * importer: the new importer (nil if download errors detected)
   def new_importer_with_unused_runner
-    importer, runner = new_importer_with_runner(nil, nil, nil)
+    importer, = new_importer_with_runner(nil, nil, nil)
     importer
   end
 

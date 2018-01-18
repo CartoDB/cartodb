@@ -1697,6 +1697,7 @@
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
         "add-layer": "Add layer",
+        "empty-layer": "Empty layer",
         "geocode-text": "To show data on this map, geocode your layer.",
         "geocode": "Geocode",
         "geocode-tooltip": "To show data on this map, geocode your layer."
@@ -2127,7 +2128,6 @@
         }
       },
       "georeference": {
-        "no-geometry": "There's no geometry in your data, please geocode it.",
         "georeference-button": "Geocode",
         "visualize": "Layer doesn't have geometry"
       },
@@ -2154,7 +2154,10 @@
       }
     },
     "data": {
-      "no-geometry-data": "Your dataset doesn't contain any geometry data.",
+      "no-geometry-data": {
+        "message": "This layer is empty. Add data to start working.",
+        "action-message": "Click the blue button on the bottom right to add points (%{pointIcon}), lines (%{lineIcon}) or polygon (%{polygonIcon})."
+      },
       "stats": {
         "add-widget": "Add as a widget",
         "edit": "EDIT",

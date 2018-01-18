@@ -348,10 +348,10 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-numbersItem {
   position: absolute;
+  width: 100%;
   margin-bottom: -6px;
   padding-right: $baseSize * 2;
   z-index: 10;
-  width: 100%;
 
   &:last-child {
     background: #FFF;
@@ -360,19 +360,19 @@ $maxLegendContainerHeight: 300px;
   &::after {
     position: absolute;
     bottom: 5px;
+    left: 0;
     width: calc(100% + 35px);
     height: 1px;
     background: rgba(0, 0, 0, 0.08);
     content: '';
     visibility: visible;
     z-index: -1;
-    left: 0;
   }
 }
 
 .Bubble-numbersItem-value {
   padding-right: 8px;
-  background: white;
+  background: #fff;
 }
 
 .Bubble-inner {

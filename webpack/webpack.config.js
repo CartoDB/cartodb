@@ -10,6 +10,7 @@ module.exports = {
     library: 'carto',
     libraryTarget: 'umd'
   },
+  devtool: 'sourcemap',
   plugins: [
     // Include only the lastest camshaft-reference
     new webpack.IgnorePlugin(/^\.\/((?!0\.59\.4).)*\/reference\.json$/),

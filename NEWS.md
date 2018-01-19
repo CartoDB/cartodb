@@ -122,6 +122,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Fix publish modal in settings view (#13418)
 * Improve onboarding for when user adds an empty layer (#11876)
 * Don't show the publish modal when the user clicks on the privacy button (#13366)
 * Add auth tokens to dependent visualizations (#13394)

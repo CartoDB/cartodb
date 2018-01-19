@@ -141,10 +141,6 @@ $buttonColor: #636D72;
   height: 100%;
   overflow: hidden;
 
-  &:hover {
-    background: rgba($cBlue, 0.08);
-  }
-
   &.is-active {
     width: 152px;
 
@@ -163,6 +159,12 @@ $buttonColor: #636D72;
   width: 32px;
   height: 32px;
   color: $buttonColor;
+
+  &:hover {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    background: rgba($cBlue, 0.08);
+  }
 }
 .CDB-Search-text {
   transition: all 150ms ease-in;

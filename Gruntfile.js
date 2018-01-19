@@ -485,7 +485,7 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('dashboard_specs', 'Build only dashboard specs', [
     'connect:test',
-    'beforeDefault',
+    'js_builder',
     'js_dashboard',
     'generate_dashboard_specs',
     'bootstrap_webpack_dashboard_specs',

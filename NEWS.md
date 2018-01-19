@@ -122,6 +122,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Add routing to analyses nodes (#13364)
+* Improve onboarding for when user adds an empty layer (#11876)
 * Don't show the publish modal when the user clicks on the privacy button (#13366)
 * Add auth tokens to dependent visualizations (#13394)
 * Logged in organization user gets redirected to dashboard [#11832](https://github.com/CartoDB/cartodb/issues/11832)

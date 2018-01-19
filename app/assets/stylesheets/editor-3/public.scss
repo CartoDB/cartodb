@@ -37,7 +37,9 @@
 }
 
 .CDB-Embed-tab {
-  display: none;
+  &:not(.is-active) {
+    display: none !important;
+  }
 
   &.is-active {
     display: flex;

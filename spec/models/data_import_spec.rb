@@ -120,11 +120,23 @@ describe DataImport do
 
   it 'should overwrite dataset with query if collision_strategy is set to overwrite' do
     # overwriting from a sql is a different case needs to be tackled -> https://github.com/CartoDB/cartodb/issues/13139
+    carto_user = Carto::User.find(@user.id)
+    carto_user.visualizations.count.should eq 1
+
+    data_import = create_import(overwrite: false, truncated: false)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+    user_tables_should_be_registered
+
     query = 'select * from walmart_latlon limit 1'
     data_import = create_import_from_query(overwrite: true, from_query: query)
     data_import.run_import!
     carto_user.reload
-    carto_user.visualizations.count.should eq 3
+    carto_user.visualizations.count.should eq 2
     data_import.state.should eq 'complete'
     data_import.table_name.should eq 'walmart_latlon'
     data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 1

@@ -377,6 +377,8 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('dashboard', [
+    'beforeDefault',
+    'js_builder',
     'js_dashboard',
     'css',
     'manifest',

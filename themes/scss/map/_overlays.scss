@@ -113,6 +113,9 @@ $buttonColor: #636D72;
   margin-right: 8px;
 
   .CDB-Shape-magnify {
+    width: 32px;
+    height: 32px;
+
     &::before {
       top: 11px;
       left: 10px;
@@ -120,9 +123,13 @@ $buttonColor: #636D72;
     }
 
     &::after {
-      right: 13px;
+      left: 17px;
       bottom: 10px;
       background: #636D72;
+    }
+
+    .is-small::after {
+      left: 17px;
     }
   }
 }
@@ -130,8 +137,6 @@ $buttonColor: #636D72;
 .CDB-Search-inner {
   @include transition(width, 100ms ease-in);
   display: flex;
-  align-items: center;
-  justify-content: center;
   width: 32px;
   height: 100%;
   overflow: hidden;
@@ -148,7 +153,7 @@ $buttonColor: #636D72;
     }
 
     .CDB-Search-text {
-      display: block;
+      visibility: visible;
       opacity: 1;
     }
   }
@@ -160,9 +165,9 @@ $buttonColor: #636D72;
   color: $buttonColor;
 }
 .CDB-Search-text {
-  @include transition(opacity, 150ms ease-in);
-  display: none;
+  transition: all 150ms ease-in;
   width: 100px;
+  visibility: hidden;
   padding: 0 0 0 8px;
   border: 0;
   border-left: 1px solid #F8F8F8;

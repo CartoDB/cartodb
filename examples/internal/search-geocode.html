@@ -31,10 +31,6 @@
         }
     </style>
     <style>
-        #map {
-            height: calc(100% - 55px);
-        }
-
         nav {
             padding: 15px;
             display: flex;
@@ -56,7 +52,8 @@
             background-color: #1785FB;
             border-radius: 3px;
         }
-        .CDB-OverlayContainer{
+
+        .CDB-OverlayContainer {
             z-index: 999;
         }
     </style>
@@ -74,17 +71,7 @@
     </script>
 </head>
 
-<body>
-    <nav>
-        <input list="examples" type="text" name="url" onchange="loadVizJson(document.querySelector('input').value)">
-        <datalist id="examples">
-            <option value="000.json" />
-            <option value="001.json" />
-            <option value="002.json" />
-            <option value="003.json" />
-        </datalist>
-        <button onclick="loadVizJson(document.querySelector('input').value)" type="button">LOAD VIZ</button>
-    </nav>
+<body onload="loadVizJson('003.json')">
     <div id="map"></div>
 </body>
 

@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Search = require('../../../../src/geo/ui/search/search');
-var MAPZEN = require('../../../../src/geo/geocoder/mapzen-geocoder');
+var geocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 
@@ -50,7 +50,7 @@ describe('geo/ui/search', function () {
         },
         type: undefined
       };
-      MAPZEN.geocode = function (address, callback) {
+      geocoder.geocode = function (address, callback) {
         var result = [ self.result ];
         callback(result);
       };
@@ -59,9 +59,9 @@ describe('geo/ui/search', function () {
     });
 
     it('should search with geocoder when form is submit', function () {
-      spyOn(MAPZEN, 'geocode');
+      spyOn(geocoder, 'geocode');
       this.view.$('.js-form').submit();
-      expect(MAPZEN.geocode).toHaveBeenCalled();
+      expect(geocoder.geocode).toHaveBeenCalled();
     });
 
     it('should change map center when geocoder returns any result', function () {

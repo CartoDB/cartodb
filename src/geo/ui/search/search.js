@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var View = require('../../../core/view');
-var MAPZEN = require('../../../geo/geocoder/mapzen-geocoder');
+var geocoder = require('../../../geo/geocoder/mapbox-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
 var Infowindow = require('../../../geo/ui/infowindow-view');
 var Point = require('../../../geo/geometry-models/point.js');
@@ -72,7 +72,7 @@ var Search = View.extend({
     // Remove previous pin without any timeout (0 represents the timeout for
     // the animation)
     this._destroySearchPin(0);
-    MAPZEN.geocode(address, function (places) {
+    geocoder.geocode(address, function (places) {
       self._onResult(places);
     });
   },

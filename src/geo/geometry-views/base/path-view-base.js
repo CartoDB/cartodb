@@ -101,6 +101,7 @@ var PathViewBase = GeometryViewBase.extend({
     var mapView = this.mapView;
     return _.map(coordinates.slice(0, -1), function (latLngA, index) {
       var latLngB = coordinates[index + 1];
+
       return new Point({
         latlng: computeMidLatLng(mapView, latLngA, latLngB),
         editable: true,
@@ -111,14 +112,21 @@ var PathViewBase = GeometryViewBase.extend({
 
   _renderMiddlePoint: function (point, index) {
     var pointView = this._createPointView(point);
+
+    point.once('dblclick', function (point) {
+      this.model.removePoint(point);
+    }.bind(this));
+
     this._middlePointViews[point.cid] = pointView;
     pointView.render();
+
     pointView.once('mousedown', function (point) {
       this._middlePointViewForNewPoint = pointView;
 
       // Add the coordinates of the new point to the path
       this.model.addPoint(point, { at: index + 1 });
     }.bind(this));
+
     this.addView(pointView);
   },
 
@@ -133,6 +141,7 @@ var PathViewBase = GeometryViewBase.extend({
       model: point,
       mapView: this.mapView
     });
+
     return pointView;
   },
 

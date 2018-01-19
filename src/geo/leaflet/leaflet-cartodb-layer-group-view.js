@@ -95,12 +95,12 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
       this._reloadInteraction();
     },
 
-    _manageOffEvents: function (nativeMap, waxEvent) {
-      this._onFeatureOut(waxEvent.layer);
+    _manageOffEvents: function (nativeMap, zeraEvent) {
+      this._onFeatureOut(zeraEvent.layer);
     },
 
-    _manageOnEvents: function (nativeMap, waxEvent) {
-      var containerPoint = findContainerPoint(nativeMap, waxEvent);
+    _manageOnEvents: function (nativeMap, zeraEvent) {
+      var containerPoint = findContainerPoint(nativeMap, zeraEvent);
 
       if (!containerPoint || isNaN(containerPoint.x) || isNaN(containerPoint.y)) {
         return false;
@@ -108,14 +108,14 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
 
       var latlng = nativeMap.containerPointToLatLng(containerPoint);
 
-      var eventType = waxEvent.e.type.toLowerCase();
+      var eventType = zeraEvent.e.type.toLowerCase();
 
       switch (eventType) {
         case 'mousemove':
-          this._onFeatureOver(latlng, containerPoint, waxEvent.data, waxEvent.layer);
+          this._onFeatureOver(latlng, containerPoint, zeraEvent.data, zeraEvent.layer);
           break;
         case 'click':
-          this._onFeatureClicked(latlng, containerPoint, waxEvent.data, waxEvent.layer);
+          this._onFeatureClicked(latlng, containerPoint, zeraEvent.data, zeraEvent.layer);
           break;
       }
     },

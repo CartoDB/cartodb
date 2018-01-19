@@ -144,9 +144,8 @@ describe DataImport do
   end
 
   it 'should raise an error if overwriting with non existent table in query' do
-    data_import = create_import(
+    data_import = create_import_from_query(
       overwrite: true,
-      truncated: false,
       from_query: 'select * from walmart_latlon_wtf limit 1'
     )
     data_import.run_import!

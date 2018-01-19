@@ -116,6 +116,15 @@ describe Carto::Superadmin::OrganizationsController do
       it_behaves_like 'dataservices usage metrics'
     end
 
+    describe 'geocoder_mapbox' do
+      before(:all) do
+        @class = CartoDB::GeocoderUsageMetrics
+        @service = :geocoder_mapbox
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
     describe 'here_isolines' do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics
@@ -129,6 +138,15 @@ describe Carto::Superadmin::OrganizationsController do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics
         @service = :mapzen_isolines
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'mapbox_isolines' do
+      before(:all) do
+        @class = CartoDB::IsolinesUsageMetrics
+        @service = :mapbox_isolines
       end
 
       it_behaves_like 'dataservices usage metrics'
@@ -156,6 +174,15 @@ describe Carto::Superadmin::OrganizationsController do
       before(:all) do
         @class = CartoDB::RoutingUsageMetrics
         @service = :routing_mapzen
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'routing_mapbox' do
+      before(:all) do
+        @class = CartoDB::RoutingUsageMetrics
+        @service = :routing_mapbox
       end
 
       it_behaves_like 'dataservices usage metrics'

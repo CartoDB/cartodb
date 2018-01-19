@@ -25,6 +25,7 @@
       },
       "tables": {
         "type": "array",
+        "additionalProperties": false,
         "items": {
           "type": "object",
           "required": [
@@ -51,9 +52,11 @@
                 ]
               }
             }
-          }
+          },
+          "additionalProperties": false
         }
       }
-    }
+    },
+    "additionalProperties": false
   }
 }

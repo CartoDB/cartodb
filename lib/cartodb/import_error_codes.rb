@@ -219,6 +219,11 @@ module CartoDB
       what_about: "The import failed because you are trying to overwrite a table but the data you are providing is not compatible with the data that table already has. You may me changing some types or removing a column. Please check and try again",
       source: ERROR_SOURCE_USER
     },
+    2013 => {
+      title: 'Cannot overwrite table',
+      what_about: "The synchronization failed because the destination table could not be overwritten. Please make sure that there are no database objects (e.g: views) that depend on it.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",

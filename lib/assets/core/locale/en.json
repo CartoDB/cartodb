@@ -1697,6 +1697,7 @@
         "analyses-count": "%{smart_count} Analysis |||| %{smart_count} Analyses",
         "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgets",
         "add-layer": "Add layer",
+        "empty-layer": "Empty layer",
         "geocode-text": "To show data on this map, geocode your layer.",
         "geocode": "Geocode",
         "geocode-tooltip": "To show data on this map, geocode your layer."
@@ -1737,7 +1738,7 @@
         "data": "Data",
         "analyses": "Analysis",
         "style": "Style",
-        "infowindow": "Pop-up",
+        "popups": "Pop-up",
         "legends": "Legend"
       },
       "infowindow-menu-tab-pane-labels": {
@@ -1991,6 +1992,7 @@
             "routing": "Routing",
             "trade-area": "Trade area",
             "georeference-street-address": "Geocode street address",
+            "georeference-cities": "Geocode cities",
             "data-observatory-measure": "Data Observatory"
           }
         },
@@ -2068,7 +2070,6 @@
         "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
-        "placeholder-geometry": "There's no geometry in your data to add a popup.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
@@ -2127,7 +2128,6 @@
         }
       },
       "georeference": {
-        "no-geometry": "There's no geometry in your data, please geocode it.",
         "georeference-button": "Geocode",
         "visualize": "Layer doesn't have geometry"
       },
@@ -2154,7 +2154,10 @@
       }
     },
     "data": {
-      "no-geometry-data": "Your dataset doesn't contain any geometry data.",
+      "no-geometry-data": {
+        "message": "This layer is empty. Add data to start working.",
+        "action-message": "Click the blue button on the bottom right to add points (%{pointIcon}), lines (%{lineIcon}) or polygon (%{polygonIcon})."
+      },
       "stats": {
         "add-widget": "Add as a widget",
         "edit": "EDIT",
@@ -2245,7 +2248,8 @@
       },
       "menu-tab-pane-labels": {
         "color": "color",
-        "size": "size"
+        "size": "size",
+        "size-disabled": "Style your layer by value to enable this type of legend"
       },
       "messages": {
         "custom-legend": {
@@ -2341,7 +2345,6 @@
           "title-label-point": "Style",
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
-          "placeholder-text": "There's no geometry in your data that could be styled.",
           "georeference": "Geocode",
           "desc": "Change the visualization"
         },

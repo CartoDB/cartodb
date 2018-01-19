@@ -136,6 +136,33 @@ describe DataImport do
     data_import.log.entries.should match(/Exception: Incompatible Schemas/)
   end
 
+  describe 'organization behaviour' do
+    include_context 'organization with users helper'
+
+    it 'should overwrite even in users with hyphens in the schema name' do
+      carto_user = Carto::User.find(@org_user_owner.id)
+      expect(carto_user.username).to include '-' # Fixture check
+
+      data_import = create_import(user: @org_user_owner, overwrite: false, truncated: false)
+      data_import.run_import!
+      carto_user.reload
+      carto_user.visualizations.count.should eq 1
+      data_import.state.should eq 'complete'
+      data_import.table_name.should eq 'walmart_latlon'
+      data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+      user_tables_should_be_registered
+
+      data_import = create_import(user: @org_user_owner, overwrite: true, truncated: true)
+      data_import.run_import!
+      carto_user.reload
+      carto_user.visualizations.count.should eq 1
+      data_import.state.should eq 'complete'
+      data_import.table_name.should eq 'walmart_latlon'
+      data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 2
+      user_tables_should_be_registered
+    end
+  end
+
   it 'should not raise exceptions if overwriting with more data' do
     carto_user = Carto::User.find(@user.id)
     carto_user.visualizations.count.should eq 1
@@ -163,9 +190,9 @@ describe DataImport do
     Carto::GhostTablesManager.new(@user.id).user_tables_synced_with_db?.should eq(true), "Tables not properly registered"
   end
 
-  def create_import(overwrite:, truncated:, incomplete_schema: false)
+  def create_import(user: @user, overwrite:, truncated:, incomplete_schema: false)
     DataImport.create(
-      user_id: @user.id,
+      user_id: user.id,
       data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
       data_type: "file",
       table_name: 'walmart_latlon',

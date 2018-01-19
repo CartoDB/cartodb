@@ -12,7 +12,7 @@ module CartoDB
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
-      
+
       # The following columns are not validated because we are comparing schemas of a cartodbfied table and one that
       # is about to be imported.
       COLUMNS_NOT_TO_VALIDATE = [:cartodb_id, :the_geom_webmercator].freeze
@@ -290,11 +290,11 @@ module CartoDB
         database.transaction do
           log("Replacing #{name} with #{result.table_name}")
           begin
-            drop("#{@destination_schema}.#{name}")
+            drop("\"#{@destination_schema}\".\"#{name}\"")
             rename(result, result.table_name, name, @destination_schema)
           rescue => e
             log("Unable to replace #{name} with #{result.table_name}. Rollingback transaction and dropping #{result.table_name}: #{e}")
-            drop("#{@destination_schema}.#{result.table_name}")
+            drop("\"#{@destination_schema}\".\"#{result.table_name}\"")
             raise e
           end
         end

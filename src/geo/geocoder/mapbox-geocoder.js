@@ -1,4 +1,4 @@
-var ENDPOINT = 'https://api.mapbox.com/geocoding/v5/mapbox.places/{{address}}?access_token=pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamF0MWt0ZTI0d3FwMndwZGF6cTVlMmZjIn0._IA8bIh1s9NjT-cejwUeNQ';
+var ENDPOINT = 'https://api.mapbox.com/geocoding/v5/mapbox.places/{{address}}.json?access_token=pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg';
 
 var TYPES = {
   country: 'country',
@@ -33,9 +33,8 @@ MapboxGeocoder.geocode = function (address, callback) {
     .then(function (response) {
       if (typeof callback === 'function') {
         callback(_formatResponse(response));
-      } else {
-        return _formatResponse(response);
       }
+      return _formatResponse(response);
     });
 };
 
@@ -44,6 +43,9 @@ MapboxGeocoder.geocode = function (address, callback) {
  * @param {object} rawMapboxResponse - The raw mapbox geocoding response, {@see https://www.mapbox.com/api-documentation/?language=JavaScript#response-object}
  */
 function _formatResponse (rawMapboxResponse) {
+  if (!rawMapboxResponse.features.length) {
+    return [];
+  }
   var center = _getCenter(rawMapboxResponse.features[0]);
   return [{
     center: center,
@@ -77,6 +79,9 @@ function _getType (feature) {
  * Transform the feature bbox into a carto.js well known format.
  */
 function _getBoundingBox (feature) {
+  if (!feature.bbox) {
+    return;
+  }
   return {
     south: feature.bbox[0],
     west: feature.bbox[1],

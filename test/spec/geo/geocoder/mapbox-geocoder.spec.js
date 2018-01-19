@@ -1,13 +1,9 @@
 var mapboxGeocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
-var mockResponse = require('./mapbox-geocoder-response');
 
 fdescribe('mapbox-geocoder', function () {
   describe('.geocode', function () {
-    beforeEach(function () {
-      spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return mockResponse; } }));
-    });
-
     it('should geocode a city location', function (done) {
+      spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-0'); } }));
       mapboxGeocoder.geocode('Vigo')
         .then(function (results) {
           expect(results).toBeDefined();
@@ -15,13 +11,14 @@ fdescribe('mapbox-geocoder', function () {
         });
     });
 
-    it('should return a well formated response', function (done) {
+    it('should return a well formated response [example 0]', function (done) {
+      spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-0'); } }));
       mapboxGeocoder.geocode('Vigo')
         .then(function (result) {
           result = result[0];
           expect(result.center).toBeDefined();
-          expect(result.center.lat).toEqual(34.0544);
           expect(result.center.lon).toEqual(-118.2439);
+          expect(result.center.lat).toEqual(34.0544);
           // Bbox
           expect(result.bbox.south).toEqual(-118.529221009603);
           expect(result.bbox.west).toEqual(33.901599990108);
@@ -30,15 +27,31 @@ fdescribe('mapbox-geocoder', function () {
           // Type
           expect(result.type).toEqual('venue');
           done();
-        }).catch(console.warn);
+        }).catch(console.error);
+    });
+
+    it('should return a well formated response when the response has no bbox [example 1]', function (done) {
+      spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-1'); } }));
+      mapboxGeocoder.geocode('Plaza de Barcelos')
+        .then(function (result) {
+          result = result[0];
+          expect(result.center).toBeDefined();
+          expect(result.center.lon).toEqual(9.754478);
+          expect(result.center.lat).toEqual(47.920347);
+          // Bbox
+          expect(result.bbox).toBeUndefined();
+          // Type
+          expect(result.type).toEqual('venue');
+          done();
+        }).catch(console.error);
     });
 
     it('should return an empty array when the response is empty', function (done) {
-      pending('SIMULATE AN EMPTY RESPONSE');
-      window.fetch.and.returnValue(Promise.resolve({ json: function () { return []; } }));
+      spyOn(window, 'fetch').and.returnValue(Promise.resolve({json: function () { return {features: []}; }}));
       mapboxGeocoder.geocode('Vigo')
         .then(function (result) {
           expect(result).toEqual([]);
+          done();
         });
     });
   });

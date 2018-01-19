@@ -276,6 +276,7 @@ module CartoDB
         database.transaction do
           log("Replacing #{name} with #{result.table_name}")
           begin
+            # the logic inside the transaction may vary, so we let the caller to implement it
             yield(database, @destination_schema)
           rescue => e
             log("Unable to replace #{name} with #{result.table_name}. Rollingback transaction and dropping #{result.table_name}: #{e}")

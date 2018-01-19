@@ -525,7 +525,9 @@ class DataImport < Sequel::Model
       overwrite_table_from_query(table_name, name, query)
       results.push CartoDB::Importer2::Result.new(success: true, error: nil)
     else
-      current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+      current_user.db_service.in_database_direct_connection(
+        statement_timeout: DIRECT_STATEMENT_TIMEOUT
+      ) do |user_direct_conn|
         user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
       end
     end

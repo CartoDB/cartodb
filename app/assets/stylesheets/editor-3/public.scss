@@ -36,8 +36,15 @@
   padding: 1rem 1rem 0;
 }
 
-.CDB-Embed-legends {
+.CDB-Embed-tab {
   display: none;
+
+  &.is-active {
+    display: flex;
+  }
+}
+
+.CDB-Embed-legends {
   height: 100%;
 }
 

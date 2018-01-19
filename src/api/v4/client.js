@@ -56,6 +56,7 @@ _.extend(Client.prototype, Backbone.Events);
 
 /**
  * Add a layer to the client.
+ * If the layer id already exists in the client this method will throw an error.
  *
  * @param {carto.layer.Base} - The layer to be added
  *
@@ -343,6 +344,7 @@ Client.prototype._reload = function () {
  */
 Client.prototype._addLayer = function (layer, engine) {
   _checkLayer(layer);
+  this._checkDuplicatedLayerId(layer);
   this._layers.add(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
@@ -386,11 +388,20 @@ Client.prototype._bindEngine = function (engine) {
 };
 
 /**
- * Utility function to reduce duplicated code.
- * Check if an object inherits from LayerBase.
+ * Check if some layer in the client has the same id.
+ * @param {carto.layer.Base} layer 
  */
-function _checkLayer (object) {
-  if (!(object instanceof LayerBase)) {
+Client.prototype._checkDuplicatedLayerId = function (layer) {
+  if (this._layers.findById(layer.getId())) {
+    throw getValidationError('duplicatedLayerId');
+  }
+};
+
+/**
+ * Utility function to reduce duplicated code.
+ */
+function _checkLayer (layer) {
+  if (!(layer instanceof LayerBase)) {
     throw getValidationError('badLayerType');
   }
 }

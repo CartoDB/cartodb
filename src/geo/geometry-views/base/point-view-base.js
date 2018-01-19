@@ -20,7 +20,7 @@ var PointViewBase = GeometryViewBase.extend({
     //  2. Debouncing can be easily disabled in the tests
     this._onDrag = _.debounce(this._updateModelFromMarker.bind(this), DRAG_DEBOUNCE_TIME_IN_MILIS);
 
-    _.bindAll(this, '_onDragStart', '_onDrag', '_onDragEnd', '_onMouseDown', '_onMouseClick');
+    _.bindAll(this, '_onDragStart', '_onDrag', '_onDragEnd', '_onMouseDown', '_onMouseClick', '_onMouseDblclick');
   },
 
   getMarker: function () {
@@ -94,6 +94,13 @@ var PointViewBase = GeometryViewBase.extend({
     }
   },
 
+  _onMouseDblclick: function () {
+    if (this._mouseDownClicked) {
+      this.model.trigger('dblclick', this.model);
+      this._mouseDownClicked = false;
+    }
+  },
+
   isDragging: function () {
     return !!this._isDragging;
   },
@@ -126,6 +133,7 @@ var PointViewBase = GeometryViewBase.extend({
 
   _unbindMarkerEvents: function () {
     this._marker.off('mousedown', this._onMouseDown);
+    this._marker.off('dblclick', this._onMouseDblclick);
     this._marker.off('dragstart', this._onDragStart);
     this._marker.off('drag', this._onDrag);
     this._marker.off('dragend', this._onDragEnd);
@@ -133,6 +141,7 @@ var PointViewBase = GeometryViewBase.extend({
 
   _bindMarkerEvents: function () {
     this._marker.on('mousedown', this._onMouseDown);
+    this._marker.on('dblclick', this._onMouseDblclick);
     this._marker.on('dragstart', this._onDragStart);
     this._marker.on('drag', this._onDrag);
     this._marker.on('dragend', this._onDragEnd);

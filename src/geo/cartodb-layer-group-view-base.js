@@ -51,20 +51,20 @@ CartoDBLayerGroupViewBase.prototype = {
       this.interaction[layerIndexInLayerGroup] = new this.interactionClass()
         .map(this.nativeMap)
         .tilejson(tilejson)
-        .on('on', function (o) {
+        .on('on', function (zeraEvent) {
           if (self._interactionDisabled) return;
-          o.layer = layerIndexInLayerGroup;
-          self._manageOnEvents(self.nativeMap, o);
+          zeraEvent.layer = layerIndexInLayerGroup;
+          self._manageOnEvents(self.nativeMap, zeraEvent);
         })
-        .on('off', function (o) {
+        .on('off', function (zeraEvent) {
           if (self._interactionDisabled) return;
-          o = o || {};
+          zeraEvent = zeraEvent || {};
           // TODO: zera has an .on('error', () => { }) callback that should be used here
-          if (o.errors != null) {
-            self._manageInteractivityErrors(o);
+          if (zeraEvent.errors != null) {
+            self._manageInteractivityErrors(zeraEvent);
           }
-          o.layer = layerIndexInLayerGroup;
-          self._manageOffEvents(self.nativeMap, o);
+          zeraEvent.layer = layerIndexInLayerGroup;
+          self._manageOffEvents(self.nativeMap, zeraEvent);
         });
     }
   },

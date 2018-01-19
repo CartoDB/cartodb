@@ -100,23 +100,24 @@ module.exports = function (Path, MapView, PathView) {
 
     describe('when the point triggers a dblclick event', function () {
       beforeEach(function () {
-        var pointToDelete = new Point({
-          latlng: [
-            -40,
-            40
-          ]
-        });
-
         this.geometry.setCoordinates([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
-
-        this.geometry.addPoint(pointToDelete);
-
-        pointToDelete.trigger('dblclick');
       });
 
       it('should remove the geometry point', function () {
+        var pointToDelete = new Point({
+          latlng: [ -40, 40 ]
+        });
+
+        this.geometry.addPoint(pointToDelete);
+
+        expect(this.geometry.getCoordinates()).toEqual([
+          [-40, 40], [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
+        ]);
+
+        pointToDelete.trigger('dblclick');
+
         expect(this.geometry.getCoordinates()).toEqual([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);

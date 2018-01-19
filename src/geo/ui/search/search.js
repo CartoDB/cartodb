@@ -131,7 +131,8 @@ var Search = View.extend({
   },
 
   _isBBoxValid: function (location) {
-    if (!location.boundingbox || location.boundingbox.south === location.boundingbox.north ||
+    if (!location.boundingbox ||
+      location.boundingbox.south === location.boundingbox.north ||
       location.boundingbox.east === location.boundingbox.west) {
       return false;
     }

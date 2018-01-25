@@ -40,6 +40,15 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
         ::Resque.enqueue(::Resque::ImporterJobs, job_id: data_import.id)
 
+        # Need to mark the synchronization job as queued state.
+        # If this is missed there is an error state that can be
+        # achieved where the synchronization job can never be
+        # manaually kicked off ever again.  This state will occur if the
+        # resque job fails to mark the synchronization state to success or
+        # failure (ie: resque never runs, or bug in ImporterJobs code)
+        member.state = Synchronization::Member::STATE_QUEUED
+        member.store
+
         response = {
           data_import: {
             endpoint:       '/api/v1/imports',

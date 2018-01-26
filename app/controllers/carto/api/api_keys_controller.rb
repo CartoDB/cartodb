@@ -24,6 +24,11 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)
+  rescue ActiveRecord::RecordNotUnique => e
+    if /api_keys_user_id_name_index/ =~ e.message
+      raise Carto::UnprocesableEntityError.new("Duplicate API Key name: #{params[:name]}")
+    end
+    raise Carto::UnprocesableEntityError.new(e.message)
   end
 
   def destroy
@@ -68,16 +73,16 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def load_api_key
-    id = params[:id]
-    if !is_uuid?(id) || !(@api_key = Carto::ApiKey.where(id: id).where(user_id: current_viewer.id).first)
-      raise Carto::LoadError.new("API key not found: #{id}")
+    name = params[:id]
+    if !(@api_key = Carto::ApiKey.where(user_id: current_viewer.id).where(name: name).first)
+      raise Carto::LoadError.new("API key not found: #{name}")
     end
   end
 
   def json_for_api_key(api_key)
     Carto::Api::ApiKeyPresenter.new(api_key).to_poro.merge(
       _links: {
-        self: api_key_url(id: api_key.id)
+        self: api_key_url(id: api_key.name)
       }
     )
   end

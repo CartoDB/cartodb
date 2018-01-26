@@ -10,7 +10,7 @@
       </div>
     </div>
   </div>
-  <div class="Editor-HeaderInfo">
+  <div class="Editor-HeaderInfo <%- hasTarget ? '' : 'is-disabled' %>">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
     <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="<%- dataFields %>">
       <div class="Editor-HeaderInfo-title u-bSpace--m">

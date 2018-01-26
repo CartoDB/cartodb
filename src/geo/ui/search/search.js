@@ -77,33 +77,16 @@ var Search = View.extend({
   },
 
   _onResult: function (places) {
-    var center;
     var address = this.$('.js-textInput').val();
 
     if (places && places.length > 0) {
       var location = places[0];
-      var validBBox = this._isBBoxValid(location);
-      center = location.center;
 
-      // Get BBox if possible and set bounds
-      if (validBBox) {
-        var s = parseFloat(location.boundingbox.south);
-        var w = parseFloat(location.boundingbox.west);
-        var n = parseFloat(location.boundingbox.north);
-        var e = parseFloat(location.boundingbox.east);
-
-        this.model.setBounds([ [ s, w ], [ n, e ] ]);
-      }
-
-      // In the case that BBox is not valid, let's
-      // center the map using the position
-      if (!validBBox) {
-        this.model.setCenter(center);
-        this.model.setZoom(this._getZoomByCategory(location.type));
-      }
+      this.model.setCenter(location.center);
+      this.model.setZoom(this._getZoomByCategory(location.type));
 
       if (this.options.searchPin) {
-        this._createSearchPin(center, address);
+        this._createSearchPin(location.center, address);
       }
     }
   },
@@ -119,16 +102,6 @@ var Search = View.extend({
       return this._ZOOM_BY_CATEGORY[type];
     }
     return this._ZOOM_BY_CATEGORY['default'];
-  },
-
-  _isBBoxValid: function (location) {
-    return false;
-    if (!location.boundingbox ||
-      location.boundingbox.south === location.boundingbox.north ||
-      location.boundingbox.east === location.boundingbox.west) {
-      return false;
-    }
-    return true;
   },
 
   _createSearchPin: function (position, address) {

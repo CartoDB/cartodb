@@ -15,7 +15,7 @@ var TYPES = {
 
 function MapboxGeocoder () { }
 
-MapboxGeocoder.geocode = function (address, callback) {
+MapboxGeocoder.geocode = function (address) {
   // callback([{
   //   center: {
   //     lon: -118.2439,
@@ -31,9 +31,6 @@ MapboxGeocoder.geocode = function (address, callback) {
       return response.json();
     })
     .then(function (response) {
-      if (typeof callback === 'function') {
-        callback(_formatResponse(response));
-      }
       return _formatResponse(response);
     });
 };

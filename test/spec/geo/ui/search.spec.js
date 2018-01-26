@@ -8,7 +8,7 @@ var fakeEvent = {
   preventDefault: jasmine.createSpy()
 };
 
-fdescribe('geo/ui/search', function () {
+describe('geo/ui/search', function () {
   beforeEach(function () {
     this.$el = $('<div>')
       .attr('id', 'map')
@@ -62,7 +62,7 @@ fdescribe('geo/ui/search', function () {
       expect(geocoder.geocode).toHaveBeenCalled();
     });
 
-    fit('should change map center when geocoder returns any result', function (done) {
+    it('should change map center when geocoder returns any result', function (done) {
       var onCenterChangedSpy = jasmine.createSpy('onCenterChangedSpy');
       this.map.bind('change:center', onCenterChangedSpy, this.view);
       this.view._onSubmit(fakeEvent).then(function () {
@@ -73,18 +73,19 @@ fdescribe('geo/ui/search', function () {
     });
 
     describe('result zoom', function () {
-      pending('resolve sync issues');
-      it('should zoom to 18 when search result is building type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
+      it('should zoom to 18 when search result is building type', function (done) {
+        geocoder.geocode.and.returnValue(Promise.resolve([{
+          center: [43.0, -3],
           type: 'building'
-        };
-        this.view.$('.js-form').submit();
-        expect(this.map.get('zoom')).toBe(18);
+        }]));
+
+        this.view._onSubmit(fakeEvent).then(function () {
+          expect(this.map.get('zoom')).toBe(18);
+          done();
+        }.bind(this));
       });
 
-      it('should zoom to 15 when search result is postal-area type', function () {
+      xit('should zoom to 15 when search result is postal-area type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -94,7 +95,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(15);
       });
 
-      it('should zoom to 18 when search result is venue type', function () {
+      xit('should zoom to 18 when search result is venue type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -104,7 +105,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(18);
       });
 
-      it('should zoom to 8 when search result is region type', function () {
+      xit('should zoom to 8 when search result is region type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -114,7 +115,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(8);
       });
 
-      it('should zoom to 5 when search result is country type', function () {
+      xit('should zoom to 5 when search result is country type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -124,7 +125,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(5);
       });
 
-      it('should zoom to 8 when search result is county type', function () {
+      xit('should zoom to 8 when search result is county type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -134,7 +135,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(8);
       });
 
-      it('should zoom to 18 when search result is address type', function () {
+      xit('should zoom to 18 when search result is address type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -144,7 +145,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(18);
       });
 
-      it('should zoom to 12 when search result is locality type', function () {
+      xit('should zoom to 12 when search result is locality type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -154,7 +155,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(12);
       });
 
-      it('should zoom to 11 when search result is localadmin type', function () {
+      xit('should zoom to 11 when search result is localadmin type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -164,7 +165,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(11);
       });
 
-      it('should zoom to 15 when search result is neighbourhood type', function () {
+      xit('should zoom to 15 when search result is neighbourhood type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -174,7 +175,7 @@ fdescribe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(15);
       });
 
-      it('should zoom to 12 when search result is unknown type', function () {
+      xit('should zoom to 12 when search result is unknown type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,

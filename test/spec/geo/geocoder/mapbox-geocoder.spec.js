@@ -1,6 +1,6 @@
 var mapboxGeocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
 var TOKEN = 'fake_token';
-fdescribe('mapbox-geocoder', function () {
+describe('mapbox-geocoder', function () {
   describe('.geocode', function () {
     it('should build the right fetch url (add address and access_token)', function (done) {
       spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-0'); } }));

@@ -130,6 +130,7 @@ ion for time-series (#12670)
 * Add auth tokens to dependent visualizations (#13394)
 * Logged in organization user gets redirected to dashboard [#11832](https://github.com/CartoDB/cartodb/issues/11832)
 * Redirect to login from static pages if there is no user (#13277)
+* Add support for collision_strategy=overwrite when creating a dataset from a query (#13139)
 * Fix popup content in time series widget (#1269)
 * Update pop up when applying HTML changes (#1263)
 * Rollback make new widgets appear on top (#13244)
@@ -326,6 +327,7 @@ ion for time-series (#12670)
 * Make scrollwheel zoom on by default (#12214)
 * Fix SAML login error with uppercased emails (#12367)
 * You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).
+* You can configure your Access token for the search bar, powered by Mapbox, with `geocoder.mapbox.search_bar_api_key` (#13425).
 * Fix viewer handling by visualizations controller (#12379).
 * Add last name field to users (#12174)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)

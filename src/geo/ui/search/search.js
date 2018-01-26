@@ -71,7 +71,8 @@ var Search = View.extend({
     // Remove previous pin without any timeout (0 represents the timeout for
     // the animation)
     this._destroySearchPin(0);
-    geocoder.geocode(address).then(this._onResult.bind(this));
+    // TODO: we a Better way to pass api keys
+    geocoder.geocode(address, window.__mapboxApiKey).then(this._onResult.bind(this));
   },
 
   _onResult: function (places) {

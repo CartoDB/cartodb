@@ -1,10 +1,19 @@
 var mapboxGeocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
-
+var TOKEN = 'fake_token';
 fdescribe('mapbox-geocoder', function () {
   describe('.geocode', function () {
+    it('should build the right fetch url (add address and access_token)', function (done) {
+      spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-0'); } }));
+      mapboxGeocoder.geocode('fake_address', TOKEN).then(function (result) {
+        var expectedFetchUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/fake_address.json?access_token=fake_token';
+        expect(window.fetch).toHaveBeenCalledWith(expectedFetchUrl);
+        done();
+      });
+    });
+
     it('should geocode a city location', function (done) {
       spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-0'); } }));
-      mapboxGeocoder.geocode('Vigo')
+      mapboxGeocoder.geocode('Vigo', TOKEN)
         .then(function (results) {
           expect(results).toBeDefined();
           done();
@@ -13,7 +22,7 @@ fdescribe('mapbox-geocoder', function () {
 
     it('should return a well formated response [example 0]', function (done) {
       spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-0'); } }));
-      mapboxGeocoder.geocode('Vigo')
+      mapboxGeocoder.geocode('Vigo', TOKEN)
         .then(function (result) {
           result = result[0];
           expect(result.center).toBeDefined();
@@ -32,7 +41,7 @@ fdescribe('mapbox-geocoder', function () {
 
     it('should return a well formated response when the response has no bbox [example 1]', function (done) {
       spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-1'); } }));
-      mapboxGeocoder.geocode('Plaza de Barcelos')
+      mapboxGeocoder.geocode('Plaza de Barcelos', TOKEN)
         .then(function (result) {
           result = result[0];
           expect(result.center).toBeDefined();
@@ -47,8 +56,8 @@ fdescribe('mapbox-geocoder', function () {
     });
 
     it('should return an empty array when the response is empty', function (done) {
-      spyOn(window, 'fetch').and.returnValue(Promise.resolve({json: function () { return {features: []}; }}));
-      mapboxGeocoder.geocode('Vigo')
+      spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return { features: [] }; } }));
+      mapboxGeocoder.geocode('Vigo', TOKEN)
         .then(function (result) {
           expect(result).toEqual([]);
           done();

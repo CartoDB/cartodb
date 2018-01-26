@@ -1,4 +1,4 @@
-var ENDPOINT = 'https://api.mapbox.com/geocoding/v5/mapbox.places/{{address}}.json?access_token=pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg';
+var ENDPOINT = 'https://api.mapbox.com/geocoding/v5/mapbox.places/{{address}}.json?access_token={{access_token}}';
 
 var TYPES = {
   country: 'country',
@@ -15,18 +15,8 @@ var TYPES = {
 
 function MapboxGeocoder () { }
 
-MapboxGeocoder.geocode = function (address) {
-  // callback([{
-  //   center: {
-  //     lon: -118.2439,
-  //     lat: 34.0544
-  //   },
-  //   lon: -118.2439,
-  //   lat: 34.0544,
-  //   type: 'venue'
-  // }]);
-
-  return fetch(ENDPOINT.replace('{{address}}', address))
+MapboxGeocoder.geocode = function (address, token) {
+  return fetch(ENDPOINT.replace('{{address}}', address).replace('{{access_token}}', token))
     .then(function (response) {
       return response.json();
     })

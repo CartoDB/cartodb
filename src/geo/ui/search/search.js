@@ -63,7 +63,6 @@ var Search = View.extend({
 
   _onSubmit: function (ev) {
     ev.preventDefault();
-    var self = this;
     var address = this.$('.js-textInput').val();
 
     if (!address) {
@@ -72,9 +71,7 @@ var Search = View.extend({
     // Remove previous pin without any timeout (0 represents the timeout for
     // the animation)
     this._destroySearchPin(0);
-    geocoder.geocode(address, function (places) {
-      self._onResult(places);
-    });
+    geocoder.geocode(address).then(this._onResult.bind(this));
   },
 
   _onResult: function (places) {

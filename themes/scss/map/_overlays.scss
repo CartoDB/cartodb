@@ -316,8 +316,6 @@ $maxLegendContainerHeight: 300px;
 }
 
 .Bubble-list {
-  @include display-flex();
-  @include justify-content(center);
   position: relative;
   width: 100px;
   height: 100px;

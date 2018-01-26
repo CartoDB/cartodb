@@ -11,6 +11,11 @@ $buttonColor: #636D72;
   left: 16px;
   align-items: center;
   z-index: 11;
+  pointer-events: none;
+
+  & > * {
+    pointer-events: all;
+  }
 }
 
 // zoom overlay

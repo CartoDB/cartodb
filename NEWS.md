@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Enable deleting geometry anchors in edit mode (#11341) 
 * Fix marker bugs (#1207)
 * Add routing to widgets
 * When editing a widget, disable the other ones (#13374)
@@ -122,6 +123,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Add routing to analyses nodes (#13364)
+* Fix publish modal in settings view (#13418)
 * Improve onboarding for when user adds an empty layer (#11876)
 * Don't show the publish modal when the user clicks on the privacy button (#13366)
 * Add auth tokens to dependent visualizations (#13394)
@@ -178,6 +180,7 @@ ion for time-series (#12670)
 * Improve the discoverability of the table view switch (#13050)
 * Change Basemap layer style (#13091)
 * Rename point/polygon count to feature count (#13066)
+* Fix broken table (similar to ghost table) when renaming a visualization, only changing capitalization (#13421)
 * Upgrade cartodb extension to 0.20.0 (#13065)
 * Fix for torque category legends (CartoDB/support#1120)
 * Upgrade cartodb extension to 0.20.0 (#13065)

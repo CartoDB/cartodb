@@ -4,6 +4,9 @@ var Search = require('../../../../src/geo/ui/search/search');
 var geocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
+var fakeEvent = {
+  preventDefault: jasmine.createSpy()
+};
 
 fdescribe('geo/ui/search', function () {
   beforeEach(function () {
@@ -59,14 +62,14 @@ fdescribe('geo/ui/search', function () {
       expect(geocoder.geocode).toHaveBeenCalled();
     });
 
-    it('should change map center when geocoder returns any result', function () {
-      pending('Fix this test. Maybe testing search._onResult ??');
-      geocoder.geocode.and.returnValue(Promise.resolve([{'center': {'lon': -3.69194, 'lat': 40.41889}, 'lat': 40.41889, 'lon': -3.69194, 'boundingbox': {'south': -3.888965, 'west': 40.311994, 'north': -3.517964, 'east': 40.643313}, 'type': 'venue'}]));
-      var onBoundsChanged = jasmine.createSpy('onBoundsChange');
-      this.map.bind('change:view_bounds_ne', onBoundsChanged, this.view);
-      this.view.$('.js-form').submit();
-      expect(onBoundsChanged).toHaveBeenCalled();
-      this.map.unbind('change:view_bounds_ne', onBoundsChanged, this.view);
+    fit('should change map center when geocoder returns any result', function (done) {
+      var onCenterChangedSpy = jasmine.createSpy('onCenterChangedSpy');
+      this.map.bind('change:center', onCenterChangedSpy, this.view);
+      this.view._onSubmit(fakeEvent).then(function () {
+        expect(onCenterChangedSpy).toHaveBeenCalled();
+        this.map.unbind('change:center', onCenterChangedSpy, this.view);
+        done();
+      }.bind(this));
     });
 
     describe('result zoom', function () {
@@ -199,7 +202,7 @@ fdescribe('geo/ui/search', function () {
           lat: 43.0,
           lon: -3.0
         };
-        expect(this.view._searchPin.get('latlng')).toEqual([ 43, -3 ]);
+        expect(this.view._searchPin.get('latlng')).toEqual([43, -3]);
       });
 
       it('should place pin in the middle of the bbox if lat,lon is not provided', function () {
@@ -212,7 +215,7 @@ fdescribe('geo/ui/search', function () {
           }
         };
         this.view.$('.js-form').submit();
-        expect(this.view._searchPin.get('latlng')).toEqual([ 5.0, 5.0 ]);
+        expect(this.view._searchPin.get('latlng')).toEqual([5.0, 5.0]);
       });
 
       it('should display address in the search infowindow', function () {

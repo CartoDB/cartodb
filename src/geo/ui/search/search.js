@@ -73,7 +73,7 @@ var Search = View.extend({
     // the animation)
     this._destroySearchPin(0);
     // TODO: we a Better way to pass api keys
-    geocoder.geocode(address, this.token).then(this._onResult.bind(this));
+    return geocoder.geocode(address, this.token).then(this._onResult.bind(this));
   },
 
   _onResult: function (places) {

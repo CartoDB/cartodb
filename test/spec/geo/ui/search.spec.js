@@ -131,46 +131,49 @@ describe('geo/ui/search', function () {
     });
 
     describe('searchPin', function () {
-      pending('resolve sync issues');
       beforeEach(function () {
         this.view.options.searchPin = true;
-        this.view.$('.js-form').submit();
       });
 
-      it('should add a pin and an infowindow when search is completed', function () {
-        expect(this.view._searchPin).toBeDefined();
-        expect(this.view._searchInfowindow).toBeDefined();
+      it('should add a pin and an infowindow when search is completed', function (done) {
+        this.view._onSubmit(fakeEvent).then(function () {
+          expect(this.view._searchPin).toBeDefined();
+          expect(this.view._searchInfowindow).toBeDefined();
+          done();
+        }.bind(this));
       });
 
-      it('should place pin in the feature center', function () {
-        pending('IMPLEMENT ME');
-        expect(this.view._searchPin.get('latlng')).toEqual([43, -3]);
+      it('should place pin in the feature center', function (done) {
+        this.view._onSubmit(fakeEvent).then(function () {
+          expect(this.view._searchPin.get('latlng')).toEqual([40.41889, -3.69194]);
+          done();
+        }.bind(this));
       });
 
-      it('should display address in the search infowindow', function () {
-        expect(this.view._searchInfowindow.$('.CDB-infowindow-title').text()).toBe('Madrid, Spain');
+      it('should display address in the search infowindow', function (done) {
+        this.view._onSubmit(fakeEvent).then(function () {
+          expect(this.view._searchInfowindow.$('.CDB-infowindow-title').text()).toBe('Madrid, Spain');
+          done();
+        }.bind(this));
       });
 
       it('should destroy/hide search pin when map is clicked', function (done) {
-        jasmine.clock().install();
-
         var view = this.view;
-        expect(view._searchPin).toBeDefined();
-        expect(view._searchInfowindow).toBeDefined();
-        this.mapView.trigger('click');
-        setTimeout(function () {
-          expect(view._searchPin).toBeUndefined();
-          expect(view._searchInfowindow).toBeUndefined();
-          done();
-        }, 1500);
-
-        jasmine.clock().tick(2000);
+        view._onSubmit(fakeEvent).then(function () {
+          expect(view._searchPin).toBeDefined();
+          expect(view._searchInfowindow).toBeDefined();
+          this.mapView.trigger('click');
+          setTimeout(function () {
+            expect(view._searchPin).toBeUndefined();
+            expect(view._searchInfowindow).toBeUndefined();
+            done();
+          }, 1000);
+        }.bind(this));
       });
     });
   });
 
   afterEach(function () {
     this.$el.remove();
-    jasmine.clock().uninstall();
   });
 });

@@ -13,7 +13,7 @@ $buttonColor: #636D72;
   z-index: 11;
   pointer-events: none;
 
-  & > * {
+  > * {
     pointer-events: all;
   }
 }

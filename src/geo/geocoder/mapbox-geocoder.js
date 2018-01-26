@@ -16,6 +16,12 @@ var TYPES = {
 function MapboxGeocoder () { }
 
 MapboxGeocoder.geocode = function (address, token) {
+  if (!address) {
+    throw new Error('MapboxGeocoder.geocode called with no address');
+  }
+  if (!token) {
+    throw new Error('MapboxGeocoder.geocode called with no access_token');
+  }
   return fetch(ENDPOINT.replace('{{address}}', address).replace('{{access_token}}', token))
     .then(function (response) {
       return response.json();

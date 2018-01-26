@@ -343,7 +343,7 @@
     "cartodb.js": {
       "version": "4.0.0-beta.13",
       "from": "cartodb/cartodb.js#add-legends-to-embed",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4d829de42ecf8824d6a2838f2b36a906eaf62151"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#834e381f8552383d598604c2415c79b046bee45a"
     },
     "center-align": {
       "version": "0.1.3",

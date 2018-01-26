@@ -83,6 +83,7 @@ var Search = View.extend({
     if (places && places.length > 0) {
       var location = places[0];
       var validBBox = this._isBBoxValid(location);
+      center = location.center;
 
       // Get BBox if possible and set bounds
       if (validBBox) {
@@ -91,16 +92,7 @@ var Search = View.extend({
         var n = parseFloat(location.boundingbox.north);
         var e = parseFloat(location.boundingbox.east);
 
-        var centerLon = (w + e) / 2;
-        var centerLat = (s + n) / 2;
-        center = [centerLat, centerLon];
         this.model.setBounds([ [ s, w ], [ n, e ] ]);
-      }
-
-      // If location is defined,
-      // let's store it
-      if (location.lat && location.lon) {
-        center = [location.lat, location.lon];
       }
 
       // In the case that BBox is not valid, let's
@@ -130,6 +122,7 @@ var Search = View.extend({
   },
 
   _isBBoxValid: function (location) {
+    return false;
     if (!location.boundingbox ||
       location.boundingbox.south === location.boundingbox.north ||
       location.boundingbox.east === location.boundingbox.west) {

@@ -26,8 +26,8 @@ fdescribe('mapbox-geocoder', function () {
         .then(function (result) {
           result = result[0];
           expect(result.center).toBeDefined();
-          expect(result.center.lon).toEqual(-118.2439);
-          expect(result.center.lat).toEqual(34.0544);
+          expect(result.center[0]).toEqual(34.0544);
+          expect(result.center[1]).toEqual(-118.2439);
           // Bbox
           expect(result.boundingbox.south).toEqual(-118.529221009603);
           expect(result.boundingbox.west).toEqual(33.901599990108);
@@ -45,8 +45,8 @@ fdescribe('mapbox-geocoder', function () {
         .then(function (result) {
           result = result[0];
           expect(result.center).toBeDefined();
-          expect(result.center.lon).toEqual(9.754478);
-          expect(result.center.lat).toEqual(47.920347);
+          expect(result.center[0]).toEqual(47.920347);
+          expect(result.center[1]).toEqual(9.754478);
           // Bbox
           expect(result.bbox).toBeUndefined();
           // Type

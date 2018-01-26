@@ -50,14 +50,12 @@ function _formatResponse (rawMapboxResponse) {
 }
 
 /**
- * Transform a lat, lon array into an object.
+ * Mapbox returns [lon, lat] while we use [lat, lon]
  */
 function _getCenter (feature) {
-  return {
-    lon: feature.center[0],
-    lat: feature.center[1]
-  };
+  return [feature.center[1], feature.center[0]];
 }
+
 /**
  * Transform the feature type into a well known enum.
  */

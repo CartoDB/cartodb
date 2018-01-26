@@ -389,6 +389,7 @@ $maxLegendContainerHeight: 300px;
 .Bubble-inner {
   @include display-flex();
   position: relative;
+  width: 100%;
 }
 
 .Bubble-average {

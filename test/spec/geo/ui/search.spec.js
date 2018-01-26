@@ -73,116 +73,60 @@ describe('geo/ui/search', function () {
     });
 
     describe('result zoom', function () {
-      it('should zoom to 18 when search result is building type', function (done) {
+      function testZoom (context, featureType, expectedZoom, done) {
         geocoder.geocode.and.returnValue(Promise.resolve([{
           center: [43.0, -3],
-          type: 'building'
+          type: featureType
         }]));
 
-        this.view._onSubmit(fakeEvent).then(function () {
-          expect(this.map.get('zoom')).toBe(18);
+        context.view._onSubmit(fakeEvent).then(function () {
+          expect(context.map.get('zoom')).toBe(expectedZoom);
           done();
-        }.bind(this));
+        });
+      }
+
+      it('should zoom to 18 when search result is building type', function (done) {
+        testZoom(this, 'building', 18, done);
       });
 
-      xit('should zoom to 15 when search result is postal-area type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'postal-area'
-        };
-        this.view.$('.js-form').submit();
-        expect(this.map.get('zoom')).toBe(15);
+      it('should zoom to 15 when search result is postal-area type', function (done) {
+        testZoom(this, 'postal-area', 15, done);
       });
 
-      xit('should zoom to 18 when search result is venue type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'venue'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(18);
+      it('should zoom to 18 when search result is venue type', function (done) {
+        testZoom(this, 'venue', 18, done);
       });
 
-      xit('should zoom to 8 when search result is region type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'region'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(8);
+      it('should zoom to 8 when search result is region type', function (done) {
+        testZoom(this, 'region', 8, done);
       });
 
-      xit('should zoom to 5 when search result is country type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'country'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(5);
+      it('should zoom to 5 when search result is country type', function (done) {
+        testZoom(this, 'country', 5, done);
       });
 
-      xit('should zoom to 8 when search result is county type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'county'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(8);
+      it('should zoom to 8 when search result is county type', function (done) {
+        testZoom(this, 'county', 8, done);
       });
 
-      xit('should zoom to 18 when search result is address type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'address'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(18);
+      it('should zoom to 18 when search result is address type', function (done) {
+        testZoom(this, 'address', 18, done);
       });
 
-      xit('should zoom to 12 when search result is locality type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'locality'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(12);
+      it('should zoom to 12 when search result is locality type', function (done) {
+        testZoom(this, 'locality', 12, done);
       });
 
-      xit('should zoom to 11 when search result is localadmin type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'localadmin'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(11);
+      it('should zoom to 11 when search result is localadmin type', function (done) {
+        testZoom(this, 'localadmin', 11, done);
       });
 
-      xit('should zoom to 15 when search result is neighbourhood type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'neighbourhood'
-        };
-        this.view.$('form').submit();
-        expect(this.map.get('zoom')).toBe(15);
+      it('should zoom to 15 when search result is neighbourhood type', function (done) {
+        testZoom(this, 'neighbourhood', 15, done);
       });
 
-      xit('should zoom to 12 when search result is unknown type', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0,
-          type: 'whatever'
-        };
-        this.view.$('.js-form').submit();
-        expect(this.map.get('zoom')).toBe(12);
+      it('should zoom to 12 when search result is unknown type', function (done) {
+        testZoom(this, 'whatever', 12, done);
       });
     });
 
@@ -198,25 +142,9 @@ describe('geo/ui/search', function () {
         expect(this.view._searchInfowindow).toBeDefined();
       });
 
-      it('should place pin in the lat,lon if it is provided', function () {
-        this.result = {
-          lat: 43.0,
-          lon: -3.0
-        };
+      it('should place pin in the feature center', function () {
+        pending('IMPLEMENT ME');
         expect(this.view._searchPin.get('latlng')).toEqual([43, -3]);
-      });
-
-      it('should place pin in the middle of the bbox if lat,lon is not provided', function () {
-        this.result = {
-          boundingbox: {
-            south: 6.0,
-            north: 4.0,
-            west: 6.0,
-            east: 4.0
-          }
-        };
-        this.view.$('.js-form').submit();
-        expect(this.view._searchPin.get('latlng')).toEqual([5.0, 5.0]);
       });
 
       it('should display address in the search infowindow', function () {

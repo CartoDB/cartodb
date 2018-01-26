@@ -29,10 +29,10 @@ fdescribe('mapbox-geocoder', function () {
           expect(result.center.lon).toEqual(-118.2439);
           expect(result.center.lat).toEqual(34.0544);
           // Bbox
-          expect(result.bbox.south).toEqual(-118.529221009603);
-          expect(result.bbox.west).toEqual(33.901599990108);
-          expect(result.bbox.north).toEqual(-118.121099990025);
-          expect(result.bbox.east).toEqual(34.1612200099034);
+          expect(result.boundingbox.south).toEqual(-118.529221009603);
+          expect(result.boundingbox.west).toEqual(33.901599990108);
+          expect(result.boundingbox.north).toEqual(-118.121099990025);
+          expect(result.boundingbox.east).toEqual(34.1612200099034);
           // Type
           expect(result.type).toEqual('venue');
           done();

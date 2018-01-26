@@ -5,7 +5,7 @@ var geocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 
-describe('geo/ui/search', function () {
+fdescribe('geo/ui/search', function () {
   beforeEach(function () {
     this.$el = $('<div>')
       .attr('id', 'map')
@@ -24,7 +24,8 @@ describe('geo/ui/search', function () {
 
     this.view = new Search({
       model: this.map,
-      mapView: this.mapView
+      mapView: this.mapView,
+      token: 'pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg'
     });
     this.view.render();
   });
@@ -38,7 +39,6 @@ describe('geo/ui/search', function () {
 
   describe('onSubmit', function () {
     beforeEach(function () {
-      var self = this;
       this.result = {
         lat: 43.0,
         lon: -3.0,
@@ -50,21 +50,17 @@ describe('geo/ui/search', function () {
         },
         type: undefined
       };
-      geocoder.geocode = function (address, callback) {
-        var result = [ self.result ];
-        callback(result);
-      };
-
+      spyOn(geocoder, 'geocode').and.callThrough();
       this.view.$('.js-textInput').val('Madrid, Spain');
     });
 
     it('should search with geocoder when form is submit', function () {
-      spyOn(geocoder, 'geocode');
       this.view.$('.js-form').submit();
       expect(geocoder.geocode).toHaveBeenCalled();
     });
 
     it('should change map center when geocoder returns any result', function () {
+      geocoder.geocode.and.returnValue(Promise.resolve([{'center': {'lon': -3.69194, 'lat': 40.41889}, 'lat': 40.41889, 'lon': -3.69194, 'boundingbox': {'south': -3.888965, 'west': 40.311994, 'north': -3.517964, 'east': 40.643313}, 'type': 'venue'}]));
       var onBoundsChanged = jasmine.createSpy('onBoundsChange');
       this.map.bind('change:view_bounds_ne', onBoundsChanged, this.view);
       this.view.$('.js-form').submit();

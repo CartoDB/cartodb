@@ -48,6 +48,7 @@ var Search = View.extend({
     this.map = this.model;
     this.mapView = this.options.mapView;
     this.template = this.options.template || template;
+    this.token = this.options.token || window.__mapboxApiKey;
   },
 
   render: function () {
@@ -72,11 +73,11 @@ var Search = View.extend({
     // the animation)
     this._destroySearchPin(0);
     // TODO: we a Better way to pass api keys
-    geocoder.geocode(address, window.__mapboxApiKey).then(this._onResult.bind(this));
+    geocoder.geocode(address, this.token).then(this._onResult.bind(this));
   },
 
   _onResult: function (places) {
-    var position = '';
+    var center;
     var address = this.$('.js-textInput').val();
 
     if (places && places.length > 0) {
@@ -92,25 +93,25 @@ var Search = View.extend({
 
         var centerLon = (w + e) / 2;
         var centerLat = (s + n) / 2;
-        position = [centerLat, centerLon];
+        center = [centerLat, centerLon];
         this.model.setBounds([ [ s, w ], [ n, e ] ]);
       }
 
       // If location is defined,
       // let's store it
       if (location.lat && location.lon) {
-        position = [location.lat, location.lon];
+        center = [location.lat, location.lon];
       }
 
       // In the case that BBox is not valid, let's
       // center the map using the position
       if (!validBBox) {
-        this.model.setCenter(position);
+        this.model.setCenter(center);
         this.model.setZoom(this._getZoomByCategory(location.type));
       }
 
       if (this.options.searchPin) {
-        this._createSearchPin(position, address);
+        this._createSearchPin(center, address);
       }
     }
   },

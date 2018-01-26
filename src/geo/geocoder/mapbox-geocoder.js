@@ -44,7 +44,7 @@ function _formatResponse (rawMapboxResponse) {
     center: center,
     lat: center.lat,
     lon: center.lon,
-    bbox: _getBoundingBox(rawMapboxResponse.features[0]),
+    boundingbox: _getBoundingBox(rawMapboxResponse.features[0]),
     type: _getType(rawMapboxResponse.features[0])
   }];
 }

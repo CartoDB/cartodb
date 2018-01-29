@@ -343,7 +343,7 @@
     "cartodb.js": {
       "version": "4.0.0-beta.13",
       "from": "cartodb/cartodb.js#add-legends-to-embed",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#23e8bb171f7d06a480f7409f73635869ef0d24a8"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#b2866eca364a1ee6a6f7e9c28fbdce5592435bc1"
     },
     "center-align": {
       "version": "0.1.3",
@@ -783,6 +783,11 @@
         }
       }
     },
+    "fastclick": {
+      "version": "1.0.6",
+      "from": "fastclick@>=1.0.6 <2.0.0",
+      "resolved": "https://registry.npmjs.org/fastclick/-/fastclick-1.0.6.tgz"
+    },
     "filename-regex": {
       "version": "2.0.1",
       "from": "filename-regex@>=2.0.0 <3.0.0",
@@ -1115,9 +1120,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.4.2",
+      "version": "2.4.3",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.2.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.3.tgz"
     },
     "js-yaml": {
       "version": "3.5.3",
@@ -1396,6 +1401,11 @@
           "version": "2.0.6",
           "from": "timers-browserify@>=2.0.4 <3.0.0",
           "resolved": "https://registry.npmjs.org/timers-browserify/-/timers-browserify-2.0.6.tgz"
+        },
+        "tty-browserify": {
+          "version": "0.0.0",
+          "from": "tty-browserify@0.0.0",
+          "resolved": "https://registry.npmjs.org/tty-browserify/-/tty-browserify-0.0.0.tgz"
         }
       }
     },
@@ -2183,9 +2193,9 @@
       }
     },
     "tty-browserify": {
-      "version": "0.0.0",
+      "version": "0.0.1",
       "from": "tty-browserify@>=0.0.0 <0.1.0",
-      "resolved": "https://registry.npmjs.org/tty-browserify/-/tty-browserify-0.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/tty-browserify/-/tty-browserify-0.0.1.tgz"
     },
     "turbo-carto": {
       "version": "0.19.0",
@@ -2203,9 +2213,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.3.8",
+      "version": "3.3.9",
       "from": "uglify-js@>=3.3.0 <3.4.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.8.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.9.tgz",
       "dependencies": {
         "commander": {
           "version": "2.13.0",

@@ -1,7 +1,6 @@
 <div class="
   VerticalRadioList-itemInner
   <% if (hasError) { %> has-error<% } %>
-  js-tooltip
 ">
   <% if (isDone) { %>
     <div class="VerticalRadioList-radio u-rSpace--m">
@@ -21,9 +20,11 @@
     <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-small"></i>
   </div>
 
-  <div class="VerticalRadioList-label CDB-Text CDB-Size-medium js-analysis-name">
+  <div class="VerticalRadioList-label CDB-Text CDB-Size-medium js-analysis-name js-tooltip">
     <%- name %>
   </div>
+
+  <div class="VerticalRadioList-spacer"></div>
 
   <%= linkContent %>
 </div>

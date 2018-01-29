@@ -39,12 +39,9 @@ function _formatResponse (rawMapboxResponse) {
   if (!rawMapboxResponse.features.length) {
     return [];
   }
-  var center = _getCenter(rawMapboxResponse.features[0]);
   return [{
-    center: center,
-    lat: center.lat,
-    lon: center.lon,
     boundingbox: _getBoundingBox(rawMapboxResponse.features[0]),
+    center: _getCenter(rawMapboxResponse.features[0]),
     type: _getType(rawMapboxResponse.features[0])
   }];
 }

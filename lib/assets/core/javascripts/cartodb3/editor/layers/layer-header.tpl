@@ -28,6 +28,9 @@
   </div>
 
   <ul class="u-flex u-tSpace-xl">
+    <% if (isEmpty) { %>
+      <li class="Editor-HeaderInfo-emptyLayer js-emptylayer"></li>
+    <% } %>
     <li class="u-rSpace">
       <button class="Editor-HeaderInfo-zoom CDB-Shape js-zoom">
         <svg width="16px" height="15px" viewBox="287 30 16 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

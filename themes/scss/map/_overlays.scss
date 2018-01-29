@@ -328,11 +328,11 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-container {
   position: relative;
-  margin-top: 10px;
   top: 7px;
   right: 0;
   width: 100%;
   height: 100px;
+  margin-top: 10px;
 }
 
 .Bubble-circle {
@@ -348,9 +348,9 @@ $maxLegendContainerHeight: 300px;
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translate3d(-50%, 0, 0);
   width: 100%;
   height: 100%;
+  transform: translate3d(-50%, 0, 0);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
   background: #F8AB17;
@@ -363,8 +363,8 @@ $maxLegendContainerHeight: 300px;
   bottom: 0;
   width: calc(100% - 50px);
 
-  &:after {
-    content: "";
+  &::after {
+    content: '';
     left: 0;
     position: absolute;
     width: 100%;
@@ -382,9 +382,9 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-numbersItem {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.8);
-  transform: translate3d(0, -50%, 0);
   padding-right: 5px;
+  transform: translate3d(0, -50%, 0);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .Bubble-average {

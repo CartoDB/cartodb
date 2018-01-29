@@ -124,6 +124,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Add routing to analyses nodes (#13364)
+* Fix organization signup page not working on subdomainless #13012
 * Fix publish modal in settings view (#13418)
 * Improve onboarding for when user adds an empty layer (#11876)
 * Don't show the publish modal when the user clicks on the privacy button (#13366)

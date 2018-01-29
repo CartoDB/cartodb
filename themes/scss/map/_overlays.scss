@@ -317,24 +317,38 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-list {
   width: 100%;
-  height: 100%;
+  height: 100px;
 }
 
 .Bubble-item {
-  @include opacity(0.5);
-  @include transform(translateX(-50%));
   position: absolute;
-  bottom: 0;
-  left: 50%;
+  width: 100%;
+  height: 100px;
 }
 
 .Bubble-container {
   position: relative;
+  margin-top: 10px;
+  top: 7px;
+  right: 0;
+  width: 100%;
+  height: 100px;
+}
+
+.Bubble-circle {
+  @include opacity(0.5);
+  position: absolute;
+  right: 0;
+  width: 100px;
+  height: 100%;
 }
 
 .Bubble-itemCircle {
   display: block;
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate3d(-50%, 0, 0);
   width: 100%;
   height: 100%;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -344,45 +358,40 @@ $maxLegendContainerHeight: 300px;
   pointer-events: none;
 }
 
+.Bubble-label {
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 50px);
+
+  &:after {
+    content: "";
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+    top: -1px;
+    z-index: -1;
+  }
+}
+
 .Bubble-list--custom::before,
 .Bubble-item--custom::before {
   visibility: hidden;
 }
 
 .Bubble-numbersItem {
-  position: relative;
-  margin-bottom: 5px;
-
-  &::before {
-    position: absolute;
-    top: 7px;
-    left: 0;
-    width: calc(100% - 74px);
-    height: 1px;
-    transform: translate3d(24px, 0, 0);
-    background: rgba(0, 0, 0, 0.08);
-    content: ' ';
-    z-index: 0;
-  }
-
-  &:last-of-type {
-    top: 7px;
-  }
-}
-
-.Bubble-inner {
-  position: absolute;
-  top: 7px;
-  right: 0;
-  width: 100px;
-  height: 100px;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.8);
+  transform: translate3d(0, -50%, 0);
+  padding-right: 5px;
 }
 
 .Bubble-average {
   @include transform(translateY(50%));
   display: block;
   position: absolute;
-  right: 105px;
+  right: 102px;
   white-space: nowrap;
   z-index: 1000;
 }

@@ -83,7 +83,7 @@ There are two test suites: one for the old Editor and one for Builder.
 
 The old Editor specs reside in `lib/assets/test/spec/cartodb`.
 
-The core Builder specs reside in `lib/assets/core/test/spec/cartodb3`.
+The core Builder specs reside in `lib/assets/test/spec/cartodb3`.
 
 #### Running all tests
 
@@ -196,7 +196,7 @@ _Don't forget to restart Rails after you have modified `config/app_config.yml`._
 There are some views that can be served from a static file in `public/static/` directory and must be built beforehand. For that purpose run the following command:
 
 ```bash
-grunt js_builder && npm run build:static
+npm run build:static
 ```
 
 Don't forget to check-in the resulting static files.

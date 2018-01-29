@@ -193,6 +193,8 @@ defaults: &defaults
       table_name: ''
     mapzen:
       search_bar_api_key: ''
+    mapbox:
+      search_bar_api_key: ''
   user_migrator:
     user_exports_folder: '/tmp/user_exports'
     user_imports_folder: '/tmp/user_imports'

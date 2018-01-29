@@ -9,10 +9,13 @@ var PathBase = GeometryBase.extend({
     options = options || {};
 
     this.points = new Backbone.Collection();
+
     if (options.latlngs) {
       this.points.reset(this._createPoints(options.latlngs));
     }
+
     this.points.on('change', this._triggerChangeEvent, this);
+    this.points.on('remove', this._triggerChangeEvent, this);
   },
 
   getCoordinates: function () {
@@ -41,15 +44,26 @@ var PathBase = GeometryBase.extend({
   },
 
   _createPoint: function (latlng) {
-    return new Point({
+    var point = new Point({
       latlng: latlng,
       editable: this.isEditable()
     });
+
+    point.once('dblclick', function (event) {
+      this.removePoint(point);
+    }, this);
+
+    return point;
   },
 
   addPoint: function (point, options) {
     options = options || {};
     var at = options.at || 0;
+
+    point.once('dblclick', function () {
+      this.removePoint(point);
+    }, this);
+
     this.points.add(point, { at: at });
   },
 

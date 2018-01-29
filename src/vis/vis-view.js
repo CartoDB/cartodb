@@ -66,6 +66,7 @@ var Vis = View.extend({
     });
 
     this.$el.append(this._legendsView.render().$el);
+    this.addView(this._legendsView);
 
     var embedLegends = $('.js-embed-legends');
 
@@ -76,6 +77,7 @@ var Vis = View.extend({
       });
 
       embedLegends.append(this._embedLegendsView.render().$el);
+      this.addView(this._embedLegendsView);
     }
   },
 

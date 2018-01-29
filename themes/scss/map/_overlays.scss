@@ -369,7 +369,7 @@ $maxLegendContainerHeight: 300px;
     left: 0;
     width: 100%;
     height: 1px;
-    background: rgba(0, 0, 0, 0.08);
+    background: rgba(#000, 0.08);
     content: '';
     z-index: -1;
   }
@@ -384,7 +384,7 @@ $maxLegendContainerHeight: 300px;
   display: inline-block;
   padding-right: 5px;
   transform: translate3d(0, -50%, 0);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(#FFF, 0.8);
 }
 
 .Bubble-average {

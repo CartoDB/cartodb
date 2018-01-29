@@ -517,3 +517,11 @@ $maxLegendContainerHeight: 300px;
     display: none;
   }
 }
+
+@media (max-width: 425px) {
+  .CDB-Logo {
+    right: 0;
+    left: initial;
+    transform: initial;
+  }
+}

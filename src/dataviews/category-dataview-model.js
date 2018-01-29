@@ -225,8 +225,7 @@ module.exports = DataviewModelBase.extend({
     var acceptedCategoryNames = [];
 
     _.each(allNewCategories, function (datum) {
-      // Category might be a non-string type (e.g. number), make sure it's always a string for concistency
-      var category = String(datum.category);
+      var category = datum.category;
 
       allNewCategoryNames.push(category);
       var isRejected = this.filter.isRejected(category);

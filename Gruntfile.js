@@ -400,7 +400,7 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js_editor',
     'jasmine:cartodbui',
-    'affected:all',
+    'affected',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:affected',
@@ -408,30 +408,20 @@ module.exports = function (grunt) {
   ]);
 
   /**
-   * `grunt affected_specs` compile Builder specs using only affected ones by the current branch.
-   * `grunt affected_specs --specs=all` compile all Builder specs.
+   * `grunt affected_specs` compile all Builder specs and launch a webpage in the browser.
    */
-  grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
+  grunt.registerTask('affected_specs', 'Build all Builder specs', [
     'affected',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:affected:build',
-    'connect:specs'
+    'connect:specs',
+    'watch:js_affected'
   ]);
 
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);
   });
-
-  /**
-   * `grunt editor_specs`
-   */
-  grunt.registerTask('editor_specs', [
-    'js_editor',
-    'jasmine:cartodbui:build',
-    'connect:server',
-    'watch:js_affected_editor'
-  ]);
 
   /**
    * `grunt affected_editor_specs` compile all Editor specs and launch a webpage in the browser.

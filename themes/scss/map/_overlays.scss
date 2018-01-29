@@ -353,16 +353,16 @@ $maxLegendContainerHeight: 300px;
   position: relative;
   margin-bottom: 5px;
 
-  &:before {
+  &::before {
     position: absolute;
     top: 7px;
     left: 0;
-    height: 1px;
     width: calc(100% - 74px);
+    height: 1px;
+    transform: translate3d(24px, 0, 0);
     background: rgba(0, 0, 0, 0.08);
     content: ' ';
     z-index: 0;
-    transform: translate3d(24px, 0, 0);
   }
 
   &:last-of-type {

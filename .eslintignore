@@ -2,7 +2,9 @@
 /config
 /db
 /doc
-/lib/assets/javascripts
+/lib/assets/javascripts/cartodb
+/lib/assets/javascripts/cdb
+/lib/assets/javascripts/utils
 /lib/assets/node_modules
 /lib/assets/test
 /lib/build/*

@@ -48,7 +48,7 @@ var Search = View.extend({
     this.map = this.model;
     this.mapView = this.options.mapView;
     this.template = this.options.template || template;
-    this.token = this.options.token || window.__mapboxApiKey;
+    this.token = this.options.token || window.mapboxApiKey;
   },
 
   render: function () {

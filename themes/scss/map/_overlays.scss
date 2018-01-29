@@ -316,9 +316,8 @@ $maxLegendContainerHeight: 300px;
 }
 
 .Bubble-list {
-  position: relative;
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
 }
 
 .Bubble-item {
@@ -330,11 +329,9 @@ $maxLegendContainerHeight: 300px;
 }
 
 .Bubble-container {
-  @include display-flex();
-  max-height: 100px;
-  padding-top: 10px;
-  padding-bottom: 8px;
+  position: relative;
 }
+
 .Bubble-itemCircle {
   display: block;
   position: relative;
@@ -352,44 +349,33 @@ $maxLegendContainerHeight: 300px;
   visibility: hidden;
 }
 
-.Bubble-numbers {
-  position: relative;
-  width: 100%;
-}
-
 .Bubble-numbersItem {
-  position: absolute;
-  width: 100%;
-  margin-bottom: -6px;
-  padding-right: $baseSize * 2;
-  z-index: 10;
+  position: relative;
+  margin-bottom: 5px;
 
-  &:last-child {
-    background: #FFF;
-  }
-
-  &::after {
+  &:before {
     position: absolute;
-    bottom: 5px;
+    top: 7px;
     left: 0;
-    width: calc(100% + 35px);
     height: 1px;
+    width: calc(100% - 74px);
     background: rgba(0, 0, 0, 0.08);
-    content: '';
-    visibility: visible;
-    z-index: -1;
+    content: ' ';
+    z-index: 0;
+    transform: translate3d(24px, 0, 0);
   }
-}
 
-.Bubble-numbersItem-value {
-  padding-right: 8px;
-  background: #FFF;
+  &:last-of-type {
+    top: 7px;
+  }
 }
 
 .Bubble-inner {
-  @include display-flex();
-  position: relative;
-  width: 100%;
+  position: absolute;
+  top: 7px;
+  right: 0;
+  width: 100px;
+  height: 100px;
 }
 
 .Bubble-average {

@@ -1,23 +1,19 @@
-<div class="Bubble-container u-flex u-justifySpace">
-  <ul class="Bubble-numbers u-flex u-justifySpace">
+<div class="Bubble-container">
+  <ul class="Bubble-numbers">
     <% if (hasCustomLabels) { %>
-      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: 0%">
-        <span class="Bubble-numbersItem-value"><%- labels[1] %></span>
-      </li>
-      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: 100%">
-        <span class="Bubble-numbersItem-value"><%- labels[0] %></span>
-      </li>
+      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: 0%"><%- labels[1] %></li>
+      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: 100%"><%- labels[0] %></li>
     <% } else { %>
       <% for (var i = 0; i<labels.length; i++) { %>
         <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: <%- labelPositions[i] %>%">
-          <span class="Bubble-numbersItem-value"><%= formatter.formatNumber(labels[i]) %></span>
+          <%= formatter.formatNumber(labels[i]) %>
         </li>
       <% } %>
     <% } %>
   </ul>
 
   <div class="Bubble-inner">
-    <ul class="Bubble-list <% if (hasCustomLabels && labels[1] === '') { %>Bubble-list--custom<% } %>">
+    <ul class="Bubble-list<% if (hasCustomLabels && labels[1] === '') { %> Bubble-list--custom<% } %>">
       <% for (var i in bubbleSizes) { %>
         <%
           var customCssClass = '';

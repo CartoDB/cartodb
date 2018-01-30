@@ -31,6 +31,7 @@ var metadataParser = require('./metadata/parser');
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
+ * @param {string} [options.id] - An unique identifier for the layer
  * @fires metadataChanged
  * @fires featureClicked
  * @fires featureOut
@@ -62,6 +63,8 @@ var metadataParser = require('./metadata/parser');
  * @api
  */
 function Layer (source, style, options) {
+  Base.apply(this, arguments);
+
   options = options || {};
 
   _checkSource(source);
@@ -75,8 +78,9 @@ function Layer (source, style, options) {
   this._visible = true;
   this._featureClickColumns = options.featureClickColumns || [];
   this._featureOverColumns = options.featureOverColumns || [];
-
-  Base.apply(this, arguments);
+  this._minzoom = options.minzoom || 0;
+  this._maxzoom = options.maxzoom || undefined;
+  this._aggregation = options.aggregation || {};
 }
 
 Layer.prototype = Object.create(Base.prototype);
@@ -335,8 +339,13 @@ Layer.prototype._createInternalModel = function (engine) {
     cartocss: this._style.getContent(),
     visible: this._visible,
     infowindow: _getInteractivityFields(this._featureClickColumns),
-    tooltip: _getInteractivityFields(this._featureOverColumns)
-  }, { engine: engine });
+    tooltip: _getInteractivityFields(this._featureOverColumns),
+    minzoom: this._minzoom,
+    maxzoom: this._maxzoom
+  }, {
+    engine: engine,
+    aggregation: this._aggregation
+  });
 
   internalModel.on('change:meta', function (layer, data) {
     var rules = data.cartocss_meta.rules;

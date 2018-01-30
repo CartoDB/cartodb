@@ -56,16 +56,17 @@ _.extend(Client.prototype, Backbone.Events);
 
 /**
  * Add a layer to the client.
+ * If the layer id already exists in the client this method will throw an error.
  *
  * @param {carto.layer.Base} - The layer to be added
  *
  * @fires error
  * @fires success
- * 
+ *
  * @example
  * // Add a layer to the client
  * client.addLayer(layer)
- *  .then(() => { 
+ *  .then(() => {
  *    console.log('Layer added');
  *  })
  *  .catch(cartoError => {
@@ -86,11 +87,11 @@ Client.prototype.addLayer = function (layer) {
  *
  * @fires error
  * @fires success
- * 
+ *
  * @example
  * // Add multiple layers ad once layer to the client
  * client.addLayers([layer0, layer1])
- *  .then(() => { 
+ *  .then(() => {
  *    console.log('Layers added');
  *  })
  *  .catch(cartoError => {
@@ -107,7 +108,7 @@ Client.prototype.addLayers = function (layers) {
 
 /**
  * Remove a layer from the client.
- * 
+ *
  * @example
  * // Remove a layer from the client
  * client.removeLayer(layer)
@@ -132,7 +133,7 @@ Client.prototype.removeLayer = function (layer) {
 
 /**
  * Remove multiple layers from the client.
- * 
+ *
  * @example
  * // Remove multiple layers from the client
  * client.removeLayers([layer1, layer2])
@@ -159,11 +160,11 @@ Client.prototype.removeLayers = function (layers) {
 
 /**
  * Get all the {@link carto.layer.Base|layers} from the client.
- * 
+ *
  * @example
  * // Get all layers from the client
  * const layers = client.getLayers();
- * 
+ *
  * @example
  * // Hide all layers from the client
  * client.getLayers().forEach(layer => layer.hide());
@@ -177,7 +178,7 @@ Client.prototype.getLayers = function () {
 
 /**
  * Add a dataview to the client.
- * 
+ *
  * @example
  * // Add a dataview to the client
  * client.addDataview(dataview)
@@ -212,7 +213,7 @@ Client.prototype.addDataview = function (dataview) {
  *  .catch(cartoError => {
  *    console.error(cartoError.message);
  *  }):
- * 
+ *
  * @param {carto.dataview.Base[]} - An array with the dataviews to be added
  *
  * @fires error
@@ -228,7 +229,7 @@ Client.prototype.addDataviews = function (dataviews) {
 
 /**
  * Remove a dataview from the client.
- * 
+ *
  * @example
  * // Remove a dataview from the client
  * client.removeDataview(dataview)
@@ -255,7 +256,7 @@ Client.prototype.removeDataview = function (dataview) {
 
 /**
  * Get all the dataviews from the client.
- * 
+ *
  * @example
  * // Get all the dataviews from the client
  * const dataviews = client.getDataviews();
@@ -271,16 +272,16 @@ Client.prototype.getDataviews = function () {
  * Return a {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|leaflet layer} that groups all the layers that have been
  * added to this client.
  *
- * @example 
+ * @example
  * // Get the leafletlayer from the client
  * const cartoLeafletLayer = client.getLeafletLayer();
- * 
+ *
  * @example
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
- *  
+ *
  * @returns A {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer} layer that groups all the layers.
- * 
+ *
  * @api
  */
 Client.prototype.getLeafletLayer = function () {
@@ -296,15 +297,15 @@ Client.prototype.getLeafletLayer = function () {
 /**
  * Return a {@link https://developers.google.com/maps/documentation/javascript/maptypes|google.maps.MapType} that groups all the layers that have been
  * added to this client.
- * 
+ *
  * @example
  * // Get googlemaps MapType from client
  * const gmapsMapType = client.getGoogleMapsMapType();
- * 
+ *
  * @example
  * // Add googlemaps MapType to a google map
  * googleMap.overlayMapTypes.push(client.getGoogleMapsMapType(googleMap));
- * 
+ *
  * @param {google.maps.Map} - The native Google Maps map where the CARTO layers will be displayed.
  *
  * @return {google.maps.MapType} A Google Maps mapType that groups all the layers:
@@ -343,6 +344,7 @@ Client.prototype._reload = function () {
  */
 Client.prototype._addLayer = function (layer, engine) {
   _checkLayer(layer);
+  this._checkDuplicatedLayerId(layer);
   this._layers.add(layer);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
@@ -386,11 +388,20 @@ Client.prototype._bindEngine = function (engine) {
 };
 
 /**
- * Utility function to reduce duplicated code.
- * Check if an object inherits from LayerBase.
+ * Check if some layer in the client has the same id.
+ * @param {carto.layer.Base} layer 
  */
-function _checkLayer (object) {
-  if (!(object instanceof LayerBase)) {
+Client.prototype._checkDuplicatedLayerId = function (layer) {
+  if (this._layers.findById(layer.getId())) {
+    throw getValidationError('duplicatedLayerId');
+  }
+};
+
+/**
+ * Utility function to reduce duplicated code.
+ */
+function _checkLayer (layer) {
+  if (!(layer instanceof LayerBase)) {
     throw getValidationError('badLayerType');
   }
 }

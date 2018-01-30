@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var View = require('../../../core/view');
-var MAPZEN = require('../../../geo/geocoder/mapzen-geocoder');
+var geocoder = require('../../../geo/geocoder/mapbox-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
 var Infowindow = require('../../../geo/ui/infowindow-view');
 var Point = require('../../../geo/geometry-models/point.js');
@@ -48,6 +48,7 @@ var Search = View.extend({
     this.map = this.model;
     this.mapView = this.options.mapView;
     this.template = this.options.template || template;
+    this.token = this.options.token || window.mapboxApiKey;
   },
 
   render: function () {
@@ -63,7 +64,6 @@ var Search = View.extend({
 
   _onSubmit: function (ev) {
     ev.preventDefault();
-    var self = this;
     var address = this.$('.js-textInput').val();
 
     if (!address) {
@@ -72,47 +72,21 @@ var Search = View.extend({
     // Remove previous pin without any timeout (0 represents the timeout for
     // the animation)
     this._destroySearchPin(0);
-    MAPZEN.geocode(address, function (places) {
-      self._onResult(places);
-    });
+    // TODO: we a Better way to pass api keys
+    return geocoder.geocode(address, this.token).then(this._onResult.bind(this));
   },
 
   _onResult: function (places) {
-    var position = '';
     var address = this.$('.js-textInput').val();
 
     if (places && places.length > 0) {
       var location = places[0];
-      var validBBox = this._isBBoxValid(location);
 
-      // Get BBox if possible and set bounds
-      if (validBBox) {
-        var s = parseFloat(location.boundingbox.south);
-        var w = parseFloat(location.boundingbox.west);
-        var n = parseFloat(location.boundingbox.north);
-        var e = parseFloat(location.boundingbox.east);
-
-        var centerLon = (w + e) / 2;
-        var centerLat = (s + n) / 2;
-        position = [centerLat, centerLon];
-        this.model.setBounds([ [ s, w ], [ n, e ] ]);
-      }
-
-      // If location is defined,
-      // let's store it
-      if (location.lat && location.lon) {
-        position = [location.lat, location.lon];
-      }
-
-      // In the case that BBox is not valid, let's
-      // center the map using the position
-      if (!validBBox) {
-        this.model.setCenter(position);
-        this.model.setZoom(this._getZoomByCategory(location.type));
-      }
+      this.model.setCenter(location.center);
+      this.model.setZoom(this._getZoomByCategory(location.type));
 
       if (this.options.searchPin) {
-        this._createSearchPin(position, address);
+        this._createSearchPin(location.center, address);
       }
     }
   },
@@ -128,14 +102,6 @@ var Search = View.extend({
       return this._ZOOM_BY_CATEGORY[type];
     }
     return this._ZOOM_BY_CATEGORY['default'];
-  },
-
-  _isBBoxValid: function (location) {
-    if (!location.boundingbox || location.boundingbox.south === location.boundingbox.north ||
-      location.boundingbox.east === location.boundingbox.west) {
-      return false;
-    }
-    return true;
   },
 
   _createSearchPin: function (position, address) {

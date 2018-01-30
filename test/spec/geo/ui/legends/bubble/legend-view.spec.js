@@ -39,7 +39,7 @@ describe('geo/ui/legends/bubbles/legend-view.js', function () {
     });
 
     it('should render bubbles', function () {
-      expect(this.legendView.$('.js-bubbleItem').length).toBe(3);
+      expect(this.legendView.$('.js-bubbleItem').length).toBe(4);
       expect(this.legendView._calculateBubbleSizes()).toEqual([100, 50, 25]);
     });
 
@@ -77,10 +77,9 @@ describe('geo/ui/legends/bubbles/legend-view.js', function () {
 
     it('should render custom labels properly', function () {
       this.model.set('topLabel', 'foo');
-      expect(this.legendView.$('.Bubble-numbersItem').length).toBe(2);
-      expect(this.legendView.$('.Bubble-numbersItem').eq(0).text()).toBe('');
-      expect(this.legendView.$('.Bubble-numbersItem').eq(1).text()).toBe('foo');
-      expect(this.legendView.$('.Bubble-average').text()).toMatch(/^\s+$/);
+      expect(this.legendView.$('.Bubble-numbersItem').length).toBe(1);
+      expect(this.legendView.$('.Bubble-numbersItem').eq(0).text()).toBe('foo');
+      expect(this.legendView.$('.Bubble-average').length).toBe(0);
     });
   });
 });

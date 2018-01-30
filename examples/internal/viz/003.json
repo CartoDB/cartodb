@@ -1,0 +1,53 @@
+{
+  "id": "2b13c956-e7c1-11e2-806b-5404a6a683d5",
+  "version": "0.1.0",
+  "title": "european_countries_e 0",
+  "likes": 0,
+  "description": null,
+  "scrollwheel": true,
+  "legends": true,
+  "url": null,
+  "map_provider": "leaflet",
+  "center": "[52.5897007687178, 52.734375]",
+  "zoom": 4,
+  "updated_at": "2015-03-13T11:24:37+00:00",
+  "datasource": {
+      "user_name": "documentation",
+      "maps_api_template": "http://{user}.cartodb.com:80",
+      "force_cors": true,
+      "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+  },
+  "layers": [
+      {
+          "options": {
+              "id": "0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+              "order": 0,
+              "visible": true,
+              "type": "Tiled",
+              "name": "Positron",
+              "className": "default positron_rainbow",
+              "baseType": "positron_rainbow",
+              "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "read_only": true,
+              "minZoom": "0",
+              "maxZoom": "18",
+              "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+              "subdomains": "abcd",
+              "category": "CartoDB"
+          },
+          "infowindow": null,
+          "tooltip": null,
+          "id": "0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+          "order": 0,
+          "type": "tiled"
+      }
+  ],
+  "overlays": [
+      {
+          "type": "search",
+          "options": {
+              "display": true
+          }
+      }
+  ]
+}

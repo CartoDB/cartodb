@@ -51,7 +51,7 @@
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
-            <% if @hasNewDashboard %>
+            <% if @has_new_dashboard %>
               url: '<%= vis_json_v3_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
             <% else %>
               url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
@@ -64,7 +64,7 @@
       };
       </script>
 
-    <% if @hasNewDashboard %>
+    <% if @has_new_dashboard %>
       <%= javascript_include_tag 'common_dashboard', 'user_feed_new' %>
     <% else %>
       <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>

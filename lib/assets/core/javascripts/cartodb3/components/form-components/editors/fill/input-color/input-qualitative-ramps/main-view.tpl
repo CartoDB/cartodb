@@ -8,6 +8,18 @@
           </button>
           <span class="label js-label"><%- attribute %></span>
         </li>
+        <% if (columnType === 'number' && !hideQuantification) { %>
+          <li class="u-flex">
+            <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>
+            <button class="CDB-Shape u-lSpace js-quantification">
+              <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
+                <div class="CDB-Shape-threePointsItem"></div>
+                <div class="CDB-Shape-threePointsItem"></div>
+                <div class="CDB-Shape-threePointsItem"></div>
+              </div>
+            </button>
+          </li>
+        <% } %>
       </ul>
     </li>
   </ul>
@@ -24,5 +36,16 @@
 <% } else if (status === 'error') { %>
   <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('form-components.editors.fill.error') %></div>
 <% } else { %>
+
+  <!--  Ramp List -->
   <div class="InputColorCategory-content js-content"></div>
+
+  <!--  Custom Ramp List -->
+  <div class="CDB-Text CDB-Size-medium CustomRamp-list CustomList-listWrapper">
+    <ul class="CustomList-list js-customList">
+      <li class="CDB-ListDecoration-item CustomList-item CustomList-item--add">
+        <button class="CDB-ListDecoration-itemLink js-listItemLink js-customize u-actionTextColor"><%- _t('form-components.editors.fill.customize') %></button>
+      </li>
+    </ul>
+  </div>
 <% } %>

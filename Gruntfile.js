@@ -408,7 +408,7 @@ module.exports = function (grunt) {
   ]);
 
   /**
-   * `grunt affected_specs` compile all Builder specs and launch a webpage in the browser.
+   * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.
    */
   grunt.registerTask('test:browser', 'Build all Builder specs', [
     'affected',

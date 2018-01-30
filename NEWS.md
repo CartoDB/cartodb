@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Replace Mapzen geocoding with Mapbox (#13450)
 * Disable following analysis steps (#13311)
 * Enable deleting geometry anchors in edit mode (#11341)
 * Fix marker bugs (#1207)

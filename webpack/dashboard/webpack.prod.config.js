@@ -9,7 +9,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  'user-feed': resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js')
+  user_feed_new: resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js')
 };
 
 module.exports = env => {
@@ -29,7 +29,7 @@ module.exports = env => {
       .concat([
       // Extract common chuncks from the 3 vendor files
         new webpack.optimize.CommonsChunkPlugin({
-          name: 'common',
+          name: 'common_dashboard',
           chunks: Object.keys(entryPoints).map(n => `${n}_vendor`),
           minChunks: (module, count) => {
             return count >= Object.keys(entryPoints).length && isVendor(module);

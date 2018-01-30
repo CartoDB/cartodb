@@ -129,6 +129,7 @@ class Admin::PagesController < Admin::AdminController
       @maps_count         = maps_builder.build.count
       @website            = website_url(@viewed_user.website)
       @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
+      @hasNewDashboard    = @viewed_user.builder_enabled && viewed_user.has_feature_flag?('dashboard_migration')
 
       if eligible_for_redirect?(@viewed_user)
         # redirect username.host.ext => org-name.host.ext/u/username

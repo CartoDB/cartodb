@@ -410,7 +410,7 @@ module.exports = function (grunt) {
   /**
    * `grunt affected_specs` compile all Builder specs and launch a webpage in the browser.
    */
-  grunt.registerTask('affected_specs', 'Build all Builder specs', [
+  grunt.registerTask('test:browser', 'Build all Builder specs', [
     'affected',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',

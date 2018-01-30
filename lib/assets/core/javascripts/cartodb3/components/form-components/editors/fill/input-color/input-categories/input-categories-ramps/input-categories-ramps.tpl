@@ -11,7 +11,7 @@
             </ul>
           </div>
         </li>
-        <% }); %>
+      <% }); %>
     </ul>
   </div>
 </div>
@@ -19,7 +19,9 @@
 <div class="CDB-Text CDB-Size-medium CustomRamp-list CustomList-listWrapper js-custom-color-set">
   <ul class="CustomList-list">
     <li class="CDB-ListDecoration-item CustomList-item CustomList-item--add">
-      <button class="CDB-ListDecoration-itemLink u-actionTextColor ">Custom color set</button>
+      <button class="CDB-ListDecoration-itemLink u-actionTextColor">Custom color set</button>
     </li>
   </ul>
 </div>
+
+<div class="js-content"></div>

@@ -60,6 +60,8 @@
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
           }
+        <% elsif !@has_new_dashboard %>
+          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
         <% end %>
       };
       </script>

@@ -2007,6 +2007,7 @@
         "search-by-column-name": "Search by column name",
         "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",
+        "select-type-placeholder": "Select a type",
         "select-data-source": "Select a data source",
         "select-second-source": "Select a second data source to join",
         "select-type": "Select data type",

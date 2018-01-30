@@ -4,7 +4,7 @@
   font-family: 'Roboto Medium';
   font-style: normal;
   font-weight: 500;
-  src: url(font-files("Roboto-Medium.woff")) format('woff');
+  src: font-files("Roboto-Medium.woff");
 }
 
 .Sessions-oauthHeader {

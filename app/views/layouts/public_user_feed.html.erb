@@ -56,8 +56,6 @@
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
           }
-        <% else %>
-          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
         <% end %>
       };
       </script>

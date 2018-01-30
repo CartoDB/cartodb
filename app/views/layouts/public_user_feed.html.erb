@@ -51,7 +51,11 @@
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
-            url: '<%= vis_json_v3_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+            <% if @hasNewDashboard %>
+              url: '<%= vis_json_v3_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+            <% else %>
+              url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+            <% end %>
             opts: {
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
@@ -62,7 +66,11 @@
       };
       </script>
 
-    <%= javascript_include_tag 'common', 'user_feed' %>
+    <% if @hasNewDashboard %>
+      <%= javascript_include_tag 'common_dashboard', 'user_feed_new' %>
+    <% else %>
+      <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
+    <% end %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>
     <%= insert_hubspot() %>

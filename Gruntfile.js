@@ -426,7 +426,6 @@ module.exports = function (grunt) {
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:affected',
-    'js_dashboard',
     'generate_dashboard_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
@@ -450,8 +449,6 @@ module.exports = function (grunt) {
    * `grunt dashboard_specs` compile dashboard specs
    */
   grunt.registerTask('dashboard_specs', 'Build only dashboard specs', [
-    'js_builder',
-    'js_dashboard',
     'generate_dashboard_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',

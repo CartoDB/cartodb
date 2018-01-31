@@ -152,12 +152,13 @@
     "build:internal": "grunt build",
     "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",
     "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
-    "bump": "npm run devlog && git commit -am 'Update devlog' &&  npm version prerelease",
+    "bump": "npm version prerelease",
     "bump:minor": "npm version minor",
     "bump:patch": "npm version patch",
-    "release": "./scripts/release.sh",
+    "version": "npm run devlog && git add DEVLOG.md",
     "postversion": "git push origin HEAD --follow-tags",
-    "devlog": "carto-devlog -s d58f78f54 -b 'Bump version' to -m 'Merge pull request' > DEVLOG.md"
+    "devlog": "carto-devlog -s d58f78f54 -b 'Bump version to' -m 'Merge pull request' > DEVLOG.md",
+    "release": "./scripts/release.sh"
   },
   "watch": {
     "docs": "src/**/*.js"

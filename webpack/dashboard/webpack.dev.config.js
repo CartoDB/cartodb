@@ -14,7 +14,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  user_feed_new: resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard/user-feed.js')
+  user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js')
 };
 
 module.exports = env => {
@@ -99,8 +99,8 @@ module.exports = env => {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard'),
             resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
         },
@@ -110,7 +110,7 @@ module.exports = env => {
           include: [
             resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
             resolve(__dirname, '../../', 'node_modules/tangram.cartodb'),
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard')
+            resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard')
           ],
           options: {
             presets: ['env']

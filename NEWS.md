@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Unplug pluggable frontends (#13446)
 * Replace Mapzen geocoding with Mapbox (#13450)
 * Disable following analysis steps (#13311)
 * Enable deleting geometry anchors in edit mode (#11341)
@@ -127,6 +128,7 @@ ion for time-series (#12670)
 * Don't disable delete analysis button if layer already has some [Support#1283](https://github.com/CartoDB/support/issues/1283)
 * Submit form with Enter key in the Add layer modal > Connect dataset tab (#13441)
 * Add routing to analyses nodes (#13364)
+* Fix organization signup page not working on subdomainless #13012
 * Fix publish modal in settings view (#13418)
 * Improve onboarding for when user adds an empty layer (#11876)
 * Don't show the publish modal when the user clicks on the privacy button (#13366)

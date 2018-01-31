@@ -186,6 +186,45 @@ describe('api/v4/client', function () {
       client.addLayer(layer);
 
       expect(client.getLayers().length).toEqual(1);
+
+      client.removeLayer(layer);
+
+      expect(client.getLayers().length).toEqual(0);
+    });
+  });
+
+  describe('.moveLayer', function () {
+    it('should throw a descriptive error when the parameter is invalid', function () {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
+      var layer = new carto.layer.Layer(source, style, {});
+
+      expect(function () {
+        client.moveLayer({}, 0);
+      }).toThrowError('The given object is not a layer.');
+
+      expect(function () {
+        client.moveLayer(layer, false);
+      }).toThrowError('index property must be a number.');
+
+      expect(function () {
+        client.moveLayer(layer, 1234);
+      }).toThrowError('index is out of range.');
+    });
+
+    it('should move the layer when is in the client', function () {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
+      var layer0 = new carto.layer.Layer(source, style, {});
+      var layer1 = new carto.layer.Layer(source, style, {});
+
+      client.addLayers([layer0, layer1]);
+      expect(client.getLayers()[0]).toEqual(layer0);
+      expect(client.getLayers()[1]).toEqual(layer1);
+
+      client.moveLayer(layer0, 1);
+      expect(client.getLayers()[1]).toEqual(layer0);
+      expect(client.getLayers()[0]).toEqual(layer1);
     });
   });
 

@@ -212,7 +212,6 @@
       "the-geom": "This column was updated to be lines according to the method chosen.",
       "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order",
       "line-source-to-target": "Link a source point to a target point based on a shared attribute",
-      "line-to-column": "Create lines from a point to to a geometry stored in another column",
       "line-to-single-point": "Connect the coordinate from latitude and longitude columns to the point geometry (`the_geom`) in your dataset."
     },
     "group-points": {
@@ -1905,7 +1904,6 @@
         "latitude": "Latitude",
         "line-sequential": "Sequential",
         "line-source-to-target": "To Source",
-        "line-to-column": "To Column",
         "line-to-single-point": "To Single Point",
         "link-layer": "Link to col.",
         "link-layer-desc": "Specify a second layer to filter by",

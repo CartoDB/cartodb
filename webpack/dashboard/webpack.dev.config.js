@@ -109,7 +109,8 @@ module.exports = env => {
           loader: 'babel-loader',
           include: [
             resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
-            resolve(__dirname, '../../', 'node_modules/tangram.cartodb')
+            resolve(__dirname, '../../', 'node_modules/tangram.cartodb'),
+            resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard')
           ],
           options: {
             presets: ['env']

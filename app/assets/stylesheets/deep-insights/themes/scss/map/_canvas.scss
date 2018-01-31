@@ -2,28 +2,28 @@
 // --------------------------------------------------
 
 .CDB-Dashboard-canvas {
-  @include display-flex();
-  @include justify-content(space-between, justify);
+  display: flex;
   position: relative;
   box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
+  justify-content: space-between;
   width: 100%;
   height: 100%; // fill content to the visible viewport, but add scroll for overflowing inline content (e.g. widgets)
   padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
-  background: rgba(#F2F6F9, 1); // Canvas is out of widget themes
+  background: #F2F6F9; // Canvas is out of widget themes
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .CDB-Dashboard-mapWrapper {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include flex-direction(column);
-  @include flex-grow(1);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 .CDB-Map-canvas {
-  @include flex-grow(1);
   position: relative;
+  flex-grow: 1;
 }
 
 .CDB-Map {
@@ -55,13 +55,15 @@
 
 @media (max-width: 759px) {
   body {
+    position: fixed !important;
+    width: 100%;
     overflow: hidden; // Avoid scroll in small screens
   }
 
   .CDB-Dashboard-canvas {
-    @include flex-direction(column);
     position: relative;
     box-sizing: border-box;
+    flex-direction: column;
     width: calc(100% - 8px);
     height: calc(100% - 8px);
     margin: $halfBaseSize;
@@ -97,5 +99,20 @@
     border-radius: 0;
     border-top-left-radius: $halfBaseSize;
     border-top-right-radius: $halfBaseSize;
+  }
+}
+
+@media (max-width: 758px) {
+  .CDB-Dashboard-canvas,
+  .CDB-Map {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .CDB-Dashboard-canvas::after {
+    border-radius: 0;
   }
 }

@@ -783,6 +783,11 @@
         }
       }
     },
+    "fastclick": {
+      "version": "1.0.6",
+      "from": "fastclick@>=1.0.6 <2.0.0",
+      "resolved": "https://registry.npmjs.org/fastclick/-/fastclick-1.0.6.tgz"
+    },
     "filename-regex": {
       "version": "2.0.1",
       "from": "filename-regex@>=2.0.0 <3.0.0",

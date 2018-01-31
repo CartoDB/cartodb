@@ -37,10 +37,10 @@
   <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('form-components.editors.fill.error') %></div>
 <% } else { %>
 
-  <!--  Ramp List -->
-  <div class="InputColorCategory-content js-content"></div>
+  <!-- Stack Layout View -->
+  <div class="js-content"></div>
 
-  <!--  Custom Ramp List -->
+  <!--  Custom Color Set -->
   <div class="CDB-Text CDB-Size-medium CustomRamp-list CustomList-listWrapper">
     <ul class="CustomList-list js-customList">
       <li class="CDB-ListDecoration-item CustomList-item CustomList-item--add">

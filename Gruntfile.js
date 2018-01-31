@@ -385,10 +385,9 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('release', [
     'check_release',
-    'build'
-    // ,
-    // 's3',
-    // 'invalidate'
+    'build',
+    's3',
+    'invalidate'
   ]);
 
   grunt.registerTask('affected', 'Generate only affected specs', function (option) {

@@ -69,7 +69,7 @@ var LeafletLayer = L.TileLayer.extend({
 
   _onFeatureClick: function (internalEvent) {
     var layer = this._layers.findById(internalEvent.layer.id);
-    triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, layer);
+    triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, internalEvent, layer);
   },
 
   _onFeatureOver: function (internalEvent) {
@@ -78,7 +78,7 @@ var LeafletLayer = L.TileLayer.extend({
       this._hoveredLayers[internalEvent.layerIndex] = true;
       this._map.getContainer().style.cursor = 'pointer';
     }
-    triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, layer);
+    triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, internalEvent, layer);
   },
 
   _onFeatureOut: function (internalEvent) {
@@ -89,7 +89,7 @@ var LeafletLayer = L.TileLayer.extend({
     } else {
       this._map.getContainer().style.cursor = 'auto';
     }
-    triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, layer);
+    triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent, layer);
   },
 
   _onFeatureError: function (error) {

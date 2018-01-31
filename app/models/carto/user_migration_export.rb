@@ -37,7 +37,7 @@ module Carto
                 else
                   UserMigrationPackage.for_export(id, log)
                 end
-      
+
       export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(package.data_dir))
 
       run_metadata_export(package.meta_dir) if export_metadata?

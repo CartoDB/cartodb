@@ -137,6 +137,11 @@ module Carto
     def setup_db_role
       db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
       db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
+      db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
+
+      if user.organization_user?
+        db_run("GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\"")
+      end
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?

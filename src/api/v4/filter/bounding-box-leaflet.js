@@ -24,6 +24,9 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * dataview.addFilter(bboxFilter);
  */
 function BoundingBoxLeaflet (map) {
+  if (!_isLeafletMap(map)) {
+    throw new Error('Bounding box needs a leaflet map but got: ' + map);
+  }
   // Adapt the Leaflet map to offer unique:
   // - getBounds() function
   // - 'boundsChanged' event
@@ -52,5 +55,13 @@ BoundingBoxLeaflet.prototype._onBoundsChanged = function (bounds) {
 BoundingBoxLeaflet.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
+
+// Helper to check if an element is a leafletmap object
+function _isLeafletMap (element) {
+  if (!element) {
+    return false;
+  }
+  return element.hasOwnProperty('_leaflet_id');
+}
 
 module.exports = BoundingBoxLeaflet;

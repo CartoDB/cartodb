@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.24",
+  "version": "4.11.27",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -782,6 +782,11 @@
           "resolved": "https://registry.npmjs.org/object-keys/-/object-keys-1.0.11.tgz"
         }
       }
+    },
+    "fastclick": {
+      "version": "1.0.6",
+      "from": "fastclick@>=1.0.6 <2.0.0",
+      "resolved": "https://registry.npmjs.org/fastclick/-/fastclick-1.0.6.tgz"
     },
     "filename-regex": {
       "version": "2.0.1",

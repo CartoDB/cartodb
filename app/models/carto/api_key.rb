@@ -76,15 +76,15 @@ module Carto
 
     def table_permissions_from_db
       query = %{
-        select
+        SELECT
           table_schema,
           table_name,
           string_agg(lower(privilege_type),',') privilege_types
-        from
+        FROM
           information_schema.role_table_grants
-        where
+        WHERE
           grantee = '#{db_role}'
-        group by
+        GROUP BY
           table_schema,
           table_name;
         }
@@ -136,14 +136,12 @@ module Carto
     end
 
     def setup_db_role
-      db_run(
-        "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
-      )
+      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'")
     end
 
     def drop_db_role
       revoke_privileges(*affected_schemas(table_permissions))
-      db_run("drop role \"#{db_role}\"")
+      db_run("DROP ROLE \"#{db_role}\"")
     end
 
     def update_role_permissions
@@ -153,9 +151,7 @@ module Carto
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          db_run(
-            "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
-          )
+          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
         end
       end
     end
@@ -208,7 +204,7 @@ module Carto
       schemas.uniq.each do |schema|
         db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
-        db_run("REVOKE ECECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
       end
     end

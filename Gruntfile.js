@@ -362,6 +362,7 @@ module.exports = function (grunt) {
   registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
+  registerCmdTask('npm-build-dashboard', {cmd: 'npm', args: ['run', 'build:dashboard']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
   registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
@@ -409,7 +410,8 @@ module.exports = function (grunt) {
     'copy:js',
     'exorcise',
     'uglify',
-    'npm-build'
+    'npm-build',
+    'npm-build:dashboard',
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [

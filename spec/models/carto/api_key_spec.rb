@@ -1,8 +1,11 @@
 # encoding: utf-8
 
 require 'spec_helper_min'
+require 'support/helpers'
 
 describe Carto::ApiKey do
+  include CartoDB::Factories
+
   def api_key_permissions(api_key, schema, table_name)
     api_key.table_permissions_from_db.find do |tp|
       tp.schema == schema && tp.name == table_name

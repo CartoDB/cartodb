@@ -33,7 +33,8 @@ GoogleMapsMapType.prototype.getTile = function (coord, zoom, ownerDocument) {
 };
 
 GoogleMapsMapType.prototype._onFeatureClick = function (internalEvent) {
-  triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, internalEvent, this._layers);
+  var layer = this._layers.findById(internalEvent.layer.id);
+  triggerLayerFeatureEvent(Layer.events.FEATURE_CLICKED, layer);
 };
 
 GoogleMapsMapType.prototype._onFeatureOver = function (internalEvent) {
@@ -42,17 +43,18 @@ GoogleMapsMapType.prototype._onFeatureOver = function (internalEvent) {
     this._hoveredLayers[internalEvent.layerIndex] = true;
     this._map.setOptions({ draggableCursor: 'pointer' });
   }
-  triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, internalEvent, this._layers);
+  triggerLayerFeatureEvent(Layer.events.FEATURE_OVER, layer);
 };
 
 GoogleMapsMapType.prototype._onFeatureOut = function (internalEvent) {
+  var layer = this._layers.findById(internalEvent.layer.id);
   this._hoveredLayers[internalEvent.layerIndex] = false;
   if (_.any(this._hoveredLayers)) {
     this._map.setOptions({ draggableCursor: 'pointer' });
   } else {
     this._map.setOptions({ draggableCursor: 'auto' });
   }
-  triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, internalEvent, this._layers);
+  triggerLayerFeatureEvent(Layer.events.FEATURE_OUT, layer);
 };
 
 GoogleMapsMapType.prototype._onFeatureError = function (error) {

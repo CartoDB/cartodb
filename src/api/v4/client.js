@@ -159,6 +159,34 @@ Client.prototype.removeLayers = function (layers) {
 };
 
 /**
+ * Move layer order.
+ *
+ * @example
+ * // Move layer order
+ * client.moveLayer(layer1, 0)
+ * .then(() => {
+ *  console.log('Layers removed');
+ * })
+ * .catch(cartoError => {
+ *  console.error(cartoError.message);
+ * });
+ *
+ *
+ * @param {carto.layer.Base} - The layer to be moved
+ * @param {number} toIndex - Final index for the layer
+ *
+ * @fires error
+ * @fires success
+ *
+ * @returns {Promise} A promise that will be fulfilled when the layer is moved
+ * @api
+ */
+Client.prototype.moveLayer = function (layer, toIndex) {
+  this._moveLayer(layer, toIndex);
+  return this._reload();
+};
+
+/**
  * Get all the {@link carto.layer.Base|layers} from the client.
  *
  * @example
@@ -352,11 +380,23 @@ Client.prototype._addLayer = function (layer, engine) {
 
 /**
  * Helper used to remove a layer from the client.
+ * @private
  */
 Client.prototype._removeLayer = function (layer) {
   _checkLayer(layer);
   this._layers.remove(layer);
   this._engine.removeLayer(layer.$getInternalModel());
+};
+
+/**
+ * Helper used to remove a layer from the client.
+ * @private
+ */
+Client.prototype._moveLayer = function (layer, toIndex) {
+  _checkLayer(layer);
+  _checkLayerIndex(toIndex, this._layers.length());
+  this._layers.move(layer, toIndex);
+  this._engine.moveLayer(layer.$getInternalModel(), toIndex);
 };
 
 /**
@@ -389,7 +429,7 @@ Client.prototype._bindEngine = function (engine) {
 
 /**
  * Check if some layer in the client has the same id.
- * @param {carto.layer.Base} layer 
+ * @param {carto.layer.Base} layer
  */
 Client.prototype._checkDuplicatedLayerId = function (layer) {
   if (this._layers.findById(layer.getId())) {
@@ -403,6 +443,15 @@ Client.prototype._checkDuplicatedLayerId = function (layer) {
 function _checkLayer (layer) {
   if (!(layer instanceof LayerBase)) {
     throw getValidationError('badLayerType');
+  }
+}
+
+function _checkLayerIndex (index, length) {
+  if (!_.isNumber(index)) {
+    throw getValidationError('indexNumber');
+  }
+  if (index < 0 || index >= length) {
+    throw getValidationError('indexOutOfRange');
   }
 }
 

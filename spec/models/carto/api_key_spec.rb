@@ -1,11 +1,8 @@
 # encoding: utf-8
 
 require 'spec_helper_min'
-require 'support/helpers'
 
 describe Carto::ApiKey do
-  include_context 'users helper'
-
   def api_key_permissions(api_key, schema, table_name)
     api_key.table_permissions_from_db.find do |tp|
       tp.schema == schema && tp.name == table_name
@@ -50,14 +47,18 @@ describe Carto::ApiKey do
     end
   end
 
-  before(:each) do
+  before(:all) do
+    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
+    @carto_user1 = Carto::User.find(@user1.id)
     @table1 = create_table(user_id: @carto_user1.id)
     @table2 = create_table(user_id: @carto_user1.id)
   end
 
-  after(:each) do
+  after(:all) do
+    bypass_named_maps
     @table2.destroy
     @table1.destroy
+    @user1.destroy if @user1
   end
 
   it 'can grant insert, select, update delete to a database role' do

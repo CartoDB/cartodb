@@ -9,9 +9,9 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  builder_embed: ['whatwg-fetch', resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/public_editor.js')],
-  dataset: resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/dataset.js'),
-  builder: resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3/editor.js')
+  builder_embed: ['whatwg-fetch', resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3/public_editor.js')],
+  dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3/dataset.js'),
+  builder: resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3/editor.js')
 };
 
 module.exports = env => {
@@ -109,9 +109,9 @@ module.exports = env => {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/dashboard'),
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/deep-insights'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
             resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
         },
@@ -119,8 +119,8 @@ module.exports = env => {
           test: /\.mustache$/,
           use: 'raw-loader',
           include: [
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/cartodb3'),
-            resolve(__dirname, '../../', 'lib/assets/core/javascripts/deep-insights'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
             resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
         }

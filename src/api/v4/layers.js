@@ -13,7 +13,7 @@ Layers.prototype.remove = function (layer) {
   return this._layers.splice(this._layers.indexOf(layer));
 };
 
-Layers.prototype.length = function () {
+Layers.prototype.size = function () {
   return this._layers.length;
 };
 

@@ -374,6 +374,7 @@ Client.prototype._addLayer = function (layer, engine) {
   _checkLayer(layer);
   this._checkDuplicatedLayerId(layer);
   this._layers.add(layer);
+  layer.$setClient(this);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
 };
@@ -394,7 +395,7 @@ Client.prototype._removeLayer = function (layer) {
  */
 Client.prototype._moveLayer = function (layer, toIndex) {
   _checkLayer(layer);
-  _checkLayerIndex(toIndex, this._layers.length());
+  _checkLayerIndex(toIndex, this._layers.size());
   this._layers.move(layer, toIndex);
   this._engine.moveLayer(layer.$getInternalModel(), toIndex);
 };
@@ -446,11 +447,11 @@ function _checkLayer (layer) {
   }
 }
 
-function _checkLayerIndex (index, length) {
+function _checkLayerIndex (index, size) {
   if (!_.isNumber(index)) {
     throw getValidationError('indexNumber');
   }
-  if (index < 0 || index >= length) {
+  if (index < 0 || index >= size) {
     throw getValidationError('indexOutOfRange');
   }
 }

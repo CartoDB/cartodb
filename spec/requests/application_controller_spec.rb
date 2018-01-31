@@ -50,7 +50,7 @@ describe ApplicationController do
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.email)
         response.status.should == 200
-        response.body.should_not include("Login to Carto")
+        response.body.should_not include("Log in")
       end
 
       it 'does not load the dashboard for an unknown user email' do
@@ -73,7 +73,7 @@ describe ApplicationController do
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.username)
         response.status.should == 200
-        response.body.should_not include("Login to Carto")
+        response.body.should_not include("Log in")
       end
 
       it 'does not load the dashboard for an unknown user username' do
@@ -96,7 +96,7 @@ describe ApplicationController do
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.id)
         response.status.should == 200
-        response.body.should_not include("Login to Carto")
+        response.body.should_not include("Log in")
       end
 
       it 'does not load the dashboard for an unknown user id' do
@@ -119,21 +119,21 @@ describe ApplicationController do
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.id)
         response.status.should == 200
-        response.body.should_not include("Login to Carto")
+        response.body.should_not include("Log in")
       end
 
       it 'loads the dashboard for a known user username' do
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.username)
         response.status.should == 200
-        response.body.should_not include("Login to Carto")
+        response.body.should_not include("Log in")
       end
 
       it 'loads the dashboard for a known user email' do
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.email)
         response.status.should == 200
-        response.body.should_not include("Login to Carto")
+        response.body.should_not include("Log in")
       end
 
       it 'does not load the dashboard for an unknown user id' do
@@ -163,7 +163,7 @@ describe ApplicationController do
           response.status.should == 302
           follow_redirect!
           response.status.should == 200
-          response.body.should include("Login")
+          response.body.should include("Log in")
         end
       end
 

@@ -20,6 +20,11 @@
   &.is-block {
     display: block;
   }
+
+  &.is-disabled {
+    opacity: 0.24;
+    pointer-events: none;
+  }
 }
 
 .Editor-HeaderInfo--noMargin {
@@ -142,4 +147,16 @@
 
 .Editor-HeaderInfo-source {
   margin-left: 27px;
+}
+
+.Editor-HeaderInfo-emptyLayer {
+  width: 16px;
+  height: 16px;
+  text-align: center;
+
+  svg {
+    display: block;
+    height: 100%;
+    margin: auto;
+  }
 }

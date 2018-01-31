@@ -411,7 +411,7 @@ module.exports = function (grunt) {
     'exorcise',
     'uglify',
     'npm-build',
-    'npm-build:dashboard'
+    'npm-build-dashboard'
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [
@@ -425,9 +425,10 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('release', [
     'check_release',
-    'build',
-    's3',
-    'invalidate'
+    'build'
+    // ,
+    // 's3',
+    // 'invalidate'
   ]);
 
   grunt.registerTask('affected', 'Generate only affected specs', function (option) {

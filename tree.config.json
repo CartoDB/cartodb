@@ -1,11 +1,7 @@
 {
   "testsFolder": [
-    "lib/assets/core/test/spec/cartodb3/",
-    "lib/assets/core/test/spec/deep-insights"
+    "lib/assets/test/spec/cartodb3/",
+    "lib/assets/test/spec/deep-insights"
   ],
-  "filesRegex": "spec\\.js$",
-  "replacements": [
-    ["lib/assets/core", "lib/assets"],
-    ["lib/assets/client", "lib/assets"]
-  ]
+  "filesRegex": "spec\\.js$"
 }

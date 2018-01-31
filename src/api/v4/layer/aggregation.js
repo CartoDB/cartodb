@@ -61,7 +61,7 @@ var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
  *   // Defines the cell-size of the aggregation grid. In this case, 1x1 pixel. 
  *   resolution: 1,
  *   // Where the new point will be placed. In this case, at the center of the grid.
- *   placement: 'carto.layer.Aggregation.placement.GRID
+ *   placement: carto.layer.Aggregation.placement.GRID
  *   // Here we define the aggregated columns that we want to obtain.
  *   columns: {
  *     // Each property key is the name of the new generated column

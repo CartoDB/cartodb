@@ -411,7 +411,7 @@ module.exports = function (grunt) {
     'exorcise',
     'uglify',
     'npm-build',
-    'npm-build:dashboard',
+    'npm-build:dashboard'
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [

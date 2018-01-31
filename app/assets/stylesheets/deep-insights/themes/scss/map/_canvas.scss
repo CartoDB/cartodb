@@ -55,6 +55,8 @@
 
 @media (max-width: 759px) {
   body {
+    position: fixed !important;
+    width: 100%;
     overflow: hidden; // Avoid scroll in small screens
   }
 

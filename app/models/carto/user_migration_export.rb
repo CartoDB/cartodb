@@ -33,7 +33,7 @@ module Carto
       update_attributes(state: STATE_EXPORTING)
 
       package = if backup
-                  UserMigrationPackage.for_backup("backup_#{user.username}_#{Time.now}", log)
+                  UserMigrationPackage.for_backup("backup_#{user.username}_#{Time.now.iso8601}", log)
                 else
                   UserMigrationPackage.for_export(id, log)
                 end

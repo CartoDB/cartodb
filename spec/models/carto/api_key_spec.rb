@@ -213,7 +213,7 @@ describe Carto::ApiKey do
                                         type: Carto::ApiKey::TYPE_REGULAR,
                                         name: 'wadus',
                                         grants: [
-                                          database_grant('public', @table1.name),
+                                          database_grant(@user1.database_schema, @table1.name),
                                           apis_grant(['maps', 'sql'])
                                         ])
 
@@ -233,7 +233,7 @@ describe Carto::ApiKey do
                                     type: Carto::ApiKey::TYPE_REGULAR,
                                     name: 'wadus',
                                     grants: [
-                                      database_grant('public', @table1.name, permissions: permissions),
+                                      database_grant(@user1.database_schema, @table1.name, permissions: permissions),
                                       apis_grant(['maps', 'sql'])
                                     ])
         api_key.save!
@@ -242,7 +242,7 @@ describe Carto::ApiKey do
           api_key_permissions(api_key, @table1.database_schema, @table1.name).permissions.should include(permission)
         end
 
-        sql = "drop table #{@table1.name}"
+        sql = "drop table #{@user1.database_schema}.#{@table1.name}"
         @user1.in_database(as: :superuser).run(sql)
 
         api_key_permissions(api_key, @table1.database_schema, @table1.name).should be_nil

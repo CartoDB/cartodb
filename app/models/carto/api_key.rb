@@ -158,12 +158,6 @@ module Carto
           )
         end
       end
-
-      write_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
-
-      if !write_schemas.empty?
-        grant_usage_for_cartodb
-      end
     end
 
     def affected_schemas(table_permissions)
@@ -211,28 +205,12 @@ module Carto
 
     def revoke_privileges(read_schemas, write_schemas)
       schemas = read_schemas + write_schemas
-      schemas << 'cartodb' if write_schemas.present?
       schemas.uniq.each do |schema|
-        db_run("revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke usage on schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke execute on all functions in schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke usage, select on all sequences in schema \"#{schema}\" from \"#{db_role}\"")
+        db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE ECECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
       end
-      db_run("revoke usage on schema \"cartodb\" from \"#{db_role}\"")
-      db_run("revoke execute on all functions in schema \"cartodb\" from \"#{db_role}\"")
-    end
-
-    def grant_usage_for_cartodb
-      db_run("grant usage on schema \"cartodb\" to \"#{db_role}\"")
-      db_run("grant execute on all functions in schema \"cartodb\" to \"#{db_role}\"")
-    end
-
-    def grant_aux_write_privileges_for_schema(s)
-      db_run("grant usage on schema \"#{s}\" to \"#{db_role}\"")
-      db_run("grant execute on all functions in schema \"#{s}\" to \"#{db_role}\"")
-      db_run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
-      db_run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
-      db_run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
     end
   end
 end

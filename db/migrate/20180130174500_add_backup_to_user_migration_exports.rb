@@ -7,6 +7,6 @@ migration(
     add_column :user_migration_exports, :backup, :boolean, default: false, null: false
   end,
   Proc.new do
-    drop_column :user_migration_export, :backup
+    drop_column :user_migration_exports, :backup
   end
 )

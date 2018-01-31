@@ -56,7 +56,6 @@ module Carto
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save :add_to_redis
-    after_save :update_role_permissions
 
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
@@ -136,7 +135,17 @@ module Carto
     end
 
     def setup_db_role
-      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'")
+      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
+      db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
+
+      table_permissions.each do |tp|
+        unless tp.permissions.empty?
+          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
+        end
+      end
+
+      read_schemas, write_schemas = affected_schemas(table_permissions)
+      (read_schemas + write_schemas).each { |s| grant_aux_write_privileges_for_schema(s) }
     end
 
     def drop_db_role
@@ -204,9 +213,13 @@ module Carto
       schemas.uniq.each do |schema|
         db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
-        db_run("REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
       end
+    end
+
+    def grant_aux_write_privileges_for_schema(s)
+      db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
+      db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
     end
   end
 end

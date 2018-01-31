@@ -274,9 +274,5 @@ describe Carto::ApiKey do
     end
 
     it_behaves_like 'api key'
-
-    describe 'can grant permissions to tables in other schemas' do
-
-    end
   end
 end

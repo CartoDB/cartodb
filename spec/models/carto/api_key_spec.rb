@@ -101,8 +101,7 @@ describe Carto::ApiKey do
       it 'removes the role from DB' do
         api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
                                         grants: [
-                                          database_grant(@table1.database_schema,
-                                                        @table1.name),
+                                          database_grant(@table1.database_schema, @table1.name),
                                           apis_grant
                                         ])
 
@@ -131,8 +130,8 @@ describe Carto::ApiKey do
 
     describe '#create_token' do
       it 'regenerates the value in Redis only after save' do
-        api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR,
-                                        name: 'full', grants: [apis_grant, database_grant(@table1.database_schema, @table1.name)])
+        api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                                        grants: [apis_grant, database_grant(@table1.database_schema, @table1.name)])
 
         old_redis_key = api_key.send(:redis_key)
         $users_metadata.hgetall(old_redis_key).should_not be_empty

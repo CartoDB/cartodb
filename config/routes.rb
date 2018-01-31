@@ -14,7 +14,9 @@ CartoDB::Application.routes.draw do
   root to: 'admin/pages#index'
 
   get   '/signup'           => 'signup#signup',     as: :signup
-  post  '/signup'           => 'signup#create',  as: :signup_organization_user
+  post  '/signup'           => 'signup#create',     as: :signup_organization_user
+  get   '(/user/:user_domain)(/u/:user_domain)/signup' => 'signup#signup', as: :signup_subdomainless
+  post  '(/user/:user_domain)(/u/:user_domain)/signup' => 'signup#create',  as: :signup_subdomainless_organization_user
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication' => 'signup#create_http_authentication', as: :signup_http_authentication
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication_in_progress' => 'signup#create_http_authentication_in_progress', as: :signup_http_authentication_in_progress
 

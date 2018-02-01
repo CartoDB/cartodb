@@ -58,16 +58,16 @@
     <div id="controls">
       <ul>
         <li onclick="setRed()">
-          <input type="radio" name="style" value="01" checked  id="red">
-          <label for="red">Red</label>
+          <input type="radio" name="style" checked id="red">
+          <label for="red">Size 7px - Red</label>
         </li>
         <li onclick="setGreen()">
-          <input type="radio" name="style" value="02" id="green">
-          <label for="green">Green</label>
+          <input type="radio" name="style" id="green">
+          <label for="green">Size 9px - Green</label>
         </li>
         <li onclick="setBlue()">
-          <input type="radio" name="style" value="03" id="blue">
-          <label for="blue">Blue</label>
+          <input type="radio" name="style" id="blue">
+          <label for="blue">Size 11px - Blue</label>
         </li>
       </ul>
     </div>
@@ -111,7 +111,7 @@
       function setGreen() {
         style.setContent(`
           #layer {
-            marker-width: 7;
+            marker-width: 9;
             marker-fill: #9BC63B;
             marker-line-color: #FFFFFF;
           }
@@ -121,7 +121,7 @@
       function setBlue() {
         style.setContent(`
           #layer {
-            marker-width: 9;
+            marker-width: 11;
             marker-fill: #1785FB;
             marker-line-color: #FFFFFF;
           }

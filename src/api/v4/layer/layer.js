@@ -424,7 +424,9 @@ Layer.prototype._createInternalModel = function (engine) {
 // Internal functions.
 
 Layer.prototype.$setClient = function (client) {
-  if (this._client) {
+  // Exit if the client is already set or
+  // it has a different engine than the layer
+  if (this._client || (this._engine && client._engine !== this._engine)) {
     return;
   }
   this._client = client;

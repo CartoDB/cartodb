@@ -23,7 +23,8 @@ module Carto
 
     def self.for_backup(id, log)
       base_dir = Cartodb.get_config(:user_backup, 'user_exports_folder')
-      instance = new(base_dir, id, log, Cartodb.get_config(:user_backup))
+      config = Cartodb.get_config(:user_backup)
+      instance = new(base_dir, id, log, config.merge(upload_path: 'backups'))
 
       FileUtils.mkdir_p(instance.data_dir)
       FileUtils.mkdir_p(instance.meta_dir)
@@ -78,7 +79,8 @@ module Carto
         file_param: file,
         s3_config: s3_config,
         allow_spaces: true,
-        force_s3_upload: true
+        force_s3_upload: true,
+        random_token: @config[:upload_path]
       )
 
       export_path = if results[:file_path].present?

@@ -1,0 +1,1 @@
+Just a reminder, your <strong><%- accountType %></strong> trial will finish the next <%- trialEnd %>. Happy mapping!

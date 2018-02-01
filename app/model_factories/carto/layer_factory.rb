@@ -6,9 +6,8 @@ module Carto
                   { kind: 'gmapsbase', options: basemap }
                 else
                   { kind: 'tiled', options: basemap
-                      .merge('urlTemplate' => basemap['url'])
-                      .merge('urlTemplateRetina' => basemap['retina']['url'])
-                  }
+                    .merge('urlTemplate' => basemap['url'])
+                    .merge('urlTemplateRetina' => basemap['retina']['url'])}
                 end
 
       Carto::Layer.new(options)

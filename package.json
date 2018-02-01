@@ -144,6 +144,7 @@
   },
   "scripts": {
     "test": "grunt test",
+    "test:browser": "grunt dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "rm -rf dist/public; webpack --config webpack/webpack.config.js && webpack --config webpack/webpack.min.config.js",

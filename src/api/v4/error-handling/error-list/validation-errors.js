@@ -58,6 +58,14 @@ module.exports = {
       messageRegex: /badLayerType/,
       friendlyMessage: 'The given object is not a layer.'
     },
+    'index-number': {
+      messageRegex: /indexNumber/,
+      friendlyMessage: 'index property must be a number.'
+    },
+    'index-out-of-range': {
+      messageRegex: /indexOutOfRange/,
+      friendlyMessage: 'index is out of range.'
+    },
     'api-key-required': {
       messageRegex: /apiKeyRequired/,
       friendlyMessage: 'apiKey property is required.'

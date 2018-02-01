@@ -126,6 +126,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
 * Don't disable delete analysis button if layer already has some [Support#1283](https://github.com/CartoDB/support/issues/1283)
 * Submit form with Enter key in the Add layer modal > Connect dataset tab (#13441)

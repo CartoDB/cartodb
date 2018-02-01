@@ -420,6 +420,32 @@ module Carto
             @template_hash[:layergroup][:layers].first[:options][:source].should be_nil
           end
 
+          describe 'when tms' do
+            before(:all) do
+              @tms_layer = @visualization.layers.first
+              @tms_layer.options[:tms] = true
+
+              @tms_layer.save
+              @visualization.reload
+
+              @tms_layer_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:layers][0]
+            end
+
+            after(:all) do
+              @tms_layer = @visualization.layers.first
+              @tms_layer.options[:tms] = nil
+
+              @tms_layer.save
+              @visualization.reload
+
+              @tms_layer_hash = nil
+            end
+
+            it 'should have tms options' do
+              @tms_layer_hash[:options][:tms].should_not be_nil
+            end
+          end
+
           describe 'when background' do
             before(:all) do
               @background_layer = @visualization.layers.first

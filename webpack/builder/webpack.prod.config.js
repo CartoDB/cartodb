@@ -21,6 +21,9 @@ module.exports = env => {
       filename: `${version}/javascripts/[name].js`,
       path: resolve(__dirname, '../../', 'public/assets')
     },
+    resolve: {
+      alias: require('../common/alias.js')
+    },
     devtool: 'source-map',
     plugins: Object.keys(entryPoints)
       .map(entry => new webpack.optimize.CommonsChunkPlugin({

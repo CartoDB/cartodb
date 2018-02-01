@@ -109,7 +109,7 @@ describe('vis/layers-factory', function () {
           spyOn(LayersFactory, 'isHttps').and.returnValue(true);
         });
 
-        describe('and is high resolution screen', function () {
+        describe('is high resolution screen', function () {
           it("should not convert '" + httpsUrlTemplate + "'", function () {
             var layerModel = layersFactory.createLayer('tiled', {
               urlTemplate: httpsUrlTemplate
@@ -156,25 +156,21 @@ describe('vis/layers-factory', function () {
         spyOn(LayersFactory, 'isRetina').and.returnValue(true);
       });
 
-      describe('urlTemplateRetina is not defined', function () {
-        it("should not convert to '" + urlTemplateRetina + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: urlTemplate
-          });
-
-          expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
+      it('should not convert to ' + urlTemplateRetina + ' if urlTemplateRetina is not defined', function () {
+        var layerModel = layersFactory.createLayer('tiled', {
+          urlTemplate: urlTemplate
         });
+
+        expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
       });
 
-      describe('urlTemplateRetina is defined', function () {
-        it("should convert to '" + urlTemplateRetina + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: urlTemplate,
-            urlTemplateRetina: urlTemplateRetina
-          });
-
-          expect(layerModel.get('urlTemplate')).toEqual(urlTemplateRetina);
+      it('should convert to ' + urlTemplateRetina + ' if urlTemplateRetina is defined', function () {
+        var layerModel = layersFactory.createLayer('tiled', {
+          urlTemplate: urlTemplate,
+          urlTemplateRetina: urlTemplateRetina
         });
+
+        expect(layerModel.get('urlTemplate')).toEqual(urlTemplateRetina);
       });
     });
 
@@ -183,15 +179,13 @@ describe('vis/layers-factory', function () {
         spyOn(LayersFactory, 'isRetina').and.returnValue(false);
       });
 
-      describe('urlTemplateRetina is defined', function () {
-        it("should not convert to '" + urlTemplateRetina + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: urlTemplate,
-            urlTemplateRetina: urlTemplateRetina
-          });
-
-          expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
+      it('should not convert to ' + urlTemplateRetina + '', function () {
+        var layerModel = layersFactory.createLayer('tiled', {
+          urlTemplate: urlTemplate,
+          urlTemplateRetina: urlTemplateRetina
         });
+
+        expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
       });
     });
   });

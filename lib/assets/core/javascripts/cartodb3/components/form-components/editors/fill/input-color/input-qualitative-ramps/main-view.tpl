@@ -36,5 +36,8 @@
 <% } else if (status === 'error') { %>
   <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('form-components.editors.fill.error') %></div>
 <% } else { %>
-  <div class="InputColorCategory-content js-content"></div>
+
+  <!-- Stack Layout View -->
+  <div class="js-content"></div>
+
 <% } %>

@@ -32,7 +32,7 @@ if (scope === 'organization') {
 
 <div class="Dialog-footer u-inner">
   <form action="<%- form_action %>" method="post">
-    <button type="button" class="CDB-Button CDB-Button--secondary cancel">
+    <button type="button" class="CDB-Button CDB-Button--secondary js-cancel">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">cancel</span>
     </button>
 

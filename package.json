@@ -43,7 +43,6 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
     "promise-polyfill": "^6.1.0",
-    "tangram.cartodb": "~0.5.7",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
     "whatwg-fetch": "^2.0.3"

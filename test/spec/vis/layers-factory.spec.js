@@ -93,6 +93,9 @@ describe('vis/layers-factory', function () {
       expect(layerModel.get('type')).toEqual('Tiled');
     });
 
+    var urlTemplate = 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png';
+    var urlTemplateRetina = 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png';
+
     _.each({
       'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
       'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
@@ -106,20 +109,22 @@ describe('vis/layers-factory', function () {
           spyOn(LayersFactory, 'isHttps').and.returnValue(true);
         });
 
-        it("should not convert '" + httpsUrlTemplate + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: httpsUrlTemplate
+        describe('and is high resolution screen', function () {
+          it("should not convert '" + httpsUrlTemplate + "'", function () {
+            var layerModel = layersFactory.createLayer('tiled', {
+              urlTemplate: httpsUrlTemplate
+            });
+
+            expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
           });
 
-          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
-        });
+          it("should convert '" + httpUrlTemplate + "' to '" + httpsUrlTemplate + "'", function () {
+            var layerModel = layersFactory.createLayer('tiled', {
+              urlTemplate: httpUrlTemplate
+            });
 
-        it("should convert '" + httpUrlTemplate + "' to '" + httpsUrlTemplate + "'", function () {
-          var layerModel = layersFactory.createLayer('tiled', {
-            urlTemplate: httpUrlTemplate
+            expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
           });
-
-          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
         });
       });
 
@@ -142,6 +147,50 @@ describe('vis/layers-factory', function () {
           });
 
           expect(layerModel.get('urlTemplate')).toEqual(httpUrlTemplate);
+        });
+      });
+    });
+
+    describe('Is high resolution screen', function () {
+      beforeEach(function () {
+        spyOn(LayersFactory, 'isRetina').and.returnValue(true);
+      });
+
+      describe('urlTemplateRetina is not defined', function () {
+        it("should not convert to '" + urlTemplateRetina + "'", function () {
+          var layerModel = layersFactory.createLayer('tiled', {
+            urlTemplate: urlTemplate
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
+        });
+      });
+
+      describe('urlTemplateRetina is defined', function () {
+        it("should convert to '" + urlTemplateRetina + "'", function () {
+          var layerModel = layersFactory.createLayer('tiled', {
+            urlTemplate: urlTemplate,
+            urlTemplateRetina: urlTemplateRetina
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(urlTemplateRetina);
+        });
+      });
+    });
+
+    describe('Is not high resolution screen', function () {
+      beforeEach(function () {
+        spyOn(LayersFactory, 'isRetina').and.returnValue(false);
+      });
+
+      describe('urlTemplateRetina is defined', function () {
+        it("should not convert to '" + urlTemplateRetina + "'", function () {
+          var layerModel = layersFactory.createLayer('tiled', {
+            urlTemplate: urlTemplate,
+            urlTemplateRetina: urlTemplateRetina
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
         });
       });
     });

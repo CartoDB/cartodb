@@ -1,3 +1,6 @@
+/* global L */
+/* global google */
+
 var Base = require('./base');
 var GoogleMapsBoundingBoxAdapter = require('../../../geo/adapters/gmaps-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
@@ -24,6 +27,9 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * dataview.addFilter(bboxFilter);
  */
 function BoundingBoxGoogleMaps (map) {
+  if (!_isGoogleMap(map)) {
+    throw new Error('Bounding box needs a google map but got: ' + map);
+  }
   // Adapt the Google Maps map to offer unique:
   // - getBounds() function
   // - 'boundsChanged' event
@@ -52,5 +58,10 @@ BoundingBoxGoogleMaps.prototype._onBoundsChanged = function (bounds) {
 BoundingBoxGoogleMaps.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
+
+// Helper to check if an element is a leafletmap object
+function _isGoogleMap (element) {
+  return element instanceof google.maps.Map;
+}
 
 module.exports = BoundingBoxGoogleMaps;

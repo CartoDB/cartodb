@@ -2,13 +2,13 @@ module Carto
   class LayerFactory
     def self.build_default_base_layer(user)
       basemap = user.default_basemap
-      retina_layer_url = basemap['retina']['url']
+      retina_layer_url = basemap['retina'] && basemap['retina']['url']
 
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else
                   { kind: 'tiled', options: basemap
-                    .merge(retina_layer_url ? 'urlTemplateRetina' => retina_layer_url : {}) }
+                    .merge(retina_layer_url ? ('urlTemplateRetina' => retina_layer_url) : {}) }
                     .merge('urlTemplate' => basemap['url'])
                 end
 
@@ -18,12 +18,12 @@ module Carto
     def self.build_default_labels_layer(base_layer)
       base_layer_options = base_layer.options
       labels_layer_url = base_layer_options['labels']['url']
-      retina_labels_layer_url = base_layer_options['retina_labels']['url']
+      retina_labels_layer_url = base_layer_options['retina_labels'] && base_layer_options['retina_labels']['url']
 
       Carto::Layer.new(
         kind: 'tiled',
         options: base_layer_options.except('name', 'className', 'labels')
-          .merge(retina_labels_layer_url ? 'urlTemplateRetina' => retina_labels_layer_url : {})
+          .merge(retina_labels_layer_url ? ('urlTemplateRetina' => retina_labels_layer_url) : {})
           .merge(
             'urlTemplate' => labels_layer_url,
             'url' => labels_layer_url,

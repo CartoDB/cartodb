@@ -83,16 +83,6 @@
   display: block;
 }
 
-/* deep insights */
-.CDB-Dashboard-canvas {
-  flex: 1;
-  box-shadow: inset 10px 0 10px -10px rgba(#000, 0.3);
-}
-
-.CDB-Dashboard-canvas.is-dark {
-  background: #293A41;
-}
-
 /* Responsive views */
 @media (max-width: $sViewport-xxl) {
   .Editor {

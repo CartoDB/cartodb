@@ -29,7 +29,7 @@ module.exports = env => {
     resolve: {
       symlinks: false,
       modules: [
-        resolve(__dirname, '../../', 'node_modules'),
+        'node_modules',
         resolve(__dirname, '../../', 'lib/assets/node_modules')
       ]
     },

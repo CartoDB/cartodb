@@ -1,0 +1,261 @@
+{
+  "type": "FeatureCollection",
+  "query": [
+    "los",
+    "angeles"
+  ],
+  "features": [
+    {
+      "id": "place.9962989141465270",
+      "type": "Feature",
+      "place_type": [
+        "place"
+      ],
+      "relevance": 0.99,
+      "properties": {
+        "wikidata": "Q65"
+      },
+      "text": "Los Angeles",
+      "place_name": "Los Angeles, California, United States",
+      "bbox": [
+        -118.529221009603,
+        33.901599990108,
+        -118.121099990025,
+        34.1612200099034
+      ],
+      "center": [
+        -118.2439,
+        34.0544
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2439,
+          34.0544
+        ]
+      },
+      "context": [
+        {
+          "id": "region.3591",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.3145",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    },
+    {
+      "id": "place.10952642230180310",
+      "type": "Feature",
+      "place_type": [
+        "place"
+      ],
+      "relevance": 0.99,
+      "properties": {
+        "wikidata": "Q16910"
+      },
+      "text": "Los Ángeles",
+      "place_name": "Los Ángeles, Bío Bío, Chile",
+      "bbox": [
+        -72.68248,
+        -37.663862,
+        -72.041277,
+        -37.178368
+      ],
+      "center": [
+        -72.35,
+        -37.46667
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -72.35,
+          -37.46667
+        ]
+      },
+      "context": [
+        {
+          "id": "region.3552",
+          "short_code": "CL-BI",
+          "wikidata": "Q2170",
+          "text": "Bío Bío"
+        },
+        {
+          "id": "country.344",
+          "short_code": "cl",
+          "wikidata": "Q298",
+          "text": "Chile"
+        }
+      ]
+    },
+    {
+      "id": "poi.1611278850983920",
+      "type": "Feature",
+      "place_type": [
+        "poi"
+      ],
+      "relevance": 0.99,
+      "properties": {
+        "address": "1 World Way",
+        "category": "international airport, airport",
+        "tel": "(310) 646-5252",
+        "wikidata": "Q8731",
+        "landmark": true,
+        "maki": "airport"
+      },
+      "text": "Los Angeles International Airport",
+      "place_name": "Los Angeles International Airport, 1 World Way, Los Angeles, California 90045, United States",
+      "center": [
+        -118.408056,
+        33.9425
+      ],
+      "geometry": {
+        "coordinates": [
+          -118.408056,
+          33.9425
+        ],
+        "type": "Point"
+      },
+      "context": [
+        {
+          "id": "neighborhood.33720",
+          "text": "Westchester"
+        },
+        {
+          "id": "postcode.8081932850252730",
+          "text": "90045"
+        },
+        {
+          "id": "place.9962989141465270",
+          "wikidata": "Q65",
+          "text": "Los Angeles"
+        },
+        {
+          "id": "region.3591",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.3145",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    },
+    {
+      "id": "neighborhood.2104633",
+      "type": "Feature",
+      "place_type": [
+        "neighborhood"
+      ],
+      "relevance": 0.99,
+      "properties": {},
+      "text": "Los Angeles Heights - Keystone",
+      "place_name": "Los Angeles Heights - Keystone, San Antonio, Texas 78201, United States",
+      "bbox": [
+        -98.534942,
+        29.453364,
+        -98.514652,
+        29.485214
+      ],
+      "center": [
+        -98.52,
+        29.47
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -98.52,
+          29.47
+        ]
+      },
+      "context": [
+        {
+          "id": "postcode.7069290925572850",
+          "text": "78201"
+        },
+        {
+          "id": "place.7705127234253710",
+          "wikidata": "Q975",
+          "text": "San Antonio"
+        },
+        {
+          "id": "region.3818",
+          "short_code": "US-TX",
+          "wikidata": "Q1439",
+          "text": "Texas"
+        },
+        {
+          "id": "country.3145",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    },
+    {
+      "id": "poi.17555628334440500",
+      "type": "Feature",
+      "place_type": [
+        "poi"
+      ],
+      "relevance": 0.99,
+      "properties": {
+        "address": "3939 S Figueroa St",
+        "category": "stadium, arena",
+        "tel": "(213) 747-7111",
+        "wikidata": "Q849784",
+        "landmark": true,
+        "maki": "baseball"
+      },
+      "text": "Los Angeles Memorial Coliseum",
+      "place_name": "Los Angeles Memorial Coliseum, 3939 S Figueroa St, Los Angeles, California 90037, United States",
+      "center": [
+        -118.287778,
+        34.014167
+      ],
+      "geometry": {
+        "coordinates": [
+          -118.287778,
+          34.014167
+        ],
+        "type": "Point"
+      },
+      "context": [
+        {
+          "id": "neighborhood.293901",
+          "text": "South Los Angeles"
+        },
+        {
+          "id": "postcode.15612390715732530",
+          "text": "90037"
+        },
+        {
+          "id": "place.9962989141465270",
+          "wikidata": "Q65",
+          "text": "Los Angeles"
+        },
+        {
+          "id": "region.3591",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.3145",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    }
+  ],
+  "attribution": "NOTICE: © 2017 Mapbox and its suppliers. All rights reserved. Use of this data is subject to the Mapbox Terms of Service (https://www.mapbox.com/about/maps/). This response and the information it contains may not be retained."
+}

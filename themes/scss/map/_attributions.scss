@@ -14,10 +14,12 @@ $size: 20px;
   font-family: 'Open Sans';
   line-height: $size;
   z-index: 10;
+
+  &.is-active {
+    width: auto;
+  }
 }
-.CDB-Attribution.is-active {
-  width: auto;
-}
+
 .CDB-Attribution.is-active .CDB-Attribution-text {
   @include flex(1);
   width: auto;
@@ -37,10 +39,16 @@ $size: 20px;
   line-height: 32px;
   vertical-align: middle;
   z-index: 1;
+
+  &.is-disabled {
+    opacity: 0.24;
+  }
+
+  &:hover {
+    background: rgba($cBlue, 0.08);
+  }
 }
-.CDB-Attribution-button.is-disabled {
-  opacity: 0.24;
-}
+
 .CDB-Attribution-text {
   @include transition(opacity, 150ms);
   width: 0;
@@ -53,6 +61,7 @@ $size: 20px;
   line-height: 16px;
   overflow: hidden;
 }
+
 .CDB-Attribution .CDB-Attribution-text a {
   color: #139BFC;
   text-decoration: underline;

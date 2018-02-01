@@ -186,6 +186,25 @@ Engine.prototype.removeLayer = function (layer) {
 
 /**
  *
+ * Move a layer in the engine layersCollection
+ *
+ * @param {layer} layer - A new layer to be moved in the engine.
+ * @param {number} toIndex - Final index for the layer.
+ *
+ * @public
+ */
+Engine.prototype.moveLayer = function (layer, toIndex) {
+  var fromIndex = this._layersCollection.indexOf(layer);
+  if (fromIndex >= 0 && fromIndex !== toIndex) {
+    this._layersCollection.models.splice(toIndex, 0, this._layersCollection.models.splice(fromIndex, 1)[0]);
+    // Equivalent to:
+    // this._layersCollection.remove(layer, { silent: true });
+    // this._layersCollection.add(layer, { at: toIndex });
+  }
+};
+
+/**
+ *
  * Add a dataview to the engine dataviewsCollection
  *
  * @param {Dataview} dataview - A new dataview to be added to the engine.

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Change style | CARTO</title>
+    <title>Change order | CARTO</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:400,600" rel="stylesheet">
     <!-- Include Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM"></script>
     <!-- Include CARTO.js -->
@@ -18,6 +17,7 @@
         position: absolute;
         height: 100%;
         width: 100%;
+        z-index: 0;
       }
       #controls {
         position: absolute;
@@ -29,6 +29,7 @@
         border-radius: 4px;
         width: 200px;
         color: #2E3C43;
+        z-index: 2;
       }
       #controls li {
         list-style-type: none;
@@ -55,17 +56,13 @@
     <div id="map"></div>
     <div id="controls">
       <ul>
-        <li onclick="setRed()">
-          <input type="radio" name="style" checked id="red">
-          <label for="red">Size 7px - Red</label>
+        <li onclick="bringToBack()">
+          <input type="radio" name="style" id="bringToBack">
+          <label for="bringToBack">Bring to back</label>
         </li>
-        <li onclick="setGreen()">
-          <input type="radio" name="style" id="green">
-          <label for="green">Size 9px - Green</label>
-        </li>
-        <li onclick="setBlue()">
-          <input type="radio" name="style" id="blue">
-          <label for="blue">Size 11px - Blue</label>
+        <li onclick="bringToFront()">
+          <input type="radio" name="style" checked id="bringToFront">
+          <label for="bringToFront">Bring to front</label>
         </li>
       </ul>
     </div>
@@ -88,49 +85,51 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.Dataset(`
+      const spainCitiesSource = new carto.source.Dataset(`
         ne_10m_populated_places_simple
       `);
-      const style = new carto.style.CartoCSS(`
+      const spainCitiesStyle = new carto.style.CartoCSS(`
         #layer {
           marker-width: 7;
           marker-fill: #EE4D5A;
           marker-line-color: #FFFFFF;
         }
       `);
-      const layer = new carto.layer.Layer(source, style);
+      const spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
 
-      client.addLayer(layer);
+      const europeCountriesSource = new carto.source.Dataset(`
+        ne_adm0_europe
+      `);
+      const europeCountriesStyle = new carto.style.CartoCSS(`
+        #layer {
+          polygon-fill: #826DBA;
+          polygon-opacity: 0.8;
+          ::outline {
+            line-width: 1;
+            line-color: #FFFFFF;
+            line-opacity: 0.8;
+          }
+        }
+      `);
+      const europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);
+
+      client.addLayers([europeCountriesLayer, spainCitiesLayer]);
       map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      function setRed() {
-        style.setContent(`
-          #layer {
-            marker-width: 7;
-            marker-fill: #EE4D5A;
-            marker-line-color: #FFFFFF;
-          }
-        `);
+      function bringToBack() {
+        spainCitiesLayer.bringToBack();
+        // or
+        // spainCitiesLayer.setOrder(0);
+        // or
+        // client.moveLayer(spainCitiesLayer, 0);
       }
 
-      function setGreen() {
-        style.setContent(`
-          #layer {
-            marker-width: 7;
-            marker-fill: #9BC63B;
-            marker-line-color: #FFFFFF;
-          }
-        `);
-      }
-
-      function setBlue() {
-        style.setContent(`
-          #layer {
-            marker-width: 9;
-            marker-fill: #1785FB;
-            marker-line-color: #FFFFFF;
-          }
-        `);
+      function bringToFront() {
+        spainCitiesLayer.bringToFront();
+        // or
+        // spainCitiesLayer.setOrder(1);
+        // // or
+        // client.moveLayer(spainCitiesLayer, 1);
       }
     </script>
   </body>

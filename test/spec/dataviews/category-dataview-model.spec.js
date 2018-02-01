@@ -272,19 +272,6 @@ describe('dataviews/category-dataview-model', function () {
       expect(resetSpy).toHaveBeenCalled();
     });
 
-    it('should cast any category value to string', function () {
-      _parseData(this.model, _.map([null, undefined, 0, 'hello', false], function (v) {
-        return {
-          category: v,
-          value: 1
-        };
-      }));
-      var areNamesString = _.every(this.model.get('data'), function (obj) {
-        return obj.name;
-      });
-      expect(areNamesString).toBeTruthy();
-    });
-
     describe('when filter is disabled', function () {
       it('should NOT add categories that are accepted when they are not present in the new categories', function () {
         this.model.filter.accept('Madrid');

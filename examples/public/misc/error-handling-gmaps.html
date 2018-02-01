@@ -11,42 +11,121 @@
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
     <style>
-      * { margin: 0; padding: 0; }
-      html { box-sizing: border-box; height: 100%; }
-      body { background: #f2f6f9; height: 100%; font-family: "Open sans", Helvetica, Arial, sans-serif; }
-      #container { display: flex; width: 100%; height: 100%; }
-      #map { flex: 1; margin: 10px; }
-      #controls { position: relative; width: 300px; margin: 20px; }
-      h3 { margin-bottom: 20px; }
-      .button { width: 100%; padding: 10px; margin: 20px 0; border: none; font-weight: bold; text-transform: uppercase; }
-      .button--to_wrong { background: #162945; color: white; }
-      .button--to_valid { background: white; color: #162945; }
-      textarea { height: 100px; width: 100%; resize: none; }
-      .value { background-color: #000; padding: 1em; }
-      .value--valid { border: green 2px solid; color: green; }
-      .value--wrong { border: red 2px solid; color: red; }
-      .panel { padding: 1em; margin-bottom: 1em; color: white; }
-      .panel--ok { background: green; }
-      .panel--error { background: red; }
-      .panel--updating { background: orange; }
+      * {
+        margin:0;
+        padding:0;
+        box-sizing: border-box;
+      }
+      html {
+        height: 100%;
+      }
+      body {
+        background: #F2F6F9;
+        height: 100%;
+        font-family: 'Open sans'
+      }
+      #container {
+        display: flex;
+        height: 100%;
+      }
+      #map {
+        flex: 1;
+      }
+      #controls {
+        width: 308px;
+      }
+      .control-inner {
+        background: #fff;
+        padding: 20px 24px;
+        border-bottom: 2px solid #F2F6F9;
+      }
+      .control-inner {
+        font-size: 10px;
+        line-height: 14px;
+      }
+      .control-inner p {
+        margin-bottom: 4px;
+        color: #747D82;
+      }
+      .control-inner p:last-child {
+        margin-bottom: 0;
+      }
+      .control-inner h3 {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        margin-bottom: 8px;
+      }
+      .button-update {
+        border: 1px solid #1785FB;
+        color: #1785FB;
+        font-size: 12px;
+        line-height: 16px;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-family: 'Open sans';
+        cursor: pointer;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .button-update:hover {
+        background: rgba(23,133,251,.08);
+      }
+      .value {
+        width: 100%;
+        resize: none;
+        padding: 7px 8px 6px;
+        border: 1px solid #DDD;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 16px;
+        font-family: 'Open Sans';
+        color: #6A6A6A;
+        margin-bottom: 8px;
+      }
+      .action-container {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .panel {
+        font-size: 12px;
+      }
+      .panel--ok {
+        background: #FFFFFF;
+      }
+      .panel--error {
+        background: #EE4D5A;
+      }
+      .panel--updating {
+        background: #EF9E4E;
+      }
     </style>
   </head>
   <body>
     <div id="container">
       <div id="map"></div>
       <div id="controls">
-        <h3>DATASET</h3>
-        <div id="dataset-value" class="value"></div>
-        <button id="dataset-button" class="button" onclick="updateDataset()"></button>
-
-        <h3>STYLE</h3>
-        <div id="style-value" class="value"></div>
-        <button id="style-button" class="button" onclick="updateStyle()"></button>
-
-        <div id="panel" class="panel"></div>
-
-        <p>In this example we handle the client error while calling .addLayer</p>
-        <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+        <div class="control-inner">
+          <h3>DATASET</h3>
+          <div id="dataset-value" class="value"></div>
+          <div class="action-container">
+            <button id="dataset-button" class="button-update" onclick="updateDataset()">
+            </button>
+          </div>
+        </div>
+        <div class="control-inner">
+          <h3>STYLE</h3>
+          <div id="style-value" class="value"></div>
+            <div class="action-container">
+              <button id="style-button" class="button-update" onclick="updateStyle()">
+              </button>
+            </div>
+        </div>
+        <div id="panel" class="control-inner panel"></div>
+        <div class="control-inner">
+          <p>In this example we handle the client error while calling the `addLayer` funciton.</p>
+          <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+        </div>
       </div>
     </div>
     <script>
@@ -173,35 +252,6 @@
           ? 'Set wrong style'
           : 'Revert to a valid style';
 
-        if (state.isDatasetValid) {
-          datasetButtonEl.classList.add('button--to_wrong');
-          datasetButtonEl.classList.remove('button--to_valid');
-        } else {
-          datasetButtonEl.classList.remove('button--to_wrong');
-          datasetButtonEl.classList.add('button--to_valid');
-        }
-
-        if (state.isStyleValid) {
-          styleButtonEl.classList.add('button--to_wrong');
-          styleButtonEl.classList.remove('button--to_valid');
-        } else {
-          styleButtonEl.classList.remove('button--to_wrong');
-          styleButtonEl.classList.add('button--to_valid');
-        }
-
-        function setValueStyle (element, valid) {
-          if (valid) {
-            element.classList.add('value--valid');
-            element.classList.remove('value--wrong');
-          } else {
-            element.classList.add('value--wrong');
-            element.classList.remove('value--valid');
-          }
-        }
-
-        setValueStyle(datasetValueEl, state.isDatasetValid);
-        setValueStyle(styleValueEl, state.isStyleValid);
-
         panelEl.textContent = state.updating
           ? 'Updating...'
           : state.errorMessage
@@ -222,7 +272,6 @@
           panelEl.classList.remove('panel--updating');
         }
       }
-
     </script>
   </body>
 </html>

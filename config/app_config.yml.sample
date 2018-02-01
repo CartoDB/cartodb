@@ -419,7 +419,6 @@ defaults: &defaults
         retina:
           url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png'
       positron_rainbow_labels:
-        default: true
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'

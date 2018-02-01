@@ -5,7 +5,10 @@ module Carto
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else
-                  { kind: 'tiled', options: basemap.merge('urlTemplate' => basemap['url']) }
+                  { kind: 'tiled', options: basemap
+                      .merge('urlTemplate' => basemap['url'])
+                      .merge('urlTemplateRetina' => basemap['retina']['url'])
+                  }
                 end
 
       Carto::Layer.new(options)
@@ -14,11 +17,13 @@ module Carto
     def self.build_default_labels_layer(base_layer)
       base_layer_options = base_layer.options
       labels_layer_url = base_layer_options['labels']['url']
+      retina_labels_layer_url = base_layer_options['retina_labels']['url']
 
       Carto::Layer.new(
         kind: 'tiled',
         options: base_layer_options.except('name', 'className', 'labels').merge(
           'urlTemplate' => labels_layer_url,
+          'urlTemplateRetina' => retina_labels_layer_url,
           'url' => labels_layer_url,
           'type' => 'Tiled',
           'name' => "#{base_layer_options['name']} Labels"

@@ -18,7 +18,10 @@ module ModelFactories
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else
-                  { kind: 'tiled', options: basemap.merge('urlTemplate' => basemap['url']) }
+                  { kind: 'tiled', options: basemap
+                      .merge('urlTemplate' => basemap['url'])
+                      .merge('urlTemplateRetina' => basemap['retina']['url'])
+                  }
                 end
 
       ::Layer.new(options)
@@ -44,11 +47,13 @@ module ModelFactories
     # Info: does not perform validity checks
     def self.get_default_labels_layer(base_layer)
       labels_layer_url = base_layer.options['labels']['url']
+      retina_labels_layer_url = base_layer.options['retina_labels']['url']
 
       ::Layer.new(
         kind: 'tiled',
         options: base_layer.options.except('name', 'className', 'labels').merge(
           'urlTemplate' => labels_layer_url,
+          'urlTemplateRetina' => retina_labels_layer_url,
           'url' => labels_layer_url,
           'type' => 'Tiled',
           'name' => "#{base_layer.options['name']} Labels"

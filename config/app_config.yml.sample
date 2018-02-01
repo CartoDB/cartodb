@@ -394,6 +394,10 @@ defaults: &defaults
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         labels:
           url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png'
+        retina:
+          url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png'
+        retina_labels:
+          url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}@2x.png'
       voyager:
         url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_labels_under/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -402,6 +406,8 @@ defaults: &defaults
         name: 'Voyager (labels below)'
         className: 'voyager'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        retina:
+          url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_labels_under/{z}/{x}/{y}@2x.png'
       voyager_lite:
         url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -410,7 +416,10 @@ defaults: &defaults
         name: 'Voyager (lite)'
         className: 'voyager_lite'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        retina:
+          url: 'http://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png'
       positron_rainbow_labels:
+        default: true
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
@@ -420,6 +429,10 @@ defaults: &defaults
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         labels:
           url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
+        retina:
+          url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png'
+        retina_labels:
+          url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png'
       dark_matter_rainbow_labels:
         url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -430,6 +443,10 @@ defaults: &defaults
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         labels:
           url: 'http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'
+        retina:
+          url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png'
+        retina_labels:
+          url: 'http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png'
       positron_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -438,6 +455,8 @@ defaults: &defaults
         name: 'Positron (labels below)'
         className: 'positron_rainbow'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        retina:
+          url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'
       dark_matter_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -446,6 +465,8 @@ defaults: &defaults
         name: 'Dark matter (labels below)'
         className: 'dark_matter_rainbow'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        retina:
+          url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'
       positron_lite_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -454,6 +475,8 @@ defaults: &defaults
         name: 'Positron (lite)'
         className: 'positron_lite_rainbow'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        retina:
+          url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png'
       dark_matter_lite_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -462,6 +485,8 @@ defaults: &defaults
         name: 'Dark matter (lite)'
         className: 'dark_matter_lite_rainbow'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        retina:
+          url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png'
       eco_cartodb:
         url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -470,6 +495,8 @@ defaults: &defaults
         name: 'CARTO World Eco'
         className: 'eco_cartodb'
         attribution: ''
+        retina:
+          url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}@2x.png'
       flat_blue:
         url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-flatblue/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -478,6 +505,8 @@ defaults: &defaults
         name: 'CARTO World Flat Blue'
         className: 'flat_blue'
         attribution: ''
+        retina:
+          url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-flatblue/{z}/{x}/{y}@2x.png'
       midnight_cartodb:
         url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-midnight/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -486,6 +515,8 @@ defaults: &defaults
         name: 'CARTO World Midnight Commander'
         className: 'midnight_cartodb'
         attribution: ''
+        retina:
+          url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-midnight/{z}/{x}/{y}2x.png'
       antique_cartodb:
         url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -494,6 +525,8 @@ defaults: &defaults
         name: 'CARTO World Antique'
         className: 'antique_cartodb'
         attribution: ''
+        retina:
+          url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}2x.png'
     Stamen:
       toner_stamen_labels:
         url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png'

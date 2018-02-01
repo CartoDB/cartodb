@@ -346,8 +346,6 @@ Client.prototype.getLeafletLayer = function () {
  * @api
  */
 Client.prototype.getGoogleMapsMapType = function (map) {
-  // NOTE: the map is required here because of wax.g.connector
-
   // Check if Google Maps is loaded
   _isGoogleMapsLoaded();
   if (!this._gmapsMapType) {

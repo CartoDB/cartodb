@@ -17,6 +17,10 @@ Layers.prototype.size = function () {
   return this._layers.length;
 };
 
+Layers.prototype.indexOf = function (layer) {
+  return this._layers.indexOf(layer);
+};
+
 Layers.prototype.contains = function (layer) {
   return this._layers.indexOf(layer) >= 0;
 };

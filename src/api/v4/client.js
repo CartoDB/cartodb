@@ -182,8 +182,13 @@ Client.prototype.removeLayers = function (layers) {
  * @api
  */
 Client.prototype.moveLayer = function (layer, toIndex) {
+  var fromIndex = this._layers.indexOf(layer);
   this._moveLayer(layer, toIndex);
-  return this._reload();
+  if (fromIndex === toIndex) {
+    return Promise.resolve();
+  } else {
+    return this._reload();
+  }
 };
 
 /**

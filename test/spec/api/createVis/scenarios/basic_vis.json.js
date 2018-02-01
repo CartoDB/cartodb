@@ -214,7 +214,6 @@ module.exports = {
         'aggregation_column': 'name',
         'aggregation': 'count',
         'column_type': 'string',
-        'sync_on_data_change': true,
         'sync_on_bbox_change': true
       },
       'style': {
@@ -246,7 +245,6 @@ module.exports = {
         'column': 'population',
         'bins': 10,
         'column_type': 'number',
-        'sync_on_data_change': true,
         'sync_on_bbox_change': true
       },
       'style': {
@@ -279,7 +277,6 @@ module.exports = {
         'aggregation_column': 'name',
         'aggregation': 'count',
         'column_type': 'string',
-        'sync_on_data_change': true,
         'sync_on_bbox_change': true
       },
       'style': {

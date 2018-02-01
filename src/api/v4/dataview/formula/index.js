@@ -111,7 +111,6 @@ Formula.prototype._createInternalModel = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._column,
     operation: this._operation,
-    sync_on_data_change: true,
     sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled
   }, {

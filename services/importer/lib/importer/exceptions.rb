@@ -168,6 +168,7 @@ module CartoDB
       CartoDB::Datasources::TokenExpiredOrInvalidError            => 1012,
       CartoDB::Datasources::InvalidServiceError                   => 1012,
       CartoDB::Datasources::DataDownloadError                     => 1011,
+      CartoDB::Datasources::DataDownloadTimeoutError              => 1020,
       CartoDB::Datasources::MissingConfigurationError             => 1012,
       CartoDB::Datasources::UninitializedError                    => 1012,
       CartoDB::Datasources::NoResultsError                        => 1015,

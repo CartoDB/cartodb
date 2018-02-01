@@ -269,7 +269,7 @@ Client.prototype.getDataviews = function () {
 };
 
 /**
- * Return a {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|leaflet layer} that groups all the layers that have been
+ * Return a {@link http://leafletjs.com/reference-1.3.1.html#tilelayer|leaflet layer} that groups all the layers that have been
  * added to this client.
  *
  * @example
@@ -280,7 +280,7 @@ Client.prototype.getDataviews = function () {
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
  *
- * @returns A {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer} layer that groups all the layers.
+ * @returns A {@link http://leafletjs.com/reference-1.3.1.html#tilelayer|L.TileLayer} layer that groups all the layers.
  *
  * @api
  */
@@ -389,7 +389,7 @@ Client.prototype._bindEngine = function (engine) {
 
 /**
  * Check if some layer in the client has the same id.
- * @param {carto.layer.Base} layer 
+ * @param {carto.layer.Base} layer
  */
 Client.prototype._checkDuplicatedLayerId = function (layer) {
   if (this._layers.findById(layer.getId())) {

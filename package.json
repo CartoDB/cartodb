@@ -155,7 +155,7 @@
     "bump": "npm version prerelease",
     "bump:minor": "npm version minor",
     "bump:patch": "npm version patch",
-    "version": "npm run devlog && git add DEVLOG.md",
+    "xversion": "npm run devlog && git add DEVLOG.md",
     "postversion": "git push origin HEAD --follow-tags",
     "devlog": "carto-devlog -s d58f78f54 -b 'Bump version to' -m 'Merge pull request' > DEVLOG.md",
     "release": "./scripts/release.sh"

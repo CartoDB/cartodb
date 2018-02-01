@@ -1,4 +1,3 @@
-/* global L */
 /* global google */
 
 var Base = require('./base');
@@ -61,6 +60,9 @@ BoundingBoxGoogleMaps.prototype.$getInternalModel = function () {
 
 // Helper to check if an element is a leafletmap object
 function _isGoogleMap (element) {
+  if (!google) {
+    throw Error('Google maps is not defined');
+  }
   return element instanceof google.maps.Map;
 }
 

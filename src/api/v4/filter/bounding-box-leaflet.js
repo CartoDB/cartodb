@@ -59,7 +59,7 @@ BoundingBoxLeaflet.prototype.$getInternalModel = function () {
 
 // Helper to check if an element is a leafletmap object
 function _isLeafletMap (element) {
-  return element instanceof L.map;
+  return element instanceof L.Map;
 }
 
 module.exports = BoundingBoxLeaflet;

@@ -340,7 +340,12 @@ class User < Sequel::Model
   end
 
   def create_master_api_key
-    Carto::ApiKey::create_master(id)
+    Carto::ApiKey.create(
+      user_id: id,
+      type: Carto::ApiKey::TYPE_MASTER,
+      name: Carto::ApiKey::MASTER_NAME,
+      grants: []
+    )
   end
 
   def create_default_public_api_key

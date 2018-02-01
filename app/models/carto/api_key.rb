@@ -50,6 +50,7 @@ module Carto
 
     before_create :create_token
     before_create :create_db_config
+    before_create :check_master_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
     validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
@@ -113,32 +114,6 @@ module Carto
       if !master? && name == Carto::ApiKey::MASTER_NAME
         errors.add(:name, "api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
       end
-    end
-
-    def self.create_master(user_id)
-      if !exists_master_key?(user_id)
-        Carto::ApiKey.create(
-          user_id: user_id,
-          type: Carto::ApiKey::TYPE_MASTER,
-          name: Carto::ApiKey::MASTER_NAME,
-          grants: []
-        )
-      else
-        raise Carto::UnprocesableEntityError.new("Duplicate master API Key")
-      end
-    rescue ActiveRecord::RecordNotUnique => e
-      if /api_keys_db_role_index/ =~ e.message
-        raise Carto::UnprocesableEntityError.new("Duplicate master API Key")
-      end
-      raise Carto::UnprocesableEntityError.new(e.message)
-    end
-
-    def self.get_master_key(user_id)
-      Carto::ApiKey.where(id: user_id, type: Carto::ApiKey::TYPE_MASTER).first
-    end
-
-    def self.exists_master_key?(user_id)
-      get_master_key(user_id).present?
     end
 
     private
@@ -290,6 +265,25 @@ module Carto
       db_run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
       db_run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
       db_run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
+    end
+
+    def check_master_key
+      if master?
+        if exists_master_key?(user_id)
+          raise Carto::UnprocesableEntityError.new("Duplicate master API Key")
+        else
+          self.name = Carto::ApiKey::MASTER_NAME
+          self.grants = []
+        end
+      end
+    end
+
+    def get_master_key(user_id)
+      Carto::ApiKey.where(id: user_id, type: Carto::ApiKey::TYPE_MASTER).first
+    end
+
+    def exists_master_key?(user_id)
+      get_master_key(user_id).present?
     end
   end
 end

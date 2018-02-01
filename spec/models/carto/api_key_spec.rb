@@ -104,7 +104,14 @@ describe Carto::ApiKey do
     end
 
     it 'cannot create more than one master key' do
-      expect { Carto::ApiKey::create_master(@carto_user1.id) }.to raise_error(Carto::UnprocesableEntityError)
+      expect {
+        Carto::ApiKey.create(
+          user_id: @carto_user1.id,
+          type: Carto::ApiKey::TYPE_MASTER,
+          name: Carto::ApiKey::MASTER_NAME,
+          grants: []
+        )
+      }.to raise_error(ActiveRecord::RecordNotUnique)
     end
 
     it 'cannot create a non master api_key with master as the name' do

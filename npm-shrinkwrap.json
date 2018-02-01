@@ -341,9 +341,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.18",
-      "from": "cartodb/cartodb.js#remove-tangram",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#6aab9214cb7f49792e5228b75c6f9d8582be8c75"
+      "version": "4.0.0-beta.20",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.20",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ff2cc64f3a6d1a24b6f06e5970916d36cb1b79c7"
     },
     "center-align": {
       "version": "0.1.3",

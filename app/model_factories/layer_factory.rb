@@ -21,7 +21,7 @@ module ModelFactories
                   { kind: 'gmapsbase', options: basemap }
                 else
                   { kind: 'tiled', options: basemap
-                    .merge(retina_layer_url ? ({ 'urlTemplateRetina' => retina_layer_url }) : {})
+                    .merge(retina_layer_url ? { 'urlTemplateRetina' => retina_layer_url } : {})
                     .merge('urlTemplate' => basemap['url']) }
                 end
 
@@ -53,7 +53,7 @@ module ModelFactories
       ::Layer.new(
         kind: 'tiled',
         options: base_layer.options.except('name', 'className', 'labels')
-        .merge(retina_labels_layer_url ? ({ 'urlTemplateRetina' => retina_labels_layer_url }) : {})
+        .merge(retina_labels_layer_url ? { 'urlTemplateRetina' => retina_labels_layer_url } : {})
         .merge(
           'urlTemplate' => labels_layer_url,
           'url' => labels_layer_url,

@@ -436,7 +436,10 @@ class User < Sequel::Model
       ActiveRecord::Base.transaction do
         delete_external_data_imports
         delete_external_sources
-        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each do |v|
+          v.user.viewer = false
+          v.destroy!
+        end
       end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.

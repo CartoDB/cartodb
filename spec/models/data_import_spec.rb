@@ -118,6 +118,42 @@ describe DataImport do
     user_tables_should_be_registered
   end
 
+  it 'should overwrite dataset with query if collision_strategy is set to overwrite' do
+    # overwriting from a sql is a different case needs to be tackled -> https://github.com/CartoDB/cartodb/issues/13139
+    carto_user = Carto::User.find(@user.id)
+    carto_user.visualizations.count.should eq 1
+
+    data_import = create_import(overwrite: false, truncated: false)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 3176
+    user_tables_should_be_registered
+
+    query = 'select * from walmart_latlon limit 1'
+    data_import = create_import_from_query(overwrite: true, from_query: query)
+    data_import.run_import!
+    carto_user.reload
+    carto_user.visualizations.count.should eq 2
+    data_import.state.should eq 'complete'
+    data_import.table_name.should eq 'walmart_latlon'
+    data_import.user.in_database["select count(*) from #{data_import.table_name}"].all[0][:count].should eq 1
+    user_tables_should_be_registered
+  end
+
+  it 'should raise an error if overwriting with non existent table in query' do
+    data_import = create_import_from_query(
+      overwrite: true,
+      from_query: 'select * from walmart_latlon_wtf limit 1'
+    )
+    data_import.run_import!
+    data_import.state.should eq 'failure'
+    data_import.error_code.should eq 8003
+    data_import.log.entries.should match(/relation.*does not exist/)
+  end
+
   it 'should raise an exception if overwriting with missing data' do
     carto_user = Carto::User.find(@user.id)
     carto_user.visualizations.count.should eq 1
@@ -195,6 +231,23 @@ describe DataImport do
       user_id: user.id,
       data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
       data_type: "file",
+      table_name: 'walmart_latlon',
+      state: "pending",
+      success: false,
+      updated_at: Time.now,
+      created_at: Time.now,
+      original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+      cartodbfy_time: 0.0,
+      collision_strategy: overwrite ? 'overwrite' : nil
+    )
+  end
+
+  def create_import_from_query(user: @user, overwrite:, from_query: '')
+    DataImport.create(
+      user_id: user.id,
+      data_source: from_query,
+      from_query: from_query,
+      data_type: "query",
       table_name: 'walmart_latlon',
       state: "pending",
       success: false,

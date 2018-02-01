@@ -324,6 +324,27 @@ describe Carto::Visualization do
     end
   end
 
+  describe '#update' do
+    before(:all) do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+      @visualization.create_mapcap!
+      @visualization.reload
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
+
+    it 'sanitizes name on rename' do
+      original = @table_visualization.name
+      @table_visualization.name = @table_visualization.name.upcase
+      @table_visualization.save!
+
+      @table_visualization.reload
+      expect(@table_visualization.name).to eq(original)
+    end
+  end
+
   describe '#invalidation_service' do
     before(:all) do
       @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')

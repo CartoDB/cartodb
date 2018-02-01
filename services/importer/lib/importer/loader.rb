@@ -330,8 +330,8 @@ module CartoDB
         if ogr2ogr.generic_error? || ogr2ogr.exit_code != 0
           job.logger.append "Ogr2ogr FAILED!"
           job.logger.append "ogr2ogr.exit_code = " + ogr2ogr.exit_code.to_s
-          job.logger.append "ogr2ogr.command = " + ogr2ogr.command, truncate=false
-          job.logger.append "ogr2ogr.command_output = " + ogr2ogr.command_output, truncate=false
+          job.logger.append "ogr2ogr.command = #{ogr2ogr.command}", false
+          job.logger.append "ogr2ogr.command_output = #{ogr2ogr.command_output}", false
           raise LoadError.new 'Ogr2ogr ERROR'
         end
       end

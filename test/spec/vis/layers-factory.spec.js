@@ -109,22 +109,20 @@ describe('vis/layers-factory', function () {
           spyOn(LayersFactory, 'isHttps').and.returnValue(true);
         });
 
-        describe('is high resolution screen', function () {
-          it("should not convert '" + httpsUrlTemplate + "'", function () {
-            var layerModel = layersFactory.createLayer('tiled', {
-              urlTemplate: httpsUrlTemplate
-            });
-
-            expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
+        it("should not convert '" + httpsUrlTemplate + "'", function () {
+          var layerModel = layersFactory.createLayer('tiled', {
+            urlTemplate: httpsUrlTemplate
           });
 
-          it("should convert '" + httpUrlTemplate + "' to '" + httpsUrlTemplate + "'", function () {
-            var layerModel = layersFactory.createLayer('tiled', {
-              urlTemplate: httpUrlTemplate
-            });
+          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
+        });
 
-            expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
+        it("should convert '" + httpUrlTemplate + "' to '" + httpsUrlTemplate + "'", function () {
+          var layerModel = layersFactory.createLayer('tiled', {
+            urlTemplate: httpUrlTemplate
           });
+
+          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
         });
       });
 

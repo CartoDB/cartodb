@@ -128,6 +128,7 @@ module CartoDB
       user_feed.js
 
       user_feed_new.js
+      user_feed_new_vendor.js
       api_keys_new.js
       common_dashboard.js
 

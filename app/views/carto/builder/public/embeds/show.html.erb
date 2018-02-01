@@ -42,6 +42,7 @@
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
     var baseURL = '<%= @viz_owner_base_url %>';
     var mapzenApiKey = '<%= mapzen_api_key %>';
+    var mapboxApiKey = '<%= mapbox_api_key %>';
   </script>
   <%= javascript_include_tag 'common.js' %>
   <%= javascript_include_tag 'builder_embed_vendor.js' %>

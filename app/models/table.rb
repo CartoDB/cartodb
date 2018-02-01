@@ -44,22 +44,6 @@ class Table
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
   # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
   RESERVED_COLUMN_NAMES = %w(oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
-  PUBLIC_ATTRIBUTES = {
-    id:                           :id,
-    name:                         :name,
-    privacy:                      :privacy_text,
-    schema:                       :schema,
-    updated_at:                   :updated_at,
-    rows_counted:                 :rows_estimated,
-    table_size:                   :table_size,
-    map_id:                       :map_id,
-    description:                  :description,
-    geometry_types:               :geometry_types,
-    table_visualization:          :table_visualization,
-    dependent_visualizations:     :serialize_fully_dependent_visualizations,
-    non_dependent_visualizations: :serialize_partially_dependent_visualizations,
-    synchronization:              :serialize_synchronization
-  }.freeze
 
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
@@ -119,22 +103,6 @@ class Table
   end
 
   # ----------------------------------------------------------------------------
-
-  def public_values(options = {}, viewer_user=nil)
-    selected_attrs = options[:except].present? ?
-      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
-
-    attrs = Hash[selected_attrs.map{ |k, v|
-      [k, (self.send(v) rescue self[v].to_s)]
-    }]
-
-    if !viewer_user.nil? && !owner.nil? && owner.id != viewer_user.id
-      attrs[:name] = "#{owner.sql_safe_database_schema}.#{attrs[:name]}"
-    end
-    attrs[:table_visualization] = CartoDB::Visualization::Presenter.new(self.table_visualization,
-                                                      { real_privacy: true, user: viewer_user }.merge(options)).to_poro
-    attrs
-  end
 
   def geometry_types_key
     "#{redis_key}:geometry_types"

@@ -638,7 +638,7 @@ class Carto::Visualization < ActiveRecord::Base
   def propagate_privacy_and_name_to
     raise "Empty table sent to propagate_privacy_and_name_to()" unless table
     propagate_privacy if privacy_changed? && canonical?
-    propagate_name if name_changed?
+    propagate_name if name_was != name # name_changed? returns false positives in changes like a->A->a (sanitization)
   end
 
   def propagate_privacy
@@ -655,9 +655,10 @@ class Carto::Visualization < ActiveRecord::Base
     table.name = name
     if table.name != name
       # Sanitization. For example, spaces -> _
-      self.name = table.name
+      update_column(:name, table.name)
     end
     table.update(name: name)
+
     if name_changed?
       support_tables.rename(name_was, name, true, name_was)
     end

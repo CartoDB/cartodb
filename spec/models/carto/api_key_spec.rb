@@ -6,6 +6,12 @@ require 'support/helpers'
 describe Carto::ApiKey do
   include_context 'users helper'
 
+  def api_key_permissions(api_key, schema, table_name)
+    api_key.table_permissions_from_db.find do |tp|
+      tp.schema == schema && tp.name == table_name
+    end
+  end
+
   def database_grant(database_schema = 'wadus', table_name = 'wadus',
                      permissions: ['insert', 'select', 'update', 'delete'])
     {
@@ -92,7 +98,11 @@ describe Carto::ApiKey do
   describe '#destroy' do
     it 'removes the role from DB' do
       api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                                      grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
+                                      grants: [
+                                        database_grant(@table1.database_schema,
+                                                       @table1.name),
+                                        apis_grant
+                                      ])
 
       @user1.in_database(as: :superuser) do |db|
         db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 1
@@ -192,6 +202,50 @@ describe Carto::ApiKey do
                                   grants: grants)
       api_key.valid?.should be_false
       api_key.errors.full_messages.should include 'Grants only one apis section is allowed'
+    end
+  end
+
+  describe '#table_permission_from_db' do
+    it 'loads newly created grants for role' do
+      api_key = Carto::ApiKey.create!(user_id: @user1.id,
+                                      type: Carto::ApiKey::TYPE_REGULAR,
+                                      name: 'wadus',
+                                      grants: [
+                                        database_grant('public', @table1.name),
+                                        apis_grant(['maps', 'sql'])
+                                      ])
+
+      sql = "grant SELECT on table \"#{@table2.database_schema}\".\"#{@table2.name}\" to \"#{api_key.db_role}\""
+      @user1.in_database(as: :superuser).run(sql)
+
+      table_permission = api_key_permissions(api_key, @table2.database_schema, @table2.name)
+      table_permission.should be
+      table_permission.permissions.should include('select')
+
+      api_key.destroy
+    end
+
+    it 'doesn\'t show removed table' do
+      permissions = ['insert', 'select', 'update', 'delete']
+      api_key = Carto::ApiKey.new(user_id: @user1.id,
+                                  type: Carto::ApiKey::TYPE_REGULAR,
+                                  name: 'wadus',
+                                  grants: [
+                                    database_grant('public', @table1.name, permissions: permissions),
+                                    apis_grant(['maps', 'sql'])
+                                  ])
+      api_key.save!
+
+      permissions.each do |permission|
+        api_key_permissions(api_key, @table1.database_schema, @table1.name).permissions.should include(permission)
+      end
+
+      sql = "drop table #{@table1.name}"
+      @user1.in_database(as: :superuser).run(sql)
+
+      api_key_permissions(api_key, @table1.database_schema, @table1.name).should be_nil
+
+      api_key.destroy
     end
   end
 end

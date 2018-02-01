@@ -15,6 +15,7 @@ public/stylesheets
 public/images
 public/fonts
 public/flash
+public/static
 app/assets/stylesheets/tmp/
 app/assets/fonts/icon_font/svgs
 db/schema.rb
@@ -43,12 +44,6 @@ cartodb.sublime-project
 app/assets/images/sprites/*.png
 npm-debug.log
 .ruby-gemset
-lib/assets/javascripts/cartodb/organization/*
-lib/assets/javascripts/cartodb3/*
-lib/assets/javascripts/deep-insights/*
-lib/assets/test/spec/cartodb3/*
-lib/assets/test/spec/deep-insights/*
-lib/assets/locale/*
 lib/build/dist
 lib/build/grunt-aws.json
 lib/build/app_config.js

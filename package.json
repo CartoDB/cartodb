@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.5",
+  "version": "4.11.27",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -26,10 +26,11 @@
     "carto-zera": "1.0.2",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.11",
+    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.17",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "d3-interpolate": "^1.1.6",
+    "fastclick": "^1.0.6",
     "html-webpack-plugin": "^2.30.1",
     "jquery": "2.1.4",
     "leaflet": "1.2.0",

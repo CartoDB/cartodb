@@ -235,45 +235,27 @@ module.exports = function (grunt) {
 
   grunt.event.on('watch', function (action, filepath, subtask) {
     // Configure copy vendor to only run on changed file
-    var cfg = grunt.config.get('copy.vendor');
-    if (filepath.indexOf(cfg.cwd) !== -1) {
-      grunt.config('copy.vendor.src', filepath.replace(cfg.cwd, ''));
+    var vendorFile = 'copy.vendor';
+    var vendorFileCfg = grunt.config.get(vendorFile);
+
+    if (filepath.indexOf(vendorFileCfg.cwd) !== -1) {
+      grunt.config(vendorFile + '.src', filepath.replace(vendorFileCfg.cwd, ''));
     } else {
-      grunt.config('copy.vendor.src', []);
+      grunt.config(vendorFile + 'src', []);
     }
 
-    var builderFiles = [
-      'js_cartodb3',
-      'js_test_cartodb3',
-      'js_deep_insights',
-      'js_test_deep_insights'
-    ];
-    var otherFiles = [
-      'app',
-      'js_cartodb'
-    ];
+    // Configure copy app to only run on changed files
+    var files = 'copy.app.files';
+    var filesCfg = grunt.config.get(files);
 
-    var COPY_PATHS = [];
-    if (subtask === 'js_affected') {
-      COPY_PATHS = COPY_PATHS.concat(builderFiles);
-    } else {
-      COPY_PATHS = COPY_PATHS.concat(otherFiles).concat(builderFiles);
-    }
+    for (var i = 0, l = filesCfg.length; i < l; ++i) {
+      var file = files + '.' + i;
+      var fileCfg = grunt.config.get(file);
 
-    // Configure copy paths to only run on changed files
-    for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
-      var files = 'copy.' + COPY_PATHS[j] + '.files';
-      var filesCfg = grunt.config.get(files);
-
-      for (var i = 0, l = filesCfg.length; i < l; ++i) {
-        var file = files + '.' + i;
-        var fileCfg = grunt.config.get(file);
-
-        if (filepath.indexOf(fileCfg.cwd) !== -1) {
-          grunt.config(file + '.src', filepath.replace(fileCfg.cwd, ''));
-        } else {
-          grunt.config(file + '.src', []);
-        }
+      if (filepath.indexOf(fileCfg.cwd) !== -1) {
+        grunt.config(file + '.src', filepath.replace(fileCfg.cwd, ''));
+      } else {
+        grunt.config(file + '.src', []);
       }
     }
   });
@@ -320,25 +302,11 @@ module.exports = function (grunt) {
 
   grunt.registerTask('js_editor', [
     'cdb',
-    'copy:js_cartodb',
     'setConfig:env.browserify_watch:true',
     'npm-carto-node',
     'run_browserify',
     'concat:js',
     'jst'
-  ]);
-
-  grunt.registerTask('js_builder', [
-    'copy:locale',
-    'copy:js_cartodb3',
-    'copy:js_test_cartodb3',
-    'copy:js_deep_insights',
-    'copy:js_test_deep_insights'
-  ]);
-
-  grunt.registerTask('js', [
-    'js_editor',
-    'js_builder'
   ]);
 
   grunt.registerTask('beforeDefault', [
@@ -348,7 +316,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('pre', [
     'beforeDefault',
-    'js',
+    'js_editor',
     'css',
     'manifest'
   ]);
@@ -432,8 +400,7 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js_editor',
     'jasmine:cartodbui',
-    'js_builder',
-    'affected:all',
+    'affected',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:affected',
@@ -441,11 +408,9 @@ module.exports = function (grunt) {
   ]);
 
   /**
-   * `grunt affected_specs` compile Builder specs using only affected ones by the current branch.
-   * `grunt affected_specs --specs=all` compile all Builder specs.
+   * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.
    */
-  grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
-    'js_builder',
+  grunt.registerTask('test:browser', 'Build all Builder specs', [
     'affected',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
@@ -457,16 +422,6 @@ module.exports = function (grunt) {
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);
   });
-
-  /**
-   * `grunt editor_specs`
-   */
-  grunt.registerTask('editor_specs', [
-    'js_editor',
-    'jasmine:cartodbui:build',
-    'connect:server',
-    'watch:js_affected_editor'
-  ]);
 
   /**
    * `grunt affected_editor_specs` compile all Editor specs and launch a webpage in the browser.

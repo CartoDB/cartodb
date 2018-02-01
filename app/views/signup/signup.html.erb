@@ -105,6 +105,9 @@
             <% end %>
 
             <% unless @oauth_fields.present? %>
+              <div class="Sessions-field Sessions-oauthHeader">
+                <p>OR SIGN UP WITH:</p>
+              </div>
               <div class="Sessions-field Sessions-oauthContainer">
                 <% @oauth_configs.each do |config| %>
                   <%= render partial: config.button_template, locals: { config: config } %>

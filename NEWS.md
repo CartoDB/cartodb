@@ -13,6 +13,7 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Add legends to mobile view in embed maps (#13417)
+* Create master API key on user creation (#13172)
 * Unplug pluggable frontends (#13446)
 * Replace Mapzen geocoding with Mapbox (#13450)
 * Disable following analysis steps (#13311)

@@ -3,11 +3,11 @@ require_relative '../../spec_helper_min'
 describe Carto::UserMigrationImport do
   it '#import throws an exception if import_metadata and dry are passed' do
     import = Carto::UserMigrationImport.create(
-      exported_file: :irrelevant_file,
+      exported_file: 'irrelevant_file',
       json_file: "irrelevant_json_file",
-      database_host: :database_host,
-      user_id: :irrelevant_user_id,
-      organization_id: :irrelevant_organization_id,
+      database_host: 'database_host',
+      user_id: 'irrelevant_user_id',
+      organization_id: 'irrelevant_organization_id',
       import_metadata: true,
       dry: true
     )
@@ -18,11 +18,11 @@ describe Carto::UserMigrationImport do
 
   it 'fails saving a migration with dry and import_metadata' do
     import = Carto::UserMigrationImport.create(
-      exported_file: :irrelevant_file,
+      exported_file: 'irrelevant_file',
       json_file: "irrelevant_json_file",
-      database_host: :database_host,
-      user_id: :irrelevant_user_id,
-      organization_id: :irrelevant_organization_id,
+      database_host: 'database_host',
+      user_id: 'irrelevant_user_id',
+      organization_id: 'irrelevant_organization_id',
       import_metadata: true,
       dry: true
     )
@@ -40,9 +40,9 @@ describe Carto::UserMigrationImport do
       @user.save
       @user = Carto::User.find(@user.id)
       @import = Carto::UserMigrationImport.create(
-        exported_file: :irrelevant_file,
+        exported_file: 'irrelevant_file',
         json_file: "irrelevant_json_file",
-        database_host: :database_host,
+        database_host: 'database_host',
         user_id: @user.id,
         organization_id: @org.id,
         import_metadata: true,
@@ -78,7 +78,7 @@ describe Carto::UserMigrationImport do
       ::User.stubs(:[]).returns(sequel_user_mock)
       sequel_user_mock.expects(:reload).times(users.length)
       users.each do |user|
-        user.expects(:database_host=).with(:database_host).once
+        user.expects(:database_host=).with('database_host').once
         user.expects(:save!).once
       end
     end
@@ -89,9 +89,9 @@ describe Carto::UserMigrationImport do
       @import.stubs(:assert_user_does_not_exist)
       @user_migration_package_mock = Object.new
       Carto::UserMigrationPackage.stubs(:for_import).returns @user_migration_package_mock
-      @user_migration_package_mock.stubs(:download).with(:irrelevant_file)
-      @user_migration_package_mock.stubs(:meta_dir).returns(:irrelevant_meta_dir)
-      @user_migration_package_mock.stubs(:data_dir).returns :irrelevant_data_dir
+      @user_migration_package_mock.stubs(:download).with('irrelevant_file')
+      @user_migration_package_mock.stubs(:meta_dir).returns('irrelevant_meta_dir')
+      @user_migration_package_mock.stubs(:data_dir).returns('irrelevant_data_dir')
       @user_mock = Carto::User.new
       @import_job_mock = Object.new
       @import_job_mock.stubs(:db_exists?).returns false
@@ -118,19 +118,19 @@ describe Carto::UserMigrationImport do
     end
 
     def should_import_metadata_for_user(user)
-      @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
-      Carto::UserMetadataExportService.any_instance.expects(:import_from_directory).with(:irrelevant_meta_dir)
+      @user_migration_package_mock.stubs(:meta_dir).returns 'irrelevant_meta_dir'
+      Carto::UserMetadataExportService.any_instance.expects(:import_from_directory).with('irrelevant_meta_dir')
                                       .returns user
       Carto::UserMetadataExportService.any_instance.expects(:import_metadata_from_directory)
-                                      .with(user, :irrelevant_meta_dir)
+                                      .with(user, 'irrelevant_meta_dir')
     end
 
     def should_import_metadata_for_organization(organization)
-      @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir)
+      @user_migration_package_mock.stubs(:meta_dir).returns 'irrelevant_meta_dir'
+      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with('irrelevant_meta_dir')
                                               .once.returns organization
       Carto::OrganizationMetadataExportService.any_instance.stubs(:import_metadata_from_directory)
-                                              .once.with(organization, :irrelevant_meta_dir)
+                                              .once.with(organization, 'irrelevant_meta_dir')
     end
 
     def create_and_add_users_to_organizaton

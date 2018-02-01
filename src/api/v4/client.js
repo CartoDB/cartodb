@@ -165,7 +165,7 @@ Client.prototype.removeLayers = function (layers) {
  * // Move layer order
  * client.moveLayer(layer1, 0)
  * .then(() => {
- *  console.log('Layers removed');
+ *  console.log('Layer moved');
  * })
  * .catch(cartoError => {
  *  console.error(cartoError.message);

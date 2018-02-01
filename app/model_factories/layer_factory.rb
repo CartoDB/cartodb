@@ -20,7 +20,7 @@ module ModelFactories
                 else
                   { kind: 'tiled', options: basemap
                     .merge('urlTemplate' => basemap['url'])
-                    .merge('urlTemplateRetina' => basemap['retina']['url'])}
+                    .merge('urlTemplateRetina' => basemap['retina']['url']) }
                 end
 
       ::Layer.new(options)

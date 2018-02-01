@@ -7,7 +7,7 @@ module Carto
                 else
                   { kind: 'tiled', options: basemap
                     .merge('urlTemplate' => basemap['url'])
-                    .merge('urlTemplateRetina' => basemap['retina']['url'])}
+                    .merge('urlTemplateRetina' => basemap['retina']['url']) }
                 end
 
       Carto::Layer.new(options)

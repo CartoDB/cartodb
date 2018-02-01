@@ -419,6 +419,7 @@ ion for time-series (#12670)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
+* Activate retina in CARTO basemaps if the viewport allows retina (#12845)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

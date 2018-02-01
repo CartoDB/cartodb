@@ -196,7 +196,7 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at'].freeze
+  EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
   EXCLUDED_USER_META_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags'].freeze
 
   def compare_excluding_dates_and_ids(v1, v2)

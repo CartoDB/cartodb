@@ -59,6 +59,9 @@ BoundingBoxLeaflet.prototype.$getInternalModel = function () {
 
 // Helper to check if an element is a leafletmap object
 function _isLeafletMap (element) {
+  if (!L) {
+    throw Error('Leaflet is not defined');
+  }
   return element instanceof L.Map;
 }
 

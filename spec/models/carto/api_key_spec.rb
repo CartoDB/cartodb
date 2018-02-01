@@ -95,6 +95,32 @@ describe Carto::ApiKey do
     api_key.destroy
   end
 
+  describe 'master api key' do
+    it 'user has a master key with the user db_role' do
+      api_key = Carto::ApiKey.where(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_MASTER).first
+      api_key.should be
+      api_key.db_role.should eq @carto_user1.database_username
+      api_key.db_password.should eq @carto_user1.database_password
+    end
+
+    it 'cannot create more than one master key' do
+      expect { Carto::ApiKey::create_master(@carto_user1.id) }.to raise_error(Carto::UnprocesableEntityError)
+    end
+
+    it 'cannot create a non master api_key with master as the name' do
+      api_key = Carto::ApiKey.new
+      api_key.type = Carto::ApiKey::TYPE_REGULAR
+      api_key.name = Carto::ApiKey::MASTER_NAME
+
+      api_key.valid?
+      api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+
+      api_key.type = Carto::ApiKey::TYPE_DEFAULT_PUBLIC
+      api_key.valid?
+      api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+    end
+  end
+
   describe '#destroy' do
     it 'removes the role from DB' do
       api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',

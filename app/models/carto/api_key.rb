@@ -2,6 +2,7 @@ require 'securerandom'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
+    return true if record.type == Carto::ApiKey::TYPE_MASTER && value && value.is_a?(Array) && value.empty?
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
     record.errors[attribute] << 'only one database section is allowed' if value.count { |v| v[:type] == 'database' } > 1
@@ -39,6 +40,8 @@ module Carto
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
 
+    MASTER_NAME = 'master'.freeze
+
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
     self.inheritance_column = :_type
@@ -62,6 +65,7 @@ module Carto
     after_destroy :remove_from_redis
 
     validates :type, inclusion: { in: VALID_TYPES }
+    validate :valid_name_for_type
 
     attr_writer :redis_client
 
@@ -101,6 +105,42 @@ module Carto
       end while self.class.exists?(token: token)
     end
 
+    def master?
+      type == Carto::ApiKey::TYPE_MASTER
+    end
+
+    def valid_name_for_type
+      if !master? && name == Carto::ApiKey::MASTER_NAME
+        errors.add(:name, "api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+      end
+    end
+
+    def self.create_master(user_id)
+      if !exists_master_key?(user_id)
+        Carto::ApiKey.create(
+          user_id: user_id,
+          type: Carto::ApiKey::TYPE_MASTER,
+          name: Carto::ApiKey::MASTER_NAME,
+          grants: []
+        )
+      else
+        raise Carto::UnprocesableEntityError.new("Duplicate master API Key")
+      end
+    rescue ActiveRecord::RecordNotUnique => e
+      if /api_keys_db_role_index/ =~ e.message
+        raise Carto::UnprocesableEntityError.new("Duplicate master API Key")
+      end
+      raise Carto::UnprocesableEntityError.new(e.message)
+    end
+
+    def self.get_master_key(user_id)
+      Carto::ApiKey.where(id: user_id, type: Carto::ApiKey::TYPE_MASTER).first
+    end
+
+    def self.exists_master_key?(user_id)
+      get_master_key(user_id).present?
+    end
+
     private
 
     PASSWORD_LENGTH = 40
@@ -108,6 +148,8 @@ module Carto
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def process_granted_apis
+      return [] if master?
+
       apis = grants.find { |v| v[:type] == 'apis' }[:apis]
       raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
       apis
@@ -128,25 +170,40 @@ module Carto
       table_permissions
     end
 
+    def current_user
+      user || ::User[user_id]
+    end
+
     def create_db_config
-      begin
-        self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
-      end while self.class.exists?(db_role: db_role)
-      self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+      if master?
+        self.db_role = current_user.database_username
+        self.db_password = current_user.database_password
+      else
+        begin
+          self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
+        end while self.class.exists?(db_role: db_role)
+        self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+      end
     end
 
     def setup_db_role
+      return if master?
+
       db_run(
         "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
       )
     end
 
     def drop_db_role
+      return if master?
+
       revoke_privileges(*affected_schemas(table_permissions))
       db_run("drop role \"#{db_role}\"")
     end
 
     def update_role_permissions
+      return if master?
+
       revoke_privileges(*affected_schemas(table_permissions_from_db))
 
       _, write_schemas = affected_schemas(table_permissions)

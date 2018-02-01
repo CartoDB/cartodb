@@ -330,6 +330,23 @@ class User < Sequel::Model
     db_service.set_statement_timeouts
   end
 
+  def create_api_keys
+    create_master_api_key
+    create_default_public_api_key
+  end
+
+  def destroy_api_keys
+    Carto::ApiKey.where(user_id: id).each(&:destroy)
+  end
+
+  def create_master_api_key
+    Carto::ApiKey::create_master(id)
+  end
+
+  def create_default_public_api_key
+    # TODO
+  end
+
   def notify_new_organization_user
     ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
   end
@@ -378,6 +395,12 @@ class User < Sequel::Model
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
+    end
+
+    db.after_commit do
+      if changes.empty?
+        create_api_keys
+      end
     end
   end
 

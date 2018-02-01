@@ -330,28 +330,6 @@ class User < Sequel::Model
     db_service.set_statement_timeouts
   end
 
-  def create_api_keys
-    create_master_api_key
-    create_default_public_api_key
-  end
-
-  def destroy_api_keys
-    Carto::ApiKey.where(user_id: id).each(&:destroy)
-  end
-
-  def create_master_api_key
-    Carto::ApiKey.create(
-      user_id: id,
-      type: Carto::ApiKey::TYPE_MASTER,
-      name: Carto::ApiKey::MASTER_NAME,
-      grants: []
-    )
-  end
-
-  def create_default_public_api_key
-    # TODO
-  end
-
   def notify_new_organization_user
     ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
   end
@@ -1844,5 +1822,14 @@ class User < Sequel::Model
 
   def created_via
     @created_via || get_user_creation.try(:created_via)
+  end
+
+  def create_api_keys
+    Carto::ApiKey.create(
+      user_id: id,
+      type: Carto::ApiKey::TYPE_MASTER,
+      name: Carto::ApiKey::MASTER_NAME,
+      grants: []
+    )
   end
 end

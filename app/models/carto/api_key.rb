@@ -40,7 +40,7 @@ module Carto
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
 
-    MASTER_NAME = 'master'.freeze
+    MASTER_NAME = 'master-api-key'.freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
@@ -122,7 +122,7 @@ module Carto
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def process_granted_apis
-      return [] if master?
+      return [{ type: "apis", apis: ["sql", "maps"] }] if master?
 
       apis = grants.find { |v| v[:type] == 'apis' }[:apis]
       raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
@@ -248,12 +248,8 @@ module Carto
       end
     end
 
-    def get_master_key(user_id)
-      Carto::ApiKey.where(id: user_id, type: Carto::ApiKey::TYPE_MASTER).first
-    end
-
     def exists_master_key?(user_id)
-      get_master_key(user_id).present?
+      Carto::ApiKey.exists?(id: user_id, type: Carto::ApiKey::TYPE_MASTER)
     end
   end
 end

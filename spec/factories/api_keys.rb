@@ -13,6 +13,11 @@ FactoryGirl.define do
   factory :master_api_key, class: Carto::ApiKey do
     type Carto::ApiKey::TYPE_MASTER
     name Carto::ApiKey::MASTER_NAME
-    grants []
+    grants [
+             {
+               type: "apis",
+               apis: ["sql", "maps"]
+             }
+           ]
   end
 end

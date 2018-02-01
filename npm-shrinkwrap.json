@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.27",
+  "version": "4.11.27-newleaflet",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -56,7 +56,7 @@
     },
     "argparse": {
       "version": "1.0.9",
-      "from": "argparse@>=1.0.7 <2.0.0",
+      "from": "argparse@>=1.0.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/argparse/-/argparse-1.0.9.tgz"
     },
     "arr-diff": {
@@ -341,9 +341,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.18",
-      "from": "cartodb/cartodb.js#zoomanimationthreshold1000",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#2510b02c24df6a19951df838c8ea5bd716b982d5"
+      "version": "4.0.0-beta.21",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.21",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#1fe3a0280cccec78fddd899c1d5671e240d3f9bd"
     },
     "center-align": {
       "version": "0.1.3",
@@ -827,11 +827,6 @@
       "version": "2.0.5",
       "from": "foreach@>=2.0.5 <3.0.0",
       "resolved": "https://registry.npmjs.org/foreach/-/foreach-2.0.5.tgz"
-    },
-    "fs.realpath": {
-      "version": "1.0.0",
-      "from": "fs.realpath@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
     },
     "function-bind": {
       "version": "1.1.1",
@@ -2110,21 +2105,6 @@
       "from": "cartodb/tangram#master",
       "resolved": "git://github.com/cartodb/tangram.git#62fc926251185d0ccf8b78f58d466f409b9ef475"
     },
-    "tangram-cartocss": {
-      "version": "0.9.10",
-      "from": "tangram-cartocss@>=0.9.0 <0.10.0",
-      "resolved": "https://registry.npmjs.org/tangram-cartocss/-/tangram-cartocss-0.9.10.tgz"
-    },
-    "tangram-reference": {
-      "version": "2.1.0",
-      "from": "tangram-reference@>=2.1.0 <2.2.0",
-      "resolved": "https://registry.npmjs.org/tangram-reference/-/tangram-reference-2.1.0.tgz"
-    },
-    "tangram.cartodb": {
-      "version": "0.5.7",
-      "from": "tangram.cartodb@>=0.5.7 <0.6.0",
-      "resolved": "https://registry.npmjs.org/tangram.cartodb/-/tangram.cartodb-0.5.7.tgz"
-    },
     "tapable": {
       "version": "0.2.8",
       "from": "tapable@>=0.2.5 <0.3.0",
@@ -2371,18 +2351,6 @@
       "version": "3.2.1",
       "from": "y18n@>=3.2.1 <4.0.0",
       "resolved": "https://registry.npmjs.org/y18n/-/y18n-3.2.1.tgz"
-    },
-    "yamljs": {
-      "version": "0.3.0",
-      "from": "yamljs@>=0.3.0 <0.4.0",
-      "resolved": "https://registry.npmjs.org/yamljs/-/yamljs-0.3.0.tgz",
-      "dependencies": {
-        "glob": {
-          "version": "7.1.2",
-          "from": "glob@>=7.0.5 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz"
-        }
-      }
     },
     "yargs": {
       "version": "6.6.0",

@@ -27,7 +27,8 @@ module CartoDB
                                s3_config: nil,
                                timestamp: Time.now,
                                allow_spaces: false,
-                               force_s3_upload: false)
+                               force_s3_upload: false,
+                               random_token: nil)
       results = {
         file_uri: nil,
         enqueue:  true
@@ -52,7 +53,7 @@ module CartoDB
 
       filename = filename.tr(' ', '_') unless allow_spaces
 
-      random_token = Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id.to_s}").first(20)
+      random_token ||= Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id.to_s}").first(20)
 
       use_s3 = !s3_config.nil? && s3_config['access_key_id'].present? && s3_config['secret_access_key'].present? &&
                s3_config['bucket_name'].present? && s3_config['url_ttl'].present?

@@ -149,35 +149,16 @@ module Carto
         end
       end
 
-      read_schemas, write_schemas = affected_schemas(table_permissions)
-      (read_schemas + write_schemas).each { |s| grant_aux_write_privileges_for_schema(s) }
+      affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
     end
 
     def drop_db_role
-      revoke_privileges(*affected_schemas(table_permissions))
+      revoke_privileges
       db_run("DROP ROLE \"#{db_role}\"")
     end
 
-    def update_role_permissions
-      revoke_privileges(*affected_schemas(table_permissions_from_db))
-
-      _, write_schemas = affected_schemas(table_permissions)
-
-      table_permissions.each do |tp|
-        unless tp.permissions.empty?
-          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
-        end
-      end
-    end
-
-    def affected_schemas(table_permissions)
-      read_schemas = []
-      write_schemas = []
-      table_permissions.each do |tp|
-        read_schemas << tp.schema
-        write_schemas << tp.schema unless !tp.write?
-      end
-      [read_schemas.uniq, write_schemas.uniq]
+    def affected_schemas
+      table_permissions.map(&:schema).uniq
     end
 
     def redis_key(token = self.token)
@@ -213,9 +194,8 @@ module Carto
       @redis_client ||= $users_metadata
     end
 
-    def revoke_privileges(read_schemas, write_schemas)
-      schemas = read_schemas + write_schemas
-      schemas.uniq.each do |schema|
+    def revoke_privileges
+      affected_schemas.uniq.each do |schema|
         db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")

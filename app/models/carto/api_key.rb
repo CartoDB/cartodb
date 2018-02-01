@@ -56,7 +56,6 @@ module Carto
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save :add_to_redis
-    after_save :update_role_permissions
 
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
@@ -76,15 +75,15 @@ module Carto
 
     def table_permissions_from_db
       query = %{
-        select
+        SELECT
           table_schema,
           table_name,
           string_agg(lower(privilege_type),',') privilege_types
-        from
+        FROM
           information_schema.role_table_grants
-        where
+        WHERE
           grantee = '#{db_role}'
-        group by
+        GROUP BY
           table_schema,
           table_name;
         }
@@ -136,44 +135,30 @@ module Carto
     end
 
     def setup_db_role
-      db_run(
-        "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
-      )
-    end
+      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
+      db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
+      db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
 
-    def drop_db_role
-      revoke_privileges(*affected_schemas(table_permissions))
-      db_run("drop role \"#{db_role}\"")
-    end
-
-    def update_role_permissions
-      revoke_privileges(*affected_schemas(table_permissions_from_db))
-
-      _, write_schemas = affected_schemas(table_permissions)
+      if user.organization_user?
+        db_run("GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\"")
+      end
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          db_run(
-            "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
-          )
+          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
         end
       end
 
-      write_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
-
-      if !write_schemas.empty?
-        grant_usage_for_cartodb
-      end
+      affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
     end
 
-    def affected_schemas(table_permissions)
-      read_schemas = []
-      write_schemas = []
-      table_permissions.each do |tp|
-        read_schemas << tp.schema
-        write_schemas << tp.schema unless !tp.write?
-      end
-      [read_schemas.uniq, write_schemas.uniq]
+    def drop_db_role
+      revoke_privileges
+      db_run("DROP ROLE \"#{db_role}\"")
+    end
+
+    def affected_schemas
+      table_permissions.map(&:schema).uniq
     end
 
     def redis_key(token = self.token)
@@ -209,30 +194,17 @@ module Carto
       @redis_client ||= $users_metadata
     end
 
-    def revoke_privileges(read_schemas, write_schemas)
-      schemas = read_schemas + write_schemas
-      schemas << 'cartodb' if write_schemas.present?
-      schemas.uniq.each do |schema|
-        db_run("revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke usage on schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke execute on all functions in schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke usage, select on all sequences in schema \"#{schema}\" from \"#{db_role}\"")
+    def revoke_privileges
+      affected_schemas.uniq.each do |schema|
+        db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
       end
-      db_run("revoke usage on schema \"cartodb\" from \"#{db_role}\"")
-      db_run("revoke execute on all functions in schema \"cartodb\" from \"#{db_role}\"")
-    end
-
-    def grant_usage_for_cartodb
-      db_run("grant usage on schema \"cartodb\" to \"#{db_role}\"")
-      db_run("grant execute on all functions in schema \"cartodb\" to \"#{db_role}\"")
     end
 
     def grant_aux_write_privileges_for_schema(s)
-      db_run("grant usage on schema \"#{s}\" to \"#{db_role}\"")
-      db_run("grant execute on all functions in schema \"#{s}\" to \"#{db_role}\"")
-      db_run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
-      db_run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
-      db_run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
+      db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
+      db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
     end
   end
 end

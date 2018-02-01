@@ -341,9 +341,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.21",
-      "from": "cartodb/cartodb.js#12845-implement-retina-basemaps",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#edecedf0fbb224ed7dfff01e2d0fe39a7cba78c7"
+      "version": "4.0.0-beta.22",
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#6aa37ae6a84dd2746b0231e051c5257200bd5a35"
     },
     "center-align": {
       "version": "0.1.3",

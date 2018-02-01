@@ -1,3 +1,4 @@
+/* global L */
 var Base = require('./base');
 var LeafletBoundingBoxAdapter = require('../../../geo/adapters/leaflet-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
@@ -58,10 +59,7 @@ BoundingBoxLeaflet.prototype.$getInternalModel = function () {
 
 // Helper to check if an element is a leafletmap object
 function _isLeafletMap (element) {
-  if (!element) {
-    return false;
-  }
-  return element.hasOwnProperty('_leaflet_id');
+  return element instanceof L.map;
 }
 
 module.exports = BoundingBoxLeaflet;

@@ -240,8 +240,8 @@ module CartoDB
           @url = sanitize_id(id, subresource_id)
 
           response = http_client.get(METADATA_URL % [@url], http_options)
-          raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.return_message} #{self.to_s}") \
-            if response.code == 0 and response.return_message.downcase.include? 'timeout'
+          raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.return_message}") \
+            if response.code.zero? and response.return_message.downcase.include? 'timeout'
           raise DataDownloadError.new("#{METADATA_URL % [@url]} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
@@ -334,8 +334,8 @@ module CartoDB
         def get_layers_list(url)
           request_url = LAYERS_URL % [url]
           response = http_client.get(request_url, http_options)
-          raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.return_message} #{self.to_s}") \
-            if response.code == 0 and response.return_message.downcase.include? 'timeout'
+          raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.return_message}") \
+            if response.code.zero? and response.return_message.downcase.include? 'timeout'
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
 
@@ -374,7 +374,7 @@ module CartoDB
           request_url = FEATURE_IDS_URL % [url]
           response = http_client.get(request_url, http_options)
           raise DataDownloadTimeoutError.new("#{request_url} (#{response.code}) : #{response.return_message}") \
-            if response.code == 0 and response.return_message.downcase.include? "timeout"
+            if response.code.zero? and response.return_message.downcase.include? "timeout"
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
 

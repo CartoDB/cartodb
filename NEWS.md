@@ -127,6 +127,8 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Update Leaflet to version 1.3.1
+* Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
 * Don't disable delete analysis button if layer already has some [Support#1283](https://github.com/CartoDB/support/issues/1283)
 * Submit form with Enter key in the Add layer modal > Connect dataset tab (#13441)
@@ -348,6 +350,7 @@ ion for time-series (#12670)
 * User organization or user key for google maps (#12232)
 * Configurable pg_dump/restore bin path (#12297)
 * Redesigned LEARN MORE buttons behaviour (#12135)
+* Fixed password protected embed maps (#13448)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Allow whitespace as layer name at vizJSONv3 (#12526)
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
@@ -397,6 +400,7 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Added TMS to layer_options (#13459)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
@@ -420,6 +424,7 @@ ion for time-series (#12670)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
+* Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 
 ### Internals

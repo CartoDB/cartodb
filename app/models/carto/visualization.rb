@@ -100,12 +100,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   before_destroy :backup_visualization
 
-  # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
-  # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
-  # with an update after creation. This is fixed in Rails 4.
-  before_create :delay_saving_tags
-  after_create :save_tags
-
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
@@ -701,15 +695,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def set_default_permission
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
-  end
-
-  def delay_saving_tags
-    @cached_tags = tags
-    self.tags = nil
-  end
-
-  def save_tags
-    update_attribute(:tags, @cached_tags)
   end
 
   def password_digest(password, salt)

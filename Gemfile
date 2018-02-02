@@ -8,8 +8,6 @@ gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
-# NOTE: Forced on purpose due to this bug https://github.com/tlconnor/activerecord-postgres-array/issues/37
-# gem 'activerecord-postgres-array', '0.0.9'
 
 gem 'protected_attributes'
 gem 'responders', '~> 2.0'

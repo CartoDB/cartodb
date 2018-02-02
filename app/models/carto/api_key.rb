@@ -9,7 +9,6 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 end
 
 module Carto
-
   class TablePermissions
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
 
@@ -56,6 +55,7 @@ module Carto
     before_create :create_token
     before_create :create_db_config
     before_validation :check_master_key
+    before_validation :check_default_public_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
     validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
@@ -114,10 +114,18 @@ module Carto
       type == TYPE_MASTER
     end
 
+    def default_public?
+      type == TYPE_DEFAULT_PUBLIC
+    end
+
     def valid_name_for_type
-      if !master? && name == MASTER_NAME
-        errors.add(:name, "api_key name cannot be #{MASTER_NAME}")
+      if !master? && name == MASTER_NAME || !default_public? && name == DEFAULT_PUBLIC_NAME
+        errors.add(:name, "api_key name cannot be #{MASTER_NAME} nor #{DEFAULT_PUBLIC_NAME}")
       end
+    end
+
+    def can_be_deleted?
+      !master? && !default_public?
     end
 
     private
@@ -151,28 +159,28 @@ module Carto
       user || Carto::User[user_id]
     end
 
+    def sequel_user
+      @sequel_user ||= ::User[user_id]
+    end
+
     def create_db_config
-      if master?
-        self.db_role = current_user.database_username
-        self.db_password = current_user.database_password
-      else
-        begin
-          self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
-        end while self.class.exists?(db_role: db_role)
-        self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
-      end
+      return create_master_db_config if master?
+
+      begin
+        self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
+      end while self.class.exists?(db_role: db_role)
+      self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+    end
+
+    def create_master_db_config
+      self.db_role = current_user.database_username
+      self.db_password = current_user.database_password
     end
 
     def setup_db_role
       return if master?
 
-      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
-      db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
-      db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
-
-      if user.organization_user?
-        db_run("GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\"")
-      end
+      create_role
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
@@ -181,6 +189,16 @@ module Carto
       end
 
       affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
+    end
+
+    def create_role
+      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
+      db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
+      db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
+
+      if user.organization_user?
+        db_run("GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\"")
+      end
     end
 
     def drop_db_role
@@ -228,6 +246,8 @@ module Carto
     end
 
     def revoke_privileges
+      return if master?
+
       affected_schemas.uniq.each do |schema|
         db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
@@ -247,8 +267,19 @@ module Carto
       self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS, API_IMPORT, API_ANALYSIS] }]
     end
 
+    def check_default_public_key
+      return unless default_public?
+      raise Carto::UnprocesableEntityError.new("Duplicate default public API Key") if exists_default_public_key?(user_id)
+      self.name = DEFAULT_PUBLIC_NAME
+      self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS] }]
+    end
+
     def exists_master_key?(user_id)
       Carto::ApiKey.exists?(id: user_id, type: TYPE_MASTER)
+    end
+
+    def exists_default_public_key?(user_id)
+      Carto::ApiKey.exists?(id: user_id, type: TYPE_DEFAULT_PUBLIC)
     end
   end
 end

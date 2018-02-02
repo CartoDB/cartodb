@@ -262,9 +262,7 @@ describe Carto::ApiKey do
         expect {
           Carto::ApiKey.create(
             user_id: @carto_user1.id,
-            type: Carto::ApiKey::TYPE_MASTER,
-            name: Carto::ApiKey::MASTER_NAME,
-            grants: []
+            type: Carto::ApiKey::TYPE_MASTER
           )
         }.to raise_error(ActiveRecord::RecordNotUnique)
       end
@@ -275,11 +273,34 @@ describe Carto::ApiKey do
         api_key.name = Carto::ApiKey::MASTER_NAME
 
         api_key.valid?
-        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
+      end
+    end
 
-        api_key.type = Carto::ApiKey::TYPE_DEFAULT_PUBLIC
+    describe 'default public api key' do
+      it 'user has a default public key with the public_db_user role' do
+        api_key = Carto::ApiKey.where(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_DEFAULT_PUBLIC).first
+        api_key.should be
+        api_key.db_role.should eq @user1.database_public_username
+        api_key.db_password.should eq CartoDB::PUBLIC_DB_USER_PASSWORD
+      end
+
+      it 'cannot create more than one master key' do
+        expect {
+          Carto::ApiKey.create(
+            user_id: @carto_user1.id,
+            type: Carto::ApiKey::TYPE_DEFAULT_PUBLIC
+          )
+        }.to raise_error(ActiveRecord::RecordNotUnique)
+      end
+
+      it 'cannot create a non default public api_key with default public name' do
+        api_key = Carto::ApiKey.new
+        api_key.type = Carto::ApiKey::TYPE_REGULAR
+        api_key.name = Carto::ApiKey::DEFAULT_PUBLIC_NAME
+
         api_key.valid?
-        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
       end
     end
   end

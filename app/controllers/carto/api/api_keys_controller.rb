@@ -33,7 +33,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def destroy
-    raise Carto::UnauthorizedError.new if @api_key.master?
+    raise Carto::UnauthorizedError.new unless @api_key.can_be_deleted?
 
     @api_key.destroy
     render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)

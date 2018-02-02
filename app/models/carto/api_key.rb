@@ -2,7 +2,6 @@ require 'securerandom'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    return true if record.type == Carto::ApiKey::TYPE_MASTER && value && value.is_a?(Array) && value.empty?
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
     record.errors[attribute] << 'only one database section is allowed' if value.count { |v| v[:type] == 'database' } > 1
@@ -50,7 +49,7 @@ module Carto
 
     before_create :create_token
     before_create :create_db_config
-    before_create :check_master_key
+    before_validation :check_master_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
     validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
@@ -122,8 +121,6 @@ module Carto
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def process_granted_apis
-      return [{ type: "apis", apis: ["sql", "maps"] }] if master?
-
       apis = grants.find { |v| v[:type] == 'apis' }[:apis]
       raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
       apis
@@ -238,14 +235,10 @@ module Carto
     end
 
     def check_master_key
-      if master?
-        if exists_master_key?(user_id)
-          raise Carto::UnprocesableEntityError.new("Duplicate master API Key")
-        else
-          self.name = Carto::ApiKey::MASTER_NAME
-          self.grants = []
-        end
-      end
+      return unless master?
+      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
+      self.name = Carto::ApiKey::MASTER_NAME
+      self.grants = [{ type: "apis", apis: ["sql", "maps"] }]
     end
 
     def exists_master_key?(user_id)

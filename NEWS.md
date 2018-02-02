@@ -422,6 +422,7 @@ ion for time-series (#12670)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
+* Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 
 ### Internals

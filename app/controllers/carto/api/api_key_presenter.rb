@@ -30,8 +30,8 @@ module Carto
               end
             }
           ],
-          createdAt: @api_key.created_at.to_s,
-          updatedAt: @api_key.updated_at.to_s
+          created_at: @api_key.created_at.to_s,
+          updated_at: @api_key.updated_at.to_s
         }
       end
     end

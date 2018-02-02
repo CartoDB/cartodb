@@ -185,7 +185,7 @@ module Carto
     end
 
     def redis_hash_as_array
-      hash = ['user', user.username, 'type', type, 'dbRole', db_role, 'dbPassword', db_password]
+      hash = ['user', user.username, 'type', type, 'db_role', db_role, 'db_password', db_password]
       granted_apis.each { |api| hash += ["grants_#{api}", true] }
       hash
     end

@@ -3,8 +3,6 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-$sViewport-xl: 1200px;
-
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;
 $sBigDescriptionWidth: 550px;
@@ -159,7 +157,7 @@ $cBackgroundColor: #2E3C43;
   .BuilderOnboarding-pad2 {
     width: 72px;
 
-    @media (max-width: $sViewport-xl) {
+    @media (max-width: $sMedia-xl) {
       width: $sToolbarWidth-mediaXL;
     }
   }
@@ -177,7 +175,7 @@ $cBackgroundColor: #2E3C43;
   .BuilderOnboarding-pad {
     width: 72px;
 
-    @media (max-width: $sViewport-xl) {
+    @media (max-width: $sMedia-xl) {
       width: $sToolbarWidth-mediaXL;
     }
   }
@@ -223,7 +221,7 @@ $cBackgroundColor: #2E3C43;
   .BuilderOnboarding-contentWrapper {
     flex: 0 0 416px;
 
-    @media (max-width: $sViewport-xl) {
+    @media (max-width: $sMedia-xl) {
       flex: 0 0 392px;
     }
   }

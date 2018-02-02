@@ -84,7 +84,7 @@
 }
 
 /* Responsive views */
-@media (max-width: $sViewport-xxl) {
+@media (max-width: $sMedia-xxl) {
   .Editor {
     .CDB-Widget-canvas,
     .CDB-Widget {
@@ -107,7 +107,7 @@
   }
 }
 
-@media (max-width: $sViewport-xl) {
+@media (max-width: $sMedia-xl) {
   .Editor {
     .CDB-Widget.CDB-Widget--timeSeries {
       min-height: auto;

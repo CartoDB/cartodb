@@ -7,17 +7,17 @@ $canvas-dark: rgba(#293A41, 1);
 
 .CDB-Dashboard-canvas {
   display: flex;
-  flex: 1;
   position: relative;
   box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
+  flex: 1;
   justify-content: space-between;
   width: 100%;
   height: 100%; // fill content to the visible viewport, but add scroll for overflowing inline content (e.g. widgets)
-  padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
+  border-radius: 4px;
   background: $canvas-light;
+  box-shadow: inset 10px 0 10px -10px rgba(#000, 0.3);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  box-shadow: inset 10px 0 10px -10px rgba(#000, 0.3);
 }
 
 .CDB-Dashboard-canvas.is-dark {
@@ -47,10 +47,6 @@ $canvas-dark: rgba(#293A41, 1);
   border-radius: 4px;
 }
 
-.CDB-Dashboard-belowMap {
-  margin-top: 8px;
-}
-
 @media (min-width: 1200px) {
   .CDB-Dashboard-mapWrapper--withMenu {
     margin-left: 56px;
@@ -59,7 +55,7 @@ $canvas-dark: rgba(#293A41, 1);
 
 @media (max-width: 1200px) {
   .CDB-Dashboard-canvas {
-    padding: 8px;
+    padding: 0;
   }
 }
 

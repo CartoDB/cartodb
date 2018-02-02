@@ -39,7 +39,13 @@ module Carto
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
 
-    MASTER_NAME = 'master-api-key'.freeze
+    MASTER_NAME         = 'master-api-key'.freeze
+    DEFAULT_PUBLIC_NAME = 'default-public-api-key'.freeze
+
+    API_SQL       = 'sql'.freeze
+    API_MAPS      = 'maps'.freeze
+    API_IMPORT    = 'import'.freeze
+    API_ANALYSIS  = 'analysis'.freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
@@ -105,12 +111,12 @@ module Carto
     end
 
     def master?
-      type == Carto::ApiKey::TYPE_MASTER
+      type == TYPE_MASTER
     end
 
     def valid_name_for_type
-      if !master? && name == Carto::ApiKey::MASTER_NAME
-        errors.add(:name, "api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+      if !master? && name == MASTER_NAME
+        errors.add(:name, "api_key name cannot be #{MASTER_NAME}")
       end
     end
 
@@ -142,7 +148,7 @@ module Carto
     end
 
     def current_user
-      user || ::User[user_id]
+      user || Carto::User[user_id]
     end
 
     def create_db_config
@@ -237,12 +243,12 @@ module Carto
     def check_master_key
       return unless master?
       raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
-      self.name = Carto::ApiKey::MASTER_NAME
-      self.grants = [{ type: "apis", apis: ["sql", "maps"] }]
+      self.name = MASTER_NAME
+      self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS, API_IMPORT, API_ANALYSIS] }]
     end
 
     def exists_master_key?(user_id)
-      Carto::ApiKey.exists?(id: user_id, type: Carto::ApiKey::TYPE_MASTER)
+      Carto::ApiKey.exists?(id: user_id, type: TYPE_MASTER)
     end
   end
 end

@@ -271,7 +271,7 @@ module Carto
       return unless default_public?
       raise Carto::UnprocesableEntityError.new("Duplicate default public API Key") if exists_default_public_key?(user_id)
       self.name = DEFAULT_PUBLIC_NAME
-      self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS] }]
+      self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS, API_IMPORT, API_ANALYSIS] }]
     end
 
     def exists_master_key?(user_id)

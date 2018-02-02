@@ -246,8 +246,8 @@ describe Carto::VisualizationsExportService2 do
       permission: { access_control_list: [] },
       synchronization: nil,
       user_table: nil,
-      created_at: DateTime.now,
-      updated_at: DateTime.now
+      created_at: DateTime.now.to_json,
+      updated_at: DateTime.now.to_json
     }
   end
 

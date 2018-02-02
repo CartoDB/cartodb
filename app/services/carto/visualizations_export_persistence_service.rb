@@ -63,10 +63,10 @@ module Carto
           visualization.updated_at = DateTime.now
         end
 
-
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
         end
+        visualization.reload
 
         # Save permissions after visualization, in order to be able to regenerate shared_entities
         if saved_acl

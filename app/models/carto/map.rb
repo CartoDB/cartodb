@@ -43,6 +43,7 @@ class Carto::Map < ActiveRecord::Base
 
   after_initialize :ensure_options
   after_save :notify_map_change
+  after_save :save_table # Manual save, since autosave is disabled
 
   def data_layers
     layers.select(&:data_layer?)
@@ -166,6 +167,13 @@ class Carto::Map < ActiveRecord::Base
   end
 
   private
+
+  def save_table
+    if user_table && !user_table.persisted?
+      user_table.map = self
+      user_table.save!
+    end
+  end
 
   def admits_more_data_layers?
     !visualization.canonical? || data_layers.empty?

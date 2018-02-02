@@ -1445,7 +1445,7 @@ describe Carto::Api::VisualizationsController do
           related_canonical = response.body[:related_canonical_visualizations]
           related_canonical.should_not be_nil
           related_canonical.count.should eq 1
-          related_canonical[0]['id'].should eq @table_visualization.id
+          related_canonical[0][:id].should eq @table_visualization.id
         end
       end
 
@@ -1696,7 +1696,7 @@ describe Carto::Api::VisualizationsController do
                 related_canonical = response.body[:related_canonical_visualizations]
                 related_canonical.should_not be_nil
                 related_canonical.count.should eq 1
-                related_canonical[0]['id'].should eq @table_visualization.id
+                related_canonical[0][:id].should eq @table_visualization.id
               end
             end
 
@@ -2837,16 +2837,16 @@ describe Carto::Api::VisualizationsController do
                                                type: Carto::Visualization::TYPE_DERIVED,
                                                shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
         response.status.should eq 200
-        response.body[:visualizations][0]['id'].should_not be_empty
-        response.body[:visualizations][0]['auth_tokens'].should_not be_empty
+        response.body[:visualizations][0][:id].should_not be_empty
+        response.body[:visualizations][0][:auth_tokens].should_not be_empty
       end
 
       get_json api_v1_visualizations_index_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key,
                                                type: Carto::Visualization::TYPE_DERIVED,
                                                shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
         response.status.should eq 200
-        response.body[:visualizations][0]['id'].should_not be_empty
-        response.body[:visualizations][0]['auth_tokens'].should be_empty
+        response.body[:visualizations][0][:id].should_not be_empty
+        response.body[:visualizations][0][:auth_tokens].should be_empty
       end
 
       destroy_full_visualization(@map, @table, @table_visualization, @visualization)

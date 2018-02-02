@@ -38,7 +38,7 @@ CartoDB::Application.configure do
 
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
-  config.serve_static_assets = true
+  config.serve_static_files = true
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
@@ -53,7 +53,7 @@ CartoDB::Application.configure do
   # `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
   # Check your `config/database.yml` has `pool: 50` or higher for `development`.
   # The condition excludes this from resque, since it won't work with it and it doesn't need it.
-  #config.threadsafe! unless $rails_rake_task
+  # config.threadsafe! unless $rails_rake_task
   config.eager_load = false
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

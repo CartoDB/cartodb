@@ -198,9 +198,9 @@ module Carto
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
 
       # Groups and notifications must be saved after users
-      groups = organization.groups.dup
+      groups = organization.groups.map(&:clone)
       organization.groups.clear
-      notifications = organization.notifications.dup
+      notifications = organization.notifications.map(&:clone)
       organization.notifications.clear
 
       save_imported_organization(organization)

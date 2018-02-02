@@ -383,9 +383,7 @@ class User < Sequel::Model
     end
 
     db.after_commit do
-      if changes.empty?
-        create_api_keys
-      end
+      create_api_keys
     end
   end
 

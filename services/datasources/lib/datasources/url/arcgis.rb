@@ -240,9 +240,7 @@ module CartoDB
           @url = sanitize_id(id, subresource_id)
 
           response = http_client.get(METADATA_URL % [@url], http_options)
-
-          check_response_timeout(METADATA_URL % [@url], response)
-          check_response_ok(METADATA_URL % [@url], response)
+          validate_response(METADATA_URL % [@url], response)
 
           # non-rails symbolize keys
           data = ::JSON.parse(response.body).inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
@@ -333,9 +331,7 @@ module CartoDB
         def get_layers_list(url)
           request_url = LAYERS_URL % [url]
           response = http_client.get(request_url, http_options)
-
-          check_response_timeout(request_url, response)
-          check_response_ok(request_url, response)
+          validate_response(request_url, response)
 
           begin
             data = ::JSON.parse(response.body).fetch('layers')
@@ -371,9 +367,7 @@ module CartoDB
         def get_ids_list(url)
           request_url = FEATURE_IDS_URL % [url]
           response = http_client.get(request_url, http_options)
-
-          check_response_timeout(request_url, response)
-          check_response_ok(request_url, response)
+          validate_response(request_url, response)
 
           begin
             data = ::JSON.parse(response.body).fetch('objectIds').sort
@@ -523,12 +517,9 @@ module CartoDB
           feature_name.gsub(/[^\w]/, '_').downcase + '.json'
         end
 
-        def check_response_timeout(request_url, response)
+        def validate_response(request_url, response)
           raise ExternalServiceTimeoutError.new("TIMEOUT: #{request_url} : #{response.return_message}") \
             if response.code.zero? and !response.return_message.nil? and response.return_message.downcase.include? 'timeout'
-        end
-
-        def check_response_ok(request_url, response)
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
         end

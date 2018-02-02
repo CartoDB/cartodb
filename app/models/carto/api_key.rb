@@ -108,9 +108,9 @@ module Carto
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def process_granted_apis
-      apis = grants.find { |v| v[:type] == 'apis' }[:apis]
+      apis = grants.find { |v| v[:type] == 'apis' }
       raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
-      apis
+      apis[:apis] || []
     end
 
     def process_table_permissions
@@ -122,7 +122,7 @@ module Carto
       databases[:tables].each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
         table_permissions[table_id] ||= Carto::TablePermissions.new(schema: table[:schema], name: table[:name])
-        table_permissions[table_id].merge!(table[:permissions])
+        table_permissions[table_id].merge!(table[:permissions]) if table[:permissions]
       end
 
       table_permissions

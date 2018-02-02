@@ -37,7 +37,7 @@ module Carto
 
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
-    TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
+    TYPE_DEFAULT_PUBLIC = 'default'.freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
@@ -185,7 +185,7 @@ module Carto
     end
 
     def redis_hash_as_array
-      hash = ['user', user.username, 'type', type, 'dbRole', db_role, 'dbPassword', db_password]
+      hash = ['user', user.username, 'type', type, 'database_role', db_role, 'database_password', db_password]
       granted_apis.each { |api| hash += ["grants_#{api}", true] }
       hash
     end

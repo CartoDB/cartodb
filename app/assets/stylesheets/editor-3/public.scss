@@ -37,8 +37,10 @@
 }
 
 .CDB-Embed-tab {
+  display: flex;
+
   &:not(.is-active) {
-    display: none !important;
+    display: none;
   }
 
   &.is-active {
@@ -60,16 +62,13 @@
 
 @media (max-width: 600px) {
   .CDB-Embed-content {
-    flex-grow: initial;
-    // 103px = header + tabs height
-    height: calc(100% - 103px);
+    display: flex;
   }
 }
 
-// Override carto.js legends styles
 .CDB-Embed-legends {
   .CDB-Legends-canvas {
-    display: block !important;
+    display: block;
     position: relative;
     top: 0;
     left: 0;

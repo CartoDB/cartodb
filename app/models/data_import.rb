@@ -668,6 +668,12 @@ class DataImport < Sequel::Model
         error_code: 1012,
         log_info: ex.to_s
       }
+    rescue ExternalServiceTimeoutError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1020,
+        log_info: ex.to_s
+      }
     rescue DataDownloadTimeoutError => ex
       had_errors = true
       manual_fields = {

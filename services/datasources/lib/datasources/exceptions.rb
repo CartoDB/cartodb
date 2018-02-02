@@ -52,6 +52,12 @@ module CartoDB
         end
       end
 
+      class ExternalServiceTimeoutError < DatasourceBaseError
+        def initialize(service = UNKNOWN_SERVICE, username = nil)
+          super("External service timed out. Check the source is not running slow and/or try again.", service, username)
+        end
+      end
+
       class DatasourcePermissionError < DatasourceBaseError; end
       class DropboxPermissionError < DatasourcePermissionError; end
       class BoxPermissionError < DatasourcePermissionError; end

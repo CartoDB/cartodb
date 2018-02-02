@@ -259,6 +259,17 @@ describe Carto::Api::ApiKeysController do
       Carto::ApiKey.where(name: api_key.name, user_id: @user1.id).first.should be_nil
     end
 
+    it 'returns 403 if API key is master' do
+      api_key = Carto::ApiKey::where(user_id: @user1.id, type: Carto::ApiKey::TYPE_MASTER).first
+      delete_json generate_api_key_url(user_req_params(@user1), name: api_key.name) do |response|
+        response.status.should eq 403
+      end
+
+      delete_json generate_api_key_url(user_req_params(@user1), name: random_uuid) do |response|
+        response.status.should eq 404
+      end
+    end
+
     it 'returns 404 if API key is not a uuid or it doesn\'t exist' do
       delete_json generate_api_key_url(user_req_params(@user1), name: 'wadus') do |response|
         response.status.should eq 404
@@ -410,15 +421,15 @@ describe Carto::Api::ApiKeysController do
       end
     end
 
-    it 'returns empty list if the API key does not belong to the user' do
+    it 'returns the list of master and default API key for a given user' do
       get_json generate_api_key_url(user_req_params(@user2)) do |response|
         response.status.should eq 200
-        response.body[:total].should eq 0
-        response.body[:count].should eq 0
+        response.body[:total].should eq 1
+        response.body[:count].should eq 1
         response.body[:_links][:first][:href].should match /page=1/
         expect(response.body[:_links].keys).not_to include(:prev)
         expect(response.body[:_links].keys).not_to include(:next)
-        response.body[:result].size.should eq 0
+        response.body[:result].size.should eq 1
       end
     end
 

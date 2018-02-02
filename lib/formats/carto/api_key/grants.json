@@ -19,7 +19,9 @@
           "type": "string",
           "enum": [
             "sql",
-            "maps"
+            "maps",
+            "import",
+            "analysis"
           ]
         }
       },

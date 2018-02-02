@@ -2545,6 +2545,22 @@ describe User do
     end
   end
 
+  describe 'create api keys on user creation' do
+    after(:each) do
+      @user.destroy if @user
+    end
+
+    it "creates master api key on user creation" do
+      @user = FactoryGirl.create(:valid_user)
+
+      api_keys = Carto::ApiKey.where(user_id: @user.id)
+      api_keys.should_not be_empty
+
+      master_api_key = Carto::ApiKey.where(user_id: @user.id, type: Carto::ApiKey::TYPE_MASTER)
+      master_api_key.should be
+    end
+  end
+
   protected
 
   def create_org(org_name, org_quota, org_seats)

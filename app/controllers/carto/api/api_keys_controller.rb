@@ -13,6 +13,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
+  rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
   def create
     api_key = Carto::ApiKey.create!(
@@ -32,6 +33,8 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def destroy
+    raise Carto::UnauthorizedError.new if @api_key.master?
+
     @api_key.destroy
     render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)
   end

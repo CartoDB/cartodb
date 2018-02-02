@@ -13,7 +13,6 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Add legends to mobile view in embed maps (#13417)
-* Create master API key on user creation (#13172)
 * Unplug pluggable frontends (#13446)
 * Replace Mapzen geocoding with Mapbox (#13450)
 * Disable following analysis steps (#13311)
@@ -114,6 +113,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Auth API
   * Keys creation (#13170)
+  * Create master API key on user creation (#13172)
   * Keys destruction (#13171)
   * Token regeneration (#13321)
   * Keys listing (#13327)

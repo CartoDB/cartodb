@@ -163,6 +163,7 @@ ion for time-series (#12670)
 * Avoid sending multiple notifications for stuck imports (#11833)
 * Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
 * Update Leaflet to version 1.3.1
+* Fix wrong user flow involving analyses and empty layers ([#13489](https://github.com/CartoDB/cartodb/pull/13489))
 * Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
 * Don't disable delete analysis button if layer already has some [Support#1283](https://github.com/CartoDB/support/issues/1283)

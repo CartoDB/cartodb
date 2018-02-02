@@ -23,7 +23,7 @@ gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'redis',                   '3.3.0'
 gem 'hiredis',                 '0.6.1'
-gem 'nokogiri',                '~> 1.6.6.2'
+gem 'nokogiri',                '~> 1.8.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk',                 '1.8.5'
 gem 'ruby-prof',               '0.15.1'

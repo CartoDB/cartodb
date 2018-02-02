@@ -9,10 +9,10 @@ describe Carto::Api::ApiKeysController do
 
   def response_grants_should_include_request_permissions(reponse_grants, table_permissions)
     table_permissions.each do |stp|
-      response_tables = reponse_grants.find { |grant| grant['type'] == 'database'}['tables']
+      response_tables = reponse_grants.find { |grant| grant[:type] == 'database'}[:tables]
       response_permissions_for_table =
-        response_tables.find { |rtp| rtp['schema'] == stp['schema'] && rtp['name'] == stp['name'] }['permissions']
-      response_permissions_for_table.sort.should eq stp['permissions'].sort
+        response_tables.find { |rtp| rtp[:schema] == stp[:schema] && rtp[:name] == stp[:name] }[:permissions]
+      response_permissions_for_table.sort.should eq stp[:permissions].sort
     end
   end
 
@@ -86,7 +86,7 @@ describe Carto::Api::ApiKeysController do
         api_key_response[:type].should eq 'regular'
         api_key_response[:token].should_not be_empty
 
-        request_table_permissions = grants.find { |grant| grant['type'] == 'database' }['tables']
+        request_table_permissions = grants.find { |grant| grant[:type] == 'database' }[:tables]
         response_grants_should_include_request_permissions(api_key_response[:grants], request_table_permissions)
 
         api_key_response[:databaseConfig].should_not be

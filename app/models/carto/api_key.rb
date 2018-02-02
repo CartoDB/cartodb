@@ -37,7 +37,7 @@ module Carto
 
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
-    TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
+    TYPE_DEFAULT_PUBLIC = 'default'.freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 

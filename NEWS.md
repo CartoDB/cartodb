@@ -348,6 +348,7 @@ ion for time-series (#12670)
 * User organization or user key for google maps (#12232)
 * Configurable pg_dump/restore bin path (#12297)
 * Redesigned LEARN MORE buttons behaviour (#12135)
+* Fixed password protected embed maps (#13448)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Allow whitespace as layer name at vizJSONv3 (#12526)
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)

@@ -1,0 +1,47 @@
+// MobileApps plan
+// --------------------------------------------------
+
+.ApiKeys-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(#000, 0.1);
+}
+
+.ApiKeys-list-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(#000, 0.1);
+}
+
+.ApiKeys-footer {
+  padding: 20px 0;
+}
+
+.ApiKeys-footer-text {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  color: #999;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 22px;
+}
+
+.ApiKeys-footer-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid #F2C000;
+  border-radius: 20px;
+  background: #F6D35C;
+  color: #FFF;
+  font-size: 13px;
+  line-height: 20px !important;
+  text-align: center;
+}

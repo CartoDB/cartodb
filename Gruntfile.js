@@ -268,6 +268,7 @@ module.exports = function (grunt) {
     'compass',
     'copy:css_vendor_cartodb3',
     'copy:css_cartodb3',
+    'copy:css_dashboard',
     'sass',
     'concat:css'
   ]);

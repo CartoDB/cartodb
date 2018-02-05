@@ -39,13 +39,12 @@ module Carto
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
 
-    MASTER_NAME         = 'master-api-key'.freeze
-    DEFAULT_PUBLIC_NAME = 'default-public-api-key'.freeze
+    MASTER_NAME         = 'Master'.freeze
 
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
-    API_IMPORT    = 'import'.freeze
-    API_ANALYSIS  = 'analysis'.freeze
+
+    GRANTS_MASTER = [{ type: "apis", apis: [API_SQL, API_MAPS] }]
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
@@ -71,6 +70,7 @@ module Carto
 
     validates :type, inclusion: { in: VALID_TYPES }
     validate :valid_name_for_type
+    validate :validate_uniqueness
 
     attr_writer :redis_client
 
@@ -242,9 +242,13 @@ module Carto
 
     def check_master_key
       return unless master?
-      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
       self.name = MASTER_NAME
-      self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS, API_IMPORT, API_ANALYSIS] }]
+      self.grants = GRANTS_MASTER
+    end
+
+    def validate_uniqueness
+      return unless master?
+      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
     end
 
     def exists_master_key?(user_id)

@@ -44,7 +44,7 @@ module Carto
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
 
-    GRANTS_MASTER = [{ type: "apis", apis: [API_SQL, API_MAPS] }]
+    GRANTS_MASTER = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 

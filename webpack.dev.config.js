@@ -114,14 +114,6 @@ module.exports = env => {
             resolve(__dirname, 'lib/assets/javascripts/deep-insights'),
             resolve(__dirname, 'node_modules/cartodb.js')
           ]
-        },
-        {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          include: [],
-          options: {
-            presets: ['es2015']
-          }
         }
       ]
     },

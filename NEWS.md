@@ -129,6 +129,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)

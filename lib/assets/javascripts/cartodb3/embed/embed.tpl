@@ -1,6 +1,7 @@
 <% if (showMenu) { %>
   <header class="CDB-Embed-header">
     <h1 class="CDB-Text CDB-Size-large"><%= title %></h1>
+    <p class="CDB-Text"><%= description %></p>
   </header>
 <% } %>
 

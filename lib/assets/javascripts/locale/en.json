@@ -7,7 +7,7 @@
           "add_payment": "Add payment method"
         }
       }
-    },
+    }
   },
   "show": {
     "title": "Editor",
@@ -18,7 +18,7 @@
       "edit_metadata": "Edit metadata...",
       "edit": "Edit",
       "visualize": "VISUALIZE"
-    },
+    }
   },
   "protected_map": {
     "title": "Protected map",

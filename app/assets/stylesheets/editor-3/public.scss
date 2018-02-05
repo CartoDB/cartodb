@@ -4,8 +4,9 @@
 @import 'tipsy-tooltip';
 
 $sEmbedTabs: 1rem;
-$cEmbedTabs-Primary: #FFFFFF;
-$cEmbedTabs-Secondary: #DDDDDD;
+$cEmbedTabs-Primary: #FFF;
+$cEmbedTabs-Secondary: #DDD;
+$cEmbedTabs-Shadow: rgba(0, 0, 0, 0.3);
 
 #dashboard {
   height: 100%;
@@ -61,7 +62,7 @@ $cEmbedTabs-Secondary: #DDDDDD;
 
   .CDB-NavMenu-inner {
     border: none;
-    box-shadow: 0 0 $sEmbedTabs $cEmbedTabs-Secondary;
+    box-shadow: 0 0 $sEmbedTabs $cEmbedTabs-Shadow;
   }
 }
 

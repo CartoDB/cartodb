@@ -519,7 +519,9 @@ module CartoDB
 
         def validate_response(request_url, response)
           raise ExternalServiceTimeoutError.new("TIMEOUT: #{request_url} : #{response.return_message}") \
-            if response.code.zero? and !response.return_message.nil? and response.return_message.downcase.include? 'timeout'
+            if response.code.zero? && !response.return_message.nil? \
+              && response.return_message.downcase.include?('timeout')
+
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
         end

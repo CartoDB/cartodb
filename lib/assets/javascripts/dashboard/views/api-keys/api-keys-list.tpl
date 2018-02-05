@@ -29,28 +29,30 @@
       <button class="CDB-Text CDB-Size-medium u-actionTextColor">Edit</button>
     </section>
   </li>
-  <li class="ApiKeys-list-item">
-    <section>
-       <h4 class="CDB-Text CDB-Size-medium is-semibold u-actionTextColor u-flex u-alignCenter">
-        SQL Maps Test key
-        <span class="CDB-Tag CDB-Text is-gray is-semibold CDB-Size-small u-iBlock u-lSpace--xl u-upperCase">
-          SQL
-        </span>
-        <span class="CDB-Tag CDB-Text is-gray is-semibold CDB-Size-small u-iBlock u-lSpace--xl u-upperCase">
-          Maps
-        </span>
-      </h4>
-       <p class="CDB-Text CDB-Size-medium u-secondaryTextColor u-tSpace--m u-flex u-alignCenter">
-        a985af72dc9190c90eee07b479390a758910d770
-        <i class="CDB-IconFont CDB-IconFont-anchor u-hintTextColor CDB-Size-large u-lSpace--xl"></i>
-      </p>
-    </section>
-    <section>
-      <button class="CDB-Text CDB-Size-medium u-actionTextColor u-rSpace--m">Clone</button>
-      <button class="CDB-Text CDB-Size-medium u-actionTextColor u-rSpace--m">Regenerate</button>
-      <button class="CDB-Text CDB-Size-medium u-errorTextColor">Delete</button>
-    </section>
-  </li>
+  <% regularKeys.forEach(function (key) { %>
+    <li class="ApiKeys-list-item">
+      <section>
+         <h4 class="CDB-Text CDB-Size-medium is-semibold u-actionTextColor u-flex u-alignCenter">
+          <%- key.get('name') %>
+
+          <% key.getApiGrants().forEach(function (apiGrant) { %>
+            <span class="CDB-Tag CDB-Text is-gray is-semibold CDB-Size-small u-iBlock u-lSpace--xl u-upperCase">
+              <%- apiGrant %>
+            </span>
+          <% }) %>
+        </h4>
+         <p class="CDB-Text CDB-Size-medium u-secondaryTextColor u-tSpace--m u-flex u-alignCenter">
+          <%- key.get('token') %>
+          <i class="CDB-IconFont CDB-IconFont-anchor u-hintTextColor CDB-Size-large u-lSpace--xl"></i>
+        </p>
+      </section>
+      <section>
+        <button class="CDB-Text CDB-Size-medium u-actionTextColor u-rSpace--m">Clone</button>
+        <button class="CDB-Text CDB-Size-medium u-actionTextColor u-rSpace--m">Regenerate</button>
+        <button class="CDB-Text CDB-Size-medium u-errorTextColor">Delete</button>
+      </section>
+    </li>
+  <% }) %>
 </ul>
 
 <footer class="ApiKeys-footer">

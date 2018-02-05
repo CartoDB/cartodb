@@ -32,7 +32,11 @@ module Carto
       log.append("=== Exporting #{organization ? 'user' : 'org'} data ===")
       update_attributes(state: STATE_EXPORTING)
 
-      package = UserMigrationPackage.for_export(id, log)
+      package = if backup
+                  UserMigrationPackage.for_backup("backup_#{user.username}_#{Time.now.iso8601}", log)
+                else
+                  UserMigrationPackage.for_export(id, log)
+                end
 
       export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(package.data_dir))
 

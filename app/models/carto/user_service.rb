@@ -138,6 +138,12 @@ module Carto
       @user.database_schema != CartoDB::DEFAULT_DB_SCHEMA ? "cartodb_publicuser_#{@user.id}" : CartoDB::PUBLIC_DB_USER
     end
 
+    def organization_member_group_role_member_name
+      @user.in_database.execute(
+        "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
+      ).first['org_member_role']
+    end
+
     private
 
     # Returns a tree elements array with [major, minor, patch] as in http://semver.org/

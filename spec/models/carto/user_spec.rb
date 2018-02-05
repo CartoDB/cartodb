@@ -56,15 +56,4 @@ describe Carto::User do
       end
     end
   end
-
-  describe '#create api keys' do
-    before(:all) do
-      @carto_user = FactoryGirl.create(:carto_user)
-    end
-
-    it 'has api_keys when new user is created' do
-      @carto_user.api_keys.should_not be_empty
-    end
-
-  end
 end

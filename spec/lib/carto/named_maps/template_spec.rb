@@ -420,6 +420,44 @@ module Carto
             @template_hash[:layergroup][:layers].first[:options][:source].should be_nil
           end
 
+          describe 'when basemap options' do
+            before(:all) do
+              @tms_layer = @visualization.layers.first
+              @tms_layer.options[:tms] = true
+              @tms_layer.options[:urlTemplate] = 'http://url_template_example'
+              @tms_layer.options[:subdomains] = 'subdomains_example'
+
+              @tms_layer.save
+              @visualization.reload
+
+              @tms_layer_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:layers][0]
+            end
+
+            after(:all) do
+              @tms_layer = @visualization.layers.first
+              @tms_layer.options[:tms] = nil
+              @tms_layer.options[:urlTemplate] = nil
+              @tms_layer.options[:subdomains] = nil
+
+              @tms_layer.save
+              @visualization.reload
+
+              @tms_layer_hash = nil
+            end
+
+            it 'should have tms options' do
+              @tms_layer_hash[:options][:tms].should be_true
+            end
+
+            it 'should have urlTemplate options' do
+              @tms_layer_hash[:options][:urlTemplate].should eq 'http://url_template_example'
+            end
+
+            it 'should have subdomains options' do
+              @tms_layer_hash[:options][:subdomains].should eq 'subdomains_example'
+            end
+          end
+
           describe 'when background' do
             before(:all) do
               @background_layer = @visualization.layers.first

@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* User feed migration
 * Add legends to mobile view in embed maps (#13417)
 * Unplug pluggable frontends (#13446)
 * Replace Mapzen geocoding with Mapbox (#13450)
@@ -118,6 +119,9 @@ ion for time-series (#12670)
   * Keys listing (#13327)
   * Header authentication (#13329)
   * Keep API Key permissions up to date when tables change (#13333)
+  * Inherit from public user for API key permissions (#13464)
+  * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
+  * Conventions (#13491)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
@@ -126,6 +130,10 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Restore translation keys to static pages (#13492)
+* Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
+* Update Leaflet to version 1.3.1
+* Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
 * Don't disable delete analysis button if layer already has some [Support#1283](https://github.com/CartoDB/support/issues/1283)
 * Submit form with Enter key in the Add layer modal > Connect dataset tab (#13441)
@@ -347,6 +355,7 @@ ion for time-series (#12670)
 * User organization or user key for google maps (#12232)
 * Configurable pg_dump/restore bin path (#12297)
 * Redesigned LEARN MORE buttons behaviour (#12135)
+* Fixed password protected embed maps (#13448)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Allow whitespace as layer name at vizJSONv3 (#12526)
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
@@ -396,11 +405,13 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Added TMS to layer_options (#13459)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
 * Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Fix SAML configuration bug that doesn't let access some properties properly (#13161)
+* Improved error messages for ArcGIS MapServer imports [Support #1288](https://github.com/CartoDB/support/issues/1288)
 * Treat all time series dataview timestamps as UTC (#13070)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 * Enable CSV exports for polygon and line datasets (#13212)
@@ -417,7 +428,7 @@ ion for time-series (#12670)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
-* Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
+* Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 
 ### Internals

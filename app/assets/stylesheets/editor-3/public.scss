@@ -79,6 +79,13 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.3);
   .CDB-Embed-tabs,
   .CDB-Embed-legends {
     display: none;
-    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 759px) {
+  body {
+    position: fixed !important;
+    width: 100%;
+    overflow: hidden; // Avoid scroll in small screens
   }
 }

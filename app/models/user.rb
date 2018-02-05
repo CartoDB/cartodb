@@ -13,7 +13,6 @@ require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
-require_relative './api_key_helper'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
@@ -32,7 +31,6 @@ class User < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include CartoDB::ConfigUtils
   include DataServicesMetricsHelper
-  include ApiKeyHelper
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
@@ -1822,5 +1820,14 @@ class User < Sequel::Model
 
   def created_via
     @created_via || get_user_creation.try(:created_via)
+  end
+
+  def create_api_keys
+    return if Carto::ApiKey.exists?(user_id: id)
+    Carto::ApiKey.create!(
+      user_id: id,
+      type: Carto::ApiKey::TYPE_MASTER,
+      name: Carto::ApiKey::MASTER_NAME
+    )
   end
 end

@@ -5,7 +5,6 @@ require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 require_relative '../../helpers/data_services_metrics_helper'
-require_relative '../api_key_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
@@ -15,7 +14,6 @@ require_dependency 'carto/helpers/billing_cycle'
 class Carto::User < ActiveRecord::Base
   extend Forwardable
   include DataServicesMetricsHelper
-  include ApiKeyHelper
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout

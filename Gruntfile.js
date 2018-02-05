@@ -324,8 +324,10 @@ module.exports = function (grunt) {
   registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
+  registerCmdTask('npm-build-dashboard', {cmd: 'npm', args: ['run', 'build:dashboard']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
+  registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
 
   /**
    * `grunt dev`
@@ -335,6 +337,13 @@ module.exports = function (grunt) {
     'npm-carto-node',
     'pre',
     'npm-start'
+  ]);
+
+  grunt.registerTask('dashboard', [
+    'beforeDefault',
+    'css',
+    'manifest',
+    'npm-dashboard'
   ]);
 
   grunt.registerTask('default', [
@@ -361,7 +370,8 @@ module.exports = function (grunt) {
     'copy:js',
     'exorcise',
     'uglify',
-    'npm-build'
+    'npm-build',
+    'npm-build-dashboard'
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [
@@ -384,12 +394,24 @@ module.exports = function (grunt) {
     requireWebpackTask().affected.call(this, option, grunt);
   });
 
+  grunt.registerTask('generate_dashboard_specs', 'Generate only dashboard specs', function (option) {
+    requireWebpackTask().dashboard.call(this, option, grunt);
+  });
+
   grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
     requireWebpackTask().bootstrap.call(this, 'builder_specs', grunt);
   });
 
+  grunt.registerTask('bootstrap_webpack_dashboard_specs', 'Create the webpack compiler', function () {
+    requireWebpackTask().bootstrap.call(this, 'dashboard_specs', grunt);
+  });
+
   grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {
     requireWebpackTask().compile.call(this, 'builder_specs');
+  });
+
+  grunt.registerTask('webpack:dashboard_specs', 'Webpack compilation task for dashboard specs', function () {
+    requireWebpackTask().compile.call(this, 'dashboard_specs');
   });
 
   /**
@@ -401,6 +423,10 @@ module.exports = function (grunt) {
     'js_editor',
     'jasmine:cartodbui',
     'affected',
+    'bootstrap_webpack_builder_specs',
+    'webpack:builder_specs',
+    'jasmine:affected',
+    'generate_dashboard_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:affected',
@@ -417,6 +443,18 @@ module.exports = function (grunt) {
     'jasmine:affected:build',
     'connect:specs',
     'watch:js_affected'
+  ]);
+
+  /**
+   * `grunt dashboard_specs` compile dashboard specs
+   */
+  grunt.registerTask('dashboard_specs', 'Build only dashboard specs', [
+    'generate_dashboard_specs',
+    'bootstrap_webpack_builder_specs',
+    'webpack:builder_specs',
+    'jasmine:affected:build',
+    'connect:specs',
+    'watch:dashboard_specs'
   ]);
 
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {

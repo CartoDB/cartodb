@@ -191,6 +191,10 @@ module ApplicationHelper
     "#{ CartoDB.url(context, 'api_v2_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
   end
 
+  def vis_json_v3_url(vis_id, context, user=nil)
+    "#{ CartoDB.url(context, 'api_v3_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
+  end
+
   def model_errors(model)
     model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
   end

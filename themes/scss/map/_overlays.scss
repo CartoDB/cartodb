@@ -285,7 +285,6 @@ $maxLegendContainerHeight: 300px;
   margin-bottom: 16px;
 }
 
-
 .CDB-Legend-item div.cartodb-legend {
   position: static;
   padding: 0;
@@ -518,6 +517,7 @@ $maxLegendContainerHeight: 300px;
     max-height: none;
     border-radius: 0;
     box-shadow: none;
+    background-color: transparent;
 
     .CDB-Legends-canvasInner {
       height: 100%;

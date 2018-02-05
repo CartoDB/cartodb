@@ -64,7 +64,6 @@
   }
 }
 
-// Widget media query
 @media (max-width: 759px) {
   .CDB-Map-canvas {
     display: flex;
@@ -98,11 +97,5 @@
     min-width: 100%;
     max-width: 100%;
     margin-left: 0;
-  }
-}
-
-@media (max-height: 420px) {
-  .CDB-Widget-canvas {
-    display: none !important;
   }
 }

@@ -3,6 +3,10 @@
 
 @import 'tipsy-tooltip';
 
+$sEmbedTabs: 1rem;
+$cEmbedTabs-Primary: #FFFFFF;
+$cEmbedTabs-Secondary: #DDDDDD;
+
 #dashboard {
   height: 100%;
 }
@@ -14,9 +18,9 @@
 }
 
 .CDB-Embed-header {
-  padding: 1rem;
-  border-bottom: 1px solid #DDD;
-  background: white;
+  padding: $sEmbedTabs;
+  border-bottom: 1px solid $cEmbedTabs-Secondary;
+  background: $cEmbedTabs-Primary;
 
   h1 {
     max-width: 100%;
@@ -33,7 +37,7 @@
 
 .CDB-NavMenu-inner {
   margin: 0;
-  padding: 1rem 1rem 0;
+  padding: $sEmbedTabs $sEmbedTabs 0;
 }
 
 .CDB-Embed-tab {
@@ -48,14 +52,32 @@
   }
 }
 
-.CDB-Embed-legends {
-  height: 100%;
+.CDB-Embed-tabs {
+  position: fixed;
+  top: 0;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: $cEmbedTabs-Primary;
+
+  .CDB-NavMenu-inner {
+    border: none;
+    box-shadow: 0 0 $sEmbedTabs $cEmbedTabs-Secondary;
+  }
 }
 
-@media (min-width: 601px) {
+.CDB-Embed-legends {
+  height: 100%;
+
+  &.CDB-Embed-tab {
+    margin-top: $sEmbedTabs * 3;
+  }
+}
+
+@media (min-width: 600px) {
   .CDB-Embed-header,
   .CDB-Embed-tabs,
   .CDB-Embed-legends {
     display: none;
+    box-sizing: border-box;
   }
 }

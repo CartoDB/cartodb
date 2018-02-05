@@ -36,7 +36,7 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    return render(file: "public/static/account/index.html", layout: false) # if current_user.has_feature_flag?('static_account')
+    return render(file: "public/static/account/index.html", layout: false) if current_user.has_feature_flag?('static_account')
 
     respond_to do |format|
       format.html { render 'account' }

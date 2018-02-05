@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.29-1299support",
+  "version": "4.11.29",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

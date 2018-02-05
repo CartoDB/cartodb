@@ -505,7 +505,25 @@ $maxLegendContainerHeight: 300px;
 
 @media (max-width: 600px) {
   .CDB-Legends-canvas {
-    display: none;
+    display: none !important;
+  }
+
+  .CDB-Legends-canvas.CDB-Legends-canvasEmbed {
+    display: block !important;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    .CDB-Legends-canvasInner {
+      height: 100%;
+      max-height: none;
+      border-radius: 0;
+    }
   }
 
   .CDB-Zoom-info,

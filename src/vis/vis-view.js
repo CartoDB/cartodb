@@ -71,9 +71,13 @@ var Vis = View.extend({
     var embedLegends = $('.js-embed-legends');
 
     if (embedLegends.length) {
+      var embedSettingsModel = _.extend(this.settingsModel, {
+        isEmbed: true
+      });
+
       this._embedLegendsView = new LegendsView({
         layersCollection: this.model.map.layers,
-        settingsModel: this.settingsModel
+        settingsModel: embedSettingsModel
       });
 
       embedLegends.append(this._embedLegendsView.render().$el);

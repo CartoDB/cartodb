@@ -6,7 +6,6 @@ var template = require('./legends-view.tpl');
 var LayerLegendsView = require('./layer-legends-view');
 
 var LegendsView = View.extend({
-
   className: 'CDB-Legends-canvas',
 
   initialize: function (options) {
@@ -28,8 +27,14 @@ var LegendsView = View.extend({
   },
 
   render: function () {
-    this.$el.html(template());
     var layerModelsWithLegends = this._layersCollection.getLayersWithLegends();
+
+    this.$el.html(template());
+
+    if (this.settingsModel.isEmbed) {
+      this.$el.addClass('CDB-Legends-canvasEmbed');
+    }
+
     _.each(layerModelsWithLegends.reverse(), this._renderLayerLegends, this);
     this._isRendered = true;
     this._renderScroll();

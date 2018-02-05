@@ -60,7 +60,6 @@
 
 @media (max-width: 600px) {
   .CDB-Embed-content {
-    flex-grow: initial;
     // 103px = header + tabs height
     height: calc(100% - 103px);
   }

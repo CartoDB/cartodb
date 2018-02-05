@@ -130,6 +130,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Improved bundling aliases
 * Restore translation keys to static pages (#13492)
 * Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
 * Update Leaflet to version 1.3.1

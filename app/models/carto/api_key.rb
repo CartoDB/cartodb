@@ -129,7 +129,8 @@ module Carto
     end
 
     def check_owned_table_permissions
-      if grants && table_permissions.any? { |tp| tp.schema != user.database_schema }
+      # Only check if no previous errors in JSON definition
+      if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
         errors.add(:grants, 'can only grant permissions over owned tables')
       end
     end

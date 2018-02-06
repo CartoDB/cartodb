@@ -18,8 +18,6 @@ FactoryGirl.define do
     quota_in_bytes         5000000
     id                     { UUIDTools::UUID.timestamp_create.to_s }
     builder_enabled        nil # Most tests still assume editor
-    organization_id        nil
-    database_schema        'public'
 
     trait :admin_privileges do
       username 'Admin'

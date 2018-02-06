@@ -2550,14 +2550,21 @@ describe User do
       @user.destroy if @user
     end
 
-    it "creates master api key on user creation" do
-      @user = FactoryGirl.create(:valid_user)
+    it "creates master api key on user creation if ff auth_api is enabled for the user" do
+      @user = FactoryGirl.create(:auth_api_user)
 
       api_keys = Carto::ApiKey.where(user_id: @user.id)
       api_keys.should_not be_empty
 
       master_api_key = Carto::ApiKey.where(user_id: @user.id, type: Carto::ApiKey::TYPE_MASTER)
       master_api_key.should be
+    end
+
+    it "does not create master api key on user creation if ff auth_api is not enabled for the user" do
+      @user = FactoryGirl.create(:valid_user)
+
+      api_keys = Carto::ApiKey.where(user_id: @user.id)
+      api_keys.should be_empty
     end
   end
 

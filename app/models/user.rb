@@ -325,6 +325,9 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
+    db.after_commit do
+      create_api_keys
+    end
     db_service.monitor_user_notification
     sleep 1
     db_service.set_statement_timeouts
@@ -378,10 +381,6 @@ class User < Sequel::Model
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
-    end
-
-    db.after_commit do
-      create_api_keys
     end
   end
 
@@ -1823,7 +1822,7 @@ class User < Sequel::Model
   end
 
   def create_api_keys
-    return if Carto::ApiKey.exists?(user_id: id)
+    return if Carto::ApiKey.exists?(user_id: id) || !has_feature_flag?('auth_api')
     Carto::ApiKey.create!(
       user_id: id,
       type: Carto::ApiKey::TYPE_MASTER,

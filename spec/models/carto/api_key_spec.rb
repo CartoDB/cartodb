@@ -286,7 +286,7 @@ describe Carto::ApiKey do
 
   describe 'with plain users' do
     before(:all) do
-      @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
+      @user1 = FactoryGirl.create(:auth_api_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 

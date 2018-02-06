@@ -124,7 +124,7 @@
 }
 
 // Widget media query
-@media (max-width: 1300px) {
+@media (max-width: $sMedia-xl) {
   .CDB-Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
@@ -135,7 +135,7 @@
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget {
     @include flex(0 0 auto);
     width: auto;

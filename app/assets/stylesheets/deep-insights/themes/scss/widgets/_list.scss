@@ -207,15 +207,14 @@
   vertical-align: top;
 }
 
-// Widget media query
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget-listItem {
     width: 33.33%;
   }
 
   .CDB-Widget-listGroup {
-    @include display-flex();
-    @include flex-wrap(wrap);
+    display: flex;
+    flex-wrap: wrap;
     margin-right: 4px;
     margin-left: 4px;
   }

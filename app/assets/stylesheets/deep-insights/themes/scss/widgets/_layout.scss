@@ -34,7 +34,7 @@
   width: 100%;
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget-contentSpaced--sideMargins {
     margin-right: 12px;
     margin-left: 12px;

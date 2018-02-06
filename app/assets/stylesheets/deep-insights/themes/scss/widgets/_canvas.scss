@@ -57,7 +57,7 @@
   z-index: 3;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget-canvas {
     width: $mobileLayout;
     min-width: $mobileLayout;
@@ -65,7 +65,7 @@
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Map-canvas {
     display: flex;
     flex: 2;

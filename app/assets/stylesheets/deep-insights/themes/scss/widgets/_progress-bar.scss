@@ -60,7 +60,7 @@
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget-progressBar {
     margin: 2px 0 4px;
   }

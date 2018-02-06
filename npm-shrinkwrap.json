@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.31",
+  "version": "4.11.3-1.13498.1",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -582,9 +582,9 @@
       "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.1.tgz",
       "dependencies": {
         "acorn": {
-          "version": "5.3.0",
+          "version": "5.4.1",
           "from": "acorn@>=5.2.1 <6.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.3.0.tgz"
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.4.1.tgz"
         }
       }
     },
@@ -772,9 +772,9 @@
       "resolved": "https://registry.npmjs.org/falafel/-/falafel-2.1.0.tgz",
       "dependencies": {
         "acorn": {
-          "version": "5.3.0",
+          "version": "5.4.1",
           "from": "acorn@>=5.0.0 <6.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.3.0.tgz"
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.4.1.tgz"
         },
         "object-keys": {
           "version": "1.0.11",
@@ -1234,9 +1234,9 @@
       "resolved": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz"
     },
     "lodash": {
-      "version": "4.17.4",
+      "version": "4.17.5",
       "from": "lodash@>=4.17.3 <5.0.0",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.5.tgz"
     },
     "lodash.memoize": {
       "version": "3.0.4",

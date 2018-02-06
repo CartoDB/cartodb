@@ -10,6 +10,7 @@
 }
 
 .CDB-Widget-canvasInner {
+  display: grid;
   position: absolute;
   top: 0;
   right: 0;
@@ -84,12 +85,7 @@
   .CDB-Widget-canvasShadow.is-visible {
     display: none;
   }
-
-  .CDB-Widget-canvasInner {
-    display: flex;
-    position: relative;
-  }
-
+  
   .CDB-Widget-canvas,
   .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
     order: 3;

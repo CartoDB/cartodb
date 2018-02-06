@@ -117,7 +117,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'does not include auth tokens for public/link visualizations' do
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should include("var authTokens = JSON.parse('[]');")
@@ -129,7 +129,7 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.create_mapcap!
       @user.google_maps_key = ''
       @user.save
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should_not include("maps.google.com/maps/api/js")
@@ -141,7 +141,7 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.create_mapcap!
       @user.google_maps_key = 'client=wadus_cid'
       @user.save
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
@@ -153,7 +153,7 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.create_mapcap!
       @user.google_maps_key = 'client=wadus_cid'
       @user.save
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should_not include("maps.google.com/maps/api/js")
@@ -280,7 +280,7 @@ describe Carto::Builder::Public::EmbedsController do
 
       it 'includes auth tokens for privately shared visualizations' do
         login_as(@org_user_1)
-        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id, vector: true)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 200
         @org_user_1.reload
@@ -296,7 +296,7 @@ describe Carto::Builder::Public::EmbedsController do
         @organization.google_maps_key = 'client=wadus_org_cid'
         @organization.save
         login_as(@org_user_1)
-        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id, vector: true)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 200
         response.body.should include("maps.google.com/maps/api/js?client=wadus_org_cid")

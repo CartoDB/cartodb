@@ -553,6 +553,40 @@ describe('api/v4/layer', function () {
     });
   });
 
+  describe('.setOrder', function () {
+    it('should call moveLayer with the passed index', function () {
+      var clientMock = { moveLayer: jasmine.createSpy('moveLayer') };
+      var layer = new carto.layer.Layer(source, style);
+      layer.$setClient(clientMock);
+
+      layer.setOrder(1);
+      expect(clientMock.moveLayer).toHaveBeenCalledWith(layer, 1);
+    });
+  });
+
+  describe('.bringToBack', function () {
+    it('should call moveLayer with the passed index', function () {
+      var clientMock = { moveLayer: jasmine.createSpy('moveLayer') };
+      var layer = new carto.layer.Layer(source, style);
+      layer.$setClient(clientMock);
+
+      layer.bringToBack();
+      expect(clientMock.moveLayer).toHaveBeenCalledWith(layer, 0);
+    });
+  });
+
+  describe('.bringToFront', function () {
+    it('should call moveLayer with the passed index', function () {
+      var numberOfLayers = 3;
+      var clientMock = { moveLayer: jasmine.createSpy('moveLayer'), _layers: { size: function () { return numberOfLayers; } } };
+      var layer = new carto.layer.Layer(source, style);
+      layer.$setClient(clientMock);
+
+      layer.bringToFront();
+      expect(clientMock.moveLayer).toHaveBeenCalledWith(layer, numberOfLayers - 1);
+    });
+  });
+
   xit('should update "internalmodel.cartocss" when the style is updated', function (done) {
     var client = new carto.Client({
       apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',

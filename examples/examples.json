@@ -40,6 +40,14 @@
             "leaflet": "public/layers/change-style-leaflet.html",
             "gmaps": "public/layers/change-style-gmaps.html"
           }
+        },
+        {
+          "title": "Move the layers",
+          "desc": "Update the order of your layers",
+          "file": {
+            "leaflet": "public/layers/change-order-leaflet.html",
+            "gmaps": "public/layers/change-order-gmaps.html"
+          }
         }
       ]
     },

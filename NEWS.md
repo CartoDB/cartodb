@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Adjust widget styles in embed maps movile view (#13487)
 * User feed migration
 * Add legends to mobile view in embed maps (#13417)
 * Unplug pluggable frontends (#13446)

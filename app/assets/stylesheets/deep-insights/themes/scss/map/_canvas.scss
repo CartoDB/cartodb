@@ -47,19 +47,19 @@ $canvas-dark: rgba(#293A41, 1);
   border-radius: 4px;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: $sMedia-xl) {
   .CDB-Dashboard-mapWrapper--withMenu {
     margin-left: 56px;
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: $sMedia-xl) {
   .CDB-Dashboard-canvas {
     padding: 0;
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-max-w-vertical) {
   body {
     width: 100%;
   }
@@ -106,7 +106,7 @@ $canvas-dark: rgba(#293A41, 1);
   }
 }
 
-@media (max-width: 758px) {
+@media (max-width: $sMedia-max-w-vertical - 1px) {
   .CDB-Dashboard-canvas,
   .CDB-Map {
     width: 100%;
@@ -118,5 +118,9 @@ $canvas-dark: rgba(#293A41, 1);
 
   .CDB-Dashboard-canvas::after {
     border-radius: 0;
+  }
+
+  .CDB-Dashboard-mapWrapper {
+    flex-direction: column;
   }
 }

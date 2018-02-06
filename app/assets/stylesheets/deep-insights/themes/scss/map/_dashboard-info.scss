@@ -1,13 +1,17 @@
 // Dashboard info
 // --------------------------------------------------
 
-/* CartoLogo */
+#dashboard {
+  height: 100%;
+}
+
+/* ~~~~~ CartoLogo ~~~~~ */
 
 .CDB-EmbedLogo-text {
   opacity: 0;
 }
 
-.CDB-EmbedLogo-imago {
+.CDB-EmbedLogo-image {
   @include transform(translateX(0));
 }
 
@@ -22,7 +26,7 @@
   fill: rgb(22, 41, 69);
 }
 
-.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-imago {
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-image {
   @include transform(translateX(37px));
 }
 
@@ -36,7 +40,7 @@
   fill: rgb(22, 41, 69);
 }
 
-/* Dashboard menu */
+/* ~~~~~ Dashboard menu ~~~~~ */
 
 .CDB-Dashboard-menuTexts {
   position: absolute;
@@ -277,13 +281,13 @@
   display: none;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: $sMedia-xl) {
   .CDB-Dashboard-menu {
     display: block;
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-max-w-vertical) {
   .CDB-Dashboard-hideMobile {
     display: none;
   }
@@ -376,7 +380,7 @@
     display: none;
   }
 
-  .CDB-EmbedLogo-imago {
+  .CDB-EmbedLogo-image {
     @include transform(translateX(37px));
   }
 

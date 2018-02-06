@@ -97,6 +97,13 @@ describe Carto::ApiKey do
       api_key.destroy
     end
 
+    it 'fails to grant to a non-existent table' do
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant])
+      }.to raise_exception Carto::UnprocesableEntityError
+    end
+
     describe '#destroy' do
       it 'removes the role from DB' do
         api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
@@ -273,5 +280,15 @@ describe Carto::ApiKey do
     end
 
     it_behaves_like 'api key'
+
+    it 'fails to grant to a non-owned table' do
+      table = create_table(user_id: @carto_org_user_2.id)
+
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full', grants: [database_grant(table.database_schema, table.name), apis_grant])
+      }.to raise_exception Carto::UnprocesableEntityError
+
+      table.destroy
+    end
   end
 end

@@ -11,6 +11,7 @@ shared_context 'users helper' do
     @carto_user1 = Carto::User.find(@user1.id)
     @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
     @carto_user2 = Carto::User.find(@user2.id)
+    @user_api_keys = FactoryGirl.create(:auth_api_user)
     @user_no_api_keys = FactoryGirl.create(:no_api_keys_user, private_tables_enabled: true, private_maps_enabled: true)
   end
 
@@ -26,6 +27,7 @@ shared_context 'users helper' do
     @user1.destroy if @user1
     @user2.destroy if @user2
     @user_no_api_keys.destroy if @user_no_api_keys
+    @user_api_keys.destroy if @user_api_keys
   end
 end
 

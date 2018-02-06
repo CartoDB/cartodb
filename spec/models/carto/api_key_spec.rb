@@ -301,8 +301,8 @@ describe Carto::ApiKey do
     include_context 'organization with users helper'
 
     before(:all) do
-      @carto_user1 = @carto_org_user_1
-      @user1 = @org_user_1
+      @carto_user1 = @carto_org_user_auth_api
+      @user1 = @org_user_auth_api
     end
 
     it_behaves_like 'api key'

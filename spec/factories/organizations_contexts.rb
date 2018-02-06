@@ -56,6 +56,7 @@ shared_context 'organization with users helper' do
 
     @org_user_1 = @helper.create_test_user(unique_name('user'), @organization)
     @org_user_2 = @helper.create_test_user(unique_name('user'), @organization)
+    @org_user_auth_api = @helper.create_test_user(unique_name('user'), @organization, auth_api: true)
 
     @organization.reload
 
@@ -63,6 +64,7 @@ shared_context 'organization with users helper' do
     @carto_org_user_owner = Carto::User.find(@org_user_owner.id)
     @carto_org_user_1 = Carto::User.find(@org_user_1.id)
     @carto_org_user_2 = Carto::User.find(@org_user_2.id)
+    @carto_org_user_auth_api = Carto::User.find(@org_user_auth_api.id)
   end
 
   before(:each) do

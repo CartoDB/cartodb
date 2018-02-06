@@ -78,8 +78,9 @@ module CartoDB
       end
       user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       user.avatar_url            = user.default_avatar
-      user.stubs(:has_feature_flag?).with('auth_api').returns(true)
-
+      if attributes[:auth_api]
+        user.stubs(:has_feature_flag?).with('auth_api').returns(true)
+      end
       user
     end
 
@@ -120,16 +121,15 @@ module CartoDB
       org_user_owner
     end
 
-    def create_test_user(username = nil, organization = nil)
+    def create_test_user(username = nil, organization = nil, attributes = nil)
       username ||= unique_name('user')
-      user = create_user(
-        username: username,
-        email: "#{username}@example.com",
-        password: username,
-        private_tables_enabled: true,
-        database_schema: organization.nil? ? 'public' : username,
-        organization: organization
-      )
+      default_attributes = { username: username,
+                             email: "#{username}@example.com",
+                             password: username,
+                             private_tables_enabled: true,
+                             database_schema: organization.nil? ? 'public' : username,
+                             organization: organization }
+      user = create_user(attributes ? default_attributes.merge(attributes) : default_attributes)
       user.save.reload
       organization.reload if organization
       user

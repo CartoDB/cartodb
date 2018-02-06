@@ -260,8 +260,8 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns 403 if API key is master' do
-      api_key = Carto::ApiKey::where(user_id: @user1.id, type: Carto::ApiKey::TYPE_MASTER).first
-      delete_json generate_api_key_url(user_req_params(@user1), name: api_key.name) do |response|
+      api_key = Carto::ApiKey::where(user_id: @user_api_keys.id, type: Carto::ApiKey::TYPE_MASTER).first
+      delete_json generate_api_key_url(user_req_params(@user_api_keys), name: api_key.name) do |response|
         response.status.should eq 403
       end
 
@@ -422,7 +422,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns the list of master and default API key for a given user' do
-      get_json generate_api_key_url(user_req_params(@user2)) do |response|
+      get_json generate_api_key_url(user_req_params(@user_api_keys)) do |response|
         response.status.should eq 200
         response.body[:total].should eq 1
         response.body[:count].should eq 1

@@ -293,7 +293,8 @@ describe Carto::ApiKey do
       table = create_table(user_id: @carto_org_user_2.id)
 
       expect {
-        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full', grants: [database_grant(table.database_schema, table.name), apis_grant])
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant(table.database_schema, table.name), apis_grant])
       }.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy

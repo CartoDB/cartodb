@@ -431,6 +431,7 @@ ion for time-series (#12670)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
+* Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

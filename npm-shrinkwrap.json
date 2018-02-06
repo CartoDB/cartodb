@@ -321,9 +321,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.18",
+      "version": "4.0.0-beta.22",
       "from": "cartodb/cartodb.js#1862-clean",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#79a81d4c6f287bfc2433d6e7afba97ac05f7e0b1"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#faabd7fb2cd09f928d100bd8fbb92bec34c67672"
     },
     "center-align": {
       "version": "0.1.3",
@@ -1118,9 +1118,9 @@
       "resolved": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz"
     },
     "lodash": {
-      "version": "4.17.4",
+      "version": "4.17.5",
       "from": "lodash@>=4.17.3 <5.0.0",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.5.tgz"
     },
     "lodash.memoize": {
       "version": "3.0.4",

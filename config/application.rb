@@ -126,6 +126,9 @@ module CartoDB
       user_feed_deps.js
       user_feed.js
 
+      user_feed_new.js
+      common_dashboard.js
+
       tipsy.js
       modernizr.js
       statsc.js

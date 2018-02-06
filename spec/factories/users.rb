@@ -60,8 +60,10 @@ FactoryGirl.define do
     end
 
     trait :auth_api do
-      ::User.any_instance.stubs(:has_feature_flag?).with('auth_api').returns(true)
-      ::User.any_instance.stubs(:has_feature_flag?).with('create_overviews').returns(true)
+      before(:create) do
+        ::User.any_instance.stubs(:has_feature_flag?).with('auth_api').returns(true)
+        ::User.any_instance.stubs(:has_feature_flag?).with('create_overviews').returns(true)
+      end
     end
 
     factory :user_with_private_tables, traits: [:enabled, :private_tables]

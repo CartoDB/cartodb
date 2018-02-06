@@ -104,6 +104,13 @@ describe Carto::ApiKey do
       }.to raise_exception Carto::UnprocesableEntityError
     end
 
+    it 'fails to grant to system table' do
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant('cartodb', 'cdb_tablemetadata'), apis_grant])
+      }.to raise_exception Carto::UnprocesableEntityError
+    end
+
     describe '#destroy' do
       it 'removes the role from DB' do
         api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',

@@ -80,6 +80,10 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.3);
   .CDB-Embed-legends {
     display: none;
   }
+
+  .CDB-Widget-canvasInner {
+    display: grid;
+  }
 }
 
 @media (max-width: 759px) {

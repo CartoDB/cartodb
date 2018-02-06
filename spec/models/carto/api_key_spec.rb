@@ -109,7 +109,7 @@ describe Carto::ApiKey do
       expect {
         Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
                               grants: [database_grant('cartodb', 'cdb_tablemetadata'), apis_grant])
-      }.to raise_exception Carto::UnprocesableEntityError
+      }.to raise_exception ActiveRecord::RecordInvalid
     end
 
     describe '#destroy' do
@@ -294,7 +294,7 @@ describe Carto::ApiKey do
 
       expect {
         Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full', grants: [database_grant(table.database_schema, table.name), apis_grant])
-      }.to raise_exception Carto::UnprocesableEntityError
+      }.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy
     end

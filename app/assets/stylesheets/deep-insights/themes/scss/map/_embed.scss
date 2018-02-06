@@ -40,12 +40,10 @@
 }
 
 .CDB-Embed-tabs {
-  position: fixed;
-  top: 0;
   box-sizing: border-box;
   width: 100%;
   background-color: $cEmbedTabs-Primary;
-  box-shadow: 0 0 $sEmbedTabs $cEmbedTabs-Shadow;
+  box-shadow: 0 5px $sEmbedTabs $cEmbedTabs-Shadow;
 
   .CDB-NavMenu-inner {
     border: none;
@@ -54,10 +52,6 @@
 
 .CDB-Embed-legends {
   height: 100%;
-
-  &.CDB-Embed-tab {
-    margin-top: $sEmbedTabs * 3;
-  }
 }
 
 @media (min-width: $sMedia-min-w-vertical) {

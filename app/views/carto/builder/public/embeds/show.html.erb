@@ -27,10 +27,6 @@
 <%= content_for(:js) do %>
   <%= insert_trackjs('builder-embeds') %>
 
-  <% if vector_render?(@visualization, params) %>
-    <%= javascript_include_tag 'tangram.min.js' %>
-  <% end %>
-
   <% if @vizjson[:map_provider] == 'googlemaps' %>
     <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
   <% end %>

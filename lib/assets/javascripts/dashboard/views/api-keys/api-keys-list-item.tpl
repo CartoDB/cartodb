@@ -9,8 +9,10 @@
     <% }) %>
   </h4>
    <p class="CDB-Text CDB-Size-medium u-secondaryTextColor u-tSpace--m u-flex u-alignCenter">
-    <%- token %>
-    <i class="CDB-IconFont CDB-IconFont-anchor u-hintTextColor CDB-Size-large u-lSpace--xl"></i>
+    <span class="js-token"><%- token %></span>
+    <button class="js-copy">
+      <i class="CDB-IconFont CDB-IconFont-anchor u-hintTextColor CDB-Size-large u-lSpace--xl"></i>
+    </button>
   </p>
 </section>
 <section>

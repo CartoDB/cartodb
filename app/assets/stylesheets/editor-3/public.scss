@@ -73,6 +73,14 @@
   justify-content: space-between;
 }
 
+.CDB-Overlay-inner {
+  display: none;
+
+  &.is-active {
+    display: block;
+  }
+}
+
 // Override carto.js legends styles
 .CDB-Legends-canvas .CDB-Legends-canvasInner {
   padding: 16px 16px 0;

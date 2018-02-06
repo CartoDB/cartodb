@@ -60,6 +60,7 @@ describe Carto::ApiKey do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
+      @carto_user1.reload.api_keys.each(&:delete)
     end
 
     it 'can grant insert, select, update delete to a database role' do

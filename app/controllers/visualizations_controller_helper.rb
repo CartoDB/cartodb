@@ -111,11 +111,6 @@ module VisualizationsControllerHelper
     Carto::Api::VizJSON3Presenter.new(visualization)
                                  .to_anonymous_map_vizjson(https_request: is_https?)
   end
-
-  def vizjson3_options(visualization, params)
-    options = {}
-    options
-  end
   private
 
   def get_priority_visualization_forcing_name(visualization_id, force_name: false, user_id: nil, organization_id: nil)

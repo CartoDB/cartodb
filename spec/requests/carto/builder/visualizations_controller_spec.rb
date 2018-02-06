@@ -163,13 +163,6 @@ describe Carto::Builder::VisualizationsController do
       response.status.should == 404
     end
 
-    it 'defaults to generate vizjson with vector=false' do
-      get builder_visualization_url(id: @visualization.id)
-
-      response.status.should == 200
-      response.body.should include('\"vector\":false')
-    end
-
     it 'does not generate vizjson with vector=true with flag (Builder should always be raster right now)' do
       get builder_visualization_url(id: @visualization.id, vector: true)
 
@@ -180,7 +173,7 @@ describe Carto::Builder::VisualizationsController do
     it 'displays analysesData' do
       analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user1.id)
 
-      get builder_visualization_url(id: @visualization.id, vector: true)
+      get builder_visualization_url(id: @visualization.id)
 
       response.status.should == 200
       response.body.should include(analysis.natural_id)

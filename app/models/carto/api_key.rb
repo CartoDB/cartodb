@@ -53,7 +53,7 @@ module Carto
     validate  :check_owned_table_permissions
 
     validates :type, inclusion: { in: VALID_TYPES }
-    validates :name, presence: true
+    validates :name, presence: true, uniqueness: { scope: :user_id }
 
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }

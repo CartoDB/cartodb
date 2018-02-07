@@ -82,6 +82,8 @@ function Layer (source, style, options) {
   this._minzoom = options.minzoom || 0;
   this._maxzoom = options.maxzoom || undefined;
   this._aggregation = options.aggregation || {};
+
+  _validateAggregationColumnsAndInteractivity(this._aggregation.columns, this._featureClickColumns, this._featureOverColumns);
 }
 
 Layer.prototype = Object.create(Base.prototype);
@@ -499,6 +501,28 @@ function _rejectAndTriggerError (err) {
 
 function _areColumnsTheSame (newColumns, oldColumns) {
   return newColumns.length === oldColumns.length && _.isEmpty(_.difference(newColumns, oldColumns));
+}
+
+/**
+ * When there are aggregated columns and interactivity columns they must agree
+ */
+function _validateAggregationColumnsAndInteractivity (aggregationColumns, clickColumns, overColumns) {
+  var aggColumns = (aggregationColumns && Object.keys(aggregationColumns)) || [];
+
+  _validateColumnsConcordance(aggColumns, clickColumns, 'featureClick');
+  _validateColumnsConcordance(aggColumns, overColumns, 'featureOver');
+}
+
+function _validateColumnsConcordance (aggColumns, interactivityColumns, interactivity) {
+  if (interactivityColumns.length > 0 && aggColumns.length > 0) {
+    var notInAggregation = _.filter(interactivityColumns, function (clickColumn) {
+      return !_.contains(aggColumns, clickColumn);
+    });
+
+    if (notInAggregation.length > 0) {
+      throw new CartoValidationError('layer', 'wrongInteractivityColumns[' + notInAggregation.join(', ') + ']#' + interactivity);
+    }
+  }
 }
 
 /**

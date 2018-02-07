@@ -462,7 +462,7 @@ describe DataImport do
     end
 
     after :each do
-      CartoDB::Importer2::QueryBatcher.unstub(:execute_update)
+      CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
     end
 
     it 'should raise statement timeout error when the query batcher raise that exception' do

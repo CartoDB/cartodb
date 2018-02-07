@@ -24,11 +24,6 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)
-  rescue ActiveRecord::RecordNotUnique => e
-    if /api_keys_user_id_name_index/ =~ e.message
-      raise Carto::UnprocesableEntityError.new("Duplicate API Key name: #{params[:name]}")
-    end
-    raise Carto::UnprocesableEntityError.new(e.message)
   end
 
   def destroy

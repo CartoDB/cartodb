@@ -50,8 +50,10 @@ module Carto
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
     validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
+    validate  :check_owned_table_permissions
 
-    validates :name, presence: true
+    validates :type, inclusion: { in: VALID_TYPES }
+    validates :name, presence: true, uniqueness: { scope: :user_id }
 
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
@@ -60,7 +62,6 @@ module Carto
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
 
-    validates :type, inclusion: { in: VALID_TYPES }
 
     attr_writer :redis_client
 
@@ -125,6 +126,13 @@ module Carto
       end
 
       table_permissions
+    end
+
+    def check_owned_table_permissions
+      # Only checks if no previous errors in JSON definition
+      if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
+        errors.add(:grants, 'can only grant permissions over owned tables')
+      end
     end
 
     def create_db_config

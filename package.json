@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.32-13487-1",
+  "version": "4.11.37.13487.01",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -43,7 +43,6 @@
     "postcss-strip-inline-comments": "0.1.5",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
-    "tangram": "cartodb/tangram#master",
     "tinycolor2": "^1.4.1",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",

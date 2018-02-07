@@ -22,6 +22,7 @@ module.exports = env => {
       path: resolve(__dirname, '../../', 'public/assets')
     },
     resolve: {
+      modules: require('../common/modules.js'),
       alias: require('../common/alias.js')
     },
     devtool: 'source-map',
@@ -95,17 +96,6 @@ module.exports = env => {
                 exports: 'html'
               }
             }
-          }
-        },
-        {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          include: [
-            resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
-            resolve(__dirname, '../../', 'node_modules/tangram.cartodb')
-          ],
-          options: {
-            presets: ['env']
           }
         },
         {

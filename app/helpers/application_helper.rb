@@ -15,7 +15,6 @@ module ApplicationHelper
   include SqlApiHelper
   include Carto::HtmlSafe
   include CartoGearsApi::Helpers::PagesHelper
-  include VectorHelper
 
   def current_user
     super(CartoDB.extract_subdomain(request))

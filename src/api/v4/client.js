@@ -7,7 +7,7 @@ var LayerBase = require('./layer/base');
 var Layers = require('./layers');
 var VERSION = require('../../../package.json').version;
 var CartoValidationError = require('./error-handling/carto-validation-error');
-var nativeUtils = require('./native/utils');
+var utils = require('../../core/util');
 
 function getValidationError (code) {
   return new CartoValidationError('client', code);
@@ -287,7 +287,7 @@ Client.prototype.getDataviews = function () {
  */
 Client.prototype.getLeafletLayer = function () {
   // Check if Leaflet is loaded
-  nativeUtils.isLeafletLoaded();
+  utils.isLeafletLoaded();
   if (!this._leafletLayer) {
     var LeafletLayer = require('./native/leaflet-layer');
     this._leafletLayer = new LeafletLayer(this._layers, this._engine);
@@ -317,7 +317,7 @@ Client.prototype.getGoogleMapsMapType = function (map) {
   // NOTE: the map is required here because of wax.g.connector
 
   // Check if Google Maps is loaded
-  nativeUtils.isGoogleMapsLoaded();
+  utils.isGoogleMapsLoaded();
   if (!this._gmapsMapType) {
     var GoogleMapsMapType = require('./native/google-maps-map-type');
     this._gmapsMapType = new GoogleMapsMapType(this._layers, this._engine, map);

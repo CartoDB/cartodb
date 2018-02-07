@@ -128,6 +128,7 @@
 
       client.addDataview(formulaDataview);
 
+      L = undefined;
       const bboxFilter = new carto.filter.BoundingBoxLeaflet(map);
 
       categoryDataview.addFilter(bboxFilter);

@@ -2,7 +2,7 @@
 var Base = require('./base');
 var LeafletBoundingBoxAdapter = require('../../../geo/adapters/leaflet-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
-var nativeUtils = require('../native/utils');
+var utils = require('../../../core/util');
 
 /**
  * Bounding box filter for Leaflet maps.
@@ -61,7 +61,7 @@ BoundingBoxLeaflet.prototype.$getInternalModel = function () {
 // Helper to check if an element is a Leaflet map object
 function _isLeafletMap (element) {
   // Check if Leaflet is loaded
-  nativeUtils.isLeafletLoaded();
+  utils.isLeafletLoaded();
   return element instanceof L.Map;
 }
 

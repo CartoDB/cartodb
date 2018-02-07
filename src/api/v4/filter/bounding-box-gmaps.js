@@ -3,7 +3,7 @@
 var Base = require('./base');
 var GoogleMapsBoundingBoxAdapter = require('../../../geo/adapters/gmaps-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
-var nativeUtils = require('../native/utils');
+var utils = require('../../../core/util');
 
 /**
  * Bounding box filter for Google Maps maps.
@@ -62,7 +62,7 @@ BoundingBoxGoogleMaps.prototype.$getInternalModel = function () {
 // Helper to check if an element is a leafletmap object
 function _isGoogleMap (element) {
   // Check if Google Maps is loaded
-  nativeUtils.isGoogleMapsLoaded();
+  utils.isGoogleMapsLoaded();
   return element instanceof google.maps.Map;
 }
 

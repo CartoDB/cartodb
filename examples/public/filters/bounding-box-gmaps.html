@@ -134,6 +134,7 @@
 
       client.addDataview(formulaDataview);
 
+      google = undefined;
       const bboxFilter = new carto.filter.BoundingBoxGoogleMaps(map);
 
       categoryDataview.addFilter(bboxFilter);

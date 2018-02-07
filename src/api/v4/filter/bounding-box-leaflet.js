@@ -26,7 +26,7 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  */
 function BoundingBoxLeaflet (map) {
   if (!_isLeafletMap(map)) {
-    throw new Error('Bounding box requires a leaflet map but got: ' + map);
+    throw new Error('Bounding box requires a Leaflet map but got: ' + map);
   }
   // Adapt the Leaflet map to offer unique:
   // - getBounds() function

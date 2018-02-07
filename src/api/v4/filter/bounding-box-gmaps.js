@@ -27,7 +27,7 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  */
 function BoundingBoxGoogleMaps (map) {
   if (!_isGoogleMap(map)) {
-    throw new Error('Bounding box requires a google map but got: ' + map);
+    throw new Error('Bounding box requires a Google Maps map but got: ' + map);
   }
   // Adapt the Google Maps map to offer unique:
   // - getBounds() function

@@ -21,7 +21,6 @@ module.exports = Model.extend({
   defaults: {
     url: '',
     data: [],
-    sync_on_data_change: true,
     sync_on_bbox_change: true,
     enabled: true,
     status: UNFETCHED_STATUS
@@ -122,9 +121,7 @@ module.exports = Model.extend({
     }, this);
 
     this.on('change:url', function (model, value, opts) {
-      if (this.syncsOnDataChanges()) {
-        this._newDataAvailable = true;
-      }
+      this._newDataAvailable = true;
       if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
         this.fetch();
       }
@@ -202,7 +199,6 @@ module.exports = Model.extend({
     }
 
     return this.isEnabled() &&
-      this.syncsOnDataChanges() &&
       this._sourceAffectsMyOwnSource(sourceId);
   },
 
@@ -331,10 +327,6 @@ module.exports = Model.extend({
     return this.set('status', FETCH_ERROR_STATUS);
   },
 
-  syncsOnDataChanges: function () {
-    return this.get('sync_on_data_change');
-  },
-
   syncsOnBoundingBoxChanges: function () {
     return this.get('sync_on_bbox_change');
   },
@@ -377,7 +369,6 @@ module.exports = Model.extend({
 {
   ATTRS_NAMES: [
     'id',
-    'sync_on_data_change',
     'sync_on_bbox_change',
     'enabled',
     'source'

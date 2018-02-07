@@ -133,7 +133,6 @@ Histogram.prototype._createInternalModel = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._column,
     bins: this._bins,
-    sync_on_data_change: true,
     sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled,
     column_type: 'number'

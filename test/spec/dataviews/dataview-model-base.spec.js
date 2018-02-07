@@ -206,13 +206,6 @@ describe('dataviews/dataview-model-base', function () {
       this.model.set('url', 'newurl');
     });
 
-    it('should not fetch new data when url changes and sync_on_data_change is disabled', function () {
-      this.model.set('sync_on_data_change', false);
-      spyOn(this.model, 'fetch');
-      this.model.trigger('change:url', this.model);
-      expect(this.model.fetch).not.toHaveBeenCalled();
-    });
-
     it('should not fetch new data when url changes and dataview is disabled', function () {
       this.model.set('enabled', false);
       spyOn(this.model, 'fetch');
@@ -222,7 +215,6 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should fetch if url changes and forceFetch option is true, no matter rest of variables', function () {
       this.model.set('enabled', false);
-      this.model.set('sync_on_data_change', false);
       spyOn(this.model, 'fetch');
 
       this.model.trigger('change:url', this.model, {}, { forceFetch: true });
@@ -363,16 +355,6 @@ describe('dataviews/dataview-model-base', function () {
 
       // Disable and enable again
       this.model.set('enabled', false);
-      this.model.set('enabled', true);
-
-      expect(this.model.fetch).not.toHaveBeenCalled();
-    });
-
-    it('should NOT fetch if a new instance of the windshaft map has been created while the dataview was disabled and sync_on_data_change is false', function () {
-      this.model.set('sync_on_data_change', false);
-
-      this.model.set('url', 'http://somethingelse.com');
-
       this.model.set('enabled', true);
 
       expect(this.model.fetch).not.toHaveBeenCalled();

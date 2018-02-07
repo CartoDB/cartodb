@@ -96,13 +96,6 @@ describe('layer-aggregation', function () {
       });
 
       describe('placement', function () {
-        it('should throw an error when placement is not defined', function () {
-          delete options.placement;
-          expect(function () {
-            new Aggregation(options); // eslint-disable-line
-          }).toThrowError('Aggregation placement is required.');
-        });
-
         it('should throw an error when placement is not one of our three valid placements', function () {
           options.placement = 'invalid_placement';
           expect(function () {
@@ -160,6 +153,17 @@ describe('layer-aggregation', function () {
           expect(function () {
             new Aggregation(options); // eslint-disable-line
           }).toThrowError("Column to be aggregated to 'fake_name_0' must be a string.");
+        });
+      });
+
+      describe('optional placement and columns', function () {
+        it('should now throw an error when neither placement nor columns appear', function () {
+          delete options.columns;
+          delete options.placement;
+
+          expect(function () {
+            new Aggregation(options); // eslint-disable-line
+          }).not.toThrow();
         });
       });
     });

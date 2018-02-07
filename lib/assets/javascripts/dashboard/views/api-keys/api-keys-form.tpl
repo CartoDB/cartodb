@@ -1,12 +1,23 @@
-<header class="ApiKeysForm-title">
-  <button class="js-back">
-    <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
-  </button>
-  <h3 class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Configure your key</h3>
-</header>
+<section>
+  <header class="ApiKeysForm-title">
+    <button class="js-back">
+      <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
+    </button>
+    <h3 class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Configure your key</h3>
+  </header>
 
+  <div data-fields="name,token"></div>
+
+  <footer class="FormAccount-footer">
+    <p class="FormAccount-footerText">Changes to the key permissions are not possible once key is generated</p>
+    <button type="submit" class="CDB-Button CDB-Button--primary js-submit">
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+    </button>
+  </footer>
+</section>
+
+<!--
 <form class="js-api-keys-form">
-  <div class="FormAccount-rowData" data-fields="name,token"></div>
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
@@ -139,3 +150,4 @@
     </button>
   </div>
 </form>
+ -->

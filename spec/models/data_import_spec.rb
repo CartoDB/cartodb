@@ -486,7 +486,7 @@ describe DataImport do
         )
       end
 
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |response|
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_valid.json"))
         body = ::JSON.parse(body)
 

@@ -2553,6 +2553,7 @@ describe User do
 
     it "creates master api key on user creation if ff auth_api is enabled for the user" do
       organization = create_org('authorg', 200.megabytes, 5)
+      auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user = create_auth_api_user(organization)
 
       api_keys = Carto::ApiKey.where(user_id: @user.id)
@@ -2560,7 +2561,9 @@ describe User do
 
       master_api_key = Carto::ApiKey.where(user_id: @user.id, type: Carto::ApiKey::TYPE_MASTER)
       master_api_key.should be
+
       organization.destroy
+      auth_api_feature_flag.destroy
     end
 
     it "does not create master api key on user creation if ff auth_api is not enabled for the user" do

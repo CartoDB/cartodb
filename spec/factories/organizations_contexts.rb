@@ -48,8 +48,7 @@ shared_context 'organization with users helper' do
   def create_auth_api_user(organization)
     user = create_user(email: 'exampleauth@carto.com',
                        username: 'exampleauth',
-                       password: 'example123',
-                       auth_api: true)
+                       password: 'example123')
 
     user.organization = organization
     user.save

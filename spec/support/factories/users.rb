@@ -78,9 +78,6 @@ module CartoDB
       end
       user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       user.avatar_url            = user.default_avatar
-      if attributes[:auth_api]
-        user.stubs(:has_feature_flag?).with('auth_api').returns(true)
-      end
 
       user
     end

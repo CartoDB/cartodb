@@ -305,12 +305,15 @@ describe Carto::ApiKey do
     before(:all) do
       @authorganization = test_organization
       @authorganization.save
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user1 = create_auth_api_user(@authorganization)
       @carto_user1 = Carto::User.where(id: @user1.id).first
     end
 
     after(:all) do
+      @user1.destroy if @user1
       @authorganization.destroy if @authorganization
+      @auth_api_feature_flag.destroy
     end
 
     it_behaves_like 'api key'

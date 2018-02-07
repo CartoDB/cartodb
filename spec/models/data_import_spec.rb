@@ -454,6 +454,68 @@ describe DataImport do
     end
   end
 
+  describe 'arcgis connector' do
+    # before :each do
+    #   CartoDB::Importer2::QueryBatcher.any_instance
+    #                                   .stubs(:execute_update)
+    #                                   .and_raise(Sequel::DatabaseError)
+    #                                   .new('canceling statement due to statement timeout')
+    # end
+
+    # after :each do
+    #   CartoDB::Importer2::QueryBatcher.unstub(:execute_update)
+    # end
+
+    it 'should run fallback for streamed connectors when Ogr2Ogr ERROR' do
+      # Metadata of a layer
+      Typhoeus.stub(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      # IDs list of a layer
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |response|
+        if response.options[:body][:objectIds].to_i == 2133
+          # First item fetch of a layer
+          body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_valid.json"))
+          body = ::JSON.parse(body)
+        else
+          # Remaining items fetch of a layer, will not use :objectIds
+          body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_invalid.json"))
+          body = ::JSON.parse(body)
+        end
+
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'failure'
+      data_import.error_code.should eq 2001
+    end
+  end
+
   describe 'log' do
     it 'is initialized to a CartoDB::Log instance' do
       data_import = DataImport.create(

@@ -1,10 +1,13 @@
+/* global google */
+
 var Base = require('./base');
 var GoogleMapsBoundingBoxAdapter = require('../../../geo/adapters/gmaps-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
+var utils = require('../../../core/util');
 
 /**
  * Bounding box filter for Google Maps maps.
- * 
+ *
  * When this filter is included into a dataview only the data inside the {@link https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map|googleMap}
  * bounds will be taken into account.
  *
@@ -24,6 +27,9 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * dataview.addFilter(bboxFilter);
  */
 function BoundingBoxGoogleMaps (map) {
+  if (!_isGoogleMap(map)) {
+    throw new Error('Bounding box requires a Google Maps map but got: ' + map);
+  }
   // Adapt the Google Maps map to offer unique:
   // - getBounds() function
   // - 'boundsChanged' event
@@ -52,5 +58,12 @@ BoundingBoxGoogleMaps.prototype._onBoundsChanged = function (bounds) {
 BoundingBoxGoogleMaps.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
+
+// Helper to check if an element is a leafletmap object
+function _isGoogleMap (element) {
+  // Check if Google Maps is loaded
+  utils.isGoogleMapsLoaded();
+  return element instanceof google.maps.Map;
+}
 
 module.exports = BoundingBoxGoogleMaps;

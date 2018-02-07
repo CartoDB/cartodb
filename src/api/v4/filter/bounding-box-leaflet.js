@@ -1,6 +1,8 @@
+/* global L */
 var Base = require('./base');
 var LeafletBoundingBoxAdapter = require('../../../geo/adapters/leaflet-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
+var utils = require('../../../core/util');
 
 /**
  * Bounding box filter for Leaflet maps.
@@ -24,6 +26,9 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * dataview.addFilter(bboxFilter);
  */
 function BoundingBoxLeaflet (map) {
+  if (!_isLeafletMap(map)) {
+    throw new Error('Bounding box requires a Leaflet map but got: ' + map);
+  }
   // Adapt the Leaflet map to offer unique:
   // - getBounds() function
   // - 'boundsChanged' event
@@ -52,5 +57,12 @@ BoundingBoxLeaflet.prototype._onBoundsChanged = function (bounds) {
 BoundingBoxLeaflet.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
+
+// Helper to check if an element is a Leaflet map object
+function _isLeafletMap (element) {
+  // Check if Leaflet is loaded
+  utils.isLeafletLoaded();
+  return element instanceof L.Map;
+}
 
 module.exports = BoundingBoxLeaflet;

@@ -133,6 +133,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Add titles (and description) to embeds in mobile viewports (#13517)
+* Improved bundling aliases
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)
 * Restore translation keys to static pages (#13492)

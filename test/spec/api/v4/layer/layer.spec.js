@@ -3,10 +3,17 @@ var carto = require('../../../../../src/api/v4');
 describe('api/v4/layer', function () {
   var source;
   var style;
+  var originalTimeout;
 
   beforeEach(function () {
     source = new carto.source.Dataset('ne_10m_populated_places_simple');
     style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+  });
+
+  afterEach(function () {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   describe('constructor', function () {

@@ -5,7 +5,7 @@ describe('api/v4/filter/bounding-box-gmaps', function () {
     it('should throw a descriptive error when initialized with invalid parameters', function () {
       expect(function () {
         new carto.filter.BoundingBoxGoogleMaps(undefined); // eslint-disable-line
-      }).toThrowError('Bounding box needs a google map but got: undefined');
+      }).toThrowError('Bounding box requires a google map but got: undefined');
     });
   });
 });

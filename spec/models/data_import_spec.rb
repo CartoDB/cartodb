@@ -456,16 +456,6 @@ describe DataImport do
 
   describe 'arcgis connector' do
     before :each do
-      CartoDB::Importer2::QueryBatcher.any_instance
-                                      .stubs(:execute_update)
-                                      .raises(Sequel::DatabaseError, 'canceling statement due to statement timeout')
-    end
-
-    after :each do
-      CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
-    end
-
-    it 'should raise statement timeout error when the query batcher raise that exception' do
       # Metadata of a layer
       Typhoeus.stub(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata.json"))
@@ -496,6 +486,16 @@ describe DataImport do
           body: ::JSON.dump(body)
         )
       end
+    end
+
+    after :each do
+      CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
+    end
+
+    it 'should raise statement timeout error when the query batcher raise that exception' do
+      CartoDB::Importer2::QueryBatcher.any_instance
+                                      .stubs(:execute_update)
+                                      .raises(Sequel::DatabaseError, 'canceling statement due to statement timeout')
 
       data_import = DataImport.create(
         user_id:    @user.id,
@@ -505,6 +505,21 @@ describe DataImport do
       data_import.run_import!
       data_import.state.should eq 'failure'
       data_import.error_code.should eq 6667
+    end
+
+    it 'should raise invalid data error when the query batcher raise any other exception' do
+      CartoDB::Importer2::QueryBatcher.any_instance
+                                      .stubs(:execute_update)
+                                      .raises(Sequel::DatabaseError, 'GEOSisValid(): InterruptedException: Interrupted!')
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'failure'
+      data_import.error_code.should eq 1012
     end
   end
 

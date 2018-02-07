@@ -109,7 +109,7 @@ module CartoDB
           GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
         end
       rescue => e
-        raise e unless statement_timeout?(e.to_s)
+        raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
         raise StatementTimeoutError.new(e.to_s, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
       end
 

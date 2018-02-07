@@ -81,6 +81,7 @@ module CartoDB
       if attributes[:auth_api]
         user.stubs(:has_feature_flag?).with('auth_api').returns(true)
       end
+
       user
     end
 
@@ -121,15 +122,16 @@ module CartoDB
       org_user_owner
     end
 
-    def create_test_user(username = nil, organization = nil, attributes = nil)
+    def create_test_user(username = nil, organization = nil)
       username ||= unique_name('user')
-      default_attributes = { username: username,
-                             email: "#{username}@example.com",
-                             password: username,
-                             private_tables_enabled: true,
-                             database_schema: organization.nil? ? 'public' : username,
-                             organization: organization }
-      user = create_user(attributes ? default_attributes.merge(attributes) : default_attributes)
+      user = create_user(
+        username: username,
+        email: "#{username}@example.com",
+        password: username,
+        private_tables_enabled: true,
+        database_schema: organization.nil? ? 'public' : username,
+        organization: organization
+      )
       user.save.reload
       organization.reload if organization
       user

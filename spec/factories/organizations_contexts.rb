@@ -45,6 +45,20 @@ shared_context 'organization with users helper' do
     organization
   end
 
+  def create_auth_api_user(organization)
+    user = create_user(email: 'exampleauth@carto.com',
+                       username: 'exampleauth',
+                       password: 'example123',
+                       auth_api: true)
+
+    user.organization = organization
+    user.save
+    user.reload
+    organization.reload
+
+    user
+  end
+
   before(:all) do
     @helper = TestUserFactory.new
     @organization = test_organization
@@ -56,7 +70,6 @@ shared_context 'organization with users helper' do
 
     @org_user_1 = @helper.create_test_user(unique_name('user'), @organization)
     @org_user_2 = @helper.create_test_user(unique_name('user'), @organization)
-    @org_user_auth_api = @helper.create_test_user(unique_name('user'), @organization, auth_api: true)
 
     @organization.reload
 
@@ -64,7 +77,6 @@ shared_context 'organization with users helper' do
     @carto_org_user_owner = Carto::User.find(@org_user_owner.id)
     @carto_org_user_1 = Carto::User.find(@org_user_1.id)
     @carto_org_user_2 = Carto::User.find(@org_user_2.id)
-    @carto_org_user_auth_api = Carto::User.find(@org_user_auth_api.id)
   end
 
   before(:each) do

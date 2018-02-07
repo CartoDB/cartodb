@@ -292,6 +292,7 @@ describe Carto::ApiKey do
 
     after(:all) do
       @user1.destroy if @user1
+      @authorganization.destroy if @authorganization
     end
 
     it_behaves_like 'api key'
@@ -301,8 +302,10 @@ describe Carto::ApiKey do
     include_context 'organization with users helper'
 
     before(:all) do
-      @carto_user1 = @carto_org_user_auth_api
-      @user1 = @org_user_auth_api
+      @authorganization = test_organization
+      @authorganization.save
+      @user1 = create_auth_api_user(@authorganization)
+      @carto_user1 = Carto::User.where(id: @user1.id).first
     end
 
     it_behaves_like 'api key'

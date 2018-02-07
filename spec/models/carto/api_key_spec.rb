@@ -275,13 +275,11 @@ describe Carto::ApiKey do
 
       it 'cannot create more than one master key' do
         expect {
-          Carto::ApiKey.create(
+          Carto::ApiKey.create!(
             user_id: @carto_user1.id,
-            type: Carto::ApiKey::TYPE_MASTER,
-            name: Carto::ApiKey::MASTER_NAME,
-            grants: []
+            type: Carto::ApiKey::TYPE_MASTER
           )
-        }.to raise_error(ActiveRecord::RecordNotUnique)
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'cannot create a non master api_key with master as the name' do
@@ -300,13 +298,13 @@ describe Carto::ApiKey do
   end
 
   describe 'with plain users' do
-    before(:all) do
+    before(:each) do
       @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
-    after(:all) do
+    after(:each) do
       @user1.destroy if @user1
       @auth_api_feature_flag.destroy
     end
@@ -317,7 +315,7 @@ describe Carto::ApiKey do
   describe 'with organization users' do
     include_context 'organization with users helper'
 
-    before(:all) do
+    before(:each) do
       @authorganization = test_organization
       @authorganization.save
       @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
@@ -325,7 +323,7 @@ describe Carto::ApiKey do
       @carto_user1 = Carto::User.where(id: @user1.id).first
     end
 
-    after(:all) do
+    after(:each) do
       @user1.destroy if @user1
       @authorganization.destroy if @authorganization
       @auth_api_feature_flag.destroy

@@ -97,9 +97,7 @@ function Aggregation (opts) {
     throw _getValidationError('invalidResolution');
   }
 
-  if (opts.placement && !_.contains(_.values(PLACEMENTS), opts.placement)) {
-    throw _getValidationError('invalidPlacement');
-  }
+  _checkValidPlacement(opts.placement);
 
   var columns = _checkAndTransformColumns(opts.columns);
 
@@ -166,6 +164,12 @@ function _columnToSnakeCase (column) {
     aggregate_function: column.aggregateFunction,
     aggregated_column: column.aggregatedColumn
   };
+}
+
+function _checkValidPlacement (placement) {
+  if (placement && !_.contains(_.values(PLACEMENTS), placement)) {
+    throw _getValidationError('invalidPlacement');
+  }
 }
 
 module.exports = Aggregation;

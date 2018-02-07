@@ -57,7 +57,7 @@ function _getListedError (cartoError, errorList) {
 }
 
 /**
- * Replace $0 wand $1 with the proper paramter in the listedError regex to build a friendly message
+ * Replace $0 and $1 with the proper paramter in the listedError regex to build a friendly message
  */
 function _replaceRegex (cartoError, listedError) {
   if (!listedError.friendlyMessage) {

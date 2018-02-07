@@ -1,5 +1,4 @@
-module.exports = function (eventName, internalEvent, layers) {
-  var layer = layers.findById(internalEvent.layer.id);
+module.exports = function (eventName, internalEvent, layer) {
   if (layer) {
     var event = {
       data: undefined,

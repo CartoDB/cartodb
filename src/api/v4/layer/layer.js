@@ -70,6 +70,7 @@ function Layer (source, style, options) {
   _checkSource(source);
   _checkStyle(style);
 
+  this._client = undefined;
   this._engine = undefined;
   this._internalModel = undefined;
 
@@ -88,7 +89,7 @@ Layer.prototype = Object.create(Base.prototype);
 /**
  * Set a new style for this layer.
  *
- * @param {carto.style.CartoCSS} New style
+ * @param {carto.style.CartoCSS} style - New style
  * @fires styleChanged
  * @fires error
  * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
@@ -140,7 +141,7 @@ Layer.prototype.getStyle = function () {
  * A source and a layer must belong to the same client so you can't
  * add a source belonging to a different client.
  *
- * @param {carto.source.Base} source New source
+ * @param {carto.source.Base} source - New source
  * @fires sourceChanged
  * @fires error
  * @return {Promise} A promise that will be fulfilled when the style is applied to the layer or rejected with a
@@ -190,8 +191,9 @@ Layer.prototype.getSource = function () {
 /**
  * Set new columns for featureClick events.
  *
- * @param {Array<string>} columns An array containing column names
- * @return {carto.layer.Layer} this
+ * @param {Array<string>} columns - An array containing column names
+ * @fires error
+ * @return {Promise}
  * @api
  */
 Layer.prototype.setFeatureClickColumns = function (columns) {
@@ -220,15 +222,16 @@ Layer.prototype.setFeatureClickColumns = function (columns) {
  * @return  {Array<string>} Column names available in featureClicked events
  * @api
  */
-Layer.prototype.getFeatureClickColumns = function (columns) {
+Layer.prototype.getFeatureClickColumns = function () {
   return this._featureClickColumns;
 };
 
 /**
  * Set new columns for featureOver events.
  *
- * @param {Array<string>} columns An array containing column names
- * @return {carto.layer.Layer} this
+ * @param {Array<string>} columns - An array containing column names
+ * @fires error
+ * @return {Promise}
  * @api
  */
 Layer.prototype.setFeatureOverColumns = function (columns) {
@@ -257,13 +260,14 @@ Layer.prototype.setFeatureOverColumns = function (columns) {
  * @return  {Array<string>} Column names available in featureOver events
  * @api
  */
-Layer.prototype.getFeatureOverColumns = function (columns) {
+Layer.prototype.getFeatureOverColumns = function () {
   return this._featureOverColumns;
 };
 
 /**
  * Hides the layer.
  *
+ * @fires visibilityChanged
  * @return {carto.layer.Layer} this
  * @api
  */
@@ -282,6 +286,7 @@ Layer.prototype.hide = function () {
 /**
  * Shows the layer.
  *
+ * @fires visibilityChanged
  * @return {carto.layer.Layer} this
  * @api
  */
@@ -300,6 +305,7 @@ Layer.prototype.show = function () {
 /**
  * Change the layer's visibility.
  *
+ * @fires visibilityChanged
  * @return {carto.layer.Layer} this
  */
 Layer.prototype.toggle = function () {
@@ -317,7 +323,7 @@ Layer.prototype.isVisible = function () {
 };
 
 /**
- * Return `true` if the layer is not visible and false when visible.
+ * Return true if the layer is not visible and false when visible.
  *
  * @return {boolean} - A boolean value indicating the layer's visibility
  * @api
@@ -326,8 +332,49 @@ Layer.prototype.isHidden = function () {
   return !this.isVisible();
 };
 
+/**
+ * Return true if the layer has interactivity.
+ *
+ * @return {boolean} - A boolean value indicating the layer's interactivity
+ * @api
+ */
 Layer.prototype.isInteractive = function () {
   return this.getFeatureClickColumns().length > 0 || this.getFeatureOverColumns().length > 0;
+};
+
+/**
+ * Set the layer's order.
+ *
+ * @param {number} index - new order index for the layer.
+ *
+ * @return {Promise}
+ * @api
+ */
+Layer.prototype.setOrder = function (index) {
+  if (!this._client) {
+    return Promise.resolve();
+  }
+  return this._client.moveLayer(this, index);
+};
+
+/**
+ * Move the layer to the back.
+ *
+ * @return {Promise}
+ * @api
+ */
+Layer.prototype.bringToBack = function () {
+  return this.setOrder(0);
+};
+
+/**
+ * Move the layer to the front.
+ *
+ * @return {Promise}
+ * @api
+ */
+Layer.prototype.bringToFront = function () {
+  return this.setOrder(this._client._layers.size() - 1);
 };
 
 // Private functions.
@@ -375,6 +422,15 @@ Layer.prototype._createInternalModel = function (engine) {
 };
 
 // Internal functions.
+
+Layer.prototype.$setClient = function (client) {
+  // Exit if the client is already set or
+  // it has a different engine than the layer
+  if (this._client || (this._engine && client._engine !== this._engine)) {
+    return;
+  }
+  this._client = client;
+};
 
 Layer.prototype.$setEngine = function (engine) {
   if (this._engine) {

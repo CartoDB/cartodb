@@ -160,6 +160,39 @@ Client.prototype.removeLayers = function (layers) {
 };
 
 /**
+ * Move layer order.
+ *
+ * @example
+ * // Move layer order
+ * client.moveLayer(layer1, 0)
+ * .then(() => {
+ *  console.log('Layer moved');
+ * })
+ * .catch(cartoError => {
+ *  console.error(cartoError.message);
+ * });
+ *
+ *
+ * @param {carto.layer.Base} - The layer to be moved
+ * @param {number} toIndex - Final index for the layer
+ *
+ * @fires error
+ * @fires success
+ *
+ * @returns {Promise} A promise that will be fulfilled when the layer is moved
+ * @api
+ */
+Client.prototype.moveLayer = function (layer, toIndex) {
+  var fromIndex = this._layers.indexOf(layer);
+  this._moveLayer(layer, toIndex);
+  if (fromIndex === toIndex) {
+    return Promise.resolve();
+  } else {
+    return this._reload();
+  }
+};
+
+/**
  * Get all the {@link carto.layer.Base|layers} from the client.
  *
  * @example
@@ -270,7 +303,7 @@ Client.prototype.getDataviews = function () {
 };
 
 /**
- * Return a {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|leaflet layer} that groups all the layers that have been
+ * Return a {@link http://leafletjs.com/reference-1.3.1.html#tilelayer|leaflet layer} that groups all the layers that have been
  * added to this client.
  *
  * @example
@@ -281,7 +314,7 @@ Client.prototype.getDataviews = function () {
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
  *
- * @returns A {@link http://leafletjs.com/reference-1.2.0.html#tilelayer|L.TileLayer} layer that groups all the layers.
+ * @returns A {@link http://leafletjs.com/reference-1.3.1.html#tilelayer|L.TileLayer} layer that groups all the layers.
  *
  * @api
  */
@@ -314,8 +347,6 @@ Client.prototype.getLeafletLayer = function () {
  * @api
  */
 Client.prototype.getGoogleMapsMapType = function (map) {
-  // NOTE: the map is required here because of wax.g.connector
-
   // Check if Google Maps is loaded
   utils.isGoogleMapsLoaded();
   if (!this._gmapsMapType) {
@@ -347,17 +378,30 @@ Client.prototype._addLayer = function (layer, engine) {
   _checkLayer(layer);
   this._checkDuplicatedLayerId(layer);
   this._layers.add(layer);
+  layer.$setClient(this);
   layer.$setEngine(this._engine);
   this._engine.addLayer(layer.$getInternalModel());
 };
 
 /**
  * Helper used to remove a layer from the client.
+ * @private
  */
 Client.prototype._removeLayer = function (layer) {
   _checkLayer(layer);
   this._layers.remove(layer);
   this._engine.removeLayer(layer.$getInternalModel());
+};
+
+/**
+ * Helper used to remove a layer from the client.
+ * @private
+ */
+Client.prototype._moveLayer = function (layer, toIndex) {
+  _checkLayer(layer);
+  _checkLayerIndex(toIndex, this._layers.size());
+  this._layers.move(layer, toIndex);
+  this._engine.moveLayer(layer.$getInternalModel(), toIndex);
 };
 
 /**
@@ -404,6 +448,15 @@ Client.prototype._checkDuplicatedLayerId = function (layer) {
 function _checkLayer (layer) {
   if (!(layer instanceof LayerBase)) {
     throw getValidationError('badLayerType');
+  }
+}
+
+function _checkLayerIndex (index, size) {
+  if (!_.isNumber(index)) {
+    throw getValidationError('indexNumber');
+  }
+  if (index < 0 || index >= size) {
+    throw getValidationError('indexOutOfRange');
   }
 }
 

@@ -1,5 +1,7 @@
-// MobileApps plan
+// API Keys
 // --------------------------------------------------
+
+// -- List
 
 .ApiKeys-title {
   display: flex;
@@ -44,4 +46,14 @@
   font-size: 13px;
   line-height: 20px !important;
   text-align: center;
+}
+
+// -- Form
+
+.ApiKeysForm-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(#000, 0.1);
 }

@@ -6,6 +6,8 @@
 </header>
 
 <form class="js-api-keys-form">
+  <div class="FormAccount-rowData" data-fields="name,token"></div>
+
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium u-mainTextColor">Name</label>
@@ -39,31 +41,29 @@
       <label class="CDB-Text CDB-Size-medium u-mainTextColor">Type</label>
     </div>
     <div class="FormAccount-rowData">
-      <fieldset name="type">
-        <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
-          <input class="CDB-Checkbox" type="checkbox" name="sql" value="true">
-          <span class="u-iBlock CDB-Checkbox-face"></span>
-          <label class="u-iBlock u-lSpace u-upperCase u-rSpace">SQL</label>
-        </div>
+      <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
+        <input class="CDB-Checkbox" type="checkbox" name="sql" value="true">
+        <span class="u-iBlock CDB-Checkbox-face"></span>
+        <label class="u-iBlock u-lSpace u-upperCase u-rSpace">SQL</label>
+      </div>
 
-        <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
-          <input class="CDB-Checkbox" type="checkbox" name="map" value="true">
-          <span class="u-iBlock CDB-Checkbox-face"></span>
-          <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Map</label>
-        </div>
+      <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
+        <input class="CDB-Checkbox" type="checkbox" name="map" value="true">
+        <span class="u-iBlock CDB-Checkbox-face"></span>
+        <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Map</label>
+      </div>
 
-        <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
-          <input class="CDB-Checkbox" type="checkbox" name="import" value="true">
-          <span class="u-iBlock CDB-Checkbox-face"></span>
-          <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Import</label>
-        </div>
+      <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
+        <input class="CDB-Checkbox" type="checkbox" name="import" value="true">
+        <span class="u-iBlock CDB-Checkbox-face"></span>
+        <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Import</label>
+      </div>
 
-        <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
-          <input class="CDB-Checkbox" type="checkbox" name="analysis" value="true">
-          <span class="u-iBlock CDB-Checkbox-face"></span>
-          <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Analysis</label>
-        </div>
-      </fieldset>
+      <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
+        <input class="CDB-Checkbox" type="checkbox" name="analysis" value="true">
+        <span class="u-iBlock CDB-Checkbox-face"></span>
+        <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Analysis</label>
+      </div>
     </div>
   </div>
 
@@ -74,7 +74,7 @@
     <ul class="ApiKeysForm-datasetsList">
       <li class="ApiKeysForm-datasetsListItem u-flex u-justifySpace">
         <a href="#">10m populated places</a>
-        <fieldset>
+        <div>
           <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
             <input class="CDB-Checkbox" type="checkbox" name="read" value="true">
             <span class="u-iBlock CDB-Checkbox-face"></span>
@@ -98,12 +98,12 @@
             <span class="u-iBlock CDB-Checkbox-face"></span>
             <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Delete</label>
           </div>
-        </fieldset>
+        </div>
       </li>
 
       <li class="ApiKeysForm-datasetsListItem u-flex u-justifySpace">
         <a href="#">some other dataset</a>
-        <fieldset>
+        <div>
           <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
             <input class="CDB-Checkbox" type="checkbox" name="read" value="true">
             <span class="u-iBlock CDB-Checkbox-face"></span>
@@ -127,7 +127,7 @@
             <span class="u-iBlock CDB-Checkbox-face"></span>
             <label class="u-iBlock u-lSpace u-upperCase u-rSpace">Delete</label>
           </div>
-        </fieldset>
+        </div>
       </li>
     </ul>
   </div>

@@ -286,13 +286,14 @@ describe Carto::ApiKey do
 
   describe 'with plain users' do
     before(:all) do
-      @user1 = FactoryGirl.create(:auth_api_user, private_tables_enabled: true, private_maps_enabled: true)
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+      @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
       @user1.destroy if @user1
-      @authorganization.destroy if @authorganization
+      @auth_api_feature_flag.destroy
     end
 
     it_behaves_like 'api key'
@@ -306,6 +307,10 @@ describe Carto::ApiKey do
       @authorganization.save
       @user1 = create_auth_api_user(@authorganization)
       @carto_user1 = Carto::User.where(id: @user1.id).first
+    end
+
+    after(:all) do
+      @authorganization.destroy if @authorganization
     end
 
     it_behaves_like 'api key'

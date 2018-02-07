@@ -18,9 +18,11 @@ describe Carto::Api::ApiKeysController do
 
   before(:all) do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+    @user_api_keys = FactoryGirl.create(:valid_user)
   end
 
   after(:all) do
+    @user_api_keys.destroy
     @auth_api_feature_flag.destroy
   end
 

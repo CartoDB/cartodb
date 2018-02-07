@@ -53,25 +53,10 @@ FactoryGirl.define do
       crypted_password 'kkkkkkkkk'
     end
 
-    trait :no_api_keys do
-      before(:create) do
-        ::User.any_instance.stubs(:create_api_keys).returns(true)
-      end
-    end
-
-    trait :auth_api do
-      before(:create) do
-        ::User.any_instance.stubs(:has_feature_flag?).with('auth_api').returns(true)
-        ::User.any_instance.stubs(:has_feature_flag?).with('create_overviews').returns(true)
-      end
-    end
-
     factory :user_with_private_tables, traits: [:enabled, :private_tables]
     factory :admin, traits: [:admin]
     factory :valid_user, traits: [:valid]
     factory :locked_user, traits: [:valid, :locked]
-    factory :no_api_keys_user, traits: [:valid, :no_api_keys]
-    factory :auth_api_user, traits: [:valid, :auth_api]
 
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)

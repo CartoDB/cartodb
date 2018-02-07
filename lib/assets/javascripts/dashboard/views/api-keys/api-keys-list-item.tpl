@@ -1,6 +1,6 @@
 <section>
    <h4 class="CDB-Text CDB-Size-medium is-semibold u-actionTextColor u-flex u-alignCenter">
-    <%- name %>
+    <button class="js-edit"><%- name %></button>
 
     <% apiGrants.forEach(function (apiGrant) { %>
       <span class="CDB-Tag CDB-Text is-gray is-semibold CDB-Size-small u-iBlock u-lSpace--xl u-upperCase">

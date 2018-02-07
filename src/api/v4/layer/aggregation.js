@@ -6,7 +6,6 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#columns } for more info.
  * @enum {string} carto.layer.Aggregation.operation
  * @memberof carto.layer.Aggregation
- * @api
  */
 var OPERATIONS = {
   /** The new point will contain the average value of the or the aggregated ones */
@@ -26,7 +25,6 @@ var OPERATIONS = {
  * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement } for more info.
  * @enum {string} carto.layer.Aggregation.placement
  * @memberof carto.layer.Aggregation
- * @api
  */
 var PLACEMENTS = {
   /** The new point will be placed at a random sample of the aggregated points */
@@ -61,7 +59,7 @@ var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
  *   // Defines the cell-size of the aggregation grid. In this case, 1x1 pixel. 
  *   resolution: 1,
  *   // Where the new point will be placed. In this case, at the center of the grid.
- *   placement: carto.layer.Aggregation.placement.GRID
+ *   placement: carto.layer.Aggregation.placement.GRID,
  *   // Here we define the aggregated columns that we want to obtain.
  *   columns: {
  *     // Each property key is the name of the new generated column
@@ -80,7 +78,6 @@ var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
  * const layer = new carto.layer.Layer(source, style, { aggregation: aggregation });
  * 
  * @constructor
- * @api
  * @memberof carto.layer
  */
 function Aggregation (opts) {
@@ -100,22 +97,18 @@ function Aggregation (opts) {
     throw _getValidationError('invalidResolution');
   }
 
-  if (!opts.placement) {
-    throw _getValidationError('placementRequired');
-  }
+  _checkValidPlacement(opts.placement);
 
-  if (!_.contains(_.values(PLACEMENTS), opts.placement)) {
-    throw _getValidationError('invalidPlacement');
-  }
+  var columns = _checkAndTransformColumns(opts.columns);
 
-  _checkColumns(opts.columns);
-
-  return {
+  var aggregation = {
     threshold: opts.threshold,
     resolution: opts.resolution,
     placement: opts.placement,
-    columns: _transformColumns(opts.columns)
+    columns: columns
   };
+
+  return _.pick(aggregation, _.identity); // Remove empty values
 }
 
 Aggregation.operation = OPERATIONS;
@@ -123,10 +116,6 @@ Aggregation.operation = OPERATIONS;
 Aggregation.placement = PLACEMENTS;
 
 function _checkColumns (columns) {
-  if (!columns) {
-    throw new Error();
-  }
-
   Object.keys(columns).forEach(function (key) {
     _checkColumn(columns, key);
   });
@@ -155,11 +144,17 @@ function _getValidationError (code) {
 }
 
 // Windshaft uses snake_case for column parameters
-function _transformColumns (columns) {
-  var returnValue = {};
-  Object.keys(columns).forEach(function (key) {
-    returnValue[key] = _columnToSnakeCase(columns[key]);
-  });
+function _checkAndTransformColumns (columns) {
+  var returnValue = null;
+
+  if (columns) {
+    _checkColumns(columns);
+
+    returnValue = {};
+    Object.keys(columns).forEach(function (key) {
+      returnValue[key] = _columnToSnakeCase(columns[key]);
+    });
+  }
   return returnValue;
 }
 
@@ -169,6 +164,12 @@ function _columnToSnakeCase (column) {
     aggregate_function: column.aggregateFunction,
     aggregated_column: column.aggregatedColumn
   };
+}
+
+function _checkValidPlacement (placement) {
+  if (placement && !_.contains(_.values(PLACEMENTS), placement)) {
+    throw _getValidationError('invalidPlacement');
+  }
 }
 
 module.exports = Aggregation;

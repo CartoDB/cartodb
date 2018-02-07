@@ -7,8 +7,8 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
     <!-- Include Leaflet -->
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
     <style>
@@ -85,11 +85,11 @@
         font-family: 'Open Sans';
         color: #6A6A6A;
         margin-bottom: 8px;
-       }
-       .action-container {
+      }
+      .action-container {
         display: flex;
         justify-content: flex-end;
-       }
+      }
     </style>
   </head>
   <body>
@@ -122,10 +122,8 @@ FROM ne_10m_populated_places_simple
             </div>
         </div>
         <div class="control-inner">
-          <p> This example only uses one style and one layer whose content is changed. </p>
-          <p>
-            Since the style and source objects are the same the wont trigger events, you need to use the promise to handle errors.
-          </p>
+          <p>This example only uses one style and one layer whose content is changed.</p>
+          <p>Since the style and source objects are the same the wont trigger events, you need to use the promise to handle errors.</p>
         </div>
       </div>
     </div>

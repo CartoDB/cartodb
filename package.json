@@ -1,6 +1,6 @@
 {
   "name": "cartodb.js",
-  "version": "4.0.0-beta.18",
+  "version": "4.0.0-beta.23",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",
@@ -43,7 +43,6 @@
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
     "promise-polyfill": "^6.1.0",
-    "tangram.cartodb": "~0.5.7",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
     "whatwg-fetch": "^2.0.3"
@@ -89,7 +88,7 @@
     "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jsdoc": "~3.5.5",
     "jstify": "0.12.0",
-    "leaflet": "1.2.0",
+    "leaflet": "1.3.1",
     "load-grunt-tasks": "~0.6.0",
     "npm-watch": "^0.3.0",
     "semver": "~5.4.0",
@@ -145,6 +144,7 @@
   },
   "scripts": {
     "test": "grunt test",
+    "test:browser": "grunt dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "rm -rf dist/public; webpack --config webpack/webpack.config.js && webpack --config webpack/webpack.min.config.js",
@@ -155,7 +155,7 @@
     "bump": "npm version prerelease",
     "bump:minor": "npm version minor",
     "bump:patch": "npm version patch",
-    "version": "npm run devlog && git add DEVLOG.md",
+    "xversion": "npm run devlog && git add DEVLOG.md",
     "postversion": "git push origin HEAD --follow-tags",
     "devlog": "carto-devlog -s d58f78f54 -b 'Bump version to' -m 'Merge pull request' > DEVLOG.md",
     "release": "./scripts/release.sh"

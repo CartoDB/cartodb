@@ -50,7 +50,7 @@ describe('Engine', function () {
   });
 
   describe('.addLayer', function () {
-    it('should add a new layer', function () {
+    it('should add a layer', function () {
       var style = '#layer { marker-color: red; }';
       var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
       var layer = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
@@ -58,6 +58,33 @@ describe('Engine', function () {
       engineMock.addLayer(layer);
       expect(engineMock._layersCollection.length).toEqual(1);
       expect(engineMock._layersCollection.at(0)).toEqual(layer);
+    });
+  });
+
+  describe('.removeLayer', function () {
+    it('should remove a layer', function () {
+      var style = '#layer { marker-color: red; }';
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var layer = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
+      engineMock.addLayer(layer);
+      engineMock.removeLayer(layer);
+      expect(engineMock._layersCollection.length).toEqual(0);
+    });
+  });
+
+  describe('.moveLayer', function () {
+    it('should move a layer', function () {
+      var style = '#layer { marker-color: red; }';
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var layer0 = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
+      var layer1 = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
+      engineMock.addLayer(layer0);
+      engineMock.addLayer(layer1);
+      expect(engineMock._layersCollection.at(0)).toEqual(layer0);
+      expect(engineMock._layersCollection.at(1)).toEqual(layer1);
+      engineMock.moveLayer(layer0, 1);
+      expect(engineMock._layersCollection.at(1)).toEqual(layer0);
+      expect(engineMock._layersCollection.at(0)).toEqual(layer1);
     });
   });
 

@@ -55,16 +55,16 @@
     <div id="controls">
       <ul>
         <li onclick="setAllCities()">
-          <input type="radio" name="style" value="01" checked  id="red">
-          <label for="red">All cities</label>
+          <input type="radio" name="source" checked id="all">
+          <label for="all">All cities</label>
         </li>
-        <li onclick="setEuropeCities()">
-          <input type="radio" name="style" value="02" id="green">
-          <label for="green">Europe cities</label>
+        <li onclick="setEuropeanCities()">
+          <input type="radio" name="source" id="europe">
+          <label for="europe">European cities</label>
         </li>
-        <li onclick="setSpainCities()">
-          <input type="radio" name="style" value="03" id="blue">
-          <label for="blue">Spain cities</label>
+        <li onclick="setSpanishCities()">
+          <input type="radio" name="source" id="spain">
+          <label for="spain">Spanish cities</label>
         </li>
       </ul>
     </div>
@@ -110,7 +110,7 @@
         `);
       }
 
-      function setEuropeCities() {
+      function setEuropeanCities() {
         source.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple
@@ -118,7 +118,7 @@
         `);
       }
 
-      function setSpainCities() {
+      function setSpanishCities() {
         source.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple

@@ -19,6 +19,10 @@ module.exports = {
     'style-with-different-client': {
       messageRegex: /differentStyleClient/,
       friendlyMessage: "A layer can't have a style which belongs to a different client."
+    },
+    'wrong-interactivity-columns': {
+      messageRegex: /wrongInteractivityColumns\[(.+)\]#(.+)$/,
+      friendlyMessage: 'Columns [$0] set on `$1` do not match the columns set in aggregation options.'
     }
   },
   source: {
@@ -57,6 +61,14 @@ module.exports = {
     'bad-layer-type': {
       messageRegex: /badLayerType/,
       friendlyMessage: 'The given object is not a layer.'
+    },
+    'index-number': {
+      messageRegex: /indexNumber/,
+      friendlyMessage: 'index property must be a number.'
+    },
+    'index-out-of-range': {
+      messageRegex: /indexOutOfRange/,
+      friendlyMessage: 'index is out of range.'
     },
     'api-key-required': {
       messageRegex: /apiKeyRequired/,
@@ -195,10 +207,6 @@ module.exports = {
     'invalid-resolution': {
       messageRegex: /invalidResolution/,
       friendlyMessage: 'Aggregation resolution must be 0.5, 1 or powers of 2 up to 256 (2, 4, 8, 16, 32, 64, 128, 256).'
-    },
-    'placement-required': {
-      messageRegex: /placementRequired/,
-      friendlyMessage: 'Aggregation placement is required.'
     },
     'invalid-placement': {
       messageRegex: /invalidPlacement/,

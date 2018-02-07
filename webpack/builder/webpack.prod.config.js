@@ -22,6 +22,7 @@ module.exports = env => {
       path: resolve(__dirname, '../../', 'public/assets')
     },
     resolve: {
+      modules: require('../common/modules.js'),
       alias: require('../common/alias.js')
     },
     devtool: 'source-map',

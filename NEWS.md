@@ -132,6 +132,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Improved bundling aliases
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)
 * Restore translation keys to static pages (#13492)

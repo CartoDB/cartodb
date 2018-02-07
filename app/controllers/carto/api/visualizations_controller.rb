@@ -180,7 +180,7 @@ module Carto
       end
 
       def vizjson3
-        render_vizjson(generate_vizjson3(@visualization, vizjson3_options(@visualization, params)))
+        render_vizjson(generate_vizjson3(@visualization))
       end
 
 

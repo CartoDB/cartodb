@@ -33,7 +33,7 @@ module Carto
         @layers_data = @visualization.layers.map do |l|
           Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
         end
-        @vizjson = generate_anonymous_map_vizjson3(@visualization, vector: false)
+        @vizjson = generate_anonymous_map_vizjson3(@visualization)
         @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = current_viewer.basemaps

@@ -213,7 +213,7 @@ describe Carto::Api::ApiKeysController do
       post_json generate_api_key_url(user_req_params(@carto_user1)), name: 'wadus', grants: grants do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /schema \"wadus\" does not exist/
+        error_response[:errors].should match /can only grant permissions over owned tables/
       end
     end
 
@@ -243,7 +243,7 @@ describe Carto::Api::ApiKeysController do
       post_json generate_api_key_url(user_req_params(@carto_user1)), name: 'wadus', grants: grants do |response|
         response.status.should eq 422
         api_key_response = response.body
-        api_key_response[:errors].should match /Duplicate API Key name: wadus/
+        api_key_response[:errors].should match /Name has already been taken/
       end
 
       Carto::ApiKey.where(name: 'wadus').each(&:destroy)

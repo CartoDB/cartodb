@@ -37,7 +37,7 @@ module Carto
 
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
-    TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
+    TYPE_DEFAULT_PUBLIC = 'default'.freeze
 
     MASTER_NAME         = 'Master'.freeze
 
@@ -57,9 +57,14 @@ module Carto
     before_validation :check_master_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
-    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
 
-    validates :name, presence: true
+    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
+    validates :type, inclusion: { in: VALID_TYPES }
+    validates :name, presence: true, uniqueness: { scope: :user_id }
+
+    validate :valid_name_for_type
+    validate :validate_uniqueness
+    validate :check_owned_table_permissions
 
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
@@ -67,10 +72,6 @@ module Carto
 
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
-
-    validates :type, inclusion: { in: VALID_TYPES }
-    validate :valid_name_for_type
-    validate :validate_uniqueness
 
     attr_writer :redis_client
 
@@ -147,6 +148,13 @@ module Carto
       table_permissions
     end
 
+    def check_owned_table_permissions
+      # Only checks if no previous errors in JSON definition
+      if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
+        errors.add(:grants, 'can only grant permissions over owned tables')
+      end
+    end
+
     def current_user
       user || Carto::User[user_id]
     end
@@ -218,7 +226,7 @@ module Carto
     end
 
     def redis_hash_as_array
-      hash = ['user', user.username, 'type', type, 'dbRole', db_role, 'dbPassword', db_password]
+      hash = ['user', user.username, 'type', type, 'database_role', db_role, 'database_password', db_password]
       granted_apis.each { |api| hash += ["grants_#{api}", true] }
       hash
     end

@@ -60,6 +60,7 @@ describe Carto::ApiKey do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
+      @carto_user1.reload.api_keys.each(&:delete)
     end
 
     it 'can grant insert, select, update delete to a database role' do
@@ -95,6 +96,20 @@ describe Carto::ApiKey do
       end
 
       api_key.destroy
+    end
+
+    it 'fails to grant to a non-existent table' do
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant])
+      }.to raise_exception Carto::UnprocesableEntityError
+    end
+
+    it 'fails to grant to system table' do
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant('cartodb', 'cdb_tablemetadata'), apis_grant])
+      }.to raise_exception ActiveRecord::RecordInvalid
     end
 
     describe '#destroy' do
@@ -317,5 +332,16 @@ describe Carto::ApiKey do
     end
 
     it_behaves_like 'api key'
+
+    it 'fails to grant to a non-owned table' do
+      table = create_table(user_id: @carto_org_user_2.id)
+
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant(table.database_schema, table.name), apis_grant])
+      }.to raise_exception ActiveRecord::RecordInvalid
+
+      table.destroy
+    end
   end
 end

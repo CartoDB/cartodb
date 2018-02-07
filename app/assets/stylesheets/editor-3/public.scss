@@ -60,7 +60,6 @@
 
 @media (max-width: 600px) {
   .CDB-Embed-content {
-    flex-grow: initial;
     // 103px = header + tabs height
     height: calc(100% - 103px);
   }
@@ -84,5 +83,13 @@
     height: 100%;
     max-height: none;
     border-radius: 0;
+  }
+}
+
+@media (max-width: 759px) {
+  body {
+    position: fixed !important;
+    width: 100%;
+    overflow: hidden; // Avoid scroll in small screens
   }
 }

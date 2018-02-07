@@ -7,6 +7,7 @@ var LayerBase = require('./layer/base');
 var Layers = require('./layers');
 var VERSION = require('../../../package.json').version;
 var CartoValidationError = require('./error-handling/carto-validation-error');
+var nativeUtils = require('./native/utils');
 
 function getValidationError (code) {
   return new CartoValidationError('client', code);
@@ -286,7 +287,7 @@ Client.prototype.getDataviews = function () {
  */
 Client.prototype.getLeafletLayer = function () {
   // Check if Leaflet is loaded
-  _isLeafletLoaded();
+  nativeUtils.isLeafletLoaded();
   if (!this._leafletLayer) {
     var LeafletLayer = require('./native/leaflet-layer');
     this._leafletLayer = new LeafletLayer(this._layers, this._engine);
@@ -316,7 +317,7 @@ Client.prototype.getGoogleMapsMapType = function (map) {
   // NOTE: the map is required here because of wax.g.connector
 
   // Check if Google Maps is loaded
-  _isGoogleMapsLoaded();
+  nativeUtils.isGoogleMapsLoaded();
   if (!this._gmapsMapType) {
     var GoogleMapsMapType = require('./native/google-maps-map-type');
     this._gmapsMapType = new GoogleMapsMapType(this._layers, this._engine, map);
@@ -389,7 +390,7 @@ Client.prototype._bindEngine = function (engine) {
 
 /**
  * Check if some layer in the client has the same id.
- * @param {carto.layer.Base} layer 
+ * @param {carto.layer.Base} layer
  */
 Client.prototype._checkDuplicatedLayerId = function (layer) {
   if (this._layers.findById(layer.getId())) {
@@ -439,27 +440,6 @@ function _checkServerUrl (serverUrl, username) {
   }
   if (serverUrl.indexOf(username) < 0) {
     throw getValidationError('serverURLDoesntMatchUsername');
-  }
-}
-
-function _isLeafletLoaded () {
-  if (!window.L) {
-    throw new Error('Leaflet is required');
-  }
-  if (window.L.version < '1.0.0') {
-    throw new Error('Leaflet +1.0 is required');
-  }
-}
-
-function _isGoogleMapsLoaded () {
-  if (!window.google) {
-    throw new Error('Google Maps is required');
-  }
-  if (!window.google.maps) {
-    throw new Error('Google Maps is required');
-  }
-  if (window.google.maps.version < '3.0.0') {
-    throw new Error('Google Maps +3.0 is required');
   }
 }
 

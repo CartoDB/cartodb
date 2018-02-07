@@ -2,10 +2,11 @@
 var Base = require('./base');
 var LeafletBoundingBoxAdapter = require('../../../geo/adapters/leaflet-bounding-box-adapter');
 var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
+var nativeUtils = require('../native/utils');
 
 /**
  * Bounding box filter for Leaflet maps.
- * 
+ *
  * When this filter is included into a dataview only the data inside the {@link http://leafletjs.com/reference-1.2.0.html#map|leafletMap}
  * bounds will be taken into account.
  *
@@ -17,7 +18,7 @@ var BoundingBoxFilterModel = require('../../../windshaft/filters/bounding-box');
  * @extends carto.filter.Base
  * @memberof carto.filter
  * @api
- * 
+ *
  * @example
  * // Create a bonding box attached to a leaflet map.
  * const bboxFilter = new carto.filter.BoundingBoxLeaflet(leafletMap);
@@ -57,11 +58,10 @@ BoundingBoxLeaflet.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
 
-// Helper to check if an element is a leafletmap object
+// Helper to check if an element is a Leaflet map object
 function _isLeafletMap (element) {
-  if (!window.L) {
-    throw new Error('Leaflet is required');
-  }
+  // Check if Leaflet is loaded
+  nativeUtils.isLeafletLoaded();
   return element instanceof L.Map;
 }
 

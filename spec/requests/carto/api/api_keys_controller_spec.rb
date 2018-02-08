@@ -503,12 +503,12 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns requested API key' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        get_json generate_api_key_url(user_req_params(@user), name: api_key.name), {}, json_headers_with_auth do |response|
+        key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        get_json generate_api_key_url(user_req_params(@user), name: key.name), {}, json_headers_with_auth do |response|
           response.status.should eq 200
-          response.body[:name].should eq api_key.name
+          response.body[:name].should eq key.name
         end
-        api_key.destroy
+        key.destroy
       end
 
       it 'returns API key list' do

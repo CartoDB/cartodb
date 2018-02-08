@@ -323,10 +323,9 @@ describe Carto::ApiKey do
 
     it 'fails to grant to a non-owned table' do
       table = create_table(user_id: @carto_org_user_2.id)
-
+      grants = [database_grant(table.database_schema, table.name), apis_grant]
       expect {
-        @carto_user1.api_keys.create_regular_key!(name: 'full',
-                                          grants: [database_grant(table.database_schema, table.name), apis_grant])
+        @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
       }.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy

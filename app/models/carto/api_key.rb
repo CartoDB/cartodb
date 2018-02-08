@@ -38,12 +38,13 @@ module Carto
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
 
-    MASTER_NAME         = 'Master'.freeze
+    NAME_MASTER = 'Master'.freeze
+    NAME_DEFAULT_PUBLIC = 'Default public'.freeze
 
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
 
-    GRANTS_MASTER = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
+    GRANTS_ALL_APIS = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
@@ -60,10 +61,10 @@ module Carto
 
     validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
     validates :type, inclusion: { in: VALID_TYPES }
+    validates :type, uniqueness: { scope: :user_id }, unless: :regular?
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
-    validate :validate_uniqueness
     validate :check_owned_table_permissions
 
     after_create :setup_db_role
@@ -119,14 +120,18 @@ module Carto
       type == TYPE_DEFAULT_PUBLIC
     end
 
+    def regular?
+      type == TYPE_REGULAR
+    end
+
     def valid_name_for_type
-      if !master? && name == MASTER_NAME || !default_public? && name == DEFAULT_PUBLIC_NAME
-        errors.add(:name, "api_key name cannot be #{MASTER_NAME} nor #{DEFAULT_PUBLIC_NAME}")
+      if !master? && name == NAME_MASTER || !default_public? && name == NAME_DEFAULT_PUBLIC
+        errors.add(:name, "api_key name cannot be #{NAME_MASTER} nor #{NAME_DEFAULT_PUBLIC}")
       end
     end
 
     def can_be_deleted?
-      !master? && !default_public?
+      regular?
     end
 
     private
@@ -270,20 +275,14 @@ module Carto
 
     def check_master_key
       return unless master?
-      self.name = MASTER_NAME
-      self.grants = GRANTS_MASTER
-    end
-
-    def validate_uniqueness
-      return unless master?
-      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
+      self.name = NAME_MASTER
+      self.grants = GRANTS_ALL_APIS
     end
 
     def check_default_public_key
       return unless default_public?
-      raise Carto::UnprocesableEntityError.new("Duplicate default public API Key") if exists_default_public_key?(user_id)
-      self.name = DEFAULT_PUBLIC_NAME
-      self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS, API_IMPORT, API_ANALYSIS] }]
+      self.name = NAME_DEFAULT_PUBLIC
+      self.grants = GRANTS_ALL_APIS
     end
 
     def exists_master_key?(user_id)

@@ -145,25 +145,25 @@
       const popup = L.popup({ closeButton: false });
 
       function openPopup(featureEvent) {
+        let content = '';
+        content += `<div class="popup-container">`;
+        if (featureEvent.data.name) {
+          content += `<h2>${featureEvent.data.name}</h2>`;
+        }
+        if (featureEvent.data.pop_max || featureEvent.data.pop_min) {
+          content += `<ul>`;
+          if (featureEvent.data.pop_max) {
+            content += `<li><h3>Max:</h3> <h4>${featureEvent.data.pop_max}</h4></li>`;
+          }
+          if (featureEvent.data.pop_min) {
+            content += `<li><h3>Min:</h3> <h4>${featureEvent.data.pop_min}<h4></li>`;
+          }
+          content += `</ul>`;
+        }
+        content += `</div>`;
+        popup.setContent(content);
         popup.setLatLng(featureEvent.latLng);
         if (!popup.isOpen()) {
-          let content = '';
-          content += `<div class="popup-container">`;
-          if (featureEvent.data.name) {
-            content += `<h2>${featureEvent.data.name}</h2>`;
-          }
-          if (featureEvent.data.pop_max || featureEvent.data.pop_min) {
-            content += `<ul>`;
-            if (featureEvent.data.pop_max) {
-              content += `<li><h3>Max:</h3> <h4>${featureEvent.data.pop_max}</h4></li>`;
-            }
-            if (featureEvent.data.pop_min) {
-              content += `<li><h3>Min:</h3> <h4>${featureEvent.data.pop_min}<h4></li>`;
-            }
-            content += `</ul>`;
-          }
-          content += `</div>`;
-          popup.setContent(content);
           popup.openOn(map);
         }
       }

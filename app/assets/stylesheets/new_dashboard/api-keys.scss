@@ -19,10 +19,15 @@
   justify-content: space-between;
   padding: 20px 0;
   border-bottom: 1px solid rgba(#000, 0.1);
+
+  &:last-child {
+    border: none;
+  }
 }
 
 .ApiKeys-footer {
   padding: 20px 0;
+  border-top: 1px solid rgba(#000, 0.1);
 }
 
 .ApiKeys-footer-text {

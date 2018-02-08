@@ -133,9 +133,9 @@ module Carto
           table_name;
         }
       db_run(query).map do |line|
-        TablePermissions.new(schema: line[:table_schema],
-                             name: line[:table_name],
-                             permissions: line[:privilege_types].split(','))
+        TablePermissions.new(schema: line['table_schema'],
+                             name: line['table_name'],
+                             permissions: line['privilege_types'].split(','))
       end
     end
 

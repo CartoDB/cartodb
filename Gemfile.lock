@@ -308,6 +308,8 @@ GEM
       rack (~> 1.4)
       rack-protection (~> 1.4)
       tilt (>= 1.3, < 3)
+    sneaky-save (0.1.2)
+      activerecord (>= 3.2.0)
     spreadsheet (1.1.1)
       ruby-ole (>= 1.0)
     sprockets (2.2.3)
@@ -427,6 +429,7 @@ DEPENDENCIES
   simplecov (= 0.13.0)
   simplecov-json
   simplecov-rcov
+  sneaky-save
   state_machine (= 1.1.2)
   statsd-client (= 0.0.7)
   test-unit
@@ -441,4 +444,4 @@ DEPENDENCIES
   zeus
 
 BUNDLED WITH
-   1.14.6
+   1.15.4

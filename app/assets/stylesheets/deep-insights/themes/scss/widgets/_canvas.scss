@@ -11,6 +11,7 @@
 
 .CDB-Widget-canvasInner {
   display: grid;
+  display: -ms-grid; //IE 11
   top: 0;
   right: 0;
   bottom: 0;
@@ -57,7 +58,7 @@
   z-index: 3;
 }
 
-@media (max-width: $sMedia-xxl) {
+@media (max-width: $sMedia-max-embed) {
   .CDB-Widget-canvas {
     width: $mobileLayout;
     min-width: $mobileLayout;

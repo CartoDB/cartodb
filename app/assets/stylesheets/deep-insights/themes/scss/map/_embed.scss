@@ -1,3 +1,8 @@
+$sEmbedTabs: 1rem;
+$cEmbedTabs-Primary: #FFF;
+$cEmbedTabs-Secondary: #DDD;
+$cEmbedTabs-Shadow: rgba(#828282, 0.3);
+
 .CDB-Embed-view {
   display: flex;
   flex-direction: column;

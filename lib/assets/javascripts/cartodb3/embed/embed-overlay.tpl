@@ -1,19 +1,17 @@
-<div class="CDB-Legends-canvas">
-  <div class="CDB-Legends-canvasInner">
-    <div class="CDB-Embed-title u-bSpace--xl">
-      <div class="CDB-Overlay-title">
-        <h1 class="CDB-Text CDB-Size-large u-ellipsis" title="<%= title %>"><%= title %></h1>
+<div class="CDB-Overlay-title <% if (!description && !legends) { %>is-collapsed<% } %>">
+  <h1 class="CDB-Text CDB-Size-large u-ellipsis" title="<%= title %>"><%= title %></h1>
 
-        <% if (description) { %><div class="CDB-Overlay-options">
-          <button class="CDB-Shape js-toggle u-lSpace">
-            <div class="CDB-ArrowToogle is-blue <% if (!collapsed) { %>is-down<% } %> is-mini"></div>
-          </button>
-        </div><% } %>
-      </div>
-
-      <% if (description) { %><div class="CDB-Overlay-inner <% if (!collapsed) { %>is-active<% } %>">
-        <div class="CDB-Embed-description CDB-Text CDB-Size-medium u-altTextColor" title="<%= description %>"><%= description %></div>
-      </div><% } %>
+  <% if (description || legends) { %>
+    <div class="CDB-Overlay-options">
+      <button class="CDB-Shape js-toggle u-lSpace">
+        <div class="CDB-ArrowToogle is-blue is-down is-mini"></div>
+      </button>
     </div>
-  </div>
+  <% } %>
 </div>
+
+<% if (description || legends) { %>
+  <div class="CDB-Overlay-inner is-active <% if (!legends) { %>is-description<% } %>">
+    <% if (description) { %><div class="CDB-Embed-description <% if (legends) { %>is-legends<% } %> CDB-Text CDB-Size-medium u-altTextColor" title="<%= description %>"><%= description %></div><% } %>
+  </div>
+<% } %>

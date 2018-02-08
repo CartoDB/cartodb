@@ -3,10 +3,17 @@ var carto = require('../../../../../src/api/v4');
 describe('api/v4/layer', function () {
   var source;
   var style;
+  var originalTimeout;
 
   beforeEach(function () {
     source = new carto.source.Dataset('ne_10m_populated_places_simple');
     style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+  });
+
+  afterEach(function () {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   describe('constructor', function () {
@@ -56,6 +63,37 @@ describe('api/v4/layer', function () {
     it('should allow custom layer id as an option', function () {
       var layer = new carto.layer.Layer(source, style, { id: 'fake_id' });
       expect(layer.getId()).toEqual('fake_id');
+    });
+
+    describe('columns validation', function () {
+      var aggregation = new carto.layer.Aggregation({
+        threshold: 1,
+        resolution: 4,
+        columns: {
+          population: {
+            aggregateFunction: 'sum',
+            aggregatedColumn: 'pop_max'
+          }
+        }
+      });
+
+      it('should validate that featureClick columns are contained in aggregation columns', function () {
+        expect(function () {
+          new carto.layer.Layer(source, style, { // eslint-disable-line
+            featureClickColumns: ['a', 'b'],
+            aggregation: aggregation
+          });
+        }).toThrowError('Columns [a, b] set on `featureClick` do not match the columns set in aggregation options.');
+      });
+
+      it('should validate that featureOver columns are contained in aggregation columns', function () {
+        expect(function () {
+          new carto.layer.Layer(source, style, { // eslint-disable-line
+            featureOverColumns: ['a', 'b'],
+            aggregation: aggregation
+          });
+        }).toThrowError('Columns [a, b] set on `featureOver` do not match the columns set in aggregation options.');
+      });
     });
   });
 

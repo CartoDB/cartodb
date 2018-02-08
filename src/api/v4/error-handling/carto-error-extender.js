@@ -57,7 +57,7 @@ function _getListedError (cartoError, errorList) {
 }
 
 /**
- * Replace $0 with the proper paramter in the listedError regex to build a friendly message
+ * Replace $0 and $1 with the proper paramter in the listedError regex to build a friendly message
  */
 function _replaceRegex (cartoError, listedError) {
   if (!listedError.friendlyMessage) {
@@ -65,7 +65,11 @@ function _replaceRegex (cartoError, listedError) {
   }
   var match = cartoError.message && cartoError.message.match(listedError.messageRegex);
   if (match && match.length > 1) {
-    return listedError.friendlyMessage.replace('$0', match[1]);
+    var replaced = listedError.friendlyMessage.replace('$0', match[1]);
+    if (match.length > 2) {
+      replaced = replaced.replace('$1', match[2]);
+    }
+    return replaced;
   }
   return listedError.friendlyMessage;
 }

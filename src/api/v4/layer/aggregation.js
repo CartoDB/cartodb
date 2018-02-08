@@ -97,22 +97,18 @@ function Aggregation (opts) {
     throw _getValidationError('invalidResolution');
   }
 
-  if (!opts.placement) {
-    throw _getValidationError('placementRequired');
-  }
+  _checkValidPlacement(opts.placement);
 
-  if (!_.contains(_.values(PLACEMENTS), opts.placement)) {
-    throw _getValidationError('invalidPlacement');
-  }
+  var columns = _checkAndTransformColumns(opts.columns);
 
-  _checkColumns(opts.columns);
-
-  return {
+  var aggregation = {
     threshold: opts.threshold,
     resolution: opts.resolution,
     placement: opts.placement,
-    columns: _transformColumns(opts.columns)
+    columns: columns
   };
+
+  return _.pick(aggregation, _.identity); // Remove empty values
 }
 
 Aggregation.operation = OPERATIONS;
@@ -120,10 +116,6 @@ Aggregation.operation = OPERATIONS;
 Aggregation.placement = PLACEMENTS;
 
 function _checkColumns (columns) {
-  if (!columns) {
-    throw new Error();
-  }
-
   Object.keys(columns).forEach(function (key) {
     _checkColumn(columns, key);
   });
@@ -152,11 +144,17 @@ function _getValidationError (code) {
 }
 
 // Windshaft uses snake_case for column parameters
-function _transformColumns (columns) {
-  var returnValue = {};
-  Object.keys(columns).forEach(function (key) {
-    returnValue[key] = _columnToSnakeCase(columns[key]);
-  });
+function _checkAndTransformColumns (columns) {
+  var returnValue = null;
+
+  if (columns) {
+    _checkColumns(columns);
+
+    returnValue = {};
+    Object.keys(columns).forEach(function (key) {
+      returnValue[key] = _columnToSnakeCase(columns[key]);
+    });
+  }
   return returnValue;
 }
 
@@ -166,6 +164,12 @@ function _columnToSnakeCase (column) {
     aggregate_function: column.aggregateFunction,
     aggregated_column: column.aggregatedColumn
   };
+}
+
+function _checkValidPlacement (placement) {
+  if (placement && !_.contains(_.values(PLACEMENTS), placement)) {
+    throw _getValidationError('invalidPlacement');
+  }
 }
 
 module.exports = Aggregation;

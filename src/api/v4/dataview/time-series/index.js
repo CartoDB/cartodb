@@ -24,7 +24,7 @@ var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
  * @fires aggregationChanged
  * @fires offsetChanged
  * @fires localTimezoneChanged
- * 
+ *
  * @constructor
  * @extends carto.dataview.Base
  * @memberof carto.dataview
@@ -181,7 +181,6 @@ TimeSeries.prototype._createInternalModel = function (engine) {
     aggregation: this._aggregation,
     offset: this._offset,
     localTimezone: this._localTimezone,
-    sync_on_data_change: true,
     sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled,
     column_type: 'date'
@@ -191,7 +190,7 @@ TimeSeries.prototype._createInternalModel = function (engine) {
   });
 };
 
-// Utility functions 
+// Utility functions
 
 function _hoursToSeconds (hours) {
   return hours * 3600;

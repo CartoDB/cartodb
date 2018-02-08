@@ -228,7 +228,6 @@ Category.prototype._createInternalModel = function (engine) {
     aggregation: this._operation,
     aggregation_column: this._operationColumn,
     categories: this._limit,
-    sync_on_data_change: true,
     sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled
   }, {

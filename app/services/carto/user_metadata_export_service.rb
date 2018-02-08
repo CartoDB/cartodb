@@ -150,6 +150,8 @@ module Carto
 
       user_hash[:search_tweets] = user.search_tweets.map { |st| export_search_tweet(st) }
 
+      user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
+
       # TODO
       # Organization notifications
 
@@ -173,6 +175,13 @@ module Carto
         created_at: search_tweet.created_at,
         updated_at: search_tweet.updated_at
       }
+    end
+
+    def export_api_key(api_key)
+      api_key_json = Carto::Api::ApiKeyPresenter.new(api_key).to_poro
+      api_key_json.merge(
+        db_role: api_key.db_role,
+        db_password: api_key.db_password)
     end
   end
 

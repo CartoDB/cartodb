@@ -285,10 +285,10 @@ describe Carto::ApiKey do
       it 'cannot create a non master api_key with master as the name' do
         api_key = Carto::ApiKey.new
         api_key.type = Carto::ApiKey::TYPE_REGULAR
-        api_key.name = Carto::ApiKey::MASTER_NAME
+        api_key.name = Carto::ApiKey::NAME_MASTER
 
         api_key.valid?
-        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
+        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::NAME_MASTER} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
       end
     end
 
@@ -315,7 +315,7 @@ describe Carto::ApiKey do
         api_key.name = Carto::ApiKey::DEFAULT_PUBLIC_NAME
 
         api_key.valid?
-        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
+        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::NAME_MASTER} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
       end
     end
   end

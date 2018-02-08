@@ -37,6 +37,7 @@ module Carto
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
+    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
     NAME_MASTER = 'Master'.freeze
     NAME_DEFAULT_PUBLIC = 'Default public'.freeze
@@ -46,14 +47,14 @@ module Carto
 
     GRANTS_ALL_APIS = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
 
-    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
+    TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
     self.inheritance_column = :_type
 
     belongs_to :user
 
-    before_create :create_token
-    before_create :create_db_config
+    before_create :create_token, if: :regular?
+    before_create :create_db_config, if: :regular?
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
 
@@ -73,6 +74,40 @@ module Carto
 
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
+
+    private_class_method :new, :create, :create!
+
+    def self.create_master_key!(user)
+      create!(
+        user: user,
+        type: TYPE_MASTER,
+        name: NAME_MASTER,
+        grants: GRANTS_ALL_APIS,
+        db_role: user.database_username,
+        db_password: user.database_password
+      )
+    end
+
+    def self.create_default_public_key!(user)
+      create!(
+        user: user,
+        type: TYPE_DEFAULT_PUBLIC,
+        name: NAME_DEFAULT_PUBLIC,
+        token: TOKEN_DEFAULT_PUBLIC,
+        grants: GRANTS_ALL_APIS,
+        db_role: user.database_public_username,
+        db_password: CartoDB::PUBLIC_DB_USER_PASSWORD
+      )
+    end
+
+    def self.create_regular_key(user, name, grants)
+      create!(
+        user: user,
+        type: TYPE_DEFAULT_PUBLIC,
+        name: name,
+        grants: grants
+      )
+    end
 
     def granted_apis
       @granted_apis ||= process_granted_apis
@@ -175,17 +210,10 @@ module Carto
     end
 
     def create_db_config
-      return create_master_db_config if master?
-
       begin
         self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
       end while self.class.exists?(db_role: db_role)
       self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
-    end
-
-    def create_master_db_config
-      self.db_role = current_user.database_username
-      self.db_password = current_user.database_password
     end
 
     def setup_db_role

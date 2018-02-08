@@ -54,8 +54,6 @@ module Carto
 
     before_create :create_token
     before_create :create_db_config
-    before_validation :check_master_key
-    before_validation :check_default_public_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
 
@@ -66,6 +64,8 @@ module Carto
 
     validate :valid_name_for_type
     validate :check_owned_table_permissions
+    validate :valid_master_key, if: :master?
+    validate :valid_default_public_key, if: :default_public?
 
     after_create :setup_db_role, if: :regular?
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
@@ -265,16 +265,14 @@ module Carto
       db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
     end
 
-    def check_master_key
-      return unless master?
-      self.name = NAME_MASTER
-      self.grants = GRANTS_ALL_APIS
+    def valid_master_key
+      errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
+      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
     end
 
-    def check_default_public_key
-      return unless default_public?
-      self.name = NAME_DEFAULT_PUBLIC
-      self.grants = GRANTS_ALL_APIS
+    def valid_default_public_key
+      errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
+      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
     end
   end
 end

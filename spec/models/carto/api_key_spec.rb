@@ -51,15 +51,20 @@ describe Carto::ApiKey do
   end
 
   shared_examples_for 'api key' do
-    before(:each) do
+    before(:all) do
       @table1 = create_table(user_id: @carto_user1.id)
       @table2 = create_table(user_id: @carto_user1.id)
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
     end
 
-    after(:each) do
+    after(:all) do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
+      @auth_api_feature_flag.destroy
+    end
+
+    after(:each) do
       @carto_user1.reload.api_keys.each(&:delete)
     end
 
@@ -273,61 +278,48 @@ describe Carto::ApiKey do
 
       it 'cannot create more than one master key' do
         expect {
-          Carto::ApiKey.create!(
-            user_id: @carto_user1.id,
-            type: Carto::ApiKey::TYPE_MASTER
-          )
+          Carto::ApiKey.create_master_key!(@carto_user1)
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'cannot create a non master api_key with master as the name' do
-        api_key = Carto::ApiKey.new
-        api_key.type = Carto::ApiKey::TYPE_REGULAR
-        api_key.name = Carto::ApiKey::NAME_MASTER
-
-        api_key.valid?
-        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::NAME_MASTER} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
+        expect {
+          Carto::ApiKey.create_master_key!(@carto_user1, Carto::ApiKey::NAME_MASTER, [apis_grant(['maps', 'sql'])])
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
 
     describe 'default public api key' do
       it 'user has a default public key with the public_db_user role' do
-        api_key = Carto::ApiKey.where(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_DEFAULT_PUBLIC).first
+        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
         api_key.should be
-        api_key.db_role.should eq @user1.database_public_username
+        api_key.db_role.should eq @carto_user1.database_public_username
         api_key.db_password.should eq CartoDB::PUBLIC_DB_USER_PASSWORD
       end
 
-      it 'cannot create more than one master key' do
+      it 'cannot create more than one default public key' do
         expect {
-          Carto::ApiKey.create(
-            user_id: @carto_user1.id,
-            type: Carto::ApiKey::TYPE_DEFAULT_PUBLIC
-          )
+          Carto::ApiKey.create_default_public_key!(@carto_user1)
         }.to raise_error(ActiveRecord::RecordNotUnique)
       end
 
       it 'cannot create a non default public api_key with default public name' do
-        api_key = Carto::ApiKey.new
-        api_key.type = Carto::ApiKey::TYPE_REGULAR
-        api_key.name = Carto::ApiKey::DEFAULT_PUBLIC_NAME
-
-        api_key.valid?
-        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::NAME_MASTER} nor #{Carto::ApiKey::DEFAULT_PUBLIC_NAME}")
+        expect {
+          Carto::ApiKey.create_master_key!(@carto_user1, Carto::ApiKey::NAME_DEFAULT_PUBLIC,
+                                           [apis_grant(['maps', 'sql'])])
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
 
   describe 'with plain users' do
-    before(:each) do
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+    before(:all) do
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
-    after(:each) do
-      @user1.destroy if @user1
-      @auth_api_feature_flag.destroy
+    after(:all) do
+      @user1.destroy
     end
 
     it_behaves_like 'api key'
@@ -336,18 +328,16 @@ describe Carto::ApiKey do
   describe 'with organization users' do
     include_context 'organization with users helper'
 
-    before(:each) do
-      @authorganization = test_organization
-      @authorganization.save
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
-      @user1 = create_auth_api_user(@authorganization)
+    before(:all) do
+      @auth_organization = test_organization
+      @auth_organization.save
+      @user1 = create_auth_api_user(@auth_organization)
       @carto_user1 = Carto::User.where(id: @user1.id).first
     end
 
-    after(:each) do
-      @user1.destroy if @user1
-      @authorganization.destroy if @authorganization
-      @auth_api_feature_flag.destroy
+    after(:all) do
+      @user1.destroy
+      @auth_organization.destroy
     end
 
     it_behaves_like 'api key'

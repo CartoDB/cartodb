@@ -2487,10 +2487,6 @@ describe User do
   end
 
   describe 'viewer user' do
-    after(:each) do
-      @user.destroy if @user
-    end
-
     def verify_viewer_quota(user)
       user.quota_in_bytes.should eq 0
       user.geocoding_quota.should eq 0
@@ -2513,6 +2509,7 @@ describe User do
                             obs_snapshot_quota: 100, soft_obs_snapshot_limit: true, obs_general_quota: 100,
                             soft_obs_general_limit: true
         verify_viewer_quota(@user)
+        @user.destroy
       end
     end
 
@@ -2530,6 +2527,7 @@ describe User do
         @user.save
         @user.reload
         verify_viewer_quota(@user)
+        @user.destroy
       end
     end
 
@@ -2541,15 +2539,13 @@ describe User do
         @user.save
         @user.reload
         verify_viewer_quota(@user)
+        @user.destroy
       end
     end
   end
 
   describe 'create api keys on user creation' do
     include_context 'organization with users helper'
-    after(:each) do
-      @user.destroy if @user
-    end
 
     it "creates master api key on user creation if ff auth_api is enabled for the user" do
       organization = create_org('authorg', 200.megabytes, 5)
@@ -2564,6 +2560,7 @@ describe User do
 
       organization.destroy
       auth_api_feature_flag.destroy
+      @user.destroy
     end
 
     it "does not create master api key on user creation if ff auth_api is not enabled for the user" do
@@ -2571,6 +2568,7 @@ describe User do
 
       api_keys = Carto::ApiKey.where(user_id: @user.id)
       api_keys.should be_empty
+      @user.destroy
     end
   end
 

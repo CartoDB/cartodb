@@ -100,10 +100,10 @@ module Carto
       )
     end
 
-    def self.create_regular_key(user, name, grants)
+    def self.create_regular_key!(user, name, grants)
       create!(
         user: user,
-        type: TYPE_DEFAULT_PUBLIC,
+        type: TYPE_REGULAR,
         name: name,
         grants: grants
       )

@@ -20,6 +20,7 @@ describe Carto::Api::ApiKeysController do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
     @user = FactoryGirl.create(:valid_user)
     @carto_user = Carto::User.find(@user.id)
+    @other_user = FactoryGirl.create(:valid_user)
     @table1 = create_table(user_id: @carto_user.id)
     @table2 = create_table(user_id: @carto_user.id)
   end
@@ -284,15 +285,13 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns 404 if the API key doesn\'t belong to that user' do
-      other_user = FactoryGirl.create(:valid_user)
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-      delete_json generate_api_key_url(user_req_params(other_user), name: api_key.name) do |response|
+      delete_json generate_api_key_url(user_req_params(@other_user), name: api_key.name) do |response|
         response.status.should eq 404
       end
 
       Carto::ApiKey.find_by_id(api_key.id).should_not be_nil
       api_key.destroy
-      other_user.destroy
     end
   end
 
@@ -332,7 +331,7 @@ describe Carto::Api::ApiKeysController do
 
     it 'returns 404 if the API key does not belong to the user' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-      get_json generate_api_key_url(user_req_params(@user2), name: api_key.name) do |response|
+      get_json generate_api_key_url(user_req_params(@other_user), name: api_key.name) do |response|
         response.status.should eq 404
       end
       api_key.destroy

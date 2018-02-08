@@ -62,6 +62,15 @@ module Carto
       ::User[user.id].after_save
     end
 
+    def save_api_key_for_user (api_key, user)
+      api_key.user = user
+      if api_key.sneaky_save
+        api_key.add_to_redis
+      else
+        CartoDB::Logger.error(message: "Unable to save ApiKey", user: user, api_key: api_key)
+      end
+    end
+
     def save_imported_search_tweet(search_tweet, user)
       persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
       search_tweet.data_import = persisted_import if persisted_import
@@ -85,6 +94,8 @@ module Carto
       user.assets = exported_user[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
 
       user.layers = build_layers_from_hash(exported_user[:layers])
+
+      user.api_keys += exported_user[:api_keys].map { |api_key| build_api_key_from_hash(api_key) }
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -117,6 +128,19 @@ module Carto
         state: exported_search_tweet[:state],
         created_at: exported_search_tweet[:created_at],
         updated_at: exported_search_tweet[:updated_at]
+      )
+    end
+
+    def build_api_key_from_hash(api_key_hash)
+      Carto::ApiKey.new(
+        created_at: api_key_hash[:created_at],
+        db_password: api_key_hash[:db_password],
+        db_role: api_key_hash[:db_role],
+        name: api_key_hash[:name],
+        token: api_key_hash[:token],
+        type: api_key_hash[:type],
+        updated_at: api_key_hash[:updated_at],
+        grants: api_key_hash[:grants]
       )
     end
   end
@@ -210,9 +234,13 @@ module Carto
 
     def import_from_directory(path)
       user = user_from_file(path)
+      api_keys = []
+      api_keys += user.api_keys
+      user.api_keys = []
       raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
 
+      api_keys.each { |api_key| save_api_key_for_user(api_key, user) }
       Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))
 
       user

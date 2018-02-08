@@ -21,7 +21,7 @@ $buttonColor: #636D72;
   height: 32px;
   border-radius: 4px;
   background: #FFF;
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 0 2px 0 rgba(#000, 0.24), 0 4px 8px 0 rgba(#000, 0.16);
   z-index: 20000;
 }
 
@@ -224,7 +224,7 @@ $maxLegendContainerHeight: 300px;
   max-height: calc(100vh - 120px);
   border-radius: 4px;
   background: #FFF;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  box-shadow: 0 2px 4px 0 rgba(#000, 0.24);
   box-sizing: border-box;
   overflow: hidden;
   z-index: 20000;
@@ -319,7 +319,7 @@ $maxLegendContainerHeight: 300px;
   bottom: 0;
   width: 140px;
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(#000, 0.08);
   content: '';
   visibility: visible;
 }
@@ -342,10 +342,10 @@ $maxLegendContainerHeight: 300px;
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(#000, 0.1);
   border-radius: 50%;
   background: #F8AB17;
-  box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: -1px 0 2px 0 rgba(#000, 0.1);
   pointer-events: none;
 }
 .Bubble-item::before {
@@ -354,7 +354,7 @@ $maxLegendContainerHeight: 300px;
   right: 50%;
   width: 140px;
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(#000, 1);
   content: '';
 }
 .Bubble-list--custom::before,
@@ -393,7 +393,7 @@ $maxLegendContainerHeight: 300px;
   right: -54px;
   width: 51px;
   height: 1px;
-  border-top: 1px dotted rgba(0, 0, 0, 0.4);
+  border-top: 1px dotted rgba(#000, 0.4);
   content: '';
   z-index: 10;
 }
@@ -405,7 +405,7 @@ $maxLegendContainerHeight: 300px;
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(#000, 0.4);
   content: '';
   z-index: 10;
 }
@@ -425,7 +425,7 @@ $maxLegendContainerHeight: 300px;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(#000, 0.16);
   border-radius: $halfBaseSize;
   content: '';
 }
@@ -472,7 +472,7 @@ $maxLegendContainerHeight: 300px;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(#000, 0.16);
   border-radius: 50%;
   content: '';
 }
@@ -517,8 +517,8 @@ $maxLegendContainerHeight: 300px;
   }
 
   .CDB-Legends-canvas.CDB-Legends-canvasEmbed.is-visible {
-    position: relative;
     display: block;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;

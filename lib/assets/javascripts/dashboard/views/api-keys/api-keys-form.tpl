@@ -6,7 +6,7 @@
     <h3 class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Configure your key</h3>
   </header>
 
-  <div data-fields="name,token"></div>
+  <div data-fields="name,token,apis"></div>
 
   <footer class="FormAccount-footer">
     <p class="FormAccount-footerText">Changes to the key permissions are not possible once key is generated</p>

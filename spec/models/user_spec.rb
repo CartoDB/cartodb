@@ -1527,6 +1527,15 @@ describe User do
       db.disconnect
     end
 
+    it 'deletes api keys' do
+      user = create_user(email: 'ddr@example.com', username: 'ddr', password: 'admin123')
+      api_key = FactoryGirl.create(:api_key_apis, user_id: user.id)
+
+      user.destroy
+      expect(Carto::ApiKey.exists?(api_key.id)).to be_false
+      expect($users_metadata.exists(api_key.send(:redis_key))).to be_false
+    end
+
     describe "on organizations" do
       include_context 'organization with users helper'
 
@@ -1567,6 +1576,18 @@ describe User do
           expect { @not_to_be_deleted.destroy }.to raise_error(/Cannot delete user, has shared entities/)
 
           ::User[@not_to_be_deleted.id].should be
+        end
+
+        it 'deletes api keys and associated roles' do
+          user = TestUserFactory.new.create_test_user(unique_name('user'), @organization)
+          api_key = FactoryGirl.create(:api_key_apis, user_id: user.id)
+
+          user.destroy
+          expect(Carto::ApiKey.exists?(api_key.id)).to be_false
+          expect($users_metadata.exists(api_key.send(:redis_key))).to be_false
+          expect(
+            @org_user_owner.in_database["SELECT 1 FROM pg_roles WHERE rolname = '#{api_key.db_role}'"].first
+          ).to be_nil
         end
       end
     end

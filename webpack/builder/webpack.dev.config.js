@@ -28,6 +28,7 @@ module.exports = env => {
     },
     resolve: {
       symlinks: false,
+      modules: require('../common/modules.js'),
       alias: require('../common/alias.js')
     },
     devtool: 'source-map',
@@ -111,17 +112,6 @@ module.exports = env => {
             resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
             resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
-        },
-        {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          include: [
-            resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
-            resolve(__dirname, '../../', 'node_modules/tangram.cartodb')
-          ],
-          options: {
-            presets: ['env']
-          }
         }
       ]
     },

@@ -67,11 +67,11 @@ module Carto
     validate :valid_name_for_type
     validate :check_owned_table_permissions
 
-    after_create :setup_db_role
+    after_create :setup_db_role, if: :regular?
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save :add_to_redis
 
-    after_destroy :drop_db_role
+    after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
 
     def granted_apis
@@ -189,8 +189,6 @@ module Carto
     end
 
     def setup_db_role
-      return if master?
-
       create_role
 
       table_permissions.each do |tp|
@@ -213,8 +211,6 @@ module Carto
     end
 
     def drop_db_role
-      return if master?
-
       revoke_privileges
       db_run("DROP ROLE \"#{db_role}\"")
     end
@@ -253,12 +249,10 @@ module Carto
     end
 
     def redis_client
-      @redis_client ||= $users_metadata
+      $users_metadata
     end
 
     def revoke_privileges
-      return if master?
-
       affected_schemas.uniq.each do |schema|
         db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
         db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")

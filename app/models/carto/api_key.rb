@@ -100,6 +100,10 @@ module Carto
       end while self.class.exists?(token: token)
     end
 
+    def add_to_redis
+      redis_client.hmset(redis_key, redis_hash_as_array)
+    end
+
     private
 
     PASSWORD_LENGTH = 40
@@ -163,10 +167,6 @@ module Carto
 
     def redis_key(token = self.token)
       "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
-    end
-
-    def add_to_redis
-      redis_client.hmset(redis_key, redis_hash_as_array)
     end
 
     def remove_from_redis(key = redis_key)

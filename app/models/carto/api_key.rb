@@ -201,10 +201,6 @@ module Carto
       end
     end
 
-    def current_user
-      user || Carto::User[user_id]
-    end
-
     def sequel_user
       @sequel_user ||= ::User[user_id]
     end

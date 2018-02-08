@@ -132,7 +132,7 @@ module Carto
           table_schema,
           table_name;
         }
-      db_connection.fetch(query).all.map do |line|
+      db_run(query).map do |line|
         TablePermissions.new(schema: line[:table_schema],
                              name: line[:table_name],
                              permissions: line[:privilege_types].split(','))
@@ -252,14 +252,14 @@ module Carto
     end
 
     def db_run(query)
-      db_connection.run(query)
-    rescue Sequel::DatabaseError => e
+      db_connection.execute(query)
+    rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
       raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
     end
 
     def db_connection
-      @user_db_connection ||= ::User[user.id].in_database(as: :superuser)
+      @user_db_connection ||= user.in_database(as: :superuser)
     end
 
     def redis_hash_as_array

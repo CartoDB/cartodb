@@ -176,22 +176,16 @@ describe Carto::ApiKey do
     describe 'validations' do
       it 'fails with several apis sections' do
         two_apis_grant = [apis_grant, apis_grant, database_grant]
-        api_key = Carto::ApiKey.new(user_id: @user1.id,
-                                    type: Carto::ApiKey::TYPE_REGULAR,
-                                    name: 'x',
-                                    grants: two_apis_grant)
-        api_key.valid?.should be_false
-        api_key.errors.full_messages.should include 'Grants only one apis section is allowed'
+        expect {
+          Carto::ApiKey.create_regular_key!(@carto_user1, 'x', two_apis_grant)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
       end
 
       it 'fails with several database sections' do
         two_apis_grant = [apis_grant, database_grant, database_grant]
-        api_key = Carto::ApiKey.new(user_id: @user1.id,
-                                    type: Carto::ApiKey::TYPE_REGULAR,
-                                    name: 'x',
-                                    grants: two_apis_grant)
-        api_key.valid?.should be_false
-        api_key.errors.full_messages.should include 'Grants only one database section is allowed'
+        expect {
+          Carto::ApiKey.create_regular_key!(@carto_user1, 'x', two_apis_grant)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one database section is allowed/)
       end
 
       it 'fails when creating without apis grants' do
@@ -213,14 +207,10 @@ describe Carto::ApiKey do
           }
           ]
         }
-      ]',
-                            symbolize_names: true)
-        api_key = Carto::ApiKey.new(user_id: @user1.id,
-                                    type: Carto::ApiKey::TYPE_REGULAR,
-                                    name: 'irrelevant',
-                                    grants: grants)
-        api_key.valid?.should be_false
-        api_key.errors.full_messages.should include 'Grants only one apis section is allowed'
+      ]', symbolize_names: true)
+        expect {
+          Carto::ApiKey.create_regular_key!(@carto_user1, 'x', grants)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
       end
     end
 

@@ -1824,7 +1824,7 @@ class User < Sequel::Model
   def create_api_keys
     carto_user = Carto::User.find(id)
 
-    Carto::ApiKey.create_master_key!(carto_user)
-    Carto::ApiKey.create_default_public_key!(carto_user)
+    carto_user.api_keys.create_master_key!
+    carto_user.api_keys.create_default_public_key!
   end
 end

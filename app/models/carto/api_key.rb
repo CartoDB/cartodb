@@ -77,7 +77,7 @@ module Carto
 
     private_class_method :new, :create, :create!
 
-    def self.create_master_key!(user)
+    def self.create_master_key!(user: Carto::User.find(scope_attributes['user_id']))
       create!(
         user: user,
         type: TYPE_MASTER,
@@ -88,7 +88,7 @@ module Carto
       )
     end
 
-    def self.create_default_public_key!(user)
+    def self.create_default_public_key!(user: Carto::User.find(scope_attributes['user_id']))
       create!(
         user: user,
         type: TYPE_DEFAULT_PUBLIC,
@@ -100,7 +100,7 @@ module Carto
       )
     end
 
-    def self.create_regular_key!(user, name, grants)
+    def self.create_regular_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
       create!(
         user: user,
         type: TYPE_REGULAR,

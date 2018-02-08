@@ -144,11 +144,11 @@ var LegendsView = View.extend({
   },
 
   show: function () {
-    this.$el.show();
+    this.$el.toggleClass('is-visible', true);
   },
 
   hide: function () {
-    this.$el.hide();
+    this.$el.toggleClass('is-visible', false);
   },
 
   clean: function () {

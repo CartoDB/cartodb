@@ -64,8 +64,8 @@ describe Carto::ApiKey do
     end
 
     it 'can grant insert, select, update delete to a database role' do
-      api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                                      grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
+      api_key = Carto::ApiKey.create_regular_key!(@carto_user1, 'full',
+                                                  [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
       with_connection_from_api_key(api_key) do |connection|
         begin
@@ -100,25 +100,25 @@ describe Carto::ApiKey do
 
     it 'fails to grant to a non-existent table' do
       expect {
-        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                              grants: [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant])
+        Carto::ApiKey.create_regular_key!(@carto_user1, 'full',
+                                          [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant])
       }.to raise_exception Carto::UnprocesableEntityError
     end
 
     it 'fails to grant to system table' do
       expect {
-        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                              grants: [database_grant('cartodb', 'cdb_tablemetadata'), apis_grant])
+        Carto::ApiKey.create_regular_key!(@carto_user1, 'full',
+                                          [database_grant('cartodb', 'cdb_tablemetadata'), apis_grant])
       }.to raise_exception ActiveRecord::RecordInvalid
     end
 
     describe '#destroy' do
       it 'removes the role from DB' do
-        api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                                        grants: [
-                                          database_grant(@table1.database_schema, @table1.name),
-                                          apis_grant
-                                        ])
+        api_key = Carto::ApiKey.create_regular_key!(@carto_user1, 'full',
+                                                    [
+                                                      database_grant(@table1.database_schema, @table1.name),
+                                                      apis_grant
+                                                    ])
 
         @user1.in_database(as: :superuser) do |db|
           db.fetch("SELECT count(1) FROM pg_roles WHERE rolname = '#{api_key.db_role}'").first[:count].should eq 1
@@ -132,8 +132,8 @@ describe Carto::ApiKey do
       end
 
       it 'removes the role from Redis' do
-        api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                                        grants: [database_grant(@table1.database_schema, @table1.name), apis_grant])
+        api_key = Carto::ApiKey.create_regular_key!(@carto_user1, 'full',
+                                                    [database_grant(@table1.database_schema, @table1.name), apis_grant])
 
         $users_metadata.hgetall(api_key.send(:redis_key)).should_not be_empty
 
@@ -145,8 +145,8 @@ describe Carto::ApiKey do
 
     describe '#create_token' do
       it 'regenerates the value in Redis only after save' do
-        api_key = Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                                        grants: [apis_grant, database_grant(@table1.database_schema, @table1.name)])
+        api_key = Carto::ApiKey.create_regular_key!(@carto_user1, 'full',
+                                                    [apis_grant, database_grant(@table1.database_schema, @table1.name)])
 
         old_redis_key = api_key.send(:redis_key)
         $users_metadata.hgetall(old_redis_key).should_not be_empty
@@ -223,10 +223,8 @@ describe Carto::ApiKey do
 
     describe '#table_permission_from_db' do
       it 'loads newly created grants for role' do
-        api_key = Carto::ApiKey.create!(user_id: @user1.id,
-                                        type: Carto::ApiKey::TYPE_REGULAR,
-                                        name: 'wadus',
-                                        grants: [
+        api_key = Carto::ApiKey.create_regular_key!(@user1, 'wadus',
+                                                    [
                                           database_grant(@user1.database_schema, @table1.name),
                                           apis_grant(['maps', 'sql'])
                                         ])
@@ -358,8 +356,8 @@ describe Carto::ApiKey do
       table = create_table(user_id: @carto_org_user_2.id)
 
       expect {
-        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
-                              grants: [database_grant(table.database_schema, table.name), apis_grant])
+        Carto::ApiKey.create_regular_key!(@carto_user1, 'full',
+                                          [database_grant(table.database_schema, table.name), apis_grant])
       }.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy

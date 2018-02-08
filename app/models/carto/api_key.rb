@@ -74,8 +74,6 @@ module Carto
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
 
-    attr_writer :redis_client
-
     def granted_apis
       @granted_apis ||= process_granted_apis
     end

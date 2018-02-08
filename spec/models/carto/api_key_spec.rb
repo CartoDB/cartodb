@@ -60,6 +60,7 @@ describe Carto::ApiKey do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
+      @carto_user1.reload.api_keys.each(&:delete)
     end
 
     it 'can grant insert, select, update delete to a database role' do
@@ -95,6 +96,20 @@ describe Carto::ApiKey do
       end
 
       api_key.destroy
+    end
+
+    it 'fails to grant to a non-existent table' do
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant])
+      }.to raise_exception Carto::UnprocesableEntityError
+    end
+
+    it 'fails to grant to system table' do
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant('cartodb', 'cdb_tablemetadata'), apis_grant])
+      }.to raise_exception ActiveRecord::RecordInvalid
     end
 
     describe '#destroy' do
@@ -260,11 +275,11 @@ describe Carto::ApiKey do
 
       it 'cannot create more than one master key' do
         expect {
-          Carto::ApiKey.create(
+          Carto::ApiKey.create!(
             user_id: @carto_user1.id,
             type: Carto::ApiKey::TYPE_MASTER
           )
-        }.to raise_error(ActiveRecord::RecordNotUnique)
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'cannot create a non master api_key with master as the name' do
@@ -306,13 +321,15 @@ describe Carto::ApiKey do
   end
 
   describe 'with plain users' do
-    before(:all) do
+    before(:each) do
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
-    after(:all) do
+    after(:each) do
       @user1.destroy if @user1
+      @auth_api_feature_flag.destroy
     end
 
     it_behaves_like 'api key'
@@ -321,11 +338,31 @@ describe Carto::ApiKey do
   describe 'with organization users' do
     include_context 'organization with users helper'
 
-    before(:all) do
-      @carto_user1 = @carto_org_user_1
-      @user1 = @org_user_1
+    before(:each) do
+      @authorganization = test_organization
+      @authorganization.save
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+      @user1 = create_auth_api_user(@authorganization)
+      @carto_user1 = Carto::User.where(id: @user1.id).first
+    end
+
+    after(:each) do
+      @user1.destroy if @user1
+      @authorganization.destroy if @authorganization
+      @auth_api_feature_flag.destroy
     end
 
     it_behaves_like 'api key'
+
+    it 'fails to grant to a non-owned table' do
+      table = create_table(user_id: @carto_org_user_2.id)
+
+      expect {
+        Carto::ApiKey.create!(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_REGULAR, name: 'full',
+                              grants: [database_grant(table.database_schema, table.name), apis_grant])
+      }.to raise_exception ActiveRecord::RecordInvalid
+
+      table.destroy
+    end
   end
 end

@@ -38,13 +38,12 @@ module Carto
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
 
-    MASTER_NAME         = 'master-api-key'.freeze
-    DEFAULT_PUBLIC_NAME = 'default-public-api-key'.freeze
+    MASTER_NAME         = 'Master'.freeze
 
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
-    API_IMPORT    = 'import'.freeze
-    API_ANALYSIS  = 'analysis'.freeze
+
+    GRANTS_MASTER = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
@@ -58,9 +57,14 @@ module Carto
     before_validation :check_default_public_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
-    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
 
-    validates :name, presence: true
+    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
+    validates :type, inclusion: { in: VALID_TYPES }
+    validates :name, presence: true, uniqueness: { scope: :user_id }
+
+    validate :valid_name_for_type
+    validate :validate_uniqueness
+    validate :check_owned_table_permissions
 
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
@@ -68,9 +72,6 @@ module Carto
 
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
-
-    validates :type, inclusion: { in: VALID_TYPES }
-    validate :valid_name_for_type
 
     attr_writer :redis_client
 
@@ -153,6 +154,13 @@ module Carto
       end
 
       table_permissions
+    end
+
+    def check_owned_table_permissions
+      # Only checks if no previous errors in JSON definition
+      if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
+        errors.add(:grants, 'can only grant permissions over owned tables')
+      end
     end
 
     def current_user
@@ -262,9 +270,13 @@ module Carto
 
     def check_master_key
       return unless master?
-      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
       self.name = MASTER_NAME
-      self.grants = [{ type: "apis", apis: [API_SQL, API_MAPS, API_IMPORT, API_ANALYSIS] }]
+      self.grants = GRANTS_MASTER
+    end
+
+    def validate_uniqueness
+      return unless master?
+      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
     end
 
     def check_default_public_key

@@ -19,9 +19,7 @@
           "type": "string",
           "enum": [
             "sql",
-            "maps",
-            "import",
-            "analysis"
+            "maps"
           ]
         }
       },

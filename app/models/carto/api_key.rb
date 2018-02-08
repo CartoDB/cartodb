@@ -201,10 +201,6 @@ module Carto
       end
     end
 
-    def sequel_user
-      @sequel_user ||= ::User[user_id]
-    end
-
     def create_db_config
       begin
         self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")

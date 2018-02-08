@@ -284,13 +284,5 @@ module Carto
       self.name = NAME_DEFAULT_PUBLIC
       self.grants = GRANTS_ALL_APIS
     end
-
-    def exists_master_key?(user_id)
-      Carto::ApiKey.exists?(id: user_id, type: TYPE_MASTER)
-    end
-
-    def exists_default_public_key?(user_id)
-      Carto::ApiKey.exists?(id: user_id, type: TYPE_DEFAULT_PUBLIC)
-    end
   end
 end

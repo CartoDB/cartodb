@@ -62,7 +62,7 @@ module Carto
       ::User[user.id].after_save
     end
 
-    def save_api_key_for_user (api_key, user)
+    def save_api_key_for_user(api_key, user)
       api_key.user = user
       if api_key.sneaky_save
         api_key.add_to_redis
@@ -205,7 +205,8 @@ module Carto
       api_key_json = Carto::Api::ApiKeyPresenter.new(api_key).to_poro
       api_key_json.merge(
         db_role: api_key.db_role,
-        db_password: api_key.db_password)
+        db_password: api_key.db_password
+      )
     end
   end
 

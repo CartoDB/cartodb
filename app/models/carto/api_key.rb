@@ -53,7 +53,7 @@ module Carto
 
     belongs_to :user
 
-    before_create :create_token, if: :regular?
+    before_create :create_token, if: ->(k) { k.regular? || k.master? }
     before_create :create_db_config, if: :regular?
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer

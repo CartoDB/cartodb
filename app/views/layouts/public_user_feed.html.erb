@@ -48,6 +48,7 @@
       var avatar_url= '<%= @avatar_url %>';
 
       var favMapViewAttrs = {
+        fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>,
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
@@ -60,8 +61,6 @@
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
           }
-        <% elsif !@has_new_dashboard %>
-          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
         <% end %>
       };
       </script>

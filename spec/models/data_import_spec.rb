@@ -457,9 +457,9 @@ describe DataImport do
   it 'marks as failure if state is stuck' do
     DataImport.any_instance.stubs(:stuck?).returns(true)
     data_import = DataImport.create(
-                                      user_id: @user.id,
-                                      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
-                                    )
+      user_id: @user.id,
+      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
+    )
     data_import.mark_as_failed_if_stuck!.should eq true
     data_import.state.should eq DataImport::STATE_FAILURE
     DataImport.any_instance.unstub(:stuck?)

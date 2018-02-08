@@ -132,7 +132,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
-* Prevent destroying modals with `keepOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
+* Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
 * Improved bundling aliases
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)

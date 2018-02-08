@@ -54,18 +54,16 @@ describe Carto::ApiKey do
     before(:all) do
       @table1 = create_table(user_id: @carto_user1.id)
       @table2 = create_table(user_id: @carto_user1.id)
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
     end
 
     after(:all) do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
-      @auth_api_feature_flag.destroy
     end
 
     after(:each) do
-      @carto_user1.reload.api_keys.each(&:delete)
+      @carto_user1.reload.api_keys.where(type: Carto::ApiKey::TYPE_REGULAR).each(&:delete)
     end
 
     it 'can grant insert, select, update delete to a database role' do
@@ -228,11 +226,11 @@ describe Carto::ApiKey do
 
     describe '#table_permission_from_db' do
       it 'loads newly created grants for role' do
-        api_key = Carto::ApiKey.create_regular_key!(@user1, 'wadus',
+        api_key = Carto::ApiKey.create_regular_key!(@carto_user1, 'wadus',
                                                     [
-                                          database_grant(@user1.database_schema, @table1.name),
-                                          apis_grant(['maps', 'sql'])
-                                        ])
+                                                      database_grant(@user1.database_schema, @table1.name),
+                                                      apis_grant(['maps', 'sql'])
+                                                    ])
 
         sql = "grant SELECT on table \"#{@table2.database_schema}\".\"#{@table2.name}\" to \"#{api_key.db_role}\""
         @user1.in_database(as: :superuser).run(sql)
@@ -246,14 +244,12 @@ describe Carto::ApiKey do
 
       it 'doesn\'t show removed table' do
         permissions = ['insert', 'select', 'update', 'delete']
-        api_key = Carto::ApiKey.new(user_id: @user1.id,
-                                    type: Carto::ApiKey::TYPE_REGULAR,
-                                    name: 'wadus',
-                                    grants: [
-                                      database_grant(@user1.database_schema, @table1.name, permissions: permissions),
-                                      apis_grant(['maps', 'sql'])
-                                    ])
-        api_key.save!
+        api_key = Carto::ApiKey.create_regular_key!(@carto_user1, 'wadus',
+                                                    [
+                                                      database_grant(@user1.database_schema, @table1.name,
+                                                                     permissions: permissions),
+                                                      apis_grant(['maps', 'sql'])
+                                                    ])
 
         permissions.each do |permission|
           api_key_permissions(api_key, @table1.database_schema, @table1.name).permissions.should include(permission)
@@ -270,7 +266,7 @@ describe Carto::ApiKey do
 
     describe 'master api key' do
       it 'user has a master key with the user db_role' do
-        api_key = Carto::ApiKey.where(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_MASTER).first
+        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_MASTER)
         api_key.should be
         api_key.db_role.should eq @carto_user1.database_username
         api_key.db_password.should eq @carto_user1.database_password
@@ -284,7 +280,7 @@ describe Carto::ApiKey do
 
       it 'cannot create a non master api_key with master as the name' do
         expect {
-          Carto::ApiKey.create_master_key!(@carto_user1, Carto::ApiKey::NAME_MASTER, [apis_grant(['maps', 'sql'])])
+          Carto::ApiKey.create_regular_key!(@carto_user1, Carto::ApiKey::NAME_MASTER, [apis_grant(['maps', 'sql'])])
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
@@ -300,12 +296,12 @@ describe Carto::ApiKey do
       it 'cannot create more than one default public key' do
         expect {
           Carto::ApiKey.create_default_public_key!(@carto_user1)
-        }.to raise_error(ActiveRecord::RecordNotUnique)
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'cannot create a non default public api_key with default public name' do
         expect {
-          Carto::ApiKey.create_master_key!(@carto_user1, Carto::ApiKey::NAME_DEFAULT_PUBLIC,
+          Carto::ApiKey.create_regular_key!(@carto_user1, Carto::ApiKey::NAME_DEFAULT_PUBLIC,
                                            [apis_grant(['maps', 'sql'])])
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
@@ -314,11 +310,13 @@ describe Carto::ApiKey do
 
   describe 'with plain users' do
     before(:all) do
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
+      @auth_api_feature_flag.destroy
       @user1.destroy
     end
 
@@ -329,6 +327,7 @@ describe Carto::ApiKey do
     include_context 'organization with users helper'
 
     before(:all) do
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @auth_organization = test_organization
       @auth_organization.save
       @user1 = create_auth_api_user(@auth_organization)
@@ -336,6 +335,7 @@ describe Carto::ApiKey do
     end
 
     after(:all) do
+      @auth_api_feature_flag.destroy
       @user1.destroy
       @auth_organization.destroy
     end

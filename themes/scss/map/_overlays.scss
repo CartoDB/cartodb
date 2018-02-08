@@ -220,7 +220,6 @@ $maxLegendContainerHeight: 300px;
   left: 16px;
   width: 240px;
   height: auto;
-  //max-height: $maxLegendContainerHeight;
   max-height: calc(100vh - 120px);
   border-radius: 4px;
   background: #FFF;
@@ -229,6 +228,7 @@ $maxLegendContainerHeight: 300px;
   overflow: hidden;
   z-index: 20000;
 }
+
 .CDB-Legends-canvasInner {
   position: relative;
   top: 0;
@@ -504,11 +504,14 @@ $maxLegendContainerHeight: 300px;
 
 @media (max-width: 600px) {
   .CDB-Legends-canvas {
-    display: none !important;
+    display: none;
+  }
+
+  .CDB-Legends-canvas.is-visible {
+    display: block;
   }
 
   .CDB-Legends-canvas.CDB-Legends-canvasEmbed {
-    display: block !important;
     position: relative;
     top: 0;
     left: 0;

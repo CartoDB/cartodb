@@ -122,7 +122,7 @@ var LegendsView = View.extend({
   },
 
   _showOrHide: function () {
-    this.$el.toggle(this._isAnyLayerLegendViewVisible());
+    this.$el.toggleClass('is-visible', this._isAnyLayerLegendViewVisible());
   },
 
   _isAnyLayerLegendViewVisible: function () {

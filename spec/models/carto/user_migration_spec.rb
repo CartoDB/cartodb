@@ -483,6 +483,80 @@ describe 'UserMigration' do
     carto_user2.attributes.should eq carto_user.attributes
   end
 
+  describe 'api keys import and exports' do
+    before :each do
+      @user = FactoryGirl.build(:valid_user)
+      @user.save
+      @carto_user = Carto::User.find(@user.id)
+      @regular_api_key = Carto::ApiKey.new(name: 'some Api Key',
+                                           type: 'regular',
+                                           grants: [{type: "apis", apis: []}],
+                                           user: @carto_user
+      )
+      @master_api_key = Carto::ApiKey.new(name: 'some Api Key',
+                                           type: 'master',
+                                           grants: [{type: "apis", apis: []}],
+                                           user: @carto_user
+      )
+      @regular_api_key.save!
+      @master_api_key.save!
+    end
+
+    after :each do
+      @user.destroy
+    end
+
+    it 'api keys are in redis and db roles are created' do
+      user_attributes = @carto_user.attributes
+      export = Carto::UserMigrationExport.create(
+        user: @carto_user,
+        export_metadata: true
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+
+      username = @user.username
+      $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
+      $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
+
+      @carto_user.client_applications.each(&:destroy)
+      @carto_user.destroy
+      @regular_api_key.destroy
+      @master_api_key.destroy
+      drop_database(@user)
+
+      $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should be nil
+      $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should be nil
+      
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+
+      import.stubs(:assert_organization_does_not_exist)
+      import.stubs(:assert_user_does_not_exist)
+      import.run_import
+
+      $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
+      $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
+
+      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+      user = Carto::User.find(user_attributes['id'])
+      user.should be
+      user.api_keys.each { |a| a.table_permissions_from_db } # to make sure DB can be queried without exceptions
+      user.api_keys.select { |a| a.type=='master'}.first.table_permissions_from_db.count.should be > 0
+    end
+  end
+
   def drop_database(user)
     conn = user.in_database(as: :cluster_admin)
     user.db_service.drop_database_and_user(conn)

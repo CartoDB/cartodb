@@ -36,9 +36,6 @@ gem 'execjs',                  '~> 0.4' # Required by ejs
 gem 'net-ldap',                '0.16.0'
 gem 'json-schema',             '2.0.0'
 
-# Gem used for saving ActiveRecord objects skipping validations
-gem 'sneaky-save'
-
 group :production, :staging do
   gem 'unicorn',               '4.8.2'
   gem 'unicorn-worker-killer'

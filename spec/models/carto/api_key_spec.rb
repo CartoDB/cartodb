@@ -212,6 +212,15 @@ describe Carto::ApiKey do
     end
 
     describe '#table_permission_from_db' do
+      before(:all) do
+        @public_table = create_table(user_id: @carto_user1.id)
+        @public_table.table_visualization.update_attributes(privacy: 'public')
+      end
+
+      after(:all) do
+        @public_table.destroy
+      end
+
       it 'loads newly created grants for role' do
         grants = [database_grant(@user1.database_schema, @table1.name), apis_grant(['maps', 'sql'])]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'wadus', grants: grants)
@@ -241,6 +250,12 @@ describe Carto::ApiKey do
         api_key_permissions(api_key, @table1.database_schema, @table1.name).should be_nil
 
         api_key.destroy
+      end
+
+      it 'shows public tables' do
+        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
+
+        api_key_permissions(api_key, @public_table.database_schema, @public_table.name).permissions.should eq ['select']
       end
     end
 

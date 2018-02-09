@@ -105,6 +105,13 @@ module Carto
       end
     end
 
+    def create_token
+      return if @skip_token_creation
+      begin
+        self.token = generate_auth_token
+      end while self.class.exists?(token: token)
+    end
+
     def master?
       type == TYPE_MASTER
     end
@@ -135,13 +142,6 @@ module Carto
 
     def add_to_redis
       redis_client.hmset(redis_key, redis_hash_as_array)
-    end
-
-    def create_token
-      return if @skip_token_creation
-      begin
-        self.token = generate_auth_token
-      end while self.class.exists?(token: token)
     end
 
     def process_granted_apis

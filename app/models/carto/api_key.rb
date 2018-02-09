@@ -39,6 +39,13 @@ module Carto
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
 
+    MASTER_NAME         = 'Master'.freeze
+
+    API_SQL       = 'sql'.freeze
+    API_MAPS      = 'maps'.freeze
+
+    GRANTS_MASTER = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
+
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
     self.inheritance_column = :_type
@@ -47,11 +54,17 @@ module Carto
 
     before_create :create_token
     before_create :create_db_config
+    before_validation :check_master_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
-    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
 
-    validates :name, presence: true
+    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
+    validates :type, inclusion: { in: VALID_TYPES }
+    validates :name, presence: true, uniqueness: { scope: :user_id }
+
+    validate :valid_name_for_type
+    validate :validate_uniqueness
+    validate :check_owned_table_permissions
 
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
@@ -59,8 +72,6 @@ module Carto
 
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
-
-    validates :type, inclusion: { in: VALID_TYPES }
 
     attr_writer :redis_client
 
@@ -100,6 +111,16 @@ module Carto
       end while self.class.exists?(token: token)
     end
 
+    def master?
+      type == TYPE_MASTER
+    end
+
+    def valid_name_for_type
+      if !master? && name == MASTER_NAME
+        errors.add(:name, "api_key name cannot be #{MASTER_NAME}")
+      end
+    end
+
     def add_to_redis
       redis_client.hmset(redis_key, redis_hash_as_array)
     end
@@ -131,14 +152,32 @@ module Carto
       table_permissions
     end
 
+    def check_owned_table_permissions
+      # Only checks if no previous errors in JSON definition
+      if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
+        errors.add(:grants, 'can only grant permissions over owned tables')
+      end
+    end
+
+    def current_user
+      user || Carto::User[user_id]
+    end
+
     def create_db_config
-      begin
-        self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
-      end while self.class.exists?(db_role: db_role)
-      self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+      if master?
+        self.db_role = current_user.database_username
+        self.db_password = current_user.database_password
+      else
+        begin
+          self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
+        end while self.class.exists?(db_role: db_role)
+        self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+      end
     end
 
     def setup_db_role
+      return if master?
+
       db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
       db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
       db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
@@ -157,6 +196,8 @@ module Carto
     end
 
     def drop_db_role
+      return if master?
+
       revoke_privileges
       db_run("DROP ROLE \"#{db_role}\"")
     end
@@ -205,6 +246,21 @@ module Carto
     def grant_aux_write_privileges_for_schema(s)
       db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
       db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
+    end
+
+    def check_master_key
+      return unless master?
+      self.name = MASTER_NAME
+      self.grants = GRANTS_MASTER
+    end
+
+    def validate_uniqueness
+      return unless master?
+      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
+    end
+
+    def exists_master_key?(user_id)
+      Carto::ApiKey.exists?(id: user_id, type: TYPE_MASTER)
     end
   end
 end

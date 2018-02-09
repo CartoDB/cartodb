@@ -10,6 +10,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   before_filter :api_authorization_required
   before_filter :check_feature_flag
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
+  before_filter :fix_grants_deep_munge # Can be removed in Rails 5 (https://github.com/rails/rails/pull/12251)
 
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
@@ -65,6 +66,26 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   private
+
+  def fix_grants_deep_munge
+    grants = params[:grants]
+    return unless grants
+
+    # deep_munge converts empty array to nil. Undo it
+    grants.each do |g|
+      if g[:type] == 'apis' && g.has_key?(:apis) && g[:apis].nil?
+        g[:apis] = []
+      elsif g[:type] == 'database'
+        if g.has_key?(:tables) && g[:tables].nil?
+          g[:tables] = []
+        else
+          g[:tables].each { |t| t[:permissions] = [] if t.has_key?(:permissions) && t[:permissions].nil? }
+        end
+      end
+    end
+    rescue
+      # Invalid JSON (e.g: string instead of array), will get caught by validator down the line
+  end
 
   def check_feature_flag
     render_404 unless current_viewer.try(:has_feature_flag?, 'auth_api')

@@ -15,6 +15,6 @@
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
   </button>
   <button type="button" class="CDB-Button CDB-Button--error js-submit">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Remove API key</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete API key</span>
   </button>
 </div>

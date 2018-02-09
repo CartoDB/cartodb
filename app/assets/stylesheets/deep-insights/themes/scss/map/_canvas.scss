@@ -54,12 +54,6 @@
 }
 
 @media (max-width: 759px) {
-  body {
-    position: fixed !important;
-    width: 100%;
-    overflow: hidden; // Avoid scroll in small screens
-  }
-
   .CDB-Dashboard-canvas {
     position: relative;
     box-sizing: border-box;

@@ -3,6 +3,10 @@ to avoid annoying `require('../../../../../')` for both source and test environm
 
 ## Relevant changes
 
+### 2018-02-01
+
+- We don't need this under a node_modules anymore, using webpack alias
+
 ### 2016-06-09 - Installing jquery-ui (v0.11.4)
 - npm package is unofficial and outdated (v0.10.5)
 - jquery-ui team won't update it until releasing v0.12 (see https://forum.jquery.com/topic/publishing-jquery-ui-version-1-11-2-to-npm)

@@ -18,9 +18,11 @@ describe Carto::Api::ApiKeysController do
 
   before(:all) do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+    @user_api_keys = FactoryGirl.create(:valid_user)
   end
 
   after(:all) do
+    @user_api_keys.destroy
     @auth_api_feature_flag.destroy
   end
 
@@ -211,7 +213,7 @@ describe Carto::Api::ApiKeysController do
       post_json generate_api_key_url(user_req_params(@carto_user1)), name: 'wadus', grants: grants do |response|
         response.status.should eq 422
         error_response = response.body
-        error_response[:errors].should match /schema \"wadus\" does not exist/
+        error_response[:errors].should match /can only grant permissions over owned tables/
       end
     end
 
@@ -241,7 +243,7 @@ describe Carto::Api::ApiKeysController do
       post_json generate_api_key_url(user_req_params(@carto_user1)), name: 'wadus', grants: grants do |response|
         response.status.should eq 422
         api_key_response = response.body
-        api_key_response[:errors].should match /Duplicate API Key name: wadus/
+        api_key_response[:errors].should match /Name has already been taken/
       end
 
       Carto::ApiKey.where(name: 'wadus').each(&:destroy)
@@ -257,6 +259,17 @@ describe Carto::Api::ApiKeysController do
       end
 
       Carto::ApiKey.where(name: api_key.name, user_id: @user1.id).first.should be_nil
+    end
+
+    it 'returns 403 if API key is master' do
+      api_key = Carto::ApiKey::where(user_id: @user_api_keys.id, type: Carto::ApiKey::TYPE_MASTER).first
+      delete_json generate_api_key_url(user_req_params(@user_api_keys), name: api_key.name) do |response|
+        response.status.should eq 403
+      end
+
+      delete_json generate_api_key_url(user_req_params(@user1), name: random_uuid) do |response|
+        response.status.should eq 404
+      end
     end
 
     it 'returns 404 if API key is not a uuid or it doesn\'t exist' do
@@ -410,15 +423,15 @@ describe Carto::Api::ApiKeysController do
       end
     end
 
-    it 'returns empty list if the API key does not belong to the user' do
-      get_json generate_api_key_url(user_req_params(@user2)) do |response|
+    it 'returns the list of master and default API key for a given user' do
+      get_json generate_api_key_url(user_req_params(@user_api_keys)) do |response|
         response.status.should eq 200
-        response.body[:total].should eq 0
-        response.body[:count].should eq 0
+        response.body[:total].should eq 1
+        response.body[:count].should eq 1
         response.body[:_links][:first][:href].should match /page=1/
         expect(response.body[:_links].keys).not_to include(:prev)
         expect(response.body[:_links].keys).not_to include(:next)
-        response.body[:result].size.should eq 0
+        response.body[:result].size.should eq 1
       end
     end
 

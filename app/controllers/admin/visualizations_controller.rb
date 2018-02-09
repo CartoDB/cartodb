@@ -412,6 +412,7 @@ class Admin::VisualizationsController < Admin::AdminController
       return(embed_protected)
     end
 
+    get_viewed_user
     return render(file: "public/static/public_map/index.html", layout: false) if @viewed_user.has_feature_flag?('static_public_map')
 
     response.headers['Cache-Control']   = "no-cache, private"

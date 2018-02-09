@@ -37,7 +37,14 @@ module Carto
 
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
-    TYPE_DEFAULT_PUBLIC = 'default_public'.freeze
+    TYPE_DEFAULT_PUBLIC = 'default'.freeze
+
+    MASTER_NAME         = 'Master'.freeze
+
+    API_SQL       = 'sql'.freeze
+    API_MAPS      = 'maps'.freeze
+
+    GRANTS_MASTER = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
 
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
 
@@ -47,21 +54,24 @@ module Carto
 
     before_create :create_token
     before_create :create_db_config
+    before_validation :check_master_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
-    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
 
-    validates :name, presence: true
+    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
+    validates :type, inclusion: { in: VALID_TYPES }
+    validates :name, presence: true, uniqueness: { scope: :user_id }
+
+    validate :valid_name_for_type
+    validate :validate_uniqueness
+    validate :check_owned_table_permissions
 
     after_create :setup_db_role
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save :add_to_redis
-    after_save :update_role_permissions
 
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
-
-    validates :type, inclusion: { in: VALID_TYPES }
 
     attr_writer :redis_client
 
@@ -76,15 +86,15 @@ module Carto
 
     def table_permissions_from_db
       query = %{
-        select
+        SELECT
           table_schema,
           table_name,
           string_agg(lower(privilege_type),',') privilege_types
-        from
+        FROM
           information_schema.role_table_grants
-        where
+        WHERE
           grantee = '#{db_role}'
-        group by
+        GROUP BY
           table_schema,
           table_name;
         }
@@ -99,6 +109,16 @@ module Carto
       begin
         self.token = generate_auth_token
       end while self.class.exists?(token: token)
+    end
+
+    def master?
+      type == TYPE_MASTER
+    end
+
+    def valid_name_for_type
+      if !master? && name == MASTER_NAME
+        errors.add(:name, "api_key name cannot be #{MASTER_NAME}")
+      end
     end
 
     private
@@ -128,52 +148,58 @@ module Carto
       table_permissions
     end
 
+    def check_owned_table_permissions
+      # Only checks if no previous errors in JSON definition
+      if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
+        errors.add(:grants, 'can only grant permissions over owned tables')
+      end
+    end
+
+    def current_user
+      user || Carto::User[user_id]
+    end
+
     def create_db_config
-      begin
-        self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
-      end while self.class.exists?(db_role: db_role)
-      self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+      if master?
+        self.db_role = current_user.database_username
+        self.db_password = current_user.database_password
+      else
+        begin
+          self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
+        end while self.class.exists?(db_role: db_role)
+        self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
+      end
     end
 
     def setup_db_role
-      db_run(
-        "create role \"#{db_role}\" NOSUPERUSER NOCREATEDB NOINHERIT LOGIN ENCRYPTED PASSWORD '#{db_password}'"
-      )
-    end
+      return if master?
 
-    def drop_db_role
-      revoke_privileges(*affected_schemas(table_permissions))
-      db_run("drop role \"#{db_role}\"")
-    end
+      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
+      db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
+      db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
 
-    def update_role_permissions
-      revoke_privileges(*affected_schemas(table_permissions_from_db))
-
-      _, write_schemas = affected_schemas(table_permissions)
+      if user.organization_user?
+        db_run("GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\"")
+      end
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          db_run(
-            "grant #{tp.permissions.join(', ')} on table \"#{tp.schema}\".\"#{tp.name}\" to \"#{db_role}\""
-          )
+          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
         end
       end
 
-      write_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
-
-      if !write_schemas.empty?
-        grant_usage_for_cartodb
-      end
+      affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
     end
 
-    def affected_schemas(table_permissions)
-      read_schemas = []
-      write_schemas = []
-      table_permissions.each do |tp|
-        read_schemas << tp.schema
-        write_schemas << tp.schema unless !tp.write?
-      end
-      [read_schemas.uniq, write_schemas.uniq]
+    def drop_db_role
+      return if master?
+
+      revoke_privileges
+      db_run("DROP ROLE \"#{db_role}\"")
+    end
+
+    def affected_schemas
+      table_permissions.map(&:schema).uniq
     end
 
     def redis_key(token = self.token)
@@ -200,7 +226,7 @@ module Carto
     end
 
     def redis_hash_as_array
-      hash = ['user', user.username, 'type', type, 'dbRole', db_role, 'dbPassword', db_password]
+      hash = ['user', user.username, 'type', type, 'database_role', db_role, 'database_password', db_password]
       granted_apis.each { |api| hash += ["grants_#{api}", true] }
       hash
     end
@@ -209,30 +235,32 @@ module Carto
       @redis_client ||= $users_metadata
     end
 
-    def revoke_privileges(read_schemas, write_schemas)
-      schemas = read_schemas + write_schemas
-      schemas << 'cartodb' if write_schemas.present?
-      schemas.uniq.each do |schema|
-        db_run("revoke all privileges on all tables in schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke usage on schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke execute on all functions in schema \"#{schema}\" from \"#{db_role}\"")
-        db_run("revoke usage, select on all sequences in schema \"#{schema}\" from \"#{db_role}\"")
+    def revoke_privileges
+      affected_schemas.uniq.each do |schema|
+        db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
+        db_run("REVOKE USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
       end
-      db_run("revoke usage on schema \"cartodb\" from \"#{db_role}\"")
-      db_run("revoke execute on all functions in schema \"cartodb\" from \"#{db_role}\"")
-    end
-
-    def grant_usage_for_cartodb
-      db_run("grant usage on schema \"cartodb\" to \"#{db_role}\"")
-      db_run("grant execute on all functions in schema \"cartodb\" to \"#{db_role}\"")
     end
 
     def grant_aux_write_privileges_for_schema(s)
-      db_run("grant usage on schema \"#{s}\" to \"#{db_role}\"")
-      db_run("grant execute on all functions in schema \"#{s}\" to \"#{db_role}\"")
-      db_run("grant usage, select on all sequences in schema \"#{s}\" TO \"#{db_role}\"")
-      db_run("grant select on \"#{s}\".\"raster_columns\" TO \"#{db_role}\"")
-      db_run("grant select on \"#{s}\".\"raster_overviews\" TO \"#{db_role}\"")
+      db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
+      db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
+    end
+
+    def check_master_key
+      return unless master?
+      self.name = MASTER_NAME
+      self.grants = GRANTS_MASTER
+    end
+
+    def validate_uniqueness
+      return unless master?
+      raise Carto::UnprocesableEntityError.new("Duplicate master API Key") if exists_master_key?(user_id)
+    end
+
+    def exists_master_key?(user_id)
+      Carto::ApiKey.exists?(id: user_id, type: TYPE_MASTER)
     end
   end
 end

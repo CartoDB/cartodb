@@ -195,6 +195,14 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.should_not include("maps.google.com/maps/api/js")
     end
 
+    it 'does not include 3rd party scripts if cookies=0 query param is present' do
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
+
+      response.body.should_not include("www.google-analytics.com/analytics")
+      response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
+      response.body.should_not include("js.hs-analytics.net/analytics")
+    end
+
     it 'does not embed password protected viz' do
       stub_passwords(TEST_PASSWORD)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED

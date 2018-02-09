@@ -140,7 +140,10 @@ module Carto
         token: api_key_hash[:token],
         type: api_key_hash[:type],
         updated_at: api_key_hash[:updated_at],
-        grants: api_key_hash[:grants]
+        grants: api_key_hash[:grants],
+        skip_role_setup: true,
+        skip_token_creation: true,
+        skip_db_config: true
       )
     end
   end

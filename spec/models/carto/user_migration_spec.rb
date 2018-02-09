@@ -493,9 +493,9 @@ describe 'UserMigration' do
                                            grants: [{ type: "apis", apis: [] }],
                                            user: @carto_user)
       @master_api_key = Carto::ApiKey.new(name: 'some Api Key',
-                                           type: 'master',
-                                           grants: [{type: "apis", apis: []}],
-                                           user: @carto_user)
+                                          type: 'master',
+                                          grants: [{ type: "apis", apis: [] }],
+                                          user: @carto_user)
       @regular_api_key.save!
       @master_api_key.save!
     end

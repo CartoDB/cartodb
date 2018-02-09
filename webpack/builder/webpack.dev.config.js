@@ -28,6 +28,7 @@ module.exports = env => {
     },
     resolve: {
       symlinks: false,
+      modules: require('../common/modules.js'),
       alias: require('../common/alias.js')
     },
     devtool: 'source-map',

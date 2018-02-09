@@ -439,6 +439,7 @@ class User < Sequel::Model
         delete_external_data_imports
         delete_external_sources
         Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+        Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.

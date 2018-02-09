@@ -122,6 +122,7 @@ ion for time-series (#12670)
   * Keys listing (#13327)
   * Header authentication (#13329)
   * Keep API Key permissions up to date when tables change (#13333)
+  * Delete API keys on user deletion (#13470)
   * Inherit from public user for API key permissions (#13464)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
@@ -133,10 +134,13 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Improved bundling aliases
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)
 * Restore translation keys to static pages (#13492)
+* Fix wrong user quotas [Support#1304](https://github.com/CartoDB/support/issues/1304)
 * Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
+* Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)

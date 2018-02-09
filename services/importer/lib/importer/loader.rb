@@ -108,6 +108,9 @@ module CartoDB
           # At this point the_geom column is renamed
           GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
         end
+      rescue => e
+        raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
+        raise StatementTimeoutError.new(e.to_s, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
       end
 
       def normalize
@@ -355,6 +358,10 @@ module CartoDB
 
       def is_shp?
         !(@source_file.fullpath =~ /\.shp$/i).nil?
+      end
+
+      def statement_timeout?(error)
+        error =~ /canceling statement due to statement timeout/i
       end
     end
   end

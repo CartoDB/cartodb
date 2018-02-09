@@ -105,12 +105,6 @@ module Carto
       end
     end
 
-    def create_token
-      begin
-        self.token = generate_auth_token
-      end while self.class.exists?(token: token)
-    end
-
     def master?
       type == TYPE_MASTER
     end
@@ -121,8 +115,16 @@ module Carto
       end
     end
 
-    def add_to_redis
-      redis_client.hmset(redis_key, redis_hash_as_array)
+    def skip_role_setup=(skip)
+      @skip_role_setup = skip
+    end
+
+    def skip_token_creation=(skip)
+      @skip_token_creation = skip
+    end
+
+    def skip_db_config=(skip)
+      @skip_db_config = skip
     end
 
     private
@@ -130,6 +132,17 @@ module Carto
     PASSWORD_LENGTH = 40
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
+    def add_to_redis
+      redis_client.hmset(redis_key, redis_hash_as_array)
+    end
+
+    def create_token
+      return if @skip_token_creation
+      begin
+        self.token = generate_auth_token
+      end while self.class.exists?(token: token)
+    end
 
     def process_granted_apis
       apis = grants.find { |v| v[:type] == 'apis' }[:apis]
@@ -164,6 +177,7 @@ module Carto
     end
 
     def create_db_config
+      return if @skip_db_config
       if master?
         self.db_role = current_user.database_username
         self.db_password = current_user.database_password
@@ -176,7 +190,7 @@ module Carto
     end
 
     def setup_db_role
-      return if master?
+      return if master? || @skip_role_setup
 
       db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
       db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")

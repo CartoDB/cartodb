@@ -119,7 +119,7 @@ module ApplicationHelper
   end
 
   def insert_fullstory
-    if Cartodb.get_config(:fullstory, 'org').present? && current_user && current_user.account_type.casecmp('FREE').zero?
+    if Cartodb.get_config(:fullstory, 'org').present? && current_user && current_user.account_type.casecmp('FREE').zero? && params[:cookies] != '0'
       render(partial: 'shared/fullstory', locals: { org: Cartodb.get_config(:fullstory, 'org') })
     end
   end

@@ -491,13 +491,11 @@ describe 'UserMigration' do
       @regular_api_key = Carto::ApiKey.new(name: 'some Api Key',
                                            type: 'regular',
                                            grants: [{type: "apis", apis: []}],
-                                           user: @carto_user
-      )
+                                           user: @carto_user)
       @master_api_key = Carto::ApiKey.new(name: 'some Api Key',
                                            type: 'master',
                                            grants: [{type: "apis", apis: []}],
-                                           user: @carto_user
-      )
+                                           user: @carto_user)
       @regular_api_key.save!
       @master_api_key.save!
     end
@@ -517,7 +515,6 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-
       username = @user.username
       $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
       $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
@@ -530,7 +527,7 @@ describe 'UserMigration' do
 
       $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should be nil
       $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should be nil
-      
+
       import = Carto::UserMigrationImport.create(
         exported_file: export.exported_file,
         database_host: user_attributes['database_host'],
@@ -552,8 +549,8 @@ describe 'UserMigration' do
 
       user = Carto::User.find(user_attributes['id'])
       user.should be
-      user.api_keys.each { |a| a.table_permissions_from_db } # to make sure DB can be queried without exceptions
-      user.api_keys.select { |a| a.type=='master'}.first.table_permissions_from_db.count.should be > 0
+      user.api_keys.each(&:table_permissions_from_db) # to make sure DB can be queried without exceptions
+      user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
     end
   end
 

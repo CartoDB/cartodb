@@ -91,7 +91,8 @@ module Carto
 
       user.layers = build_layers_from_hash(exported_user[:layers])
 
-      user.api_keys += exported_user[:api_keys].map { |api_key| build_api_key_from_hash(api_key) }
+      api_keys = exported_user[:api_keys] || []
+      user.api_keys += api_keys.map { |api_key| build_api_key_from_hash(api_key) }
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]

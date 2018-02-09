@@ -123,7 +123,7 @@ module Carto
         SELECT
           table_schema,
           table_name,
-          string_agg(lower(privilege_type),',') privilege_types
+          string_agg(DISTINCT lower(privilege_type),',') privilege_types
         FROM
           information_schema.table_privileges tp
         JOIN

@@ -129,7 +129,7 @@ module Carto
         JOIN
           information_schema.applicable_roles ar ON tp.grantee = ar.role_name OR tp.grantee = ar.grantee
         WHERE
-          ar.grantee = '#{db_role}'
+          tp.grantee = '#{db_role}'
         GROUP BY
           table_schema,
           table_name;

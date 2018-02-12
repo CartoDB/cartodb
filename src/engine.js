@@ -291,7 +291,7 @@ Engine.prototype._buildParams = function (includeFilters) {
     params.auth_token = this._windshaftSettings.authToken;
     return params;
   }
-  console.error('Engine initialized with no apiKeys neither authToken');
+  console.warn('Engine initialized with no apiKeys neither authToken');
 };
 
 /**

@@ -53,7 +53,7 @@ module Carto
 
     belongs_to :user
 
-    before_create :create_token, if: ->(k) { k.regular? || k.master? }
+    before_create :create_token, if: :regular?
     before_create :create_db_config, if: :regular?
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
@@ -82,6 +82,7 @@ module Carto
         user: user,
         type: TYPE_MASTER,
         name: NAME_MASTER,
+        token: user.api_key,
         grants: GRANTS_ALL_APIS,
         db_role: user.database_username,
         db_password: user.database_password

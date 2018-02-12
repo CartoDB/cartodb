@@ -454,7 +454,7 @@ describe DataImport do
     end
   end
 
-  it 'marks as failure if state is stuck' do
+  it 'avoids mark as stuck a stuck job' do
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",

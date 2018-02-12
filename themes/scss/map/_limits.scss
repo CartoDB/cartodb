@@ -9,11 +9,11 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits {
-  transition: width 150ms ease-in;
   position: relative;
   order: 10;
   width: 32px;
   margin-right: 8px;
+  transition: width 150ms ease-in;
   border-radius: 3px;
   box-sizing: border-box;
   font-family: 'Open Sans';
@@ -56,11 +56,11 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits-text {
-  transition: opacity 150ms;
   width: 0;
   height: 16px;
   margin-left: -1px;
   padding: 0;
+  transition: opacity 150ms;
   border-left: 1px solid transparent;
   color: $buttonColor;
   font-size: 10px;

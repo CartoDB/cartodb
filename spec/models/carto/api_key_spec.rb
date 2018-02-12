@@ -264,16 +264,49 @@ describe Carto::ApiKey do
         api_key.destroy
       end
     end
+
+    describe 'master api key' do
+      it 'user has a master key with the user db_role' do
+        api_key = Carto::ApiKey.where(user_id: @carto_user1.id, type: Carto::ApiKey::TYPE_MASTER).first
+        api_key.should be
+        api_key.db_role.should eq @carto_user1.database_username
+        api_key.db_password.should eq @carto_user1.database_password
+      end
+
+      it 'cannot create more than one master key' do
+        expect {
+          Carto::ApiKey.create!(
+            user_id: @carto_user1.id,
+            type: Carto::ApiKey::TYPE_MASTER
+          )
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'cannot create a non master api_key with master as the name' do
+        api_key = Carto::ApiKey.new
+        api_key.type = Carto::ApiKey::TYPE_REGULAR
+        api_key.name = Carto::ApiKey::MASTER_NAME
+
+        api_key.valid?
+        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+
+        api_key.type = Carto::ApiKey::TYPE_DEFAULT_PUBLIC
+        api_key.valid?
+        api_key.errors[:name].should include("api_key name cannot be #{Carto::ApiKey::MASTER_NAME}")
+      end
+    end
   end
 
   describe 'with plain users' do
-    before(:all) do
+    before(:each) do
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
-    after(:all) do
+    after(:each) do
       @user1.destroy if @user1
+      @auth_api_feature_flag.destroy
     end
 
     it_behaves_like 'api key'
@@ -282,9 +315,18 @@ describe Carto::ApiKey do
   describe 'with organization users' do
     include_context 'organization with users helper'
 
-    before(:all) do
-      @carto_user1 = @carto_org_user_1
-      @user1 = @org_user_1
+    before(:each) do
+      @authorganization = test_organization
+      @authorganization.save
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+      @user1 = create_auth_api_user(@authorganization)
+      @carto_user1 = Carto::User.where(id: @user1.id).first
+    end
+
+    after(:each) do
+      @user1.destroy if @user1
+      @authorganization.destroy if @authorganization
+      @auth_api_feature_flag.destroy
     end
 
     it_behaves_like 'api key'

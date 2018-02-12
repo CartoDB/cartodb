@@ -3,7 +3,7 @@
     <div class="CustomRamp-listOptions CDB-ListDecoration-itemLink CDB-ListDecoration-itemLink--double js-customRamp js-listItemLink is-selected">
       <ul class="ColorBarContainer">
         <% _.each(customRamp, function (color) { %>
-        <li class="ColorBar ColorBar--spaceless" style="background-color: <%- color %>;"></li>
+        <li class="ColorBar ColorBar--disableHighlight ColorBar--spaceless" style="background-color: <%- color %>;"></li>
         <% }); %>
       </ul>
     </div>

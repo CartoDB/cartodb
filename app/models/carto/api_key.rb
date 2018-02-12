@@ -296,6 +296,7 @@ module Carto
     def valid_default_public_key
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
       errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
   end
 end

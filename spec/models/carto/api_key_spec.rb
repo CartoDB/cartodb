@@ -299,6 +299,13 @@ describe Carto::ApiKey do
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_DEFAULT_PUBLIC, grants: [apis_grant])
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
+
+      it 'cannot change token' do
+        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
+        api_key.token = 'wadus'
+        api_key.save.should be_false
+        api_key.errors.should include 'token'
+      end
     end
   end
 

@@ -128,7 +128,7 @@ $buttonColor: #636D72;
 }
 
 .CDB-Search-inner {
-  @include transition(width, 100ms ease-in);
+  transition: width 100ms ease-in;
   display: flex;
   align-items: center;
   width: 32px;
@@ -159,7 +159,7 @@ $buttonColor: #636D72;
   color: $buttonColor;
 }
 .CDB-Search-text {
-  @include transition(opacity, 150ms ease-in);
+  transition: opacity 150ms ease-in;
   display: none;
   width: 100px;
   padding: 0 0 0 8px;

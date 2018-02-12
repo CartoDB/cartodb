@@ -4,7 +4,7 @@
 $size: 20px;
 
 .CDB-Attribution {
-  @include transition(background, 100ms);
+  transition: background 100ms;
   position: relative;
   order: 2;
   width: 32px;
@@ -50,7 +50,7 @@ $size: 20px;
 }
 
 .CDB-Attribution-text {
-  @include transition(opacity, 150ms);
+  transition: opacity 150ms;
   width: 0;
   height: 16px;
   margin-left: -1px;

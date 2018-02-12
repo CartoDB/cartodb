@@ -9,7 +9,7 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits {
-  @include transition(width, 150ms ease-in);
+  transition: width 150ms ease-in;
   position: relative;
   order: 10;
   width: 32px;
@@ -56,7 +56,7 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits-text {
-  @include transition(opacity, 150ms);
+  transition: opacity 150ms;
   width: 0;
   height: 16px;
   margin-left: -1px;

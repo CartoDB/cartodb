@@ -20,6 +20,18 @@
             </button>
           </li>
         <% } %>
+        <% if (columnType !== 'number' && !hideQuantification) { %>
+          <li class="u-flex">
+            Category
+            <button class="CDB-Shape u-lSpace js-quantification">
+              <div class="CDB-Shape-threePoints is-horizontal is-small">
+                <div class="CDB-Shape-threePointsItem"></div>
+                <div class="CDB-Shape-threePointsItem"></div>
+                <div class="CDB-Shape-threePointsItem"></div>
+              </div>
+            </button>
+          </li>
+        <% } %>
       </ul>
     </li>
   </ul>

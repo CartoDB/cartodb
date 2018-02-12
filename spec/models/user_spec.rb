@@ -2599,7 +2599,7 @@ describe User do
       expect(@auth_api_user.api_key).to eq (master_key.token)
 
       expect { @auth_api_user.regenerate_api_key }.to change { @auth_api_user.api_key }
-      master_api_key.reload
+      master_key.reload
       expect(@auth_api_user.api_key).to eq (master_key.token)
     end
   end

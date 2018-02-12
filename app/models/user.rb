@@ -1832,6 +1832,9 @@ class User < Sequel::Model
 
   def sync_master_key
     master_key = Carto::ApiKey.where(user_id: id, type: Carto::ApiKey::TYPE_MASTER).first
-    master_key.try(:update_attributes, token: api_key)
+    return unless master_key
+
+    master_key.user.api_key = api_key # Workaround: User save is not yet commited, so AR doesn't see the new api_key
+    master_key.update_attributes(token: api_key)
   end
 end

@@ -4,12 +4,12 @@
       <input
         class="CDB-Checkbox js-checkbox"
         type="checkbox"
-        name="<%- input[0] %>"
-        <%- values[input] ? 'checked' : '' %>
-        <%- isDisabled ? 'disabled' : '' %>
+        name="<%- input.name %>"
+        <%- values[input.name] ? 'checked' : '' %>
+        <%- disabled ? 'disabled' : '' %>
       >
       <span class="u-iBlock CDB-Checkbox-face"></span>
-      <label class="u-iBlock u-lSpace u-upperCase u-rSpace"><%- input %></label>
+      <label class="u-iBlock u-lSpace u-rSpace"><%- input.label || input.name %></label>
     </div>
   <% }) %>
 </div>

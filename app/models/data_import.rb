@@ -477,9 +477,9 @@ class DataImport < Sequel::Model
   # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
     state == STATE_STUCK ||
-    ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(state) &&
-    created_at < 5.minutes.ago &&
-    !running_import_ids.include?(id)
+      ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(state) &&
+      created_at < 5.minutes.ago &&
+      !running_import_ids.include?(id)
   end
 
   def from_table

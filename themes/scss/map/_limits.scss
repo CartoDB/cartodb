@@ -24,7 +24,7 @@ $linkColor: #139BFC;
     width: 320px;
 
     .CDB-Limits-text {
-      @include flex(1);
+      flex: 1;
       width: auto;
       padding: 0 12px;
       border-left: 1px solid rgba(0, 0, 0, 0.1);
@@ -78,7 +78,7 @@ $linkColor: #139BFC;
     margin-right: 0;
 
     &.is-active {
-      @include flex(1);
+      flex: 1;
       width: 0;
     }
   }

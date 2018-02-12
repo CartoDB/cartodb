@@ -307,8 +307,8 @@ $maxLegendContainerHeight: 300px;
 }
 
 .Bubble-list {
-  @include display-flex();
-  @include justify-content(center);
+  display: flex;
+  justify-content: center;
   position: relative;
   width: 100px;
   height: 100px;
@@ -332,7 +332,7 @@ $maxLegendContainerHeight: 300px;
 }
 
 .Bubble-container {
-  @include display-flex();
+  display: flex;
   max-height: 100px;
   padding-top: 3px;
   padding-bottom: 8px;
@@ -375,7 +375,7 @@ $maxLegendContainerHeight: 300px;
   }
 }
 .Bubble-inner {
-  @include display-flex();
+  display: flex;
   position: relative;
 }
 .Bubble-average {

@@ -52,8 +52,8 @@ module Carto
 
     belongs_to :user
 
-    before_create :create_token
-    before_create :create_db_config
+    before_create :create_token, unless: :token
+    before_create :create_db_config, unless: Proc.new { |api_key| api_key.db_role && api_key.db_password }
     before_validation :check_master_key
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
@@ -66,14 +66,14 @@ module Carto
     validate :validate_uniqueness
     validate :check_owned_table_permissions
 
-    after_create :setup_db_role
+    after_create :setup_db_role, unless: :skip_role_setup
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save :add_to_redis
 
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
 
-    attr_writer :redis_client
+    attr_writer :redis_client, :skip_role_setup
 
     def granted_apis
       @granted_apis ||= process_granted_apis
@@ -106,7 +106,6 @@ module Carto
     end
 
     def create_token
-      return if @skip_token_creation
       begin
         self.token = generate_auth_token
       end while self.class.exists?(token: token)
@@ -120,18 +119,6 @@ module Carto
       if !master? && name == MASTER_NAME
         errors.add(:name, "api_key name cannot be #{MASTER_NAME}")
       end
-    end
-
-    def skip_role_setup=(skip)
-      @skip_role_setup = skip
-    end
-
-    def skip_token_creation=(skip)
-      @skip_token_creation = skip
-    end
-
-    def skip_db_config=(skip)
-      @skip_db_config = skip
     end
 
     private
@@ -177,7 +164,6 @@ module Carto
     end
 
     def create_db_config
-      return if @skip_db_config
       if master?
         self.db_role = current_user.database_username
         self.db_password = current_user.database_password

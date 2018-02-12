@@ -7,7 +7,7 @@ require 'carto/export/data_import_exporter'
 # 1.0.1: export search tweets
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.1'.freeze
+    CURRENT_VERSION = '1.0.2'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -138,9 +138,7 @@ module Carto
         type: api_key_hash[:type],
         updated_at: api_key_hash[:updated_at],
         grants: api_key_hash[:grants],
-        skip_role_setup: true,
-        skip_token_creation: true,
-        skip_db_config: true
+        skip_role_setup: true
       )
     end
   end
@@ -202,11 +200,18 @@ module Carto
     end
 
     def export_api_key(api_key)
-      api_key_json = Carto::Api::ApiKeyPresenter.new(api_key).to_poro
-      api_key_json.merge(
+      {
+        created_at: api_key.created_at,
+        db_password: api_key.db_password,
+        db_role: api_key.db_role,
+        name: api_key.name,
+        token: api_key.token,
+        type: api_key.type,
+        updated_at: api_key.updated_at,
+        grants: api_key.grants,
         db_role: api_key.db_role,
         db_password: api_key.db_password
-      )
+      }
     end
   end
 

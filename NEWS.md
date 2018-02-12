@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
 * User feed migration
 * Add legends to mobile view in embed maps (#13417)
 * Unplug pluggable frontends (#13446)
@@ -114,6 +115,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Auth API
   * Keys creation (#13170)
+  * Create master API key on user creation (#13172)
   * Keys destruction (#13171)
   * Organization concerns (#13511)
   * Token regeneration (#13321)
@@ -133,11 +135,15 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Add titles (and description) to embeds in mobile viewports (#13517)
+* User feed renders google maps properly when user has it enabled
+* Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
 * Improved bundling aliases
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)
 * Restore translation keys to static pages (#13492)
+* Fix wrong user quotas [Support#1304](https://github.com/CartoDB/support/issues/1304)
 * Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
+* Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
@@ -437,6 +443,7 @@ ion for time-series (#12670)
 * Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
+* Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

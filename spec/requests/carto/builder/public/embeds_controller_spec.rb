@@ -195,12 +195,50 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.should_not include("maps.google.com/maps/api/js")
     end
 
-    it 'does not include 3rd party scripts if cookies=0 query param is present' do
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
+    it 'includes 3rd party scripts for analytics' do
+      Cartodb.with_config(
+        trackjs: {
+          'customer' => 'fake_trackjs_customer'
+        },
+        metrics: {
+          'hubspot': {
+            'enabled' => true,
+            'token' => 'fake_hubspot_token'
+          }
+        },
+        google_analytics: {
+          'embeds' => 'fake_embed_id',
+          'domain' => 'carto-test.com'
+        }
+      ) do
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
-      response.body.should_not include("www.google-analytics.com/analytics")
-      response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
-      response.body.should_not include("js.hs-analytics.net/analytics")
+        response.body.should include("www.google-analytics.com/analytics")
+        response.body.should include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
+      end
+    end
+
+    it 'does not include 3rd party scripts if cookies=0 query param is present' do
+      Cartodb.with_config(
+        trackjs: {
+          'customer' => 'fake_trackjs_customer'
+        },
+        metrics: {
+          'hubspot': {
+            'enabled' => true,
+            'token' => 'fake_hubspot_token'
+          }
+        },
+        google_analytics: {
+          'embeds' => 'fake_embed_id',
+          'domain' => 'carto-test.com'
+        }
+      ) do
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
+
+        response.body.should_not include("www.google-analytics.com/analytics")
+        response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
+      end
     end
 
     it 'does not embed password protected viz' do

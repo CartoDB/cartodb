@@ -488,16 +488,10 @@ describe 'UserMigration' do
       @user = FactoryGirl.build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
-      @regular_api_key = Carto::ApiKey.new(name: 'some Api Key',
-                                           type: 'regular',
+      @regular_api_key = Carto::ApiKey.create_regular_key!(name: 'some Api Key',
                                            grants: [{ type: "apis", apis: [] }],
                                            user: @carto_user)
-      @master_api_key = Carto::ApiKey.new(name: 'some Api Key',
-                                          type: 'master',
-                                          grants: [{ type: "apis", apis: [] }],
-                                          user: @carto_user)
-      @regular_api_key.save!
-      @master_api_key.save!
+      @master_api_key = Carto::ApiKey.create_master_key!(user: @carto_user)
     end
 
     after :each do

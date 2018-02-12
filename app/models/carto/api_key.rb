@@ -111,6 +111,20 @@ module Carto
       )
     end
 
+    def self.new_from_hash(api_key_hash)
+      new(
+        created_at: api_key_hash[:created_at],
+        db_password: api_key_hash[:db_password],
+        db_role: api_key_hash[:db_role],
+        name: api_key_hash[:name],
+        token: api_key_hash[:token],
+        type: api_key_hash[:type],
+        updated_at: api_key_hash[:updated_at],
+        grants: api_key_hash[:grants],
+        user_id: api_key_hash[:user_id]
+      )
+    end
+
     def granted_apis
       @granted_apis ||= process_granted_apis
     end

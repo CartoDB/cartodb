@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.29-13478",
+  "version": "4.11.41-13478-01",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "carto-zera": "1.0.2",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.21",
+    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.23",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "d3-interpolate": "^1.1.6",
@@ -43,7 +43,6 @@
     "postcss-strip-inline-comments": "0.1.5",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
-    "tangram": "cartodb/tangram#master",
     "tinycolor2": "^1.4.1",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
@@ -57,6 +56,7 @@
     "babel-core": "6.25.0",
     "babel-loader": "7.1.1",
     "babel-plugin-transform-object-assign": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-es2015": "6.24.1",
     "babelify": "^8.0.0",
     "bluebird": "3.5.0",
@@ -166,13 +166,15 @@
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-optional --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
-    "build": "NODE_ENV='production' webpack -p --config webpack.prod.config.js",
+    "build": "NODE_ENV='production' webpack -p --config webpack/builder/webpack.prod.config.js",
+    "build:dashboard": "NODE_ENV='production' webpack -p --config webpack/dashboard/webpack.prod.config.js",
     "build:static": "NODE_ENV='production' webpack -p --progress --config webpack/webpack.prod.config.js",
     "carto-node": "NODE_ENV=production webpack -p --config webpack/carto-node/webpack.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
-    "start": "grunt watch:css & webpack --progress --watch --config webpack.dev.config.js",
+    "start": "grunt watch:css & webpack --progress --watch --config webpack/builder/webpack.dev.config.js",
+    "dashboard": "grunt watch:css & webpack --progress --watch --config webpack/dashboard/webpack.dev.config.js",
     "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
-    "dev": "webpack --progress --config webpack.dev.config.js",
+    "dev": "webpack --progress --config webpack/builder/webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }
 }

@@ -123,12 +123,17 @@ class Admin::PagesController < Admin::AdminController
       dataset_builder = user_datasets_public_builder(@viewed_user)
       maps_builder = user_maps_public_builder(@viewed_user)
 
-      @name               = @viewed_user.name_or_username
-      @avatar_url         = @viewed_user.avatar
-      @tables_num         = dataset_builder.build.count
-      @maps_count         = maps_builder.build.count
-      @website            = website_url(@viewed_user.website)
-      @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
+      @name                = @viewed_user.name_or_username
+      @avatar_url          = @viewed_user.avatar
+      @tables_num          = dataset_builder.build.count
+      @maps_count          = maps_builder.build.count
+      @website             = website_url(@viewed_user.website)
+      @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
+      @has_new_dashboard   = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
+      @gmaps_query_string  = @viewed_user.google_maps_query_string
+      @needs_gmaps_lib     = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
+
+      @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
 
       if eligible_for_redirect?(@viewed_user)
         # redirect username.host.ext => org-name.host.ext/u/username

@@ -62,3 +62,19 @@
   padding: 20px 0;
   border-bottom: 1px solid rgba(#000, 0.1);
 }
+
+.ApiKeysForm-grantsTable {
+  flex: 1;
+}
+
+.ApiKeysForm-grantsTable-item {
+  display: flex;
+  box-sizing: border-box;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 10px;
+}
+
+.ApiKeysForm-box-modal {
+  box-shadow: none;
+}

@@ -325,6 +325,9 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
+    db.after_commit do
+      create_api_keys
+    end
     db_service.monitor_user_notification
     sleep 1
     db_service.set_statement_timeouts
@@ -1817,5 +1820,14 @@ class User < Sequel::Model
 
   def created_via
     @created_via || get_user_creation.try(:created_via)
+  end
+
+  def create_api_keys
+    return if Carto::ApiKey.exists?(user_id: id) || !has_feature_flag?('auth_api')
+    Carto::ApiKey.create!(
+      user_id: id,
+      type: Carto::ApiKey::TYPE_MASTER,
+      name: Carto::ApiKey::MASTER_NAME
+    )
   end
 end

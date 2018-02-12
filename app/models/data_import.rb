@@ -266,7 +266,7 @@ class DataImport < Sequel::Model
   end
 
   def mark_as_failed_if_stuck!
-    return false unless stuck? && !marked_stuck?
+    return false unless stuck? && state != STATE_STUCK
 
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
@@ -279,10 +279,6 @@ class DataImport < Sequel::Model
       user: current_user
     )
     true
-  end
-
-  def marked_stuck?
-    state == STATE_STUCK && !success
   end
 
   def data_source=(data_source)

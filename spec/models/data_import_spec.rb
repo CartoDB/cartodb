@@ -454,14 +454,14 @@ describe DataImport do
     end
   end
 
-  it 'avoids mark as stuck a stuck job' do
+  it 'avoids mark as failure a stuck job' do
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",
-      state: DataImport::STATE_STUCK,
-      success: false
+      state: DataImport::STATE_STUCK
     )
     data_import.mark_as_failed_if_stuck!.should eq false
+    data_import.success.should eq false
   end
 
   describe 'arcgis connector' do

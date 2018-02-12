@@ -68,9 +68,11 @@ describe Carto::UserMetadataExportService do
 
   describe 'import v 1.0.1' do
     it 'imports correctly' do
-      export = full_export.reject { |entry| entry == :api_keys }
+      export = full_export
+      export[:user] = export[:user].reject { |entry| entry == :api_keys }
       user = service.build_user_from_hash_export(export)
       user.save!
+      user.destroy
     end
   end
 

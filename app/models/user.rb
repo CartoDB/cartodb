@@ -983,6 +983,7 @@ class User < Sequel::Model
                           'db_public',                 database_timeout,
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
+    sync_master_key
   end
 
   def get_auth_tokens
@@ -1827,5 +1828,10 @@ class User < Sequel::Model
 
     carto_user.api_keys.create_master_key!
     carto_user.api_keys.create_default_public_key!
+  end
+
+  def sync_master_key
+    master_key = Carto::ApiKey.where(user_id: id, type: Carto::ApiKey::TYPE_MASTER).first
+    master_key.try(:update_attributes, token: api_key)
   end
 end

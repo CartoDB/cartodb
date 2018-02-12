@@ -282,7 +282,7 @@ class DataImport < Sequel::Model
   end
 
   def marked_stuck?
-    return self.state == STATE_STUCK && !self.success
+    state == STATE_STUCK && !success
   end
 
   def data_source=(data_source)
@@ -476,10 +476,10 @@ class DataImport < Sequel::Model
   # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
   # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
-    self.state = STATE_STUCK ||
-    (![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
-    self.created_at < 5.minutes.ago &&
-    !running_import_ids.include?(self.id))
+    state = STATE_STUCK ||
+    ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(state) &&
+    created_at < 5.minutes.ago &&
+    !running_import_ids.include?(id)
   end
 
   def from_table

@@ -366,7 +366,7 @@ $maxLegendContainerHeight: 300px;
 }
 .Bubble-numbersItem {
   position: absolute;
-  margin-bottom: -11px; /* to review */
+  margin-bottom: -11px;
   padding-right: $baseSize * 2;
   background: rgba(#FFF, 0.8);
   z-index: 10;
@@ -503,7 +503,7 @@ $maxLegendContainerHeight: 300px;
   position: absolute;
   width: 18px;
   height: 18px;
-  transform: translateX(-3px) translateY(-3px) scale(.66667); // scale original 18px SVG image => 12px
+  transform: translateX(-3px) translateY(-3px) scale(0.66667); // scale original 18px SVG image => 12px
   vertical-align: bottom;
 }
 

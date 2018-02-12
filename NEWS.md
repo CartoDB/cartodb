@@ -116,6 +116,7 @@ ion for time-series (#12670)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
+  * Create default public API key on user creation (#13471)
   * Keys destruction (#13171)
   * Organization concerns (#13511)
   * Token regeneration (#13321)

@@ -2578,6 +2578,7 @@ describe User do
 
       master_api_key = Carto::ApiKey.where(user_id: @user.id, type: Carto::ApiKey::TYPE_MASTER)
       master_api_key.should be
+      master_api_key.token.should eq @user.api_key
 
       organization.destroy
       auth_api_feature_flag.destroy

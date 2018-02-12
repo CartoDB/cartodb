@@ -14,7 +14,6 @@ describe Carto::Builder::Public::EmbedsController do
     @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3)
     # Only mapcapped visualizations are presented by default
     Carto::Mapcap.create!(visualization_id: @visualization.id)
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'vector_vs_raster', restricted: true)
   end
 
   before(:each) do
@@ -117,43 +116,8 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 302
     end
 
-    it 'defaults to generate vizjson with vector=true' do
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
-
-      response.status.should == 200
-      response.body.should_not include('\"vector\":true')
-    end
-
-    it 'generates vizjson with vector=true with flag' do
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
-
-      response.status.should == 200
-      response.body.should include('\"vector\":true')
-    end
-
-    it 'doesn\'t include vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
-      set_feature_flag @visualization.user, 'vector_vs_raster', false
-
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
-
-      response.status.should == 200
-      response.body.should_not include('\"vector\"')
-    end
-
-    it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is present' do
-      set_feature_flag @visualization.user, 'vector_vs_raster', true
-
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
-      response.status.should == 200
-      response.body.should include('\"vector\":true')
-
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: false)
-      response.status.should == 200
-      response.body.should include('\"vector\":false')
-    end
-
     it 'does not include auth tokens for public/link visualizations' do
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should include("var authTokens = JSON.parse('[]');")
@@ -165,7 +129,7 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.create_mapcap!
       @user.google_maps_key = ''
       @user.save
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should_not include("maps.google.com/maps/api/js")
@@ -177,7 +141,7 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.create_mapcap!
       @user.google_maps_key = 'client=wadus_cid'
       @user.save
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
@@ -189,10 +153,56 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.create_mapcap!
       @user.google_maps_key = 'client=wadus_cid'
       @user.save
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should_not include("maps.google.com/maps/api/js")
+    end
+
+    it 'includes 3rd party scripts for analytics' do
+      Cartodb.with_config(
+        trackjs: {
+          'customer' => 'fake_trackjs_customer'
+        },
+        metrics: {
+          'hubspot': {
+            'enabled' => true,
+            'token' => 'fake_hubspot_token'
+          }
+        },
+        google_analytics: {
+          'embeds' => 'fake_embed_id',
+          'domain' => 'carto-test.com'
+        }
+      ) do
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+        response.body.should include("www.google-analytics.com/analytics")
+        response.body.should include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
+      end
+    end
+
+    it 'does not include 3rd party scripts if cookies=0 query param is present' do
+      Cartodb.with_config(
+        trackjs: {
+          'customer' => 'fake_trackjs_customer'
+        },
+        metrics: {
+          'hubspot': {
+            'enabled' => true,
+            'token' => 'fake_hubspot_token'
+          }
+        },
+        google_analytics: {
+          'embeds' => 'fake_embed_id',
+          'domain' => 'carto-test.com'
+        }
+      ) do
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
+
+        response.body.should_not include("www.google-analytics.com/analytics")
+        response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
+      end
     end
 
     it 'does not embed password protected viz' do
@@ -316,7 +326,7 @@ describe Carto::Builder::Public::EmbedsController do
 
       it 'includes auth tokens for privately shared visualizations' do
         login_as(@org_user_1)
-        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id, vector: true)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 200
         @org_user_1.reload
@@ -332,7 +342,7 @@ describe Carto::Builder::Public::EmbedsController do
         @organization.google_maps_key = 'client=wadus_org_cid'
         @organization.save
         login_as(@org_user_1)
-        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id, vector: true)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 200
         response.body.should include("maps.google.com/maps/api/js?client=wadus_org_cid")

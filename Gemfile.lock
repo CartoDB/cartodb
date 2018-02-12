@@ -231,7 +231,7 @@ GEM
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
-    rb-readline (0.5.3)
+    rb-readline (0.5.5)
     rbtrace (0.4.8)
       ffi (>= 1.0.6)
       msgpack (>= 0.4.3)

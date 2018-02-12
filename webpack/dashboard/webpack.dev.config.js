@@ -27,10 +27,7 @@ module.exports = env => {
     },
     resolve: {
       symlinks: false,
-      modules: [
-        'node_modules',
-        resolve(__dirname, '../../', 'lib/assets/javascripts')
-      ],
+      modules: require('../common/modules.js'),
       alias: require('../common/alias.js')
     },
     devtool: 'source-map',

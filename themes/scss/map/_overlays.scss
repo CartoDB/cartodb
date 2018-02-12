@@ -201,7 +201,7 @@ $buttonColor: #636D72;
   }
 }
 .CDB-Logo {
-  @include transform(translateX(-50%));
+  transform: translateX(-50%);
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -324,7 +324,7 @@ $maxLegendContainerHeight: 300px;
   visibility: visible;
 }
 .Bubble-item {
-  @include transform(translateX(-50%));
+  transform: translateX(-50%);
   opacity: 0.5;
   position: absolute;
   bottom: 0;
@@ -379,7 +379,7 @@ $maxLegendContainerHeight: 300px;
   position: relative;
 }
 .Bubble-average {
-  @include transform(translateY(50%));
+  transform: translateY(50%);
   display: block;
   position: absolute;
   right: 105px;

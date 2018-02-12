@@ -278,6 +278,13 @@ describe Carto::ApiKey do
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_MASTER, grants: [apis_grant])
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
+
+      it 'token must match user api key' do
+        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_MASTER)
+        api_key.token = 'wadus'
+        api_key.save.should be_false
+        api_key.errors.full_messages.should include "Token must match user model for master keys"
+      end
     end
 
     describe 'default public api key' do
@@ -304,7 +311,7 @@ describe Carto::ApiKey do
         api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
         api_key.token = 'wadus'
         api_key.save.should be_false
-        api_key.errors.should include 'token'
+        api_key.errors.full_messages.should include "Token must be default_public for default public keys"
       end
     end
   end

@@ -73,7 +73,8 @@ module Carto
     after_destroy :drop_db_role
     after_destroy :remove_from_redis
 
-    attr_writer :redis_client, :skip_role_setup
+    attr_writer :redis_client
+    attr_accessor :skip_role_setup
 
     def granted_apis
       @granted_apis ||= process_granted_apis
@@ -176,7 +177,7 @@ module Carto
     end
 
     def setup_db_role
-      return if master? || @skip_role_setup
+      return if master?
 
       db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
       db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")

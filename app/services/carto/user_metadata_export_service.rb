@@ -62,11 +62,6 @@ module Carto
       ::User[user.id].after_save
     end
 
-    def save_api_key_for_user(api_key, user)
-      api_key.user = user
-      api_key.save!
-    end
-
     def save_imported_search_tweet(search_tweet, user)
       persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
       search_tweet.data_import = persisted_import if persisted_import
@@ -138,6 +133,7 @@ module Carto
         type: api_key_hash[:type],
         updated_at: api_key_hash[:updated_at],
         grants: api_key_hash[:grants],
+        user_id: api_key_hash[:user_id],
         skip_role_setup: true
       )
     end
@@ -209,8 +205,7 @@ module Carto
         type: api_key.type,
         updated_at: api_key.updated_at,
         grants: api_key.grants,
-        db_role: api_key.db_role,
-        db_password: api_key.db_password
+        user_id: api_key.user_id
       }
     end
   end
@@ -240,13 +235,10 @@ module Carto
 
     def import_from_directory(path)
       user = user_from_file(path)
-      api_keys = []
-      api_keys += user.api_keys
-      user.api_keys = []
+
       raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
 
-      api_keys.each { |api_key| save_api_key_for_user(api_key, user) }
       Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))
 
       user

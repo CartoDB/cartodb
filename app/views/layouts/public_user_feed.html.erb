@@ -17,9 +17,9 @@
 
     <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard', 'user_feed' %>
 
-    <% if @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps' %>
+    <% if @needs_gmaps_lib %>
       <script type="text/javascript"
-          src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @most_viewed_vis_map.user.google_maps_query_string %>">
+          src="//maps.googleapis.com/maps/api/js?v=3.12<%= @gmaps_query_string %>">
       </script>
     <% end %>
   </head>
@@ -48,6 +48,7 @@
       var avatar_url= '<%= @avatar_url %>';
 
       var favMapViewAttrs = {
+        fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>,
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
@@ -60,8 +61,6 @@
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
           }
-        <% elsif !@has_new_dashboard %>
-          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
         <% end %>
       };
       </script>

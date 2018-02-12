@@ -2596,11 +2596,11 @@ describe User do
 
     it 'syncs api key changes with master api key' do
       master_key = Carto::ApiKey.where(user_id: @auth_api_user.id, type: Carto::ApiKey::TYPE_MASTER).first
-      expect(@auth_api_user.api_key).to eq (master_key.token)
+      expect(@auth_api_user.api_key).to eq master_key.token
 
-      expect { @auth_api_user.regenerate_api_key }.to change { @auth_api_user.api_key }
+      expect { @auth_api_user.regenerate_api_key }.to(change { @auth_api_user.api_key })
       master_key.reload
-      expect(@auth_api_user.api_key).to eq (master_key.token)
+      expect(@auth_api_user.api_key).to eq master_key.token
     end
   end
 

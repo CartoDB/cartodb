@@ -266,12 +266,12 @@ class DataImport < Sequel::Model
   end
 
   def mark_as_failed_if_stuck!
-    return false unless stuck?
+    return false unless stuck? && !marked_stuck?
 
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
     self.success  = false
-    self.state    = STATE_FAILURE
+    self.state    = STATE_STUCK
     save
 
     CartoDB::notify_exception(
@@ -279,6 +279,10 @@ class DataImport < Sequel::Model
       user: current_user
     )
     true
+  end
+
+  def marked_stuck?
+    return self.state == STATE_STUCK && !self.success
   end
 
   def data_source=(data_source)
@@ -472,9 +476,10 @@ class DataImport < Sequel::Model
   # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
   # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
-    ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
+    self.state = STATE_STUCK ||
+    (![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
     self.created_at < 5.minutes.ago &&
-    !running_import_ids.include?(self.id)
+    !running_import_ids.include?(self.id))
   end
 
   def from_table

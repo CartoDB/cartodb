@@ -87,7 +87,7 @@ module Carto
       user.layers = build_layers_from_hash(exported_user[:layers])
 
       api_keys = exported_user[:api_keys] || []
-      user.api_keys += api_keys.map { |api_key| build_api_key_from_hash(api_key) }
+      user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -121,10 +121,6 @@ module Carto
         created_at: exported_search_tweet[:created_at],
         updated_at: exported_search_tweet[:updated_at]
       )
-    end
-
-    def build_api_key_from_hash(api_key_hash)
-      Carto::ApiKey.new_from_hash(api_key_hash.merge(skip_role_setup: true))
     end
   end
 

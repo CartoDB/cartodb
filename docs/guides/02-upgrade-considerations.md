@@ -1,33 +1,33 @@
 ## Upgrade Considerations Guide
 
-This document is intended for existing developers who have used [previous versions](/documentation/cartojs/docs/#versioning) of CARTO.js.
+This document is intended for existing developers who have used [previous versions](https://carto.com/documentation/carto-js/reference/#versioning) of CARTO.js.
 
 ### About this Guide
 
 This guide describes how the CARTO.js library has changed to support additional functionality. It outlines the basic workflow for creating an application and includes an example of updating an old application using the new library.
 
-**Note**: A full reference library is in the process of being built. As we continue to enhance CARTO.js, supported code will be maintained in the [Reference]({{site.baseurl}}/cartojs/docs/).
+**Note**: A full reference library is in the process of being built. As we continue to enhance CARTO.js, supported code will be maintained in the [Reference](https://carto.com/cartojs/reference/).
 
 At a high-level, the workflow consists of:
 
  1. Define the client parameters to manage layers and dataviews:
-     - [`new carto.Client`](/documentation/cartojs/docs/#cartoclient)
-     - [`addLayers`](/documentation/cartojs/docs/#cartoclientaddlayer)
-     - [`addDataview`](/documentation/cartojs/docs/#cartoclientadddataview) or [`addDataviews`](/documentation/cartojs/docs/#cartoclientadddataviews)
-     - [`getDataviews`](/documentation/cartojs/docs/#cartoclientgetdataviews)
+     - [`new carto.Client`](https://carto.com/documentation/carto-js/reference/#cartoclient)
+     - [`addLayers`](https://carto.com/documentation/carto-js/reference/#cartoclientaddlayer)
+     - [`addDataview`](https://carto.com/documentation/carto-js/reference/#cartoclientadddataview) or [`addDataviews`](https://carto.com/documentation/carto-js/reference/#cartoclientadddataviews)
+     - [`getDataviews`](https://carto.com/documentation/carto-js/reference/#cartoclientgetdataviews)
 
 2. Define the Base data source objects:
-    - Add dataset as the source [`carto.source.dataset`](/documentation/cartojs/docs/#cartosourcedataset)
-    - Add SQL to filter data [`carto.source.sql`](/documentation/cartojs/docs/#cartosourcesql)
+    - Add dataset as the source [`carto.source.dataset`](https://carto.com/documentation/carto-js/reference/#cartosourcedataset)
+    - Add SQL to filter data [`carto.source.sql`](https://carto.com/documentation/carto-js/reference/#cartosourcesql)
 
 3. Publish the App:
-    - [`getLayers`](/documentation/cartojs/docs/#cartoclientgetlayers)
+    - [`getLayers`](https://carto.com/documentation/carto-js/reference/#cartoclientgetlayers)
 
 You should understand the following changes in concept before you begin.
 
 #### Dataset Privacy
 
-Since we are still working on the Authentication feature, which is directly related to dataset privacy, datasets must be public when testing the Beta library. A future enhancement will include the ability to work with private data. View the [FAQs](https://cartodb.github.io{{site.baseurl}}/cartojs/support/faq.html) for temporary limitations and known issues.
+Since we are still working on the Authentication feature, which is directly related to dataset privacy, datasets must be public when testing the Beta library. A future enhancement will include the ability to work with private data. View the [FAQs](https://carto.com//documentation/carto-js/support/faq/) for temporary limitations and known issues.
 
 #### Map Workflow
 

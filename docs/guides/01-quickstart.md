@@ -10,7 +10,7 @@ This guide describes how to create a Leaflet map and display data from CARTO ove
 2. Use Dataviews to Create Widgets.
 
 
-**Tip:** For more advanced documentation, view the [Full Reference API]({{site.baseurl}}/cartojs/docs/) or browse through some [examples]({{site.baseurl}}/cartojs/examples/). You can also read the [FAQs](/documentation/cartojs/support/faq/).
+**Tip:** For more advanced documentation, view the [Full Reference API](https://carto.com/documentation/carto-js/reference/) or browse through some [examples](https://carto.com/documentation/carto-js/examples/). You can also read the [FAQs](https://carto.com/documentation/carto-js/support/faq/).
 
 ### Requesting an API Key
 
@@ -380,8 +380,8 @@ client.addDataview(countriesDataview);
 ### Conclusion
 
 <div class="example-map">
-  <iframe src="{{site.baseurl}}/carto-js/guides/quickstart-example.html" width="100%" height="600" frameBorder="0" style="padding-top: 20px;padding-bottom: 0;" class="u-vspace--24"></iframe>
-  <a href="{{site.baseurl}}/cartojs/guides/quickstart-example.html" class="buttonLink is-DocsGreen u-vspace--32" target="_blank">
+  <iframe src="https://carto.com/carto-js/guides/quickstart-example.html" width="100%" height="600" frameBorder="0" style="padding-top: 20px;padding-bottom: 0;" class="u-vspace--24"></iframe>
+  <a href="https://carto.com/carto-js/guides/quickstart-example.html" class="buttonLink is-DocsGreen u-vspace--32" target="_blank">
     <svg width="8px" height="7px" viewbox="0 0 8 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <path class="buttonLink-media" d="M1.52245273,3.04854764 L3.68776506,0.883235307 C3.88225492,0.688745449 3.88821988,0.353713791 3.68525771,0.15075162 C3.4882313,-0.0462747862 3.15435142,-0.053333131 2.95277402,0.148244267 L0.147793654,2.95322464 C0.0109867585,3.09003153 -0.0325396573,3.29637729 0.0243152648,3.47738142 C-0.0325396573,3.65838554 0.0109867585,3.8647313 0.147793654,4.00153819 L2.95277402,6.80651857 C3.15435142,7.00809596 3.4882313,7.00103762 3.68525771,6.80401121 C3.88821988,6.60104904 3.88225492,6.26601738 3.68776506,6.07152753 L1.70421948,4.08798194 L7.99996393,4.08798194 L7.99996393,3.04854764 L1.52245273,3.04854764 Z" id="Combined-Shape" fill="#1FAC06" transform="translate(3.999982, 3.477381) scale(-1, 1) translate(-3.999982, -3.477381) "/>
@@ -391,4 +391,4 @@ client.addDataview(countriesDataview);
   </a>
 </div>
 
-This guide is just an overview of how to use CARTO.js to overlay data and create widgets. View the [Examples]({{site.baseurl}}/cartojs/examples/) section for specific features of CARTO.js in action.
+This guide is just an overview of how to use CARTO.js to overlay data and create widgets. View the [Examples](https://carto.com/documentation/carto-js/examples/) section for specific features of CARTO.js in action.

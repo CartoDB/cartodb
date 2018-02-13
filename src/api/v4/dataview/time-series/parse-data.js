@@ -55,7 +55,7 @@ function _createBins (data, maxFreq) {
       * @property {number} min - Minimum UTC timestamp present in the bin. Only appears if freq > 0
       * @property {number} max - Maximum UTC timestamp present in the bin. Only appears if freq > 0
       * @property {number} freq - Numbers of elements present in the bin
-      * @property {number} normalized - Normalized frequency with respect to the whole data
+      * @property {number} normalized - Normalized frequency with respect to the whole dataset
       * @api
       */
     return {

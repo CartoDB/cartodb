@@ -326,7 +326,7 @@ class User < Sequel::Model
     save_metadata
     self.load_avatar
 
-    db.after_commit { create_api_keys }
+    db.after_commit { create_api_keys } if has_feature_flag?('auth_api')
 
     db_service.monitor_user_notification
     sleep 1
@@ -1705,7 +1705,6 @@ class User < Sequel::Model
   end
 
   def create_api_keys
-    return unless has_feature_flag?('auth_api')
     carto_user = Carto::User.find(id)
 
     carto_user.api_keys.create_master_key!

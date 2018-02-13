@@ -80,7 +80,11 @@ namespace :user do
         if user.nil?
           puts "WARN: User #{email} not found"
         else
-          user.create_api_keys
+          begin
+            user.create_api_keys
+          rescue => e
+            "WARN: Unable to create api keys for user with email #{email}: #{e}"
+          end
         end
       end
     end

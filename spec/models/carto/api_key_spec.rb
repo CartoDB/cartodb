@@ -244,7 +244,7 @@ describe Carto::ApiKey do
           api_key_permissions(api_key, @table1.database_schema, @table1.name).permissions.should include(permission)
         end
 
-        sql = "drop table #{@user1.database_schema}.#{@table1.name}"
+        sql = "drop table \"#{@user1.database_schema}\".\"#{@table1.name}\""
         @user1.in_database(as: :superuser).run(sql)
 
         api_key_permissions(api_key, @table1.database_schema, @table1.name).should be_nil
@@ -318,14 +318,11 @@ describe Carto::ApiKey do
   end
 
   describe 'with organization users' do
-    include_context 'organization with users helper'
-
     before(:all) do
       @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
-      @auth_organization = test_organization
-      @auth_organization.save
-      @user1 = create_auth_api_user(@auth_organization)
-      @carto_user1 = Carto::User.where(id: @user1.id).first
+      @auth_organization = FactoryGirl.create(:organization, quota_in_bytes: 1.gigabytes)
+      @user1 = TestUserFactory.new.create_owner(@auth_organization)
+      @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
@@ -337,13 +334,16 @@ describe Carto::ApiKey do
     it_behaves_like 'api key'
 
     it 'fails to grant to a non-owned table' do
-      table = create_table(user_id: @carto_org_user_2.id)
+      other_user = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
+
+      table = create_table(user_id: other_user.id)
       grants = [database_grant(table.database_schema, table.name), apis_grant]
       expect {
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
       }.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy
+      other_user.destroy
     end
   end
 end

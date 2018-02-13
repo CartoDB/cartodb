@@ -488,10 +488,24 @@ describe 'UserMigration' do
       @user = FactoryGirl.build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
-      @regular_api_key = Carto::ApiKey.create_regular_key!(name: 'some Api Key',
-                                                           grants: [{ type: "apis", apis: [] }],
-                                                           user: @carto_user)
       @master_api_key = Carto::ApiKey.create_master_key!(user: @carto_user)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
+      @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_user,
+                                                           name: 'Some ApiKey',
+                                                           grants: [
+                                                             {
+                                                               type: "apis",
+                                                               apis: ["maps", "sql"]
+                                                             },
+                                                             {type: 'database',
+                                                              tables: [
+                                                                {schema: @carto_user.database_schema,
+                                                                 name: @table.name,
+                                                                 permissions: ['select']
+                                                                }
+                                                              ]
+                                                             }
+                                                           ])
     end
 
     after :each do
@@ -514,9 +528,13 @@ describe 'UserMigration' do
       $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
 
       @carto_user.client_applications.each(&:destroy)
+      @master_api_key.destroy
+      @table.destroy
+      @map.destroy
+      @table_visualization.destroy
+      @visualization.destroy
       @carto_user.destroy
       @regular_api_key.destroy
-      @master_api_key.destroy
       drop_database(@user)
 
       $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should be nil

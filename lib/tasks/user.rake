@@ -61,4 +61,28 @@ namespace :user do
       puts "Changed the number of max layers for '#{user.username}' from #{old_max_layers} to #{max_layers}."
     end
   end
+
+  namespace :api_key do
+    desc 'Creates default API Keys for user'
+    task :create_default, [:emails_file] => [:environment] do |task, args|
+      line = 0
+      File.foreach(args[:emails_file]) do |email|
+        email.strip!
+        line += 1
+
+        unless email =~ /.*@.*\..*/
+          puts "Row #{line} is not an email: #{email}"
+          next
+        end
+
+        user = User.first(email: email)
+
+        if user.nil?
+          puts "WARN: User #{email} not found"
+        else
+          user.create_api_keys
+        end
+      end
+    end
+  end
 end

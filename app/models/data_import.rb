@@ -475,7 +475,7 @@ class DataImport < Sequel::Model
     state == STATE_STUCK ||
       ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(state) &&
         created_at < 5.minutes.ago &&
-          !running_import_ids.include?(id)
+        !running_import_ids.include?(id)
   end
 
   def from_table

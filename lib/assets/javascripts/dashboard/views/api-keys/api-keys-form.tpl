@@ -12,7 +12,7 @@
   <footer class="FormAccount-footer">
     <p class="FormAccount-footerText">Changes to the key permissions are not possible once key is generated</p>
     <% if (showSubmit) { %>
-      <button type="submit" class="CDB-Button CDB-Button--primary js-submit">
+      <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-submit" disabled>
         <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
       </button>
     <% } %>

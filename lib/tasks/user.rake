@@ -64,7 +64,7 @@ namespace :user do
 
   namespace :api_key do
     desc 'Creates default API Keys for user'
-    task :create_default, [:emails_file] => [:environment] do |task, args|
+    task :create_default, [:emails_file] => [:environment] do |_, args|
       line = 0
       File.foreach(args[:emails_file]) do |email|
         email.strip!

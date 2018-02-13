@@ -2274,6 +2274,10 @@
         "message": "This layer is empty. Add data to start working.",
         "action-message": "Click the blue button on the bottom right to add points (%{pointIcon}), lines (%{lineIcon}) or polygon (%{polygonIcon})."
       },
+      "no-data": {
+        "message": "No data available.",
+        "action-message": "There are no results for the combination of analyses applied to your data. Try tweaking them."
+      },
       "stats": {
         "add-widget": "Add as a widget",
         "edit": "EDIT",

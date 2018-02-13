@@ -497,11 +497,13 @@ describe 'UserMigration' do
                                                                type: "apis",
                                                                apis: ["maps", "sql"]
                                                              },
-                                                             {type: 'database',
+                                                             {
+                                                              type: 'database',
                                                               tables: [
-                                                                {schema: @carto_user.database_schema,
-                                                                 name: @table.name,
-                                                                 permissions: ['select']
+                                                                {
+                                                                  schema: @carto_user.database_schema,
+                                                                  name: @table.name,
+                                                                  permissions: ['select']
                                                                 }
                                                               ]
                                                              }

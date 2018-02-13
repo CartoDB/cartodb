@@ -426,8 +426,8 @@ module CartoDB
       # in the old database while the process is ongoing
       # Disabling it may be hard. Maybe it's easier to just exclude it in the export.
       def import_pgdump(dump)
-        @logger.info("Creating roles for API Keys")
-        Carto::User.find(@pack_config['user']['id']).api_keys.select { |k| k.regular? }.each do |k|
+        @logger.info("Creating roles for regular API Keys")
+        Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
           k.role_creation_queries.each { |q| superuser_pg_conn.query(q) }
         end
 

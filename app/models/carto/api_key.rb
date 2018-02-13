@@ -75,6 +75,9 @@ module Carto
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
 
+    scope :master, ->() { where(type: TYPE_MASTER) }
+    scope :default_public, ->() { where(type: TYPE_DEFAULT_PUBLIC) }
+
     private_class_method :new, :create, :create!
 
     def self.create_master_key!(user: Carto::User.find(scope_attributes['user_id']))

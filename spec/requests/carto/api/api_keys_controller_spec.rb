@@ -262,8 +262,8 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns 403 if API key is master or default public' do
-      master_api_key = @carto_user.api_keys.find_by_type(Carto::ApiKey::TYPE_MASTER)
-      default_api_key = @carto_user.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
+      master_api_key = @carto_user.api_keys.master.first
+      default_api_key = @carto_user.api_keys.default_public.first
 
       delete_json generate_api_key_url(user_req_params(@user), name: master_api_key.name) do |response|
         response.status.should eq 403
@@ -438,7 +438,7 @@ describe Carto::Api::ApiKeysController do
 
   describe 'header auth' do
     before(:all) do
-      @master_api_key = @carto_user.api_keys.find_by_type(Carto::ApiKey::TYPE_MASTER)
+      @master_api_key = @carto_user.api_keys.master.first
     end
 
     def json_headers_with_auth

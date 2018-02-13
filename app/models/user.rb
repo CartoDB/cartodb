@@ -1833,7 +1833,7 @@ class User < Sequel::Model
   end
 
   def sync_master_key
-    master_key = Carto::ApiKey.where(user_id: id, type: Carto::ApiKey::TYPE_MASTER).first
+    master_key = Carto::ApiKey.where(user_id: id).master.first
     return unless master_key
 
     # Workaround: User save is not yet commited, so AR doesn't see the new api_key
@@ -1842,7 +1842,7 @@ class User < Sequel::Model
   end
 
   def sync_default_public_key
-    default_key = Carto::ApiKey.where(user_id: id, type: Carto::ApiKey::TYPE_DEFAULT_PUBLIC).first
+    default_key = Carto::ApiKey.where(user_id: id).default_public.first
     return unless default_key
 
     # Workaround: User save is not yet commited, so AR doesn't see the new database_schema

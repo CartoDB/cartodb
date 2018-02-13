@@ -2581,7 +2581,7 @@ describe User do
         api_keys = Carto::ApiKey.where(user_id: @auth_api_user.id)
         api_keys.should_not be_empty
 
-        master_api_key = Carto::ApiKey.where(user_id: @auth_api_user.id, type: Carto::ApiKey::TYPE_MASTER).first
+        master_api_key = Carto::ApiKey.where(user_id: @auth_api_user.id).master.first
         master_api_key.should be
         master_api_key.token.should eq @auth_api_user.api_key
       end
@@ -2595,7 +2595,7 @@ describe User do
     end
 
     it 'syncs api key changes with master api key' do
-      master_key = Carto::ApiKey.where(user_id: @auth_api_user.id, type: Carto::ApiKey::TYPE_MASTER).first
+      master_key = Carto::ApiKey.where(user_id: @auth_api_user.id).master.first
       expect(@auth_api_user.api_key).to eq master_key.token
 
       expect { @auth_api_user.regenerate_api_key }.to(change { @auth_api_user.api_key })

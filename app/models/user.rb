@@ -379,6 +379,9 @@ class User < Sequel::Model
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
+    sync_master_key if changes.include?(:api_key)
+    sync_default_public_key if changes.include?(:database_schema)
+
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
     end
@@ -983,7 +986,6 @@ class User < Sequel::Model
                           'db_public',                 database_timeout,
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
-    sync_master_key
   end
 
   def get_auth_tokens
@@ -1834,7 +1836,17 @@ class User < Sequel::Model
     master_key = Carto::ApiKey.where(user_id: id, type: Carto::ApiKey::TYPE_MASTER).first
     return unless master_key
 
-    master_key.user.api_key = api_key # Workaround: User save is not yet commited, so AR doesn't see the new api_key
+    # Workaround: User save is not yet commited, so AR doesn't see the new api_key
+    master_key.user.api_key = api_key
     master_key.update_attributes(token: api_key)
+  end
+
+  def sync_default_public_key
+    default_key = Carto::ApiKey.where(user_id: id, type: Carto::ApiKey::TYPE_DEFAULT_PUBLIC).first
+    return unless default_key
+
+    # Workaround: User save is not yet commited, so AR doesn't see the new database_schema
+    default_key.user.database_schema = database_schema
+    default_key.update_attributes(db_role: database_public_username)
   end
 end

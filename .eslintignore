@@ -2,8 +2,10 @@
 /config
 /db
 /doc
-/lib/assets/javascripts
-/lib/assets/node_modules
+/lib/assets/javascripts/cartodb
+/lib/assets/javascripts/cdb
+/lib/assets/javascripts/utils
+/lib/assets/javascripts/vendor/jquery-ui.js
 /lib/assets/test
 /lib/build/*
 !/lib/build/tasks

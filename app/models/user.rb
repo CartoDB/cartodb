@@ -325,6 +325,9 @@ class User < Sequel::Model
     setup_user
     save_metadata
     self.load_avatar
+
+    db.after_commit { create_api_keys } if has_feature_flag?('auth_api')
+
     db_service.monitor_user_notification
     sleep 1
     db_service.set_statement_timeouts
@@ -436,6 +439,7 @@ class User < Sequel::Model
         delete_external_data_imports
         delete_external_sources
         Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+        Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.
@@ -1816,5 +1820,12 @@ class User < Sequel::Model
 
   def created_via
     @created_via || get_user_creation.try(:created_via)
+  end
+
+  def create_api_keys
+    carto_user = Carto::User.find(id)
+
+    carto_user.api_keys.create_master_key!
+    carto_user.api_keys.create_default_public_key!
   end
 end

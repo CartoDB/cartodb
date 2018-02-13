@@ -15,6 +15,26 @@ describe SignupController do
       @fake_organization.delete if @fake_organization
     end
 
+    it 'returns 200 when subdomainless and route is signup_subdomainless' do
+      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      Organization.stubs(:where).returns([@fake_organization])
+      host! "localhost.lan"
+      get signup_subdomainless_url(user_domain: 'organization')
+      response.status.should == 200
+    end
+
+    it 'returns 404 when subdomainless and route is signup' do
+      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      Organization.stubs(:where).returns([@fake_organization])
+      host! "localhost.lan"
+      get signup_url
+      response.status.should == 404
+    end
+
     it 'returns 404 outside organization subdomains' do
       get signup_url
       response.status.should == 404

@@ -266,12 +266,12 @@ class DataImport < Sequel::Model
   end
 
   def mark_as_failed_if_stuck!
-    return false unless stuck? && state != STATE_STUCK
+    return false unless stuck?
 
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
     self.success  = false
-    self.state    = STATE_STUCK
+    set_error(6671)
     save
 
     CartoDB::notify_exception(

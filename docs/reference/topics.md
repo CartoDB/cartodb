@@ -4,11 +4,17 @@ CARTO.js is a JavaScript library that interacts with different CARTO APIs. It is
 
 To understand the fundamentals of CARTO.js 4.0, [read the guides]({https://carto.com/carto-js/guides/quickstart/)read the guides. To view the source code, browse the [open-source repository](https://github.com/CartoDB/cartodb.js) in Github and contribute. Otherwise, view [examples with Leaflet and Google Maps](https://carto.com/carto-js/examples/) or find different [support options](https://carto.com/carto-js/support/).
 
+If you find any trouble understanding any term written in this reference, please visit our [glossary]({{site.baseurl}}/carto-js/guides/glossary/)
+
 The contents described in this document are subject to CARTO's [Terms of Service](https://carto.com/legal/)
+
+
 
 ## Authentication
 
 CARTO.js 4.0 requires using an API Key. From your CARTO dashboard, click _[Your API keys](https://carto.com/login)_ from the avatar drop-down menu to view your uniquely generated API Key for managing data with CARTO Engine.
+
+![Your API Keys](./avatar.gif)
 
 The examples in this documentation include a placeholder for the API Key. Ensure that you modify any placeholder parameters with your own credentials. You will have to supply your unique API Key to a [`carto.Client`](#cartoclient).
 
@@ -32,7 +38,7 @@ console.log(carto.version);
 
 ## Loading the Library 
 CARTO.js is hosted on a CDN for easy loading. You can load the full source "carto.js" file or the minified version "carto.min.js". Once the script is loaded, you will have a global `carto` namespace.
-We will also host it on NPM so that you can require it in your custom apps.
+CARTO.js is hosted in NPM as well. You can require it as a dependency in your custom apps.
 
 ```html
 <!-- CDN: load the latest CARTO.js version -->
@@ -45,6 +51,8 @@ We will also host it on NPM so that you can require it in your custom apps.
 ```javascript
 // NPM: load the latest CARTO.js version
 npm install carto.js
+// or
+yarn add carto.js
 
 var carto = require('carto.js');
 ```

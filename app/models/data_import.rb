@@ -270,9 +270,7 @@ class DataImport < Sequel::Model
 
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
-    self.success  = false
-    set_error(6671)
-    save
+    handle_failure(CartoDB::Importer2::StuckImportJobError.new)
 
     CartoDB::notify_exception(
       CartoDB::Importer2::GenericImportError.new('Import timed out or got stuck'),

@@ -47,6 +47,12 @@ module CartoDB
       end
     end
 
+    class StuckImportJobError < BaseImportError
+      def initialize(message="The import job was stuck and we marked it as failed")
+        super(message, 6671)
+      end
+    end
+
     class DownloadTimeoutError < BaseImportError
       def initialize(message="Data download timed out. Check the source is not running slow and/or try again.")
         super(message, 1020)
@@ -160,6 +166,7 @@ module CartoDB
       StatementTimeoutError                 => 6667,
       TooManyTableRowsError                 => 6668,
       UserConcurrentImportsLimitError       => 6669,
+      StuckImportJobError                   => 6671,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,

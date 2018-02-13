@@ -18,7 +18,7 @@ module Carto
       imports.map { |import|
         if import.created_at < Time.now - 60.minutes && !running_ids.include?(import.id)
           # INFO: failure is handled with old model
-          ::DataImport[import.id].handle_failure
+          ::DataImport[import.id].handle_failure(CartoDB::Importer2::StuckImportJobError.new)
           nil
         else
           import

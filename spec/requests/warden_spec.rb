@@ -22,7 +22,7 @@ describe 'Warden :auth_api Strategy' do
 
   it 'authenticates with header' do
     get_json generate_api_key_url, {}, http_json_headers.merge(
-      'Authorization' => 'Basic ' + Base64.encode64("#{@user_api_keys.username}:#{@master_api_key.token}")
+      'Authorization' => 'Basic ' + Base64.strict_encode64("#{@user_api_keys.username}:#{@master_api_key.token}")
     ) do |response|
       response.status.should eq 200
     end

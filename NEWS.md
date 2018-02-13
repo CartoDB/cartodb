@@ -135,6 +135,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Make legends collapsable (#13531)
 * Add titles (and description) to embeds in mobile viewports (#13517)
 * User feed renders google maps properly when user has it enabled
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))

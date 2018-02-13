@@ -186,6 +186,19 @@ module Carto
       regular?
     end
 
+    def role_creation_queries
+      queries = [
+        "CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'",
+        "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
+        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
+      ]
+
+      if user.organization_user?
+        queries << "GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\""
+      end
+      queries
+    end
+
     private
 
     PASSWORD_LENGTH = 40
@@ -244,13 +257,7 @@ module Carto
     end
 
     def create_role
-      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
-      db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
-      db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
-
-      if user.organization_user?
-        db_run("GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\"")
-      end
+      role_creation_queries.each { |q| db_run(q) }
     end
 
     def drop_db_role

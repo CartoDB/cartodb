@@ -1636,6 +1636,10 @@
           "url": "https://carto.com/pricing/"
         }
       },
+      "no-data": {
+        "message": "No data available.",
+        "action-message": "There are no results for the combination of analyses applied to your data. Try tweaking them."
+      },
       "limit": {
         "title": "Some tiles might not be working correctly",
         "body": "Looks like you are over your account limits when trying to render some of your tiles.",
@@ -2273,10 +2277,6 @@
       "no-geometry-data": {
         "message": "This layer is empty. Add data to start working.",
         "action-message": "Click the blue button on the bottom right to add points (%{pointIcon}), lines (%{lineIcon}) or polygon (%{polygonIcon})."
-      },
-      "no-data": {
-        "message": "No data available.",
-        "action-message": "There are no results for the combination of analyses applied to your data. Try tweaking them."
       },
       "stats": {
         "add-widget": "Add as a widget",

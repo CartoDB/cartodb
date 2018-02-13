@@ -67,8 +67,9 @@
   border-bottom: 1px solid rgba(#000, 0.1);
 }
 
-.ApiKeysForm-grantsTable {
-  flex: 1;
+.ApiKeysForm-tablesList {
+  max-height: 250px;
+  overflow: scroll;
 }
 
 .ApiKeysForm-grantsTable-item {
@@ -77,8 +78,10 @@
   justify-content: space-between;
   width: 100%;
   padding: 12px 10px;
+  border-bottom: 1px solid rgba(46, 60, 67, 0.08);
 }
 
 .ApiKeysForm-box-modal {
+  margin-top: 16px;
   box-shadow: none;
 }

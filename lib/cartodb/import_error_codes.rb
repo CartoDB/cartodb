@@ -312,6 +312,11 @@ module CartoDB
       what_about: "You reached the limit on the number of named map templates.",
       source: ERROR_SOURCE_USER
     },
+    6671 => {
+      title: 'Stuck import job',
+      what_about: "The import job was stuck and we marked it as failed. Please try importing again.",
+      source: ERROR_SOURCE_CARTODB
+    },
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try

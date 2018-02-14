@@ -145,6 +145,7 @@ ion for time-series (#12670)
 * Restore translation keys to static pages (#13492)
 * Fix wrong user quotas [Support#1304](https://github.com/CartoDB/support/issues/1304)
 * Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
+* Avoid sending multiple notifications for stuck imports (#11833)
 * Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version

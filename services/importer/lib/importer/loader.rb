@@ -254,7 +254,7 @@ module CartoDB
         ogr2ogr.run(append_mode)
 
         #In case there are not an specific error we try to fix it
-        if ogr2ogr.generic_error? && ogr2ogr.exit_code == 0 || ogr2ogr.missing_srs?
+        if ogr2ogr.generic_error? && ogr2ogr.exit_code.zero? || ogr2ogr.missing_srs?
           try_fallback(append_mode)
         end
 

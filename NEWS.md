@@ -116,6 +116,7 @@ ion for time-series (#12670)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
+  * Create default public API key on user creation (#13471)
   * Keys destruction (#13171)
   * Organization concerns (#13511)
   * Token regeneration (#13321)
@@ -135,6 +136,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix wrong user flow involving analyses and empty layers ([#13489](https://github.com/CartoDB/cartodb/pull/13489))
+* Add titles (and description) to embeds in mobile viewports (#13517)
 * User feed renders google maps properly when user has it enabled
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
 * Improved bundling aliases
@@ -143,6 +145,7 @@ ion for time-series (#12670)
 * Restore translation keys to static pages (#13492)
 * Fix wrong user quotas [Support#1304](https://github.com/CartoDB/support/issues/1304)
 * Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
+* Avoid sending multiple notifications for stuck imports (#11833)
 * Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version

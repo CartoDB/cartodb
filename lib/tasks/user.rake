@@ -82,8 +82,9 @@ namespace :user do
         else
           begin
             user.create_api_keys
+            puts "INFO: Api Keys created for #{user.email}"
           rescue => e
-            "WARN: Unable to create api keys for user with email #{email}: #{e}"
+            puts "WARN: Unable to create api keys for user with email #{email}: #{e}"
           end
         end
       end

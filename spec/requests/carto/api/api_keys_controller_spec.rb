@@ -262,8 +262,8 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns 403 if API key is master or default public' do
-      master_api_key = @carto_user.api_keys.find_by_type(Carto::ApiKey::TYPE_MASTER)
-      default_api_key = @carto_user.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
+      master_api_key = @carto_user.api_keys.master.first
+      default_api_key = @carto_user.api_keys.default_public.first
 
       delete_json generate_api_key_url(user_req_params(@user), name: master_api_key.name) do |response|
         response.status.should eq 403
@@ -438,14 +438,16 @@ describe Carto::Api::ApiKeysController do
 
   describe 'header auth' do
     before(:all) do
-      @master_api_key = @carto_user.api_keys.find_by_type(Carto::ApiKey::TYPE_MASTER)
+      @master_api_key = @carto_user.api_keys.master.first
     end
 
     def json_headers_with_auth
       http_json_headers.merge(
-        'Authorization' => 'Basic ' + Base64.encode64("#{@user.username}:#{@master_api_key.token}")
+        'Authorization' => 'Basic ' + Base64.strict_encode64("#{@user.username}:#{@master_api_key.token}")
       )
     end
+
+    let(:header_params) { { user_domain: @carto_user.username } }
 
     describe 'with header auth' do
       it 'creates api_key' do
@@ -470,7 +472,7 @@ describe Carto::Api::ApiKeysController do
           name: name,
           grants: grants
         }
-        post_json generate_api_key_url(user_req_params(@carto_user)), payload, json_headers_with_auth do |response|
+        post_json generate_api_key_url(header_params), payload, json_headers_with_auth do |response|
           response.status.should eq 201
           Carto::ApiKey.where(name: response.body[:name]).each(&:destroy)
         end
@@ -478,8 +480,7 @@ describe Carto::Api::ApiKeysController do
 
       it 'destroys the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        params = user_req_params(@user)
-        delete_json generate_api_key_url(params, name: api_key.name), {}, json_headers_with_auth do |response|
+        delete_json generate_api_key_url(header_params, name: api_key.name), {}, json_headers_with_auth do |response|
           response.status.should eq 200
           response.body[:name].should eq api_key.name
         end
@@ -504,7 +505,7 @@ describe Carto::Api::ApiKeysController do
 
       it 'returns requested API key' do
         key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        get_json generate_api_key_url(user_req_params(@user), name: key.name), {}, json_headers_with_auth do |response|
+        get_json generate_api_key_url(header_params, name: key.name), {}, json_headers_with_auth do |response|
           response.status.should eq 200
           response.body[:name].should eq key.name
         end
@@ -512,7 +513,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns API key list' do
-        get_json generate_api_key_url(user_req_params(@user)), {}, json_headers_with_auth do |response|
+        get_json generate_api_key_url(header_params), {}, json_headers_with_auth do |response|
           response.status.should eq 200
         end
       end

@@ -2565,31 +2565,42 @@ describe User do
     end
   end
 
-  describe 'create api keys on user creation' do
-    include_context 'organization with users helper'
-
-    it "creates master api key on user creation if ff auth_api is enabled for the user" do
-      organization = create_org('authorg', 200.megabytes, 5)
-      auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
-      @user = create_auth_api_user(organization)
-
-      api_keys = Carto::ApiKey.where(user_id: @user.id)
-      api_keys.should_not be_empty
-
-      master_api_key = Carto::ApiKey.where(user_id: @user.id, type: Carto::ApiKey::TYPE_MASTER)
-      master_api_key.should be
-
-      organization.destroy
-      auth_api_feature_flag.destroy
-      @user.destroy
+  describe 'api keys' do
+    before(:all) do
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+      @auth_api_user = FactoryGirl.create(:valid_user)
     end
 
-    it "does not create master api key on user creation if ff auth_api is not enabled for the user" do
-      @user = FactoryGirl.create(:valid_user)
+    after(:all) do
+      @auth_api_feature_flag.destroy
+      @auth_api_user.destroy
+    end
 
-      api_keys = Carto::ApiKey.where(user_id: @user.id)
-      api_keys.should be_empty
-      @user.destroy
+    describe 'create api keys on user creation' do
+      it "creates master api key on user creation if ff auth_api is enabled for the user" do
+        api_keys = Carto::ApiKey.where(user_id: @auth_api_user.id)
+        api_keys.should_not be_empty
+
+        master_api_key = Carto::ApiKey.where(user_id: @auth_api_user.id).master.first
+        master_api_key.should be
+        master_api_key.token.should eq @auth_api_user.api_key
+      end
+
+      it "does not create master api key on user creation if ff auth_api is not enabled for the user" do
+        user = FactoryGirl.create(:valid_user)
+        api_keys = Carto::ApiKey.where(user_id: @user.id)
+        api_keys.should be_empty
+        user.destroy
+      end
+    end
+
+    it 'syncs api key changes with master api key' do
+      master_key = Carto::ApiKey.where(user_id: @auth_api_user.id).master.first
+      expect(@auth_api_user.api_key).to eq master_key.token
+
+      expect { @auth_api_user.regenerate_api_key }.to(change { @auth_api_user.api_key })
+      master_key.reload
+      expect(@auth_api_user.api_key).to eq master_key.token
     end
   end
 

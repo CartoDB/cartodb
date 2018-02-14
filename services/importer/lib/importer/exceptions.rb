@@ -24,43 +24,49 @@ module CartoDB
     # Mapped errors
 
     class FileTooBigError < BaseImportError
-      def initialize(message="The file supplied exceeds the maximum allowed for the user")
+      def initialize(message = "The file supplied exceeds the maximum allowed for the user")
         super(message, 6666)
       end
     end
 
     class TooManyTableRowsError < BaseImportError
-      def initialize(message="The imported table contains more rows than allowed for the user")
+      def initialize(message = "The imported table contains more rows than allowed for the user")
         super(message, 6668)
       end
     end
 
     class UserConcurrentImportsLimitError < BaseImportError
-      def initialize(message="User already using all allowed import slots")
+      def initialize(message = "User already using all allowed import slots")
         super(message,6669)
       end
     end
 
     class TooManyNamedMapTemplatesError < BaseImportError
-      def initialize(message="User reached the limit on number of templates")
+      def initialize(message = "User reached the limit on number of templates")
         super(message, 6670)
       end
     end
 
+    class StuckImportJobError < BaseImportError
+      def initialize(message = "The import job was stuck and we marked it as failed")
+        super(message, 6671)
+      end
+    end
+
     class DownloadTimeoutError < BaseImportError
-      def initialize(message="Data download timed out. Check the source is not running slow and/or try again.")
+      def initialize(message = "Data download timed out. Check the source is not running slow and/or try again.")
         super(message, 1020)
       end
     end
 
     class CartoDBfyError < BaseImportError
-      def initialize(message="Error CartoDBFying table")
+      def initialize(message = "Error CartoDBFying table")
         super(message, 2010)
       end
     end
 
     class CartoDBfyInvalidID < BaseImportError
-      def initialize(message="Invalid cartodb_id")
+      def initialize(message = "Invalid cartodb_id")
         super(message, 2011)
       end
     end
@@ -160,6 +166,7 @@ module CartoDB
       StatementTimeoutError                 => 6667,
       TooManyTableRowsError                 => 6668,
       UserConcurrentImportsLimitError       => 6669,
+      StuckImportJobError                   => 6671,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,
@@ -168,6 +175,8 @@ module CartoDB
       CartoDB::Datasources::TokenExpiredOrInvalidError            => 1012,
       CartoDB::Datasources::InvalidServiceError                   => 1012,
       CartoDB::Datasources::DataDownloadError                     => 1011,
+      CartoDB::Datasources::DataDownloadTimeoutError              => 1020,
+      CartoDB::Datasources::ExternalServiceTimeoutError           => 1020,
       CartoDB::Datasources::MissingConfigurationError             => 1012,
       CartoDB::Datasources::UninitializedError                    => 1012,
       CartoDB::Datasources::NoResultsError                        => 1015,

@@ -68,7 +68,7 @@ module Carto
 
         def load_vizjson
           vis = visualization_for_presentation
-          @vizjson = generate_named_map_vizjson3(vis, vizjson3_options(vis, params))
+          @vizjson = generate_named_map_vizjson3(vis)
         end
 
         def load_state

@@ -106,7 +106,6 @@ module CartoDB
       public_dashboard_deps.js
       public_dashboard.js
       public_like.js
-      tangram.min.js
       old_common.js
       old_common_without_core.js
       templates.js
@@ -126,6 +125,9 @@ module CartoDB
 
       user_feed_deps.js
       user_feed.js
+
+      user_feed_new.js
+      common_dashboard.js
 
       tipsy.js
       modernizr.js

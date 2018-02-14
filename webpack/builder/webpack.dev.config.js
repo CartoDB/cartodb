@@ -1,7 +1,12 @@
 const webpack = require('webpack');
 const {resolve} = require('path');
-const PACKAGE = require('./package.json');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const PACKAGE = require('../../package.json');
 const version = PACKAGE.version;
+
+const stats = (env) => {
+  return env && env.stats;
+};
 
 const isVendor = (module, count) => {
   const userRequest = module.userRequest;
@@ -9,9 +14,9 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
-  builder_embed: ['whatwg-fetch', './lib/assets/javascripts/cartodb3/public_editor.js'],
-  dataset: './lib/assets/javascripts/cartodb3/dataset.js',
-  builder: './lib/assets/javascripts/cartodb3/editor.js'
+  builder_embed: ['whatwg-fetch', resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3/public_editor.js')],
+  dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3/dataset.js'),
+  builder: resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3/editor.js')
 };
 
 module.exports = env => {
@@ -19,15 +24,27 @@ module.exports = env => {
     entry: entryPoints,
     output: {
       filename: `${version}/javascripts/[name].js`,
-      path: resolve(__dirname, 'public/assets')
+      path: resolve(__dirname, '../../', 'public/assets')
+    },
+    resolve: {
+      symlinks: false,
+      modules: require('../common/modules.js'),
+      alias: require('../common/alias.js')
     },
     devtool: 'source-map',
-    plugins: Object.keys(entryPoints)
-      .map(entry => new webpack.optimize.CommonsChunkPlugin({
-        name: `${entry}_vendor`,
-        chunks: [entry],
-        minChunks: isVendor
-      }))
+    plugins: [
+      stats(env) ? new BundleAnalyzerPlugin({
+        analyzerMode: 'static'
+      }) : undefined
+    ].concat(
+      // For each entry point, we generate the vendor file
+      Object.keys(entryPoints)
+        .map(entry => new webpack.optimize.CommonsChunkPlugin({
+          name: `${entry}_vendor`,
+          chunks: [entry],
+          minChunks: isVendor
+        }))
+    )
       .concat([
       // Extract common chuncks from the 3 vendor files
         new webpack.optimize.CommonsChunkPlugin({
@@ -51,76 +68,49 @@ module.exports = env => {
         }),
 
         new webpack.DefinePlugin({
-          __IN_DEV__: JSON.stringify(false),
-          __ENV__: JSON.stringify('prod')
-        }),
-
-        // Minify
-        new webpack.optimize.UglifyJsPlugin({
-          sourceMap: true,
-          beautify: false,
-          mangle: {
-            screw_ie8: true,
-            keep_fnames: true
-          },
-          compress: {
-            screw_ie8: true
-          },
-          comments: false,
-          output: {
-            ascii_only: true
-          }
+          __IN_DEV__: JSON.stringify(true),
+          __ENV__: JSON.stringify('dev')
         })
-      ]),
+      ])
+      .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
     module: {
       rules: [
         {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, 'node_modules/cartodb.js')
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ],
           options: {
             shim: {
               'wax.cartodb.js': {
                 exports: 'wax'
               },
-              'lzma': {
-                exports: 'LZMA'
-              },
               'html-css-sanitizer': {
                 exports: 'html'
+              },
+              'lzma': {
+                exports: 'LZMA'
               }
             }
-          }
-        },
-        {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          include: [
-            resolve(__dirname, 'node_modules/tangram-cartocss'),
-            resolve(__dirname, 'node_modules/tangram.cartodb')
-          ],
-          options: {
-            presets: ['es2015']
           }
         },
         {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [
-            resolve(__dirname, 'lib/assets/javascripts/cartodb3'),
-            resolve(__dirname, 'lib/assets/javascripts/deep-insights'),
-            resolve(__dirname, 'node_modules/cartodb.js')
+            resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
         },
         {
           test: /\.mustache$/,
           use: 'raw-loader',
           include: [
-            resolve(__dirname, 'lib/assets/javascripts/cartodb3'),
-            resolve(__dirname, 'lib/assets/javascripts/deep-insights'),
-            resolve(__dirname, 'node_modules/cartodb.js')
+            resolve(__dirname, '../../', 'lib/assets/javascripts/cartodb3'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
+            resolve(__dirname, '../../', 'node_modules/cartodb.js')
           ]
         }
       ]
@@ -130,8 +120,6 @@ module.exports = env => {
       fs: 'empty' // This fixes the error Module not found: Error: Can't resolve 'fs'
     },
 
-    stats: {
-      warnings: false
-    }
+    stats: 'normal'
   };
 };

@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
+* User feed migration
 * Add legends to mobile view in embed maps (#13417)
 * Unplug pluggable frontends (#13446)
 * Replace Mapzen geocoding with Mapbox (#13450)
@@ -113,12 +115,17 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Auth API
   * Keys creation (#13170)
+  * Create master API key on user creation (#13172)
+  * Create default public API key on user creation (#13471)
   * Keys destruction (#13171)
+  * Organization concerns (#13511)
   * Token regeneration (#13321)
   * Keys listing (#13327)
   * Header authentication (#13329)
   * Keep API Key permissions up to date when tables change (#13333)
+  * Delete API keys on user deletion (#13470)
   * Inherit from public user for API key permissions (#13464)
+  * Sync master key with user model (#13540)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
@@ -130,6 +137,18 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix wrong user flow involving analyses and empty layers ([#13489](https://github.com/CartoDB/cartodb/pull/13489))
+* Add titles (and description) to embeds in mobile viewports (#13517)
+* User feed renders google maps properly when user has it enabled
+* Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
+* Improved bundling aliases
+* Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
+* Remove Tangram references (#13461)
+* Restore translation keys to static pages (#13492)
+* Show signup errors when org-user signup fails [Support#1312](https://github.com/CartoDB/support/issues/1312)
+* Fix wrong user quotas [Support#1304](https://github.com/CartoDB/support/issues/1304)
+* Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
+* Avoid sending multiple notifications for stuck imports (#11833)
+* Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
@@ -409,6 +428,7 @@ ion for time-series (#12670)
 * Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
 * Fix for legends when there is only one element in the ramp (cartodb.js#1938)
 * Fix SAML configuration bug that doesn't let access some properties properly (#13161)
+* Improved error messages for ArcGIS MapServer imports [Support #1288](https://github.com/CartoDB/support/issues/1288)
 * Treat all time series dataview timestamps as UTC (#13070)
 * Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
 * Enable CSV exports for polygon and line datasets (#13212)
@@ -427,6 +447,8 @@ ion for time-series (#12670)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
+* Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
+* Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
 
 ### Internals
 * Replace SCSS-Lint with Stylelint (#13165)

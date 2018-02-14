@@ -1,0 +1,44 @@
+<li class="FeedItem">
+  <a href="http://<%- username %>.<%- account_host %>" class="FeedItem-avatar u-hideOnTablet">
+    <img src="<%- avatar_url %>" class="UserAvatar-img UserAvatar-img--big" />
+  </a>
+
+  <div class="DatasetCard DatasetCard--long" data-vis-id="<%- vis.id %>">
+    <div class="DatasetCard-content">
+      <div class="DatasetCard-contentBodyRow DatasetCard-contentBodyRow--flex">
+        <div class="DatasetCard-contentBodyDetails--left">
+          <div class="DatasetsList-itemCategory is--<%- geomType %>Dataset"></div>
+        </div>
+        <div class="DatasetCard-contentBodyDetails--right u-ellipsLongText">
+          <h3 class="DatasetCard-title DefaultTitle CDB-Text is-semibold">
+            <a href="<%- base_url %>/tables/<%- vis.name %>/public" class="DefaultTitle-link u-ellipsLongText" title="<%- vis.name %>"><%- vis.name %></a>
+          </h3>
+
+          <div class="DatasetCard-contentFooter u-altTextColor CDB-Size-medium">
+            <div class="MapCard-contentFooterDetails--left">
+              <% if (datasetSize && datasetSize[0] > 0) { %>
+              <div class="MapCard-contentFooterIcon u-hideOnMobile">
+                <i class="CDB-IconFont CDB-IconFont-floppy SizeIndicator-icon"></i>
+                <span class="MapCardIcon-counter"><%- datasetSize[0] %></span> <span class="MapCardIcon-label"><%- datasetSize[1] %></span>
+              </div>
+              <% } %>
+
+              <div class="MapCard-contentFooterDetails--right">
+                <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                  <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
+                  <%- updated %>
+                </div>
+              </div>
+            </div>
+            <div class="MapCard-contentFooterDetails--right">
+              <a href="#/like" class="LikesIndicator js-like is-likeable" data-vis-id="<%- vis.id %>">
+                <i class="CDB-Text CDB-IconFont CDB-IconFont-heartFill LikesIndicator-icon "></i>
+                <span class="CDB-Text CDB-Size-medium LikesIndicator-count"><%- vis.likes %></span>
+                <span class="CDB-Text CDB-Size-medium LikesIndicator-label">like<%- vis.likes !== 1 ? 's' : '' %></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>

@@ -128,7 +128,7 @@ Another feature of Builder specs is that we only generate the affected ones by d
 To start specs development type the next command:
 
 ```bash
-grunt affected_specs
+grunt test:browser
 ```
 
 After building the whole suite for the first time, a webpage will show up with a link to the Jasmine page with all the specs. This suite is at `http://localhost:8088/_SpecRunner-affected.html`
@@ -138,7 +138,7 @@ Then, the process will watch changes in the codebase and will regenerate the spe
 If you prefer to generate all specs anyway, you can pass a flag to the grunt task:
 
 ```bash
-grunt affected_specs --specs=all
+grunt test:browser --specs=all
 ```
 
 This will generate the whole Builder suite, not only the specs affected by the current branch.
@@ -149,11 +149,11 @@ If you want to run simultaneously the application and the specs generation follo
 
 1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt dev`. This will build the application assets and will watch for changes.
 
-2. Open a second terminal and run `grunt affected_specs`.
+2. Open a second terminal and run `grunt test:browser`.
 
 3. You will see in the first terminal that a lot of changes build the bundle again. That's normal. The first step of the point 3 is to copy all needed files, so the `watch` of `grunt dev` triggers. Don't worry about it.
 
-4. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt affected_specs` will build the specs.
+4. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt test:browser` will build the specs.
 
 #### Running a particular spec
 

@@ -115,12 +115,11 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+}
 
-  &:first-child {
-    // Let the left container grow and
-    // position the right one on the right edge
-    flex: 1;
-  }
+.CDB-ListDecoration-title {
+  flex: 1;
+  overflow: hidden;
 }
 
 .CDB-ListDecoration-rampNav-item {

@@ -1,11 +1,14 @@
 <div class="CDB-Box-modalHeader">
   <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--paddingHorizontal">
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemDisplay--flex CDB-Text CDB-Size-medium u-secondaryTextColor">
-      <div class='CDB-ListDecoration-secondaryContainer'>
+      <div class="CDB-ListDecoration-secondaryContainer">
         <button class="u-rSpace u-actionTextColor js-back" type="button">
           <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
         </button>
-        <span class="label js-label"><%- label %></span>
+      </div>
+
+      <div class="CDB-ListDecoration-secondaryContainer CDB-ListDecoration-title u-rSpace--m">
+        <span class="label u-ellipsis js-label"><%- label %></span>
       </div>
 
       <% if (isCategorized && imageEnabled) { %>

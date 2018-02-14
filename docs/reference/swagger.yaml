@@ -1,0 +1,542 @@
+openapi: 3.0.0
+info:
+  title: Auth API
+  description: >
+    # Introduction
+
+    This API allows you to manage API keys. API keys are the fundamental
+    building block of Carto's authorization system. See this this guide for more
+    information.
+
+
+    This API Accepts and returns JSON.
+
+    API base endpoint is `https://<your_username>.carto.com/api/v3/api_keys` or `https://<org_name>.carto.com/u/<your_username/api/v3/api_keys` in case you are using a user belonging to an organization.
+
+    # Authorization
+
+    There are three different API Keys that provide with different access privileges:
+
+    1. `default`: This api provides access to all public objects. It cannot be removed.
+
+    1. `master`: Using this API Key you will have full access and will be able to create/manage `regular` API Keys. It cannot be removed. You should keep its token safe and use it only when strictly necessary.
+
+    1. `regular`: This API Keys can be created with custom access privileges and can also be removed.
+
+    # API Key format
+
+    Every API Key consists on four main parts:
+
+    1. **name**: You will choose it when creating the API Key and it will be used for indexing your API Keys.
+
+    1. **type**: As mentioned before, there are three type of API Keys: `default`, `master` and `regular` providing different levels of access.
+
+    1. **token**: It will be used for authenticating your requests.
+
+    1. **grants**: Describes which APIs this API Key provides access to and to which tables. It consists on an array of two JSON objects. This object's `type` attribute can be `apis` or `database`:
+
+        - `apis`: Describes which APIs does this API Key provide access to through `apis` attribute:
+        ```{
+              {
+                    "type": "apis",
+                    "apis": [
+                        "sql",
+                        "maps"
+                    ]
+                }
+        ```
+        - `database`: Describes to which tables and which privleges on each table this API Key grants access to though `tables` attribute:
+        ```{
+              {
+                    "type": "database",
+                    "tables": [
+                        {
+                            "schema": "public",
+                            "name": "puigdemont",
+                            "permissions": [
+                                "insert",
+                                "select",
+                                "update"
+                            ]
+                        }
+                    ]
+                }
+        ```
+
+    # Authentication
+
+    In order to authenticate your requests to the api, they need to include a `Basic` `Authentication` header, where the `username` would be your username and the `password` would be your API Key's token. This authentication method will be valid across all CARTO components (Auth API, Maps API, SQL API). You can build your own `Authorization` header as follows:
+
+
+    ```
+    "Basic #{Base64.strict_encode64(username + ':' + api_key.token)}"
+    ```
+
+
+    **Important:** The API key you provide to access Auth API must be of type
+    `master`.
+  version: 0.0.1
+  contact:
+    name: Have you found an error? Github issues
+    url: 'https://github.com'
+servers:
+  - url: 'https://{user}.{domain}/api/v3'
+    description: Production server (uses live data)
+    variables:
+      domain:
+        default: carto.com
+        description: 'If on premise, change it to your domain'
+      user:
+        default: username
+        description: Your username
+paths:
+  /api_keys:
+    get:
+      summary: List API keys
+      description: Returns the API keys matching the filters.
+      tags:
+        - API Keys
+      operationId: getApiKeys
+      parameters:
+        - in: query
+          name: user
+          schema:
+            type: string
+          description: >-
+            Filter by user name. If the parameter is not present, the provided
+            access API key's user will be used
+          required: false
+        - in: query
+          name: type
+          schema:
+            $ref: '#/components/schemas/ApiKeysTypes'
+          description: Filter by the type of the API keys
+          required: false
+        - in: query
+          name: token
+          schema:
+            type: string
+          description: Filter by API key token
+          required: false
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiKey'
+                example:
+                  - id: aaaaa-bbbbbbbbbbb-cccccc
+                    name: 2019 Election results
+                    user: demo
+                    type: regular
+                    token: '1234567890123456789012345678901234567890'
+                    grants:
+                      - type: apis
+                        apis:
+                          - sql
+                      - type: database
+                        tables:
+                          - name: table1
+                            schema: schema1
+                            permissions:
+                              - read
+                              - insert
+                          - name: table2
+                            schema: schema1
+                            permissions:
+                              - read
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -X GET \
+
+            'http://username.carto.com/api_keys/'
+
+
+            curl -X GET \
+
+            'http://username.carto.com/api_keys/?user=demo&type=regular'
+
+
+            curl -X GET \
+
+            'http://username.carto.com/api_keys/?token=1234567890123456789012345678901234567890'
+    post:
+      summary: Create API key
+      description: >-
+        Creates a _regular_ API key.
+
+
+        _Master_ and _Default Public_ API keys are automatically generated on
+        user's creation.
+      tags:
+        - API Keys
+      operationId: createApiKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyCreation'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/BadInput'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X POST \
+            http://username.carto.com/api_keys/ \
+            -d '{
+              "name": "2019 Election results",
+              "grants": [
+                {
+                  "type": "apis",
+                  "apis": [
+                    "sql"
+                  ]
+                },
+                {
+                  "type": "database",
+                  "tables": [
+                    {
+                      "name": "table1",
+                      "schema": "schema1",
+                      "permissions": [
+                        "read",
+                        "insert"
+                      ]
+                    },
+                    {
+                      "name": "table2",
+                      "schema": "schema1",
+                      "permissions": [
+                        "read"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }'
+  '/api_keys/{id}':
+    parameters:
+      - $ref: '#/components/parameters/apiKeyId'
+    get:
+      summary: Get API key
+      description: >-
+        Returns an API key based on it's ID.
+
+
+        If you want to search by API key _token_, use the GET **/api_keys**
+        endpoint with the query param _token_ set.
+      tags:
+        - API Keys
+      operationId: getApiKeyById
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET \
+            http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc
+    delete:
+      summary: Delete API key
+      description: >-
+        Deletes an API key based on it's ID. Only _regular_ API keys can be
+        deleted.
+      tags:
+        - API Keys
+      operationId: deleteApiKeyById
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X DELETE \
+            http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc
+  '/api_keys/{id}/regenerate':
+    parameters:
+      - $ref: '#/components/parameters/apiKeyId'
+    put:
+      summary: Regenerate API key token
+      description: Regenerates the API key token. The rest of the fields remain the same.
+      tags:
+        - API Keys
+      operationId: regenerateApiKeyById
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+              example:
+                id: aaaaaa-bbbbbbbbbbbbbb-ccccccc
+                name: 2019 Election results
+                user: demo
+                type: regular
+                token: abcdefghijabcdefghijabcdefghijabcdefghij
+                grants:
+                  - type: apis
+                    apis:
+                      - sql
+                  - type: database
+                    tables:
+                      - name: table1
+                        schema: schema1
+                        permissions:
+                          - read
+                          - insert
+                      - name: table2
+                        schema: schema1
+                        permissions:
+                          - read
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -X PUT \
+
+            http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc/regenerate
+components:
+  schemas:
+    ApiKey:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            user:
+              type: string
+            type:
+              $ref: '#/components/schemas/ApiKeysTypes'
+            token:
+              type: string
+            grants:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/GrantApis'
+                  - $ref: '#/components/schemas/GrantDatabase'
+        - $ref: '#/components/schemas/Timestamps'
+      required:
+        - id
+        - name
+        - type
+        - user
+        - token
+        - grants
+      example:
+        id: aaaaaa-bbbbbbbbbbbbbb-ccccccc
+        name: 2019 Election results
+        user: demo
+        type: regular
+        token: '1234567890123456789012345678901234567890'
+        grants:
+          - type: apis
+            apis:
+              - sql
+          - type: database
+            tables:
+              - name: table1
+                schema: schema1
+                permissions:
+                  - read
+                  - insert
+              - name: table2
+                schema: schema1
+                permissions:
+                  - read
+    ApiKeyCreation:
+      type: object
+      properties:
+        name:
+          type: string
+          description: For administrative purposes only
+        user:
+          type: string
+          description: >-
+            The associated user. If the field is not present, the provided
+            access API key's user will be used
+        grants:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/GrantDatabase'
+              - $ref: '#/components/schemas/GrantApis'
+            discriminator:
+              propertyName: type
+      required:
+        - name
+        - grants
+      example:
+        name: 2019 Election results
+        user: demo
+        grants:
+          - type: apis
+            apis:
+              - sql
+          - type: database
+            tables:
+              - name: table1
+                schema: schema1
+                permissions:
+                  - read
+                  - insert
+              - name: table2
+                schema: schema1
+                permissions:
+                  - read
+    GrantDatabase:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - database
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableGrant'
+      required:
+        - type
+        - tables
+    TableGrant:
+      type: object
+      properties:
+        name:
+          type: string
+        schema:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+            enum:
+              - read
+              - insert
+              - update
+              - delete
+          uniqueItems: true
+      required:
+        - name
+        - schema
+        - permissions
+    GrantApis:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - apis
+        apis:
+          type: array
+          items:
+            $ref: '#/components/schemas/Apis'
+          uniqueItems: true
+      required:
+        - type
+        - apis
+    Apis:
+      type: string
+      enum:
+        - sql
+        - maps
+    ApiKeysTypes:
+      type: string
+      enum:
+        - master
+        - default
+        - regular
+    Timestamps:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+  securitySchemes:
+    ApiKeyHTTPBasicAuth:
+      type: http
+      scheme: basic
+    ApiKeyQueryParam:
+      type: apiKey
+      in: header
+      name: api_key
+  parameters:
+    apiKeyId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: the API key ID
+  responses:
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Unauthorized. No authentication provided.
+    Forbidden:
+      description: Forbidden. The API key does not authorize this request.
+    BadInput:
+      description: Request's parameters error

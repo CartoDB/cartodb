@@ -454,6 +454,88 @@ describe DataImport do
     end
   end
 
+  it 'mark as failure a stuck job' do
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",
+      state: DataImport::STATE_STUCK
+    )
+    data_import.mark_as_failed_if_stuck!.should eq true
+    data_import.success.should eq false
+    data_import.error_code.should eq 6671
+
+    data_import.mark_as_failed_if_stuck!.should eq false
+  end
+
+  describe 'arcgis connector' do
+    before :each do
+      # Metadata of a layer
+      Typhoeus.stub(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      # IDs list of a layer
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_valid.json"))
+        body = ::JSON.parse(body)
+
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+    end
+
+    after :each do
+      CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
+    end
+
+    it 'should raise statement timeout error when the query batcher raise that exception' do
+      CartoDB::Importer2::QueryBatcher.any_instance
+                                      .stubs(:execute_update)
+                                      .raises(Sequel::DatabaseError, 'canceling statement due to statement timeout')
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'failure'
+      data_import.error_code.should eq 6667
+    end
+
+    it 'should raise invalid data error when the query batcher raise any other exception' do
+      CartoDB::Importer2::QueryBatcher.any_instance
+                                      .stubs(:execute_update)
+                                      .raises(Sequel::DatabaseError, 'GEOSisValid(): InterruptedException: Interrupted!')
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'failure'
+      data_import.error_code.should eq 1012
+    end
+  end
+
   describe 'log' do
     it 'is initialized to a CartoDB::Log instance' do
       data_import = DataImport.create(

@@ -54,6 +54,7 @@ class SignupController < ApplicationController
       CartoDB.notify_debug('User not valid at signup', { errors: errors } )
       if errors['organization'] && !errors[:organization].empty?
         @signup_source = 'Organization'
+        @signup_errors = errors
         render 'shared/signup_issue'
       else
         if google_signup? && existing_user(@user)
@@ -174,6 +175,7 @@ class SignupController < ApplicationController
       check_signup_errors = Sequel::Model::Errors.new
       @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization))
       @signup_source = 'Organization'
+      @signup_errors = check_signup_errors
       render 'shared/signup_issue' and return false if check_signup_errors.length > 0
     end
   end

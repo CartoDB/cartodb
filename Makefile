@@ -26,7 +26,6 @@ WORKING_SPECS_1 = \
 	spec/requests/application_controller_spec.rb \
 	spec/requests/sessions_spec.rb \
 	spec/requests/api/json/layer_presenter_spec.rb \
-	spec/requests/carto/api/api_keys_controller_spec.rb \
 	spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
@@ -77,7 +76,6 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
-	spec/models/carto/api_key_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/visualization/watcher_spec.rb \
@@ -251,6 +249,7 @@ WORKING_SPECS_9 = \
 SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_spec.rb \
 	spec/models/carto/analysis_node_spec.rb \
+	spec/models/carto/api_key_spec.rb \
 	spec/models/carto/layer_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/notification_spec.rb \
@@ -286,6 +285,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/named_maps/template_spec.rb \
 	services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb \
 	spec/models/carto/mapcap_spec.rb \
+	spec/requests/carto/api/api_keys_controller_spec.rb \
 	spec/requests/carto/api/mapcaps_controller_spec.rb \
 	spec/requests/carto/api/states_controller_spec.rb \
 	spec/requests/carto/api/metrics_controller_spec.rb \

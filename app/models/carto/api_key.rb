@@ -9,7 +9,6 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 end
 
 module Carto
-
   class TablePermissions
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
 
@@ -38,32 +37,98 @@ module Carto
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
-
     VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
+
+    NAME_MASTER = 'Master'.freeze
+    NAME_DEFAULT_PUBLIC = 'Default public'.freeze
+
+    API_SQL       = 'sql'.freeze
+    API_MAPS      = 'maps'.freeze
+
+    GRANTS_ALL_APIS = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
+
+    TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
     self.inheritance_column = :_type
 
     belongs_to :user
 
-    before_create :create_token
-    before_create :create_db_config
+    before_create :create_token, if: ->(k) { k.regular? && !k.token }
+    before_create :create_db_config, if: ->(k) { k.regular? && !(k.db_role && k.db_password) }
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
-    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
-    validate  :check_owned_table_permissions
 
+    validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
     validates :type, inclusion: { in: VALID_TYPES }
+    validates :type, uniqueness: { scope: :user_id }, unless: :regular?
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
-    after_create :setup_db_role
+    validate :valid_name_for_type
+    validate :check_owned_table_permissions
+    validate :valid_master_key, if: :master?
+    validate :valid_default_public_key, if: :default_public?
+
+    after_create :setup_db_role, if: ->(k) { k.regular? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save :add_to_redis
 
-    after_destroy :drop_db_role
+    after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
 
+    scope :master, ->() { where(type: TYPE_MASTER) }
+    scope :default_public, ->() { where(type: TYPE_DEFAULT_PUBLIC) }
 
-    attr_writer :redis_client
+    attr_accessor :skip_role_setup
+
+    private_class_method :new, :create, :create!
+
+    def self.create_master_key!(user: Carto::User.find(scope_attributes['user_id']))
+      create!(
+        user: user,
+        type: TYPE_MASTER,
+        name: NAME_MASTER,
+        token: user.api_key,
+        grants: GRANTS_ALL_APIS,
+        db_role: user.database_username,
+        db_password: user.database_password
+      )
+    end
+
+    def self.create_default_public_key!(user: Carto::User.find(scope_attributes['user_id']))
+      create!(
+        user: user,
+        type: TYPE_DEFAULT_PUBLIC,
+        name: NAME_DEFAULT_PUBLIC,
+        token: TOKEN_DEFAULT_PUBLIC,
+        grants: GRANTS_ALL_APIS,
+        db_role: user.database_public_username,
+        db_password: CartoDB::PUBLIC_DB_USER_PASSWORD
+      )
+    end
+
+    def self.create_regular_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+      create!(
+        user: user,
+        type: TYPE_REGULAR,
+        name: name,
+        grants: grants
+      )
+    end
+
+    def self.new_from_hash(api_key_hash)
+      new(
+        created_at: api_key_hash[:created_at],
+        db_password: api_key_hash[:db_password],
+        db_role: api_key_hash[:db_role],
+        name: api_key_hash[:name],
+        token: api_key_hash[:token],
+        type: api_key_hash[:type],
+        updated_at: api_key_hash[:updated_at],
+        grants: api_key_hash[:grants],
+        user_id: api_key_hash[:user_id],
+        skip_role_setup: true
+      )
+    end
 
     def granted_apis
       @granted_apis ||= process_granted_apis
@@ -79,19 +144,21 @@ module Carto
         SELECT
           table_schema,
           table_name,
-          string_agg(lower(privilege_type),',') privilege_types
+          string_agg(DISTINCT lower(privilege_type),',') privilege_types
         FROM
-          information_schema.role_table_grants
+          information_schema.table_privileges tp
+        LEFT JOIN
+          information_schema.applicable_roles ar ON tp.grantee = ar.role_name
         WHERE
-          grantee = '#{db_role}'
+          ar.grantee = '#{db_role}' OR tp.grantee = '#{db_role}'
         GROUP BY
           table_schema,
           table_name;
         }
-      db_connection.fetch(query).all.map do |line|
-        TablePermissions.new(schema: line[:table_schema],
-                             name: line[:table_name],
-                             permissions: line[:privilege_types].split(','))
+      db_run(query).map do |line|
+        TablePermissions.new(schema: line['table_schema'],
+                             name: line['table_name'],
+                             permissions: line['privilege_types'].split(','))
       end
     end
 
@@ -101,11 +168,50 @@ module Carto
       end while self.class.exists?(token: token)
     end
 
+    def master?
+      type == TYPE_MASTER
+    end
+
+    def default_public?
+      type == TYPE_DEFAULT_PUBLIC
+    end
+
+    def regular?
+      type == TYPE_REGULAR
+    end
+
+    def valid_name_for_type
+      if !master? && name == NAME_MASTER || !default_public? && name == NAME_DEFAULT_PUBLIC
+        errors.add(:name, "api_key name cannot be #{NAME_MASTER} nor #{NAME_DEFAULT_PUBLIC}")
+      end
+    end
+
+    def can_be_deleted?
+      regular?
+    end
+
+    def role_creation_queries
+      queries = [
+        "CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'",
+        "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
+        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
+      ]
+
+      if user.organization_user?
+        queries << "GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\""
+      end
+      queries
+    end
+
     private
 
     PASSWORD_LENGTH = 40
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
+    def add_to_redis
+      redis_client.hmset(redis_key, redis_hash_as_array)
+    end
 
     def process_granted_apis
       apis = grants.find { |v| v[:type] == 'apis' }[:apis]
@@ -143,13 +249,7 @@ module Carto
     end
 
     def setup_db_role
-      db_run("CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'")
-      db_run("GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"")
-      db_run("ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}")
-
-      if user.organization_user?
-        db_run("GRANT \"#{user.service.organization_member_group_role_member_name}\" TO \"#{db_role}\"")
-      end
+      create_role
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
@@ -158,6 +258,10 @@ module Carto
       end
 
       affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
+    end
+
+    def create_role
+      role_creation_queries.each { |q| db_run(q) }
     end
 
     def drop_db_role
@@ -173,23 +277,19 @@ module Carto
       "#{REDIS_KEY_PREFIX}#{user.username}:#{token}"
     end
 
-    def add_to_redis
-      redis_client.hmset(redis_key, redis_hash_as_array)
-    end
-
     def remove_from_redis(key = redis_key)
       redis_client.del(key)
     end
 
     def db_run(query)
-      db_connection.run(query)
-    rescue Sequel::DatabaseError => e
+      db_connection.execute(query)
+    rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
       raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
     end
 
     def db_connection
-      @user_db_connection ||= ::User[user.id].in_database(as: :superuser)
+      @user_db_connection ||= user.in_database(as: :superuser)
     end
 
     def redis_hash_as_array
@@ -199,7 +299,7 @@ module Carto
     end
 
     def redis_client
-      @redis_client ||= $users_metadata
+      $users_metadata
     end
 
     def revoke_privileges
@@ -213,6 +313,18 @@ module Carto
     def grant_aux_write_privileges_for_schema(s)
       db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
       db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
+    end
+
+    def valid_master_key
+      errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
+      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:token, "must match user model for master keys") unless token == user.api_key
+    end
+
+    def valid_default_public_key
+      errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
+      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
   end
 end

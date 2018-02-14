@@ -2508,10 +2508,6 @@ describe User do
   end
 
   describe 'viewer user' do
-    after(:each) do
-      @user.destroy if @user
-    end
-
     def verify_viewer_quota(user)
       user.quota_in_bytes.should eq 0
       user.geocoding_quota.should eq 0
@@ -2534,6 +2530,7 @@ describe User do
                             obs_snapshot_quota: 100, soft_obs_snapshot_limit: true, obs_general_quota: 100,
                             soft_obs_general_limit: true
         verify_viewer_quota(@user)
+        @user.destroy
       end
     end
 
@@ -2551,6 +2548,7 @@ describe User do
         @user.save
         @user.reload
         verify_viewer_quota(@user)
+        @user.destroy
       end
     end
 
@@ -2562,7 +2560,47 @@ describe User do
         @user.save
         @user.reload
         verify_viewer_quota(@user)
+        @user.destroy
       end
+    end
+  end
+
+  describe 'api keys' do
+    before(:all) do
+      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
+      @auth_api_user = FactoryGirl.create(:valid_user)
+    end
+
+    after(:all) do
+      @auth_api_feature_flag.destroy
+      @auth_api_user.destroy
+    end
+
+    describe 'create api keys on user creation' do
+      it "creates master api key on user creation if ff auth_api is enabled for the user" do
+        api_keys = Carto::ApiKey.where(user_id: @auth_api_user.id)
+        api_keys.should_not be_empty
+
+        master_api_key = Carto::ApiKey.where(user_id: @auth_api_user.id).master.first
+        master_api_key.should be
+        master_api_key.token.should eq @auth_api_user.api_key
+      end
+
+      it "does not create master api key on user creation if ff auth_api is not enabled for the user" do
+        user = FactoryGirl.create(:valid_user)
+        api_keys = Carto::ApiKey.where(user_id: @user.id)
+        api_keys.should be_empty
+        user.destroy
+      end
+    end
+
+    it 'syncs api key changes with master api key' do
+      master_key = Carto::ApiKey.where(user_id: @auth_api_user.id).master.first
+      expect(@auth_api_user.api_key).to eq master_key.token
+
+      expect { @auth_api_user.regenerate_api_key }.to(change { @auth_api_user.api_key })
+      master_key.reload
+      expect(@auth_api_user.api_key).to eq master_key.token
     end
   end
 

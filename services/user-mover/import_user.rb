@@ -427,8 +427,12 @@ module CartoDB
       # Disabling it may be hard. Maybe it's easier to just exclude it in the export.
       def import_pgdump(dump)
         @logger.info("Creating roles for regular API Keys")
-        Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
-          k.role_creation_queries.each { |q| superuser_pg_conn.query(q) }
+        begin
+          Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
+            k.role_creation_queries.each { |q| superuser_pg_conn.query(q) }
+          end
+        rescue ActiveRecord::RecordNotFound
+          @logger.error("Unable to create roles for user's api keys, User id: #{@pack_config['user']['id']}")
         end
 
         @logger.info("Importing dump from #{dump} using pg_restore..")

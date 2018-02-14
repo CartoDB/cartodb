@@ -10,7 +10,7 @@ This guide describes how to create a Leaflet map and display data from CARTO ove
 2. Use Dataviews to Create Widgets.
 
 
-**Tip:** For more advanced documentation, view the [Full Reference API](https://carto.com/documentation/carto-js/reference/) or browse through some [examples](https://carto.com/documentation/carto-js/examples/). You can also read the [FAQs](https://carto.com/documentation/carto-js/support/faq/).
+**Tip:** For more advanced documentation, view the [Full Reference API]({{ site.cartojs_docs }}/reference/) or browse through some [examples]({{ site.cartojs_docs }}/examples/). You can also read the [FAQs]({{ site.cartojs_docs }}/support/faq/).
 
 ### Requesting an API Key
 
@@ -391,4 +391,4 @@ client.addDataview(countriesDataview);
   </a>
 </div>
 
-This guide is just an overview of how to use CARTO.js to overlay data and create widgets. View the [Examples](https://carto.com/documentation/carto-js/examples/) section for specific features of CARTO.js in action.
+This guide is just an overview of how to use CARTO.js to overlay data and create widgets. View the [Examples]({{ site.cartojs_docs }}/examples/) section for specific features of CARTO.js in action.

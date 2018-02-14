@@ -4,7 +4,7 @@ CARTO.js 4.0 introduces new concepts that in some cases, change the behavior of 
 
 ### Do I need an API Key?
 
-Yes. See the [full reference API](/documentation/carto-js/reference/#authenticatio)for details.
+Yes. See the [full reference API]({{site.cartojs_docs}}/reference/#authentication)for details.
 
 ### How do I request an API Key?
 

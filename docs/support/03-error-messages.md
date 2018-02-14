@@ -443,6 +443,6 @@ If you find an error on Chrome JavaScript Console, Firefox Web Console, or any o
 
 CARTO.js writes error messages to `window.console` if they are not caught. Please check the developer documentation for your browser in order to understand how you can check it.
 
-If any errors occurred when loading CARTO.js, they appear as one or more lines in the console. You can check the [error codes table](#errors above to find te error in the error message. You can also find the details about the error message in the [Full Reference API](https://carto.com/documentation/carto-js/reference/).
+If any errors occurred when loading CARTO.js, they appear as one or more lines in the console. You can check the [error codes table](#errors above to find te error in the error message. You can also find the details about the error message in the [Full Reference API]({{site.cartojs_docs}}/reference/).
 
-Ensure that you are using a [supported browser](https://carto.com/documentation/carto-js/support/browsers/).
+Ensure that you are using a [supported browser]({{site.cartojs_docs}}/support/browsers/).

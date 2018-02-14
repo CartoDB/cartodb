@@ -2,9 +2,9 @@
 
 CARTO.js is a JavaScript library that interacts with different CARTO APIs. It is part of the [CARTO Engine](https://carto.com/pricing/engine/) ecosystem.
 
-To understand the fundamentals of CARTO.js 4.0, [read the guides]({https://carto.com/carto-js/guides/quickstart/)read the guides. To view the source code, browse the [open-source repository](https://github.com/CartoDB/cartodb.js) in Github and contribute. Otherwise, view [examples with Leaflet and Google Maps](https://carto.com/carto-js/examples/) or find different [support options](https://carto.com/carto-js/support/).
+To understand the fundamentals of CARTO.js 4.0, [read the guides]({{site.cartojs_docs}}/guides/quickstart/)read the guides. To view the source code, browse the [open-source repository](https://github.com/CartoDB/cartodb.js) in Github and contribute. Otherwise, view [examples with Leaflet and Google Maps]({{site.cartojs_docs}}/examples/) or find different [support options]({site.cartojs_docs}}/support/).
 
-If you find any trouble understanding any term written in this reference, please visit our [glossary]({{site.baseurl}}/carto-js/guides/glossary/)
+If you find any trouble understanding any term written in this reference, please visit our [glossary]({{site.cartojs_docs}}/guides/glossary/)
 
 The contents described in this document are subject to CARTO's [Terms of Service](https://carto.com/legal/)
 
@@ -14,7 +14,7 @@ The contents described in this document are subject to CARTO's [Terms of Service
 
 CARTO.js 4.0 requires using an API Key. From your CARTO dashboard, click _[Your API keys](https://carto.com/login)_ from the avatar drop-down menu to view your uniquely generated API Key for managing data with CARTO Engine.
 
-![Your API Keys](./avatar.gif)
+![Your API Keys](../img/avatar.gif)
 
 The examples in this documentation include a placeholder for the API Key. Ensure that you modify any placeholder parameters with your own credentials. You will have to supply your unique API Key to a [`carto.Client`](#cartoclient).
 

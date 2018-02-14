@@ -1,6 +1,6 @@
 ## Upgrade Considerations Guide
 
-This document is intended for existing developers who have used [previous versions](https://carto.com/documentation/carto-js/reference/#versioning) of CARTO.js.
+This document is intended for existing developers who have used [previous versions]({{site.cartojs_docs}}/reference/#versioning) of CARTO.js.
 
 ### About this Guide
 
@@ -11,17 +11,17 @@ This guide describes how the CARTO.js library has changed to support additional 
 At a high-level, the workflow consists of:
 
  1. Define the client parameters to manage layers and dataviews:
-     - [`new carto.Client`](https://carto.com/documentation/carto-js/reference/#cartoclient)
-     - [`addLayers`](https://carto.com/documentation/carto-js/reference/#cartoclientaddlayer)
-     - [`addDataview`](https://carto.com/documentation/carto-js/reference/#cartoclientadddataview) or [`addDataviews`](https://carto.com/documentation/carto-js/reference/#cartoclientadddataviews)
-     - [`getDataviews`](https://carto.com/documentation/carto-js/reference/#cartoclientgetdataviews)
+     - [`new carto.Client`]({{site.cartojs_docs}}/reference/#cartoclient)
+     - [`addLayers`]({{site.cartojs_docs}}/reference/#cartoclientaddlayer)
+     - [`addDataview`]({{site.cartojs_docs}}/reference/#cartoclientadddataview) or [`addDataviews`]({{site.cartojs_docs}}/reference/#cartoclientadddataviews)
+     - [`getDataviews`]({{site.cartojs_docs}}/reference/#cartoclientgetdataviews)
 
 2. Define the Base data source objects:
-    - Add dataset as the source [`carto.source.dataset`](https://carto.com/documentation/carto-js/reference/#cartosourcedataset)
-    - Add SQL to filter data [`carto.source.sql`](https://carto.com/documentation/carto-js/reference/#cartosourcesql)
+    - Add dataset as the source [`carto.source.dataset`]({{site.cartojs_docs}}/reference/#cartosourcedataset)
+    - Add SQL to filter data [`carto.source.sql`]({{site.cartojs_docs}}/reference/#cartosourcesql)
 
 3. Publish the App:
-    - [`getLayers`](https://carto.com/documentation/carto-js/reference/#cartoclientgetlayers)
+    - [`getLayers`]({{site.cartojs_docs}}/reference/#cartoclientgetlayers)
 
 You should understand the following changes in concept before you begin.
 

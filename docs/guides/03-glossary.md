@@ -10,7 +10,7 @@ Throughout CARTO.js documentation, `client` refers to the object used as an entr
 
 It's the object used to add your account credentials and to manage layers and dataviews.
 
-More info at [carto.Client]({{site.baseurl}}/carto-js/reference/#cartoclient)
+More info at [carto.Client]({{site.cartojs_docs}}/reference/#cartoclient)
 
 ### L
 
@@ -20,7 +20,7 @@ A layer object is used to visualize geospatial data in CARTO.js. They have a sou
 
 They are showed on top of a Leaflet or a Google map. 
 
-[Layer reference]({{site.baseurl}}/carto-js/reference/#cartolayerlayer)
+[Layer reference]({{site.cartojs_docs}}/reference/#cartolayerlayer)
 
 ### P
 

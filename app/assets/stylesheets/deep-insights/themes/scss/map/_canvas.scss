@@ -2,8 +2,8 @@
 // --------------------------------------------------
 
 // Canvas is out of widget themes
-$canvas-light: rgba(#F2F6F9, 1);
-$canvas-dark: rgba(#293A41, 1);
+$canvas-light: #F2F6F9;
+$canvas-dark: #293A41;
 
 .CDB-Dashboard-canvas {
   display: flex;
@@ -96,7 +96,7 @@ $canvas-dark: rgba(#293A41, 1);
   }
 
   .CDB-Dashboard-belowMap {
-    margin-top: 2px;
+    margin-top: 0;
   }
 
   .CDB-Map {

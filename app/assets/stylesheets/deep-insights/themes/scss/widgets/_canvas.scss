@@ -10,12 +10,14 @@
 }
 
 .CDB-Widget-canvasInner {
-  display: grid;
+  display: flex;
   top: 0;
   right: 0;
   bottom: 0;
+  flex-direction: column;
   width: 100%;
   height: 100%;
+  margin-left: 2px;
   overflow-x: visible;
   overflow-y: auto;
   border-radius: $baseSize / 2;
@@ -57,7 +59,7 @@
   z-index: 3;
 }
 
-@media (max-width: $sMedia-xxl) {
+@media (max-width: $sMedia-max-embed) {
   .CDB-Widget-canvas {
     width: $mobileLayout;
     min-width: $mobileLayout;
@@ -94,8 +96,10 @@
     max-width: 100%;
     margin-left: 0;
   }
+}
 
+@media (max-width: $sMedia-l) and (orientation: portrait) {
   .CDB-Widget-canvasInner {
-    display: flex;
+    flex-direction: column;
   }
 }

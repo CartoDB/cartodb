@@ -12,6 +12,20 @@
   min-width: 1024px;
   height: 100vh;
   -webkit-font-smoothing: antialiased;
+
+  .CDB-Dashboard-canvas {
+    padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
+    background: #F2F6F9; // Canvas is out of widget themes
+  }
+
+  .CDB-Dashboard-belowMap {
+    margin-top: 8px;
+  }
+
+  .CDB-Widget-canvasInner {
+    height: auto;
+    margin-left: 0;
+  }
 }
 
 .Editor--topBar {
@@ -164,6 +178,7 @@
     .CDB-Widget-canvasInner {
       display: flex;
       position: relative;
+      flex-direction: row;
     }
 
     .CDB-Widget-header,

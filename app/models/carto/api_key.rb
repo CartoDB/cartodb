@@ -197,6 +197,11 @@ module Carto
         "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
       ]
 
+      # This is GRANTED to the organizational role for organization users, and the PUBLIC users for non-orgs
+      # We do not want to grant the organization role to the Api Keys, since that also opens access to the analysis
+      # catalog and tablemetadata. To be more consistent, we should probably GRANT this to the organization public
+      # user instead, but that has the downside of leaking quotas to the public.
+      # This works for now, but if you are adding new permissions, please reconsider this decision.
       if user.organization_user?
         queries << "GRANT ALL ON FUNCTION \"#{user.database_schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\""
       end

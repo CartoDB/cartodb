@@ -96,7 +96,7 @@ $canvas-dark: #293A41;
   }
 
   .CDB-Dashboard-belowMap {
-    margin-top: 2px;
+    margin-top: 0;
   }
 
   .CDB-Map {
@@ -122,11 +122,5 @@ $canvas-dark: #293A41;
 
   .CDB-Dashboard-mapWrapper {
     flex-direction: column;
-  }
-}
-
-@media (max-width: $sMedia-l) and (orientation: landscape) {
-  .CDB-Dashboard-mapWrapper {
-    min-height: 100vh;
   }
 }

@@ -176,8 +176,8 @@
   }
 
   .CDB-Widget-content--histogram {
-    @include display-flex();
-    @include flex-direction(column);
+    display: flex;
+    flex-direction: column;
     min-width: 232px;
   }
 
@@ -191,6 +191,7 @@
   }
 
   .CDB-Widget-canvasInner {
+    flex-direction: row;
     border-radius: 0;
   }
 

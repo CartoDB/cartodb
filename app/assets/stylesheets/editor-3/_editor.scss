@@ -21,6 +21,11 @@
   .CDB-Dashboard-belowMap {
     margin-top: 8px;
   }
+
+  .CDB-Widget-canvasInner {
+    height: auto;
+    margin-left: 0;
+  }
 }
 
 .Editor--topBar {
@@ -173,6 +178,7 @@
     .CDB-Widget-canvasInner {
       display: flex;
       position: relative;
+      flex-direction: row;
     }
 
     .CDB-Widget-header,

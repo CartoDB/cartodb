@@ -17,21 +17,10 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
+  margin-left: 2px;
   overflow-x: visible;
   overflow-y: auto;
   border-radius: $baseSize / 2;
-  background-color: white;
-}
-
-.Editor {
-  .CDB-Widget-canvasInner {
-    height: auto;
-    background-color: inherit;
-  }
-
-  .CDB-Widget-canvas {
-    margin-left: $baseSize;
-  }
 }
 
 .CDB-Widget-canvasShadow {
@@ -111,6 +100,6 @@
 
 @media (max-width: $sMedia-l) and (orientation: portrait) {
   .CDB-Widget-canvasInner {
-    flex-direction: row;
+    flex-direction: column;
   }
 }

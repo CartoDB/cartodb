@@ -431,7 +431,9 @@ module CartoDB
           Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
             k.role_creation_queries.each { |q| superuser_pg_conn.query(q) }
           end
-        rescue ActiveRecord::RecordNotFound
+        rescue ActiveRecord::RecordNotFound => e
+          CartoDB::Logger.error(exception: e,
+                                message: 'This should not be happening. Trying import a dump for a non-existing DB')
           @logger.error("Unable to create roles for user's api keys, User id: #{@pack_config['user']['id']}")
         end
 

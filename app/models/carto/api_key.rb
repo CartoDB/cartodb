@@ -53,7 +53,7 @@ module Carto
 
     belongs_to :user
 
-    before_create :create_token, if: ->(k) { (k.regular? || k.master?) && !k.token }
+    before_create :create_token, if: ->(k) { k.regular? && !k.token }
     before_create :create_db_config, if: ->(k) { k.regular? && !(k.db_role && k.db_password) }
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
@@ -75,6 +75,9 @@ module Carto
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
 
+    scope :master, ->() { where(type: TYPE_MASTER) }
+    scope :default_public, ->() { where(type: TYPE_DEFAULT_PUBLIC) }
+
     attr_accessor :skip_role_setup
 
     private_class_method :new, :create, :create!
@@ -84,6 +87,7 @@ module Carto
         user: user,
         type: TYPE_MASTER,
         name: NAME_MASTER,
+        token: user.api_key,
         grants: GRANTS_ALL_APIS,
         db_role: user.database_username,
         db_password: user.database_password
@@ -143,10 +147,10 @@ module Carto
           string_agg(DISTINCT lower(privilege_type),',') privilege_types
         FROM
           information_schema.table_privileges tp
-        JOIN
-          information_schema.applicable_roles ar ON tp.grantee = ar.role_name OR tp.grantee = ar.grantee
+        LEFT JOIN
+          information_schema.applicable_roles ar ON tp.grantee = ar.role_name
         WHERE
-          tp.grantee = '#{db_role}'
+          ar.grantee = '#{db_role}' OR tp.grantee = '#{db_role}'
         GROUP BY
           table_schema,
           table_name;
@@ -314,11 +318,13 @@ module Carto
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
       errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 
     def valid_default_public_key
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
       errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
   end
 end

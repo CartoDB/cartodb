@@ -1707,6 +1707,13 @@ class User < Sequel::Model
     destroy
   end
 
+  def create_api_keys
+    carto_user = Carto::User.find(id)
+
+    carto_user.api_keys.create_master_key!
+    carto_user.api_keys.create_default_public_key!
+  end
+
   private
 
   def common_data_outdated?
@@ -1823,13 +1830,6 @@ class User < Sequel::Model
 
   def created_via
     @created_via || get_user_creation.try(:created_via)
-  end
-
-  def create_api_keys
-    carto_user = Carto::User.find(id)
-
-    carto_user.api_keys.create_master_key!
-    carto_user.api_keys.create_default_public_key!
   end
 
   def sync_master_key

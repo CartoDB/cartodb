@@ -128,6 +128,7 @@ ion for time-series (#12670)
   * Sync master key with user model (#13540)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
+  * API Keys are exported and imported (#13346)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
@@ -137,6 +138,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
+* Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
 * User feed renders google maps properly when user has it enabled
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))

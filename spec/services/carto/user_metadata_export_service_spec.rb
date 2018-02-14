@@ -66,6 +66,16 @@ describe Carto::UserMetadataExportService do
 
   let(:service) { Carto::UserMetadataExportService.new }
 
+  describe 'import v 1.0.1' do
+    it 'imports correctly' do
+      export = full_export
+      export[:user] = export[:user].reject { |entry| entry == :api_keys }
+      user = service.build_user_from_hash_export(export)
+      user.save!
+      user.destroy
+    end
+  end
+
   describe '#user export' do
     before(:all) do
       create_user_with_basemaps_assets_visualizations
@@ -256,7 +266,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.0",
+      version: "1.0.2",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -349,6 +359,36 @@ describe Carto::UserMetadataExportService do
         org_admin: false,
         last_name: nil,
         feature_flags: [Carto::FeatureFlag.first.name],
+        api_keys: [
+          {
+            created_at: "2018-02-12T16:11:26+00:00",
+            db_password: "kkkkkkkkktest_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
+            db_role: "test_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
+            name: "Master",
+            token: "Sy4uMloXYVo3bA-bmBi_xw",
+            type: "master",
+            updated_at: "2018-02-12T16:11:26+00:00",
+            grants: [{
+              type: "apis",
+              apis: ["sql", "maps"]
+            }],
+            user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
+          },
+          {
+            created_at: "2018-02-12T16:11:26+00:00",
+            db_password: "be63855d1179de48dc8c82b9fce338636d961e76",
+            db_role: "user00000001_role_31cf62cd1123fe32b0bf76b048e3af39",
+            name: "some Api Key",
+            token: "OHP1p6jPwG5Lbabr4jq20g",
+            type: "regular",
+            updated_at: "2018-02-12T16:11:26+00:00",
+            grants: [{
+              type: "apis",
+              apis: []
+            }],
+            user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
+          }
+        ],
         assets: [
           {
             public_url: "https://manolo.es/es/co/bar.png",

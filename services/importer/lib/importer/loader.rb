@@ -254,7 +254,7 @@ module CartoDB
         ogr2ogr.run(append_mode)
 
         #In case there are not an specific error we try to fix it
-        if ogr2ogr.generic_error? && ogr2ogr.exit_code == 0
+        if ogr2ogr.generic_error? && ogr2ogr.exit_code == 0 || ogr2ogr.missing_srs?
           try_fallback(append_mode)
         end
 
@@ -290,6 +290,12 @@ module CartoDB
           @job.fallback_executed = "encoding"
           ogr2ogr.overwrite = true
           ogr2ogr.encoding = "ISO-8859-1"
+          ogr2ogr.run(append_mode)
+        elsif ogr2ogr.missing_srs?
+          job.log "Fallback: Source dataset has no coordinate system, forcing -s_srs 4326"
+          @job.fallback_executed = "srs 4326"
+          ogr2ogr.overwrite = true
+          ogr2ogr.shape_coordinate_system = '4326'
           ogr2ogr.run(append_mode)
         end
         ogr2ogr.set_default_properties

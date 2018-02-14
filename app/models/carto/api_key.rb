@@ -130,10 +130,8 @@ module Carto
           string_agg(DISTINCT lower(privilege_type),',') privilege_types
         FROM
           information_schema.table_privileges tp
-        LEFT JOIN
-          information_schema.applicable_roles ar ON tp.grantee = ar.role_name
         WHERE
-          ar.grantee = '#{db_role}' OR tp.grantee = '#{db_role}'
+          tp.grantee = '#{db_role}'
         GROUP BY
           table_schema,
           table_name;

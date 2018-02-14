@@ -12,7 +12,7 @@ describe 'Warden :auth_api Strategy' do
   before :all do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
     @user_api_keys = FactoryGirl.create(:valid_user)
-    @master_api_key = Carto::ApiKey.where(user_id: @user_api_keys.id, type: Carto::ApiKey::TYPE_MASTER).first
+    @master_api_key = Carto::ApiKey.where(user_id: @user_api_keys.id).master.first
   end
 
   after :all do
@@ -22,7 +22,7 @@ describe 'Warden :auth_api Strategy' do
 
   it 'authenticates with header' do
     get_json generate_api_key_url, {}, http_json_headers.merge(
-      'Authorization' => 'Basic ' + Base64.encode64("#{@user_api_keys.username}:#{@master_api_key.token}")
+      'Authorization' => 'Basic ' + Base64.strict_encode64("#{@user_api_keys.username}:#{@master_api_key.token}")
     ) do |response|
       response.status.should eq 200
     end

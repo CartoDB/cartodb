@@ -27,6 +27,7 @@ module CartoDB
         def statement_timeout?; return; end
         def segfault_error?; return; end
         def kml_style_missing?; return; end
+        def missing_srs?; return; end
       end
     end
   end

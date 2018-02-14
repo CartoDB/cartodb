@@ -116,6 +116,7 @@ ion for time-series (#12670)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
+  * Create default public API key on user creation (#13471)
   * Keys destruction (#13171)
   * Organization concerns (#13511)
   * Token regeneration (#13321)
@@ -134,6 +135,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Add titles (and description) to embeds in mobile viewports (#13517)
 * User feed renders google maps properly when user has it enabled
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
 * Improved bundling aliases

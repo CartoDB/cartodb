@@ -54,4 +54,43 @@ describe('core/util', function () {
       navigator.msMaxTouchPoints = currentTouchPointsValue;
     });
   });
+
+  fdescribe('google maps checks', function () {
+    var existingGMaps = null;
+
+    beforeEach(function () {
+      existingGMaps = window.google;
+      window.google = undefined;
+    });
+
+    afterEach(function () {
+      window.google = existingGMaps;
+    });
+
+    it('gmaps is required as global and it must be between 3.0 and 3.31', function () {
+      var checkGoogle = function () {
+        util.isGoogleMapsLoaded();
+      };
+
+      expect(checkGoogle).toThrowError('Google Maps is required');
+
+      window.google = { something: 'something' };
+      expect(checkGoogle).toThrowError('Google Maps is required');
+
+      window.google.maps = {
+        version: '2.9.9'
+      };
+      expect(checkGoogle).toThrowError('Google Maps version should be > 3.0 and < 3.31');
+
+      window.google.maps = {
+        version: '3.31.0'
+      };
+      expect(checkGoogle).toThrowError('Google Maps version should be > 3.0 and < 3.31');
+
+      window.google.maps = {
+        version: '3.30.0'
+      };
+      expect(checkGoogle).not.toThrow();
+    });
+  });
 });

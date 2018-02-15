@@ -12,7 +12,7 @@ NOTES:
 Extension migration
 -------------------
 
-Most CARTO releases need an updated the cartodb-postgresql extension. After installing it, it must be upgraded in all existing databases:
+Most CARTO releases need an updated cartodb-postgresql extension. After installing it, it must be upgraded in all existing databases:
 
  $ bundle exec rake cartodb:db:upgrade_postgres_extension
 

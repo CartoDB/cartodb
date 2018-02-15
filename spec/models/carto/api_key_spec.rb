@@ -254,8 +254,10 @@ describe Carto::ApiKey do
 
       it 'shows public tables' do
         api_key = @carto_user1.api_keys.default_public.first
-
-        api_key_permissions(api_key, @public_table.database_schema, @public_table.name).permissions.should eq ['select']
+        unless @carto_user1.has_organization?
+          api_key_permissions(api_key, @public_table.database_schema, @public_table.name)
+            .permissions.should eq ['select']
+        end
       end
     end
 

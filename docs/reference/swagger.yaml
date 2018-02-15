@@ -185,11 +185,7 @@ paths:
       security:
         - ApiKeyHTTPBasicAuth: []
         - ApiKeyQueryParam: []
-      x-code-samples:
-        - lang: Curl
-          source: |
-            curl -X GET \
-            http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc
+
     delete:
       summary: Delete API key
       description: >-
@@ -211,10 +207,7 @@ paths:
         - ApiKeyHTTPBasicAuth: []
         - ApiKeyQueryParam: []
       x-code-samples:
-        - lang: Curl
-          source: |
-            curl -X DELETE \
-            http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc
+
   '/api_keys/{name}/regenerate':
     parameters:
       - $ref: '#/components/parameters/apiKeyName'
@@ -239,11 +232,7 @@ paths:
         - ApiKeyHTTPBasicAuth: []
         - ApiKeyQueryParam: []
       x-code-samples:
-        - lang: Curl
-          source: >
-            curl -X PUT \
 
-            http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc/regenerate
 components:
   schemas:
     ApiKeys:

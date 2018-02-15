@@ -57,7 +57,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def show
-    render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)
+    render_jsonp(json_for_api_key(@api_key), 200)
   end
 
   private

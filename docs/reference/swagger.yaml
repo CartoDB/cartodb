@@ -515,3 +515,4 @@ components:
       description: Forbidden. The API key does not authorize this request.
     BadInput:
       description: Request's parameters error
+      

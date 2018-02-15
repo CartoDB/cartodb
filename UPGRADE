@@ -4,7 +4,7 @@ Standard migration (default)
 Unless stated otherwise, assume any new CARTO release requires calling these commands:
 
  $ bundle exec rake db:migrate
- 
+
 NOTES:
  - Redis server must be listening on the configured port (see config/app_config.yml) for some of the steps below to work
  - Rails must be restarted after an upgrade
@@ -13,8 +13,8 @@ Extension migration
 -------------------
 
 Most CARTO releases need an updated the cartodb-postgresql extension. After installing it, it must be upgraded in all existing databases:
- 
- $ bundle exec rake cartodb:db:load_functions
+
+ $ bundle exec rake cartodb:db:upgrade_postgres_extension
 
 Specific version notes
 ======================

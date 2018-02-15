@@ -55,7 +55,7 @@ describe('core/util', function () {
     });
   });
 
-  fdescribe('google maps checks', function () {
+  describe('google maps checks', function () {
     var existingGMaps = null;
 
     beforeEach(function () {

@@ -80,12 +80,12 @@ describe('core/util', function () {
       window.google.maps = {
         version: '2.9.9'
       };
-      expect(checkGoogle).toThrowError('Google Maps version should be > 3.0 and < 3.31');
+      expect(checkGoogle).toThrowError('Google Maps version should be >= 3.0 and < 3.31');
 
       window.google.maps = {
         version: '3.31.0'
       };
-      expect(checkGoogle).toThrowError('Google Maps version should be > 3.0 and < 3.31');
+      expect(checkGoogle).toThrowError('Google Maps version should be >= 3.0 and < 3.31');
 
       window.google.maps = {
         version: '3.30.0'

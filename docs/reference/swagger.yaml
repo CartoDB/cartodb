@@ -80,7 +80,7 @@ info:
     name: Have you found an error? Github issues
     url: 'https://github.com'
 servers:
-  - url: 'https://{user}.{domain}/api/v3'
+  - url: 'https://{user}.carto.com/api/v3'
     description: Production server (uses live data)
     variables:
       domain:
@@ -93,30 +93,28 @@ paths:
   /api_keys:
     get:
       summary: List API keys
-      description: Returns the API keys matching the filters.
+      description: Returns the API keys list.
       tags:
         - API Keys
       operationId: getApiKeys
       parameters:
         - in: query
-          name: user
+          name: per_page
           schema:
-            type: string
-          description: >-
-            Filter by user name. If the parameter is not present, the provided
-            access API key's user will be used
+            type: integer
+          description: Limits number of API Keys listed
           required: false
         - in: query
-          name: type
+          name: page
           schema:
-            $ref: '#/components/schemas/ApiKeysTypes'
-          description: Filter by the type of the API keys
+            type: integer
+          description: Defines what page to fetch
           required: false
         - in: query
-          name: token
+          name: order
           schema:
             type: string
-          description: Filter by API key token
+          description: Its used to define the critera by which API Keys are listed. It can be any of the attributes
           required: false
       responses:
         '200':
@@ -126,58 +124,17 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ApiKey'
-                example:
-                  - id: aaaaa-bbbbbbbbbbb-cccccc
-                    name: 2019 Election results
-                    user: demo
-                    type: regular
-                    token: '1234567890123456789012345678901234567890'
-                    grants:
-                      - type: apis
-                        apis:
-                          - sql
-                      - type: database
-                        tables:
-                          - name: table1
-                            schema: schema1
-                            permissions:
-                              - read
-                              - insert
-                          - name: table2
-                            schema: schema1
-                            permissions:
-                              - read
+                  $ref: '#/components/schemas/ApiKeys'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
       security:
         - ApiKeyHTTPBasicAuth: []
         - ApiKeyQueryParam: []
-      x-code-samples:
-        - lang: Curl
-          source: >
-            curl -X GET \
 
-            'http://username.carto.com/api_keys/'
-
-
-            curl -X GET \
-
-            'http://username.carto.com/api_keys/?user=demo&type=regular'
-
-
-            curl -X GET \
-
-            'http://username.carto.com/api_keys/?token=1234567890123456789012345678901234567890'
     post:
       summary: Create API key
       description: >-
-        Creates a _regular_ API key.
-
-
-        _Master_ and _Default Public_ API keys are automatically generated on
+        Creates a `regular` API key. `master` and `default_public` API Keys are automatically generated on
         user's creation.
       tags:
         - API Keys
@@ -189,68 +146,28 @@ paths:
             schema:
               $ref: '#/components/schemas/ApiKeyCreation'
       responses:
-        '200':
-          description: Ok
+        '201':
+          description: Created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiKey'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/BadInput'
       security:
         - ApiKeyHTTPBasicAuth: []
         - ApiKeyQueryParam: []
-      x-code-samples:
-        - lang: Curl
-          source: |
-            curl -X POST \
-            http://username.carto.com/api_keys/ \
-            -d '{
-              "name": "2019 Election results",
-              "grants": [
-                {
-                  "type": "apis",
-                  "apis": [
-                    "sql"
-                  ]
-                },
-                {
-                  "type": "database",
-                  "tables": [
-                    {
-                      "name": "table1",
-                      "schema": "schema1",
-                      "permissions": [
-                        "read",
-                        "insert"
-                      ]
-                    },
-                    {
-                      "name": "table2",
-                      "schema": "schema1",
-                      "permissions": [
-                        "read"
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }'
-  '/api_keys/{id}':
+
+  '/api_keys/{name}':
     parameters:
-      - $ref: '#/components/parameters/apiKeyId'
+      - $ref: '#/components/parameters/apiKeyName'
     get:
       summary: Get API key
       description: >-
-        Returns an API key based on it's ID.
+        Returns an API key based on its `name`.
 
-
-        If you want to search by API key _token_, use the GET **/api_keys**
-        endpoint with the query param _token_ set.
       tags:
         - API Keys
       operationId: getApiKeyById
@@ -263,8 +180,6 @@ paths:
                 $ref: '#/components/schemas/ApiKey'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
       security:
@@ -278,13 +193,13 @@ paths:
     delete:
       summary: Delete API key
       description: >-
-        Deletes an API key based on it's ID. Only _regular_ API keys can be
+        Deletes an API key based on it's `name`. Only `regular` API keys can be
         deleted.
       tags:
         - API Keys
       operationId: deleteApiKeyById
       responses:
-        '204':
+        '200':
           description: The resource was deleted successfully.
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -300,10 +215,10 @@ paths:
           source: |
             curl -X DELETE \
             http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc
-  '/api_keys/{id}/regenerate':
+  '/api_keys/{name}/regenerate':
     parameters:
-      - $ref: '#/components/parameters/apiKeyId'
-    put:
+      - $ref: '#/components/parameters/apiKeyName'
+    post:
       summary: Regenerate API key token
       description: Regenerates the API key token. The rest of the fields remain the same.
       tags:
@@ -316,31 +231,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiKey'
-              example:
-                id: aaaaaa-bbbbbbbbbbbbbb-ccccccc
-                name: 2019 Election results
-                user: demo
-                type: regular
-                token: abcdefghijabcdefghijabcdefghijabcdefghij
-                grants:
-                  - type: apis
-                    apis:
-                      - sql
-                  - type: database
-                    tables:
-                      - name: table1
-                        schema: schema1
-                        permissions:
-                          - read
-                          - insert
-                      - name: table2
-                        schema: schema1
-                        permissions:
-                          - read
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
       security:
@@ -354,17 +246,107 @@ paths:
             http://username.carto.com/api_keys/aaaaaa-bbbbbbbbbbbbbb-ccccccc/regenerate
 components:
   schemas:
+    ApiKeys:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of API Keys
+        count:
+          type: integer
+          description: Number of returned API Keys
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKey'
+        _links:
+          type: object
+          properties:
+            first:
+              $ref: '#/components/schemas/Links'
+              description: Link to the first page
+            prev:
+              $ref: '#/components/schemas/Links'
+              description: Link to the previous page
+            next:
+              $ref: '#/components/schemas/Links'
+              description: Link to the next page
+            last:
+              $ref: '#/components/schemas/Links'
+              description: Link to the last page
+      example:
+        total: 3
+        count: 3
+        result:
+          - name: Master
+            user:
+              username: amartin
+            type: master
+            token: slxIYwIDyEGGS2W9W-uEKw
+            grants:
+              - type: apis
+                apis:
+                  - sql
+                  - maps
+              - type: database
+                tables: []
+            created_at: '2018-02-08 14:24:41 +0000'
+            updated_at: '2018-02-08 14:24:41 +0000'
+            _links:
+              self: 'https://carto.com/api/v3/api_keys/Master'
+          - name: MyTableApi
+            user:
+              username: amartin
+            type: regular
+            token: moLv8B-kotcjUL-uxMhbGg
+            grants:
+              - type: apis
+                apis:
+                  - maps
+              - type: database
+                tables:
+                  - schema: public
+                    name: my_table
+                    permissions:
+                      - insert
+                      - select
+                      - update
+            created_at: '2018-02-14 13:23:12 +0000'
+            updated_at: '2018-02-14 13:23:12 +0000'
+            _links:
+              self: 'https://carto.com/api/v3/api_keys/MyTableApi'
+          - name: Default public
+            user:
+              username: amartin
+            type: default
+            token: default_public
+            grants:
+              - type: apis
+                apis:
+                  - sql
+                  - maps
+              - type: database
+                tables: []
+            created_at: '2018-02-15 13:50:36 +0000'
+            updated_at: '2018-02-15 13:50:36 +0000'
+            _links:
+              self: 'https://carto.com/api/v3/api_keys/Default%20public'
+        _links:
+          first:
+            href: 'https://carto.com/api/v3/api_keys?order=updated_at&page=1&per_page=20'
+          last:
+            href: 'https://carto.com/api/v3/api_keys?order=updated_at&page=1&per_page=20'
+
     ApiKey:
       allOf:
         - type: object
           properties:
-            id:
-              type: string
-              format: uuid
             name:
               type: string
             user:
-              type: string
+              properties:
+                username:
+                  type: string
             type:
               $ref: '#/components/schemas/ApiKeysTypes'
             token:
@@ -373,77 +355,75 @@ components:
               type: array
               items:
                 oneOf:
-                  - $ref: '#/components/schemas/GrantApis'
+                  - $ref: '#/components/schemas/ApisGrant'
                   - $ref: '#/components/schemas/GrantDatabase'
+            _links:
+              type: object
+              properties:
+                self:
+                  $ref: '#/components/schemas/Links'
+                  description: Link to the resource
         - $ref: '#/components/schemas/Timestamps'
       required:
-        - id
         - name
         - type
-        - user
-        - token
         - grants
       example:
-        id: aaaaaa-bbbbbbbbbbbbbb-ccccccc
-        name: 2019 Election results
-        user: demo
+        name: MyTableApi
+        user:
+          username: amartin
         type: regular
-        token: '1234567890123456789012345678901234567890'
+        token: moLv8B-kotcjUL-uxMhbGg
         grants:
           - type: apis
             apis:
-              - sql
+              - maps
           - type: database
             tables:
-              - name: table1
-                schema: schema1
+              - schema: public
+                name: my_table
                 permissions:
-                  - read
                   - insert
-              - name: table2
-                schema: schema1
-                permissions:
-                  - read
+                  - select
+                  - update
+        created_at: '2018-02-14 13:23:12 +0000'
+        updated_at: '2018-02-14 13:23:12 +0000'
+        _links:
+          self:
+            href: 'http://amartin.carto.com/api/v3/api_keys/MyTableApi'
+
     ApiKeyCreation:
       type: object
       properties:
         name:
           type: string
-          description: For administrative purposes only
-        user:
-          type: string
-          description: >-
-            The associated user. If the field is not present, the provided
-            access API key's user will be used
+          description: For identifying your API Key
         grants:
           type: array
           items:
             oneOf:
               - $ref: '#/components/schemas/GrantDatabase'
-              - $ref: '#/components/schemas/GrantApis'
+              - $ref: '#/components/schemas/ApisGrant'
             discriminator:
               propertyName: type
       required:
         - name
         - grants
       example:
-        name: 2019 Election results
-        user: demo
+        name: MyTableApi
         grants:
           - type: apis
             apis:
-              - sql
+              - maps
           - type: database
             tables:
-              - name: table1
-                schema: schema1
+              - schema: public
+                name: my_table
                 permissions:
-                  - read
+                  - select
+                  - update
                   - insert
-              - name: table2
-                schema: schema1
-                permissions:
-                  - read
+
     GrantDatabase:
       type: object
       properties:
@@ -479,7 +459,7 @@ components:
         - name
         - schema
         - permissions
-    GrantApis:
+    ApisGrant:
       type: object
       properties:
         type:
@@ -514,6 +494,13 @@ components:
         updatedAt:
           type: string
           format: date-time
+    Links:
+      type: object
+      properties:
+        href:
+          type: string
+          format: url
+          description: link to the resource
   securitySchemes:
     ApiKeyHTTPBasicAuth:
       type: http
@@ -523,19 +510,18 @@ components:
       in: header
       name: api_key
   parameters:
-    apiKeyId:
+    apiKeyName:
       in: path
-      name: id
+      name: name
       required: true
       schema:
         type: string
-        format: uuid
-      description: the API key ID
+      description: the API key `name`
   responses:
     NotFound:
       description: The specified resource was not found
     Unauthorized:
-      description: Unauthorized. No authentication provided.
+      description: Unauthorized. Wrong or no authentication provided.
     Forbidden:
       description: Forbidden. The API key does not authorize this request.
     BadInput:

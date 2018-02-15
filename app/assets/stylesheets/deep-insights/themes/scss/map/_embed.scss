@@ -3,11 +3,7 @@ $cEmbedTabs-Primary: #FFF;
 $cEmbedTabs-Secondary: #DDD;
 $cEmbedTabs-Shadow: rgba(#828282, 0.3);
 
-@import 'tipsy-tooltip';
-
-#dashboard {
-  height: 100%;
-}
+@import '../../editor-3/tipsy-tooltip';
 
 .CDB-Embed-view {
   display: flex;
@@ -156,13 +152,5 @@ $cEmbedTabs-Shadow: rgba(#828282, 0.3);
     display: flex;
     width: 100%;
     overflow-x: hidden;
-  }
-}
-
-@media (max-width: $sMedia-l) {
-  body {
-    position: fixed !important;
-    width: 100%;
-    overflow: hidden; // Avoid scroll in small screens
   }
 }

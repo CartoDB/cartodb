@@ -3,7 +3,7 @@ $cEmbedTabs-Primary: #FFF;
 $cEmbedTabs-Secondary: #DDD;
 $cEmbedTabs-Shadow: rgba(#828282, 0.3);
 
-@import '../../editor-3/tipsy-tooltip';
+@import '../widgets/tipsy-tooltip';
 
 .CDB-Embed-view {
   display: flex;

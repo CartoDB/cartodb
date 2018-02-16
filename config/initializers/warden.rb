@@ -314,12 +314,12 @@ module Carto::Api::AuthApiAuthentication
     fail!
   end
 
-  def api_key_from_request
-    return @api_key_from_request if @api_key_from_request
+  def request_api_key
+    return @request_api_key if @request_api_key
     decoded_auth = Base64.decode64(base64_auth)
     user_name, token = decoded_auth.split(':')
     user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    @api_key_from_request = Carto::ApiKey.where(user_id: user_id, token: token).first
+    @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
   end
 
   private

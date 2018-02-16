@@ -42,7 +42,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     page, per_page, order = page_per_page_order_params
 
     api_keys = Carto::User.find(current_viewer.id).api_keys
-    api_keys = api_key_from_request.master? ? api_keys : api_keys.where(id: api_key_from_request.id)
+    api_keys = request_api_key.master? ? api_keys : api_keys.where(id: request_api_key.id)
     filtered_api_keys = Carto::PagedModel.paged_association(api_keys, page, per_page, order)
 
     result = filtered_api_keys.map { |api_key| json_for_api_key(api_key) }
@@ -72,7 +72,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def load_api_key
     name = params[:id]
     @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id).where(name: name).first
-    if !api_key_from_request.master? && @viewed_api_key != api_key_from_request || !@viewed_api_key
+    if !request_api_key.master? && @viewed_api_key != request_api_key || !@viewed_api_key
       raise Carto::LoadError.new("API key not found: #{name}")
     end
   end

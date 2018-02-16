@@ -71,7 +71,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   def load_api_key
     name = params[:id]
-    @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id).where(name: name).first
+    @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id, name: name).first
     if !request_api_key.master? && @viewed_api_key != request_api_key || !@viewed_api_key
       raise Carto::LoadError.new("API key not found: #{name}")
     end

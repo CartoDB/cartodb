@@ -865,8 +865,8 @@ class DataImport < Sequel::Model
 
       if importer.success?
         update_visualization_id(importer)
-        update_synchronization(importer)
       end
+      update_synchronization(importer)
 
       importer.success? ? set_datasource_audit_to_complete(datasource_provider,
                                                          importer.success? && importer.table ? importer.table.id : nil)

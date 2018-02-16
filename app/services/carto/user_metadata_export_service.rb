@@ -7,7 +7,7 @@ require 'carto/export/data_import_exporter'
 # 1.0.1: export search tweets
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.1'.freeze
+    CURRENT_VERSION = '1.0.2'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -86,6 +86,9 @@ module Carto
 
       user.layers = build_layers_from_hash(exported_user[:layers])
 
+      api_keys = exported_user[:api_keys] || []
+      user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user
@@ -150,6 +153,8 @@ module Carto
 
       user_hash[:search_tweets] = user.search_tweets.map { |st| export_search_tweet(st) }
 
+      user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
+
       # TODO
       # Organization notifications
 
@@ -172,6 +177,20 @@ module Carto
         state: search_tweet.state,
         created_at: search_tweet.created_at,
         updated_at: search_tweet.updated_at
+      }
+    end
+
+    def export_api_key(api_key)
+      {
+        created_at: api_key.created_at,
+        db_password: api_key.db_password,
+        db_role: api_key.db_role,
+        name: api_key.name,
+        token: api_key.token,
+        type: api_key.type,
+        updated_at: api_key.updated_at,
+        grants: api_key.grants,
+        user_id: api_key.user_id
       }
     end
   end
@@ -201,6 +220,7 @@ module Carto
 
     def import_from_directory(path)
       user = user_from_file(path)
+
       raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
 

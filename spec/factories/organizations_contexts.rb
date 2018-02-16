@@ -45,19 +45,6 @@ shared_context 'organization with users helper' do
     organization
   end
 
-  def create_auth_api_user(organization)
-    user = create_user(email: 'exampleauth@carto.com',
-                       username: 'exampleauth',
-                       password: 'example123')
-
-    user.organization = organization
-    user.save
-    user.reload
-    organization.reload
-
-    user
-  end
-
   before(:all) do
     @helper = TestUserFactory.new
     @organization = test_organization

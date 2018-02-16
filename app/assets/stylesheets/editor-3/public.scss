@@ -101,13 +101,29 @@
 @media (min-width: 1200px) {
   .CDB-Overlay-title {
     display: none;
+
+    &.is-collapsed {
+      margin-bottom: 24px;
+    }
+
+    &.is-menu {
+      display: flex;
+    }
   }
 
   .CDB-Overlay-inner {
     margin-top: 0;
 
+    &.is-menu {
+      margin-top: 8px;
+    }
+
     .CDB-Embed-description {
       display: none;
+
+      &.is-menu {
+        display: block;
+      }
     }
   }
 
@@ -139,11 +155,19 @@
 
   .CDB-Overlay-title {
     display: none;
+
+    &.is-menu {
+      display: flex;
+    }
   }
 
   .CDB-Overlay-inner {
     .CDB-Embed-description {
       display: none;
+
+      &.is-menu {
+        display: block;
+      }
     }
   }
 

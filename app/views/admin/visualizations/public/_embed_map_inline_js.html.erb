@@ -1,5 +1,5 @@
 <% if @visualization.map.provider == 'googlemaps' %>
-<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3.30&sensor=false&<%= @visualization.user.google_maps_query_string %>"></script>
+  <%= insert_google_maps(@visualization.user.google_maps_query_string) %>
 <% end %>
 
 <%= javascript_include_tag 'embed.js', 'public_like.js' %>

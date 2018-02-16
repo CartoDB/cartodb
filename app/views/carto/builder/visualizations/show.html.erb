@@ -22,7 +22,9 @@
   var mapboxApiKey = '<%= mapbox_api_key %>';
 </script>
 
-<%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
+<% if @google_maps_qs.present? %>
+  <%= insert_google_maps(@google_maps_qs) %>
+<% end %>
 
 <%= javascript_include_tag 'common.js' %>
 <%= javascript_include_tag 'builder_vendor.js' %>

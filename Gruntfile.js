@@ -390,7 +390,7 @@ module.exports = function (grunt) {
     'invalidate'
   ]);
 
-  grunt.registerTask('affected', 'Generate only affected specs', function (option) {
+  grunt.registerTask('generate_builder_specs', 'Generate only builder specs', function (option) {
     requireWebpackTask().affected.call(this, option, grunt);
   });
 
@@ -422,14 +422,14 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js_editor',
     'jasmine:cartodbui',
-    'affected',
+    'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
-    'jasmine:affected',
+    'jasmine:builder',
     'generate_dashboard_specs',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected',
+    'bootstrap_webpack_dashboard_specs',
+    'webpack:dashboard_specs',
+    'jasmine:dashboard',
     'lint'
   ]);
 
@@ -437,11 +437,11 @@ module.exports = function (grunt) {
    * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.
    */
   grunt.registerTask('test:browser', 'Build all Builder specs', [
-    'affected',
+    'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
-    'jasmine:affected:build',
-    'connect:specs',
+    'jasmine:builder:build',
+    'connect:specs_builder',
     'watch:js_affected'
   ]);
 
@@ -450,10 +450,10 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('dashboard_specs', 'Build only dashboard specs', [
     'generate_dashboard_specs',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected:build',
-    'connect:specs',
+    'bootstrap_webpack_dashboard_specs',
+    'webpack:dashboard_specs',
+    'jasmine:dashboard:build',
+    'connect:specs_dashboard',
     'watch:dashboard_specs'
   ]);
 

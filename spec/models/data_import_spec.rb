@@ -377,6 +377,7 @@ describe DataImport do
   end
 
   it 'updates synch_job state after success data import' do
+    data_import = nil
     sync_job = FactoryGirl.create(:enqueued_sync)
     Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)

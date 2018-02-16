@@ -52,8 +52,6 @@ describe Api::Json::SynchronizationsController do
               Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
             end
           }.to change { Carto::Synchronization.count }.by 1
-
-
         ensure
           external_source.external_data_imports.each(&:destroy)
           external_source.destroy

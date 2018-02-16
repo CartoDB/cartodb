@@ -293,7 +293,43 @@ Warden::Strategies.add(:user_creation) do
   end
 end
 
+module Carto::Api::AuthApiAuthentication
+  def base64_auth
+    match = AUTH_HEADER_RE.match(request.headers['Authorization'])
+    match && match[:auth]
+  end
+
+  def authenticate_user(master_key)
+    decoded_auth = Base64.decode64(base64_auth)
+    user_name, token = decoded_auth.split(':')
+    return fail! unless user_name == CartoDB.extract_subdomain(request)
+
+    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
+    api_key = Carto::ApiKey.where(user_id: user_id, token: token)
+    api_key = master_key ? api_key.master : api_key
+    return fail! unless api_key.exists?
+
+    success!(::User[user_id])
+  rescue
+    fail!
+  end
+
+  def api_key_from_request
+    return @api_key_from_request if @api_key_from_request
+    decoded_auth = Base64.decode64(base64_auth)
+    user_name, token = decoded_auth.split(':')
+    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
+    @api_key_from_request = Carto::ApiKey.where(user_id: user_id, token: token).first
+  end
+
+  private
+
+  AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
+end
+
 Warden::Strategies.add(:auth_api) do
+  include Carto::Api::AuthApiAuthentication
+
   def valid?
     base64_auth.present?
   end
@@ -304,24 +340,23 @@ Warden::Strategies.add(:auth_api) do
   end
 
   def authenticate!
-    decoded_auth = Base64.decode64(base64_auth)
-    user_name, token = decoded_auth.split(':')
-    return fail! unless user_name == CartoDB.extract_subdomain(request)
+    authenticate_user(true)
+  end
+end
 
-    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    return fail! unless Carto::ApiKey.where(user_id: user_id, token: token).master.exists?
+Warden::Strategies.add(:any_auth_api) do
+  include Carto::Api::AuthApiAuthentication
 
-    success!(::User[user_id])
-  rescue
-    fail!
+  def valid?
+    base64_auth.present?
   end
 
-  private
+  # We don't want to store a session and send a response cookie
+  def store?
+    false
+  end
 
-  AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
-
-  def base64_auth
-    match = AUTH_HEADER_RE.match(request.headers['Authorization'])
-    match && match[:auth]
+  def authenticate!
+    authenticate_user(false)
   end
 end

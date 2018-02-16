@@ -115,6 +115,18 @@ describe Carto::ApiKey do
       }.to raise_exception ActiveRecord::RecordInvalid
     end
 
+    it 'fails to access system tables' do
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: [apis_grant])
+
+      with_connection_from_api_key(api_key) do |connection|
+        ['cdb_tablemetadata', 'cdb_analysis_catalog'].each do |table|
+          expect {
+            connection.execute("select count(1) from cartodb.#{table}")
+          }.to raise_exception /permission denied/
+        end
+      end
+    end
+
     describe '#destroy' do
       it 'removes the role from DB' do
         grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
@@ -244,7 +256,7 @@ describe Carto::ApiKey do
           api_key_permissions(api_key, @table1.database_schema, @table1.name).permissions.should include(permission)
         end
 
-        sql = "drop table #{@user1.database_schema}.#{@table1.name}"
+        sql = "drop table \"#{@user1.database_schema}\".\"#{@table1.name}\""
         @user1.in_database(as: :superuser).run(sql)
 
         api_key_permissions(api_key, @table1.database_schema, @table1.name).should be_nil
@@ -253,15 +265,17 @@ describe Carto::ApiKey do
       end
 
       it 'shows public tables' do
-        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
-
-        api_key_permissions(api_key, @public_table.database_schema, @public_table.name).permissions.should eq ['select']
+        api_key = @carto_user1.api_keys.default_public.first
+        unless @carto_user1.has_organization?
+          api_key_permissions(api_key, @public_table.database_schema, @public_table.name)
+            .permissions.should eq ['select']
+        end
       end
     end
 
     describe 'master api key' do
       it 'user has a master key with the user db_role' do
-        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_MASTER)
+        api_key = @carto_user1.api_keys.master.first
         api_key.should be
         api_key.db_role.should eq @carto_user1.database_username
         api_key.db_password.should eq @carto_user1.database_password
@@ -278,11 +292,18 @@ describe Carto::ApiKey do
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_MASTER, grants: [apis_grant])
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
+
+      it 'token must match user api key' do
+        api_key = @carto_user1.api_keys.master.first
+        api_key.token = 'wadus'
+        api_key.save.should be_false
+        api_key.errors.full_messages.should include "Token must match user model for master keys"
+      end
     end
 
     describe 'default public api key' do
       it 'user has a default public key with the public_db_user role' do
-        api_key = @carto_user1.api_keys.find_by_type(Carto::ApiKey::TYPE_DEFAULT_PUBLIC)
+        api_key = @carto_user1.api_keys.default_public.first
         api_key.should be
         api_key.db_role.should eq @carto_user1.database_public_username
         api_key.db_password.should eq CartoDB::PUBLIC_DB_USER_PASSWORD
@@ -298,6 +319,13 @@ describe Carto::ApiKey do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_DEFAULT_PUBLIC, grants: [apis_grant])
         }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'cannot change token' do
+        api_key = @carto_user1.api_keys.default_public.first
+        api_key.token = 'wadus'
+        api_key.save.should be_false
+        api_key.errors.full_messages.should include "Token must be default_public for default public keys"
       end
     end
   end
@@ -318,14 +346,11 @@ describe Carto::ApiKey do
   end
 
   describe 'with organization users' do
-    include_context 'organization with users helper'
-
     before(:all) do
       @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
-      @auth_organization = test_organization
-      @auth_organization.save
-      @user1 = create_auth_api_user(@auth_organization)
-      @carto_user1 = Carto::User.where(id: @user1.id).first
+      @auth_organization = FactoryGirl.create(:organization, quota_in_bytes: 1.gigabytes)
+      @user1 = TestUserFactory.new.create_owner(@auth_organization)
+      @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
@@ -337,13 +362,15 @@ describe Carto::ApiKey do
     it_behaves_like 'api key'
 
     it 'fails to grant to a non-owned table' do
-      table = create_table(user_id: @carto_org_user_2.id)
+      other_user = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
+      table = create_table(user_id: other_user.id)
       grants = [database_grant(table.database_schema, table.name), apis_grant]
       expect {
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
       }.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy
+      other_user.destroy
     end
   end
 end

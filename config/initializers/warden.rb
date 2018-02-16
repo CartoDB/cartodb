@@ -309,7 +309,7 @@ Warden::Strategies.add(:auth_api) do
     return fail! unless user_name == CartoDB.extract_subdomain(request)
 
     user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    return fail! unless Carto::ApiKey.where(user_id: user_id, type: Carto::ApiKey::TYPE_MASTER, token: token).exists?
+    return fail! unless Carto::ApiKey.where(user_id: user_id, token: token).master.exists?
 
     success!(::User[user_id])
   rescue

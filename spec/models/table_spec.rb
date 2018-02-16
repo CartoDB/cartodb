@@ -1952,7 +1952,7 @@ describe Table do
         check_query_geometry("SELECT 'wadus' AS the_geom;", [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'geometry'],
-            [:the_geom_str, 'unknown']
+            [:the_geom_str, 'text']
         ])
 
         # geometrycollection (concrete type) Unsupported

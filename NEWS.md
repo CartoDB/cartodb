@@ -124,7 +124,7 @@ ion for time-series (#12670)
   * Header authentication (#13329)
   * Keep API Key permissions up to date when tables change (#13333)
   * Delete API keys on user deletion (#13470)
-  * Inherit from public user for API key permissions (#13464)
+  * Inherit from public user for API key permissions (#13464, #13550)
   * Sync master key with user model (#13540)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
@@ -138,10 +138,12 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
 * Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
 * User feed renders google maps properly when user has it enabled
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
+* Import gpkg without coordinate system. ([Support#1303](https://github.com/CartoDB/support/issues/1303))
 * Improved bundling aliases
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)

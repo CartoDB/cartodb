@@ -115,6 +115,18 @@ describe Carto::ApiKey do
       }.to raise_exception ActiveRecord::RecordInvalid
     end
 
+    it 'fails to access system tables' do
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: [apis_grant])
+
+      with_connection_from_api_key(api_key) do |connection|
+        ['cdb_tablemetadata', 'cdb_analysis_catalog'].each do |table|
+          expect {
+            connection.execute("select count(1) from cartodb.#{table}")
+          }.to raise_exception /permission denied/
+        end
+      end
+    end
+
     describe '#destroy' do
       it 'removes the role from DB' do
         grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]

@@ -4,10 +4,12 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   include Carto::ControllerHelper
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
+  include Carto::Api::AuthApiAuthentication
 
   ssl_required :create, :destroy, :regenerate_token, :show, :index
 
-  before_filter :api_authorization_required
+  before_filter :any_api_authorization_required, only: [:index, :show]
+  before_filter :api_authorization_required, except: [:index, :show]
   before_filter :check_feature_flag
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 

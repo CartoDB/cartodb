@@ -128,7 +128,7 @@ describe SignupController do
       email = "testemail@#{@organization.whitelisted_email_domains[0]}"
       password = '12345678'
       user = { username: name, email: email, password: password }
-      org_name =  @organization.name
+      org_name = @organization.name
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: org_name, user: user)
       response.status.should == 422

@@ -132,7 +132,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should_not include("maps.google.com/maps/api/js")
+      response.body.should_not include("maps.googleapis.com/maps/api/js")
     end
 
     it 'includes the google maps client id if configured' do
@@ -144,7 +144,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include("maps.google.com/maps/api/js?client=wadus_cid")
+      response.body.should include("maps.googleapis.com/maps/api/js?v=3.30&client=wadus_cid")
     end
 
     it 'does not includes google maps if the maps does not need it' do
@@ -156,7 +156,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should_not include("maps.google.com/maps/api/js")
+      response.body.should_not include("maps.googleapis.com/maps/api/js")
     end
 
     it 'includes 3rd party scripts for analytics' do
@@ -345,7 +345,7 @@ describe Carto::Builder::Public::EmbedsController do
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 200
-        response.body.should include("maps.google.com/maps/api/js?client=wadus_org_cid")
+        response.body.should include("maps.googleapis.com/maps/api/js?v=3.30&client=wadus_org_cid")
       end
     end
   end

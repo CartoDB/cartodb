@@ -114,6 +114,10 @@ module CartoDB
         command_output =~ /tables can have at most 1600 columns/i
       end
 
+      def missing_srs?
+        exit_code == 256 && command_output =~ /Use -s_srs to set one/i
+      end
+
       def unsupported_format?
         exit_code == 256 && command_output =~ /Unable to open(.*)with the following drivers/i
       end

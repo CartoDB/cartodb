@@ -140,6 +140,7 @@ ion for time-series (#12670)
 * Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
 * User feed renders google maps properly when user has it enabled
+* New Synchronization records can enter error state preventing future synchronizations (#13435)
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
 * Import gpkg without coordinate system. ([Support#1303](https://github.com/CartoDB/support/issues/1303))
 * Improved bundling aliases

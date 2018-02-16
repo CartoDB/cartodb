@@ -121,6 +121,18 @@ describe SignupController do
       Carto::UserCreation.where(username: username).any?.should be_false
     end
 
+    it 'triggers validation error and not a NewUser job if username is too long' do
+      ::Resque.expects(:enqueue).never
+
+      username = 'sixtythreecharacterslongistoomanycharactersmatewhydoyoueventrythis'
+      email = "testemail@#{@organization.whitelisted_email_domains[0]}"
+      password = '12345678'
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
+      response.status.should == 422
+      Carto::UserCreation.where(username: username).any?.should be_false
+    end
+
     it 'triggers validation error is password is too short' do
       user = ::User.new
 

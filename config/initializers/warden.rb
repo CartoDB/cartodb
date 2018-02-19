@@ -303,6 +303,7 @@ module Carto::Api::AuthApiAuthentication
   def self.from_header=(value)
     @@from_header = value
   end
+
   def base64_auth
     match = AUTH_HEADER_RE.match(request.headers['Authorization'])
     match && match[:auth]
@@ -318,7 +319,7 @@ module Carto::Api::AuthApiAuthentication
     api_key = master_key ? api_key.master : api_key
     return fail! unless api_key.exists?
 
-    Carto::Api::AuthApiAuthentication.from_header = true #TODO remove this when user's api_key field is removed
+    Carto::Api::AuthApiAuthentication.from_header = true # TODO remove this when user's api_key field is removed
     success!(::User[user_id])
   rescue
     fail!

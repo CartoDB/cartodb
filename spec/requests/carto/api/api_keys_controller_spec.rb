@@ -439,7 +439,7 @@ describe Carto::Api::ApiKeysController do
   describe 'header auth' do
     before(:each) do
       @master_api_key = @carto_user.api_keys.master.first
-      @carto_user.api_keys.create_regular_key!(name: 'key1', grants: [{type: "apis", apis: []}])
+      @carto_user.api_keys.create_regular_key!(name: 'key1', grants: empty_grants)
     end
 
     def json_headers_with_auth(api_key: @master_api_key)
@@ -449,7 +449,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     def empty_grants
-      [{type: "apis", apis: []}]
+      [{ type: "apis", apis: [] }]
     end
 
     def public_api_key
@@ -491,10 +491,6 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'does not allow regular api_keys' do
-        payload = {
-          name: 'wadus',
-          grants: empty_grants
-        }
         delete_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
           response.status.should eq 401
         end

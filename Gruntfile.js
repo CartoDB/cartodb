@@ -436,7 +436,7 @@ module.exports = function (grunt) {
   /**
    * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.
    */
-  grunt.registerTask('test:browser', 'Build all Builder specs', [
+  grunt.registerTask('test:browser:builder', 'Build all Builder specs', [
     'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
@@ -448,7 +448,7 @@ module.exports = function (grunt) {
   /**
    * `grunt dashboard_specs` compile dashboard specs
    */
-  grunt.registerTask('dashboard_specs', 'Build only dashboard specs', [
+  grunt.registerTask('test:browser:dashboard', 'Build only dashboard specs', [
     'generate_dashboard_specs',
     'bootstrap_webpack_dashboard_specs',
     'webpack:dashboard_specs',

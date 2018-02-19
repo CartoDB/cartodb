@@ -2605,7 +2605,7 @@ describe User do
 
     describe 'are enabled/disabled' do
       before(:all) do
-        @regular_key = @auth_api_user.api_keys.create_regular_key!(name: 'regular', grants: [{type: 'apis', apis: []}])
+        @regular_key = @auth_api_user.api_keys.create_regular_key!(name: 'regkey', grants: [{ type: 'apis', apis: [] }])
       end
 
       after(:all) do

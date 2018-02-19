@@ -73,7 +73,7 @@ describe Admin::OrganizationsController do
         u.reload
         expect(u.api_key).to_not eq old_api_key
       end
-      expect { api_key.reload }.to change { api_key.token }
+      expect { api_key.reload }.to(change { api_key.token })
       api_key.destroy
     end
   end

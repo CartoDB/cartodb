@@ -270,9 +270,7 @@ class DataImport < Sequel::Model
 
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
-    self.success  = false
-    self.state    = STATE_STUCK
-    save
+    handle_failure(CartoDB::Importer2::StuckImportJobError.new)
 
     CartoDB::notify_exception(
       CartoDB::Importer2::GenericImportError.new('Import timed out or got stuck'),
@@ -472,9 +470,10 @@ class DataImport < Sequel::Model
   # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
   # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
-    ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
-    self.created_at < 5.minutes.ago &&
-    !running_import_ids.include?(self.id)
+    state == STATE_STUCK ||
+      ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(state) &&
+        created_at < 5.minutes.ago &&
+        !running_import_ids.include?(id)
   end
 
   def from_table
@@ -866,8 +865,8 @@ class DataImport < Sequel::Model
 
       if importer.success?
         update_visualization_id(importer)
-        update_synchronization(importer)
       end
+      update_synchronization(importer)
 
       importer.success? ? set_datasource_audit_to_complete(datasource_provider,
                                                          importer.success? && importer.table ? importer.table.id : nil)

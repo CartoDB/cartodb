@@ -82,7 +82,8 @@ describe SignupController do
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
-      response.body.should match(/Please, contact the administrator of #{@fake_organization.name}/)
+      response.body.should include("organization not enough seats")
+      response.body.should include("contact the administrator of #{@fake_organization.name}</a>")
       response.body.should match(Regexp.new @fake_organization.owner.email)
     end
 
@@ -118,6 +119,20 @@ describe SignupController do
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
       response.status.should == 422
       Carto::UserCreation.where(username: username).any?.should be_false
+    end
+
+    it 'triggers validation error and not a NewUser job if username is too long' do
+      ::Resque.expects(:enqueue).never
+
+      name = 'sixtythreecharacterslongiswaytoomanycharactersmatewhydoyoueventry'
+      email = "testemail@#{@organization.whitelisted_email_domains[0]}"
+      password = '12345678'
+      user = { username: name, email: email, password: password }
+      org_name = @organization.name
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: org_name, user: user)
+      response.status.should == 422
+      Carto::UserCreation.where(username: name).any?.should be_false
     end
 
     it 'triggers validation error is password is too short' do

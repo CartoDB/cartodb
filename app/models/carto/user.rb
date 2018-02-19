@@ -190,6 +190,10 @@ class Carto::User < ActiveRecord::Base
     self.database_schema.include?('-') ? "\"#{self.database_schema}\"" : self.database_schema
   end
 
+  def database_public_username
+    database_schema == CartoDB::DEFAULT_DB_SCHEMA ? CartoDB::PUBLIC_DB_USER : "cartodb_publicuser_#{id}"
+  end
+
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key

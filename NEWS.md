@@ -141,6 +141,7 @@ ion for time-series (#12670)
 * Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
 * Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
+* Support several versions of pg_dump and pg_restore binaries (CartoDB/cartodb-central#2073)
 * User feed renders google maps properly when user has it enabled
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
 * Import gpkg without coordinate system. ([Support#1303](https://github.com/CartoDB/support/issues/1303))

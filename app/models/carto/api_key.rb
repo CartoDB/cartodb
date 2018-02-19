@@ -75,8 +75,9 @@ module Carto
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
 
-    scope :master, ->() { where(type: TYPE_MASTER) }
-    scope :default_public, ->() { where(type: TYPE_DEFAULT_PUBLIC) }
+    scope :master, -> { where(type: TYPE_MASTER) }
+    scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
+    scope :regular, -> { where(type: TYPE_REGULAR) }
 
     attr_accessor :skip_role_setup
 
@@ -204,6 +205,14 @@ module Carto
         queries << "GRANT ALL ON FUNCTION \"#{user.database_schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\""
       end
       queries
+    end
+
+    def enable
+      add_to_redis
+    end
+
+    def disable
+      remove_from_redis
     end
 
     private

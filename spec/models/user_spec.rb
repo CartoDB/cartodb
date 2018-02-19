@@ -2602,6 +2602,46 @@ describe User do
       master_key.reload
       expect(@auth_api_user.api_key).to eq master_key.token
     end
+
+    describe 'are enabled/disabled' do
+      before(:all) do
+        @regular_key = @auth_api_user.api_keys.create_regular_key!(name: 'regular', grants: [{type: 'apis', apis: []}])
+      end
+
+      after(:all) do
+        @regular_key.destroy
+      end
+
+      before(:each) do
+        @auth_api_user.state = 'active'
+        @auth_api_user.engine_enabled = true
+        @auth_api_user.save
+      end
+
+      def enabled_api_key?(api_key)
+        $users_metadata.exists(api_key.send(:redis_key))
+      end
+
+      it 'disables all api keys for locked users' do
+        @auth_api_user.state = 'locked'
+        @auth_api_user.save
+
+        expect(@auth_api_user.api_keys.none? { |k| enabled_api_key?(k) }).to be_true
+      end
+
+      it 'disables regular keys for engine disabled' do
+        @auth_api_user.engine_enabled = false
+        @auth_api_user.save
+
+        expect(@auth_api_user.api_keys.regular.none? { |k| enabled_api_key?(k) }).to be_true
+        expect(@auth_api_user.api_keys.master.all? { |k| enabled_api_key?(k) }).to be_true
+        expect(@auth_api_user.api_keys.default_public.all? { |k| enabled_api_key?(k) }).to be_true
+      end
+
+      it 'enables all keys for active engine users' do
+        expect(@auth_api_user.api_keys.all? { |k| enabled_api_key?(k) }).to be_true
+      end
+    end
   end
 
   protected

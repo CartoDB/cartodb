@@ -379,12 +379,18 @@ class User < Sequel::Model
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
+    # API keys management
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
+    sync_enabled_api_keys if changes.include?(:engine_enabled) || changes.include?(:state)
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
     end
+  end
+
+  def api_keys
+    Carto::ApiKey.where(user_id: id)
   end
 
   def shared_entities
@@ -1833,7 +1839,7 @@ class User < Sequel::Model
   end
 
   def sync_master_key
-    master_key = Carto::ApiKey.where(user_id: id).master.first
+    master_key = api_keys.master.first
     return unless master_key
 
     # Workaround: User save is not yet commited, so AR doesn't see the new api_key
@@ -1842,11 +1848,26 @@ class User < Sequel::Model
   end
 
   def sync_default_public_key
-    default_key = Carto::ApiKey.where(user_id: id).default_public.first
+    default_key = api_keys.default_public.first
     return unless default_key
 
     # Workaround: User save is not yet commited, so AR doesn't see the new database_schema
     default_key.user.database_schema = database_schema
     default_key.update_attributes(db_role: database_public_username)
+  end
+
+  def sync_enabled_api_keys
+    if locked?
+      # Locked user: no API access (this breaks Builder, embeds, etc. and that's ok)
+      api_keys.each(&:disable)
+    elsif !engine_enabled?
+      # User without engine: we need to keep built-in API keys for basic builder functionality, but no regular keys
+      api_keys.master.each(&:enable)
+      api_keys.default_public.each(&:enable)
+      api_keys.regular.each(&:disable)
+    else
+      # Engine user: has access to everything
+      api_keys.each(&:enable)
+    end
   end
 end

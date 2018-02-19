@@ -71,6 +71,30 @@ describe Carto::UserMigrationImport do
       @import.run_import
     end
 
+    it 'avoids cascade deletion of a failed user migration' do
+      should_import_metadata_for_failed_user(@user)
+      should_import_data_with_exception
+      @import.org_import = false
+      @import.organization_id = nil
+      should_update_database_host_for_users([@user])
+
+      @import.run_import
+      @import.user.should eq nil
+    end
+
+    it 'avoids cascade deletion of a failed organization migration' do
+      users = create_and_add_users_to_organizaton
+      should_import_metadata_for_failed_organization(@organization_mock)
+      should_import_data_with_exception
+      @import.stubs(:update_attributes)
+      @import.org_import = true
+      @import.user_id = nil
+      should_update_database_host_for_users(users)
+
+      @import.run_import
+      @import.organization.should eq nil
+    end
+
     private
 
     def should_update_database_host_for_users(users)
@@ -133,11 +157,28 @@ describe Carto::UserMigrationImport do
                                               .once.with(organization, :irrelevant_meta_dir)
     end
 
+    def should_import_metadata_for_failed_user(user)
+      @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
+      Carto::UserMetadataExportService.any_instance.expects(:import_from_directory).with(:irrelevant_meta_dir)
+                                      .returns user
+    end
+
+    def should_import_metadata_for_failed_organization(organization)
+      @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
+      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir)
+                                              .once.returns organization
+    end
+
     def create_and_add_users_to_organizaton
       user2 = Carto::User.new
       user3 = Carto::User.new
       @organization_mock.users << user2
       @organization_mock.users << user3
+    end
+
+    def should_import_data_with_exception
+      @import.stubs(:do_import_data)
+             .raises(Sequel::DatabaseError, 'blabla')
     end
   end
 end

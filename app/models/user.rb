@@ -148,6 +148,7 @@ class User < Sequel::Model
     validates_format /\A[a-z0-9\-]+\z/, :username, message: "must only contain lowercase letters, numbers and the dash (-) symbol"
     validates_format /\A[a-z0-9]{1}/, :username, message: "must start with alphanumeric chars"
     validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
+    validates_max_length 63, :username
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -378,6 +379,9 @@ class User < Sequel::Model
     elsif changes.include?(:database_schema)
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
+
+    sync_master_key if changes.include?(:api_key)
+    sync_default_public_key if changes.include?(:database_schema)
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
@@ -1704,6 +1708,13 @@ class User < Sequel::Model
     destroy
   end
 
+  def create_api_keys
+    carto_user = Carto::User.find(id)
+
+    carto_user.api_keys.create_master_key!
+    carto_user.api_keys.create_default_public_key!
+  end
+
   private
 
   def common_data_outdated?
@@ -1822,10 +1833,21 @@ class User < Sequel::Model
     @created_via || get_user_creation.try(:created_via)
   end
 
-  def create_api_keys
-    carto_user = Carto::User.find(id)
+  def sync_master_key
+    master_key = Carto::ApiKey.where(user_id: id).master.first
+    return unless master_key
 
-    carto_user.api_keys.create_master_key!
-    carto_user.api_keys.create_default_public_key!
+    # Workaround: User save is not yet commited, so AR doesn't see the new api_key
+    master_key.user.api_key = api_key
+    master_key.update_attributes(token: api_key)
+  end
+
+  def sync_default_public_key
+    default_key = Carto::ApiKey.where(user_id: id).default_public.first
+    return unless default_key
+
+    # Workaround: User save is not yet commited, so AR doesn't see the new database_schema
+    default_key.user.database_schema = database_schema
+    default_key.update_attributes(db_role: database_public_username)
   end
 end

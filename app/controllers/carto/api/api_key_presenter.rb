@@ -21,18 +21,26 @@ module Carto
             },
             {
               type: 'database',
-              tables: @api_key.table_permissions_from_db.map do |p|
-                {
-                  schema: p.schema,
-                  name: p.name,
-                  permissions: p.permissions
-                }
-              end
+              tables: table_permissions_for_api_key
             }
           ],
           created_at: @api_key.created_at.to_s,
           updated_at: @api_key.updated_at.to_s
         }
+      end
+
+      private
+
+      def table_permissions_for_api_key
+        return [] if @api_key.master? || @api_key.default_public?
+
+        @api_key.table_permissions_from_db.map do |p|
+          {
+            schema: p.schema,
+            name: p.name,
+            permissions: p.permissions
+          }
+        end
       end
     end
   end

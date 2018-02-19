@@ -161,10 +161,9 @@ module Carto
       end
     end
 
-    def create_token
-      begin
-        self.token = generate_auth_token
-      end while self.class.exists?(token: token)
+    def regenerate_token!
+      create_token
+      save!
     end
 
     def master?
@@ -212,6 +211,12 @@ module Carto
     PASSWORD_LENGTH = 40
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
+    def create_token
+      begin
+        self.token = generate_auth_token
+      end while self.class.exists?(token: token)
+    end
 
     def add_to_redis
       redis_client.hmset(redis_key, redis_hash_as_array)

@@ -1631,7 +1631,7 @@ class User < Sequel::Model
 
   def regenerate_all_api_keys
     regenerate_api_key
-    api_keys.regular.each(&:create_token)
+    api_keys.regular.each(&:regenerate_token!)
   end
 
   # This is set temporary on user creation with invitation,

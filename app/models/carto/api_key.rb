@@ -207,12 +207,9 @@ module Carto
       queries
     end
 
-    def enable
-      add_to_redis
-    end
-
-    def disable
-      remove_from_redis
+    def set_enabled_for_engine
+      # We enable/disable API keys for engine usage by adding/removing them from Redis
+      valid_user? ? add_to_redis : remove_from_redis
     end
 
     private

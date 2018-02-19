@@ -382,8 +382,8 @@ class User < Sequel::Model
     # API keys management
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
-    sync_enabled_api_keys if changes.include?(:engine_enabled) || changes.include?(:state)
     $users_metadata.HSET(key, 'map_key', User.make_token) if locked?
+    db.after_commit { sync_enabled_api_keys } if changes.include?(:engine_enabled) || changes.include?(:state)
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
@@ -1858,17 +1858,6 @@ class User < Sequel::Model
   end
 
   def sync_enabled_api_keys
-    if locked?
-      # Locked user: no API access (this breaks Builder, embeds, etc. and that's ok)
-      api_keys.each(&:disable)
-    elsif !engine_enabled?
-      # User without engine: we need to keep built-in API keys for basic builder functionality, but no regular keys
-      api_keys.master.each(&:enable)
-      api_keys.default_public.each(&:enable)
-      api_keys.regular.each(&:disable)
-    else
-      # Engine user: has access to everything
-      api_keys.each(&:enable)
-    end
+    api_keys.each(&:set_enabled_for_engine)
   end
 end

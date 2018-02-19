@@ -5,11 +5,11 @@ info:
     # Introduction
 
     This API allows you to manage API keys. API keys are the fundamental
-    building block of Carto's authorization system. See this this guide for more
+    building block of CARTO's authorization system. See this this guide for more
     information.
 
 
-    This API Accepts and returns JSON.
+    This API accepts and returns JSON.
 
     API base endpoint is `https://<your_username>.carto.com/api/v3/api_keys` or `https://<org_name>.carto.com/u/<your_username/api/v3/api_keys` in case you are using a user belonging to an organization.
 
@@ -17,7 +17,7 @@ info:
 
     There are three different API Keys that provide with different access privileges:
 
-    1. `default`: This api provides access to all public objects. It cannot be removed.
+    1. `default`: This API provides access to all public objects. It cannot be removed.
 
     1. `master`: Using this API Key you will have full access and will be able to create/manage `regular` API Keys. It cannot be removed. You should keep its token safe and use it only when strictly necessary.
 
@@ -52,7 +52,7 @@ info:
                     "tables": [
                         {
                             "schema": "public",
-                            "name": "puigdemont",
+                            "name": "my_table",
                             "permissions": [
                                 "insert",
                                 "select",
@@ -65,7 +65,7 @@ info:
 
     # Authentication
 
-    In order to authenticate your requests to the api, they need to include a `Basic` `Authentication` header, where the `username` would be your username and the `password` would be your API Key's token. This authentication method will be valid across all CARTO components (Auth API, Maps API, SQL API). You can build your own `Authorization` header as follows:
+    In order to authenticate your requests to the API, they need to include a `Basic` `Authentication` header, where the `username` would be your username and the `password` would be your API Key's token. This authentication method will be valid across all CARTO components (Auth API, Maps API, SQL API). You can build your own `Authorization` header as follows:
 
 
     ```
@@ -78,7 +78,7 @@ info:
   version: 0.0.1
   contact:
     name: Have you found an error? Github issues
-    url: 'https://github.com'
+    url: 'https://github.com/CartoDB/cartodb/issues/new'
 servers:
   - url: 'https://{user}.carto.com/api/v3'
     description: Production server (uses live data)

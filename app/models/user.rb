@@ -383,6 +383,7 @@ class User < Sequel::Model
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
     sync_enabled_api_keys if changes.include?(:engine_enabled) || changes.include?(:state)
+    $users_metadata.HSET(key, 'map_key', User.make_token) if locked?
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions

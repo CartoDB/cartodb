@@ -2627,6 +2627,8 @@ describe User do
         @auth_api_user.save
 
         expect(@auth_api_user.api_keys.none? { |k| enabled_api_key?(k) }).to be_true
+
+        expect(@auth_api_user.api_key).to_not eq($users_metadata.HGET(@auth_api_user.send(:key), 'map_key'))
       end
 
       it 'disables regular keys for engine disabled' do
@@ -2636,10 +2638,14 @@ describe User do
         expect(@auth_api_user.api_keys.regular.none? { |k| enabled_api_key?(k) }).to be_true
         expect(@auth_api_user.api_keys.master.all? { |k| enabled_api_key?(k) }).to be_true
         expect(@auth_api_user.api_keys.default_public.all? { |k| enabled_api_key?(k) }).to be_true
+
+        expect(@auth_api_user.api_key).to eq($users_metadata.HGET(@auth_api_user.send(:key), 'map_key'))
       end
 
       it 'enables all keys for active engine users' do
         expect(@auth_api_user.api_keys.all? { |k| enabled_api_key?(k) }).to be_true
+
+        expect(@auth_api_user.api_key).to eq($users_metadata.HGET(@auth_api_user.send(:key), 'map_key'))
       end
     end
   end

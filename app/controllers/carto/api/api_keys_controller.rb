@@ -9,6 +9,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   before_filter :api_authorization_required
   before_filter :check_feature_flag
+  before_filter :check_engine_enabled
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -64,6 +65,10 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   def check_feature_flag
     render_404 unless current_viewer.try(:has_feature_flag?, 'auth_api')
+  end
+
+  def check_engine_enabled
+    render_404 unless current_viewer.try(:engine_enabled?)
   end
 
   def load_api_key

@@ -294,6 +294,15 @@ Warden::Strategies.add(:user_creation) do
 end
 
 module Carto::Api::AuthApiAuthentication
+  @@from_header = false
+
+  def self.from_header?
+    @@from_header
+  end
+
+  def self.from_header=(value)
+    @@from_header = value
+  end
   def base64_auth
     match = AUTH_HEADER_RE.match(request.headers['Authorization'])
     match && match[:auth]
@@ -309,6 +318,7 @@ module Carto::Api::AuthApiAuthentication
     api_key = master_key ? api_key.master : api_key
     return fail! unless api_key.exists?
 
+    Carto::Api::AuthApiAuthentication.from_header = true #TODO remove this when user's api_key field is removed
     success!(::User[user_id])
   rescue
     fail!
@@ -316,10 +326,18 @@ module Carto::Api::AuthApiAuthentication
 
   def request_api_key
     return @request_api_key if @request_api_key
-    decoded_auth = Base64.decode64(base64_auth)
-    user_name, token = decoded_auth.split(':')
-    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
+    if Carto::Api::AuthApiAuthentication.from_header?
+      decoded_auth = Base64.decode64(base64_auth)
+      user_name, token = decoded_auth.split(':')
+      user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
+      @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
+    else # This is for keeping backwards compatibility until we remove api_key from user
+      api_key = params[:api_key]
+      user_name = CartoDB.extract_subdomain(request)
+      return unless $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
+      user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
+      @request_api_key = Carto::User.find(user_id).api_keys.create_in_memory_master
+    end
   end
 
   private

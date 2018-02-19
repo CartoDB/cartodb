@@ -48,10 +48,10 @@ describe Carto::UserMigrationImport do
         import_metadata: true,
         dry: false
       )
-      setup_mocks
     end
 
     it 'updates database host for imported user' do
+      setup_mocks
       should_import_metadata_for_user(@user)
       @import.org_import = false
       @import.organization_id = nil
@@ -61,6 +61,7 @@ describe Carto::UserMigrationImport do
     end
 
     it 'updates database host for all users in org' do
+      setup_mocks
       users = create_and_add_users_to_organizaton
       should_import_metadata_for_organization(@organization_mock)
       @import.stubs(:update_attributes)
@@ -72,6 +73,7 @@ describe Carto::UserMigrationImport do
     end
 
     it 'avoids cascade deletion of a failed user migration' do
+      setup_failure_mocks
       should_import_metadata_for_failed_user(@user)
       should_import_data_with_exception
       @import.org_import = false
@@ -83,6 +85,7 @@ describe Carto::UserMigrationImport do
     end
 
     it 'avoids cascade deletion of a failed organization migration' do
+      setup_failure_mocks
       users = create_and_add_users_to_organizaton
       should_import_metadata_for_failed_organization(@organization_mock)
       should_import_data_with_exception
@@ -107,7 +110,7 @@ describe Carto::UserMigrationImport do
       end
     end
 
-    def setup_mocks
+    def setup_common_mocks
       @organization_mock = Carto::Organization.new
       @import.stubs(:assert_organization_does_not_exist)
       @import.stubs(:assert_user_does_not_exist)
@@ -123,7 +126,16 @@ describe Carto::UserMigrationImport do
       @import_job_mock.expects(:terminate_connections).once
       CartoDB::DataMover::ImportJob.stubs(:new).returns @import_job_mock
       @user_migration_package_mock.stubs(:cleanup)
+    end
+
+    def setup_mocks
+      setup_common_mocks
       @import.expects(:save!).once.returns @import
+    end
+
+    def setup_failure_mocks
+      setup_common_mocks
+      @import.expects(:save!).twice
     end
 
     def expected_job_arguments

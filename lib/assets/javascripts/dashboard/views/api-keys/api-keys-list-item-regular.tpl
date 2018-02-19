@@ -1,5 +1,5 @@
 <section>
-   <h4 class="CDB-Text CDB-Size-medium is-semibold u-actionTextColor u-flex u-alignCenter">
+   <h4 class="CDB-Text CDB-Size-medium is-semibold u-flex u-alignCenter u-actionTextColor">
     <button class="js-edit"><%- name %></button>
 
     <% apiGrants.forEach(function (apiGrant) { %>
@@ -15,6 +15,7 @@
     </button>
   </p>
 </section>
+
 <ul class="u-flex">
   <li>
     <button class="CDB-Text CDB-Size-medium u-actionTextColor u-rSpace--m js-regenerate">Regenerate</button>

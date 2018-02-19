@@ -16,19 +16,15 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
   def create
-    api_key = Carto::ApiKey.create!(
-      user_id: current_viewer.id,
-      type: Carto::ApiKey::TYPE_REGULAR,
-      name: params[:name],
-      grants: params[:grants]
-    )
+    carto_viewer = Carto::User.find(current_viewer.id)
+    api_key = carto_viewer.api_keys.create_regular_key!(name: params[:name], grants: params[:grants])
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)
   end
 
   def destroy
-    raise Carto::UnauthorizedError.new if @api_key.master?
+    raise Carto::UnauthorizedError.new unless @api_key.can_be_deleted?
 
     @api_key.destroy
     render_jsonp(Carto::Api::ApiKeyPresenter.new(@api_key).to_poro, 200)
@@ -80,7 +76,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def json_for_api_key(api_key)
     Carto::Api::ApiKeyPresenter.new(api_key).to_poro.merge(
       _links: {
-        self: api_key_url(id: api_key.name)
+        self: api_key_url(id: CGI::escape(api_key.name))
       }
     )
   end

@@ -43,7 +43,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         # Need to mark the synchronization job as queued state.
         # If this is missed there is an error state that can be
         # achieved where the synchronization job can never be
-        # manaually kicked off ever again.  This state will occur if the
+        # manually kicked off ever again.  This state will occur if the
         # resque job fails to mark the synchronization state to success or
         # failure (ie: resque never runs, or bug in ImporterJobs code)
         member.state = Synchronization::Member::STATE_QUEUED

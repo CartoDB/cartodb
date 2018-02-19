@@ -55,7 +55,7 @@ describe Carto::Api::ApiKeysController do
           type: "database",
           tables: [
             {
-              schema: @carto_user1.database_schema,
+              schema: @carto_user.database_schema,
               name: @table1.name,
               permissions: [
                 "insert",
@@ -65,7 +65,7 @@ describe Carto::Api::ApiKeysController do
               ]
             },
             {
-              schema: @carto_user1.database_schema,
+              schema: @carto_user.database_schema,
               name: @table2.name,
               permissions: [
                 "select"

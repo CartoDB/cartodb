@@ -34,7 +34,13 @@ module CartoDB
         )} -Z0 -Fc -f #{@filename} --serializable-deferrable -v --quote-all-identifiers")
       end
 
-      def initialize(username, database_host, database_name, path, filename, database_schema = nil, logger = default_logger)
+      def initialize(username,
+                     database_host,
+                     database_name,
+                     path,
+                     filename,
+                     database_schema = nil,
+                     logger = default_logger)
         @username = username
         @database_host = database_host
         @database_name = database_name

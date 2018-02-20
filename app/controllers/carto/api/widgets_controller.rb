@@ -5,8 +5,10 @@ module Carto
 
       ssl_required :show, :create, :update, :destroy
 
-      before_filter :load_parameters
+      before_filter :load_parameters, except: [:update_all]
       before_filter :load_widget, only: [:show, :update, :destroy]
+      before_filter :load_widgets_parameters, only: [:update_all]
+      before_filter :load_widgets, only: [:update_all]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -60,6 +62,27 @@ module Carto
         render json: { errors: e.message }, status: 500
       end
 
+      def update_all
+        widgets = @widgets.map do |widget|
+          widget_params = params[:widgets].present? ? params[:widgets].find { |p| p['id'] == widget.id } : params
+
+          unless widget.update_attributes(widget_attributes(widget_params))
+            raise UnprocesableEntityError.new(widget.errors.full_messages)
+          end
+
+          widget
+        end
+
+        if widgets.count > 1
+          render_jsonp(widgets: widgets.map { |w| WidgetPresenter.new(w).to_poro })
+        else
+          render_jsonp WidgetPresenter.new(widgets[0]).to_poro
+        end
+      rescue RuntimeError => e
+        CartoDB::Logger.error(message: 'Error updating widgets', exception: e)
+        render_jsonp({ description: e.message }, 400)
+      end
+
       def destroy
         @widget.destroy
 
@@ -67,6 +90,10 @@ module Carto
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error destroying widget", widget: @widget)
         render json: { errors: e.message }, status: 500
+      end
+
+      def widget_attributes(param)
+        param.slice(:order)
       end
 
       private
@@ -97,6 +124,14 @@ module Carto
         true
       end
 
+      def load_widgets_parameters
+        @visualization_id = params[:visualization_id]
+        @visualization = Carto::Visualization.where(id: @visualization_id).first
+        raise LoadError.new("Map not found: #{@visualization_id}") unless @visualization
+
+        true
+      end
+
       def source_id_from_params
         params[:source] ? params[:source][:id] : nil
       end
@@ -107,6 +142,15 @@ module Carto
         raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless @widget
         raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})") unless @widget.belongs_to_map?(@map_id)
         raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}") unless @widget.writable_by_user?(current_user)
+
+        true
+      end
+
+      def load_widgets
+        @widgets = Carto::Widget.from_visualization_id(@visualization_id)
+
+        raise Carto::LoadError.new("Widgets not found") unless @widgets
+        # TODO: raise errors
 
         true
       end

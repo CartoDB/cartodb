@@ -603,6 +603,8 @@ CartoDB::Application.routes.draw do
                     only: [:index, :show, :create, :update, :destroy],
                     constraints: { id: /[^\/]+/ }
         end
+
+        put 'widgets' => 'widgets#update_all', as: :api_v3_widgets_update_all
       end
 
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do

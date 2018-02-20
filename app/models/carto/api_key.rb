@@ -240,7 +240,7 @@ module Carto
     def create_token
       begin
         self.token = generate_auth_token
-      end while self.class.exists?(token: token)
+      end while self.class.exists?(user_id: user_id, token: token)
     end
 
     def add_to_redis
@@ -278,7 +278,7 @@ module Carto
     def create_db_config
       begin
         self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
-      end while self.class.exists?(db_role: db_role)
+      end while self.class.exists?(user_id: user_id, db_role: db_role)
       self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
     end
 

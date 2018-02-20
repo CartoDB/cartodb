@@ -326,7 +326,7 @@ Layer.prototype.isVisible = function () {
 };
 
 /**
- * Return true if the layer is not visible and false when visible.
+ * Return `true` if the layer is not visible and `false` when visible.
  *
  * @return {boolean} - A boolean value indicating the layer's visibility
  * @api

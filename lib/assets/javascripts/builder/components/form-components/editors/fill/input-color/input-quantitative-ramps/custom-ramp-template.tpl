@@ -1,4 +1,3 @@
-<% if (customRamp && customRamp.length) { %>
 <li class="CDB-ListDecoration-item CustomList-item CustomRamp js-customRampItem">
   <div class="CustomRamp-listOptions CDB-ListDecoration-itemLink CDB-ListDecoration-itemLink--double js-customRamp js-listItemLink is-selected">
     <ul class="ColorBarContainer">
@@ -13,4 +12,3 @@
     </div>
   </button>
 </li>
-<% } %>

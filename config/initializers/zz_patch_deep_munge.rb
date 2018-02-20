@@ -36,7 +36,7 @@ module ActionDispatch
               # if v.empty?
               #  hash[k] = nil
               #  ActiveSupport::Notifications.instrument("deep_munge.action_controller", keys: keys)
-              #end
+              # end
             when Hash
               deep_munge(v, keys)
             end

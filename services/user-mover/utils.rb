@@ -5,6 +5,16 @@ require 'tempfile'
 module CartoDB
   module DataMover
     module Utils
+      PG_DUMP_BIN_PATHS = {
+        '9.5': 'pg_dump_bin_path_95',
+        '10': 'pg_dump_bin_path'
+      }.freeze
+
+      PG_RESTORE_BIN_PATHS = {
+        '9.5': 'pg_restore_bin_path_95',
+        '10': 'pg_restore_bin_path'
+      }.freeze
+
       def conn_string(user, host, port, name)
         %{#{!user ? '' : '-U ' + user} -h #{host} -p #{port} -d #{name} }
       end
@@ -77,6 +87,32 @@ module CartoDB
         end
         logger.debug(log_message)
         throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
+      end
+
+      def get_pg_dump_bin_path(conn)
+        bin_version = get_database_version_for_binaries(conn)
+        Cartodb.get_config(:user_migrator, PG_DUMP_BIN_PATHS[bin_version.to_sym]) || 'pg_dump'
+      end
+
+      def get_pg_restore_bin_path(conn)
+        bin_version = get_database_version_for_binaries(conn)
+        Cartodb.get_config(:user_migrator, PG_RESTORE_BIN_PATHS[bin_version.to_sym]) || 'pg_restore'
+      end
+
+      def get_database_version_for_binaries(conn)
+        version = get_database_version(conn.query("SELECT version()").first['version'])
+        if version
+          version[0...version.rindex('.')]
+        end
+      end
+
+      def get_database_version(version)
+        version_match = version.match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
+        if version_match.nil?
+          return nil
+        else
+          return version_match[2]
+        end
       end
 
       def default_logger

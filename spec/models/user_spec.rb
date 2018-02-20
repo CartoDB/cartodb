@@ -2604,29 +2604,6 @@ describe User do
     end
   end
 
-  describe 'database version' do
-    it 'should get proper database version for pg_* binaries' do
-      user = FactoryGirl.create(:valid_user)
-
-      user.db_service.stubs(:get_database_version).returns('9.5.1')
-      user.db_service.get_database_version_for_binaries.should eq '9.5'
-
-      user.db_service.stubs(:get_database_version).returns('10.1')
-      user.db_service.get_database_version_for_binaries.should eq '10'
-
-      user.destroy
-    end
-
-    it 'should get proper binary paths version for pg_dump and pg_restore' do
-      user = FactoryGirl.create(:valid_user)
-
-      user.db_service.get_pg_dump_bin_path.should include 'pg_dump'
-      user.db_service.get_pg_restore_bin_path.should include 'pg_restore'
-
-      user.destroy
-    end
-  end
-
   protected
 
   def create_org(org_name, org_quota, org_seats)

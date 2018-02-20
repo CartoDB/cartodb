@@ -662,8 +662,7 @@ module CartoDB
       end
 
       def pg_restore_bin_path
-        user_model = ::User.find(username: @target_username)
-        user_model.db_service.get_pg_restore_bin_path
+        get_pg_restore_bin_path(superuser_pg_conn)
       end
 
       def target_dbname

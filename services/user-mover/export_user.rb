@@ -34,14 +34,14 @@ module CartoDB
         )} -Z0 -Fc -f #{@filename} --serializable-deferrable -v --quote-all-identifiers")
       end
 
-      def initialize(username,
+      def initialize(conn,
                      database_host,
                      database_name,
                      path,
                      filename,
                      database_schema = nil,
                      logger = default_logger)
-        @username = username
+        @conn = conn
         @database_host = database_host
         @database_name = database_name
         @filename = filename
@@ -68,8 +68,7 @@ module CartoDB
       private
 
       def pg_dump_bin_path
-        user_model = ::User.find(username: @username)
-        user_model.db_service.get_pg_dump_bin_path
+        get_pg_dump_bin_path(@conn)
       end
     end
   end
@@ -499,7 +498,7 @@ module CartoDB
             redis_conn.quit
             if @options[:data]
               DumpJob.new(
-                @username,
+                pg_conn,
                 @user_data['database_host'] || '127.0.0.1',
                 @user_data['database_name'],
                 @options[:path],
@@ -542,7 +541,7 @@ module CartoDB
 
             if @options[:data] && !@options[:split_user_schemas]
               DumpJob.new(
-                @username,
+                pg_conn,
                 @database_host,
                 @database_name,
                 @options[:path],

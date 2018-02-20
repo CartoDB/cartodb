@@ -25,16 +25,6 @@ module CartoDB
       CDB_DATASERVICES_CLIENT_VERSION = '0.23.0'.freeze
       ODBC_FDW_VERSION = '0.2.0'.freeze
 
-      PG_DUMP_BIN_PATHS = {
-        '9.5': 'pg_dump_bin_path_95',
-        '10': 'pg_dump_bin_path'
-      }.freeze
-
-      PG_RESTORE_BIN_PATHS = {
-        '9.5': 'pg_restore_bin_path_95',
-        '10': 'pg_restore_bin_path'
-      }.freeze
-
       def initialize(user)
         raise "User nil" unless user
         @user = user
@@ -1254,23 +1244,6 @@ module CartoDB
         else
           return version_match[2]
         end
-      end
-
-      def get_database_version_for_binaries
-        version = get_database_version
-        if version
-          version[0...version.rindex('.')]
-        end
-      end
-
-      def get_pg_dump_bin_path
-        bin_version = get_database_version_for_binaries
-        Cartodb.get_config(:user_migrator, PG_DUMP_BIN_PATHS[bin_version.to_sym]) || 'pg_dump'
-      end
-
-      def get_pg_restore_bin_path
-        bin_version = get_database_version_for_binaries
-        Cartodb.get_config(:user_migrator, PG_RESTORE_BIN_PATHS[bin_version.to_sym]) || 'pg_restore'
       end
 
       def connect_to_aggregation_tables

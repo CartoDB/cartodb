@@ -568,6 +568,25 @@ describe 'UserMigration' do
     end
   end
 
+  include CartoDB::DataMover::Utils
+  describe 'database version' do
+    before(:each) do
+      @conn_mock = Object.new
+      @conn_mock.stubs(:query).returns(['version'=> 'PostgreSQL 9.5.2 on x86_64-pc-linux-gnu...'])
+    end
+    it 'should get proper database version for pg_* binaries' do
+      get_database_version_for_binaries(@conn_mock).should eq '9.5'
+
+      @conn_mock.stubs(:query).returns(['version'=> 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
+      get_database_version_for_binaries(@conn_mock).should eq '10'
+    end
+
+    it 'should get proper binary paths version for pg_dump and pg_restore' do
+      get_pg_dump_bin_path(@conn_mock).should include 'pg_dump'
+      get_pg_restore_bin_path(@conn_mock).should include 'pg_restore'
+    end
+  end
+
   def drop_database(user)
     conn = user.in_database(as: :cluster_admin)
     user.db_service.drop_database_and_user(conn)

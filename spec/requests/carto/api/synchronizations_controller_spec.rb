@@ -86,7 +86,7 @@ describe Carto::Api::SynchronizationsController do
         last_response.status.should == 200
 
         response = JSON.parse(last_response.body)
-        response.fetch('state').should == 'created'
+        response.fetch('state').should == 'queued'
       end
     end
 

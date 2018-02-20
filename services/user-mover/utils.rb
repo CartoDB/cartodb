@@ -81,13 +81,11 @@ module CartoDB
 
       def get_pg_dump_bin_path(conn)
         bin_version = get_database_version_for_binaries(conn)
-        logger.debug("Using pg_dump version: '#{bin_version}'")
         Cartodb.get_config(:user_migrator, 'pg_dump_bin_path', bin_version) || 'pg_dump'
       end
 
       def get_pg_restore_bin_path(conn, dump_name = nil)
         bin_version = dump_name ? get_dump_database_version(conn, dump_name) : get_database_version_for_binaries(conn)
-        logger.debug("Using pg_restore version: '#{bin_version}'")
         Cartodb.get_config(:user_migrator, 'pg_dump_restore_path', bin_version) || 'pg_restore'
       end
 
@@ -106,7 +104,6 @@ module CartoDB
         pg_restore_bin_path = get_pg_restore_bin_path(conn)
 
         database_version = run("#{pg_restore_bin_path} -l #{dump_name} | grep \"database version\"")
-        logger.debug("Dump created with database version: '#{database_version}'")
         version_match = database_version.match(/(database version: (([0-9]+\.?){2,3})).*/)
 
         pg_dump_version = version_match[2] if version_match
@@ -118,7 +115,6 @@ module CartoDB
       end
 
       def run(command)
-        logger.debug("Run: '#{command}'")
         `#{command}`
       end
 

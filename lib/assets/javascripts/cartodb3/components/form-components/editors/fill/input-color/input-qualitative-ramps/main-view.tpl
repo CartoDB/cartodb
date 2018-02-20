@@ -8,11 +8,11 @@
           </button>
           <span class="label js-label"><%- attribute %></span>
         </li>
-        <% if (columnType === 'number' && !hideQuantification) { %>
+        <% if ((columnType !== 'number') && !hideQuantification) { %>
           <li class="u-flex">
             <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>
             <button class="CDB-Shape u-lSpace js-quantification">
-              <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
+              <div class="CDB-Shape-threePoints is-horizontal <% if (columnType !== 'string') { %>is-blue<% } %> is-small">
                 <div class="CDB-Shape-threePointsItem"></div>
                 <div class="CDB-Shape-threePointsItem"></div>
                 <div class="CDB-Shape-threePointsItem"></div>
@@ -36,5 +36,8 @@
 <% } else if (status === 'error') { %>
   <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('form-components.editors.fill.error') %></div>
 <% } else { %>
-  <div class="InputColorCategory-content js-content"></div>
+
+  <!-- Stack Layout View -->
+  <div class="js-content"></div>
+
 <% } %>

@@ -148,6 +148,7 @@ class User < Sequel::Model
     validates_format /\A[a-z0-9\-]+\z/, :username, message: "must only contain lowercase letters, numbers and the dash (-) symbol"
     validates_format /\A[a-z0-9]{1}/, :username, message: "must start with alphanumeric chars"
     validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
+    validates_max_length 63, :username
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -379,12 +380,19 @@ class User < Sequel::Model
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
+    # API keys management
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
+    $users_metadata.HSET(key, 'map_key', User.make_token) if locked?
+    db.after_commit { sync_enabled_api_keys } if changes.include?(:engine_enabled) || changes.include?(:state)
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
     end
+  end
+
+  def api_keys
+    Carto::ApiKey.where(user_id: id)
   end
 
   def shared_entities
@@ -1624,6 +1632,11 @@ class User < Sequel::Model
     update api_key: new_api_key
   end
 
+  def regenerate_all_api_keys
+    regenerate_api_key
+    api_keys.regular.each(&:regenerate_token!)
+  end
+
   # This is set temporary on user creation with invitation,
   # or retrieved from database afterwards
   def invitation_token
@@ -1833,7 +1846,7 @@ class User < Sequel::Model
   end
 
   def sync_master_key
-    master_key = Carto::ApiKey.where(user_id: id).master.first
+    master_key = api_keys.master.first
     return unless master_key
 
     # Workaround: User save is not yet commited, so AR doesn't see the new api_key
@@ -1842,11 +1855,15 @@ class User < Sequel::Model
   end
 
   def sync_default_public_key
-    default_key = Carto::ApiKey.where(user_id: id).default_public.first
+    default_key = api_keys.default_public.first
     return unless default_key
 
     # Workaround: User save is not yet commited, so AR doesn't see the new database_schema
     default_key.user.database_schema = database_schema
     default_key.update_attributes(db_role: database_public_username)
+  end
+
+  def sync_enabled_api_keys
+    api_keys.each(&:set_enabled_for_engine)
   end
 end

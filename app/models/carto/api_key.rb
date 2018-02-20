@@ -70,13 +70,14 @@ module Carto
 
     after_create :setup_db_role, if: ->(k) { k.regular? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
-    after_save :add_to_redis
+    after_save :add_to_redis, if: :valid_user?
 
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
 
-    scope :master, ->() { where(type: TYPE_MASTER) }
-    scope :default_public, ->() { where(type: TYPE_DEFAULT_PUBLIC) }
+    scope :master, -> { where(type: TYPE_MASTER) }
+    scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
+    scope :regular, -> { where(type: TYPE_REGULAR) }
 
     attr_accessor :skip_role_setup
 
@@ -113,6 +114,20 @@ module Carto
         name: name,
         grants: grants
       )
+    end
+
+    def self.create_in_memory_master(user: Carto::User.find(scope_attributes['user_id']))
+      api_key = new(
+        user: user,
+        type: TYPE_MASTER,
+        name: NAME_MASTER,
+        token: user.api_key,
+        grants: GRANTS_ALL_APIS,
+        db_role: user.database_username,
+        db_password: user.database_password
+      )
+      api_key.readonly!
+      api_key
     end
 
     def self.new_from_hash(api_key_hash)
@@ -160,10 +175,15 @@ module Carto
       end
     end
 
-    def create_token
-      begin
-        self.token = generate_auth_token
-      end while self.class.exists?(token: token)
+    def regenerate_token!
+      if master?
+        # Send all master key updates through the user model, avoid circular updates
+        ::User[user.id].regenerate_api_key
+        reload
+      else
+        create_token
+        save!
+      end
     end
 
     def master?
@@ -206,11 +226,22 @@ module Carto
       queries
     end
 
+    def set_enabled_for_engine
+      # We enable/disable API keys for engine usage by adding/removing them from Redis
+      valid_user? ? add_to_redis : remove_from_redis
+    end
+
     private
 
     PASSWORD_LENGTH = 40
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
+    def create_token
+      begin
+        self.token = generate_auth_token
+      end while self.class.exists?(token: token)
+    end
 
     def add_to_redis
       redis_client.hmset(redis_key, redis_hash_as_array)
@@ -332,6 +363,11 @@ module Carto
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
       errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
+    end
+
+    def valid_user?
+      # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled
+      !(user.locked? || regular? && !user.engine_enabled?)
     end
   end
 end

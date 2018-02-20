@@ -14,7 +14,7 @@
         ]
       },
       "apis": {
-        "type": ["array", "null"],
+        "type": ["array"],
         "items": {
           "type": "string",
           "enum": [
@@ -41,7 +41,7 @@
               "type": "string"
             },
             "permissions": {
-              "type": ["array", "null"],
+              "type": ["array"],
               "items": {
                 "type": "string",
                 "enum": [

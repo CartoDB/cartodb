@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.20.0`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.21.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
+* checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
 * Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
 * User feed migration
 * Add legends to mobile view in embed maps (#13417)
@@ -138,10 +140,14 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix wrong user flow involving analyses and empty layers ([#13489](https://github.com/CartoDB/cartodb/pull/13489))
+* Fix select geometries dropdown in JOIN analysis ([Support#1281](https://github.com/CartoDB/support/issues/1281))
+* Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
 * Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
 * User feed renders google maps properly when user has it enabled
+* New Synchronization records can enter error state preventing future synchronizations (#13435)
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
+* Import gpkg without coordinate system. ([Support#1303](https://github.com/CartoDB/support/issues/1303))
 * Improved bundling aliases
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)

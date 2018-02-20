@@ -247,8 +247,6 @@ namespace :cartodb do
 
     desc 'Upgrade cartodb postgresql extension'
     task :upgrade_postgres_extension, [:database_host, :version, :sleep, :statement_timeout] => :environment do |task_name, args|
-      raise "Sample usage: rake cartodb:db:upgrade_postgres_extension['127.0.0.1','0.5.2']" if args[:database_host].blank? or args[:version].blank?
-
       # Send this as string, not as number
       extension_version = args[:version]
       database_host = args[:database_host]
@@ -256,14 +254,17 @@ namespace :cartodb do
       statement_timeout = args[:statement_timeout].blank? ? 180000 : args[:statement_timeout] # 3 min by default
 
       puts "Upgrading cartodb extension with following config:"
-      puts "extension_version: #{extension_version}"
-      puts "database_host: #{database_host}"
+      puts "extension_version: #{extension_version || 'LATEST'}"
+      puts "database_host: #{database_host || 'ALL'}"
       puts "sleep: #{sleep}"
       puts "statement_timeout: #{statement_timeout}"
 
-      count = ::User.where(database_host: database_host).count
+      query = User
+      query = query.where(database_host: database_host) if database_host
 
-      ::User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
+      count = query.count
+
+      query.order(Sequel.asc(:created_at)).each_with_index do |user, i|
         begin
           # We grant 2 x statement_timeout, by default 6 min
           Timeout::timeout(statement_timeout/1000 * 2) do

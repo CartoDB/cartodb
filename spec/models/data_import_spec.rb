@@ -347,6 +347,19 @@ describe DataImport do
     table.should_not be_nil
   end
 
+  it 'imports a gpkg with no coordinate system' do
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: fake_data_path('no_coordinate_system_dataset.gpkg'),
+      updated_at: Time.now
+    ).run_import!
+
+    table = ::UserTable.where(id: data_import.table_id).first
+    table.should_not be_nil
+    table.name.should be == 'no_coordinate_system_dataset'
+    table.service.records[:rows].should have(1).items
+  end
+
   it 'should allow to create a table from a url' do
     data_import = nil
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
@@ -361,6 +374,39 @@ describe DataImport do
     table.should_not be_nil
     table.name.should be == 'clubbing'
     table.service.records[:rows].should have(10).items
+  end
+
+  it 'updates synch_job state after success data import' do
+    data_import = nil
+    sync_job = FactoryGirl.create(:enqueued_sync)
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: url,
+        synchronization_id: sync_job.id,
+        updated_at: Time.now
+      ).run_import!
+    end
+
+    data_import.state.should eq DataImport::STATE_COMPLETE
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_SUCCESS
+  end
+
+  it 'updates synch_job state after failed data import' do
+    sync_job = FactoryGirl.create(:enqueued_sync)
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",
+      synchronization_id: sync_job.id,
+      updated_at: Time.now
+    ).run_import!
+
+    data_import.state.should eq DataImport::STATE_FAILURE
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_FAILURE
   end
 
   it 'should allow to create a table from a url with params' do

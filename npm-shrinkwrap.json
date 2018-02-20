@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.4-3.13478.1",
+  "version": "4.11.45.13478.01",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",

@@ -590,7 +590,7 @@
         "input-ramp": {
           "buckets": "bucket |||| buckets"
         },
-        "input-categories": {
+        "input-qualitative-ramps": {
           "null": "null",
           "others": "Others"
         },

@@ -48,10 +48,10 @@ describe Carto::UserMigrationImport do
         import_metadata: true,
         dry: false
       )
+      setup_mocks
     end
 
     it 'updates database host for imported user' do
-      setup_mocks
       should_import_metadata_for_user(@user)
       @import.org_import = false
       @import.organization_id = nil
@@ -61,7 +61,6 @@ describe Carto::UserMigrationImport do
     end
 
     it 'updates database host for all users in org' do
-      setup_mocks
       users = create_and_add_users_to_organizaton
       should_import_metadata_for_organization(@organization_mock)
       @import.stubs(:update_attributes)
@@ -70,32 +69,6 @@ describe Carto::UserMigrationImport do
       should_update_database_host_for_users(users)
 
       @import.run_import
-    end
-
-    it 'avoids cascade deletion of a failed user migration' do
-      setup_failure_mocks
-      should_import_metadata_for_failed_user(@user)
-      should_import_data_with_exception
-      @import.org_import = false
-      @import.organization_id = nil
-      should_update_database_host_for_users([@user])
-
-      @import.run_import
-      @import.user.should eq nil
-    end
-
-    it 'avoids cascade deletion of a failed organization migration' do
-      setup_failure_mocks
-      users = create_and_add_users_to_organizaton
-      should_import_metadata_for_failed_organization(@organization_mock)
-      should_import_data_with_exception
-      @import.stubs(:update_attributes)
-      @import.org_import = true
-      @import.user_id = nil
-      should_update_database_host_for_users(users)
-
-      @import.run_import
-      @import.organization.should eq nil
     end
 
     private
@@ -110,7 +83,7 @@ describe Carto::UserMigrationImport do
       end
     end
 
-    def setup_common_mocks
+    def setup_mocks
       @organization_mock = Carto::Organization.new
       @import.stubs(:assert_organization_does_not_exist)
       @import.stubs(:assert_user_does_not_exist)
@@ -126,16 +99,7 @@ describe Carto::UserMigrationImport do
       @import_job_mock.expects(:terminate_connections).once
       CartoDB::DataMover::ImportJob.stubs(:new).returns @import_job_mock
       @user_migration_package_mock.stubs(:cleanup)
-    end
-
-    def setup_mocks
-      setup_common_mocks
       @import.expects(:save!).once.returns @import
-    end
-
-    def setup_failure_mocks
-      setup_common_mocks
-      @import.expects(:save!).twice
     end
 
     def expected_job_arguments
@@ -169,28 +133,11 @@ describe Carto::UserMigrationImport do
                                               .once.with(organization, :irrelevant_meta_dir)
     end
 
-    def should_import_metadata_for_failed_user(user)
-      @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
-      Carto::UserMetadataExportService.any_instance.expects(:import_from_directory).with(:irrelevant_meta_dir)
-                                      .returns user
-    end
-
-    def should_import_metadata_for_failed_organization(organization)
-      @user_migration_package_mock.stubs(:meta_dir).returns :irrelevant_meta_dir
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with(:irrelevant_meta_dir)
-                                              .once.returns organization
-    end
-
     def create_and_add_users_to_organizaton
       user2 = Carto::User.new
       user3 = Carto::User.new
       @organization_mock.users << user2
       @organization_mock.users << user3
-    end
-
-    def should_import_data_with_exception
-      @import.stubs(:do_import_data)
-             .raises(Sequel::DatabaseError, 'blabla')
     end
   end
 end

@@ -13,7 +13,11 @@ var TORQUE_LAYER_CARTOCSS_PROPS = [
   '-torque-data-aggregation',
   '-torque-resolution'
 ];
-var LAYER_NAME_IN_CARTO_CSS = 'Map';
+var LAYER_CARTOCSS_PROPS = [
+  'marker-width'
+];
+var LAYER_NAME_IN_CARTO_CSS = '#layer';
+var TORQUE_LAYER_NAME_IN_CARTO_CSS = 'Map';
 var DEFAULT_ANIMATION_DURATION = 30;
 var TORQUE_DURATION_ATTRIBUTE = '-torque-animation-duration';
 
@@ -95,9 +99,17 @@ var TorqueLayer = LayerModelBase.extend({
 
   _getTorqueLayerCartoCSSProperties: function (renderer, cartoCSS) {
     var shader = renderer.render(cartoCSS);
+    var torqueLayer = shader.findLayer({ name: TORQUE_LAYER_NAME_IN_CARTO_CSS });
     var layer = shader.findLayer({ name: LAYER_NAME_IN_CARTO_CSS });
+
     var properties = {};
     _.each(TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
+      var value = torqueLayer && torqueLayer.eval(property);
+      if (value) {
+        properties[property] = value;
+      }
+    });
+    _.each(LAYER_CARTOCSS_PROPS, function (property) {
       var value = layer && layer.eval(property);
       if (value) {
         properties[property] = value;

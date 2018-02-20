@@ -159,6 +159,19 @@ describe 'UserMigration' do
       import.run_import.should eq false
       Carto::User.exists?(@user.id).should eq true
     end
+
+    it 'import record should exist if import_data fails and rollbacks' do
+      Carto::UserMigrationImport.any_instance.stubs(:do_import_data).raises('Some exception')
+
+      imp = import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+
+      Carto::UserMigrationImport.where(id: imp.id).should_not be_empty
+      Carto::User.where(username: @carto_user.username).should be_empty
+
+      Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
+    end
   end
 
   describe 'failing organization organizations should rollback' do
@@ -247,6 +260,19 @@ describe 'UserMigration' do
       imp = org_import
       imp.run_import.should eq false
       imp.state.should eq 'failure'
+    end
+
+    it 'import record should exist if import_data fails and rollbacks' do
+      Carto::UserMigrationImport.any_instance.stubs(:do_import_data).raises('Some exception')
+
+      imp = org_import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+
+      Carto::UserMigrationImport.where(id: imp.id).should_not be_empty
+      Carto::Organization.where(id: @carto_organization.id).should be_empty
+
+      Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
     end
   end
 

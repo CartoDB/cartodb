@@ -10,6 +10,6 @@
       </div>
     <% } %>
 
-    <div class="js-datasets-list"></div>
+    <ul class="js-datasets-list"></ul>
   </div>
 </div>

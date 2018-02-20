@@ -537,7 +537,7 @@ describe Carto::Api::ApiKeysController do
     describe 'without header auth fails and does not' do
       it 'create api_key' do
         api_keys_count = @carto_user.api_keys.count
-        post_json generate_api_key_url(user_req_params(@carto_user).merge(api_key: nil)) do |response|
+        post_json generate_api_key_url(user_domain: @carto_user.username) do |response|
           response.status.should eq 401
           @carto_user.reload
           @carto_user.api_keys.count.should eq api_keys_count
@@ -546,7 +546,7 @@ describe Carto::Api::ApiKeysController do
 
       it 'destroy the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        delete_json generate_api_key_url(user_req_params(@carto_user).merge(api_key: nil), name: api_key.name) do |response|
+        delete_json generate_api_key_url(user_domain: @carto_user.username, name: api_key.name) do |response|
           response.status.should eq 401
           Carto::ApiKey.find(api_key.id).should be
         end
@@ -568,14 +568,14 @@ describe Carto::Api::ApiKeysController do
 
       it 'return requested API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        get_json generate_api_key_url(user_req_params(@carto_user).merge(api_key: nil), name: api_key.name) do |response|
+        get_json generate_api_key_url(user_domain: @carto_user.username, name: api_key.name) do |response|
           response.status.should eq 401
         end
         api_key.destroy
       end
 
       it 'return API key list' do
-        get_json generate_api_key_url(user_req_params(@carto_user).merge(api_key: nil)) do |response|
+        get_json generate_api_key_url(user_domain: @carto_user.username) do |response|
           response.status.should eq 401
         end
       end

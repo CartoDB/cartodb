@@ -23,6 +23,41 @@ You will need to sign a Contributor License Agreement (CLA) before making a subm
 
 This project is licensed under the BSD 3-clause "New" or "Revised" License - see the [LICENSE.txt](LICENSE.txt) file for details.
 
+## Documentation
+
+### API Reference
+
+Run `npm run docs` to build the API reference documentation from jsdoc annotations.
+
+Once the task is done, you can visit `docs/public/index.html` to check the reference
+
+### General documentation
+
+You can read the general documentation that is published at [https://carto.com/documentation/cartojs/](https://carto.com/documentation/cartojs/) also in this repo. They are written in Markdown.
+
+Warning: internal links in these documents don't work. They are replaced when the documentation is published in [https://carto.com/](https://carto.com/documentation/cartojs/)
+
+
+#### Guides
+
+The folder `docs/guides` contains general information about the CARTO.js library.
+
+- Quickstart: get started quickly following this tutorial.
+- Upgrade considerations: if you have experience with previous versions of CARTO.js, this is the place to learn the differences between the former library and the newest one.
+- Glossary: terms that appear throughout the documentation.
+
+#### Examples
+
+In the folder `examples/public` you can find several folders with example for every feature of CARTO.js.
+
+#### Reference topics
+
+The document `docs/reference/topics.md` contains general considerations when working with CARTO.js. It's advisable to read them before diving in the API reference.
+
+#### Support
+
+The folder `docs/support` contains several document with support documentation: support options, FAQs, error messages...
+
 ## Development
 
 ### Run the tests
@@ -60,3 +95,4 @@ To publish a release to the `CDN` and `npm`
 ```
 npm run release
 ```
+

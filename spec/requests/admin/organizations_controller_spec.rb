@@ -60,6 +60,7 @@ describe Admin::OrganizationsController do
 
   describe '#regenerate_api_keys' do
     it 'regenerate api keys for all org users' do
+      api_key = @carto_org_user_owner.api_keys.create_regular_key!(name: 'wadus', grants: [{ type: 'apis', apis: [] }])
       @organization.engine_enabled = true
       @organization.save
       host! "#{@organization.name}.localhost.lan"
@@ -72,6 +73,8 @@ describe Admin::OrganizationsController do
         u.reload
         expect(u.api_key).to_not eq old_api_key
       end
+      expect { api_key.reload }.to(change { api_key.token })
+      api_key.destroy
     end
   end
 

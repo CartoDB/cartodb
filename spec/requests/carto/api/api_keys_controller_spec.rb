@@ -509,17 +509,135 @@ describe Carto::Api::ApiKeysController do
   end
 
   describe 'header auth' do
-    before(:all) do
+    before(:each) do
       @master_api_key = @carto_user.api_keys.master.first
+      @carto_user.api_keys.create_regular_key!(name: 'key1', grants: empty_grants)
     end
 
-    def json_headers_with_auth
+    def json_headers_with_auth(api_key: @master_api_key)
       http_json_headers.merge(
-        'Authorization' => 'Basic ' + Base64.strict_encode64("#{@user.username}:#{@master_api_key.token}")
+        'Authorization' => 'Basic ' + Base64.strict_encode64("#{@user.username}:#{api_key.token}")
       )
     end
 
+    def empty_grants
+      [{ type: "apis", apis: [] }]
+    end
+
+    def public_api_key
+      @carto_user.api_keys.find(&:default_public?)
+    end
+
+    def regular_api_key
+      @carto_user.reload.api_keys.find(&:regular?)
+    end
+
+    def empty_payload
+      {
+        name: 'wadus',
+        grants: empty_grants
+      }
+    end
+
     let(:header_params) { { user_domain: @carto_user.username } }
+
+    describe '#create' do
+      it 'does not allow default_public api keys' do
+        post_json generate_api_key_url(header_params), empty_payload, json_headers_with_auth(api_key: public_api_key) do |response|
+          response.status.should eq 401
+        end
+      end
+
+      it 'does not allow regular api_keys' do
+        post_json generate_api_key_url(header_params), empty_payload, json_headers_with_auth(api_key: regular_api_key) do |response|
+          response.status.should eq 401
+        end
+      end
+    end
+
+    describe '#destroy' do
+      it 'does not allow default_public api keys' do
+        delete_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+          response.status.should eq 401
+        end
+      end
+
+      it 'does not allow regular api_keys' do
+        delete_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+          response.status.should eq 401
+        end
+      end
+    end
+
+    describe '#regenerate_token' do
+      it 'does not allow default_public api keys' do
+        post_json regenerate_api_key_token_url(header_params.merge(id: regular_api_key.name)), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+          response.status.should eq 401
+        end
+      end
+
+      it 'does not allow regular api_keys' do
+        post_json regenerate_api_key_token_url(header_params.merge(id: regular_api_key.name)), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+          response.status.should eq 401
+        end
+      end
+    end
+
+    describe '#index' do
+      it 'shows only given api with default_public api keys' do
+        get_json generate_api_key_url(header_params), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+          response.body[:count].should eq 1
+          response.body[:result].length.should eq 1
+          response.body[:result].first['user']['username'].should eq @carto_user.username
+          response.body[:result].first['token'].should eq public_api_key.token
+        end
+      end
+
+      it 'shows only given api with regular api keys' do
+        get_json generate_api_key_url(header_params), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+          response.body[:count].should eq 1
+          response.body[:result].length.should eq 1
+          response.body[:result].first['user']['username'].should eq @carto_user.username
+          response.body[:result].first['token'].should eq regular_api_key.token
+        end
+      end
+    end
+
+    describe '#show' do
+      it 'shows given public api_key if authetnicated with it' do
+        get_json generate_api_key_url(header_params, name: public_api_key.name), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+          response.status.should eq 200
+          response.body[:user][:username].should eq @carto_user.username
+          response.body[:token].should eq public_api_key.token
+        end
+      end
+
+      it 'shows given regular api_key if authetnicated with it' do
+        get_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+          response.status.should eq 200
+          response.body[:user][:username].should eq @carto_user.username
+          response.body[:token].should eq regular_api_key.token
+        end
+      end
+
+      it 'returns 404 if showing an api key different than the authenticated (public) one' do
+        get_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+          response.status.should eq 404
+          response.body[:errors].should eq 'API key not found: key1'
+        end
+      end
+
+      it 'returns 404 if showing an api key different than the authenticated (regular) one' do
+        get_json generate_api_key_url(header_params, name: public_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+          response.status.should eq 404
+          response.body[:errors].should eq 'API key not found: Default public'
+        end
+      end
+    end
 
     describe 'with header auth' do
       it 'creates api_key' do

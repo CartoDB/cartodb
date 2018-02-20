@@ -2648,6 +2648,28 @@ describe User do
         expect(@auth_api_user.api_key).to eq($users_metadata.HGET(@auth_api_user.send(:key), 'map_key'))
       end
     end
+
+    describe '#regenerate_all_api_keys' do
+      before(:all) do
+        @regular_key = @auth_api_user.api_keys.create_regular_key!(name: 'regkey', grants: [{ type: 'apis', apis: [] }])
+      end
+
+      after(:all) do
+        @regular_key.destroy
+      end
+
+      it 'regenerates master key at user model' do
+        expect { @auth_api_user.regenerate_all_api_keys }.to(change { @auth_api_user.api_key })
+      end
+
+      it 'regenerates master key model' do
+        expect { @auth_api_user.regenerate_all_api_keys }.to(change { @auth_api_user.api_keys.master.first.token })
+      end
+
+      it 'regenerates regular key' do
+        expect { @auth_api_user.regenerate_all_api_keys }.to(change { @regular_key.reload.token })
+      end
+    end
   end
 
   protected

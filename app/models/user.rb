@@ -148,6 +148,7 @@ class User < Sequel::Model
     validates_format /\A[a-z0-9\-]+\z/, :username, message: "must only contain lowercase letters, numbers and the dash (-) symbol"
     validates_format /\A[a-z0-9]{1}/, :username, message: "must start with alphanumeric chars"
     validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
+    validates_max_length 63, :username
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -1629,6 +1630,11 @@ class User < Sequel::Model
   def regenerate_api_key(new_api_key = ::User.make_token)
     invalidate_varnish_cache
     update api_key: new_api_key
+  end
+
+  def regenerate_all_api_keys
+    regenerate_api_key
+    api_keys.regular.each(&:regenerate_token!)
   end
 
   # This is set temporary on user creation with invitation,

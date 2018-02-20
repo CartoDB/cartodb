@@ -123,11 +123,13 @@ ion for time-series (#12670)
   * Organization concerns (#13511)
   * Token regeneration (#13321)
   * Keys listing (#13327)
+  * Disable keys for locked users (#13560)
   * Header authentication (#13329)
   * Keep API Key permissions up to date when tables change (#13333)
   * Delete API keys on user deletion (#13470)
   * Inherit from public user for API key permissions (#13464, #13550)
   * Sync master key with user model (#13540)
+  * Regenerate all user/orgs api keys (#13586)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
   * API Keys are exported and imported (#13346)
@@ -140,6 +142,8 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Rename 'cartodb3' to 'builder'
+* Make legends collapsable (#13531)
+* Add marker size to layer cartocss props to reinstantiate torque map (#13590)
 * Fix select geometries dropdown in JOIN analysis ([Support#1281](https://github.com/CartoDB/support/issues/1281))
 * Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
 * Removed references to analytics JS files in static pages (#13543)
@@ -460,6 +464,7 @@ ion for time-series (#12670)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
 
 ### Internals
+* Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)

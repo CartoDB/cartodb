@@ -70,7 +70,7 @@ module Carto
 
     after_create :setup_db_role, if: ->(k) { k.regular? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
-    after_save :add_to_redis
+    after_save :add_to_redis, if: :valid_user?
 
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
@@ -226,6 +226,11 @@ module Carto
       queries
     end
 
+    def set_enabled_for_engine
+      # We enable/disable API keys for engine usage by adding/removing them from Redis
+      valid_user? ? add_to_redis : remove_from_redis
+    end
+
     private
 
     PASSWORD_LENGTH = 40
@@ -358,6 +363,11 @@ module Carto
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
       errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
+    end
+
+    def valid_user?
+      # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled
+      !(user.locked? || regular? && !user.engine_enabled?)
     end
   end
 end

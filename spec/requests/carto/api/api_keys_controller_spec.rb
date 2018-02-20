@@ -16,6 +16,28 @@ describe Carto::Api::ApiKeysController do
     end
   end
 
+  let(:create_payload) do
+    {
+      name: 'wadus',
+      grants: [
+        {
+          "type" => "apis",
+          "apis" => []
+        },
+        {
+          "type" => "database",
+          "tables" => [
+            {
+              "schema" => @carto_user.database_schema,
+              "name" => @table1.name,
+              "permissions" => []
+            }
+          ]
+        }
+      ]
+    }
+  end
+
   before(:all) do
     @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
     @user = FactoryGirl.create(:valid_user)
@@ -42,6 +64,77 @@ describe Carto::Api::ApiKeysController do
 
   def user_req_params(user)
     { user_domain: user.username, api_key: user.api_key }
+  end
+
+  describe '#authorization' do
+    shared_examples 'unauthorized' do
+      before(:all) do
+        @api_key = FactoryGirl.create(:api_key_apis, user: @unauthorized_user)
+      end
+
+      after(:all) do
+        @api_key.destroy
+      end
+
+      it 'to create api keys' do
+        post_json generate_api_key_url(user_req_params(@unauthorized_user)), create_payload do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'to destroy api keys' do
+        delete_json generate_api_key_url(user_req_params(@unauthorized_user), name: @api_key.name) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'to regenerate api keys' do
+        options = { user_domain: @unauthorized_user.username, api_key: @unauthorized_user.api_key, id: @api_key.name }
+        post_json regenerate_api_key_token_url(options) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'to show api keys' do
+        get_json generate_api_key_url(user_req_params(@unauthorized_user), name: @api_key.name) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+
+      it 'to list api keys' do
+        get_json generate_api_key_url(user_req_params(@unauthorized_user)) do |response|
+          expect(response.status).to eq 404
+        end
+      end
+    end
+
+    describe 'without feature flag' do
+      before(:all) do
+        @unauthorized_user = Carto::User.find(FactoryGirl.create(:valid_user).id)
+      end
+
+      before(:each) do
+        User.any_instance.stubs(:has_feature_flag?).with('auth_api').returns(false)
+      end
+
+      after(:all) do
+        ::User[@unauthorized_user.id].destroy
+      end
+
+      it_behaves_like 'unauthorized'
+    end
+
+    describe 'without engine_enabled' do
+      before(:all) do
+        @unauthorized_user = Carto::User.find(FactoryGirl.create(:valid_user, engine_enabled: false).id)
+      end
+
+      after(:all) do
+        ::User[@unauthorized_user.id].destroy
+      end
+
+      it_behaves_like 'unauthorized'
+    end
   end
 
   describe '#create' do
@@ -98,32 +191,11 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'creates allows empty apis grants' do
-      grants = [
-        {
-          "type" => "apis",
-          "apis" => []
-        },
-        {
-          "type" => "database",
-          "tables" => [
-            {
-              "schema" => @carto_user.database_schema,
-              "name" => @table1.name,
-              "permissions" => []
-            }
-          ]
-        }
-      ]
-      name = 'wadus'
-      payload = {
-        name: name,
-        grants: grants
-      }
-      post_json generate_api_key_url(user_req_params(@carto_user)), payload do |response|
+      post_json generate_api_key_url(user_req_params(@carto_user)), create_payload do |response|
         response.status.should eq 201
         api_key_response = response.body
         api_key_response[:id].should_not be
-        api_key_response[:name].should eq name
+        api_key_response[:name].should eq create_payload[:name]
         api_key_response[:user][:username].should eq @carto_user.username
         api_key_response[:type].should eq 'regular'
         api_key_response[:token].should_not be_empty

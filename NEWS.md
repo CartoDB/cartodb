@@ -459,6 +459,7 @@ ion for time-series (#12670)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
 
 ### Internals
+* Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)

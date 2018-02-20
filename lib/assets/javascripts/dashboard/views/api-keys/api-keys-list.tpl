@@ -6,7 +6,7 @@
     </button>
   </header>
 
-  <ul class="ApeiKeys-list js-api-keys-list"></ul>
+  <ul class="ApiKeys-list js-api-keys-list"></ul>
 </section>
 
 <% if (showGoogleApiKeys) { %>

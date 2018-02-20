@@ -277,6 +277,9 @@ module Carto
       table_permissions.each do |tp|
         unless tp.permissions.empty?
           db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
+          sequences_for_table(tp.schema, tp.name).each do |seq|
+            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+          end
         end
       end
 
@@ -302,6 +305,22 @@ module Carto
 
     def remove_from_redis(key = redis_key)
       redis_client.del(key)
+    end
+
+    def sequences_for_table(schema, table)
+      db_run(%{
+        SELECT
+          n.nspname, c.relname
+        FROM
+          pg_depend d
+          JOIN pg_class c ON d.objid = c.oid
+          JOIN pg_namespace n ON c.relnamespace = n.oid
+        WHERE
+          d.refobjsubid > 0 AND
+          d.classid = 'pg_class'::regclass AND
+          c.relkind = 'S'::"char" AND
+          d.refobjid = '#{schema}.#{table}'::regclass;
+      }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 
     def db_run(query)
@@ -339,7 +358,6 @@ module Carto
 
     def grant_aux_write_privileges_for_schema(s)
       db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
-      db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
     end
 
     def valid_master_key

@@ -546,7 +546,7 @@ describe Carto::Api::ApiKeysController do
 
       it 'destroy the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        delete_json generate_api_key_url(user_domain: @carto_user.username, name: api_key.name) do |response|
+        delete_json generate_api_key_url({ user_domain: @carto_user.username }, name: api_key.name) do |response|
           response.status.should eq 401
           Carto::ApiKey.find(api_key.id).should be
         end

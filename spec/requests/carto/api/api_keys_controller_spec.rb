@@ -311,6 +311,21 @@ describe Carto::Api::ApiKeysController do
         response.body[:token].should eq @api_key.token
       end
     end
+
+    it 'regenerates master tokens' do
+      master_key = @carto_user.api_keys.master.first
+      old_token = master_key.token
+
+      options = { user_domain: @user.username, api_key: @user.api_key, id: master_key.name }
+      post_json regenerate_api_key_token_url(options) do |response|
+        response.status.should eq 200
+        response.body[:token].should_not be_nil
+        response.body[:token].should_not eq old_token
+        master_key.reload
+        response.body[:token].should eq master.token
+        @carto_user.reload.api_key.should eq master.token
+      end
+    end
   end
 
   describe '#show' do

@@ -162,8 +162,14 @@ module Carto
     end
 
     def regenerate_token!
-      create_token
-      save!
+      if master?
+        # Send all master key updates through the user model, avoid circular updates
+        ::User[user.id].regenerate_api_key
+        reload
+      else
+        create_token
+        save!
+      end
     end
 
     def master?

@@ -322,8 +322,8 @@ describe Carto::Api::ApiKeysController do
         response.body[:token].should_not be_nil
         response.body[:token].should_not eq old_token
         master_key.reload
-        response.body[:token].should eq master.token
-        @carto_user.reload.api_key.should eq master.token
+        response.body[:token].should eq master_key.token
+        @carto_user.reload.api_key.should eq master_key.token
       end
     end
   end

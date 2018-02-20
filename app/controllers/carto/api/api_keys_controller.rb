@@ -33,8 +33,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def regenerate_token
-    @viewed_api_key.create_token
-    @viewed_api_key.save!
+    @viewed_api_key.regenerate_token!
     render_jsonp(Carto::Api::ApiKeyPresenter.new(@viewed_api_key).to_poro, 200)
   end
 

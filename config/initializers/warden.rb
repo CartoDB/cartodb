@@ -309,14 +309,14 @@ module Carto::Api::AuthApiAuthentication
     match && match[:auth]
   end
 
-  def authenticate_user(master_key)
+  def authenticate_user(require_master_key)
     decoded_auth = Base64.decode64(base64_auth)
     user_name, token = decoded_auth.split(':')
     return fail! unless user_name == CartoDB.extract_subdomain(request)
 
     user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
     api_key = Carto::ApiKey.where(user_id: user_id, token: token)
-    api_key = master_key ? api_key.master : api_key
+    api_key = require_master_key ? api_key.master : api_key
     return fail! unless api_key.exists?
 
     Carto::Api::AuthApiAuthentication.from_header = true # TODO remove this when user's api_key field is removed

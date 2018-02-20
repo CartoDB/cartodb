@@ -9,7 +9,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   ssl_required :create, :destroy, :regenerate_token, :show, :index
 
   before_filter :any_api_authorization_required, only: [:index, :show]
-  before_filter :api_authorization_required, except: [:index, :show]
+  skip_filter :api_authorization_required, only: [:index, :show]
   before_filter :check_feature_flag
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
@@ -72,7 +72,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def load_api_key
     name = params[:id]
     @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id, name: name).first
-    if !request_api_key.master? && @viewed_api_key != request_api_key || !@viewed_api_key
+    if !@viewed_api_key || !request_api_key.master? && @viewed_api_key != request_api_key
       raise Carto::LoadError.new("API key not found: #{name}")
     end
   end

@@ -585,6 +585,19 @@ describe 'UserMigration' do
       get_pg_dump_bin_path(@conn_mock).should include 'pg_dump'
       get_pg_restore_bin_path(@conn_mock).should include 'pg_restore'
     end
+
+    it 'retrieves dump database version from stubbed dump file name' do
+      CartoDB::DataMover::Utils.stubs(:run).returns(';     Dumped from database version: 9.5.2')
+      get_dump_database_version(@conn_mock, '/tmp/test.dump')
+    end
+  end
+
+  def run_command(cmd)
+    p cmd
+    IO.popen(cmd) do |io|
+      Process.wait(io.pid)
+    end
+    puts "Output code: #{$?}"
   end
 
   def drop_database(user)

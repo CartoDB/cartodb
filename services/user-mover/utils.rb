@@ -5,16 +5,6 @@ require 'tempfile'
 module CartoDB
   module DataMover
     module Utils
-      PG_DUMP_BIN_PATHS = {
-        '9.5': 'pg_dump_bin_path_95',
-        '10': 'pg_dump_bin_path'
-      }.freeze
-
-      PG_RESTORE_BIN_PATHS = {
-        '9.5': 'pg_restore_bin_path_95',
-        '10': 'pg_restore_bin_path'
-      }.freeze
-
       def conn_string(user, host, port, name)
         %{#{!user ? '' : '-U ' + user} -h #{host} -p #{port} -d #{name} }
       end
@@ -91,28 +81,45 @@ module CartoDB
 
       def get_pg_dump_bin_path(conn)
         bin_version = get_database_version_for_binaries(conn)
-        Cartodb.get_config(:user_migrator, PG_DUMP_BIN_PATHS[bin_version.to_sym]) || 'pg_dump'
+        logger.debug("Using pg_dump version: '#{bin_version}'")
+        Cartodb.get_config(:user_migrator, 'pg_dump_bin_path', bin_version) || 'pg_dump'
       end
 
-      def get_pg_restore_bin_path(conn)
-        bin_version = get_database_version_for_binaries(conn)
-        Cartodb.get_config(:user_migrator, PG_RESTORE_BIN_PATHS[bin_version.to_sym]) || 'pg_restore'
+      def get_pg_restore_bin_path(conn, dump_name = nil)
+        bin_version = dump_name ? get_dump_database_version(conn, dump_name) : get_database_version_for_binaries(conn)
+        logger.debug("Using pg_restore version: '#{bin_version}'")
+        Cartodb.get_config(:user_migrator, 'pg_dump_restore_path', bin_version) || 'pg_restore'
       end
 
       def get_database_version_for_binaries(conn)
-        version = get_database_version(conn.query("SELECT version()").first['version'])
-        if version
-          version[0...version.rindex('.')]
-        end
+        version = get_database_version(conn)
+        shorten_version(version)
       end
 
-      def get_database_version(version)
+      def get_database_version(conn)
+        version = conn.query("SELECT version()").first['version']
         version_match = version.match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
-        if version_match.nil?
-          return nil
-        else
-          return version_match[2]
-        end
+        version_match[2] if version_match
+      end
+
+      def get_dump_database_version(conn, dump_name)
+        pg_restore_bin_path = get_pg_restore_bin_path(conn)
+
+        database_version = run("#{pg_restore_bin_path} -l #{dump_name} | grep \"database version\"")
+        logger.debug("Dump created with database version: '#{database_version}'")
+        version_match = database_version.match(/(database version: (([0-9]+\.?){2,3})).*/)
+
+        pg_dump_version = version_match[2] if version_match
+        shorten_version(pg_dump_version)
+      end
+
+      def shorten_version(version)
+        version[0...version.rindex('.')] if version
+      end
+
+      def run(command)
+        logger.debug("Run: '#{command}'")
+        `#{command}`
       end
 
       def default_logger

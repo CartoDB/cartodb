@@ -253,7 +253,7 @@ describe Carto::Api::ApiKeysController do
   describe '#destroy' do
     it 'destroys the API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-      delete_json generate_api_key_url(user_req_params(@user), name: api_key.name) do |response|
+      delete_json generate_api_key_url(user_req_params(@carto_user), name: api_key.name) do |response|
         response.status.should eq 200
         response.body[:name].should eq api_key.name
       end
@@ -265,21 +265,21 @@ describe Carto::Api::ApiKeysController do
       master_api_key = @carto_user.api_keys.master.first
       default_api_key = @carto_user.api_keys.default_public.first
 
-      delete_json generate_api_key_url(user_req_params(@user), name: master_api_key.name) do |response|
+      delete_json generate_api_key_url(user_req_params(@carto_user), name: master_api_key.name) do |response|
         response.status.should eq 403
       end
 
-      delete_json generate_api_key_url(user_req_params(@user), name: default_api_key.name) do |response|
+      delete_json generate_api_key_url(user_req_params(@carto_user), name: default_api_key.name) do |response|
         response.status.should eq 403
       end
     end
 
     it 'returns 404 if API key is not a uuid or it doesn\'t exist' do
-      delete_json generate_api_key_url(user_req_params(@user), name: 'wadus') do |response|
+      delete_json generate_api_key_url(user_req_params(@carto_user), name: 'wadus') do |response|
         response.status.should eq 404
       end
 
-      delete_json generate_api_key_url(user_req_params(@user), name: random_uuid) do |response|
+      delete_json generate_api_key_url(user_req_params(@carto_user), name: random_uuid) do |response|
         response.status.should eq 404
       end
     end
@@ -331,7 +331,7 @@ describe Carto::Api::ApiKeysController do
   describe '#show' do
     it 'returns requested API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-      get_json generate_api_key_url(user_req_params(@user), name: api_key.name) do |response|
+      get_json generate_api_key_url(user_req_params(@carto_user), name: api_key.name) do |response|
         response.status.should eq 200
         response.body[:name].should eq api_key.name
       end
@@ -339,7 +339,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns 404 if the API key does not exist' do
-      get_json generate_api_key_url(user_req_params(@user), name: 'wadus') do |response|
+      get_json generate_api_key_url(user_req_params(@carto_user), name: 'wadus') do |response|
         response.status.should eq 404
       end
     end
@@ -432,7 +432,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     it 'returns the list of master and default API key for a given user' do
-      get_json generate_api_key_url(user_req_params(@user)) do |response|
+      get_json generate_api_key_url(user_req_params(@carto_user)) do |response|
         response.status.should eq 200
         response.body[:total].should eq 2
         response.body[:count].should eq 2
@@ -546,7 +546,7 @@ describe Carto::Api::ApiKeysController do
 
       it 'destroy the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        delete_json generate_api_key_url(user_req_params(@user).merge(api_key: nil), name: api_key.name) do |response|
+        delete_json generate_api_key_url(user_req_params(@carto_user).merge(api_key: nil), name: api_key.name) do |response|
           response.status.should eq 401
           Carto::ApiKey.find(api_key.id).should be
         end
@@ -568,14 +568,14 @@ describe Carto::Api::ApiKeysController do
 
       it 'return requested API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        get_json generate_api_key_url(user_req_params(@user).merge(api_key: nil), name: api_key.name) do |response|
+        get_json generate_api_key_url(user_req_params(@carto_user).merge(api_key: nil), name: api_key.name) do |response|
           response.status.should eq 401
         end
         api_key.destroy
       end
 
       it 'return API key list' do
-        get_json generate_api_key_url(user_req_params(@user).merge(api_key: nil)) do |response|
+        get_json generate_api_key_url(user_req_params(@carto_user).merge(api_key: nil)) do |response|
           response.status.should eq 401
         end
       end

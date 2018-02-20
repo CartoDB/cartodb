@@ -388,6 +388,10 @@ class User < Sequel::Model
     end
   end
 
+  def api_keys
+    Carto::ApiKey.where(user_id: id)
+  end
+
   def shared_entities
     CartoDB::SharedEntity.join(:visualizations, id: :entity_id).where(user_id: id)
   end
@@ -1623,6 +1627,11 @@ class User < Sequel::Model
   def regenerate_api_key(new_api_key = ::User.make_token)
     invalidate_varnish_cache
     update api_key: new_api_key
+  end
+
+  def regenerate_all_api_keys
+    regenerate_api_key
+    api_keys.regular.each(&:regenerate_token!)
   end
 
   # This is set temporary on user creation with invitation,

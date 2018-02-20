@@ -3,7 +3,7 @@
     <span class="RampItem-text CDB-Text u-ellipsis u-actionTextColor" title="<%- name %>"><%- name %></span>
 
     <div class='RampItem-secondaryContainer'>
-      <div class="ColorBar RampItem-bar js-colorPicker" style="background-color: <%- val %>;"></div>
+      <div class="ColorBar ColorBar--disableHighlight RampItem-bar js-colorPicker" style="background-color: <%- val %>;"></div>
 
       <% if (imageEnabled) { %>
         <div class='RampItem-img'>

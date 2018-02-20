@@ -83,7 +83,7 @@ There are two test suites: one for the old Editor and one for Builder.
 
 The old Editor specs reside in `lib/assets/test/spec/cartodb`.
 
-The core Builder specs reside in `lib/assets/test/spec/cartodb3`.
+The core Builder specs reside in `lib/assets/test/spec/builder`.
 
 #### Running all tests
 

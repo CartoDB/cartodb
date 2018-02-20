@@ -615,15 +615,8 @@ describe 'UserMigration' do
     it 'retrieves dump database version from stubbed dump file name' do
       CartoDB::DataMover::Utils.stubs(:run).returns(';     Dumped from database version: 9.5.2')
       get_dump_database_version(@conn_mock, '/tmp/test.dump')
+      CartoDB::DataMover::Utils.unstub(:run)
     end
-  end
-
-  def run_command(cmd)
-    p cmd
-    IO.popen(cmd) do |io|
-      Process.wait(io.pid)
-    end
-    puts "Output code: #{$?}"
   end
 
   def drop_database(user)

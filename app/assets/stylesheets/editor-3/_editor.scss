@@ -23,7 +23,7 @@
   }
 
   .CDB-Widget-canvasInner {
-    height: auto;
+    position: relative;
     margin-left: 8px;
   }
 }
@@ -177,7 +177,6 @@
 
     .CDB-Widget-canvasInner {
       display: flex;
-      position: relative;
       flex-direction: row;
     }
 

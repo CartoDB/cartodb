@@ -1,20 +1,26 @@
+@import '../widgets/tipsy-tooltip';
+
 $sEmbedTabs: 1rem;
 $cEmbedTabs-Primary: #FFF;
-$cEmbedTabs-Secondary: #DDD;
-$cEmbedTabs-Shadow: rgba(#828282, 0.3);
-
-@import '../widgets/tipsy-tooltip';
+$cEmbedTabs-Secondary: #F2F6F9;
+$cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Embed-view {
   display: flex;
   flex-direction: column;
   height: 100%;
+
+  .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
+    padding: $sEmbedTabs $sEmbedTabs 0;
+  }
 }
 
 .CDB-Embed-header {
+  z-index: 2;
   padding: $sEmbedTabs;
   border-bottom: 1px solid $cEmbedTabs-Secondary;
   background: $cEmbedTabs-Primary;
+  box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
 
   h1 {
     max-width: 100%;
@@ -42,15 +48,12 @@ $cEmbedTabs-Shadow: rgba(#828282, 0.3);
 
 .CDB-Embed-content {
   flex: 1;
-}
-
-.CDB-NavMenu-inner {
-  margin: 0;
-  padding: $sEmbedTabs $sEmbedTabs 0;
+  height: 100%;
 }
 
 .CDB-Embed-tab {
   display: flex;
+  border-radius: 0;
 
   &:not(.is-active) {
     display: none;
@@ -65,9 +68,9 @@ $cEmbedTabs-Shadow: rgba(#828282, 0.3);
   box-sizing: border-box;
   width: 100%;
   background-color: $cEmbedTabs-Primary;
-  box-shadow: 0 5px $sEmbedTabs $cEmbedTabs-Shadow;
+  box-shadow: 0 8px 16px 0 $cEmbedTabs-Shadow;
 
-  .CDB-NavMenu-inner {
+  .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
     border: none;
   }
 }

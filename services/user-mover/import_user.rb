@@ -384,7 +384,8 @@ module CartoDB
       end
 
       def run_file_restore_postgres(file, sections = nil)
-        command = "#{pg_restore_bin_path(file)} -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
+        file_path = "#{@path}#{file}"
+        command = "#{pg_restore_bin_path(file_path)} -e --verbose -j4 --disable-triggers -Fc #{file_path} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],

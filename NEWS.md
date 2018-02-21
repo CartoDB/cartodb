@@ -144,6 +144,7 @@ ion for time-series (#12670)
 * Rename 'cartodb3' to 'builder'
 * Make legends collapsable (#13531)
 * Add marker size to layer cartocss props to reinstantiate torque map (#13590)
+* Fix wrong user flow involving analyses and empty layers ([#13489](https://github.com/CartoDB/cartodb/pull/13489))
 * Fix select geometries dropdown in JOIN analysis ([Support#1281](https://github.com/CartoDB/support/issues/1281))
 * Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
 * Removed references to analytics JS files in static pages (#13543)

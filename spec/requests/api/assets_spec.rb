@@ -30,9 +30,7 @@ describe "Assets API" do
 
       post_json(
         api_v1_users_assets_create_url(user_id: @user),
-        params.merge(
-          kind: 'wadus',
-          filename: uploaded_file.path)
+        params.merge(kind: 'wadus', filename: uploaded_file.path)
       ) do |response|
         response.status.should be_success
         response.body[:public_url].should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante_blue/
@@ -58,9 +56,7 @@ describe "Assets API" do
 
       post_json(
         api_v1_users_assets_create_url(user_id: @user),
-        params.merge(
-          kind: 'wadus',
-          filename: uploaded_file.path)
+        params.merge(kind: 'wadus', filename: uploaded_file.path)
       ) do |response|
         response.status.should be_success
         response.body[:public_url].should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante%20blue/

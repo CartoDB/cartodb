@@ -103,8 +103,9 @@ module CartoDB
       def get_dump_database_version(conn, dump_name)
         pg_restore_bin_path = get_pg_restore_bin_path(conn)
 
-        database_version = run("#{pg_restore_bin_path} -l #{dump_name} | grep \"database version\"")
-        version_match = database_version.match(/(database version: (([0-9]+\.?){2,3})).*/)
+        stdout, stderr, status = Open3.capture3(pg_restore_bin_path, '-l', dump_name)
+        raise stderr unless status.success?
+        version_match = stdout.match(/(pg_dump version: (([0-9]+\.?){2,3})).*/)
 
         pg_dump_version = version_match[2] if version_match
         shorten_version(pg_dump_version)
@@ -112,10 +113,6 @@ module CartoDB
 
       def shorten_version(version)
         version[0...version.rindex('.')] if version
-      end
-
-      def run(command)
-        `#{command}`
       end
 
       def default_logger

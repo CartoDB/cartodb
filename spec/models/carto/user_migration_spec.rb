@@ -600,6 +600,7 @@ describe 'UserMigration' do
       @conn_mock = Object.new
       @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 9.5.2 on x86_64-pc-linux-gnu...'])
     end
+
     it 'should get proper database version for pg_* binaries' do
       get_database_version_for_binaries(@conn_mock).should eq '9.5'
 
@@ -612,10 +613,16 @@ describe 'UserMigration' do
       get_pg_restore_bin_path(@conn_mock).should include 'pg_restore'
     end
 
+    it 'raises exception if cannot get dump database version' do
+      expect { get_dump_database_version(@conn_mock, '123') }.to raise_error
+    end
+
     it 'retrieves dump database version from stubbed dump file name' do
-      CartoDB::DataMover::Utils.stubs(:run).returns(';     Dumped from database version: 9.5.2')
-      get_dump_database_version(@conn_mock, '/tmp/test.dump')
-      CartoDB::DataMover::Utils.unstub(:run)
+      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
+      status_mock = Object.new
+      status_mock.stubs(:success?).returns(true)
+      Open3.stubs(:capture3).returns([';     Dumped by pg_dump version: 9.5.2', '', status_mock])
+      get_dump_database_version(@conn_mock, '/tmp/test.dump').should eq '9.5'
     end
   end
 

@@ -11,16 +11,20 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   height: 100%;
 
   .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
+    margin-bottom: 0;
     padding: $sEmbedTabs $sEmbedTabs 0;
   }
 }
 
 .CDB-Embed-header {
-  z-index: 2;
+  z-index: 3;
   padding: $sEmbedTabs;
   border-bottom: 1px solid $cEmbedTabs-Secondary;
   background: $cEmbedTabs-Primary;
-  box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
+
+  &.CDB-Embed-header--shadow {
+    box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
+  }
 
   h1 {
     max-width: 100%;
@@ -54,7 +58,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Embed-tab {
   display: flex;
-  border-radius: 0;
 
   &:not(.is-active) {
     display: none;
@@ -69,7 +72,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
   width: 100%;
   background-color: $cEmbedTabs-Primary;
-  box-shadow: 0 8px 16px 0 $cEmbedTabs-Shadow;
+  box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
 
   .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
     border: none;
@@ -121,14 +124,12 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     width: 100%;
     height: 100%;
     max-height: none;
-    border-radius: 0;
     box-shadow: none;
   }
 
   .CDB-Legends-canvasInner {
     height: 100%;
     max-height: none;
-    border-radius: 0;
   }
 }
 

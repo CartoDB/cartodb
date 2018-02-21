@@ -141,6 +141,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Fix icons in custom html legends (#13600)
 * Rename 'cartodb3' to 'builder'
 * Make legends collapsable (#13531)
 * Add marker size to layer cartocss props to reinstantiate torque map (#13590)

@@ -103,6 +103,10 @@ describe Asset do
         end
       end
 
+      it 'should import assets with spaces in their name' do
+        asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante blue.png').to_s
+        File.exists?(local_path(asset)).should be_true
+      end
     end
   end
 

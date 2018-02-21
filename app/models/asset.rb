@@ -10,8 +10,6 @@ class Asset < Sequel::Model
 
   KIND_ORG_AVATAR = 'orgavatar'
 
-  PUBLIC_ATTRIBUTES = %w{ id public_url user_id kind }
-
   VALID_EXTENSIONS = %w{ .jpeg .jpg .gif .png .svg }
 
   attr_accessor :asset_file, :url
@@ -24,10 +22,6 @@ class Asset < Sequel::Model
   def after_destroy
     super
     remove unless self.public_url.blank?
-  end
-
-  def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
   end
 
   def validate

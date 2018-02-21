@@ -131,11 +131,11 @@ describe Asset do
     end
   end
 
-  describe '#public_values' do
+  describe '#presenter' do
     it 'returns the expected format' do
       asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
 
-      asset.public_values.should == { "public_url" => nil, "user_id" => @user.id, "id" => nil, "kind" => nil }
+      Carto::Api::AssetPresenter.new(asset).to_hash.should == { public_url: nil, user_id: @user.id, id: nil, kind: nil }
     end
   end
 end

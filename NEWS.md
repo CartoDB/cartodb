@@ -142,6 +142,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix icons in custom html legends (#13600)
+* Rename 'cartodb3' to 'builder'
 * Make legends collapsable (#13531)
 * Add marker size to layer cartocss props to reinstantiate torque map (#13590)
 * Fix select geometries dropdown in JOIN analysis ([Support#1281](https://github.com/CartoDB/support/issues/1281))

@@ -162,7 +162,7 @@ module CartoDB
                     url
                   end
 
-        raw_url.is_a?(String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
+        raw_url.is_a?(String) && raw_url.include?('://') ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
 
       def raise_if_url_invalid(url)

@@ -6,7 +6,8 @@
 .vscode
 *.swp
 dist
-docs
+docs/public
+docs/internal
 Gemfile.lock
 node_modules
 npm-debug.log

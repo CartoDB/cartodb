@@ -6,7 +6,7 @@ var EVENTS = require('../events');
 /**
  * Base data source object.
  * 
- * The methods listed in the {@link carto.source.Base|source.Base} object are availiable in all source objects.
+ * The methods listed in the {@link carto.source.Base|source.Base} object are available in all source objects.
  * 
  * Use a source to reference the data used in a {@link carto.dataview.Base|dataview} or a {@link carto.layer.Base|layer}.
  *  

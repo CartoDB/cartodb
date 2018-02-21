@@ -12,8 +12,8 @@ var isValidTimeAggregation = require('../../constants').isValidTimeAggregation;
  * @param {string} column - The column name to get the data
  * @param {object} [options]
  * @param {carto.dataview.timeAggregation} [options.aggregation=auto] - Granularity of time aggregation
- * @param {number} [options.offset] - Amount of hours to displace the aggregation from UTC
- * @param {boolean} [options.useLocalTimezone] - Indicates to use the user local timezone or not
+ * @param {number} [options.offset] - Number of hours to offset the aggregation from UTC
+ * @param {boolean} [options.useLocalTimezone] - Indicates whether to use the local user timezone, or not
  *
  * @fires dataChanged
  * @fires columnChanged
@@ -124,7 +124,7 @@ TimeSeries.prototype.getOffset = function () {
 };
 
 /**
- * Set the local timezone flag. If enabled, the time offset is overriden by the use local timezone.
+ * Set the local timezone flag. If enabled, the time offset is overriden by the user's local timezone.
  *
  * @param {boolean} localTimezone
  * @fires localTimezoneChanged

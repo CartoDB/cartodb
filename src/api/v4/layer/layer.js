@@ -31,6 +31,7 @@ var metadataParser = require('./metadata/parser');
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
+ * @param {carto.layer.Aggregation} [options.aggregation={}] - Specify {@link carto.layer.Aggregation|aggregation } options
  * @param {string} [options.id] - An unique identifier for the layer
  * @fires metadataChanged
  * @fires featureClicked
@@ -325,7 +326,7 @@ Layer.prototype.isVisible = function () {
 };
 
 /**
- * Return true if the layer is not visible and false when visible.
+ * Return `true` if the layer is not visible and `false` when visible.
  *
  * @return {boolean} - A boolean value indicating the layer's visibility
  * @api

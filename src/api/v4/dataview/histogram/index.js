@@ -4,7 +4,7 @@ var HistogramDataviewModel = require('../../../../dataviews/histogram-dataview-m
 var parseHistogramData = require('./parse-data.js');
 
 /**
- * An histogram is used to represent the distribution of numerical data.
+ * A histogram is used to represent the distribution of numerical data.
  *
  * See {@link https://en.wikipedia.org/wiki/Histogram}.
  *

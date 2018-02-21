@@ -48,6 +48,14 @@
             "leaflet": "public/layers/change-order-leaflet.html",
             "gmaps": "public/layers/change-order-gmaps.html"
           }
+        },
+        {
+          "title": "Server tile aggregation",
+          "desc": "Apply smart backend aggregation",
+          "file": {
+            "leaflet": "public/layers/layer-with-aggregation-leaflet.html",
+            "gmaps": "public/layers/layer-with-aggregation-gmaps.html"
+          }
         }
       ]
     },

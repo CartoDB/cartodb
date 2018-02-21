@@ -6,6 +6,7 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#columns } for more info.
  * @enum {string} carto.layer.Aggregation.operation
  * @memberof carto.layer.Aggregation
+ * @api
  */
 var OPERATIONS = {
   /** The new point will contain the average value of the or the aggregated ones */
@@ -25,6 +26,7 @@ var OPERATIONS = {
  * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement } for more info.
  * @enum {string} carto.layer.Aggregation.placement
  * @memberof carto.layer.Aggregation
+ * @api
  */
 var PLACEMENTS = {
   /** The new point will be placed at a random sample of the aggregated points */
@@ -78,6 +80,7 @@ var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
  * const layer = new carto.layer.Layer(source, style, { aggregation: aggregation });
  * 
  * @constructor
+ * @api
  * @memberof carto.layer
  */
 function Aggregation (opts) {

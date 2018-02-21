@@ -75,7 +75,7 @@ module CartoDB
       end
 
       def run(_available_quota_in_bytes = nil)
-        if @translated_url =~ %r{://}
+        if @translated_url.include?('://')
           raise_if_over_storage_quota(requested_quota: content_length || 0,
                                       available_quota: size_limit_in_bytes,
                                       user_id: @user.id)

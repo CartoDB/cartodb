@@ -90,6 +90,7 @@
 
 /* TODO move to cartoassets and change to border-top and :first-child */
 .CDB-ListDecoration-item {
+  flex: 1;
   min-height: 41px;
 
   &:last-of-type {
@@ -114,7 +115,11 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+}
+
+.CDB-ListDecoration-title {
+  flex: 1;
+  overflow: hidden;
 }
 
 .CDB-ListDecoration-rampNav-item {

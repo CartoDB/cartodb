@@ -120,6 +120,15 @@ describe Asset do
       asset.destroy
       File.exists?(path).should be_false
     end
+
+    it 'removes the file with special characters from storage' do
+      Asset.any_instance.stubs("use_s3?").returns(false)
+      asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante blue.png').to_s
+      path = local_path(asset)
+      File.exists?(path).should be_true
+      asset.destroy
+      File.exists?(path).should be_false
+    end
   end
 
   describe '#public_values' do

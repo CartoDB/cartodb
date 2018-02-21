@@ -21,7 +21,7 @@ $buttonColor: #636D72;
   height: 32px;
   border-radius: 4px;
   background: #FFF;
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 0 2px 0 rgba(#000, 0.24), 0 4px 8px 0 rgba(#000, 0.16);
   z-index: 20000;
 }
 
@@ -128,11 +128,11 @@ $buttonColor: #636D72;
 }
 
 .CDB-Search-inner {
-  @include transition(width, 100ms ease-in);
   display: flex;
   align-items: center;
   width: 32px;
   height: 100%;
+  transition: width 100ms ease-in;
   overflow: hidden;
 
   &:hover {
@@ -159,10 +159,10 @@ $buttonColor: #636D72;
   color: $buttonColor;
 }
 .CDB-Search-text {
-  @include transition(opacity, 150ms ease-in);
   display: none;
   width: 100px;
   padding: 0 0 0 8px;
+  transition: opacity 150ms ease-in;
   border: 0;
   border-left: 1px solid #F8F8F8;
   background: none;
@@ -201,12 +201,12 @@ $buttonColor: #636D72;
   }
 }
 .CDB-Logo {
-  @include transform(translateX(-50%));
   position: absolute;
   bottom: 0;
   left: 50%;
   width: auto;
   height: auto;
+  transform: translateX(-50%);
   z-index: 10;
 }
 
@@ -216,19 +216,24 @@ $maxLegendContainerHeight: 300px;
 
 .CDB-Legends-canvas {
   position: absolute;
+  display: none;
   top: 16px;
   left: 16px;
   width: 240px;
   height: auto;
-  //max-height: $maxLegendContainerHeight;
   max-height: calc(100vh - 120px);
   border-radius: 4px;
   background: #FFF;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  box-shadow: 0 2px 4px 0 rgba(#000, 0.24);
   box-sizing: border-box;
   overflow: hidden;
   z-index: 20000;
 }
+
+.CDB-Legends-canvas.is-visible {
+  display: block;
+}
+
 .CDB-Legends-canvasInner {
   position: relative;
   top: 0;
@@ -251,16 +256,16 @@ $maxLegendContainerHeight: 300px;
   pointer-events: none;
 }
 .CDB-Legends-canvasShadow--top {
-  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
   top: 0;
   border-top-left-radius: $baseSize / 2;
   border-top-right-radius: $baseSize / 2;
+  background: linear-gradient(#FFF, rgba(255, 255, 255, 0));
 }
 .CDB-Legends-canvasShadow--bottom {
-  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   bottom: 0;
   border-bottom-left-radius: $baseSize / 2;
   border-bottom-right-radius: $baseSize / 2;
+  background: linear-gradient(rgba(255, 255, 255, 0), #FFF);
 }
 .CDB-Legends-canvasShadow.is-visible {
   display: block;
@@ -302,9 +307,9 @@ $maxLegendContainerHeight: 300px;
 }
 
 .Bubble-list {
-  @include display-flex();
-  @include justify-content(center);
+  display: flex;
   position: relative;
+  justify-content: center;
   width: 100px;
   height: 100px;
 }
@@ -314,20 +319,20 @@ $maxLegendContainerHeight: 300px;
   bottom: 0;
   width: 140px;
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(#000, 0.08);
   content: '';
   visibility: visible;
 }
 .Bubble-item {
-  @include opacity(0.5);
-  @include transform(translateX(-50%));
   position: absolute;
   bottom: 0;
   left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.5;
 }
 
 .Bubble-container {
-  @include display-flex();
+  display: flex;
   max-height: 100px;
   padding-top: 3px;
   padding-bottom: 8px;
@@ -337,10 +342,10 @@ $maxLegendContainerHeight: 300px;
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(#000, 0.1);
   border-radius: 50%;
   background: #F8AB17;
-  box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: -1px 0 2px 0 rgba(#000, 0.1);
   pointer-events: none;
 }
 .Bubble-item::before {
@@ -349,7 +354,7 @@ $maxLegendContainerHeight: 300px;
   right: 50%;
   width: 140px;
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(#000, 1);
   content: '';
 }
 .Bubble-list--custom::before,
@@ -361,7 +366,7 @@ $maxLegendContainerHeight: 300px;
 }
 .Bubble-numbersItem {
   position: absolute;
-  margin-bottom: -11px; /* to review */
+  margin-bottom: -11px;
   padding-right: $baseSize * 2;
   background: rgba(#FFF, 0.8);
   z-index: 10;
@@ -370,14 +375,14 @@ $maxLegendContainerHeight: 300px;
   }
 }
 .Bubble-inner {
-  @include display-flex();
+  display: flex;
   position: relative;
 }
 .Bubble-average {
-  @include transform(translateY(50%));
   display: block;
   position: absolute;
   right: 105px;
+  transform: translateY(50%);
   white-space: nowrap;
   z-index: 1000;
 }
@@ -388,7 +393,7 @@ $maxLegendContainerHeight: 300px;
   right: -54px;
   width: 51px;
   height: 1px;
-  border-top: 1px dotted rgba(0, 0, 0, 0.4);
+  border-top: 1px dotted rgba(#000, 0.4);
   content: '';
   z-index: 10;
 }
@@ -400,7 +405,7 @@ $maxLegendContainerHeight: 300px;
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(#000, 0.4);
   content: '';
   z-index: 10;
 }
@@ -420,7 +425,7 @@ $maxLegendContainerHeight: 300px;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(#000, 0.16);
   border-radius: $halfBaseSize;
   content: '';
 }
@@ -467,7 +472,7 @@ $maxLegendContainerHeight: 300px;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(#000, 0.16);
   border-radius: 50%;
   content: '';
 }
@@ -504,11 +509,15 @@ $maxLegendContainerHeight: 300px;
 
 @media (max-width: 600px) {
   .CDB-Legends-canvas {
-    display: none !important;
+    display: none;
   }
 
-  .CDB-Legends-canvas.CDB-Legends-canvasEmbed {
-    display: block !important;
+  .CDB-Legends-canvas.is-visible {
+    display: none;
+  }
+
+  .CDB-Legends-canvas.CDB-Legends-canvasEmbed.is-visible {
+    display: block;
     position: relative;
     top: 0;
     left: 0;

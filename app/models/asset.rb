@@ -123,7 +123,7 @@ class Asset < Sequel::Model
     mode = chmod_mode
     FileUtils.chmod(mode, local_filename(filename)) if mode
 
-    URI.escape(File.join('/', ASSET_SUBFOLDER, target_asset_path, filename))
+    File.join('/', ASSET_SUBFOLDER, target_asset_path, ERB::Util.url_encode(filename))
   end
 
   def use_s3?
@@ -132,7 +132,7 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      local_url = URI.unescape(public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
+      local_url = CGI.unescape(public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
       begin
         FileUtils.rm((public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/'))
       rescue => e

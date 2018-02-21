@@ -60,7 +60,7 @@ describe Asset do
   end
 
   def local_path(asset)
-    local_url = URI.unescape(asset.public_url).gsub(/\/uploads/, '')
+    local_url = CGI.unescape(asset.public_url).gsub(/\/uploads/, '')
     Carto::Conf.new.public_uploaded_assets_path + local_url
   end
 

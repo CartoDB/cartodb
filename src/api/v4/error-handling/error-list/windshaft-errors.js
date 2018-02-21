@@ -10,6 +10,9 @@ module.exports = {
     'column-does-not-exist': {
       messageRegex: /column (.+) does not exist/,
       friendlyMessage: 'Invalid column name. Column $0 does not exist.'
+    },
+    'analysis-requires-authentication': {
+      messageRegex: /^Analysis requires authentication with API key/
     }
   },
   generic: {
@@ -58,6 +61,12 @@ module.exports = {
     },
     'invalid-aggregation-value': {
       messageRegex: /Invalid aggregation value. Valid ones: auto, minute, hour, day, week, month, quarter, year/
+    }
+  },
+  auth: {
+    'forbidden': {
+      messageRegex: /^Forbidden$/,
+      friendlyMessage: 'Forbidden. API key does not grant access.'
     }
   }
 };

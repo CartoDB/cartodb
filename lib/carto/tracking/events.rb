@@ -251,7 +251,7 @@ module Carto
         include Carto::Tracking::Validators::Layer
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :layer_id
+        required_properties :user_id, :visualization_id, :layer_id, :empty
       end
 
       class ChangedDefaultGeometry < Event
@@ -269,7 +269,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :previus_type, :type
+        required_properties :user_id, :visualization_id, :previous_agg_type, :agg_type
       end
 
       class UsedAdvancedMode < Event
@@ -278,7 +278,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :type
+        required_properties :user_id, :visualization_id, :mode_type
       end
 
       # Models a generic event for segment.

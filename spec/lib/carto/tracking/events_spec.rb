@@ -101,7 +101,7 @@ module Carto
             expect { event.report! }.to_not raise_error
           end
 
-          it 'matches current prod properites' do
+          it 'matches current prod properties' do
             current_prod_properties = [:vis_id,
                                        :privacy,
                                        :type,
@@ -1332,6 +1332,37 @@ module Carto
                                         table_name: 'test')
             end
           end
+
+          it 'matches current prod properties' do
+            current_prod_properties = [:creation_time,
+                                       :event_user_id,
+                                       :event_origin,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :vis_id,
+                                       :privacy,
+                                       :type,
+                                       :object_created_at,
+                                       :lifetime,
+                                       :layer_id,
+                                       :format,
+                                       :source,
+                                       :table_name,
+                                       :visible]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      layer_id: @visualization.data_layers.first.id,
+                                      format: 'csv',
+                                      source: 'd0',
+                                      table_name: 'test',
+                                      visible: true)
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
+          end
         end
 
         describe DraggedNode do
@@ -1373,20 +1404,123 @@ module Carto
             it 'requires a user_id' do
               @event = @event_class.new(@user.id,
                                         layer_id: @visualization.data_layers.first.id,
-                                        visualization_id: @visualization.id)
+                                        visualization_id: @visualization.id,
+                                        empty: true)
             end
 
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id,
                                         layer_id: @visualization.data_layers.first.id,
-                                        user_id: @user.id)
+                                        user_id: @user.id,
+                                        empty: true)
             end
 
             it 'requires a layer_id' do
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
-                                        visualization_id: @visualization.id)
+                                        visualization_id: @visualization.id,
+                                        empty: true)
             end
+
+            it 'requires a empty' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id)
+            end
+          end
+
+          it 'matches current prod properties' do
+            current_prod_properties = [:creation_time,
+                                       :event_user_id,
+                                       :event_origin,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :vis_id,
+                                       :privacy,
+                                       :type,
+                                       :object_created_at,
+                                       :lifetime,
+                                       :layer_id,
+                                       :empty]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      layer_id: @visualization.data_layers.first.id,
+                                      empty: true)
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
+          end
+        end
+
+        describe StyledByValue do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        attribute: 'test',
+                                        attribute_type: 'test')
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        attribute: 'test',
+                                        attribute_type: 'test',
+                                        user_id: @user.id)
+            end
+
+            it 'requires an attribute' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        attribute_type: 'test')
+            end
+
+            it 'requires an attribute_type' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        attribute: 'test')
+            end
+          end
+
+          it 'matches current prod properties' do
+            current_prod_properties = [:creation_time,
+                                       :event_user_id,
+                                       :event_origin,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :vis_id,
+                                       :privacy,
+                                       :type,
+                                       :object_created_at,
+                                       :lifetime,
+                                       :attribute,
+                                       :attribute_type]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      attribute: 'test',
+                                      attribute_type: 'test')
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
           end
         end
 
@@ -1429,29 +1563,54 @@ module Carto
             it 'requires a user_id' do
               @event = @event_class.new(@user.id,
                                         visualization_id: @visualization.id,
-                                        type: 'hexabins',
+                                        agg_type: 'hexabins',
                                         previous_type: 'simple')
             end
 
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
-                                        type: 'hexabins',
-                                        previous_type: 'simple')
+                                        agg_type: 'hexabins',
+                                        previous_agg_type: 'simple')
             end
 
-            it 'requires a type' do
+            it 'requires a agg_type' do
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
                                         visualization_id: @visualization.id,
-                                        previous_type: 'simple')
+                                        previous_agg_type: 'simple')
             end
-            it 'requires a previous_type' do
+            it 'requires a previous_agg_type' do
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
                                         visualization_id: @visualization.id,
-                                        type: 'hexabins')
+                                        agg_type: 'hexabins')
             end
+          end
+
+          it 'matches current prod properties' do
+            current_prod_properties = [:creation_time,
+                                       :event_user_id,
+                                       :event_origin,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :vis_id,
+                                       :privacy,
+                                       :type,
+                                       :object_created_at,
+                                       :lifetime,
+                                       :agg_type,
+                                       :previous_agg_type]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      agg_type: 'test',
+                                      previous_agg_type: 'test')
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
           end
         end
 
@@ -1469,16 +1628,39 @@ module Carto
             end
 
             it 'requires a user_id' do
-              @event = @event_class.new(@user.id, visualization_id: @visualization.id, type: 'sql')
+              @event = @event_class.new(@user.id, visualization_id: @visualization.id, mode_type: 'sql')
             end
 
             it 'requires a visualization_id' do
-              @event = @event_class.new(@user.id, user_id: @user.id, type: 'cartocss')
+              @event = @event_class.new(@user.id, user_id: @user.id, mode_type: 'cartocss')
             end
 
-            it 'requires a type' do
-              @event = @event_class.new(@user.id, user_id: @user.id)
+            it 'requires a mode_type' do
+              @event = @event_class.new(@user.id, user_id: @user.id, visualization_id: @visualization.id)
             end
+          end
+
+          it 'matches current prod properties' do
+            current_prod_properties = [:creation_time,
+                                       :event_user_id,
+                                       :event_origin,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :vis_id,
+                                       :privacy,
+                                       :type,
+                                       :object_created_at,
+                                       :lifetime,
+                                       :mode_type]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      mode_type: 'cartocss')
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
           end
         end
       end

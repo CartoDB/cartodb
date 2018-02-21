@@ -129,7 +129,7 @@ class Asset < Sequel::Model
     mode = chmod_mode
     FileUtils.chmod(mode, local_filename(filename)) if mode
 
-    File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
+    URI.escape(File.join('/', ASSET_SUBFOLDER, target_asset_path, filename))
   end
 
   def use_s3?

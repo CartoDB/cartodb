@@ -60,7 +60,7 @@ describe Asset do
   end
 
   def local_path(asset)
-    local_url = asset.public_url.gsub(/\/uploads/, '')
+    local_url = URI.unescape(asset.public_url).gsub(/\/uploads/, '')
     Carto::Conf.new.public_uploaded_assets_path + local_url
   end
 
@@ -106,6 +106,7 @@ describe Asset do
       it 'should import assets with spaces in their name' do
         asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante blue.png').to_s
         File.exists?(local_path(asset)).should be_true
+        asset.public_url.should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante%20blue\.png/
       end
     end
   end

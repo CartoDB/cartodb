@@ -1,5 +1,4 @@
 require 'active_record'
-require_dependency 'carto/automatic_geocoding'
 require_dependency 'carto/db/sanitize'
 
 module Carto

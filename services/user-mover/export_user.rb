@@ -62,7 +62,7 @@ module CartoDB
       private
 
       def pg_dump_bin_path
-        get_pg_dump_bin_path(@conn)
+        get_pg_dump_bin_path(user_pg_conn)
       end
     end
   end

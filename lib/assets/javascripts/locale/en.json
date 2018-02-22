@@ -2768,7 +2768,8 @@
       "sample": "sample",
       "errors": {
         "timeout": "Your analysis has taken too long. Try to %{sample} your data or %{contact} for further assistance",
-        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist",
+        "without-cartodb-id": "The column \"cartodb_id\" does not exist"
       }
     },
     "widgets": {

@@ -294,23 +294,18 @@ Warden::Strategies.add(:user_creation) do
 end
 
 module Carto::Api::AuthApiAuthentication
-  @@from_header = false
-
-  def self.from_header?
-    @@from_header
+  # We don't want to store a session and send a response cookie
+  def store?
+    false
   end
 
-  def self.from_header=(value)
-    @@from_header = value
+  def valid?
+    base64_auth.present? || params[:api_key].present?
   end
 
   def base64_auth
     match = AUTH_HEADER_RE.match(request.headers['Authorization'])
     match && match[:auth]
-  end
-
-  def valid?
-    base64_auth.present? || params[:api_key].present?
   end
 
   def authenticate_user(require_master_key)
@@ -341,18 +336,19 @@ module Carto::Api::AuthApiAuthentication
       decoded_auth = Base64.decode64(base64_auth)
       user_name, token = decoded_auth.split(':')
       user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-      @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
-    else # This is for keeping backwards compatibility until we remove api_key from user
-      api_key = params[:api_key]
+    else
+      token = params[:api_key]
       user_name = CartoDB.extract_subdomain(request)
-      return unless $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
       user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
-      @request_api_key = if Carto::User.find(user_id).api_keys.master.exists?
-                           Carto::User.find(user_id).api_keys.master.first
-                         else
-                           Carto::User.find(user_id).api_keys.create_in_memory_master
-                         end
     end
+    @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
+
+    # TODO: remove this block when all api keys are in sync
+    if !@request_api_key && (user = ::User[user_id]).api_key == token
+      @request_api_key = user.api_keys.create_in_memory_master
+    end
+    
+    @request_api_key
   end
 
   private
@@ -363,11 +359,6 @@ end
 Warden::Strategies.add(:auth_api) do
   include Carto::Api::AuthApiAuthentication
 
-  # We don't want to store a session and send a response cookie
-  def store?
-    false
-  end
-
   def authenticate!
     authenticate_user(true)
   end
@@ -375,11 +366,6 @@ end
 
 Warden::Strategies.add(:any_auth_api) do
   include Carto::Api::AuthApiAuthentication
-
-  # We don't want to store a session and send a response cookie
-  def store?
-    false
-  end
 
   def authenticate!
     authenticate_user(false)

@@ -206,11 +206,11 @@ defaults: &defaults
       async_long_uploads: false
     uploads_path: 'public/uploads'
     pg_dump_bin_path:
-      9.5: 'pg_dump'
-      10: 'pg_dump'
+      '9.5': 'pg_dump'
+      '10': 'pg_dump'
     pg_restore_bin_path:
-      9.5: 'pg_restore'
-      10: 'pg_restore'
+      '9.5': 'pg_restore'
+      '10': 'pg_restore'
   exporter:
     exporter_temporal_folder: '/tmp/exporter'
     s3:

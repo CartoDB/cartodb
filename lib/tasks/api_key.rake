@@ -47,14 +47,14 @@ namespace :carto do
 
     desc 'Creates default API Keys for users who don\'t have them yet'
     task create_default: :environment do
-      Carto::User.joins('LEFT JOIN api_keys ON api_keys.user_id = users.id').where(api_keys: { id: nil }).each { |u| create_api_keys_for_user(u) }
+      Carto::User.joins('LEFT JOIN api_keys ON api_keys.user_id = users.id').where(api_keys: { id: nil }).find_each { |u| create_api_keys_for_user(u) }
     end
 
     desc 'Creates default API Keys for users who don\'t have them yet under given organization'
-      task :create_default_for_organization, [:org_name] => [:environment] do |_, args|
+    task :create_default_for_organization, [:org_name] => [:environment] do |_, args|
       puts "INFO: Creating default API Keys for all users in organization #{args[:org_name]}"
       org = Carto::Organization.find_by_name(args[:org_name])
-      puts "ERROR: Organization not found" unless org
+      raise "ERROR: Organization not found" unless org
       org.users.each { |u| create_api_keys_for_user(u) }
     end
   end

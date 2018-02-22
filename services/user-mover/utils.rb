@@ -86,7 +86,7 @@ module CartoDB
 
       def get_pg_restore_bin_path(conn, dump_name = nil)
         bin_version = dump_name ? get_dump_database_version(conn, dump_name) : get_database_version_for_binaries(conn)
-        Cartodb.get_config(:user_migrator, 'pg_dump_restore_path', bin_version) || 'pg_restore'
+        Cartodb.get_config(:user_migrator, 'pg_restore_bin_path', bin_version) || 'pg_restore'
       end
 
       def get_database_version_for_binaries(conn)

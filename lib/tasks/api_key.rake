@@ -1,9 +1,3 @@
-require_relative '../../app/models/carto/user'
-require_relative '../../lib/carto/configuration'
-require_relative '../../config/initializers/sequel.rb'
-require_relative '../../app/models/carto/carto_json_serializer.rb'
-require_relative '../../app/models/carto/api_key'
-
 namespace :carto do
   namespace :api_key do
     def rename_api_keys_for_user_id(user_id)
@@ -19,7 +13,7 @@ namespace :carto do
 
     # This should only be used for development, before CartoDB/cartodb/pull/13396 migration
     desc 'Rename Api Keys to avoid name collisions within the same user'
-    task :rename do
+    task rename: :environment do
       Carto::ApiKey.uniq.pluck(:user_id).each { |user_id| rename_api_keys_for_user_id(user_id) }
     end
 
@@ -52,12 +46,12 @@ namespace :carto do
     end
 
     desc 'Creates default API Keys for users who don\'t have them yet'
-    task :create_default do
-      Carto::User.joins('LEFT JOIN api_keys ON api_keys.user_id = users.id').where(api_keys: { id: nil }).first.each { |u| create_api_keys_for_user(u) }
+    task create_default: :environment do
+      Carto::User.joins('LEFT JOIN api_keys ON api_keys.user_id = users.id').where(api_keys: { id: nil }).each { |u| create_api_keys_for_user(u) }
     end
 
     desc 'Creates default API Keys for users who don\'t have them yet under given organization'
-    task :create_default_for_organization, [:org_name] => [:environment] do |_, args|
+      task :create_default_for_organization, [:org_name] => [:environment] do |_, args|
       puts "INFO: Creating default API Keys for all users in organization #{args[:org_name]}"
       org = Carto::Organization.find_by_name(args[:org_name])
       puts "ERROR: Organization not found" unless org

@@ -289,10 +289,13 @@ module Carto::Api::AuthApiAuthentication
     user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
     api_key = Carto::ApiKey.where(user_id: user_id, token: token)
     api_key = require_master_key ? api_key.master : api_key
+
+    # TODO: Remove this block when all api keys are in sync
     unless api_key.exists?
       user = ::User[user_id]
       return success!(user) if user.api_key == token
     end
+
     return fail! unless api_key.exists?
     success!(::User[user_id])
   rescue

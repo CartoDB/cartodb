@@ -11,6 +11,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   before_filter :any_api_authorization_required, only: [:index, :show]
   skip_filter :api_authorization_required, only: [:index, :show]
   before_filter :check_feature_flag
+  before_filter :check_engine_enabled
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -33,8 +34,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def regenerate_token
-    @viewed_api_key.create_token
-    @viewed_api_key.save!
+    @viewed_api_key.regenerate_token!
     render_jsonp(Carto::Api::ApiKeyPresenter.new(@viewed_api_key).to_poro, 200)
   end
 
@@ -67,6 +67,10 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   def check_feature_flag
     render_404 unless current_viewer.try(:has_feature_flag?, 'auth_api')
+  end
+
+  def check_engine_enabled
+    render_404 unless current_viewer.try(:engine_enabled?)
   end
 
   def load_api_key

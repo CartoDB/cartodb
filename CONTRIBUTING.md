@@ -2,7 +2,7 @@ The development tracker for CartoDB is on GitHub:
 http://github.com/cartodb/cartodb
 
 Bug fixes are best reported as pull requests over there.
-Features are best discussed on the mailing list:
+Features are best discussed on the mailing list:  
 https://groups.google.com/d/forum/cartodb
 
 ---
@@ -83,7 +83,7 @@ There are two test suites: one for the old Editor and one for Builder.
 
 The old Editor specs reside in `lib/assets/test/spec/cartodb`.
 
-The core Builder specs reside in `lib/assets/test/spec/cartodb3`.
+The core Builder specs reside in `lib/assets/test/spec/builder`.
 
 #### Running all tests
 
@@ -123,25 +123,21 @@ If you want to run simultaneously the application and the specs generation follo
 
 The development of Builder specs is separated from regular development. This means that you can develop new specs or modify the existing ones without having the whole application running. This speeds up the development task.
 
-Another feature of Builder specs is that we only generate the affected ones by default. That means that we check the current branch changes against `master` branch and only build those specs that are affected by those changes. This way, we pass only the needed subset of specs.
-
 To start specs development type the next command:
 
 ```bash
-grunt test:browser
+grunt test:browser:builder
 ```
 
-After building the whole suite for the first time, a webpage will show up with a link to the Jasmine page with all the specs. This suite is at `http://localhost:8088/_SpecRunner-affected.html`
-
-Then, the process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass again the tests.
-
-If you prefer to generate all specs anyway, you can pass a flag to the grunt task:
+You can optionally provide an argument to grunt to filter what specs will be generated, like this:
 
 ```bash
-grunt test:browser --specs=all
+grunt test:browser:builder --match=dropdown
 ```
 
-This will generate the whole Builder suite, not only the specs affected by the current branch.
+After building the whole suite for the first time, a web server will be started on port 8088 and the spec runner webpage will show up. If you need to use a different port, change the port & URL values on the [connect task](lib/build/tasks/connect.js)
+
+The process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass again the tests.
 
 **Run specs and regular codebase simultaneously**
 
@@ -149,11 +145,9 @@ If you want to run simultaneously the application and the specs generation follo
 
 1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt dev`. This will build the application assets and will watch for changes.
 
-2. Open a second terminal and run `grunt test:browser`.
+2. Open a second terminal and run `grunt test:browser:builder`.
 
-3. You will see in the first terminal that a lot of changes build the bundle again. That's normal. The first step of the point 3 is to copy all needed files, so the `watch` of `grunt dev` triggers. Don't worry about it.
-
-4. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt test:browser` will build the specs.
+3. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt test:browser` will build the specs.
 
 #### Running a particular spec
 

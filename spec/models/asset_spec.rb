@@ -60,7 +60,7 @@ describe Asset do
   end
 
   def local_path(asset)
-    local_url = asset.public_url.gsub(/\/uploads/, '')
+    local_url = CGI.unescape(asset.public_url).gsub(/\/uploads/, '')
     Carto::Conf.new.public_uploaded_assets_path + local_url
   end
 
@@ -103,6 +103,11 @@ describe Asset do
         end
       end
 
+      it 'should import assets with spaces in their name' do
+        asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante blue.png').to_s
+        File.exists?(local_path(asset)).should be_true
+        asset.public_url.should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante%20blue\.png/
+      end
     end
   end
 
@@ -115,13 +120,22 @@ describe Asset do
       asset.destroy
       File.exists?(path).should be_false
     end
+
+    it 'removes the file with special characters from storage' do
+      Asset.any_instance.stubs("use_s3?").returns(false)
+      asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante blue.png').to_s
+      path = local_path(asset)
+      File.exists?(path).should be_true
+      asset.destroy
+      File.exists?(path).should be_false
+    end
   end
 
-  describe '#public_values' do
+  describe '#presenter' do
     it 'returns the expected format' do
       asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
 
-      asset.public_values.should == { "public_url" => nil, "user_id" => @user.id, "id" => nil, "kind" => nil }
+      Carto::Api::AssetPresenter.new(asset).to_hash.should == { public_url: nil, user_id: @user.id, id: nil, kind: nil }
     end
   end
 end

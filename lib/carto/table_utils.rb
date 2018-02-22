@@ -1,7 +1,7 @@
 module Carto
   module TableUtils
     # Returns a (double) quoted table name if needed (if it contains a dash, for example).
-    # Coupled to lib/assets/javascripts/cartodb3/helpers/utils.js#safeTableNameQuoting
+    # Coupled to lib/assets/javascripts/builder/helpers/utils.js#safeTableNameQuoting
     def safe_table_name_quoting(table_name)
       can_be_quoted?(table_name) ? dashes_quoting(table_name) : table_name
     end

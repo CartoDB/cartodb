@@ -62,7 +62,7 @@ module CartoDB
       private
 
       def pg_dump_bin_path
-        get_pg_dump_bin_path(user_pg_conn)
+        get_pg_dump_bin_path(@conn)
       end
     end
   end
@@ -492,7 +492,7 @@ module CartoDB
             redis_conn.quit
             if @options[:data]
               DumpJob.new(
-                pg_conn,
+                user_pg_conn,
                 @user_data['database_host'] || '127.0.0.1',
                 @user_data['database_name'],
                 @options[:path],
@@ -535,7 +535,7 @@ module CartoDB
 
             if @options[:data] && !@options[:split_user_schemas]
               DumpJob.new(
-                pg_conn,
+                user_pg_conn,
                 @database_host,
                 @database_name,
                 @options[:path],

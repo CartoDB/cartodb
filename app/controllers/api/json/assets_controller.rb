@@ -18,7 +18,7 @@ class Api::Json::AssetsController < Api::ApplicationController
           @asset.save
         end
 
-        render_jsonp(@asset.public_values)
+        render_jsonp(Carto::Api::AssetPresenter.new(@asset).to_hash)
       rescue Sequel::ValidationFailed
         render json: { error: @asset.errors.full_messages }, status: 400
       rescue => e

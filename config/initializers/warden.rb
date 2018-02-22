@@ -156,37 +156,6 @@ Warden::Strategies.add(:api_authentication) do
   end
 end
 
-Warden::Strategies.add(:api_key) do
-  def valid?
-    params[:api_key].present?
-  end
-
-  # We don't want to store a session and send a response cookie
-  def store?
-    false
-  end
-
-  def authenticate!
-    begin
-      if (api_key = params[:api_key]) && api_key.present?
-        user_name = CartoDB.extract_subdomain(request)
-        if $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
-          user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
-          return fail! if user_id.blank?
-          user = ::User[user_id]
-          success!(user)
-        else
-          return fail!
-        end
-      else
-        return fail!
-      end
-    rescue
-      return fail!
-    end
-  end
-end
-
 Warden::Strategies.add(:http_header_authentication) do
   include LoginEventTrigger
 
@@ -347,7 +316,7 @@ module Carto::Api::AuthApiAuthentication
     if !@request_api_key && (user = ::User[user_id]).api_key == token
       @request_api_key = user.api_keys.create_in_memory_master
     end
-    
+
     @request_api_key
   end
 

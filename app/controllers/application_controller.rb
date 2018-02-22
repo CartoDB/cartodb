@@ -225,7 +225,7 @@ class ApplicationController < ActionController::Base
   # but doesn't break the request if can't authenticate
   def optional_api_authorization
     if params[:api_key].present?
-      got_auth = authenticate(:api_authentication, :scope => CartoDB.extract_subdomain(request))
+      got_auth = authenticate(:auth_api, :api_authentication, :scope => CartoDB.extract_subdomain(request))
       validate_session(current_user) if got_auth
     end
   end

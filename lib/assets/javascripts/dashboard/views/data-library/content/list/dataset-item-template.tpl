@@ -19,7 +19,7 @@
           <div class="MapCard-contentFooterDetails--left MapCard-contentFooterDetails--noright">
             <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
               <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
-              <%- moment(date).fromNow() %>
+              <%- dateFromNow %>
             </div>
             <% if (datasetSize && datasetSize[0] > 0) { %>
             <div class="MapCard-contentFooterIcon u-hideOnMobile">

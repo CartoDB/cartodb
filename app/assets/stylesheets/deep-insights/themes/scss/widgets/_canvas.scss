@@ -99,6 +99,13 @@
   }
 }
 
+@media (min-height: $sMedia-desktop) and (min-width: $sMedia-xl) {
+  .CDB-Widget-canvas,
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+    margin-left: 8px;
+  }
+}
+
 @media (max-width: $sMedia-l) and (orientation: portrait) {
   .CDB-Widget-canvasInner {
     flex-direction: column;

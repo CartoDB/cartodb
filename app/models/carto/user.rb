@@ -2,6 +2,7 @@
 
 require 'active_record'
 require_relative 'user_service'
+require_dependency 'carto/user_table'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 require_relative '../../helpers/data_services_metrics_helper'

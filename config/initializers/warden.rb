@@ -318,28 +318,19 @@ module Carto::Api::AuthApiAuthentication
       decoded_auth = Base64.decode64(base64_auth)
       user_name, token = decoded_auth.split(':')
       return fail! unless user_name == CartoDB.extract_subdomain(request)
-
-      user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-      api_key = Carto::ApiKey.where(user_id: user_id, token: token)
-      api_key = require_master_key ? api_key.master : api_key
-      return fail! unless api_key.exists?
-
-      success!(::User[user_id])
     else
-      if (api_key = params[:api_key]) && api_key.present?
-        user_name = CartoDB.extract_subdomain(request)
-        if $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
-          user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
-          return fail! if user_id.blank?
-          user = ::User[user_id]
-          success!(user)
-        else
-          return fail!
-        end
-      else
-        return fail!
-      end
+      token = params[:api_key]
+      user_name = CartoDB.extract_subdomain(request)
     end
+    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
+    api_key = Carto::ApiKey.where(user_id: user_id, token: token)
+    api_key = require_master_key ? api_key.master : api_key
+    unless api_key.exists?
+      user = ::User[user_id]
+      return success!(user) if user.api_key == token
+    end
+    return fail! unless api_key.exists?
+    success!(::User[user_id])
   rescue
     fail!
   end

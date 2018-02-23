@@ -384,7 +384,8 @@ module CartoDB
       end
 
       def run_file_restore_postgres(file, sections = nil)
-        command = "#{pg_restore_bin_path} -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
+        file_path = "#{@path}#{file}"
+        command = "#{pg_restore_bin_path(file_path)} -e --verbose -j4 --disable-triggers -Fc #{file_path} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],
@@ -661,8 +662,8 @@ module CartoDB
         importjob_logger.info(@import_log.to_json)
       end
 
-      def pg_restore_bin_path
-        Cartodb.get_config(:user_migrator, 'pg_restore_bin_path') || 'pg_restore'
+      def pg_restore_bin_path(dump)
+        get_pg_restore_bin_path(superuser_pg_conn, dump)
       end
 
       def target_dbname

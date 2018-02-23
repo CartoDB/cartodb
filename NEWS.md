@@ -142,6 +142,7 @@ ion for time-series (#12670)
 * Use carto.js v4.0.0-beta.13
 
 ### Bug fixes / enhancements
+* Fix icons in custom html legends (#13600)
 * Rename 'cartodb3' to 'builder'
 * Make legends collapsable (#13531)
 * Add marker size to layer cartocss props to reinstantiate torque map (#13590)
@@ -149,6 +150,7 @@ ion for time-series (#12670)
 * Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
 * Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
+* Support several versions of pg_dump and pg_restore binaries (CartoDB/cartodb-central#2073)
 * User feed renders google maps properly when user has it enabled
 * New Synchronization records can enter error state preventing future synchronizations (#13435)
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
@@ -452,9 +454,11 @@ ion for time-series (#12670)
 * Enable CSV exports for polygon and line datasets (#13196)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
+* Fix asset upload with special character in local storage (#13602)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
 * Make new widgets appear on top (#13244)
+* Fix imports with local storage and special characters (#13604)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)

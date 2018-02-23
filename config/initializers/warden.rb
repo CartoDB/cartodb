@@ -327,8 +327,7 @@ module Carto::Api::AuthApiAuthentication
 
   def split_auth
     decoded_auth = Base64.decode64(base64_auth)
-    user_name, token = decoded_auth.split(':')
-    return user_name, token
+    decoded_auth.split(':')
   end
 end
 

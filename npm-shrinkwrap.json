@@ -314,8 +314,8 @@
     },
     "carto": {
       "version": "0.15.1-cdb4",
-      "from": "cartodb/carto#shield_placement_type",
-      "resolved": "git://github.com/cartodb/carto.git#368dad0d11cf6ac60550f43074b05ec036024af7"
+      "from": "cartodb/carto#master",
+      "resolved": "git://github.com/cartodb/carto.git#664b45cdde978881e5464db02df5c31eb645e370"
     },
     "carto-zera": {
       "version": "1.0.2",
@@ -333,9 +333,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.28",
-      "from": "cartodb/cartodb.js#shield_placement_type",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#850b1559754f14f8f6338f8e3115909a75c3398e"
+      "version": "4.0.0-beta.30",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.30",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#54a4072247abd26618fd12dbdcee090f60f24bd9"
     },
     "center-align": {
       "version": "0.1.3",
@@ -1883,8 +1883,8 @@
     },
     "torque.js": {
       "version": "2.16.3",
-      "from": "cartodb/torque#shield_placement_type",
-      "resolved": "git://github.com/cartodb/torque.git#e6451e0e7b946768348d55e00530e4fba9342101"
+      "from": "cartodb/torque#master",
+      "resolved": "git://github.com/cartodb/torque.git#742c2d98088bd47a67cbad6baf2357427eb118ca"
     },
     "transformify": {
       "version": "0.1.2",

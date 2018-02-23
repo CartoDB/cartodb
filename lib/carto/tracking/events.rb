@@ -27,9 +27,9 @@ module Carto
         end
 
         def required_properties
-          these_required_properties = self.class.instance_eval { @required_properties }
+          these_required_properties = self.class.instance_eval { @required_properties || [] }
 
-          these_required_properties || self.class.superclass.required_properties
+          these_required_properties + self.class.superclass.required_properties
         end
 
         def report
@@ -169,18 +169,14 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :origin
-      end
-
-      class CreatedDataset < DatasetEvent; end
-      class DeletedDataset < Event
-        include Carto::Tracking::Services::Segment
-
-        include Carto::Tracking::Validators::Visualization::Writable
-        include Carto::Tracking::Validators::User
-
         required_properties :user_id, :visualization_id
       end
+
+      class CreatedDataset < DatasetEvent
+        required_properties :origin
+      end
+
+      class DeletedDataset < DatasetEvent; end
 
       class AnalysisEvent < Event
         include Carto::Tracking::Services::Hubspot

@@ -129,7 +129,7 @@ class Admin::PagesController < Admin::AdminController
       @maps_count          = maps_builder.build.count
       @website             = website_url(@viewed_user.website)
       @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
-      @has_new_dashboard   = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
+      @has_new_dashboard   = @viewed_user.builder_enabled && @viewed_user.has_feature_flag?('dashboard_migration')
       @gmaps_query_string  = @viewed_user.google_maps_query_string
       @needs_gmaps_lib     = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
 
@@ -261,6 +261,12 @@ class Admin::PagesController < Admin::AdminController
 
     @page_description = description
 
+    if @viewed_user.nil?
+      @has_new_dashboard = @org.builder_enabled && @org.owner.has_feature_flag?('dashboard_migration')
+    else
+      @has_new_dashboard = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
+    end
+
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
@@ -309,6 +315,12 @@ class Admin::PagesController < Admin::AdminController
     end
 
     @page_description = description
+
+    if @viewed_user.nil?
+      @has_new_dashboard = @org.builder_enabled&& @org.owner.has_feature_flag?('dashboard_migration')
+    else
+      @has_new_dashboard = @viewed_user.builder_enabled && @viewed_user.has_feature_flag?('dashboard_migration')
+    end
 
     respond_to do |format|
       format.html { render 'public_maps', layout: 'public_dashboard' }
@@ -485,6 +497,11 @@ class Admin::PagesController < Admin::AdminController
   def get_viewed_user
     username = CartoDB.extract_subdomain(request)
     @viewed_user = ::User.where(username: username).first
+
+    if @viewed_user.nil?
+      username = username.strip.downcase
+      @org = get_organization_if_exists(username)
+    end
   end
 
 

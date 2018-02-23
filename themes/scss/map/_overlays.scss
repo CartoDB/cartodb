@@ -11,6 +11,11 @@ $buttonColor: #636D72;
   left: 16px;
   align-items: center;
   z-index: 11;
+  pointer-events: none;
+
+  > * {
+    pointer-events: all;
+  }
 }
 
 // zoom overlay
@@ -21,7 +26,7 @@ $buttonColor: #636D72;
   height: 32px;
   border-radius: 4px;
   background: #FFF;
-  box-shadow: 0 0 2px 0 rgba(#000, 0.24), 0 4px 8px 0 rgba(#000, 0.16);
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   z-index: 20000;
 }
 
@@ -113,6 +118,9 @@ $buttonColor: #636D72;
   margin-right: 8px;
 
   .CDB-Shape-magnify {
+    width: 32px;
+    height: 32px;
+
     &::before {
       top: 11px;
       left: 10px;
@@ -120,24 +128,23 @@ $buttonColor: #636D72;
     }
 
     &::after {
-      right: 13px;
       bottom: 10px;
+      left: 17px;
       background: #636D72;
+    }
+
+    .is-small::after {
+      left: 17px;
     }
   }
 }
 
 .CDB-Search-inner {
+  @include transition(width, 100ms ease-in);
   display: flex;
-  align-items: center;
   width: 32px;
   height: 100%;
-  transition: width 100ms ease-in;
   overflow: hidden;
-
-  &:hover {
-    background: rgba($cBlue, 0.08);
-  }
 
   &.is-active {
     width: 152px;
@@ -147,8 +154,8 @@ $buttonColor: #636D72;
     }
 
     .CDB-Search-text {
-      display: block;
       opacity: 1;
+      visibility: visible;
     }
   }
 }
@@ -157,17 +164,23 @@ $buttonColor: #636D72;
   width: 32px;
   height: 32px;
   color: $buttonColor;
+
+  &:hover {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    background: rgba($cBlue, 0.08);
+  }
 }
 .CDB-Search-text {
-  display: none;
   width: 100px;
   padding: 0 0 0 8px;
-  transition: opacity 150ms ease-in;
+  transition: all 150ms ease-in;
   border: 0;
   border-left: 1px solid #F8F8F8;
   background: none;
   font: 12px/16px 'Open Sans';
   opacity: 0;
+  visibility: hidden;
 
   &:focus {
     outline: none;
@@ -201,12 +214,12 @@ $buttonColor: #636D72;
   }
 }
 .CDB-Logo {
+  @include transform(translateX(-50%));
   position: absolute;
   bottom: 0;
   left: 50%;
   width: auto;
   height: auto;
-  transform: translateX(-50%);
   z-index: 10;
 }
 
@@ -216,24 +229,19 @@ $maxLegendContainerHeight: 300px;
 
 .CDB-Legends-canvas {
   position: absolute;
-  display: none;
   top: 16px;
   left: 16px;
   width: 240px;
   height: auto;
+  //max-height: $maxLegendContainerHeight;
   max-height: calc(100vh - 120px);
   border-radius: 4px;
   background: #FFF;
-  box-shadow: 0 2px 4px 0 rgba(#000, 0.24);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
   overflow: hidden;
   z-index: 20000;
 }
-
-.CDB-Legends-canvas.is-visible {
-  display: block;
-}
-
 .CDB-Legends-canvasInner {
   position: relative;
   top: 0;
@@ -256,16 +264,16 @@ $maxLegendContainerHeight: 300px;
   pointer-events: none;
 }
 .CDB-Legends-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
   top: 0;
   border-top-left-radius: $baseSize / 2;
   border-top-right-radius: $baseSize / 2;
-  background: linear-gradient(#FFF, rgba(255, 255, 255, 0));
 }
 .CDB-Legends-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   bottom: 0;
   border-bottom-left-radius: $baseSize / 2;
   border-bottom-right-radius: $baseSize / 2;
-  background: linear-gradient(rgba(255, 255, 255, 0), #FFF);
 }
 .CDB-Legends-canvasShadow.is-visible {
   display: block;
@@ -290,6 +298,7 @@ $maxLegendContainerHeight: 300px;
   margin-bottom: 16px;
 }
 
+
 .CDB-Legend-item div.cartodb-legend {
   position: static;
   padding: 0;
@@ -307,85 +316,86 @@ $maxLegendContainerHeight: 300px;
 }
 
 .Bubble-list {
-  display: flex;
-  position: relative;
-  justify-content: center;
-  width: 100px;
+  width: 100%;
   height: 100px;
 }
-.Bubble-list::before {
-  position: absolute;
-  right: 50%;
-  bottom: 0;
-  width: 140px;
-  height: 1px;
-  background: rgba(#000, 0.08);
-  content: '';
-  visibility: visible;
-}
+
 .Bubble-item {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0.5;
+  width: 100%;
+  height: 100px;
 }
 
 .Bubble-container {
-  display: flex;
-  max-height: 100px;
-  padding-top: 3px;
-  padding-bottom: 8px;
+  position: relative;
+  top: 7px;
+  right: 0;
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
 }
+
+.Bubble-circle {
+  @include opacity(0.5);
+  position: absolute;
+  right: 0;
+  width: 100px;
+  height: 100%;
+}
+
 .Bubble-itemCircle {
   display: block;
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
   width: 100%;
   height: 100%;
-  border: 1px solid rgba(#000, 0.1);
+  transform: translate3d(-50%, 0, 0);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
   background: #F8AB17;
-  box-shadow: -1px 0 2px 0 rgba(#000, 0.1);
+  box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
-.Bubble-item::before {
+
+.Bubble-label {
   position: absolute;
-  top: 5px;
-  right: 50%;
-  width: 140px;
-  height: 1px;
-  background: rgba(#000, 1);
-  content: '';
+  bottom: 0;
+  width: calc(100% - 50px);
+
+  &::after {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(#000, 0.08);
+    content: '';
+    z-index: -1;
+  }
 }
+
 .Bubble-list--custom::before,
 .Bubble-item--custom::before {
   visibility: hidden;
 }
-.Bubble-numbers {
-  position: relative;
-}
+
 .Bubble-numbersItem {
-  position: absolute;
-  margin-bottom: -11px;
-  padding-right: $baseSize * 2;
+  display: inline-block;
+  padding-right: 5px;
+  transform: translate3d(0, -50%, 0);
   background: rgba(#FFF, 0.8);
-  z-index: 10;
-  &:last-child {
-    background: #FFF;
-  }
 }
-.Bubble-inner {
-  display: flex;
-  position: relative;
-}
+
 .Bubble-average {
+  @include transform(translateY(50%));
   display: block;
   position: absolute;
-  right: 105px;
-  transform: translateY(50%);
+  right: 102px;
   white-space: nowrap;
   z-index: 1000;
 }
+
 .Bubble-average::after {
   display: block;
   position: absolute;
@@ -393,7 +403,7 @@ $maxLegendContainerHeight: 300px;
   right: -54px;
   width: 51px;
   height: 1px;
-  border-top: 1px dotted rgba(#000, 0.4);
+  border-top: 1px dotted rgba(0, 0, 0, 0.4);
   content: '';
   z-index: 10;
 }
@@ -405,7 +415,7 @@ $maxLegendContainerHeight: 300px;
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(#000, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   content: '';
   z-index: 10;
 }
@@ -425,7 +435,7 @@ $maxLegendContainerHeight: 300px;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(#000, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.16);
   border-radius: $halfBaseSize;
   content: '';
 }
@@ -472,7 +482,7 @@ $maxLegendContainerHeight: 300px;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(#000, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.16);
   border-radius: 50%;
   content: '';
 }
@@ -509,34 +519,18 @@ $maxLegendContainerHeight: 300px;
 
 @media (max-width: 600px) {
   .CDB-Legends-canvas {
-    display: none;
+    display: none !important;
   }
-
-  .CDB-Legends-canvas.is-visible {
-    display: none;
-  }
-
-  .CDB-Legends-canvas.CDB-Legends-canvasEmbed.is-visible {
-    display: block;
-    position: relative;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    max-height: none;
-    border-radius: 0;
-    background-color: transparent;
-    box-shadow: none;
-
-    .CDB-Legends-canvasInner {
-      height: 100%;
-      max-height: none;
-      border-radius: 0;
-    }
-  }
-
   .CDB-Zoom-info,
   .CDB-Fullscreen {
     display: none;
+  }
+}
+
+@media (max-width: 425px) {
+  .CDB-Logo {
+    right: 0;
+    left: initial;
+    transform: initial;
   }
 }

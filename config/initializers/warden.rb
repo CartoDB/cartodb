@@ -278,43 +278,29 @@ module Carto::Api::AuthApiAuthentication
   end
 
   def authenticate_user(require_master_key)
-    if base64_auth.present?
-      user_name, token = split_auth
-      return fail! unless user_name == CartoDB.extract_subdomain(request)
-    else
-      token = params[:api_key]
-      user_name = CartoDB.extract_subdomain(request)
-    end
-    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    api_key = Carto::ApiKey.where(user_id: user_id, token: token)
+    user, token = user_and_token_from_request
+    api_key = user.api_keys.where(token: token)
     api_key = require_master_key ? api_key.master : api_key
 
     # TODO: Remove this block when all api keys are in sync 'auth_api'
     unless api_key.exists?
-      user = ::User[user_id]
       return success!(user) if user.api_key == token
     end
 
     return fail! unless api_key.exists?
-    success!(::User[user_id])
+    success!(user)
   rescue
     fail!
   end
 
   def request_api_key
     return @request_api_key if @request_api_key
-    if base64_auth.present?
-      user_name, token = split_auth
-    else
-      token = params[:api_key]
-      user_name = CartoDB.extract_subdomain(request)
-    end
 
-    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
+    user, token = user_and_token_from_request
+    @request_api_key = user.api_keys.where(token: token).first
 
     # TODO: remove this block when all api keys are in sync 'auth_api'
-    if !@request_api_key && (user = ::User[user_id]).api_key == token
+    if !@request_api_key && user.api_key == token
       @request_api_key = user.api_keys.create_in_memory_master
     end
 
@@ -324,6 +310,17 @@ module Carto::Api::AuthApiAuthentication
   private
 
   AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
+
+  def user_and_token_from_request
+    if base64_auth.present?
+      username, token = split_auth
+      return fail! unless username == CartoDB.extract_subdomain(request)
+    else
+      token = params[:api_key]
+      username = CartoDB.extract_subdomain(request)
+    end
+    [User[username: username], token]
+  end
 
   def split_auth
     decoded_auth = Base64.decode64(base64_auth)

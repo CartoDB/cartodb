@@ -58,7 +58,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Embed-tab {
   display: flex;
-  padding: 0;
+  padding: 8px;
 
   &:not(.is-active) {
     display: none;
@@ -218,12 +218,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   .CDB-Embed-tab {
     display: flex;
     width: 100%;
+    padding: 0;
     overflow-x: hidden;
-  }
-}
-
-@media (min-height: $sMedia-desktop) and (min-width: $sMedia-xl) {
-  .CDB-Embed-tab {
-    padding: 16px;
   }
 }

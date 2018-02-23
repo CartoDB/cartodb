@@ -18,10 +18,14 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  margin-left: 2px;
   overflow-x: visible;
   overflow-y: auto;
   border-radius: $baseSize / 2;
+}
+
+.CDB-Widget-canvas,
+.CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+  margin-left: 8px;
 }
 
 .CDB-Widget-canvasShadow {
@@ -96,13 +100,6 @@
     min-width: 100%;
     max-width: 100%;
     margin-left: 0;
-  }
-}
-
-@media (min-height: $sMedia-desktop) and (min-width: $sMedia-xl) {
-  .CDB-Widget-canvas,
-  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
-    margin-left: 8px;
   }
 }
 

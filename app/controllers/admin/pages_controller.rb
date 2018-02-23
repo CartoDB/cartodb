@@ -317,7 +317,7 @@ class Admin::PagesController < Admin::AdminController
     @page_description = description
 
     if @viewed_user.nil?
-      @has_new_dashboard = @org.builder_enabled&& @org.owner.has_feature_flag?('dashboard_migration')
+      @has_new_dashboard = @org.builder_enabled && @org.owner.has_feature_flag?('dashboard_migration')
     else
       @has_new_dashboard = @viewed_user.builder_enabled && @viewed_user.has_feature_flag?('dashboard_migration')
     end

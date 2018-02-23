@@ -16,6 +16,31 @@ describe Carto::Api::ApiKeysController do
     end
   end
 
+  def json_headers_with_auth(api_key: @master_api_key)
+    http_json_headers.merge(
+      'Authorization' => 'Basic ' + Base64.strict_encode64("#{@user.username}:#{api_key.token}")
+    )
+  end
+
+  def empty_grants
+    [{ type: "apis", apis: [] }]
+  end
+
+  def public_api_key
+    @carto_user.api_keys.find(&:default_public?)
+  end
+
+  def regular_api_key
+    @carto_user.reload.api_keys.find(&:regular?)
+  end
+
+  def empty_payload
+    {
+      name: 'wadus',
+      grants: empty_grants
+    }
+  end
+
   let(:create_payload) do
     {
       name: 'wadus',
@@ -62,8 +87,8 @@ describe Carto::Api::ApiKeysController do
     name ? api_key_url(req_params.merge(id: name)) : api_keys_url(req_params)
   end
 
-  def user_req_params(user)
-    { user_domain: user.username, api_key: user.api_key }
+  def user_req_params(user, token = nil)
+    { user_domain: user.username, api_key: token || user.api_key }
   end
 
   describe '#authorization' do
@@ -529,31 +554,6 @@ describe Carto::Api::ApiKeysController do
       @carto_user.api_keys.create_regular_key!(name: 'key1', grants: empty_grants)
     end
 
-    def json_headers_with_auth(api_key: @master_api_key)
-      http_json_headers.merge(
-        'Authorization' => 'Basic ' + Base64.strict_encode64("#{@user.username}:#{api_key.token}")
-      )
-    end
-
-    def empty_grants
-      [{ type: "apis", apis: [] }]
-    end
-
-    def public_api_key
-      @carto_user.api_keys.find(&:default_public?)
-    end
-
-    def regular_api_key
-      @carto_user.reload.api_keys.find(&:regular?)
-    end
-
-    def empty_payload
-      {
-        name: 'wadus',
-        grants: empty_grants
-      }
-    end
-
     let(:header_params) { { user_domain: @carto_user.username } }
 
     describe '#create' do
@@ -767,6 +767,68 @@ describe Carto::Api::ApiKeysController do
       it 'return API key list' do
         get_json generate_api_key_url(user_domain: @carto_user.username) do |response|
           response.status.should eq 401
+        end
+      end
+    end
+  end
+
+  describe 'query param and special permissions' do
+    before :each do
+      @carto_user.api_keys.create_regular_key!(name: 'key1', grants: empty_grants)
+    end
+
+    describe '#index' do
+      it 'shows only given api with default_public api keys' do
+        get_json generate_api_key_url(user_req_params(@carto_user, public_api_key.token)), nil do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+          response.body[:count].should eq 1
+          response.body[:result].length.should eq 1
+          response.body[:result].first['user']['username'].should eq @carto_user.username
+          response.body[:result].first['token'].should eq public_api_key.token
+        end
+      end
+
+      it 'shows only given api with regular api keys' do
+        get_json generate_api_key_url(user_req_params(@carto_user, regular_api_key.token)), nil do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+          response.body[:count].should eq 1
+          response.body[:result].length.should eq 1
+          response.body[:result].first['user']['username'].should eq @carto_user.username
+          response.body[:result].first['token'].should eq regular_api_key.token
+        end
+      end
+    end
+
+    describe '#show' do
+      it 'shows given public api_key if authetnicated with it' do
+        get_json generate_api_key_url(user_req_params(@user, public_api_key.token), name: public_api_key.name), nil do |response|
+          response.status.should eq 200
+          response.body[:user][:username].should eq @carto_user.username
+          response.body[:token].should eq public_api_key.token
+        end
+      end
+
+      it 'shows given regular api_key if authetnicated with it' do
+        get_json generate_api_key_url(user_req_params(@user, regular_api_key.token), name: regular_api_key.name), nil do |response|
+          response.status.should eq 200
+          response.body[:user][:username].should eq @carto_user.username
+          response.body[:token].should eq regular_api_key.token
+        end
+      end
+
+      it 'returns 404 if showing an api key different than the authenticated (public) one' do
+        get_json generate_api_key_url(user_req_params(@user, public_api_key.token), name: regular_api_key.name), nil do |response|
+          response.status.should eq 404
+          response.body[:errors].should eq 'API key not found: key1'
+        end
+      end
+
+      it 'returns 404 if showing an api key different than the authenticated (regular) one' do
+        get_json generate_api_key_url(user_req_params(@user, regular_api_key.token), name: public_api_key.name), nil do |response|
+          response.status.should eq 404
+          response.body[:errors].should eq 'API key not found: Default public'
         end
       end
     end

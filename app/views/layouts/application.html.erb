@@ -37,5 +37,11 @@
     <%= insert_hubspot() -%>
     <%= render 'admin/shared/intercom' %>
     <script src="//fast.appcues.com/32697.js"></script>
+    <script>
+      Appcues.identify(1, {
+        name: 'Pablo',
+        email: 'pablo@carto.com'
+      });
+    </script>
   </body>
 </html>

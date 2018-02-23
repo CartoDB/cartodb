@@ -623,7 +623,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     describe '#show' do
-      it 'shows given public api_key if authetnicated with it' do
+      it 'shows given public api_key if authenticated with it' do
         get_json generate_api_key_url(header_params, name: public_api_key.name), nil, json_headers_with_auth(api_key: public_api_key) do |response|
           response.status.should eq 200
           response.body[:user][:username].should eq @carto_user.username
@@ -631,7 +631,7 @@ describe Carto::Api::ApiKeysController do
         end
       end
 
-      it 'shows given regular api_key if authetnicated with it' do
+      it 'shows given regular api_key if authenticated with it' do
         get_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
           response.status.should eq 200
           response.body[:user][:username].should eq @carto_user.username
@@ -802,7 +802,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     describe '#show' do
-      it 'shows given public api_key if authetnicated with it' do
+      it 'shows given public api_key if authenticated with it' do
         get_json generate_api_key_url(user_req_params(@user, public_api_key.token), name: public_api_key.name), nil do |response|
           response.status.should eq 200
           response.body[:user][:username].should eq @carto_user.username
@@ -810,7 +810,7 @@ describe Carto::Api::ApiKeysController do
         end
       end
 
-      it 'shows given regular api_key if authetnicated with it' do
+      it 'shows given regular api_key if authenticated with it' do
         get_json generate_api_key_url(user_req_params(@user, regular_api_key.token), name: regular_api_key.name), nil do |response|
           response.status.should eq 200
           response.body[:user][:username].should eq @carto_user.username

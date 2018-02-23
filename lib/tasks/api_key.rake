@@ -17,7 +17,6 @@ namespace :carto do
       Carto::ApiKey.uniq.pluck(:user_id).each { |user_id| rename_api_keys_for_user_id(user_id) }
     end
 
-
     desc 'Creates default API Keys for user'
     task :create_default_for_emails, [:emails_file] => [:environment] do |_, args|
       line = 0

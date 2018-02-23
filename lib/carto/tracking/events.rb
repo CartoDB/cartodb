@@ -43,6 +43,7 @@ module Carto
 
         def report!
           check_required_properties!
+          check_no_extra_properties!
           authorize!
 
           report_to_methods = methods.select do |method_name|
@@ -61,6 +62,16 @@ module Carto
 
           unless missing_properties.empty?
             message = "#{name} is missing the following properties: #{missing_properties.join(', ')}"
+
+            raise Carto::UnprocesableEntityError.new(message)
+          end
+        end
+
+        def check_no_extra_properties!
+          extra_properties = @format.to_hash.symbolize_keys.keys - required_properties
+
+          unless extra_properties.empty?
+            message = "#{name} is adding the following extra properties: #{extra_properties.join(', ')}"
 
             raise Carto::UnprocesableEntityError.new(message)
           end

@@ -55,6 +55,13 @@ module Carto
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
+            end
           end
 
           describe '#security validation' do
@@ -142,6 +149,13 @@ module Carto
 
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
             end
           end
 
@@ -233,6 +247,13 @@ module Carto
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
+            end
           end
 
           describe '#security validation' do
@@ -319,6 +340,13 @@ module Carto
 
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
             end
           end
 
@@ -419,6 +447,13 @@ module Carto
               @event = @event_class.new(@user.id,
                                         user_id: @user.id)
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        connection: connection,
+                                        extra: 'extra')
+            end
           end
 
           describe '#security validation' do
@@ -496,6 +531,13 @@ module Carto
             it 'requires a connection' do
               @event = @event_class.new(@user.id, user_id: @user.id)
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        connection: connection,
+                                        extra: 'extra')
+            end
           end
 
           describe '#security validation' do
@@ -559,6 +601,11 @@ module Carto
 
             it 'requires a user_id' do
               @event = @event_class.new(@user.id, {})
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        extra: 'extra')
             end
           end
 
@@ -628,6 +675,14 @@ module Carto
               @event = @event_class.new(@user.id,
                                         visualization_id: @visualization.id,
                                         user_id: @user.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        mapviews: 123,
+                                        extra: 'extra')
             end
           end
 
@@ -723,6 +778,13 @@ module Carto
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
+            end
           end
 
           describe '#security validation' do
@@ -811,6 +873,13 @@ module Carto
 
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
             end
           end
 
@@ -916,6 +985,14 @@ module Carto
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
                                         visualization_id: @visualization.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        analysis: analysis,
+                                        extra: 'extra')
             end
           end
 
@@ -1030,6 +1107,14 @@ module Carto
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
                                         visualization_id: @visualization.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        analysis: analysis,
+                                        extra: 'extra')
             end
           end
 
@@ -1172,6 +1257,14 @@ module Carto
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
                                         visualization_id: @visualization.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        analysis: analysis,
+                                        extra: 'extra')
             end
           end
 
@@ -1331,6 +1424,18 @@ module Carto
                                         source: 'd0',
                                         table_name: 'test')
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        format: 'csv',
+                                        source: 'd0',
+                                        table_name: 'test',
+                                        visible: true,
+                                        extra: 'extra')
+            end
           end
 
           it 'matches current prod properties' do
@@ -1385,6 +1490,13 @@ module Carto
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
+            end
           end
         end
 
@@ -1427,6 +1539,15 @@ module Carto
                                         user_id: @user.id,
                                         visualization_id: @visualization.id,
                                         layer_id: @visualization.data_layers.first.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        empty: true,
+                                        extra: 'extra')
             end
           end
 
@@ -1496,6 +1617,14 @@ module Carto
                                         visualization_id: @visualization.id,
                                         attribute: 'test')
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        attribute: 'test',
+                                        extra: 'extra')
+            end
           end
 
           it 'matches current prod properties' do
@@ -1544,6 +1673,13 @@ module Carto
             it 'requires a visualization_id' do
               @event = @event_class.new(@user.id, user_id: @user.id)
             end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        extra: 'extra')
+            end
           end
         end
 
@@ -1585,6 +1721,15 @@ module Carto
                                         user_id: @user.id,
                                         visualization_id: @visualization.id,
                                         agg_type: 'hexabins')
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        agg_type: 'hexabins',
+                                        previous_agg_type: 'simple',
+                                        extra: 'extra')
             end
           end
 
@@ -1637,6 +1782,14 @@ module Carto
 
             it 'requires a mode_type' do
               @event = @event_class.new(@user.id, user_id: @user.id, visualization_id: @visualization.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        mode_type: 'cartocss',
+                                        extra: 'extra')
             end
           end
 

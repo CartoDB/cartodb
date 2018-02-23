@@ -772,17 +772,28 @@ module Carto
             end
 
             it 'requires a user_id' do
-              @event = @event_class.new(@user.id, visualization_id: @visualization.id)
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        origin: 'import')
             end
 
             it 'requires a visualization_id' do
-              @event = @event_class.new(@user.id, user_id: @user.id)
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        origin: 'import')
+            end
+
+            it 'requires a origin' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id)
             end
 
             it 'does not allow adding any additional property' do
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
                                         visualization_id: @visualization.id,
+                                        origin: 'import',
                                         extra: 'extra')
             end
           end
@@ -799,6 +810,7 @@ module Carto
             it 'must have write access to visualization' do
               @event = @event_class.new(@intruder.id,
                                         visualization_id: @visualization.id,
+                                        origin: 'import',
                                         user_id: @intruder.id)
 
               expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
@@ -807,6 +819,7 @@ module Carto
             it 'must be reported by user' do
               @event = @event_class.new(@intruder.id,
                                         visualization_id: @visualization.id,
+                                        origin: 'import',
                                         user_id: @user.id)
 
               expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
@@ -816,6 +829,7 @@ module Carto
           it 'reports' do
             event = @event_class.new(@user.id,
                                      visualization_id: @visualization.id,
+                                     origin: 'import',
                                      user_id: @user.id)
 
             expect { event.report! }.to_not raise_error
@@ -824,6 +838,7 @@ module Carto
           it 'reports by user with access' do
             event = @event_class.new(@intruder.id,
                                      visualization_id: @visualization.id,
+                                     origin: 'import',
                                      user_id: @intruder.id)
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)

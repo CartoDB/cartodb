@@ -285,10 +285,10 @@ module Carto
 
             it 'can have a dataset_id' do
               event = @event_class.new(@user.id,
-                                        user_id: @user.id,
-                                        visualization_id: @visualization.id,
-                                        sql: 'bla',
-                                        dataset_id: '1')
+                                       user_id: @user.id,
+                                       visualization_id: @visualization.id,
+                                       sql: 'bla',
+                                       dataset_id: '1')
 
               expect { event.report! }.to_not raise_error
             end

@@ -205,6 +205,13 @@ describe Downloader do
       downloader.instance_variable_get("@translated_url").should == url_with_percentage
     end
 
+    it 'does not break local filenames with special characters on it' do
+      # INFO: notice this URL is fake
+      path_with_percentage = '/public/uploads/tést file%.csv'
+      downloader = Downloader.new(@user.id, path_with_percentage)
+      downloader.instance_variable_get("@translated_url").should == path_with_percentage
+    end
+
     it "doesn't download the file if ETag hasn't changed" do
       etag = 'bogus'
       stub_download(

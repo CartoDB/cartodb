@@ -52,13 +52,13 @@ $canvas-dark: #293A41;
   margin-top: 8px;
 }
 
-@media (min-width: $sMedia-xxl) {
+@media (min-width: $sMedia-xl) {
   .CDB-Dashboard-mapWrapper--withMenu {
     margin-left: 56px;
   }
 }
 
-@media (max-width: $sMedia-xxl) {
+@media (max-width: $sMedia-xl) {
   .CDB-Dashboard-canvas {
     padding: 0;
   }

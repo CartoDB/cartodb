@@ -281,13 +281,13 @@
   display: none;
 }
 
-@media (min-width: $sMedia-xxl) {
+@media (min-width: $sMedia-xl) {
   .CDB-Dashboard-menu {
     display: block;
   }
 }
 
-@media (max-width: $sMedia-xxl) {
+@media (max-width: $sMedia-xl) {
   .CDB-Dashboard-hideMobile {
     display: none;
   }

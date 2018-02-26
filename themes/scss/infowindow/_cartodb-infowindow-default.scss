@@ -100,16 +100,16 @@
   pointer-events: none;
 }
 .CDB-infowindow-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
   top: 0;
   border-top-left-radius: $baseSize / 2;
   border-top-right-radius: $baseSize / 2;
-  background: linear-gradient(#FFF, rgba(255, 255, 255, 0));
 }
 .CDB-infowindow-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   bottom: 0;
   border-bottom-left-radius: $baseSize / 2;
   border-bottom-right-radius: $baseSize / 2;
-  background: linear-gradient(rgba(255, 255, 255, 0), #FFF);
 }
 .CDB-infowindow-canvasShadow.is-visible {
   display: block;

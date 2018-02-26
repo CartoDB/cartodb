@@ -134,6 +134,18 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 }
 
+@media (max-width: $sMedia-xl) {
+  .CDB-Embed-tab {
+    .CDB-Widget {
+      width: 250px;
+    }
+
+    .CDB-Widget.CDB-Widget--timeSeries {
+      width: auto;
+    }
+  }
+}
+
 @media (min-width: $sMedia-xl) {
   .CDB-Overlay-title {
     display: none;

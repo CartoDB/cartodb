@@ -26,7 +26,7 @@
     "carto-zera": "1.0.2",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.27",
+    "cartodb.js": "CartoDB/cartodb.js#13487-adjust-spaces-mobile-view-embed-maps",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "d3-interpolate": "^1.1.6",

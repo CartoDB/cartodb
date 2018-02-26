@@ -122,9 +122,7 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def regenerate_all_api_keys
-    @organization.users.each { |user|
-      user.regenerate_api_key
-    }
+    @organization.users.each(&:regenerate_all_api_keys)
 
     redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Users API keys regenerated successfully" }
   rescue => e

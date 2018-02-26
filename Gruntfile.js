@@ -266,8 +266,8 @@ module.exports = function (grunt) {
     'copy:app',
     'copy:css_cartodb',
     'compass',
-    'copy:css_vendor_cartodb3',
-    'copy:css_cartodb3',
+    'copy:css_vendor_builder',
+    'copy:css_builder',
     'sass',
     'concat:css'
   ]);
@@ -390,7 +390,7 @@ module.exports = function (grunt) {
     'invalidate'
   ]);
 
-  grunt.registerTask('affected', 'Generate only affected specs', function (option) {
+  grunt.registerTask('generate_builder_specs', 'Generate only builder specs', function (option) {
     requireWebpackTask().affected.call(this, option, grunt);
   });
 
@@ -422,38 +422,38 @@ module.exports = function (grunt) {
     'beforeDefault',
     'js_editor',
     'jasmine:cartodbui',
-    'affected',
+    'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
-    'jasmine:affected',
+    'jasmine:builder',
     'generate_dashboard_specs',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected',
+    'bootstrap_webpack_dashboard_specs',
+    'webpack:dashboard_specs',
+    'jasmine:dashboard',
     'lint'
   ]);
 
   /**
    * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.
    */
-  grunt.registerTask('test:browser', 'Build all Builder specs', [
-    'affected',
+  grunt.registerTask('test:browser:builder', 'Build all Builder specs', [
+    'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
-    'jasmine:affected:build',
-    'connect:specs',
+    'jasmine:builder:build',
+    'connect:specs_builder',
     'watch:js_affected'
   ]);
 
   /**
    * `grunt dashboard_specs` compile dashboard specs
    */
-  grunt.registerTask('dashboard_specs', 'Build only dashboard specs', [
+  grunt.registerTask('test:browser:dashboard', 'Build only dashboard specs', [
     'generate_dashboard_specs',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected:build',
-    'connect:specs',
+    'bootstrap_webpack_dashboard_specs',
+    'webpack:dashboard_specs',
+    'jasmine:dashboard:build',
+    'connect:specs_dashboard',
     'watch:dashboard_specs'
   ]);
 

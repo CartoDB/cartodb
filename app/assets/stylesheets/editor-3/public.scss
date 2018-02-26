@@ -25,21 +25,22 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
 
-.CDB-Embed-title {
-  h1 {
-    margin: 0;
+  .CDB-Embed-description {
+    margin-top: 8px;
   }
 }
 
 .CDB-Embed-description {
   max-height: 32px;
-  margin-top: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+
+  &.is-legends {
+    margin-bottom: 16px;
+  }
 }
 
 .CDB-Embed-content {
@@ -69,13 +70,26 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  &.is-collapsed {
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    margin: 0;
+  }
 }
 
 .CDB-Overlay-inner {
   display: none;
+  margin-top: 8px;
 
   &.is-active {
     display: block;
+  }
+
+  &.is-description {
+    margin-bottom: 16px;
   }
 }
 
@@ -85,14 +99,43 @@
 }
 
 @media (min-width: 1200px) {
-  .CDB-Embed-overlay,
-  .CDB-Embed-title {
+  .CDB-Overlay-title {
     display: none;
+
+    &.is-collapsed {
+      margin-bottom: 24px;
+    }
+
+    &.is-menu {
+      display: flex;
+    }
+  }
+
+  .CDB-Overlay-inner {
+    margin-top: 0;
+
+    &.is-menu {
+      margin-top: 8px;
+    }
+
+    .CDB-Embed-description {
+      display: none;
+
+      &.is-menu {
+        display: block;
+      }
+    }
   }
 
   // Override carto.js legends styles
-  .CDB-Legends-canvas .CDB-Legends-canvasInner {
-    padding: 24px 24px 0;
+  .CDB-Legends-canvas {
+    &.is-overlay {
+      display: none;
+    }
+
+    .CDB-Legends-canvasInner {
+      padding: 24px 24px 0;
+    }
   }
 }
 
@@ -110,9 +153,28 @@
     height: calc(100% - 103px);
   }
 
-  .CDB-Embed-overlay,
-  .CDB-Embed-title {
+  .CDB-Overlay-title {
     display: none;
+
+    &.is-menu {
+      display: flex;
+    }
+  }
+
+  .CDB-Overlay-inner {
+    .CDB-Embed-description {
+      display: none;
+
+      &.is-menu {
+        display: block;
+      }
+    }
+  }
+
+  .CDB-Legends-canvas {
+    &.is-overlay {
+      display: none;
+    }
   }
 }
 

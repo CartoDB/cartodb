@@ -29,14 +29,10 @@ markComment: >
   for your contributions.
 
 # Comment to post when removing the stale label.
-# unmarkComment: >
-#   Your comment here.
+unmarkComment: false
 
 # Comment to post when closing a stale Issue or Pull Request.
-closeComment: >
-  This issue has been automatically closed because it has not had recent
-  activity. Please reopen it if you think it is still very relevant today.
-  Thank you!
+closeComment: false
 
 # Limit the number of actions per hour, from 1-30. Default is 30
 limitPerRun: 30

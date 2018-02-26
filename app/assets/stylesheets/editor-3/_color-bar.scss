@@ -8,7 +8,7 @@
     content: '';
     position: absolute;
     right: 0;
-    bottom: -14px - 2 * $baseSize;
+    bottom: -14px;
     left: 0;
     height: 2px;
     transition: background-color 0.2s ease-in;
@@ -18,6 +18,12 @@
   &:hover {
     &::after {
       background: $cBlueHover;
+    }
+  }
+
+  &.ColorBar--disableHighlight:hover {
+    &::after {
+      background: initial;
     }
   }
 
@@ -64,6 +70,10 @@
 
 .ColorBarContainer--rampEditing {
   width: 171px;
+
+  .ColorBar::after {
+    bottom: -14px - 2 * $baseSize;
+  }
 }
 
 .ColorsBar {

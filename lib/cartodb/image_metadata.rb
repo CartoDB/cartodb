@@ -9,6 +9,9 @@ module CartoDB
     end
 
     def extract_metadata
+      @width = 0
+      @height = 0
+
       has_magick? ? parse_identify : parse_file
     end
 
@@ -18,13 +21,19 @@ module CartoDB
 
     def parse_identify
       identify_command = `which identify`.gsub(/\n/, '')
-      result = `#{identify_command} #{identify_file_prefix}#{input_file} 2>&1`.match(/ (\d+)x(\d+) /)
+      stdout, status = Open3.capture2(identify_command, identify_file_prefix + input_file)
+      return unless status == 0
+
+      result = stdout.match(/ (\d+)x(\d+) /)
       @width  = result[1].to_i rescue 0
       @height = result[2].to_i rescue 0
     end
 
     def parse_file
-      result  = `file #{input_file} 2>&1`.match(/(\d+) x (\d+)/)
+      stdout, status = Open3.capture2('file', input_file)
+      return unless status == 0
+
+      result  = stdout.match(/(\d+) x (\d+)/)
       @width  = result[1].to_i rescue 0
       @height = result[2].to_i rescue 0
     end

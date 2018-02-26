@@ -155,7 +155,7 @@ describe Carto::ApiKey do
       end
     end
 
-    describe '#create_token' do
+    describe '#regenerate_token!' do
       it 'regenerates the value in Redis only after save' do
         grants = [apis_grant, database_grant(@table1.database_schema, @table1.name)]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
@@ -163,14 +163,10 @@ describe Carto::ApiKey do
         old_redis_key = api_key.send(:redis_key)
         $users_metadata.hgetall(old_redis_key).should_not be_empty
 
-        api_key.create_token
+        api_key.regenerate_token!
 
-        $users_metadata.hgetall(old_redis_key).should_not be_empty
         new_redis_key = api_key.send(:redis_key)
-        $users_metadata.hgetall(new_redis_key).should be_empty
-
-        api_key.save!
-
+        new_redis_key.should_not be eq old_redis_key
         $users_metadata.hgetall(new_redis_key).should_not be_empty
         $users_metadata.hgetall(old_redis_key).should be_empty
 

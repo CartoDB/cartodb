@@ -826,8 +826,8 @@
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
-          "enter": "Enter your Integration URL",
-          "error": "Error retrieving your basemap. Please check your Integration URL.",
+          "enter": "Enter a URL",
+          "error": "Error retrieving your basemap. Please check your Mapbox URL.",
           "invalid": "This URL is not valid."
         },
         "wms": {

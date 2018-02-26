@@ -144,17 +144,28 @@ module Carto
             end
 
             it 'requires a user_id' do
-              @event = @event_class.new(@user.id, visualization_id: @visualization.id)
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        origin: 'import')
             end
 
             it 'requires a visualization_id' do
-              @event = @event_class.new(@user.id, user_id: @user.id)
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        origin: 'import')
+            end
+
+            it 'requires a origin' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id)
             end
 
             it 'does not allow adding any additional property' do
               @event = @event_class.new(@user.id,
                                         user_id: @user.id,
                                         visualization_id: @visualization.id,
+                                        origin: 'import',
                                         extra: 'extra')
             end
           end
@@ -171,6 +182,7 @@ module Carto
             it 'must have write access to visualization' do
               @event = @event_class.new(@intruder.id,
                                         visualization_id: @visualization.id,
+                                        origin: 'import',
                                         user_id: @intruder.id)
 
               expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
@@ -179,6 +191,7 @@ module Carto
             it 'must be reported by user' do
               @event = @event_class.new(@intruder.id,
                                         visualization_id: @visualization.id,
+                                        origin: 'import',
                                         user_id: @user.id)
 
               expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
@@ -188,6 +201,7 @@ module Carto
           it 'reports' do
             event = @event_class.new(@user.id,
                                      visualization_id: @visualization.id,
+                                     origin: 'import',
                                      user_id: @user.id)
 
             expect { event.report! }.to_not raise_error
@@ -196,6 +210,7 @@ module Carto
           it 'reports by user with access' do
             event = @event_class.new(@intruder.id,
                                      visualization_id: @visualization.id,
+                                     origin: 'import',
                                      user_id: @intruder.id)
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
@@ -224,6 +239,340 @@ module Carto
                                  .instance_eval { @format }
 
             check_hash_has_keys(format.to_segment, current_prod_properties)
+          end
+        end
+
+        describe AppliedSql do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError) if @event
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        sql: 'bla')
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        sql: 'bla')
+            end
+
+            it 'requires a sql' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id)
+            end
+
+            it 'can have a node_id' do
+              event = @event_class.new(@user.id,
+                                       user_id: @user.id,
+                                       visualization_id: @visualization.id,
+                                       sql: 'bla',
+                                       node_id: '1')
+
+              expect { event.report! }.to_not raise_error
+            end
+
+            it 'can have a dataset_id' do
+              event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        sql: 'bla',
+                                        dataset_id: '1')
+
+              expect { event.report! }.to_not raise_error
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        sql: 'bla',
+                                        extra: 'extra')
+            end
+          end
+
+          describe '#security validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'must have write access to visualization' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        sql: 'import',
+                                        user_id: @intruder.id)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            it 'must be reported by user' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        sql: 'import',
+                                        user_id: @user.id)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+          end
+
+          it 'reports' do
+            event = @event_class.new(@user.id,
+                                     visualization_id: @visualization.id,
+                                     sql: 'import',
+                                     user_id: @user.id)
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'reports by user with access' do
+            event = @event_class.new(@intruder.id,
+                                     visualization_id: @visualization.id,
+                                     sql: 'import',
+                                     user_id: @intruder.id)
+
+            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+
+            expect { event.report! }.to_not raise_error
+          end
+        end
+
+        describe AppliedCartocss do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla')
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla')
+            end
+
+            it 'requires a layer_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        cartocss: 'bla')
+            end
+
+            it 'requires a cartocss' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id)
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla',
+                                        extra: 'extra')
+            end
+          end
+
+          describe '#security validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'must have write access to visualization' do
+              @event = @event_class.new(@intruder.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla')
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            it 'must be reported by user' do
+              @event = @event_class.new(@intruder.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla')
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+          end
+
+          it 'reports' do
+            event = @event_class.new(@user.id,
+                                     user_id: @user.id,
+                                     visualization_id: @visualization.id,
+                                     layer_id: @visualization.data_layers.first.id,
+                                     cartocss: 'bla')
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'reports by user with access' do
+            event = @event_class.new(@intruder.id,
+                                     user_id: @intruder.id,
+                                     visualization_id: @visualization.id,
+                                     layer_id: @visualization.data_layers.first.id,
+                                     cartocss: 'bla')
+
+            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+
+            expect { event.report! }.to_not raise_error
+          end
+        end
+
+        describe ModifiedStyleForm do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla',
+                                        style_properties: 'bla')
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla',
+                                        style_properties: 'bla')
+            end
+
+            it 'requires a layer_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        cartocss: 'bla',
+                                        style_properties: 'bla')
+            end
+
+            it 'requires a cartocss' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        style_properties: 'bla')
+            end
+
+            it 'requires a style_properties' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla')
+            end
+
+            it 'does not allow adding any additional property' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla',
+                                        style_properties: 'bla',
+                                        extra: 'extra')
+            end
+          end
+
+          describe '#security validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'must have write access to visualization' do
+              @event = @event_class.new(@intruder.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla',
+                                        style_properties: 'bla')
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            it 'must be reported by user' do
+              @event = @event_class.new(@intruder.id,
+                                        user_id: @user.id,
+                                        visualization_id: @visualization.id,
+                                        layer_id: @visualization.data_layers.first.id,
+                                        cartocss: 'bla',
+                                        style_properties: 'bla')
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+          end
+
+          it 'reports' do
+            event = @event_class.new(@user.id,
+                                     user_id: @user.id,
+                                     visualization_id: @visualization.id,
+                                     layer_id: @visualization.data_layers.first.id,
+                                     cartocss: 'bla',
+                                     style_properties: 'bla')
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'reports by user with access' do
+            event = @event_class.new(@intruder.id,
+                                     user_id: @intruder.id,
+                                     visualization_id: @visualization.id,
+                                     layer_id: @visualization.data_layers.first.id,
+                                     cartocss: 'bla',
+                                     style_properties: 'bla')
+
+            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+
+            expect { event.report! }.to_not raise_error
           end
         end
 

@@ -32,6 +32,17 @@ module Carto
           these_required_properties + self.class.superclass.required_properties
         end
 
+        def self.optional_properties(*optional_properties)
+          @optional_properties ||= []
+          @optional_properties += optional_properties
+        end
+
+        def optional_properties
+          these_optional_properties = self.class.instance_eval { @optional_properties || [] }
+
+          these_optional_properties + self.class.superclass.optional_properties
+        end
+
         def report
           report!
         rescue => exception
@@ -68,7 +79,7 @@ module Carto
         end
 
         def check_no_extra_properties!
-          extra_properties = @format.to_hash.symbolize_keys.keys - required_properties
+          extra_properties = @format.to_hash.symbolize_keys.keys - required_properties - optional_properties
 
           unless extra_properties.empty?
             message = "#{name} is adding the following extra properties: #{extra_properties.join(', ')}"
@@ -113,7 +124,10 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class CreatedMap < MapEvent; end
+      class CreatedMap < MapEvent
+        required_properties :origin
+      end
+
       class DeletedMap < MapEvent; end
 
       class PublishedMap < Event
@@ -198,7 +212,8 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id
+        required_properties :user_id, :visualization_id, :sql
+        optional_properties :node_id, :dataset_id
       end
 
       class AppliedCartocss < Event
@@ -207,16 +222,11 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id
+        required_properties :user_id, :visualization_id, :layer_id, :cartocss
       end
 
-      class ModifiedStyleForm < Event
-        include Carto::Tracking::Services::Hubspot
-
-        include Carto::Tracking::Validators::Visualization::Writable
-        include Carto::Tracking::Validators::User
-
-        required_properties :user_id, :visualization_id
+      class ModifiedStyleForm < AppliedCartocss
+        required_properties :style_properties
       end
 
       class CreatedWidget < Event

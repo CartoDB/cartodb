@@ -9,6 +9,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
+  public_dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dashboard.js'),
   user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js')
 };
 

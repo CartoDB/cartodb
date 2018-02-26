@@ -261,11 +261,7 @@ class Admin::PagesController < Admin::AdminController
 
     @page_description = description
 
-    if @viewed_user.nil?
-      @has_new_dashboard = @org.builder_enabled && @org.owner.has_feature_flag?('dashboard_migration')
-    else
-      @has_new_dashboard = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
-    end
+    set_vars_for_public_dashboard
 
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'public_dashboard' }
@@ -316,15 +312,22 @@ class Admin::PagesController < Admin::AdminController
 
     @page_description = description
 
+    set_vars_for_public_dashboard
+
+    respond_to do |format|
+      format.html { render 'public_maps', layout: 'public_dashboard' }
+    end
+  end
+
+  def set_vars_for_public_dashboard
     if @viewed_user.nil?
       @has_new_dashboard = @org.builder_enabled && @org.owner.has_feature_flag?('dashboard_migration')
     else
       @has_new_dashboard = @viewed_user.builder_enabled && @viewed_user.has_feature_flag?('dashboard_migration')
     end
 
-    respond_to do |format|
-      format.html { render 'public_maps', layout: 'public_dashboard' }
-    end
+    @needs_gmaps_lib = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
+    @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
   end
 
   def set_layout_vars_for_user(user, content_type)

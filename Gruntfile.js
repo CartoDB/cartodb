@@ -329,6 +329,8 @@ module.exports = function (grunt) {
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
   registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
+  registerCmdTask('npm-test:browser:dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
+  registerCmdTask('npm-test:dashboard', {cmd: 'npm', args: ['run', 'dashboard', '-- --browsers ChromeHeadless']});
 
   /**
    * `grunt dev`
@@ -427,10 +429,11 @@ module.exports = function (grunt) {
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:builder',
-    'generate_dashboard_specs',
-    'bootstrap_webpack_dashboard_specs',
-    'webpack:dashboard_specs',
-    'jasmine:dashboard',
+    // 'generate_dashboard_specs',
+    // 'bootstrap_webpack_dashboard_specs',
+    // 'webpack:dashboard_specs',
+    // 'jasmine:dashboard',
+
     'lint'
   ]);
 

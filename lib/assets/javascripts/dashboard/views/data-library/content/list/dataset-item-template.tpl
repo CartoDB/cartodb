@@ -11,7 +11,13 @@
       <div class="MapCard-contentFooterDetails u-ellipsLongText">
         <div class="MapCard-contentFooterTitle">
           <h3 class="MapCard-title DefaultTitle CDB-Text is-semibold CDB-Size-large">
-            <a href="<%- dataset_base_url %><%- vis.name %>" class="DefaultTitle-link u-ellipsLongText" title="<%- vis.display_name %>"><% if (vis.display_name == "" || vis.display_name == null) { %><%- vis.name %><% } else { %><%- vis.display_name %><% } %></a>
+            <a href="<%- dataset_base_url %><%- vis.name %>" class="DefaultTitle-link u-ellipsLongText" title="<%- vis.display_name %>">
+              <% if (vis.display_name) { %>
+                <%- vis.display_name %>
+              <% } else { %>
+                <%- vis.name %>
+              <% } %>
+            </a>
           </h3>
         </div>
 
@@ -22,10 +28,10 @@
               <%- dateFromNow %>
             </div>
             <% if (datasetSize && datasetSize[0] > 0) { %>
-            <div class="MapCard-contentFooterIcon u-hideOnMobile">
-              <i class="CDB-IconFont CDB-IconFont-floppy SizeIndicator-icon"></i>
-              <span class="MapCardIcon-counter"><%- datasetSize[0] %></span> <span class="MapCardIcon-label"><%- datasetSize[1] %></span>
-            </div>
+              <div class="MapCard-contentFooterIcon u-hideOnMobile">
+                <i class="CDB-IconFont CDB-IconFont-floppy SizeIndicator-icon"></i>
+                <span class="MapCardIcon-counter"><%- datasetSize[0] %></span> <span class="MapCardIcon-label"><%- datasetSize[1] %></span>
+              </div>
             <% } %>
           </div>
         </div>

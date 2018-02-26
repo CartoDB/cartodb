@@ -7,7 +7,6 @@ module Carto
 
       before_filter :load_parameters, except: [:update_all]
       before_filter :load_widget, only: [:show, :update, :destroy]
-      before_filter :load_widgets_parameters, only: [:update_all]
       before_filter :load_widgets, only: [:update_all]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -124,14 +123,6 @@ module Carto
         true
       end
 
-      def load_widgets_parameters
-        @visualization_id = params[:visualization_id]
-        @visualization = Carto::Visualization.where(id: @visualization_id).first
-        raise LoadError.new("Map not found: #{@visualization_id}") unless @visualization
-
-        true
-      end
-
       def source_id_from_params
         params[:source] ? params[:source][:id] : nil
       end
@@ -147,10 +138,14 @@ module Carto
       end
 
       def load_widgets
+        @visualization_id = params[:visualization_id]
+        @visualization = Carto::Visualization.where(id: @visualization_id).first
+
+        raise LoadError.new("Map not found: #{@visualization_id}") unless @visualization
+
         @widgets = Carto::Widget.from_visualization_id(@visualization_id)
 
-        raise Carto::LoadError.new("Widgets not found") unless @widgets
-        # TODO: raise errors
+        raise Carto::LoadError.new("Widgets not found for #{@visualization_id}") unless @widgets
 
         true
       end

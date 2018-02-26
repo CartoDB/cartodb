@@ -140,6 +140,7 @@ ion for time-series (#12670)
 * Added Mapbox services providers (#cartodb-platform/3835)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
+* Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
 * Add `shield-placement-keyword` CartoCSS property (#13612)
@@ -469,6 +470,7 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
 * Improve spec bundles / process

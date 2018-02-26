@@ -183,6 +183,7 @@
     "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack/builder/webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js",
+    "test:dashboard": "karma start karma/dashboard.conf.js --browsers ChromeHeadless --single-run",
     "test:browser:dashboard": "karma start karma/dashboard.conf.js"
   }
 }

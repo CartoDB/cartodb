@@ -329,8 +329,8 @@ module.exports = function (grunt) {
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
   registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
-  registerCmdTask('npm-test:browser:dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
-  registerCmdTask('npm-test:dashboard', {cmd: 'npm', args: ['run', 'dashboard', '-- --browsers ChromeHeadless']});
+  registerCmdTask('npm-test:dashboard', {cmd: 'npm', args: ['run', 'test:dashboard']});
+  registerCmdTask('npm-test:browser:dashboard', {cmd: 'npm', args: ['run', 'test:browser:dashboard']});
 
   /**
    * `grunt dev`
@@ -429,11 +429,7 @@ module.exports = function (grunt) {
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:builder',
-    // 'generate_dashboard_specs',
-    // 'bootstrap_webpack_dashboard_specs',
-    // 'webpack:dashboard_specs',
-    // 'jasmine:dashboard',
-
+    'npm-test:dashboard',
     'lint'
   ]);
 
@@ -453,12 +449,7 @@ module.exports = function (grunt) {
    * `grunt dashboard_specs` compile dashboard specs
    */
   grunt.registerTask('test:browser:dashboard', 'Build only dashboard specs', [
-    'generate_dashboard_specs',
-    'bootstrap_webpack_dashboard_specs',
-    'webpack:dashboard_specs',
-    'jasmine:dashboard:build',
-    'connect:specs_dashboard',
-    'watch:dashboard_specs'
+    'npm-test:browser:dashboard'
   ]);
 
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {

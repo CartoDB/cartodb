@@ -9,11 +9,11 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits {
+  @include transition(width, 150ms ease-in);
   position: relative;
   order: 10;
   width: 32px;
   margin-right: 8px;
-  transition: width 150ms ease-in;
   border-radius: 3px;
   box-sizing: border-box;
   font-family: 'Open Sans';
@@ -24,7 +24,7 @@ $linkColor: #139BFC;
     width: 320px;
 
     .CDB-Limits-text {
-      flex: 1;
+      @include flex(1);
       width: auto;
       padding: 0 12px;
       border-left: 1px solid rgba(0, 0, 0, 0.1);
@@ -56,11 +56,11 @@ $linkColor: #139BFC;
 }
 
 .CDB-Limits-text {
+  @include transition(opacity, 150ms);
   width: 0;
   height: 16px;
   margin-left: -1px;
   padding: 0;
-  transition: opacity 150ms;
   border-left: 1px solid transparent;
   color: $buttonColor;
   font-size: 10px;
@@ -78,7 +78,7 @@ $linkColor: #139BFC;
     margin-right: 0;
 
     &.is-active {
-      flex: 1;
+      @include flex(1);
       width: 0;
     }
   }

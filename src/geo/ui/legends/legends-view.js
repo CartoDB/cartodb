@@ -6,6 +6,7 @@ var template = require('./legends-view.tpl');
 var LayerLegendsView = require('./layer-legends-view');
 
 var LegendsView = View.extend({
+
   className: 'CDB-Legends-canvas',
 
   initialize: function (options) {
@@ -27,14 +28,8 @@ var LegendsView = View.extend({
   },
 
   render: function () {
-    var layerModelsWithLegends = this._layersCollection.getLayersWithLegends();
-
     this.$el.html(template());
-
-    if (this.settingsModel.isEmbed) {
-      this.$el.addClass('CDB-Legends-canvasEmbed');
-    }
-
+    var layerModelsWithLegends = this._layersCollection.getLayersWithLegends();
     _.each(layerModelsWithLegends.reverse(), this._renderLayerLegends, this);
     this._isRendered = true;
     this._renderScroll();
@@ -122,7 +117,7 @@ var LegendsView = View.extend({
   },
 
   _showOrHide: function () {
-    this.$el.toggleClass('is-visible', this._isAnyLayerLegendViewVisible());
+    this.$el.toggle(this._isAnyLayerLegendViewVisible());
   },
 
   _isAnyLayerLegendViewVisible: function () {
@@ -144,11 +139,11 @@ var LegendsView = View.extend({
   },
 
   show: function () {
-    this.$el.toggleClass('is-visible', true);
+    this.$el.show();
   },
 
   hide: function () {
-    this.$el.toggleClass('is-visible', false);
+    this.$el.hide();
   },
 
   clean: function () {

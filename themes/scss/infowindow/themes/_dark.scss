@@ -47,10 +47,10 @@ $sBg-dark: #2E3C43;
     opacity: 0.3;
   }
   .CDB-infowindow-canvasShadow--top {
-    background: linear-gradient($sBg-dark, rgba(255, 255, 255, 0));
+    @include background-gradient($sBg-dark, rgba(255, 255, 255, 0));
   }
   .CDB-infowindow-canvasShadow--bottom {
-    background: linear-gradient(rgba(255, 255, 255, 0), $sBg-dark);
+    @include background-gradient(rgba(255, 255, 255, 0), $sBg-dark);
   }
   .CDB-infowindow-list .ps-scrollbar-x-rail {
     background: linear-gradient(180deg, transparent 50%, #4F5B61 50%) !important;

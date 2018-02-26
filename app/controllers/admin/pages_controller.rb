@@ -320,11 +320,13 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_vars_for_public_dashboard
-    if @viewed_user.nil?
-      @has_new_dashboard = @org.builder_enabled && @org.owner.has_feature_flag?('dashboard_migration')
-    else
-      @has_new_dashboard = @viewed_user.builder_enabled && @viewed_user.has_feature_flag?('dashboard_migration')
-    end
+    @has_new_dashboard = if @viewed_user.nil?
+                           @org.builder_enabled \
+                           && @org.owner.has_feature_flag?('dashboard_migration')
+                         else
+                           @viewed_user.builder_enabled \
+                           && @viewed_user.has_feature_flag?('dashboard_migration')
+                         end
 
     @needs_gmaps_lib = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'

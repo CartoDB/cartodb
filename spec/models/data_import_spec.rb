@@ -580,6 +580,37 @@ describe DataImport do
       data_import.state.should eq 'failure'
       data_import.error_code.should eq 1012
     end
+
+    it 'should import this supposed invalid dataset for ogr2ogr 2.1.1' do
+      # IDs list of a layer
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_invalid.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_invalid.json"))
+        body = ::JSON.parse(body)
+
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'complete'
+    end
   end
 
   describe 'log' do

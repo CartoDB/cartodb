@@ -100,6 +100,12 @@
     "jasmine": "2.5.2",
     "jasmine-ajax": "CartoDB/jasmine-ajax#master",
     "jstify": "0.13.0",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.1",
+    "karma-jasmine-ajax": "^0.1.13",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-webpack": "^2.0.9",
     "load-grunt-tasks": "3.2.0",
     "minimist": "1.2.0",
     "open": "0.0.5",
@@ -176,6 +182,7 @@
     "dashboard": "grunt watch:css & webpack --progress --watch --config webpack/dashboard/webpack.dev.config.js",
     "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack/builder/webpack.dev.config.js",
-    "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
+    "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js",
+    "test:browser:dashboard": "karma start karma/dashboard.conf.js"
   }
 }

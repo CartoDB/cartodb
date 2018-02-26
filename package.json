@@ -14,6 +14,7 @@
   "contributors": [],
   "license": "BSD-3-Clause",
   "dependencies": {
+    "babel-preset-react": "^6.24.1",
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.2",
@@ -43,6 +44,8 @@
     "postcss-strip-inline-comments": "0.1.5",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "tinycolor2": "^1.4.1",
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",

@@ -116,6 +116,16 @@ module.exports = env => {
             presets: ['env'],
             plugins: ['transform-object-rest-spread']
           }
+        },
+        {
+          test: /\.jsx$/,
+          loader: 'babel-loader',
+          include: [
+            resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard')
+          ],
+          options: {
+            presets: ['env', 'react']
+          }
         }
       ]
     },

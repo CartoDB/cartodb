@@ -2672,6 +2672,100 @@ describe User do
     end
   end
 
+  describe 'when creating rate limits' do
+    before :each do
+      @rate_limits = FactoryGirl.create(:rate_limits)
+      @rate_limits2 = FactoryGirl.create(:rate_limits_custom)
+      @user = FactoryGirl.create(:valid_user)
+
+      @map_prefix = "limits:rate:store:#{@user.username}:maps:"
+    end
+
+    after :each do
+      @user.destroy unless @user.nil?
+      @rate_limits.destroy unless @rate_limits.nil?
+      @rate_limits2.destroy unless @rate_limits2.nil?
+    end
+
+    it 'does not create rate limits when account_type does not exist' do
+      $limits_metadata.EXISTS("#{@map_prefix}anonymous").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}static").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}static_named").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}dataview").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}analysis").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}tile").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}attributes").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}named_list").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}named_create").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}named_get").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}named").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}named_update").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}named_delete").should == 0
+      $limits_metadata.EXISTS("#{@map_prefix}named_tiles").should == 0
+    end
+
+    it 'creates rate limits from user account type' do
+      FactoryGirl.create(:account_type_free, rate_limit_id: @rate_limits.id)
+      @user = FactoryGirl.create(:valid_user)
+
+      @map_prefix = "limits:rate:store:#{@user.username}:maps:"
+
+      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 3).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["3", "4", "5"]
+      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["6", "7", "8"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["12", "13", "14"]
+      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 3).should == ["15", "16", "17"]
+      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["18", "19", "20"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 3).should == ["21", "22", "23"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 3).should == ["24", "25", "26"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 3).should == ["27", "28", "29"]
+      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 3).should == ["30", "31", "32"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["33", "34", "35"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["36", "37", "38"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["39", "40", "41"]
+    end
+
+    it 'updates rate limits from user custom rate_limit' do
+      @user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits2.id)
+
+      @map_prefix = "limits:rate:store:#{@user.username}:maps:"
+
+      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 3).should == ["10", "11", "12"]
+      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["13", "14", "15"]
+      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["16", "17", "18"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["19", "110", "111"]
+      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["112", "113", "114"]
+      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 3).should == ["115", "116", "117"]
+      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["118", "119", "120"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 3).should == ["121", "122", "123"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 3).should == ["124", "125", "126"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 3).should == ["127", "128", "129"]
+      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 3).should == ["130", "131", "132"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["133", "134", "135"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["136", "137", "138"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["139", "140", "141"]
+
+      @user.rate_limit_id = @rate_limits.id
+      @user.save
+
+      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 3).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["3", "4", "5"]
+      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["6", "7", "8"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["12", "13", "14"]
+      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 3).should == ["15", "16", "17"]
+      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["18", "19", "20"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 3).should == ["21", "22", "23"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 3).should == ["24", "25", "26"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 3).should == ["27", "28", "29"]
+      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 3).should == ["30", "31", "32"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["33", "34", "35"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["36", "37", "38"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["39", "40", "41"]
+    end
+  end
+
   protected
 
   def create_org(org_name, org_quota, org_seats)

@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Carto
-  class AccountType
+  class AccountType < ActiveRecord::Base
 
     FREE = 'FREE'.freeze
     BASIC = 'BASIC'.freeze

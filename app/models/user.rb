@@ -994,6 +994,26 @@ class User < Sequel::Model
                           'db_public',                 database_timeout,
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
+    save_rate_limits
+  end
+
+  def save_rate_limits
+    rate_limits = get_rate_limits
+    rate_limits.to_redis.each do |key, value|
+      $limits_metadata.DEL "limits:rate:store:#{username}:#{key}"
+      $limits_metadata.LPUSH "limits:rate:store:#{username}:#{key}", value
+    end
+  rescue ActiveRecord::RecordNotFound => e
+    CartoDB.notify_exception(e, user: self)
+  end
+
+  def get_rate_limits
+    rate_limits_id = rate_limit_id ||
+                     Carto::AccountType.where(account_type: account_type)
+                                       .first
+                                       .try(:rate_limit_id)
+
+    Carto::RateLimit.find(rate_limits_id)
   end
 
   def get_auth_tokens

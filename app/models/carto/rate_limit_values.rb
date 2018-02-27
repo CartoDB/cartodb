@@ -16,24 +16,17 @@ module Carto
     end
 
     def to_redis_array
-      result = []
-      @rate_limits.reverse.each do |rate_limit|
-        result.push(rate_limit.period)
-              .push(rate_limit.count_per_period)
-              .push(rate_limit.max_burst)
-      end
-
-      result
+      RateLimitValues.dump(self)
     end
 
     def self.dump(rate_limit_values)
       return [] if rate_limit_values.nil?
 
       result = []
-      rate_limit_values.rate_limits.each_value do |rate_limit|
-        result.push(rate_limit.max_burst)
+      rate_limit_values.rate_limits.reverse.each do |rate_limit|
+        result.push(rate_limit.period)
               .push(rate_limit.count_per_period)
-              .push(rate_limit.period)
+              .push(rate_limit.max_burst)
       end
 
       result

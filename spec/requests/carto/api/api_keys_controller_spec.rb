@@ -16,6 +16,10 @@ describe Carto::Api::ApiKeysController do
     end
   end
 
+  def json_headers_for_key(key)
+    json_headers_with_auth(key.user.username, key.token)
+  end
+
   def json_headers_with_auth(username, token)
     http_json_headers.merge(
       'Authorization' => 'Basic ' + Base64.strict_encode64("#{username}:#{token}")
@@ -623,13 +627,13 @@ describe Carto::Api::ApiKeysController do
 
     describe '#create' do
       it 'does not allow default_public api keys' do
-        post_json generate_api_key_url(header_params), empty_payload, json_headers_with_auth(api_key: public_api_key) do |response|
+        post_json generate_api_key_url(header_params), empty_payload, json_headers_for_key(public_api_key) do |response|
           response.status.should eq 401
         end
       end
 
       it 'does not allow regular api_keys' do
-        post_json generate_api_key_url(header_params), empty_payload, json_headers_with_auth(api_key: regular_api_key) do |response|
+        post_json generate_api_key_url(header_params), empty_payload, json_headers_for_key(regular_api_key) do |response|
           response.status.should eq 401
         end
       end
@@ -637,13 +641,13 @@ describe Carto::Api::ApiKeysController do
 
     describe '#destroy' do
       it 'does not allow default_public api keys' do
-        delete_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+        delete_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_for_key(public_api_key) do |response|
           response.status.should eq 401
         end
       end
 
       it 'does not allow regular api_keys' do
-        delete_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+        delete_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_for_key(regular_api_key) do |response|
           response.status.should eq 401
         end
       end
@@ -651,13 +655,13 @@ describe Carto::Api::ApiKeysController do
 
     describe '#regenerate_token' do
       it 'does not allow default_public api keys' do
-        post_json regenerate_api_key_token_url(header_params.merge(id: regular_api_key.name)), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+        post_json regenerate_api_key_token_url(header_params.merge(id: regular_api_key.name)), nil, json_headers_for_key(public_api_key) do |response|
           response.status.should eq 401
         end
       end
 
       it 'does not allow regular api_keys' do
-        post_json regenerate_api_key_token_url(header_params.merge(id: regular_api_key.name)), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+        post_json regenerate_api_key_token_url(header_params.merge(id: regular_api_key.name)), nil, json_headers_for_key(regular_api_key) do |response|
           response.status.should eq 401
         end
       end
@@ -665,7 +669,7 @@ describe Carto::Api::ApiKeysController do
 
     describe '#index' do
       it 'shows only given api with default_public api keys' do
-        get_json generate_api_key_url(header_params), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+        get_json generate_api_key_url(header_params), nil, json_headers_for_key(public_api_key) do |response|
           response.status.should eq 200
           response.body[:total].should eq 1
           response.body[:count].should eq 1
@@ -676,7 +680,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'shows only given api with regular api keys' do
-        get_json generate_api_key_url(header_params), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+        get_json generate_api_key_url(header_params), nil, json_headers_for_key(regular_api_key) do |response|
           response.status.should eq 200
           response.body[:total].should eq 1
           response.body[:count].should eq 1
@@ -689,7 +693,7 @@ describe Carto::Api::ApiKeysController do
 
     describe '#show' do
       it 'shows given public api_key if authenticated with it' do
-        get_json generate_api_key_url(header_params, name: public_api_key.name), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+        get_json generate_api_key_url(header_params, name: public_api_key.name), nil, json_headers_for_key(public_api_key) do |response|
           response.status.should eq 200
           response.body[:user][:username].should eq @carto_user.username
           response.body[:token].should eq public_api_key.token
@@ -697,7 +701,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'shows given regular api_key if authenticated with it' do
-        get_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+        get_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_for_key(regular_api_key) do |response|
           response.status.should eq 200
           response.body[:user][:username].should eq @carto_user.username
           response.body[:token].should eq regular_api_key.token
@@ -705,14 +709,14 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns 404 if showing an api key different than the authenticated (public) one' do
-        get_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_with_auth(api_key: public_api_key) do |response|
+        get_json generate_api_key_url(header_params, name: regular_api_key.name), nil, json_headers_for_key(public_api_key) do |response|
           response.status.should eq 404
           response.body[:errors].should eq 'API key not found: key1'
         end
       end
 
       it 'returns 404 if showing an api key different than the authenticated (regular) one' do
-        get_json generate_api_key_url(header_params, name: public_api_key.name), nil, json_headers_with_auth(api_key: regular_api_key) do |response|
+        get_json generate_api_key_url(header_params, name: public_api_key.name), nil, json_headers_for_key(regular_api_key) do |response|
           response.status.should eq 404
           response.body[:errors].should eq 'API key not found: Default public'
         end
@@ -742,7 +746,7 @@ describe Carto::Api::ApiKeysController do
           name: name,
           grants: grants
         }
-        post_json generate_api_key_url(header_params), payload, json_headers_with_auth do |response|
+        post_json generate_api_key_url(header_params), payload, json_headers_for_key(@master_api_key) do |response|
           response.status.should eq 201
           Carto::ApiKey.where(name: response.body[:name]).each(&:destroy)
         end
@@ -750,7 +754,7 @@ describe Carto::Api::ApiKeysController do
 
       it 'destroys the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        delete_json generate_api_key_url(header_params, name: api_key.name), {}, json_headers_with_auth do |response|
+        delete_json generate_api_key_url(header_params, name: api_key.name), {}, json_headers_for_key(@master_api_key) do |response|
           response.status.should eq 200
           response.body[:name].should eq api_key.name
         end
@@ -763,7 +767,7 @@ describe Carto::Api::ApiKeysController do
         api_key.save!
         old_token = api_key.token
         options = { user_domain: @user.username, id: api_key.name }
-        post_json regenerate_api_key_token_url(options), {}, json_headers_with_auth do |response|
+        post_json regenerate_api_key_token_url(options), {}, json_headers_for_key(@master_api_key) do |response|
           response.status.should eq 200
           response.body[:token].should_not be_nil
           response.body[:token].should_not eq old_token
@@ -775,7 +779,7 @@ describe Carto::Api::ApiKeysController do
 
       it 'returns requested API key' do
         key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
-        get_json generate_api_key_url(header_params, name: key.name), {}, json_headers_with_auth do |response|
+        get_json generate_api_key_url(header_params, name: key.name), {}, json_headers_for_key(@master_api_key) do |response|
           response.status.should eq 200
           response.body[:name].should eq key.name
         end
@@ -783,7 +787,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns API key list' do
-        get_json generate_api_key_url(header_params), {}, json_headers_with_auth do |response|
+        get_json generate_api_key_url(header_params), {}, json_headers_for_key(@master_api_key) do |response|
           response.status.should eq 200
         end
       end

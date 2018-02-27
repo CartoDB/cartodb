@@ -152,7 +152,7 @@ Warden::Strategies.add(:api_authentication) do
         end
       end
     end
-    throw(:warden)
+    fail!
   end
 end
 

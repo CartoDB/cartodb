@@ -14,7 +14,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   before_filter :login_required
   before_filter :check_user_permissions
   before_filter :initialize_cartodb_central_client
-  before_filter :get_viewed_user
   before_filter :load_organization_notifications
   before_filter :validate_id, only: [:show, :update, :destroy]
   before_filter :load_mobile_app, only: [:show, :update]
@@ -30,7 +29,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_apps = response[:mobile_apps].map { |a| Carto::MobileApp.new(a) }
     @open_monthly_users = response[:monthly_users][:open]
     @private_monthly_users = response[:monthly_users][:private]
-    @has_new_dashboard = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
+    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
   rescue CartoDB::CentralCommunicationFailure => e
     @mobile_apps = []
     CartoDB::Logger.error(message: 'Error loading mobile apps from Central', exception: e)
@@ -140,11 +139,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
     redirect_to(CartoDB.url(self, 'mobile_apps'),
                 flash: { error: 'Unable to connect to license server. Try again in a moment.' })
-  end
-
-  def get_viewed_user
-    username = CartoDB.extract_subdomain(request).strip.downcase
-    @viewed_user = User.where(username: username).first
   end
 
   def get_default_avatar

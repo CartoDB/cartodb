@@ -141,6 +141,7 @@ ion for time-series (#12670)
 * Added Mapbox services providers (#cartodb-platform/3835)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
+* Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
 * Add `shield-placement-keyword` CartoCSS property (#13612)
@@ -167,6 +168,7 @@ ion for time-series (#12670)
 * Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
 * Avoid sending multiple notifications for stuck imports (#11833)
 * Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
+* Support invalid ArcGIS layer [Support#1291](https://github.com/CartoDB/support/issues/1291)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
@@ -469,6 +471,7 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
 * Improve spec bundles / process

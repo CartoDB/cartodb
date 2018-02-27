@@ -11,9 +11,9 @@
   </script>
 
   <% if @has_new_dashboard %>
-    <%= javascript_include_tag 'common_dashboard', 'mobile_apps_new_vendor', 'mobile_apps_new' -%>
+    <%= javascript_include_tag 'common_dashboard', 'mobile_apps_new_vendor', 'mobile_apps_new' %>
   <% else %>
-    <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'account_deps.js', 'mobile_apps.js' -%>
+    <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'account_deps.js', 'mobile_apps.js' %>
   <% end %>
 <% end %>
 

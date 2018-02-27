@@ -141,6 +141,7 @@ ion for time-series (#12670)
 * Added Mapbox services providers (#cartodb-platform/3835)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
+* Change Mapbox modal (#1265)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
@@ -434,6 +435,7 @@ ion for time-series (#12670)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
 * Axis labels changes in Time-Series (#12658)
+* Fix backend tests (#13623)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)

@@ -327,17 +327,16 @@ class Admin::PagesController < Admin::AdminController
 
     @needs_gmaps_lib = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
-    
-    if @viewed_user.nil?
-      if @most_viewed_vis_map
-        @gmaps_query_string = @most_viewed_vis_map.map.user.google_maps_query_string
-      else
-        @gmaps_query_string = @org.google_maps_key
-      end
-    else
-      @gmaps_query_string  = @viewed_user.google_maps_query_string
-    end
-    
+
+    @gmaps_query_string = if @viewed_user.nil?
+                            if @most_viewed_vis_map
+                              @most_viewed_vis_map.map.user.google_maps_query_string
+                            else
+                              @org.google_maps_key
+                            end
+                          else
+                            @viewed_user.google_maps_query_string
+                          end
   end
 
   def set_layout_vars_for_user(user, content_type)

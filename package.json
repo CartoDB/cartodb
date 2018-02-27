@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.53-apikeys.02",
+  "version": "4.11.53-datalibrary",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

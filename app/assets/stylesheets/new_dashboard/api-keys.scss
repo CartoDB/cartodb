@@ -95,6 +95,14 @@
   box-shadow: none;
 }
 
+.ApiKeys-MultiCheckbox {
+  margin-right: 12px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
 .Share-copy {
   position: absolute;
   right: 0;

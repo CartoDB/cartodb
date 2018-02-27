@@ -1,6 +1,6 @@
 <div class="FormAccount-rowData">
   <% inputs.forEach(function (input) { %>
-    <div class="u-iblock CDB-Text CDB-Size-medium u-rSpace--xl">
+    <div class="ApiKeys-MultiCheckbox u-iblock CDB-Text CDB-Size-medium">
       <input
         class="CDB-Checkbox js-checkbox"
         type="checkbox"

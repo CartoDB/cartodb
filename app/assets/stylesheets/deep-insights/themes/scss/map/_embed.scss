@@ -2,7 +2,7 @@
 
 $sEmbedTabs: 1rem;
 $cEmbedTabs-Primary: #FFF;
-$cEmbedTabs-Secondary: #F2F6F9;
+$cEmbedTabs-Secondary: #DDD;
 $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Embed-view {
@@ -76,7 +76,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
 
   .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
-    border: none;
+    border-bottom: 1px solid $cEmbedTabs-Secondary;
   }
 }
 

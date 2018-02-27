@@ -66,6 +66,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
   &.is-active {
     display: flex;
+    box-shadow: none;
   }
 }
 

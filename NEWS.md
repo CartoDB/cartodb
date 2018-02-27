@@ -141,6 +141,7 @@ ion for time-series (#12670)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
 * Change Mapbox modal (#1265)
+* Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
 * Add `shield-placement-keyword` CartoCSS property (#13612)
@@ -441,6 +442,7 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Proper error message when ArcGIS server does not support query capability (#11544)
 * Added TMS to layer_options (#13459)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
@@ -470,6 +472,7 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
 * Improve spec bundles / process

@@ -322,6 +322,8 @@
   }
 
   .CDB-Dashboard-menuFooter {
+    @include display-flex();
+    @include align-items(center);
     position: static;
     width: auto;
   }
@@ -333,7 +335,6 @@
   }
 
   .CDB-Dashboard-menuFooterTxt {
-    width: 100%;
     opacity: 1;
     font-size: 10px;
     line-height: 1;

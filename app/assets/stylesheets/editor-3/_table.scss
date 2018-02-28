@@ -378,7 +378,7 @@ $tableBorderColor: $cSecondaryLine;
   }
 }
 
-@media (max-width: $sViewport-xl) {
+@media (max-width: $sMedia-xl) {
   .Table {
     top: $baseSize;
     right: $baseSize;

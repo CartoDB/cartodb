@@ -42,6 +42,7 @@
     "postcss": "5.0.19",
     "postcss-scss": "0.4.0",
     "postcss-strip-inline-comments": "0.1.5",
+    "promise-polyfill": "https://registry.npmjs.org/promise-polyfill/-/promise-polyfill-6.1.0.tgz",
     "queue-async": "1.2.1",
     "rangeslider.js": "2.3.0",
     "tinycolor2": "^1.4.1",

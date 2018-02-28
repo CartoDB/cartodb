@@ -1,7 +1,10 @@
-// Karma configuration
-// Generated on Fri Feb 16 2018 17:14:39 GMT+0100 (CET)
+// Karma configuration for Dashboard
 
+const webpack = require('webpack');
 const webpackConfig = require('../lib/build/tasks/webpack/webpack.config.js').task('');
+const excludedPlugins = [
+  webpack.optimize.CommonsChunkPlugin
+];
 
 module.exports = function (config) {
   config.set({
@@ -30,18 +33,17 @@ module.exports = function (config) {
       {
         resolve: webpackConfig.resolve,
         module: webpackConfig.module,
-        plugins: webpackConfig.plugins.slice(1),
+        plugins: webpackConfig.plugins.filter(
+          plugin => !excludedPlugins.some(excludedPlugin => plugin instanceof excludedPlugin)
+        ),
         target: webpackConfig.target,
         node: webpackConfig.node
       }
     ),
 
     // test results reporter to use
-    // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress', 'kjhtml'],
-
-    // plugins: ['karma-jasmine-ajax'],
 
     // web server port
     port: 9876,

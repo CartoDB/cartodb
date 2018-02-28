@@ -429,6 +429,10 @@ module CartoDB
             raise DataDownloadError.new("ERROR: #{prepared_url} POST " +
                                         "#{params_data} (#{response.code}) : #{response.body} #{self.to_s}")
           end
+          if response.code == 400 && !response.return_message.nil? \
+              && response.return_message.downcase.include?('operation is not supported')
+            raise UnsupportedOperationError.new("#{request_url} (#{response.code}) : #{response.body}") \
+          end
 
           begin
             body = ::JSON.parse(response.body)
@@ -521,6 +525,10 @@ module CartoDB
           raise ExternalServiceTimeoutError.new("TIMEOUT: #{request_url} : #{response.return_message}") \
             if response.code.zero? && !response.return_message.nil? \
               && response.return_message.downcase.include?('timeout')
+
+          raise UnsupportedOperationError.new("#{request_url} (#{response.code}) : #{response.body}") \
+            if response.code == 400 && !response.return_message.nil? \
+              && response.return_message.downcase.include?('operation is not supported')
 
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200

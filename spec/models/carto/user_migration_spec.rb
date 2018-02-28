@@ -514,7 +514,7 @@ describe 'UserMigration' do
       @user = FactoryGirl.build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
-      @master_api_key = @carto_user.api_keys.master.first
+      @master_api_key = @carto_user.api_keys.create_master_key!
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_user,
                                                            name: 'Some ApiKey',
@@ -552,6 +552,7 @@ describe 'UserMigration' do
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
       username = @user.username
+      byebug
       $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
       $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
 

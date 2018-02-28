@@ -376,6 +376,39 @@ describe DataImport do
     table.service.records[:rows].should have(10).items
   end
 
+  it 'updates synch_job state after success data import' do
+    data_import = nil
+    sync_job = FactoryGirl.create(:enqueued_sync)
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
+    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: url,
+        synchronization_id: sync_job.id,
+        updated_at: Time.now
+      ).run_import!
+    end
+
+    data_import.state.should eq DataImport::STATE_COMPLETE
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_SUCCESS
+  end
+
+  it 'updates synch_job state after failed data import' do
+    sync_job = FactoryGirl.create(:enqueued_sync)
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",
+      synchronization_id: sync_job.id,
+      updated_at: Time.now
+    ).run_import!
+
+    data_import.state.should eq DataImport::STATE_FAILURE
+    Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_FAILURE
+  end
+
   it 'should allow to create a table from a url with params' do
     data_import = nil
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
@@ -546,6 +579,37 @@ describe DataImport do
       data_import.run_import!
       data_import.state.should eq 'failure'
       data_import.error_code.should eq 1012
+    end
+
+    it 'should import this supposed invalid dataset for ogr2ogr 2.1.1' do
+      # IDs list of a layer
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_invalid.json"))
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: body
+        )
+      end
+
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do
+        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_invalid.json"))
+        body = ::JSON.parse(body)
+
+        Typhoeus::Response.new(
+          code: 200,
+          headers: { 'Content-Type' => 'application/json' },
+          body: ::JSON.dump(body)
+        )
+      end
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'complete'
     end
   end
 

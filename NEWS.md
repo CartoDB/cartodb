@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.20.0`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.21.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
+* checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
 * Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
 * User feed migration
 * Add legends to mobile view in embed maps (#13417)
@@ -121,11 +123,13 @@ ion for time-series (#12670)
   * Organization concerns (#13511)
   * Token regeneration (#13321)
   * Keys listing (#13327)
+  * Disable keys for locked users (#13560)
   * Header authentication (#13329)
   * Keep API Key permissions up to date when tables change (#13333)
   * Delete API keys on user deletion (#13470)
   * Inherit from public user for API key permissions (#13464, #13550)
   * Sync master key with user model (#13540)
+  * Regenerate all user/orgs api keys (#13586)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
   * API Keys are exported and imported (#13346)
@@ -134,17 +138,29 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 * Updates Dataservices API client default version to `0.23.0`
 * Added Mapbox services providers (#cartodb-platform/3835)
+* Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
+* Change Mapbox modal (#1265)
+* Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
 * Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)
+* Add `shield-placement-keyword` CartoCSS property (#13612)
+* Fix icons in custom html legends (#13600)
+* Rename 'cartodb3' to 'builder'
+* Make legends collapsable (#13531)
+* Add marker size to layer cartocss props to reinstantiate torque map (#13590)
+* Fix select geometries dropdown in JOIN analysis ([Support#1281](https://github.com/CartoDB/support/issues/1281))
 * Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
 * Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
+* Support several versions of pg_dump and pg_restore binaries (CartoDB/cartodb-central#2073)
 * User feed renders google maps properly when user has it enabled
+* New Synchronization records can enter error state preventing future synchronizations (#13435)
 * Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
 * Import gpkg without coordinate system. ([Support#1303](https://github.com/CartoDB/support/issues/1303))
 * Improved bundling aliases
+* User migrator deletes import log after importing failure (#13542)
 * Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
 * Remove Tangram references (#13461)
 * Restore translation keys to static pages (#13492)
@@ -153,6 +169,7 @@ ion for time-series (#12670)
 * Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
 * Avoid sending multiple notifications for stuck imports (#11833)
 * Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
+* Support invalid ArcGIS layer [Support#1291](https://github.com/CartoDB/support/issues/1291)
 * Update Leaflet to version 1.3.1
 * Remove tangram by updating cartodb.js version
 * Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
@@ -418,6 +435,7 @@ ion for time-series (#12670)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
 * Axis labels changes in Time-Series (#12658)
+* Fix backend tests (#13623)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
@@ -426,6 +444,7 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Proper error message when ArcGIS server does not support query capability (#11544)
 * Added TMS to layer_options (#13459)
 * Fix ambiguous column call in the search tweets query (#13073)
 * Fix email validator failing with empty emails (#13078)
@@ -442,9 +461,11 @@ ion for time-series (#12670)
 * Enable CSV exports for polygon and line datasets (#13196)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
+* Fix asset upload with special character in local storage (#13602)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
 * Make new widgets appear on top (#13244)
+* Fix imports with local storage and special characters (#13604)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
@@ -453,8 +474,10 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)

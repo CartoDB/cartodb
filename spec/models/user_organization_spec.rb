@@ -295,12 +295,4 @@ describe UserOrganization do
       Carto::Db::UserSchemaMover.any_instance.stubs(:default_strategy).returns(Carto::Db::UserSchemaMover::STEPS_STRATEGY)
     end
   end
-
-  describe 'move_schema_content_by_renaming' do
-    it_behaves_like 'promoting a user to owner'
-
-    before(:each) do
-      Carto::Db::UserSchemaMover.any_instance.stubs(:default_strategy).returns(Carto::Db::UserSchemaMover::RENAMING_STRATEGY)
-    end
-  end
 end

@@ -590,7 +590,7 @@
         "input-ramp": {
           "buckets": "bucket |||| buckets"
         },
-        "input-categories": {
+        "input-qualitative-ramps": {
           "null": "null",
           "others": "Others"
         },
@@ -826,9 +826,8 @@
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
-          "enter": "Enter your map ID/URL",
-          "enter-token": "Enter your access token",
-          "error": "Error retrieving your basemap. Please check your access token.",
+          "enter": "Enter a URL",
+          "error": "Error retrieving your basemap. Please check your Mapbox URL.",
           "invalid": "This URL is not valid."
         },
         "wms": {

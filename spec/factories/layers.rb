@@ -93,7 +93,7 @@ module Fixtures
 
       # These depend on tooltip_light.jst.mustache at the following paths:
       # - /lib/assets/javascripts/cartodb/table/views/tooltip/templates/tooltip_light.jst.mustache
-      # - /lib/assets/javascripts/cartodb3/mustache-templates/tooltips/tooltip_light.jst.mustache
+      # - /lib/assets/javascripts/builder/mustache-templates/tooltips/tooltip_light.jst.mustache
       def v2_tooltip_light_template_fragment
         '<div class="cartodb-tooltip-content-wrapper">'
       end
@@ -105,7 +105,7 @@ module Fixtures
 
     # These depend on infowindow_light.jst.mustache at the following paths:
     # - /lib/assets/javascripts/cartodb/table/views/infowindow/templates/infowindow_light.jst.mustache
-    # - /lib/assets/javascripts/cartodb3/mustache-templates/infowindows/infowindow_light.jst.mustache
+    # - /lib/assets/javascripts/builder/mustache-templates/infowindows/infowindow_light.jst.mustache
     module Infowindows
       def custom_infowindow(template = 'wadus infowindow')
         {

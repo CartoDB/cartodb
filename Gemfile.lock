@@ -157,7 +157,7 @@ GEM
       multi_json (~> 1.0, >= 1.0.3)
     journey (1.0.4)
     json (1.8.6)
-    json-schema (2.0.0)
+    json-schema (2.1.9)
     jwt (1.5.4)
     kgio (2.10.0)
     launchy (2.4.3)
@@ -390,7 +390,7 @@ DEPENDENCIES
   google-api-client (= 0.7.0)
   hiredis (= 0.6.1)
   instagram (= 1.1.6)
-  json-schema (= 2.0.0)
+  json-schema (= 2.1.9)
   memory_profiler
   mocha (= 1.1.0)
   mock_redis

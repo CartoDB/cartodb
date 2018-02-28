@@ -216,6 +216,11 @@ class ApplicationController < ActionController::Base
     validate_session(current_user)
   end
 
+  def any_api_authorization_required
+    authenticate!(:api_key, :any_auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
+    validate_session(current_user)
+  end
+
   # This only allows to authenticate if sending an API request to username.api_key subdomain,
   # but doesn't break the request if can't authenticate
   def optional_api_authorization

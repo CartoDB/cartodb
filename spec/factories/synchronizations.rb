@@ -14,5 +14,13 @@ FactoryGirl.define do
     after(:build) do |sync|
       sync.log = FactoryGirl.build(:carto_log, type: 'sync')
     end
+
+    trait :enqueued do
+      state Carto::Synchronization::STATE_QUEUED
+      ran_at nil
+      run_at nil
+    end
+
+    factory :enqueued_sync, traits: [:enqueued]
   end
 end

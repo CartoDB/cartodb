@@ -81,7 +81,7 @@ describe "Geocodings API" do
         post_json api_v1_geocodings_create_url, payload do |response|
           response.status.should eq 200
           response.body[:id].should_not be_nil
-          response.body[:country_code].should eq "'spain','us'"
+          response.body[:country_code].split(',').sort.should eq ["'spain'", "'us'"]
           response.body[:country_column].should eq "country"
         end
       end
@@ -125,7 +125,7 @@ describe "Geocodings API" do
         post_json api_v1_geocodings_create_url, payload do |response|
           response.status.should eq 200
           response.body[:id].should_not be_nil
-          response.body[:region_code].should eq "'madrid','minnesota'"
+          response.body[:region_code].split(',').sort.should eq ["'madrid'", "'minnesota'"]
           response.body[:region_column].should eq "region"
         end
       end

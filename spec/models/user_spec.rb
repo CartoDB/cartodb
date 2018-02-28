@@ -2585,6 +2585,13 @@ describe User do
         master_api_key.should be
         master_api_key.token.should eq @auth_api_user.api_key
       end
+
+      it "does not create master api key on user creation if ff auth_api is not enabled for the user" do
+        user = FactoryGirl.create(:valid_user)
+        api_keys = Carto::ApiKey.where(user_id: @user.id)
+        api_keys.should be_empty
+        user.destroy
+      end
     end
 
     it 'syncs api key changes with master api key' do

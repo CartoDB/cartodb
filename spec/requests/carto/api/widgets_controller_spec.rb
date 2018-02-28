@@ -305,6 +305,32 @@ describe Carto::Api::WidgetsController do
       end
       analysis.destroy
     end
+
+    it 'update_many' do
+      widget2 = FactoryGirl.create(:widget, layer: @layer)
+      payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key)
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 200
+        response.body[0]['title'].should eq 'wadus'
+        response.body[1]['title'].should eq 'wadus2'
+      end
+    end
+
+    def serialize_widget(w)
+      payload = {
+        id: w.id,
+        layer_id: w.layer_id,
+        type: w.type,
+        title: w.title,
+        options: w.options,
+        style: w.style
+      }
+      payload[:order] = w.order if w.order
+      payload[:source] = { id: w.source_id } if w.source_id
+
+      payload
+    end
   end
 
   describe '#delete' do

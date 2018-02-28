@@ -17,6 +17,7 @@ to the oauth.google_plus section of the configuration file.
 * Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
 * User feed migration
 * Add legends to mobile view in embed maps (#13417)
+* Add rate limits persistence (#13088)
 * Unplug pluggable frontends (#13446)
 * Replace Mapzen geocoding with Mapbox (#13450)
 * Disable following analysis steps (#13311)

@@ -47,16 +47,23 @@ module Carto
       end
 
       def update
-        update_params = params.slice(:order, :type, :title)
-        update_params[:source_id] = source_id_from_params if source_id_from_params
-        @widget.update_attributes(update_params)
-        @widget.options = params[:options]
-        @widget.style = params[:style]
-        @widget.save!
+        update_widget!(@widget, params)
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error updating widget", widget: @widget)
+        render json: { errors: e.message }, status: 500
+      end
+
+      def update_many
+        result = []
+        params[:_json].each do |json_widget|
+          widget = Carto::Widget.where(layer_id: @layer_id, id: json_widget[:id]).first
+          result << WidgetPresenter.new(update_widget!(widget, json_widget)).to_poro
+        end
+        render_jsonp(result)
+      rescue => e
+        CartoDB::Logger.error(exception: e, message: "Error updating widgets")
         render json: { errors: e.message }, status: 500
       end
 
@@ -70,6 +77,16 @@ module Carto
       end
 
       private
+
+      def update_widget!(widget, params)
+        update_params = params.slice(:order, :type, :title)
+        update_params[:source_id] = source_id_from_params(params) if source_id_from_params(params)
+        widget.update_attributes(update_params)
+        widget.options = params[:options]
+        widget.style = params[:style]
+        widget.save!
+        widget.reload
+      end
 
       def load_parameters
         @map_id = params[:map_id]
@@ -97,7 +114,7 @@ module Carto
         true
       end
 
-      def source_id_from_params
+      def source_id_from_params(params = self.params)
         params[:source] ? params[:source][:id] : nil
       end
 

@@ -180,6 +180,7 @@ module CartoDB
       CartoDB::Datasources::MissingConfigurationError             => 1012,
       CartoDB::Datasources::UninitializedError                    => 1012,
       CartoDB::Datasources::NoResultsError                        => 1015,
+      CartoDB::Datasources::UnsupportedOperationError             => 1023,
       CartoDB::Datasources::ParameterError                        => 99999,
       CartoDB::Datasources::ServiceDisabledError                  => 99999,
       CartoDB::Datasources::OutOfQuotaError                       => 8006,

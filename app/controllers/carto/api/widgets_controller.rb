@@ -3,7 +3,7 @@ module Carto
     class WidgetsController < ::Api::ApplicationController
       include Carto::ControllerHelper
 
-      ssl_required :show, :create, :update, :destroy
+      ssl_required :show, :create, :update, :destroy, :update_many
 
       before_filter :load_parameters, except: [:update_many]
       before_filter :load_map, only: [:update_many]
@@ -57,14 +57,13 @@ module Carto
       end
 
       def update_many
-        result = params[:_json].map do |json_widget|
-          widget = widget_with_validations(json_widget[:id])
-          WidgetPresenter.new(update_widget!(widget, json_widget)).to_poro
+        ActiveRecord::Base.transaction do
+          result = params[:_json].map do |json_widget|
+            widget = widget_with_validations(json_widget[:id])
+            WidgetPresenter.new(update_widget!(widget, json_widget)).to_poro
+          end
+          render_jsonp(result)
         end
-        render_jsonp(result)
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: "Error updating widgets")
-        render json: { errors: e.message }, status: 500
       end
 
       def destroy
@@ -78,12 +77,12 @@ module Carto
 
       private
 
-      def update_widget!(widget, params)
-        update_params = params.slice(:order, :type, :title)
-        update_params[:source_id] = source_id_from_params(params) if source_id_from_params(params)
+      def update_widget!(widget, json_params)
+        update_params = json_params.slice(:order, :type, :title)
+        update_params[:source_id] = source_id_from_params(json_params) if source_id_from_params(json_params)
         widget.update_attributes(update_params)
-        widget.options = params[:options]
-        widget.style = params[:style]
+        widget.options = json_params[:options]
+        widget.style = json_params[:style]
         widget.save!
         widget.reload
       end
@@ -126,8 +125,8 @@ module Carto
         true
       end
 
-      def source_id_from_params(params = self.params)
-        params[:source] ? params[:source][:id] : nil
+      def source_id_from_params(parameters = self.params)
+        parameters[:source] ? parameters[:source][:id] : nil
       end
 
       def load_widget

@@ -13,7 +13,6 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Adjust widget styles in embed maps movile view (#13487)
-* Allows a viewer user to sign up to an org with no unassigned quota ([#1341](https://github.com/CartoDB/support/issues/1341))
 * Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
 * checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
 * Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
@@ -147,6 +146,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
+* Allows a viewer user to sign up to an org with no unassigned quota ([#1341](https://github.com/CartoDB/support/issues/1341))
 * Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)
 * Add `shield-placement-keyword` CartoCSS property (#13612)
 * Fix icons in custom html legends (#13600)

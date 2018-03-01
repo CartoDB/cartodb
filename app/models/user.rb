@@ -133,10 +133,10 @@ class User < Sequel::Model
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
 
-  def self.new_with_organization(organization, args = {})
+  def self.new_with_organization(organization, viewer: false)
     user = ::User.new
     user.organization = organization
-    user.quota_in_bytes = args[:viewer] ? 0 : organization.default_quota_in_bytes
+    user.quota_in_bytes = viewer ? 0 : organization.default_quota_in_bytes
     user
   end
 

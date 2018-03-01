@@ -5,7 +5,8 @@ module Carto
 
       ssl_required :show, :create, :update, :destroy
 
-      before_filter :load_parameters
+      before_filter :load_parameters, except: [:update_many]
+      before_filter :load_map, only: [:update_many]
       before_filter :load_widget, only: [:show, :update, :destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -56,10 +57,9 @@ module Carto
       end
 
       def update_many
-        result = []
-        params[:_json].each do |json_widget|
-          widget = Carto::Widget.where(layer_id: @layer_id, id: json_widget[:id]).first
-          result << WidgetPresenter.new(update_widget!(widget, json_widget)).to_poro
+        result = params[:_json].map do |json_widget|
+          widget = widget_with_validations(json_widget[:id])
+          WidgetPresenter.new(update_widget!(widget, json_widget)).to_poro
         end
         render_jsonp(result)
       rescue => e
@@ -89,11 +89,19 @@ module Carto
       end
 
       def load_parameters
+        load_map && load_layer && load_widget_id
+      end
+
+      def load_map
         @map_id = params[:map_id]
         @map = Carto::Map.where(id: @map_id).first
         raise LoadError.new("Map not found: #{@map_id}") unless @map
         raise Carto::UnauthorizedError.new("Not authorized for map #{@map.id}") unless @map.writable_by_user?(current_user)
 
+        true
+      end
+
+      def load_layer
         @layer_id = params[:map_layer_id]
         payload_layer_id = params['layer_id']
 
@@ -106,6 +114,10 @@ module Carto
 
         raise UnprocesableEntityError.new("Layer #{@layer_id} doesn't belong to map #{@map_id}") unless @map.contains_layer?(@layer)
 
+        true
+      end
+
+      def load_widget_id
         @widget_id = params[:id]
         if [@widget_id, params[:id]].compact.uniq.length >= 2
           raise UnprocesableEntityError.new("URL id (#{@widget_id}) and payload id (#{params[:id]}) don't match")
@@ -119,13 +131,19 @@ module Carto
       end
 
       def load_widget
-        @widget = Carto::Widget.where(layer_id: @layer_id, id: @widget_id).first
+        @widget = widget_with_validations(@widget_id, @layer_id)
+      end
 
-        raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless @widget
-        raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})") unless @widget.belongs_to_map?(@map_id)
-        raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}") unless @widget.writable_by_user?(current_user)
+      def widget_with_validations(widget_id, layer_id = nil)
+        search_criteria = { id: widget_id}
+        search_criteria.merge!(layer_id: layer_id) if layer_id
+        widget = Carto::Widget.where(search_criteria).first
 
-        true
+        raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless widget
+        raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})") unless widget.belongs_to_map?(@map_id)
+        raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}") unless widget.writable_by_user?(current_user)
+
+        widget
       end
     end
   end

@@ -3,49 +3,47 @@
 module Carto
   class RateLimit < ActiveRecord::Base
 
-    serialize :maps_anonymous, RateLimitValues
-    serialize :maps_static, RateLimitValues
-    serialize :maps_static_named, RateLimitValues
-    serialize :maps_dataview, RateLimitValues
-    serialize :maps_analysis, RateLimitValues
-    serialize :maps_tile, RateLimitValues
-    serialize :maps_attributes, RateLimitValues
-    serialize :maps_named_list, RateLimitValues
-    serialize :maps_named_create, RateLimitValues
-    serialize :maps_named_get, RateLimitValues
-    serialize :maps_named, RateLimitValues
-    serialize :maps_named_update, RateLimitValues
-    serialize :maps_named_delete, RateLimitValues
-    serialize :maps_named_tiles, RateLimitValues
+    RATE_LIMIT_ATTRIBUTES = [:maps_anonymous,
+                             :maps_static,
+                             :maps_static_named,
+                             :maps_dataview,
+                             :maps_analysis,
+                             :maps_tile,
+                             :maps_attributes,
+                             :maps_named_list,
+                             :maps_named_create,
+                             :maps_named_get,
+                             :maps_named,
+                             :maps_named_update,
+                             :maps_named_delete,
+                             :maps_named_tiles].freeze
+
+    RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
 
     before_create :fix_rate_limit_values_for_insert
 
-    RATE_LIMITS_APPS = ['maps', 'sql'].freeze
-
     def to_redis
       result = {}
-      attribute_names.each do |key|
-        if rate_limit_attribute?(key)
-          result[key.sub('_', ':')] = self[key].to_redis_array
-        end
+      RATE_LIMIT_ATTRIBUTES.each do |key|
+        result[key.to_s.sub('_', ':')] = self[key].to_redis_array
       end
       result
+    end
+
+    def save_to_redis(user)
+      to_redis.each do |key, value|
+        $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
+        $limits_metadata.LPUSH "limits:rate:store:#{user.username}:#{key}", value
+      end
     end
 
     private
 
     def fix_rate_limit_values_for_insert
-      attribute_names.each do |key|
+      RATE_LIMIT_ATTRIBUTES.each do |key|
         value = self[key]
-        self[key] = Carto::InsertableArray.new(value) if value && rate_limit_attribute?(key)
+        self[key] = Carto::InsertableArray.new(value) if value
       end
-    end
-
-    def rate_limit_attribute?(attribute_name)
-      return false if attribute_name.nil?
-
-      key = attribute_name.split('_').first
-      RATE_LIMITS_APPS.include?(key)
     end
   end
 end

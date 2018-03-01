@@ -998,16 +998,12 @@ class User < Sequel::Model
   end
 
   def save_rate_limits
-    rate_limits = get_rate_limits
-    rate_limits.to_redis.each do |key, value|
-      $limits_metadata.DEL "limits:rate:store:#{username}:#{key}"
-      $limits_metadata.LPUSH "limits:rate:store:#{username}:#{key}", value
-    end
+    rate_limits.save_to_redis(self)
   rescue ActiveRecord::RecordNotFound => e
     CartoDB.notify_exception(e, user: self)
   end
 
-  def get_rate_limits
+  def rate_limits
     rate_limits_id = rate_limit_id ||
                      Carto::AccountType.where(account_type: account_type)
                                        .first

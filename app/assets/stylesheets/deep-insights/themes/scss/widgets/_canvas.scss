@@ -6,19 +6,26 @@
   width: $desktopLayout;
   min-width: $desktopLayout;
   max-width: $desktopLayout;
-  margin-left: $baseSize;
   border-radius: $baseSize / 2;
 }
 
 .CDB-Widget-canvasInner {
-  position: absolute;
+  display: flex;
+  position: relative;
   top: 0;
   right: 0;
   bottom: 0;
+  flex-direction: column;
   width: 100%;
+  height: 100%;
   overflow-x: visible;
   overflow-y: auto;
   border-radius: $baseSize / 2;
+}
+
+.CDB-Widget-canvas,
+.CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+  margin-left: 8px;
 }
 
 .CDB-Widget-canvasShadow {
@@ -57,7 +64,7 @@
   z-index: 3;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: $sMedia-max-embed) {
   .CDB-Widget-canvas {
     width: $mobileLayout;
     min-width: $mobileLayout;
@@ -65,8 +72,7 @@
   }
 }
 
-// Widget media query
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Map-canvas {
     display: flex;
     flex: 2;
@@ -87,11 +93,6 @@
     display: none;
   }
 
-  .CDB-Widget-canvasInner {
-    display: flex;
-    position: relative;
-  }
-
   .CDB-Widget-canvas,
   .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
     order: 3;
@@ -102,8 +103,8 @@
   }
 }
 
-@media (max-height: 420px) {
-  .CDB-Widget-canvas {
-    display: none !important;
+@media (max-width: $sMedia-l) and (orientation: portrait) {
+  .CDB-Widget-canvasInner {
+    flex-direction: column;
   }
 }

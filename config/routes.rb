@@ -578,10 +578,6 @@ CartoDB::Application.routes.draw do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
       end
 
-      scope 'maps/:visualization_id', constraints: { id: /[^\/]+/ } do
-        put 'widgets' => 'widgets#update_all', as: :api_v3_widgets_update_all
-      end
-
       scope '/viz/:id', constraints: { id: /[^\/]+/ } do
         get 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
       end

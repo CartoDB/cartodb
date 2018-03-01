@@ -145,6 +145,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fixed bubble legends in IE11 (https://github.com/CartoDB/cartodb/issues/13635)
 * Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
 * Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)
 * Add `shield-placement-keyword` CartoCSS property (#13612)

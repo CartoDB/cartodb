@@ -1,3 +1,8 @@
+// NOTE: this configuration file MUST NOT be loaded with `-p` or `--optimize-minimize` option.
+// This option includes an implicit call to UglifyJsPlugin and LoaderOptionsPlugin. Instead,
+// an explicit call is made in this file to this plugins with customized options that enables
+// more control of the output bundle in order to fix unexpected behavior in old browsers.
+
 const webpack = require('webpack');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const path = require('path');

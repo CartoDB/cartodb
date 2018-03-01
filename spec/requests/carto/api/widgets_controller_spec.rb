@@ -300,7 +300,7 @@ describe Carto::Api::WidgetsController do
         response.status.should eq 200
         response_widget_should_match_payload(response.body, payload)
 
-        loaded_widget = Carto::Widget.find(response.body[:id])
+        Carto::Widget.find(response.body[:id])
         response_widget_should_match_widget(response.body, Carto::Widget.find(response.body[:id]))
       end
       analysis.destroy

@@ -6,8 +6,7 @@ module Carto
       ssl_required :show, :create, :update, :destroy, :update_many
 
       before_filter :load_map
-      before_filter :load_layer, except: [:update_many]
-      before_filter :load_widget_id, except: [:update_many]
+      before_filter :load_layer, :load_widget_id, except: [:update_many]
       before_filter :load_widget, only: [:show, :update, :destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error

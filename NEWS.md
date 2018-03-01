@@ -14,11 +14,9 @@ to the oauth.google_plus section of the configuration file.
 ### Features
 * Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
 * checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
-* Add migration scripts for rate limits (#13088)
 * Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
 * User feed migration
 * Add legends to mobile view in embed maps (#13417)
-* Add rate limits persistence (#13088)
 * Unplug pluggable frontends (#13446)
 * Replace Mapzen geocoding with Mapbox (#13450)
 * Disable following analysis steps (#13311)
@@ -117,6 +115,8 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
+* Limits V2
+  * Add rate limits persistence (#13626)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)

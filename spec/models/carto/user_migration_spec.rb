@@ -552,7 +552,6 @@ describe 'UserMigration' do
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
       username = @user.username
-      byebug
       $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
       $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
 

@@ -89,17 +89,11 @@ module Carto
         widget
       end
 
-      def load_parameters
-        load_map && load_layer && load_widget_id
-      end
-
       def load_map
         @map_id = params[:map_id]
         @map = Carto::Map.where(id: @map_id).first
         raise LoadError.new("Map not found: #{@map_id}") unless @map
         raise Carto::UnauthorizedError.new("Not authorized for map #{@map.id}") unless @map.writable_by_user?(current_user)
-
-        true
       end
 
       def load_layer
@@ -114,8 +108,6 @@ module Carto
         raise LoadError.new("Layer not found: #{@layer_id}") unless @layer
 
         raise UnprocesableEntityError.new("Layer #{@layer_id} doesn't belong to map #{@map_id}") unless @map.contains_layer?(@layer)
-
-        true
       end
 
       def load_widget_id
@@ -123,8 +115,6 @@ module Carto
         if [@widget_id, params[:id]].compact.uniq.length >= 2
           raise UnprocesableEntityError.new("URL id (#{@widget_id}) and payload id (#{params[:id]}) don't match")
         end
-
-        true
       end
 
       def source_id_from_params(parameters = params)

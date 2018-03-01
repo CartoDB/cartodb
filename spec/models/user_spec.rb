@@ -2675,14 +2675,26 @@ describe User do
   describe 'when creating rate limits' do
     before :each do
       @account_type = FactoryGirl.create(:account_type_free)
+      @account_type_pro = FactoryGirl.create(:account_type_pro)
       @user = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)
       @rate_limits = FactoryGirl.create(:rate_limits_custom)
+      @organization = FactoryGirl.create(:organization)
+
+      owner = FactoryGirl.create(:user, account_type: 'PRO')
+      uo = CartoDB::UserOrganization.new(@organization.id, owner.id)
+      uo.promote_user_to_admin
+      @organization.reload
+      @user_org = FactoryGirl.build(:user, account_type: 'FREE')
+      @user_org.organization_id = @organization.id
+      @user_org.enabled = true
+      @user_org.save
 
       @map_prefix = "limits:rate:store:#{@user.username}:maps:"
     end
 
     after :each do
       @user.destroy unless @user.nil?
+      @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
       @account_type.rate_limit.destroy unless @account_type.nil?
       @rate_limits.destroy unless @rate_limits.nil?
@@ -2738,6 +2750,24 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["133", "134", "135"]
       $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["136", "137", "138"]
       $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["139", "140", "141"]
+    end
+
+    it 'creates rate limits for a org user' do
+      @map_prefix = "limits:rate:store:#{@user_org.username}:maps:"
+      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 3).should == ["1", "1", "2"]
+      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["2", "4", "5"]
+      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["3", "7", "8"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["4", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["5", "13", "14"]
+      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 6).should == ["6", "16", "17", "30", "32", "34"]
+      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["7", "19", "20"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 3).should == ["8", "22", "23"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 3).should == ["9", "25", "26"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 3).should == ["10", "28", "29"]
+      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 3).should == ["11", "31", "32"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["12", "34", "35"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["13", "37", "38"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["14", "40", "41"]
     end
   end
 

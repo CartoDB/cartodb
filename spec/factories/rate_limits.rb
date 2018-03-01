@@ -32,4 +32,21 @@ FactoryGirl.define do
     maps_named_delete [136, 137, 138]
     maps_named_tiles  [139, 140, 141]
   end
+
+  factory :rate_limits_pro, class: Carto::RateLimit do
+    maps_anonymous    [1, 1, 2]
+    maps_static       [2, 4, 5]
+    maps_static_named [3, 7, 8]
+    maps_dataview     [4, 10, 11]
+    maps_analysis     [5, 13, 14]
+    maps_tile         [6, 16, 17, 30, 32, 34]
+    maps_attributes   [7, 19, 20]
+    maps_named_list   [8, 22, 23]
+    maps_named_create [9, 25, 26]
+    maps_named_get    [10, 28, 29]
+    maps_named        [11, 31, 32]
+    maps_named_update [12, 34, 35]
+    maps_named_delete [13, 37, 38]
+    maps_named_tiles  [14, 40, 41]
+  end
 end

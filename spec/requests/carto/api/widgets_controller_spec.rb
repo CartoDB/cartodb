@@ -310,6 +310,7 @@ describe Carto::Api::WidgetsController do
   describe '#update_many' do
     it 'updates many' do
       widget2 = FactoryGirl.create(:widget, layer: @layer)
+
       payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
                                                        map_id: @map.id,
@@ -361,6 +362,23 @@ describe Carto::Api::WidgetsController do
       put_json url, payload, http_json_headers do |response|
         response.status.should == 403
         @widget.reload.title.should_not eq 'wadus'
+      end
+    end
+
+    it 'fails if any of the widgets fails and doesn\'t update any' do
+      widget2 = FactoryGirl.create(:widget, layer: @layer)
+      Carto::Widget.stubs(:find).with(@widget.id).returns(@widget)
+      Carto::Widget.stubs(:find).with(widget2.id).raises(ActiveRecord::RecordNotFound.new)
+
+      payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 404
+        Carto::Widget.unstub(:find)
+        @widget.reload.title.should_not eq 'wadus'
+        widget2.reload.title.should_not eq 'wadus2'
       end
     end
 

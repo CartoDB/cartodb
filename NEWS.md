@@ -143,6 +143,7 @@ ion for time-series (#12670)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
 * Change Mapbox modal (#1265)
+* Add end-point to update multiple widgets at once (#13596)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements

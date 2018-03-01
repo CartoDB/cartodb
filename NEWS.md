@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Adjust widget styles in embed maps movile view (#13487)
 * Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
 * checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
 * Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
@@ -140,9 +141,12 @@ ion for time-series (#12670)
 * Added Mapbox services providers (#cartodb-platform/3835)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
+* Change Mapbox modal (#1265)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
+* Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)
 * Add `shield-placement-keyword` CartoCSS property (#13612)
 * Fix icons in custom html legends (#13600)
 * Rename 'cartodb3' to 'builder'
@@ -433,6 +437,7 @@ ion for time-series (#12670)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
 * Axis labels changes in Time-Series (#12658)
+* Fix backend tests (#13623)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)

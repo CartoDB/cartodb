@@ -13,8 +13,8 @@
   var ACTIVE_LOCALE = 'en';
 </script>
 
-<% if @canonical_visualization.map.provider == 'googlemaps' %>
-  <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
+<% if @canonical_visualization.map.provider == 'googlemaps' && @google_maps_qs.present? %>
+  <%= insert_google_maps(@google_maps_qs) %>
 <% end %>
 
 <%= javascript_include_tag 'common.js' %>

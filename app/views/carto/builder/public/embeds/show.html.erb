@@ -27,8 +27,8 @@
 <%= content_for(:js) do %>
   <%= insert_trackjs('builder-embeds') %>
 
-  <% if @vizjson[:map_provider] == 'googlemaps' %>
-    <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
+  <% if @vizjson[:map_provider] == 'googlemaps' && @google_maps_qs.present? %>
+    <%= insert_google_maps(@google_maps_qs) %>
   <% end %>
 
   <script>

@@ -1,17 +1,28 @@
 // Dashboard canvas
 // --------------------------------------------------
 
+// Canvas is out of widget themes
+$canvas-light: #F2F6F9;
+$canvas-dark: #293A41;
+
 .CDB-Dashboard-canvas {
   display: flex;
   position: relative;
   box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
+  flex: 1;
   justify-content: space-between;
   width: 100%;
   height: 100%; // fill content to the visible viewport, but add scroll for overflowing inline content (e.g. widgets)
-  padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
-  background: #F2F6F9; // Canvas is out of widget themes
+  overflow-x: hidden;
+  border-radius: 4px;
+  background: $canvas-light;
+  box-shadow: inset 10px 0 10px -10px rgba(#000, 0.3);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.CDB-Dashboard-canvas.is-dark {
+  background: $canvas-dark;
 }
 
 .CDB-Dashboard-mapWrapper {
@@ -41,19 +52,28 @@
   margin-top: 8px;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: $sMedia-xl) {
   .CDB-Dashboard-mapWrapper--withMenu {
     margin-left: 56px;
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: $sMedia-xl) {
   .CDB-Dashboard-canvas {
-    padding: 8px;
+    padding: 0;
+  }
+
+  .CDB-Dashboard-canvas.CDB-Embed-tab--menu.is-active {
+    height: calc(100% - 38px);
+    box-shadow: none;
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-max-w-vertical) {
+  body {
+    width: 100%;
+  }
+
   .CDB-Dashboard-canvas {
     position: relative;
     box-sizing: border-box;
@@ -86,7 +106,7 @@
   }
 
   .CDB-Dashboard-belowMap {
-    margin-top: 2px;
+    margin-top: 0;
   }
 
   .CDB-Map {
@@ -96,7 +116,7 @@
   }
 }
 
-@media (max-width: 758px) {
+@media (max-width: $sMedia-max-w-vertical - 1px) {
   .CDB-Dashboard-canvas,
   .CDB-Map {
     width: 100%;
@@ -108,5 +128,9 @@
 
   .CDB-Dashboard-canvas::after {
     border-radius: 0;
+  }
+
+  .CDB-Dashboard-mapWrapper {
+    flex-direction: column;
   }
 }

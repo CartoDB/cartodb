@@ -2690,13 +2690,16 @@ describe User do
       @user_org.save
 
       @map_prefix = "limits:rate:store:#{@user.username}:maps:"
+      @sql_prefix = "limits:rate:store:#{@user.username}:sql:"
     end
 
     after :each do
       @user.destroy unless @user.nil?
       @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
+      @account_type_pro.destroy unless @account_type_pro.nil?
       @account_type.rate_limit.destroy unless @account_type.nil?
+      @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
       @rate_limits.destroy unless @rate_limits.nil?
     end
 
@@ -2705,6 +2708,7 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["3", "4", "5"]
       $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["6", "7", "8"]
       $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 3).should == ["9", "10", "11"]
       $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["12", "13", "14"]
       $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 6).should == ["15", "16", "17", "30", "32", "34"]
       $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["18", "19", "20"]
@@ -2715,6 +2719,12 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["33", "34", "35"]
       $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["36", "37", "38"]
       $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["39", "40", "41"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 3).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 3).should == ["3", "4", "5"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 3).should == ["6", "7", "8"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 3).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 3).should == ["12", "13", "14"]
+
     end
 
     it 'updates rate limits from user custom rate_limit' do
@@ -2722,6 +2732,7 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["3", "4", "5"]
       $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["6", "7", "8"]
       $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 3).should == ["9", "10", "11"]
       $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["12", "13", "14"]
       $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 6).should == ["15", "16", "17", "30", "32", "34"]
       $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["18", "19", "20"]
@@ -2732,6 +2743,11 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["33", "34", "35"]
       $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["36", "37", "38"]
       $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["39", "40", "41"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 3).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 3).should == ["3", "4", "5"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 3).should == ["6", "7", "8"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 3).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 3).should == ["12", "13", "14"]
 
       @user.rate_limit_id = @rate_limits.id
       @user.save
@@ -2740,6 +2756,7 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["13", "14", "15"]
       $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["16", "17", "18"]
       $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["19", "110", "111"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 3).should == ["19", "110", "111"]
       $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["112", "113", "114"]
       $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 6).should == ["115", "116", "117", "230", "232", "234"]
       $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["118", "119", "120"]
@@ -2750,14 +2767,22 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["133", "134", "135"]
       $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["136", "137", "138"]
       $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["139", "140", "141"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 3).should == ["10", "11", "12"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 3).should == ["13", "14", "15"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 3).should == ["16", "17", "18"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 3).should == ["19", "110", "111"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 3).should == ["112", "113", "114"]
     end
 
     it 'creates rate limits for a org user' do
       @map_prefix = "limits:rate:store:#{@user_org.username}:maps:"
+      @sql_prefix = "limits:rate:store:#{@user_org.username}:sql:"
+
       $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 3).should == ["1", "1", "2"]
       $limits_metadata.LRANGE("#{@map_prefix}static", 0, 3).should == ["2", "4", "5"]
       $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 3).should == ["3", "7", "8"]
       $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 3).should == ["4", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 3).should == ["4", "10", "11"]
       $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 3).should == ["5", "13", "14"]
       $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 6).should == ["6", "16", "17", "30", "32", "34"]
       $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 3).should == ["7", "19", "20"]
@@ -2768,6 +2793,11 @@ describe User do
       $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 3).should == ["12", "34", "35"]
       $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 3).should == ["13", "37", "38"]
       $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 3).should == ["14", "40", "41"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 3).should == ["1", "1", "2"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 3).should == ["2", "4", "5"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 3).should == ["3", "7", "8"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 3).should == ["4", "10", "11"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 3).should == ["5", "13", "14"]
     end
   end
 

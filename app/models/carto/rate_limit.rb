@@ -7,6 +7,7 @@ module Carto
                              :maps_static,
                              :maps_static_named,
                              :maps_dataview,
+                             :maps_dataview_search,
                              :maps_analysis,
                              :maps_tile,
                              :maps_attributes,
@@ -16,7 +17,12 @@ module Carto
                              :maps_named,
                              :maps_named_update,
                              :maps_named_delete,
-                             :maps_named_tiles].freeze
+                             :maps_named_tiles,
+                             :sql_query,
+                             :sql_query_format,
+                             :sql_job_create,
+                             :sql_job_get,
+                             :sql_job_delete].freeze
 
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
 

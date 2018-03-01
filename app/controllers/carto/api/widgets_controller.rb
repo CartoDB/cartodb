@@ -126,14 +126,18 @@ module Carto
       end
 
       def widget_with_validations(widget_id, layer_id = nil)
-        search_criteria = { id: widget_id }
-        search_criteria[:layer_id] = layer_id if layer_id
-        widget = Carto::Widget.where(search_criteria).first
+        widget =  Carto::Widget.find(widget_id)
 
         raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless widget
+
+        if layer_id
+          raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless widget.layer_id == layer_id
+        end
+
         unless widget.belongs_to_map?(@map_id)
           raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})")
         end
+
         unless widget.writable_by_user?(current_user)
           raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}")
         end

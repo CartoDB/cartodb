@@ -142,7 +142,7 @@ module Carto
 
         widget
       end
-      
+
     end
   end
 end

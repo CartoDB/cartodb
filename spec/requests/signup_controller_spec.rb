@@ -101,10 +101,10 @@ describe SignupController do
 
       host! "#{@organization.name}.localhost.lan"
       get signup_organization_user_url(user_domain: @organization.name,
-                                        user: { username: 'viewer-user',
-                                                email: email,
-                                                password: '2{Patrañas}' },
-                                        invitation_token: token)
+                                       user: { username: 'viewer-user',
+                                               email: email,
+                                               password: '2{Patrañas}' },
+                                               invitation_token: token)
 
       response.status.should == 200
       response.body.should_not include("quota_in_bytes not enough disk quota")
@@ -124,10 +124,10 @@ describe SignupController do
 
       host! "#{@organization.name}.localhost.lan"
       get signup_organization_user_url(user_domain: @organization.name,
-                                        user: { username: 'viewer-user',
-                                                email: email,
-                                                password: '2{Patrañas}' },
-                                        invitation_token: token)
+                                       user: { username: 'viewer-user',
+                                               email: email,
+                                               password: '2{Patrañas}' },
+                                               invitation_token: token)
 
       response.status.should == 200
       response.body.should include("quota_in_bytes not enough disk quota")

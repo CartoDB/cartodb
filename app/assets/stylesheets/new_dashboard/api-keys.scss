@@ -81,6 +81,14 @@
   overflow: auto;
 }
 
+.ApiKeysForm-grantsTable.showOnlySelect {
+  [data-name='insert'],
+  [data-name='update'],
+  [data-name='delete'] {
+    display: none;
+  }
+}
+
 .ApiKeysForm-grantsTable-item {
   display: flex;
   box-sizing: border-box;

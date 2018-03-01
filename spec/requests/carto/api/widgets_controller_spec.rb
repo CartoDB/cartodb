@@ -311,7 +311,6 @@ describe Carto::Api::WidgetsController do
       payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
                                                        map_id: @map.id,
-                                                       map_layer_id: @widget.layer_id,
                                                        api_key: @user1.api_key)
       put_json url, payload, http_json_headers do |response|
         response.status.should == 200

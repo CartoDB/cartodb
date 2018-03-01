@@ -200,8 +200,8 @@ class SignupController < ApplicationController
     email = (params[:user] && params[:user][:email]) || params[:email]
     token = params[:invitation_token]
     if email && token
-      invitation = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
-      @invitation ||= invitation.select { |i| i.token(email) == token }.first
+      invitations = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
+      @invitation ||= invitations.select { |i| i.token(email) == token }.first
     end
   end
 

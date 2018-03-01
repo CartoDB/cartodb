@@ -173,7 +173,9 @@ class SignupController < ApplicationController
   def check_organization_quotas
     if @organization
       check_signup_errors = Sequel::Model::Errors.new
-      @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization))
+      viewer = @invitation.try(:viewer)
+      user = ::User.new_with_organization(@organization, viewer: viewer)
+      @organization.validate_for_signup(check_signup_errors, user)
       @signup_source = 'Organization'
       @signup_errors = check_signup_errors
       render 'shared/signup_issue' and return false if check_signup_errors.length > 0
@@ -191,11 +193,15 @@ class SignupController < ApplicationController
   end
 
   def valid_email_invitation_token?
+    valid_email_invitation_token.present?
+  end
+
+  def valid_email_invitation_token
     email = (params[:user] && params[:user][:email]) || params[:email]
     token = params[:invitation_token]
     if email && token
       invitation = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
-      invitation.any? { |i| i.token(email) == token }
+      @invitation ||= invitation.select { |i| i.token(email) == token }.first
     end
   end
 

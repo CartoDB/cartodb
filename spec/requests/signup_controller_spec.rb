@@ -10,6 +10,7 @@ describe SignupController do
   end
 
   describe 'signup page' do
+    include_context 'organization with users helper'
 
     after(:each) do
       @fake_organization.delete if @fake_organization
@@ -87,6 +88,50 @@ describe SignupController do
       response.body.should match(Regexp.new @fake_organization.owner.email)
     end
 
+    it 'does not return an error if organization has no unassigned_quota left but the invited user is a viewer' do
+      email = 'viewer_user@whatever.com'
+      @organization.quota_in_bytes = @organization.assigned_quota
+      @organization.save
+      user = Carto::User.find(@org_user_owner.id)
+      invitation = Carto::Invitation.create_new(user, [email], 'W!', true)
+      invitation.save
+      token = invitation.token(email)
+
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+
+      host! "#{@organization.name}.localhost.lan"
+      get signup_organization_user_url(user_domain: @organization.name,
+                                        user: { username: 'viewer-user',
+                                                email: email,
+                                                password: '2{Patrañas}' },
+                                        invitation_token: token)
+
+      response.status.should == 200
+      response.body.should_not include("quota_in_bytes not enough disk quota")
+    end
+
+    it 'returns an error if organization has no unassigned_quota and invited user is not a viewer' do
+      email = 'viewer_user@whatever.com'
+      @organization.quota_in_bytes = @organization.assigned_quota
+      @organization.whitelisted_email_domains = ['whatever.com']
+      @organization.save
+      user = Carto::User.find(@org_user_owner.id)
+      invitation = Carto::Invitation.create_new(user, [email], 'W!', false)
+      invitation.save
+      token = invitation.token(email)
+
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+
+      host! "#{@organization.name}.localhost.lan"
+      get signup_organization_user_url(user_domain: @organization.name,
+                                        user: { username: 'viewer-user',
+                                                email: email,
+                                                password: '2{Patrañas}' },
+                                        invitation_token: token)
+
+      response.status.should == 200
+      response.body.should include("quota_in_bytes not enough disk quota")
+    end
   end
 
   describe 'user creation' do

@@ -125,7 +125,7 @@ module Carto
         true
       end
 
-      def source_id_from_params(parameters = self.params)
+      def source_id_from_params(parameters = params)
         parameters[:source] ? parameters[:source][:id] : nil
       end
 

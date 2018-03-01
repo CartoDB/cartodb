@@ -59,11 +59,11 @@ module Carto
 
       def update_many
         entries = params[:_json].map do |json_widget|
-          {widget: widget_with_validations(json_widget[:id]), json: json_widget }
+          { widget: widget_with_validations(json_widget[:id]), json: json_widget }
         end
         result = []
         ActiveRecord::Base.transaction do
-          result = entries.map { |entry| update_widget!(entry[:widget], entry[:json])}
+          result = entries.map { |entry| update_widget!(entry[:widget], entry[:json]) }
         end
         render_jsonp(result.map { |widget| WidgetPresenter.new(widget).to_poro })
       end

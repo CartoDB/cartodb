@@ -1007,7 +1007,7 @@ class User < Sequel::Model
     rate_limits_id = rate_limit_id
 
     if !rate_limits_id
-      account_type = organization_user? ? organization.owner.account_type : account_type
+      account_type = organization_user? ? organization.owner.try(:account_type) : account_type
       rate_limits_id = Carto::AccountType.where(account_type: account_type)
                                          .first
                                          .try(:rate_limit_id)

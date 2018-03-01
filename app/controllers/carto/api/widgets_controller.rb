@@ -86,7 +86,7 @@ module Carto
         widget.options = json_params[:options]
         widget.style = json_params[:style]
         widget.save!
-        widget.reload
+        widget
       end
 
       def load_parameters

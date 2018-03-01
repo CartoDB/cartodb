@@ -139,8 +139,12 @@ module Carto
         widget = Carto::Widget.where(search_criteria).first
 
         raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless widget
-        raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})") unless widget.belongs_to_map?(@map_id)
-        raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}") unless widget.writable_by_user?(current_user)
+        unless widget.belongs_to_map?(@map_id)
+          raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})")
+        end
+        unless widget.writable_by_user?(current_user)
+          raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}")
+        end
 
         widget
       end

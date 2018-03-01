@@ -332,14 +332,12 @@ module Carto::Api::AuthApiAuthentication
       user_name, token = decoded_auth.split(':')
       user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
       @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
-    elsif params[:api_key] # This is for keeping backwards compatibility until we remove api_key from user
+    else # This is for keeping backwards compatibility until we remove api_key from user
       api_key = params[:api_key]
       user_name = CartoDB.extract_subdomain(request)
       return unless $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
       user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
       @request_api_key = Carto::User.find(user_id).api_keys.create_in_memory_master
-    else
-      @request_api_key = current_user.api_keys.create_in_memory_master
     end
   end
 

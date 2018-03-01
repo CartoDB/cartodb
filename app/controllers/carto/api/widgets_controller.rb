@@ -134,8 +134,8 @@ module Carto
       end
 
       def widget_with_validations(widget_id, layer_id = nil)
-        search_criteria = { id: widget_id}
-        search_criteria.merge!(layer_id: layer_id) if layer_id
+        search_criteria = { id: widget_id }
+        search_criteria[:layer_id] = layer_id if layer_id
         widget = Carto::Widget.where(search_criteria).first
 
         raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless widget

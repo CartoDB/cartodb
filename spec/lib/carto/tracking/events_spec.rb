@@ -980,6 +980,12 @@ module Carto
             expect { event.report! }.to_not raise_error
           end
 
+          it 'reports with optional quota_overage' do
+            event = @event_class.new(@user.id, user_id: @user.id, quota_overage: 123)
+
+            expect { event.report! }.to_not raise_error
+          end
+
           it 'matches current prod properites' do
             current_prod_properties = [:creation_time,
                                        :event_origin,

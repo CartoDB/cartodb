@@ -124,6 +124,10 @@ module ApplicationHelper
     end
   end
 
+  def insert_google_maps(query_string)
+    render(partial: 'shared/google_maps', locals: { query_string: query_string })
+  end
+
   ##
   # Checks that the precompile list contains this file or raises an error, in dev only
   # Note: You will need to move config.assets.precompile to application.rb from production.rb

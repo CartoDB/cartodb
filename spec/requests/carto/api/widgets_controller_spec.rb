@@ -317,7 +317,9 @@ describe Carto::Api::WidgetsController do
       put_json url, payload, http_json_headers do |response|
         response.status.should == 200
         response.body[0]['title'].should eq 'wadus'
+        Carto::Widget.find(response.body[0]['id']).title.should eq 'wadus'
         response.body[1]['title'].should eq 'wadus2'
+        Carto::Widget.find(response.body[1]['id']).title.should eq 'wadus2'
       end
     end
 
@@ -344,6 +346,7 @@ describe Carto::Api::WidgetsController do
 
       put_json url, payload, http_json_headers do |response|
         response.status.should == 404
+        @widget.reload.title.should_not eq 'wadus'
       end
     end
 
@@ -357,6 +360,7 @@ describe Carto::Api::WidgetsController do
 
       put_json url, payload, http_json_headers do |response|
         response.status.should == 403
+        @widget.reload.title.should_not eq 'wadus'
       end
     end
 

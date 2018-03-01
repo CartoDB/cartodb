@@ -305,8 +305,10 @@ describe Carto::Api::WidgetsController do
       end
       analysis.destroy
     end
+  end
 
-    it 'update_many' do
+  describe '#update_many' do
+    it 'updates many' do
       widget2 = FactoryGirl.create(:widget, layer: @layer)
       payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
@@ -316,6 +318,45 @@ describe Carto::Api::WidgetsController do
         response.status.should == 200
         response.body[0]['title'].should eq 'wadus'
         response.body[1]['title'].should eq 'wadus2'
+      end
+    end
+
+    it 'fails with 404 if widget is not found' do
+      payload = [serialize_widget(@widget).merge(title: 'wadus')]
+      @widget.destroy
+
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 404
+      end
+    end
+
+    it 'fails with 404 if widget does not belong to map' do
+      payload = [serialize_widget(@widget).merge(title: 'wadus')]
+      Carto::Widget.any_instance.stubs(:belongs_to_map?).with(@map.id).returns(false)
+
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 404
+      end
+    end
+
+    it 'fails with 404 if not writable by user' do
+      payload = [serialize_widget(@widget).merge(title: 'wadus')]
+      Carto::Widget.any_instance.stubs(:writable_by_user?).returns(false)
+
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 403
       end
     end
 

@@ -140,6 +140,7 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 * Updates Dataservices API client default version to `0.23.0`
 * Added Mapbox services providers (#cartodb-platform/3835)
+* Add support for queryparams and special permissions in Auth API (#13597)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
 * Change Mapbox modal (#1265)

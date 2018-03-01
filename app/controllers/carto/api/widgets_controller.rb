@@ -58,13 +58,14 @@ module Carto
       end
 
       def update_many
-        ActiveRecord::Base.transaction do
-          result = params[:_json].map do |json_widget|
-            widget = widget_with_validations(json_widget[:id])
-            WidgetPresenter.new(update_widget!(widget, json_widget)).to_poro
-          end
-          render_jsonp(result)
+        entries = params[:_json].map do |json_widget|
+          {widget: widget_with_validations(json_widget[:id]), json: json_widget }
         end
+        result = []
+        ActiveRecord::Base.transaction do
+          result = entries.map { |entry| update_widget!(entry[:widget], entry[:json])}
+        end
+        render_jsonp(result.map { |widget| WidgetPresenter.new(widget).to_poro })
       end
 
       def destroy

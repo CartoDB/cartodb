@@ -20,8 +20,8 @@ migration(
       column      :maps_named_update, "integer[]"
       column      :maps_named_delete, "integer[]"
       column      :maps_named_tiles, "integer[]"
-      DateTime    :created_at, null: false
-      DateTime    :updated_at, null: false
+      DateTime    :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
+      DateTime    :updated_at, null: false, default: Sequel::CURRENT_TIMESTAMP
     end
   end,
   Proc.new do

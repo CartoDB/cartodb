@@ -147,6 +147,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
+* Allows a viewer user to sign up to an org with no unassigned quota ([#1341](https://github.com/CartoDB/support/issues/1341))
 * Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)
 * Add `shield-placement-keyword` CartoCSS property (#13612)
 * Fix icons in custom html legends (#13600)

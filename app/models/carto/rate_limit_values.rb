@@ -23,10 +23,10 @@ module Carto
       return [] if rate_limit_values.nil?
 
       result = []
-      rate_limit_values.rate_limits.reverse.each do |rate_limit|
-        result.push(rate_limit.period)
+      rate_limit_values.rate_limits.each do |rate_limit|
+        result.push(rate_limit.max_burst)
               .push(rate_limit.count_per_period)
-              .push(rate_limit.max_burst)
+              .push(rate_limit.period)
       end
 
       result

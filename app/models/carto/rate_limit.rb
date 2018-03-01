@@ -33,7 +33,7 @@ module Carto
     def save_to_redis(user)
       to_redis.each do |key, value|
         $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
-        $limits_metadata.LPUSH "limits:rate:store:#{user.username}:#{key}", value
+        $limits_metadata.RPUSH "limits:rate:store:#{user.username}:#{key}", value
       end
     end
 

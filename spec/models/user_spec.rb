@@ -2684,6 +2684,7 @@ describe User do
     after :each do
       @user.destroy unless @user.nil?
       @account_type.destroy unless @account_type.nil?
+      @account_type.rate_limit.destroy unless @account_type.nil?
       @rate_limits.destroy unless @rate_limits.nil?
     end
 

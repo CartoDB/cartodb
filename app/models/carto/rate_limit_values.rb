@@ -1,6 +1,7 @@
 module Carto
   class RateLimitValues
-    attr_accessor :rate_limits
+    extend Forwardable
+    delegate [].methods => :@rate_limits
 
     VALUES_PER_RATE_LIMIT = 3
 
@@ -11,7 +12,7 @@ module Carto
       return if !values || values.length % VALUES_PER_RATE_LIMIT != 0
 
       values.each_slice(VALUES_PER_RATE_LIMIT) do |slice|
-        @rate_limits.push(RateLimitValue.new(slice))
+        push(RateLimitValue.new(slice))
       end
     end
 
@@ -23,7 +24,7 @@ module Carto
       return [] if rate_limit_values.nil?
 
       result = []
-      rate_limit_values.rate_limits.each do |rate_limit|
+      rate_limit_values.each do |rate_limit|
         result.push(rate_limit.max_burst)
               .push(rate_limit.count_per_period)
               .push(rate_limit.period)

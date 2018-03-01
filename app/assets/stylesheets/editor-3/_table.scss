@@ -84,6 +84,7 @@ $tableBorderColor: $cSecondaryLine;
 
 .Table-headItemName {
   box-sizing: border-box;
+  width: 180px; // ie11
   height: auto;
   margin: 0;
   padding: 0;

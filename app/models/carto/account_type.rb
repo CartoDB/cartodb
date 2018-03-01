@@ -14,6 +14,8 @@ module Carto
 
     NO_SOFT_GEOCODING_PLANS_REGEXP = /(#{NO_SOFT_GEOCODING_PLANS})/i
 
+    belongs_to :rate_limit
+
     def pay_users
       ::User.where("upper(account_type) != '#{FREE}'").count
     end

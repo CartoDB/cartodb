@@ -65,9 +65,7 @@
       };
     </script>
     <% if @needs_gmaps_lib %>
-      <script type="text/javascript"
-          src="//maps.googleapis.com/maps/api/js?v=3.12<%= @gmaps_query_string %>">
-      </script>
+      <%= insert_google_maps(@gmaps_query_string) %>
     <% end %>
     <% if @has_new_dashboard %>
       <%= javascript_include_tag 'common_dashboard.js', 'public_dashboard_new_vendor', 'public_dashboard_new' %>

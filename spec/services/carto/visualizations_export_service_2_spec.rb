@@ -1479,13 +1479,16 @@ describe Carto::VisualizationsExportService2 do
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           original_id = built_viz.id
 
+          Delorean.jump(10)
           imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+          Delorean.back_to_the_present
           imported_viz.id.should_not eq original_id
           imported_viz.permission.acl.should be_empty
           imported_viz.shared_entities.count.should be_zero
           imported_viz.mapcapped?.should be_false
           expect(imported_viz.created_at.to_s).not_to eq original_attributes[:created_at].to_s
           expect(imported_viz.updated_at.to_s).not_to eq original_attributes[:updated_at].to_s
+          puts imported_viz.created_at, original_attributes[:created_at]
 
           destroy_visualization(imported_viz.id)
         end
@@ -1497,7 +1500,9 @@ describe Carto::VisualizationsExportService2 do
           test_id = random_uuid
           built_viz.id = test_id
 
+          Delorean.jump(10)
           imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, full_restore: true)
+          Delorean.back_to_the_present
           imported_viz.id.should eq test_id
           imported_viz.permission.acl.should_not be_empty
           imported_viz.shared_entities.count.should eq 1

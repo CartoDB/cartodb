@@ -998,22 +998,27 @@ class User < Sequel::Model
   end
 
   def save_rate_limits
-    rate_limits.save_to_redis(self)
-  rescue ActiveRecord::RecordNotFound => e
-    CartoDB.notify_exception(e, user: self)
+    effective_rate_limit.save_to_redis(self)
+  rescue => e
+    CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)
   end
 
-  def rate_limits
-    rate_limits_id = rate_limit_id
+  def effective_rate_limit
+    rate_limit || effective_account_type.rate_limit
+  rescue ActiveRecord::RecordNotFound => e
+    CartoDB::Logger.error(message: 'Error retrieving user rate limits', exception: e)
+  end
 
-    if !rate_limits_id
-      account_type = organization_user? && organization.owner ? organization.owner.account_type : account_type
-      rate_limits_id = Carto::AccountType.where(account_type: account_type)
-                                         .first
-                                         .try(:rate_limit_id)
-    end
+  def effective_account_type
+    organization_user? && organization.owner ? organization.owner.carto_account_type : carto_account_type
+  end
 
-    Carto::RateLimit.find(rate_limits_id)
+  def rate_limit
+    Carto::RateLimit.find(rate_limit_id) if rate_limit_id
+  end
+
+  def carto_account_type
+    Carto::AccountType.find(account_type)
   end
 
   def get_auth_tokens

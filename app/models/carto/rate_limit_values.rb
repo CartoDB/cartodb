@@ -9,7 +9,9 @@ module Carto
       @rate_limits = []
       values = convert_to_array(values)
 
-      return if !values || values.length % VALUES_PER_RATE_LIMIT != 0
+      if !values || values.length % VALUES_PER_RATE_LIMIT != 0
+        raise 'Error: Number of rate limits needs to be multiple of three'
+      end
 
       values.each_slice(VALUES_PER_RATE_LIMIT) do |slice|
         push(RateLimitValue.new(slice))
@@ -23,14 +25,7 @@ module Carto
     def self.dump(rate_limit_values)
       return [] if rate_limit_values.nil?
 
-      result = []
-      rate_limit_values.each do |rate_limit|
-        result.push(rate_limit.max_burst)
-              .push(rate_limit.count_per_period)
-              .push(rate_limit.period)
-      end
-
-      result
+      rate_limit_values.flat_map(&:to_array)
     end
 
     def self.load(values)
@@ -50,9 +45,11 @@ module Carto
     attr_accessor :max_burst, :count_per_period, :period
 
     def initialize(values)
-      self.max_burst = values[0].to_i
-      self.count_per_period = values[1].to_i
-      self.period = values[2].to_i
+      self.max_burst, self.count_per_period, self.period = values.map(&:to_i)
+    end
+
+    def to_array
+      [max_burst, count_per_period, period]
     end
   end
 end

@@ -61,8 +61,11 @@ module CartoDB
       def run_command(cmd)
         logger.debug "Running command: \"#{cmd}\""
         Tempfile.open('datamover') do |f|
-          run_command_with_log(cmd, f)
-          f.close(true)
+          begin
+            run_command_with_log(cmd, f)
+          ensure
+            f.close(true)
+          end
         end
       end
 

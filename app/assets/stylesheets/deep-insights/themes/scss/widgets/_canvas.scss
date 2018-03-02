@@ -108,3 +108,9 @@
     flex-direction: column;
   }
 }
+
+@media (min-width: $sMedia-l) and (max-width: $sMedia-xl) {
+  .CDB-Widget-canvas {
+    height: calc(100% - 38px);
+  }
+}

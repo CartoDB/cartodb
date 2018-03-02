@@ -18,7 +18,7 @@ module ModelFactories
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else
-                  { kind: 'tiled', options: basemap.except() }
+                  { kind: 'tiled', options: basemap }
                 end
 
       ::Layer.new(options)

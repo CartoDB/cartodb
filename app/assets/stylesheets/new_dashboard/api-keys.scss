@@ -12,6 +12,13 @@
   border-bottom: 1px solid rgba(#000, 0.1);
 }
 
+.ApiKeys-list {
+  .Pagination {
+    justify-content: flex-end;
+    margin: 1rem 0;
+  }
+}
+
 .ApiKeys-list-item {
   display: flex;
   flex-direction: row;

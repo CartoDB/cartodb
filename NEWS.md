@@ -13,6 +13,7 @@ to the oauth.google_plus section of the configuration file.
 
 ### Features
 * Improve API keys view for the new Auth API (#13477)
+* Adjust widget styles in embed maps movile view (#13487)
 * Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
 * checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
 * Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
@@ -139,12 +140,15 @@ ion for time-series (#12670)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
 * Updates Dataservices API client default version to `0.23.0`
 * Added Mapbox services providers (#cartodb-platform/3835)
+* Add support for queryparams and special permissions in Auth API (#13597)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
 * Change Mapbox modal (#1265)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
+* Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)
 * Add `shield-placement-keyword` CartoCSS property (#13612)
 * Fix icons in custom html legends (#13600)
 * Rename 'cartodb3' to 'builder'
@@ -152,6 +156,7 @@ ion for time-series (#12670)
 * Add marker size to layer cartocss props to reinstantiate torque map (#13590)
 * Fix select geometries dropdown in JOIN analysis ([Support#1281](https://github.com/CartoDB/support/issues/1281))
 * Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
+* Add new attributes to events ([Central#1997](https://github.com/CartoDB/cartodb-central#1997))
 * Removed references to analytics JS files in static pages (#13543)
 * Add titles (and description) to embeds in mobile viewports (#13517)
 * Support several versions of pg_dump and pg_restore binaries (CartoDB/cartodb-central#2073)

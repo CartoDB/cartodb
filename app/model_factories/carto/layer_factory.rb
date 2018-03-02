@@ -1,7 +1,7 @@
 module Carto
   class LayerFactory
     def self.build_default_base_layer(user)
-      basemap = user.default_basemap
+      basemap = user.default_basemap.except('default')
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else

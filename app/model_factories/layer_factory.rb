@@ -14,11 +14,11 @@ module ModelFactories
     end
 
     def self.get_default_base_layer(user)
-      basemap = user.default_basemap
+      basemap = user.default_basemap.except('default')
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else
-                  { kind: 'tiled', options: basemap }
+                  { kind: 'tiled', options: basemap.except() }
                 end
 
       ::Layer.new(options)

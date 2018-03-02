@@ -159,6 +159,19 @@ describe 'UserMigration' do
       import.run_import.should eq false
       Carto::User.exists?(@user.id).should eq true
     end
+
+    it 'import record should exist if import_data fails and rollbacks' do
+      Carto::UserMigrationImport.any_instance.stubs(:do_import_data).raises('Some exception')
+
+      imp = import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+
+      Carto::UserMigrationImport.where(id: imp.id).should_not be_empty
+      Carto::User.where(username: @carto_user.username).should be_empty
+
+      Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
+    end
   end
 
   describe 'failing organization organizations should rollback' do
@@ -247,6 +260,19 @@ describe 'UserMigration' do
       imp = org_import
       imp.run_import.should eq false
       imp.state.should eq 'failure'
+    end
+
+    it 'import record should exist if import_data fails and rollbacks' do
+      Carto::UserMigrationImport.any_instance.stubs(:do_import_data).raises('Some exception')
+
+      imp = org_import
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+
+      Carto::UserMigrationImport.where(id: imp.id).should_not be_empty
+      Carto::Organization.where(id: @carto_organization.id).should be_empty
+
+      Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
     end
   end
 
@@ -488,7 +514,7 @@ describe 'UserMigration' do
       @user = FactoryGirl.build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
-      @master_api_key = Carto::ApiKey.create_master_key!(user: @carto_user)
+      @master_api_key = @carto_user.api_keys.create_master_key!
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_user,
                                                            name: 'Some ApiKey',
@@ -565,6 +591,38 @@ describe 'UserMigration' do
       user.should be
       user.api_keys.each(&:table_permissions_from_db) # to make sure DB can be queried without exceptions
       user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
+    end
+  end
+
+  include CartoDB::DataMover::Utils
+  describe 'database version' do
+    before(:each) do
+      @conn_mock = Object.new
+      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 9.5.2 on x86_64-pc-linux-gnu...'])
+    end
+
+    it 'should get proper database version for pg_* binaries' do
+      get_database_version_for_binaries(@conn_mock).should eq '9.5'
+
+      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
+      get_database_version_for_binaries(@conn_mock).should eq '10'
+    end
+
+    it 'should get proper binary paths version for pg_dump and pg_restore' do
+      get_pg_dump_bin_path(@conn_mock).should include 'pg_dump'
+      get_pg_restore_bin_path(@conn_mock).should include 'pg_restore'
+    end
+
+    it 'raises exception if cannot get dump database version' do
+      expect { get_dump_database_version(@conn_mock, '123') }.to raise_error
+    end
+
+    it 'retrieves dump database version from stubbed dump file name' do
+      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
+      status_mock = Object.new
+      status_mock.stubs(:success?).returns(true)
+      Open3.stubs(:capture3).returns([';     Dumped by pg_dump version: 9.5.2', '', status_mock])
+      get_dump_database_version(@conn_mock, '/tmp/test.dump').should eq '9.5'
     end
   end
 

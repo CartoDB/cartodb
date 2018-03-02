@@ -123,8 +123,7 @@
   overflow: hidden;
 }
 
-// Widget media query
-@media (max-width: 1300px) {
+@media (max-width: $sMedia-max-embed) {
   .CDB-Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
@@ -135,7 +134,7 @@
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget {
     @include flex(0 0 auto);
     width: auto;
@@ -177,8 +176,8 @@
   }
 
   .CDB-Widget-content--histogram {
-    @include display-flex();
-    @include flex-direction(column);
+    display: flex;
+    flex-direction: column;
     min-width: 232px;
   }
 
@@ -192,6 +191,7 @@
   }
 
   .CDB-Widget-canvasInner {
+    flex-direction: row;
     border-radius: 0;
   }
 

@@ -14,7 +14,7 @@ module Carto
     end
 
     it 'doesn\'t read the same file twice' do
-      file_path = 'lib/assets/javascripts/cartodb3/data/default-cartography.json'
+      file_path = 'lib/assets/javascripts/builder/data/default-cartography.json'
 
       File.expects(:read).with(file_path).returns('{}').at_most(1)
 

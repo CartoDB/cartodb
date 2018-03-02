@@ -212,17 +212,20 @@ class ApplicationController < ActionController::Base
   end
 
   def api_authorization_required
-    authenticate!(:api_key, :auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
+    authenticate!(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
+    validate_session(current_user)
+  end
+
+  def any_api_authorization_required
+    authenticate!(:any_auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
     validate_session(current_user)
   end
 
   # This only allows to authenticate if sending an API request to username.api_key subdomain,
   # but doesn't break the request if can't authenticate
   def optional_api_authorization
-    if params[:api_key].present?
-      got_auth = authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
-      validate_session(current_user) if got_auth
-    end
+    got_auth = authenticate(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
+    validate_session(current_user) if got_auth
   end
 
   def render_locked_user

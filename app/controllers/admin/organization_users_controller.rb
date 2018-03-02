@@ -207,7 +207,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def regenerate_api_key
-    @user.regenerate_api_key
+    @user.regenerate_all_api_keys
     flash[:success] = "User API key regenerated successfully"
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue => e

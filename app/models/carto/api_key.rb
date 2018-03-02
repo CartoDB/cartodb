@@ -70,13 +70,14 @@ module Carto
 
     after_create :setup_db_role, if: ->(k) { k.regular? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
-    after_save :add_to_redis
+    after_save :add_to_redis, if: :valid_user?
 
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
 
-    scope :master, ->() { where(type: TYPE_MASTER) }
-    scope :default_public, ->() { where(type: TYPE_DEFAULT_PUBLIC) }
+    scope :master, -> { where(type: TYPE_MASTER) }
+    scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
+    scope :regular, -> { where(type: TYPE_REGULAR) }
 
     attr_accessor :skip_role_setup
 
@@ -113,6 +114,20 @@ module Carto
         name: name,
         grants: grants
       )
+    end
+
+    def self.create_in_memory_master(user: Carto::User.find(scope_attributes['user_id']))
+      api_key = new(
+        user: user,
+        type: TYPE_MASTER,
+        name: NAME_MASTER,
+        token: user.api_key,
+        grants: GRANTS_ALL_APIS,
+        db_role: user.database_username,
+        db_password: user.database_password
+      )
+      api_key.readonly!
+      api_key
     end
 
     def self.new_from_hash(api_key_hash)
@@ -160,10 +175,15 @@ module Carto
       end
     end
 
-    def create_token
-      begin
-        self.token = generate_auth_token
-      end while self.class.exists?(token: token)
+    def regenerate_token!
+      if master?
+        # Send all master key updates through the user model, avoid circular updates
+        ::User[user.id].regenerate_api_key
+        reload
+      else
+        create_token
+        save!
+      end
     end
 
     def master?
@@ -206,11 +226,22 @@ module Carto
       queries
     end
 
+    def set_enabled_for_engine
+      # We enable/disable API keys for engine usage by adding/removing them from Redis
+      valid_user? ? add_to_redis : remove_from_redis
+    end
+
     private
 
     PASSWORD_LENGTH = 40
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
+    def create_token
+      begin
+        self.token = generate_auth_token
+      end while self.class.exists?(user_id: user_id, token: token)
+    end
 
     def add_to_redis
       redis_client.hmset(redis_key, redis_hash_as_array)
@@ -247,7 +278,7 @@ module Carto
     def create_db_config
       begin
         self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
-      end while self.class.exists?(db_role: db_role)
+      end while self.class.exists?(user_id: user_id, db_role: db_role)
       self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
     end
 
@@ -257,6 +288,9 @@ module Carto
       table_permissions.each do |tp|
         unless tp.permissions.empty?
           db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
+          sequences_for_table(tp.schema, tp.name).each do |seq|
+            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+          end
         end
       end
 
@@ -282,6 +316,22 @@ module Carto
 
     def remove_from_redis(key = redis_key)
       redis_client.del(key)
+    end
+
+    def sequences_for_table(schema, table)
+      db_run(%{
+        SELECT
+          n.nspname, c.relname
+        FROM
+          pg_depend d
+          JOIN pg_class c ON d.objid = c.oid
+          JOIN pg_namespace n ON c.relnamespace = n.oid
+        WHERE
+          d.refobjsubid > 0 AND
+          d.classid = 'pg_class'::regclass AND
+          c.relkind = 'S'::"char" AND
+          d.refobjid = '#{schema}.#{table}'::regclass;
+      }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 
     def db_run(query)
@@ -319,7 +369,6 @@ module Carto
 
     def grant_aux_write_privileges_for_schema(s)
       db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
-      db_run("GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{s}\" TO \"#{db_role}\"")
     end
 
     def valid_master_key
@@ -332,6 +381,11 @@ module Carto
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
       errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
+    end
+
+    def valid_user?
+      # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled
+      !(user.locked? || regular? && !user.engine_enabled?)
     end
   end
 end

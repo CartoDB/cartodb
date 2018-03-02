@@ -13,9 +13,7 @@
 
 <% content_for(:js) do %>
   <% if @table.map.provider == 'googlemaps' %>
-    <script type="text/javascript"
-      src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @user.google_maps_query_string %>">
-    </script>
+    <%= insert_google_maps(@user.google_maps_query_string) %>
   <% end %>
 
   <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>

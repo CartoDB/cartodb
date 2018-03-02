@@ -133,10 +133,10 @@ class User < Sequel::Model
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
 
-  def self.new_with_organization(organization)
+  def self.new_with_organization(organization, viewer: false)
     user = ::User.new
     user.organization = organization
-    user.quota_in_bytes = organization.default_quota_in_bytes
+    user.quota_in_bytes = viewer ? 0 : organization.default_quota_in_bytes
     user
   end
 
@@ -1723,8 +1723,8 @@ class User < Sequel::Model
   def create_api_keys
     carto_user = Carto::User.find(id)
 
-    carto_user.api_keys.create_master_key!
-    carto_user.api_keys.create_default_public_key!
+    carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
+    carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
   end
 
   private

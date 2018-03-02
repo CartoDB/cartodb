@@ -62,7 +62,7 @@
       };
     </script>
     <% if @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps' %>
-      <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @most_viewed_vis_map.user.google_maps_query_string %>"></script>
+      <%= insert_google_maps(@most_viewed_vis_map.user.google_maps_query_string) %>
     <% end %>
     <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <%= yield :js %>

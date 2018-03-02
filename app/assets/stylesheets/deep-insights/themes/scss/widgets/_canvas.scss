@@ -109,7 +109,7 @@
   }
 }
 
-@media (min-width: $sMedia-l) and (max-width: $sMedia-xl) {
+@media (min-width: $sMedia-l + 1px) and (max-width: $sMedia-xl) {
   .CDB-Widget-canvas {
     height: calc(100% - 38px);
   }

@@ -139,6 +139,11 @@
 
 .Share-copy {
   position: absolute;
+  top: 50%;
   right: 0;
-  min-height: 32px;
+  transform: translate3d(0, -50%, 0);
+}
+
+.Editor-formInput {
+  position: relative;
 }

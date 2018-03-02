@@ -60,7 +60,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def show
-    render_jsonp(Carto::Api::ApiKeyPresenter.new(@viewed_api_key).to_poro, 200)
+    render_jsonp(json_for_api_key(@viewed_api_key).to_poro, 200)
   end
 
   private
@@ -84,7 +84,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def json_for_api_key(api_key)
     Carto::Api::ApiKeyPresenter.new(api_key).to_poro.merge(
       _links: {
-        self: api_key_url(id: api_key.name)
+        self: { href: api_key_url(id: api_key.name) }
       }
     )
   end

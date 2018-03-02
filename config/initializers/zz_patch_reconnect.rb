@@ -18,7 +18,7 @@
 module PostgreSQLAutoReconnectionPatch
   # Queries the database and returns the results in an Array-like object
   def query(sql, name = nil) #:nodoc:
-    with_auto_reconnect(sql, name) do
+    with_auto_reconnect do
       super
     end
   end

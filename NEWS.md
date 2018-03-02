@@ -495,6 +495,7 @@ ion for time-series (#12670)
 * Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
 * Merge Deep-insights project in Cartodb (#13284)
 * Affected specs tasks now take into account multiple specs folders [PR #13295](https://github.com/CartoDB/cartodb/pull/13295)
+* Updated to Rails 4.2.10 (#11735)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

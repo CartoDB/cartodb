@@ -14,6 +14,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
+  public_table_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dataset.js'),
   public_dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dashboard.js'),
   user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js'),
   api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js'),

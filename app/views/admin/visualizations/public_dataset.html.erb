@@ -16,7 +16,11 @@
     <%= insert_google_maps(@user.google_maps_query_string) %>
   <% end %>
 
-  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
+  <% if @has_new_dashboard %>
+    <%= javascript_include_tag 'common_dashboard.js', 'public_table_new_vendor.js', 'public_table_new.js' %>
+  <% else %>
+    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
+  <% end %>
 
   <script>
     var table_name          = '<%=raw @table.qualified_table_name %>';
@@ -39,26 +43,28 @@
       debug = true;
     <% end %>
 
-    cdb.config.set('debug', debug);
+    <% unless @has_new_dashboard %>
+      cdb.config.set('debug', debug);
 
-    $(function() {
-      <% if Cartodb.config[:graphite_public] %>
-        if (location.protocol.indexOf('https') === -1) {
-          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
-            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-              cartodb.core.Profiler.backend(function () {
-              statsc.send.apply(statsc, arguments);
+      $(function() {
+        <% if Cartodb.config[:graphite_public] %>
+          if (location.protocol.indexOf('https') === -1) {
+            jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+              statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+                cartodb.core.Profiler.backend(function () {
+                statsc.send.apply(statsc, arguments);
+              })
+              // stop sending stats after 11 seconds
+              // statsc send stats in 5 secs interval so allow to send at least twice
+              setTimeout(function() {
+                  cartodb.core.Profiler.backend(null);
+              }, 11*1000);
+
             })
-            // stop sending stats after 11 seconds
-            // statsc send stats in 5 secs interval so allow to send at least twice
-            setTimeout(function() {
-                cartodb.core.Profiler.backend(null);
-            }, 11*1000);
-
-          })
-        }
-      <% end %>
-    });
+          }
+        <% end %>
+      });
+    <% end %>
   </script>
 
 <% end %>

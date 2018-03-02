@@ -132,6 +132,8 @@ module CartoDB
       api_keys_new_vendor.js
       public_dashboard_new.js
       public_dashboard_new_vendor.js
+      public_table_new.js
+      public_table_new_vendor.js
       data_library_new.js
       data_library_new_vendor.js
       common_dashboard.js

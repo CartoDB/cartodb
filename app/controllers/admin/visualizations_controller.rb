@@ -114,6 +114,9 @@ class Admin::VisualizationsController < Admin::AdminController
   def public_table
     return(render_pretty_404) if @visualization.private?
 
+    get_viewed_user
+    @has_new_dashboard = @viewed_user.has_feature_flag?('dashboard_migration')
+
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]
         destination_user = ::User.where(username: request.params[:user_domain]).first

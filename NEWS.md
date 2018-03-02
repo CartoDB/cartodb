@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Update multiple widgets at once (#13596)
 * Adjust widget styles in embed maps movile view (#13487)
 * Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
 * checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
@@ -143,7 +144,6 @@ ion for time-series (#12670)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
 * Change Mapbox modal (#1265)
-* Add end-point to update multiple widgets at once (#13596)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements

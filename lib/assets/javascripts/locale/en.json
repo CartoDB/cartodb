@@ -2232,9 +2232,9 @@
         "between": "Between",
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
-        "is-greater-or-equal-than": "Is greater or equal than",
+        "is-greater-or-equal-than": "Is greater than or equal to",
         "is-less-than": "Is less than",
-        "is-less-or-equal-than": "Is less or equal than"
+        "is-less-or-equal-than": "Is less than or equal to"
       },
       "notifier": {
         "center-map": {

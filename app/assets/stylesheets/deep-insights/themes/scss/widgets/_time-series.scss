@@ -32,9 +32,9 @@
 }
 
 .CDB-Widget-timeSeriesFakeChart {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(flex-end);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   width: 100%;
   height: 92px; // value to match real widget content height, to avoid "jumpy" behavior
   margin-top: 29px;
@@ -45,12 +45,12 @@
 }
 
 .CDB-Widget-timeSeriesFakeChartItem {
-  @include flex-grow(1);
   display: inline-block;
+  flex-grow: 1;
   margin-right: $baseSize / 4;
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget-timeSeriesFakeChart {
     height: $baseSize * 2;
   }

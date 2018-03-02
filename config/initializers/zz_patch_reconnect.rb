@@ -18,7 +18,7 @@
 module PostgreSQLAutoReconnectionPatch
   # Queries the database and returns the results in an Array-like object
   def query(sql, name = nil) #:nodoc:
-    wrap_execute(sql, name) do
+    with_auto_reconnect(sql, name) do
       super
     end
   end
@@ -26,36 +26,30 @@ module PostgreSQLAutoReconnectionPatch
   # Executes an SQL statement, returning a PGresult object on success
   # or raising a PGError exception otherwise.
   def execute(sql, name = nil)
-    wrap_execute(sql, name) do
+    with_auto_reconnect do
       super
     end
   end
 
   def exec_query(sql, name = 'SQL', binds = [])
-    wrap_execute(sql, name, binds) do
+    with_auto_reconnect do
       super
     end
   end
 
   def exec_delete(sql, name = 'SQL', binds = [])
-    wrap_execute(sql, name, binds) do
+    with_auto_reconnect do
       super
     end
   end
 
   private
 
-  def wrap_execute(sql, name = "SQL", binds = [])
-    with_auto_reconnect do
-      yield
-    end
-  end
-
   def with_auto_reconnect
     yield
   rescue ActiveRecord::StatementInvalid
     raise unless @connection.status == PG::CONNECTION_BAD
-    raise unless open_transactions == 0
+    raise unless open_transactions.zero?
 
     reconnect!
     yield

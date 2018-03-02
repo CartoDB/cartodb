@@ -400,24 +400,6 @@ defaults: &defaults
         labels:
           urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png'
           urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}@2x.png'
-      voyager:
-        urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png'
-        urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}@2x.png'
-        subdomains: 'abcd'
-        minZoom: '0'
-        maxZoom: '18'
-        name: 'Voyager (labels below)'
-        className: 'voyager'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
-      voyager_lite:
-        urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
-        urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png'
-        subdomains: 'abcd'
-        minZoom: '0'
-        maxZoom: '18'
-        name: 'Voyager (lite)'
-        className: 'voyager_lite'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       positron_rainbow_labels:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png'
@@ -442,6 +424,15 @@ defaults: &defaults
         labels:
           urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'
           urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png'
+      voyager:
+        urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png'
+        urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}@2x.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager (labels below)'
+        className: 'voyager'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       positron_rainbow:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'
@@ -459,6 +450,15 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter (labels below)'
         className: 'dark_matter_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      voyager_lite:
+        urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
+        urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Voyager (lite)'
+        className: 'voyager_lite'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       positron_lite_rainbow:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'

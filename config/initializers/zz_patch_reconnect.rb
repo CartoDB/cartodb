@@ -31,7 +31,6 @@ module PostgreSQLAutoReconnectionPatch
     end
   end
 
-
   def exec_query(sql, name = 'SQL', binds = [])
     wrap_execute(sql, name, binds) do
       super
@@ -54,7 +53,6 @@ module PostgreSQLAutoReconnectionPatch
 
   def with_auto_reconnect
     yield
-
   rescue ActiveRecord::StatementInvalid
     raise unless @connection.status == PG::CONNECTION_BAD
     raise unless open_transactions == 0
@@ -65,7 +63,7 @@ module PostgreSQLAutoReconnectionPatch
     unless @connection.status == PG::CONNECTION_BAD
       raise "Not valid connection status: #{@connection.status}. Error: #{e.message}"
     end
-    raise unless open_transactions == 0
+    raise unless open_transactions.zero?
     raise unless e.message =~ /result has been cleared/
 
     reconnect!

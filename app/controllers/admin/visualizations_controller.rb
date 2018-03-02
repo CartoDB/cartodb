@@ -27,8 +27,6 @@ class Admin::VisualizationsController < Admin::AdminController
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
   ssl_required :index, :show, :protected_public_map, :show_protected_public_map
 
-
-
   before_filter :x_frame_options_allow, only: [:embed_forbidden, :embed_map, :embed_protected,
                                                :show_organization_embed_map, :show_protected_embed_map,
                                                :track_embed]
@@ -571,9 +569,9 @@ class Admin::VisualizationsController < Admin::AdminController
       # Might be an org url, try getting the org
       organization = Organization.where(name: org_name).first
       unless organization.nil?
-        authenticated_users = request.session.to_hash.select { |k, v|
+        authenticated_users = request.session.to_hash.select { |k, _v|
           k.start_with?("warden.user") && !k.end_with?(".session")
-        }                                    .values
+        }.values
         authenticated_users.each { |username|
           user = ::User.where(username: username).first
           if url.nil? && !user.nil? && !user.organization.nil?

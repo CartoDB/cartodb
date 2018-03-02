@@ -1,5 +1,4 @@
 class Superadmin::SuperadminController < ActionController::Base
-  #include SslRequirement
   before_filter :authenticate
 
   rescue_from StandardError, with: :rescue_from_superadmin_error
@@ -10,7 +9,7 @@ class Superadmin::SuperadminController < ActionController::Base
     end
   end
 
-  def self.ssl_allowed(*splat)
+  def self.ssl_allowed(*_splat)
     # noop
   end
 

@@ -15,7 +15,7 @@ describe Carto::Api::GrantablesController do
   describe 'Grantables', :order => :defined do
 
     before(:all) do
-      @headers = {'CONTENT_TYPE'  => 'application/json', :format => "json", 'Accept' => 'application/json' }
+      @headers = { 'CONTENT_TYPE' => 'application/json', :format => "json", 'Accept' => 'application/json' }
     end
 
     it "Throws 401 error without http auth" do

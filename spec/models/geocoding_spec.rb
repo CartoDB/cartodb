@@ -111,7 +111,7 @@ describe Geocoding do
     it 'sends a payload with duration information' do
       def is_metrics_payload?(str)
         payload = JSON.parse(str)
-        payload.has_key?('queue_time') && payload.has_key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
+        payload.key?('queue_time') && payload.key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
       rescue JSON::ParserError
         false
       end

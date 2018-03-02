@@ -2037,7 +2037,7 @@ describe Carto::Api::VisualizationsController do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:datasource].has_key?(:template_name).should be_false
+          vizjson3[:datasource].key?(:template_name).should be_false
         end
       end
     end

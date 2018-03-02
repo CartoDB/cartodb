@@ -36,7 +36,7 @@ describe Carto::Api::GroupsController do
       @group_2_json = { 'id' => @group_2.id, 'organization_id' => @group_2.organization_id, 'name' => @group_2.name, 'display_name' => @group_2.display_name }
       @group_3 = FactoryGirl.create(:random_group, display_name: 'g_3', organization: @carto_organization)
       @group_3_json = { 'id' => @group_3.id, 'organization_id' => @group_3.organization_id, 'name' => @group_3.name, 'display_name' => @group_3.display_name }
-      @headers = {'CONTENT_TYPE'  => 'application/json', :format => "json", 'Accept' => 'application/json' }
+      @headers = { 'CONTENT_TYPE' => 'application/json', :format => "json", 'Accept' => 'application/json' }
     end
 
     after(:all) do

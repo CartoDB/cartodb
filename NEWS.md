@@ -146,6 +146,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix `Fix them` redirection bug (https://github.com/CartoDB/cartodb/issues/9974)
 * Fix bad SQL behavior: infinite loop and blank panels (https://github.com/CartoDB/cartodb/issues/13603)
 * Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
 * Allows a viewer user to sign up to an org with no unassigned quota ([#1341](https://github.com/CartoDB/support/issues/1341))

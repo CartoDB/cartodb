@@ -27,7 +27,7 @@
   <% } %>
 
   <div class="Dialog-footer u-inner">
-    <button type="button" class="CDB-Button CDB-Button--secondary cancel">
+    <button type="button" class="CDB-Button CDB-Button--secondary js-cancel">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
     </button>
     <button type="submit" class="CDB-Button CDB-Button--error js-ok">

@@ -55,8 +55,8 @@ var LAYER_CONSTRUCTORS = {
   tiled: function (attrs, options) {
     checkProperties(attrs, ['urlTemplate']);
 
-    var layerUrl = LayersFactory.isRetina() && attrs.urlTemplateRetina
-      ? attrs.urlTemplateRetina
+    var layerUrl = LayersFactory.isHdpi() && attrs.urlTemplate2x
+      ? attrs.urlTemplate2x
       : attrs.urlTemplate;
 
     attrs.urlTemplate = LayersFactory.isHttps()
@@ -154,7 +154,7 @@ LayersFactory.isHttps = function () {
   return (window && window.location.protocol && window.location.protocol === 'https:') || false;
 };
 
-LayersFactory.isRetina = function () {
+LayersFactory.isHdpi = function () {
   return window.devicePixelRatio > 1;
 };
 

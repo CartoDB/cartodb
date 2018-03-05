@@ -26,13 +26,10 @@ module Carto
 
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
 
-    before_save :fix_rate_limit_values_for_insert
-    after_save :reserialize
-
     def to_redis
       result = {}
       RATE_LIMIT_ATTRIBUTES.each do |key|
-        result[key.to_s.sub('_', ':')] = as_rate_limit_values(key).to_redis_array
+        result[key.to_s.sub('_', ':')] = self[key].to_redis_array
       end
       result
     end
@@ -41,24 +38,6 @@ module Carto
       to_redis.each do |key, value|
         $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
         $limits_metadata.RPUSH "limits:rate:store:#{user.username}:#{key}", value
-      end
-    end
-
-    private
-
-    def reserialize
-      RATE_LIMIT_ATTRIBUTES.each { |attr| self[attr] = RateLimitValues.new(self[attr]) }
-    end
-
-    def as_rate_limit_values(key)
-      value = self[key]
-      value = RateLimitValues.new(value) unless value.is_a?(RateLimitValues)
-      value
-    end
-
-    def fix_rate_limit_values_for_insert
-      RATE_LIMIT_ATTRIBUTES.each do |key|
-        self[key] = Carto::InsertableArray.new(as_rate_limit_values(key).to_redis_array)
       end
     end
   end

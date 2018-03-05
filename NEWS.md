@@ -148,6 +148,7 @@ ion for time-series (#12670)
 ### Bug fixes / enhancements
 * Fix `Fix them` redirection bug (https://github.com/CartoDB/cartodb/issues/9974)
 * Fix bad SQL behavior: infinite loop and blank panels (https://github.com/CartoDB/cartodb/issues/13603)
+* Several style fixes in IE11 (https://github.com/CartoDB/cartodb/issues/13635)
 * Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
 * Allows a viewer user to sign up to an org with no unassigned quota ([#1341](https://github.com/CartoDB/support/issues/1341))
 * Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)

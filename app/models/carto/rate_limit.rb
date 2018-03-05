@@ -27,11 +27,12 @@ module Carto
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
 
     before_create :fix_rate_limit_values_for_insert
+    before_save :fix_rate_limit_values_for_insert
 
     def to_redis
       result = {}
       RATE_LIMIT_ATTRIBUTES.each do |key|
-        result[key.to_s.sub('_', ':')] = self[key].to_redis_array
+        result[key.to_s.sub('_', ':')] = as_rate_limit_values(key).to_redis_array
       end
       result
     end
@@ -45,10 +46,15 @@ module Carto
 
     private
 
+    def as_rate_limit_values(attr)
+      value = self[attr]
+      value = RateLimitValues.new(value) unless value.is_a?(RateLimitValues)
+      value
+    end
+
     def fix_rate_limit_values_for_insert
       RATE_LIMIT_ATTRIBUTES.each do |key|
-        value = self[key]
-        self[key] = Carto::InsertableArray.new(value) if value
+        self[key] = Carto::InsertableArray.new(as_rate_limit_values(key).to_redis_array)
       end
     end
   end

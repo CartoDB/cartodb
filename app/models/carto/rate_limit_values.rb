@@ -1,17 +1,13 @@
 module Carto
   class RateLimitValues
     extend Forwardable
-    delegate [].methods => :@rate_limits
+    delegate [:first, :second, :all, :push, :pop, :each, :flat_map, :empty?, :length] => :@rate_limits
 
     VALUES_PER_RATE_LIMIT = 3
 
     def initialize(values)
       @rate_limits = []
-      values = convert_to_array(values)
-
-      if !values || values.length % VALUES_PER_RATE_LIMIT != 0
-        raise 'Error: Number of rate limits needs to be multiple of three'
-      end
+      values = convert_from_db_array(values)
 
       values.each_slice(VALUES_PER_RATE_LIMIT) do |slice|
         push(RateLimitValue.new(slice))
@@ -34,7 +30,7 @@ module Carto
 
     private
 
-    def convert_to_array(values)
+    def convert_from_db_array(values)
       return [] if values.nil? || values.empty?
       return values.delete('{}').split(',') if values.is_a? String
       values
@@ -45,6 +41,10 @@ module Carto
     attr_accessor :max_burst, :count_per_period, :period
 
     def initialize(values)
+      if !values || values.length % Carto::RateLimitValues::VALUES_PER_RATE_LIMIT != 0
+        raise 'Error: Number of rate limits needs to be multiple of three'
+      end
+
       self.max_burst, self.count_per_period, self.period = values.map(&:to_i)
     end
 

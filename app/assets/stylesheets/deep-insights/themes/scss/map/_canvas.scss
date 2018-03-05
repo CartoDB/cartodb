@@ -51,7 +51,7 @@ $canvas-dark: #293A41;
   margin-top: 8px;
 }
 
-@media (min-width: $sMedia-xl) {
+@media (min-width: $sMedia-xl + 1px) {
   .CDB-Dashboard-mapWrapper--withMenu {
     margin-left: 56px;
   }

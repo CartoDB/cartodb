@@ -254,3 +254,9 @@
     display: none;
   }
 }
+
+@media (min-width: $sMedia-xxl + 1px) {
+  .CDB-Widget-listItem {
+    width: 346px;
+  }
+}

@@ -26,8 +26,8 @@ module Carto
 
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
 
-    before_create :fix_rate_limit_values_for_insert
     before_save :fix_rate_limit_values_for_insert
+    after_save :reserialize
 
     def to_redis
       result = {}
@@ -46,8 +46,12 @@ module Carto
 
     private
 
-    def as_rate_limit_values(attr)
-      value = self[attr]
+    def reserialize
+      RATE_LIMIT_ATTRIBUTES.each { |attr| self[attr] = RateLimitValues.new(self[attr]) }
+    end
+
+    def as_rate_limit_values(key)
+      value = self[key]
       value = RateLimitValues.new(value) unless value.is_a?(RateLimitValues)
       value
     end

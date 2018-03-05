@@ -102,9 +102,31 @@ describe Carto::RateLimit do
     end
 
     it 'is persisted correctly to redis' do
-      @rate_limit.save_to_redis(@user)
       map_prefix = "limits:rate:store:#{@user.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user.username}:sql:"
+
+      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}static_named", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}dataview", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}dataview_search", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}analysis", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}tile", 0, 5).should == []
+      $limits_metadata.LRANGE("#{map_prefix}attributes", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}named_list", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}named_create", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}named_get", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}named", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}named_update", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}named_delete", 0, 2).should == []
+      $limits_metadata.LRANGE("#{map_prefix}named_tiles", 0, 2).should == []
+      $limits_metadata.LRANGE("#{sql_prefix}query", 0, 2).should == []
+      $limits_metadata.LRANGE("#{sql_prefix}query_format", 0, 2).should == []
+      $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == []
+      $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == []
+      $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == []
+
+      @rate_limit.save_to_redis(@user)
 
       $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
       $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ["3", "4", "5"]
@@ -126,6 +148,10 @@ describe Carto::RateLimit do
       $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ["19", "110", "111"]
       $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == ["6", "7", "8"]
       $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == ["0", "1", "2"]
+
+      @rate_limit.maps_static.first.max_burst = 4
+      @rate_limit.save_to_redis(@user)
+      $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ["4", "4", "5"]
     end
 
     it 'cannot crate a rate_limit with wrong number of rate limits' do

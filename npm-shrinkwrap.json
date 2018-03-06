@@ -23,9 +23,9 @@
       "resolved": "https://registry.npmjs.org/acorn-node/-/acorn-node-1.3.0.tgz",
       "dependencies": {
         "acorn": {
-          "version": "5.5.0",
+          "version": "5.5.1",
           "from": "acorn@>=5.4.1 <6.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.5.0.tgz"
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.5.1.tgz"
         }
       }
     },
@@ -460,9 +460,9 @@
       }
     },
     "clean-css": {
-      "version": "4.1.9",
+      "version": "4.1.10",
       "from": "clean-css@>=4.1.0 <4.2.0",
-      "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-4.1.9.tgz"
+      "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-4.1.10.tgz"
     },
     "clip-path-polygon": {
       "version": "0.1.12",
@@ -633,6 +633,11 @@
       "from": "d3-interpolate@>=1.1.6 <2.0.0",
       "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.6.tgz"
     },
+    "d3-queue": {
+      "version": "3.0.7",
+      "from": "d3-queue@>=3.0.7 <4.0.0",
+      "resolved": "https://registry.npmjs.org/d3-queue/-/d3-queue-3.0.7.tgz"
+    },
     "d3-time": {
       "version": "1.0.8",
       "from": "d3-time@>=1.0.0 <2.0.0",
@@ -694,9 +699,9 @@
       "resolved": "https://registry.npmjs.org/detective/-/detective-4.7.1.tgz",
       "dependencies": {
         "acorn": {
-          "version": "5.5.0",
+          "version": "5.5.1",
           "from": "acorn@>=5.2.1 <6.0.0",
-          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.5.0.tgz"
+          "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.5.1.tgz"
         }
       }
     },
@@ -1587,9 +1592,9 @@
           "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.6.tgz"
         },
         "string_decoder": {
-          "version": "1.0.3",
+          "version": "1.1.0",
           "from": "string_decoder@>=1.0.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.3.tgz"
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.0.tgz"
         },
         "timers-browserify": {
           "version": "2.0.6",
@@ -1853,7 +1858,7 @@
     },
     "promise-polyfill": {
       "version": "6.1.0",
-      "from": "promise-polyfill@>=6.1.0 <7.0.0",
+      "from": "https://registry.npmjs.org/promise-polyfill/-/promise-polyfill-6.1.0.tgz",
       "resolved": "https://registry.npmjs.org/promise-polyfill/-/promise-polyfill-6.1.0.tgz"
     },
     "prr": {

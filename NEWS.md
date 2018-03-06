@@ -146,6 +146,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Don't fetch rows when fetching columns for analyses (#13654)
 * Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
 * Allows a viewer user to sign up to an org with no unassigned quota ([#1341](https://github.com/CartoDB/support/issues/1341))
 * Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)

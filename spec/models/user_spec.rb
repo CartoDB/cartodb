@@ -2674,6 +2674,7 @@ describe User do
 
   describe 'when creating rate limits' do
     before :each do
+      @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits', restricted: false)
       @account_type = FactoryGirl.create(:account_type_free)
       @account_type_pro = FactoryGirl.create(:account_type_pro)
       @user = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)
@@ -2695,12 +2696,23 @@ describe User do
 
     after :each do
       @user.destroy unless @user.nil?
+      @user_no_ff.destroy unless @user_no_ff.nil?
       @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
       @account_type_pro.destroy unless @account_type_pro.nil?
       @account_type.rate_limit.destroy unless @account_type.nil?
       @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
       @rate_limits.destroy unless @rate_limits.nil?
+      @limits_feature_flag.destroy if @limits_feature_flag.exists?
+    end
+
+    it 'does not create rate limits if feature flag is not enabled' do
+      @limits_feature_flag.destroy unless @limits_feature_flag.nil?
+      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)
+      map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
+      sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
     end
 
     it 'creates rate limits from user account type' do
@@ -2724,7 +2736,6 @@ describe User do
       $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["6", "7", "8"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
-
     end
 
     it 'updates rate limits from user custom rate_limit' do

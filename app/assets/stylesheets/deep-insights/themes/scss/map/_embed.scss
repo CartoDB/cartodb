@@ -196,10 +196,10 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 }
 
-@media (max-width: $sMedia-min-w-vertical) {
+@media (max-width: $sMedia-min-w-vertical - 1px) {
   .CDB-Embed-content {
-    // 103px = header + tabs height
-    height: calc(100% - 103px);
+    // 104px = header + tabs height
+    height: calc(100% - 104px);
   }
 
   .CDB-Overlay-title {
@@ -231,6 +231,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   .CDB-Embed-tab {
     display: flex;
     width: 100%;
+    margin: 0;
     padding: 0;
     overflow-x: hidden;
   }

@@ -33,7 +33,6 @@ module Carto
 
     def self.dump(rate_limit_values)
       return [] if rate_limit_values.nil?
-      # rate_limit_values.validate
 
       Carto::InsertableArray.new(rate_limit_values.flat_map(&:to_array))
     end
@@ -41,11 +40,6 @@ module Carto
     def self.load(values)
       RateLimitValues.new(values)
     end
-
-    # def validate
-    #   raise 'Error. Empty rate limits for endpoint' if @rate_limits.empty?
-    #   @rate_limits.each(&:valid?)
-    # end
 
     private
 

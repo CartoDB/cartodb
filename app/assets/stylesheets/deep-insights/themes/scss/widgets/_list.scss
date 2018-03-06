@@ -93,6 +93,7 @@
 
 .CDB-Widget-listItem {
   display: block;
+  width: $mobileLayout - 6px;
 }
 
 .CDB-Widget-listItemInner {
@@ -207,21 +208,19 @@
   vertical-align: top;
 }
 
-// Widget media query
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget-listItem {
     width: 33.33%;
   }
 
   .CDB-Widget-listGroup {
-    @include display-flex();
-    @include flex-wrap(wrap);
+    display: flex;
+    flex-wrap: wrap;
     margin-right: 4px;
     margin-left: 4px;
   }
 
   .CDB-Widget-listWrapper {
-    min-width: 320px;
     overflow-x: hidden;
   }
 
@@ -246,5 +245,18 @@
   .CDB-Widget-content--noSidesMargin .CDB-Widget-listItem--fake {
     margin-right: 12px;
     margin-left: 12px;
+  }
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Widget-list--fake,
+  .CDB-Widget-listItem--fake {
+    display: none;
+  }
+}
+
+@media (min-width: 1301px) {
+  .CDB-Widget-listItem {
+    width: 346px;
   }
 }

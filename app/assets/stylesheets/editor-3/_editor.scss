@@ -102,7 +102,7 @@
   .Editor {
     .CDB-Widget-canvas,
     .CDB-Widget {
-      width: 280px;
+      width: $mobileLayout;
     }
 
     .CDB-Widget.CDB-Widget--timeSeries {
@@ -115,8 +115,12 @@
     }
 
     .CDB-Widget-canvas {
-      min-width: 280px;
-      max-width: 280px;
+      min-width: $mobileLayout;
+      max-width: $mobileLayout;
+    }
+
+    .CDB-Widget-listItem {
+      width: $mobileLayout - 6px;
     }
   }
 }

@@ -93,6 +93,7 @@
 
 .CDB-Widget-listItem {
   display: block;
+  width: $mobileLayout - 6px;
 }
 
 .CDB-Widget-listItemInner {
@@ -251,5 +252,11 @@
   .CDB-Widget-list--fake,
   .CDB-Widget-listItem--fake {
     display: none;
+  }
+}
+
+@media (min-width: 1301px) {
+  .CDB-Widget-listItem {
+    width: 346px;
   }
 }

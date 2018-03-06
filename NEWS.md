@@ -147,6 +147,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)
+* Add isSourceType false by default to select-view (#13655)
 * Parameter text for Filter by Column Value Analysis Method (https://github.com/CartoDB/design/issues/1125)
 * Fix `Fix them` redirection bug (https://github.com/CartoDB/cartodb/issues/9974)
 * Fix bad SQL behavior: infinite loop and blank panels (https://github.com/CartoDB/cartodb/issues/13603)

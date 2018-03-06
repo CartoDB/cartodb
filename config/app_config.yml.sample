@@ -479,7 +479,7 @@ defaults: &defaults
         className: 'dark_matter_lite_rainbow'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       eco_cartodb:
-        urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
+        urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '10'

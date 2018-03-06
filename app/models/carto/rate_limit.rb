@@ -35,6 +35,7 @@ module Carto
     end
 
     def save_to_redis(user)
+      return unless user.has_feature_flag?('limits')
       to_redis.each do |key, value|
         $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
         $limits_metadata.RPUSH "limits:rate:store:#{user.username}:#{key}", value

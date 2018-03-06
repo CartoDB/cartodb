@@ -1,19 +1,20 @@
 module Carto
   class RateLimitValues
     extend Forwardable
-    delegate [:first,
-              :second,
-              :all,
-              :push,
-              :pop,
-              :each,
-              :flat_map,
-              :empty?,
-              :length,
-              :<<,
+    delegate [:<<,
               :[],
               :[]=,
-              :clear] => :@rate_limits
+              :all,
+              :clear,
+              :each,
+              :empty?,
+              :flat_map,
+              :first,
+              :length,
+              :pop,
+              :present?,
+              :push,
+              :second] => :@rate_limits
 
     VALUES_PER_RATE_LIMIT = 3
 
@@ -32,7 +33,7 @@ module Carto
 
     def self.dump(rate_limit_values)
       return [] if rate_limit_values.nil?
-      rate_limit_values.validate
+      # rate_limit_values.validate
 
       Carto::InsertableArray.new(rate_limit_values.flat_map(&:to_array))
     end
@@ -41,10 +42,10 @@ module Carto
       RateLimitValues.new(values)
     end
 
-    def validate
-      raise 'Error. Empty rate limits for endpoint' if @rate_limits.empty?
-      @rate_limits.each(&:valid?)
-    end
+    # def validate
+    #   raise 'Error. Empty rate limits for endpoint' if @rate_limits.empty?
+    #   @rate_limits.each(&:valid?)
+    # end
 
     private
 

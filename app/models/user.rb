@@ -998,6 +998,7 @@ class User < Sequel::Model
   end
 
   def save_rate_limits
+    return unless has_feature_flag?('limits_v2')
     effective_rate_limit.save_to_redis(self)
   rescue => e
     CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)

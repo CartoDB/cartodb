@@ -2674,7 +2674,7 @@ describe User do
 
   describe 'when creating rate limits' do
     before :each do
-      @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits', restricted: false)
+      @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = FactoryGirl.create(:account_type_free)
       @account_type_pro = FactoryGirl.create(:account_type_pro)
       @user = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)

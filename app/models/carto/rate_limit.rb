@@ -25,6 +25,7 @@ module Carto
                              :sql_job_delete].freeze
 
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
+    RATE_LIMIT_ATTRIBUTES.each { |attr| validates attr, presence: true }
 
     def to_redis
       result = {}
@@ -35,7 +36,7 @@ module Carto
     end
 
     def save_to_redis(user)
-      return unless user.has_feature_flag?('limits')
+      raise ActiveRecord::RecordInvalid.new(self) unless valid?
       to_redis.each do |key, value|
         $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
         $limits_metadata.RPUSH "limits:rate:store:#{user.username}:#{key}", value

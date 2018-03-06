@@ -54,7 +54,6 @@
   position: relative;
   z-index: 1;
   margin: 0;
-  overflow: hidden;
 }
 
 .CDB-Widget-list.is-hidden {
@@ -68,7 +67,6 @@
   flex-direction: row;
   max-height: 232px;
   margin-left: 0;
-  overflow: hidden;
 }
 
 .CDB-Widget-list--noresults {
@@ -214,10 +212,15 @@
   }
 
   .CDB-Widget-listGroup {
+    min-width: 249px;
+    max-width: 249px;
+    width: 249px;
     display: flex;
     flex-wrap: wrap;
-    margin-right: 4px;
-    margin-left: 4px;
+    padding-right: 4px;
+    padding-left: 4px;
+    box-sizing: border-box;
+    flex: 1;
   }
 
   .CDB-Widget-listWrapper {

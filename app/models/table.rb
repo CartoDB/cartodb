@@ -1211,7 +1211,7 @@ class Table
   def valid_cartodb_id_candidate?(col_name)
     return false unless flattened_schema.include?(col_name)
     owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
-      return db["SELECT COUNT(*) from #{qualified_table_name} where objectid is null"].first[:count] == 0
+      return db["SELECT COUNT(*) from #{qualified_table_name} where #{col_name} is null"].first[:count] == 0
     end
   end
 

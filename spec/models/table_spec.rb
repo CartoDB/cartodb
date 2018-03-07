@@ -211,7 +211,7 @@ describe Table do
             CartoDB: {
               "waduson" => {
                 "default" => true,
-                "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
                 "subdomains" => "abcd",
                 "minZoom" => "0",
                 "maxZoom" => "18",
@@ -240,7 +240,6 @@ describe Table do
           map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
 
           map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-          map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
           map.layers[0].options["subdomains"].should == "abcd"
           map.layers[0].options["minZoom"].should == "0"
           map.layers[0].options["maxZoom"].should == "18"
@@ -259,7 +258,7 @@ describe Table do
             CartoDB: {
               "waduson" => {
                 "default" => true,
-                "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
                 "subdomains" => "abcd",
                 "minZoom" => "0",
                 "maxZoom" => "18",
@@ -267,7 +266,7 @@ describe Table do
                 "className" => "waduson",
                 "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
                 "labels" => {
-                  "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+                  "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
                 }
               }
             }
@@ -282,7 +281,6 @@ describe Table do
           table.map.layers.map(&:kind).should == ['tiled', 'carto', 'tiled']
 
           table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-          table.map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
           table.map.layers[0].options["subdomains"].should == "abcd"
           table.map.layers[0].options["minZoom"].should == "0"
           table.map.layers[0].options["maxZoom"].should == "18"
@@ -292,7 +290,6 @@ describe Table do
           table.map.layers[0].order.should == 0
 
           table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
-          table.map.layers[2].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
           table.map.layers[2].options["subdomains"].should == "abcd"
           table.map.layers[2].options["minZoom"].should == "0"
           table.map.layers[2].options["maxZoom"].should == "18"

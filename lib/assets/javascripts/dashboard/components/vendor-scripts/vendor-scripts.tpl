@@ -25,7 +25,7 @@
     ga('set', 'Member Type', '<%= googleAnalyticsMemberType %>');
     ga('send', 'pageview');
   </script>
-  <script async src='https://www.google-analytics.com/analytics.js'></script>
+  <script async="" src='https://www.google-analytics.com/analytics.js'></script>
   <% } %>
 
   <% if (hubspotEnabled) { %>

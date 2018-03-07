@@ -212,15 +212,15 @@
   }
 
   .CDB-Widget-listGroup {
-    min-width: 249px;
-    max-width: 249px;
-    width: 249px;
     display: flex;
-    flex-wrap: wrap;
-    padding-right: 4px;
-    padding-left: 4px;
     box-sizing: border-box;
     flex: 1;
+    flex-wrap: wrap;
+    width: 249px;
+    min-width: 249px;
+    max-width: 249px;
+    padding-right: 4px;
+    padding-left: 4px;
   }
 
   .CDB-Widget-listWrapper {

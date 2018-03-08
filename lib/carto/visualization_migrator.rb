@@ -8,6 +8,7 @@ module Carto
 
       layer_selector_migration(vis)
       google_basemap_migration(vis)
+      analysis_migration(vis)
       mapcap_creation(vis)
     end
 
@@ -41,6 +42,11 @@ module Carto
         l.options[:baseType] = l.options.delete(:base_type)
         l.save!
       end
+    end
+
+    def analysis_migration(vis)
+      vis.add_source_analyses
+      vis.reload
     end
   end
 end

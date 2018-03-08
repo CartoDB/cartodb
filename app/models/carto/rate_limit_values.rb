@@ -27,6 +27,10 @@ module Carto
       end
     end
 
+    def to_array
+      flat_map(&:to_array)
+    end
+
     def to_redis_array
       RateLimitValues.dump(self)
     end

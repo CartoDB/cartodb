@@ -27,6 +27,12 @@ module Carto
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
     RATE_LIMIT_ATTRIBUTES.each { |attr| validates attr, presence: true }
 
+    def self.from_api_attributes(attributes)
+      rate_limit = RateLimit.new
+      attributes.each { |k, v| rate_limit[k] = RateLimitValues.new(v) }
+      rate_limit
+    end
+
     def to_redis
       result = {}
       RATE_LIMIT_ATTRIBUTES.each do |key|
@@ -41,6 +47,10 @@ module Carto
         $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
         $limits_metadata.RPUSH "limits:rate:store:#{user.username}:#{key}", value
       end
+    end
+
+    def api_attributes
+      RATE_LIMIT_ATTRIBUTES.map { |attr| [attr.to_sym, self[attr].to_array] }.to_h
     end
   end
 end

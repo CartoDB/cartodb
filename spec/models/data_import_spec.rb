@@ -18,7 +18,7 @@ describe DataImport do
 
   after(:all) do
     bypass_named_maps
-    @user.destroy
+    @user.try(:destroy)
   end
 
   it "raises an 1014 error when strategy is set to skip and there's already a table with that name" do

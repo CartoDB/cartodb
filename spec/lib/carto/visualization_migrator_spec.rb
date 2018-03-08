@@ -14,11 +14,17 @@ describe Carto::VisualizationMigrator do
   shared_context 'full visualization' do
     before(:all) do
       @user_1 = FactoryGirl.create(:carto_user, private_tables_enabled: false)
+    end
+
+    before(:each) do
       @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id), visualization_attributes: { version: 3 })
     end
 
-    after(:all) do
+    after(:each) do
       destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
+
+    after(:all) do
       @user_1.destroy
     end
   end
@@ -59,6 +65,18 @@ describe Carto::VisualizationMigrator do
       @visualization.reload
       @visualization.layers.first.options.should have_key(:baseType)
       @visualization.layers.first.options.should_not have_key(:base_type)
+    end
+
+    it 'adds analyses' do
+      # Fixture check
+      expect(@visualization.analyses.none?).to be_true
+      expect(@visualization.data_layers.none?(&:source_id)).to be_true
+
+      migrator.migrate_visualization_to_v3(@visualization)
+
+      @visualization.reload
+      expect(@visualization.analyses.any?).to be_true
+      expect(@visualization.data_layers.all?(&:source_id)).to be_true
     end
   end
 end

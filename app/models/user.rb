@@ -538,7 +538,7 @@ class User < Sequel::Model
       begin
         rate_limit.try(:destroy_completely, self)
       rescue => e
-        CartoDB.notify_error('Error deleting rate limit at user deletion', user: self, error: e.inspect)
+        CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
       end
     end
   end

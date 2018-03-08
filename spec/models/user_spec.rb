@@ -2679,25 +2679,25 @@ describe User do
       @account_type_pro = FactoryGirl.create(:account_type_pro)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
-      @user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
-      @organization = FactoryGirl.create(:organization)
+      # @user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      # @organization = FactoryGirl.create(:organization)
 
-      owner = FactoryGirl.create(:user, account_type: 'PRO')
-      uo = CartoDB::UserOrganization.new(@organization.id, owner.id)
-      uo.promote_user_to_admin
-      @organization.reload
-      @user_org = FactoryGirl.build(:user, account_type: 'FREE')
-      @user_org.organization_id = @organization.id
-      @user_org.enabled = true
-      @user_org.save
+      # owner = FactoryGirl.create(:user, account_type: 'PRO')
+      # uo = CartoDB::UserOrganization.new(@organization.id, owner.id)
+      # uo.promote_user_to_admin
+      # @organization.reload
+      # @user_org = FactoryGirl.build(:user, account_type: 'FREE')
+      # @user_org.organization_id = @organization.id
+      # @user_org.enabled = true
+      # @user_org.save
 
       @map_prefix = "limits:rate:store:#{@user.username}:maps:"
       @sql_prefix = "limits:rate:store:#{@user.username}:sql:"
     end
 
     after :each do
-      @user.destroy unless @user.nil?
-      @user_no_ff.destroy unless @user_no_ff.nil?
+      # @user.destroy unless @user.nil?
+      # @user_no_ff.destroy unless @user_no_ff.nil?
       @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
       @account_type_pro.destroy unless @account_type_pro.nil?
@@ -2813,16 +2813,29 @@ describe User do
       $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["5", "13", "14"]
     end
 
-    it 'calls destroy rate limits' do
-      @user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
-      Carto::RateLimit.any_instance.expects(:destroy_completely).at_least_once
-      @user2.destroy
+    it 'destroy rate limits' do
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+
+      user2.destroy
+
+      expect {
+        Carto::RateLimit.find(user2.rate_limit_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it 'destroys rate limits from redis' do
-      @user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
-      $limits_metadata.expects(:DEL).times(20)
-      @user2.destroy
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+
+      map_prefix = "limits:rate:store:#{user2.username}:maps:"
+      sql_prefix = "limits:rate:store:#{user2.username}:sql:"
+
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 1
+
+      user2.destroy
+
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
     end
   end
 

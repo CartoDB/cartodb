@@ -32,17 +32,6 @@ describe Carto::VisualizationMigrator do
   describe '#migrate_visualization_to_v3' do
     include_context 'full visualization'
 
-    it 'migrates layer selector for sequel model' do
-      @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
-
-      model = CartoDB::Visualization::Member.new(id: @visualization.id).fetch
-      migrator.migrate_visualization_to_v3(model)
-
-      model = CartoDB::Visualization::Member.new(id: @visualization.id).fetch
-      model.overlays.any? { |o| o.type == 'layer_selector' }.should be_false
-      model.map.options['layer_selector'].should be_true
-    end
-
     it 'migrates layer selector for ActiveRecord model' do
       @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
       @visualization.reload

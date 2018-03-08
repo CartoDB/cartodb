@@ -118,6 +118,8 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
+* Limits V2
+  * Add rate limits persistence (#13626)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)

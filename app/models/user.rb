@@ -451,7 +451,6 @@ class User < Sequel::Model
         delete_external_sources
         Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
         Carto::ApiKey.where(user_id: id).each(&:destroy)
-        Carto::RateLimit.find(rate_limit_id).destroy if rate_limit_id
       end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.
@@ -533,6 +532,14 @@ class User < Sequel::Model
     unless @org_id_for_org_wipe.nil?
       organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
+    end
+
+    db.after_commit do
+      begin
+        rate_limit.try(:destroy_completely, self)
+      rescue => e
+        CartoDB.notify_error('Error deleting rate limit at user deletion', user: self, error: e.inspect)
+      end
     end
   end
 

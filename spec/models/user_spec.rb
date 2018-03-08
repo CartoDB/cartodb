@@ -2677,8 +2677,8 @@ describe User do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = FactoryGirl.create(:account_type_free)
       @account_type_pro = FactoryGirl.create(:account_type_pro)
-      @user = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)
       @rate_limits = FactoryGirl.create(:rate_limits_custom)
+      @user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       @organization = FactoryGirl.create(:organization)
 
       owner = FactoryGirl.create(:user, account_type: 'PRO')
@@ -2708,7 +2708,7 @@ describe User do
 
     it 'does not create rate limits if feature flag is not enabled' do
       @limits_feature_flag.destroy unless @limits_feature_flag.nil?
-      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)
+      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
@@ -2809,6 +2809,18 @@ describe User do
       $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["3", "7", "8"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["4", "10", "11"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["5", "13", "14"]
+    end
+
+    it 'calls destroy rate limits' do
+      @user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      Carto::RateLimit.any_instance.expects(:destroy_completely).at_least_once
+      @user2.destroy
+    end
+
+    it 'destroys rate limits from redis' do
+      @user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      $limits_metadata.expects(:DEL).times(20)
+      @user2.destroy
     end
   end
 

@@ -2677,7 +2677,8 @@ describe User do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = FactoryGirl.create(:account_type_free)
       @account_type_pro = FactoryGirl.create(:account_type_pro)
-      @rate_limits = FactoryGirl.create(:rate_limits_custom)
+      @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
+      @rate_limits = FactoryGirl.create(:rate_limits)
       @user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       @organization = FactoryGirl.create(:organization)
 
@@ -2703,6 +2704,7 @@ describe User do
       @account_type.rate_limit.destroy unless @account_type.nil?
       @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
       @rate_limits.destroy unless @rate_limits.nil?
+      @rate_limits_custom.destroy unless @rate_limits_custom.nil?
       @limits_feature_flag.destroy if @limits_feature_flag.exists?
     end
 
@@ -2760,7 +2762,7 @@ describe User do
       $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
 
-      @user.rate_limit_id = @rate_limits.id
+      @user.rate_limit_id = @rate_limits_custom.id
       @user.save
 
       $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["10", "11", "12"]

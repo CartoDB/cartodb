@@ -1760,6 +1760,12 @@
         "layer-options": "Layer options",
         "basemap-options": "Basemap options"
       },
+      "warnings": {
+        "no-data": {
+          "message": "No data available.",
+          "action-message": "There are no results for the combination of analyses applied to your data. Try tweaking them."
+        }
+      },
       "errors": {
         "broken-node": "Broken node",
         "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"

@@ -2679,25 +2679,25 @@ describe User do
       @account_type_pro = FactoryGirl.create(:account_type_pro)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
-      # @user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
-      # @organization = FactoryGirl.create(:organization)
+      @user_rt = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      @organization = FactoryGirl.create(:organization)
 
-      # owner = FactoryGirl.create(:user, account_type: 'PRO')
-      # uo = CartoDB::UserOrganization.new(@organization.id, owner.id)
-      # uo.promote_user_to_admin
-      # @organization.reload
-      # @user_org = FactoryGirl.build(:user, account_type: 'FREE')
-      # @user_org.organization_id = @organization.id
-      # @user_org.enabled = true
-      # @user_org.save
+      owner = FactoryGirl.create(:user, account_type: 'PRO')
+      uo = CartoDB::UserOrganization.new(@organization.id, owner.id)
+      uo.promote_user_to_admin
+      @organization.reload
+      @user_org = FactoryGirl.build(:user, account_type: 'FREE')
+      @user_org.organization_id = @organization.id
+      @user_org.enabled = true
+      @user_org.save
 
-      @map_prefix = "limits:rate:store:#{@user.username}:maps:"
-      @sql_prefix = "limits:rate:store:#{@user.username}:sql:"
+      @map_prefix = "limits:rate:store:#{@user_rt.username}:maps:"
+      @sql_prefix = "limits:rate:store:#{@user_rt.username}:sql:"
     end
 
     after :each do
-      # @user.destroy unless @user.nil?
-      # @user_no_ff.destroy unless @user_no_ff.nil?
+      @user_rt.destroy unless @user_rt.nil?
+      @user_no_ff.destroy unless @user_no_ff.nil?
       @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
       @account_type_pro.destroy unless @account_type_pro.nil?

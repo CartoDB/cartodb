@@ -2679,6 +2679,7 @@ describe User do
       @account_type_pro = FactoryGirl.create(:account_type_pro)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
+      @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
       @user_rt = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       @organization = FactoryGirl.create(:organization)
 
@@ -2705,11 +2706,12 @@ describe User do
       @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
       @rate_limits.destroy unless @rate_limits.nil?
       @rate_limits_custom.destroy unless @rate_limits_custom.nil?
+      @rate_limits_pro.destroy unless @rate_limits_pro.nil?
       @limits_feature_flag.destroy if @limits_feature_flag.exists?
     end
 
     it 'does not create rate limits if feature flag is not enabled' do
-      @limits_feature_flag.destroy unless @limits_feature_flag.nil?
+      @limits_feature_flag.destroy
       @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
@@ -2762,8 +2764,8 @@ describe User do
       $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
 
-      @user.rate_limit_id = @rate_limits_custom.id
-      @user.save
+      @user_rt.rate_limit_id = @rate_limits_custom.id
+      @user_rt.save
 
       $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["10", "11", "12"]
       $limits_metadata.LRANGE("#{@map_prefix}static", 0, 2).should == ["13", "14", "15"]
@@ -2814,7 +2816,7 @@ describe User do
     end
 
     it 'destroy rate limits' do
-      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
 
       user2.destroy
 
@@ -2824,7 +2826,7 @@ describe User do
     end
 
     it 'destroys rate limits from redis' do
-      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
 
       map_prefix = "limits:rate:store:#{user2.username}:maps:"
       sql_prefix = "limits:rate:store:#{user2.username}:sql:"

@@ -36,6 +36,8 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
+    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
+
     return render(file: "public/static/account/index.html", layout: false) if current_user.has_feature_flag?('static_account')
 
     respond_to do |format|

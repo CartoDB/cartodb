@@ -534,6 +534,7 @@ class User < Sequel::Model
       organization.destroy
     end
 
+    # we need to wait for the deletion to be commited because of the mix of Sequel (user)  # and AR (rate_limit) models and rate_limit_id being a FK in the users table
     db.after_commit do
       begin
         rate_limit.try(:destroy_completely, self)

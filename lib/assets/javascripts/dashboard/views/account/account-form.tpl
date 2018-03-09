@@ -122,6 +122,7 @@
     </button>
   </div>
 
+  <% if (!cantBeDeletedReason) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.delete_account') %></p>
     </div>
@@ -136,4 +137,5 @@
         <span class="FormAccount-button--deleteAccount CDB-Size-medium js-deleteAccount"><%= _t('account.views.form.delete_all') %></span>
       </div>
     </div>
+  <% } %>
 </form>

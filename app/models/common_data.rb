@@ -18,11 +18,20 @@ class CommonData
   def datasets
 
     if @datasets.nil?
-      datasets = []
+      @datasets = []
       if is_enabled?
-        datasets = get_datasets(get_datasets_json)
+        is_https_request = (@visualizations_api_url =~ /^https:\/\//)
+        cached_data = redis_cache.get(is_https_request)
+        if cached_data.nil?
+          response = get_datasets_json('common_data', @visualizations_api_url)
+          if response.code == 200
+            redis_cache.set(is_https_request, response.headers, response.response_body)
+            @datasets = get_datasets(response.response_body)
+          end
+        else
+          @datasets = get_datasets(cached_data[:body])
+        end
       end
-      @datasets = datasets
     end
 
     @datasets
@@ -71,32 +80,22 @@ class CommonData
       }
   end
 
-  def get_datasets_json
-    body = nil
+  def get_datasets_json(http_client_tag, visualizations_api_url)
     begin
-      http_client = Carto::Http::Client.get('common_data', log_requests: true)
+      http_client = Carto::Http::Client.get(http_client_tag, log_requests: true)
       request = http_client.request(
-        @visualizations_api_url,
+        visualizations_api_url,
         method: :get,
         connecttimeout: CONNECT_TIMEOUT,
         timeout: DEFAULT_TIMEOUT,
         params: { per_page: NO_PAGE_LIMIT },
         followlocation: true
       )
-      is_https_request = (request.url =~ /^https:\/\//)
-      cached_data = redis_cache.get(is_https_request)
-      return cached_data[:body] unless cached_data.nil?
-      response = request.run
-      if response.code == 200
-        body = response.response_body
-        redis_cache.set(is_https_request, response.headers, response.response_body)
-        body
-      end
+      request.run
     rescue Exception => e
       CartoDB.notify_exception(e)
-      body = nil
+      nil
     end
-    body
   end
 
   def export_url(table_name)

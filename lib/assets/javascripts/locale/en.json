@@ -1764,6 +1764,10 @@
         "no-data": {
           "message": "No data available.",
           "action-message": "There are no results for the combination of analyses applied to your data. Try tweaking them."
+        },
+        "geocode": {
+          "message": "There is no geometry in your data.",
+          "action-message": "Apply a Geocode analysis or manually add geometry data to visualize on the map."
         }
       },
       "errors": {

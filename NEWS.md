@@ -150,6 +150,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)
 * Don't fetch rows when fetching columns for analyses (#13654)
 * Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)
 * Add isSourceType false by default to select-view (#13655)

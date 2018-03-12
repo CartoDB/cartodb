@@ -12,6 +12,8 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Add search to widgets in mobile views (#13658)
+* Update multiple widgets at once (#13596)
 * Adjust widget styles in embed maps movile view (#13487)
 * Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
 * checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
@@ -116,6 +118,8 @@ ion for time-series (#12670)
 * Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
+* Limits V2
+  * Add rate limits persistence (#13626)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
@@ -143,10 +147,10 @@ ion for time-series (#12670)
 * Add rakes for generating default API Keys (#13595)
 * Use carto.js v4.0.0-beta.13
 * Change Mapbox modal (#1265)
-* Add end-point to update multiple widgets at once (#13596)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Safe access to vis map for old visualizations without maps (#13665)
 * Don't fetch rows when fetching columns for analyses (#13654)
 * Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)
 * Add isSourceType false by default to select-view (#13655)
@@ -478,6 +482,7 @@ ion for time-series (#12670)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
 * Make new widgets appear on top (#13244)
+* Add indices to `layers` relations for performance (#13669)
 * Fix imports with local storage and special characters (#13604)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)

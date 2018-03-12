@@ -54,7 +54,6 @@
   position: relative;
   z-index: 1;
   margin: 0;
-  overflow: hidden;
 }
 
 .CDB-Widget-list.is-hidden {
@@ -68,7 +67,6 @@
   flex-direction: row;
   max-height: 232px;
   margin-left: 0;
-  overflow: hidden;
 }
 
 .CDB-Widget-list--noresults {
@@ -93,6 +91,7 @@
 
 .CDB-Widget-listItem {
   display: block;
+  width: $mobileLayout - 6px;
 }
 
 .CDB-Widget-listItemInner {
@@ -214,9 +213,14 @@
 
   .CDB-Widget-listGroup {
     display: flex;
+    box-sizing: border-box;
+    flex: 1;
     flex-wrap: wrap;
-    margin-right: 4px;
-    margin-left: 4px;
+    width: 249px;
+    min-width: 249px;
+    max-width: 249px;
+    padding-right: 4px;
+    padding-left: 4px;
   }
 
   .CDB-Widget-listWrapper {
@@ -251,5 +255,11 @@
   .CDB-Widget-list--fake,
   .CDB-Widget-listItem--fake {
     display: none;
+  }
+}
+
+@media (min-width: 1301px) {
+  .CDB-Widget-listItem {
+    width: 346px;
   }
 }

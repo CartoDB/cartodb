@@ -3,28 +3,11 @@ module Carto
   # See https://github.com/rails/rails/issues/13144
   class CartoJsonSerializer
     def self.dump(hash)
-      hash.nil? ? nil : hash.to_json
+      hash.try(&:to_json)
     end
 
     def self.load(value)
-      if value
-        h = hash(value)
-        h.is_a?(Hash) ? h.with_indifferent_access : h
-      end
-    end
-
-    def self.hash(value, symbolize: false)
-      if value.is_a?(Hash)
-        symbolize ? value.deep_symbolize_keys : value
-      elsif value.is_a?(Array)
-        value.map { |v| hash(v, symbolize: symbolize) }
-      else
-        begin
-          JSON.parse(value, symbolize_names: symbolize)
-        rescue
-          value
-        end
-      end
+      value.try(&:with_indifferent_access)
     end
   end
 
@@ -34,8 +17,19 @@ module Carto
   # key comparison, fail, and it only applies to the first level.
   class CartoJsonSymbolizerSerializer < CartoJsonSerializer
     def self.load(value)
-      value.nil? ? nil : hash(value, symbolize: true)
+      value && symbolize(value)
     end
+
+    def self.symbolize(value)
+      if value.is_a?(Hash)
+        value.deep_symbolize_keys
+      elsif value.is_a?(Array)
+        value.map { |v| symbolize(v) }
+      else
+        value
+      end
+    end
+    private_class_method :symbolize
   end
 end
 

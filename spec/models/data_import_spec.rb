@@ -514,7 +514,11 @@ describe DataImport do
   end
 
   describe 'arcgis connector' do
-    before :each do
+    after :each do
+      CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
+    end
+
+    def stub_arcgis_response_with_file(filename)
       # Metadata of a layer
       Typhoeus.stub(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata.json"))
@@ -527,31 +531,57 @@ describe DataImport do
 
       # IDs list of a layer
       Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids.json"))
+        json_file = JSON.parse(File.read(File.join(File.dirname(__FILE__), filename)))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
-          body: body
+          body: JSON.dump(
+            {
+                            objectIdFieldName: "OBJECTID",
+                            objectIds: json_file['features'].map { |f| f['attributes']['OBJECTID'] }
+            })
         )
       end
 
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_valid.json"))
-        body = ::JSON.parse(body)
+      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |request|
+        response_body = File.read(File.join(File.dirname(__FILE__), filename))
+        response_body = ::JSON.parse(response_body)
+
+        request_body = request.options[:body]
+
+        requested_object_id = nil
+        lower_match = nil
+        upper_match = nil
+        if request_body[:objectIds]
+          requested_object_id = request_body[:objectIds]
+        else
+          lower_match = /OBJECTID\s+>=(\d+)/ =~ request.options[:body][:where]
+          upper_match = /OBJECTID\s+<=(\d+)/ =~ request.options[:body][:where]
+        end
+
+        response_body['features'] = response_body['features'].select do |f|
+          object_id = f['attributes']['OBJECTID']
+          if requested_object_id
+            object_id == requested_object_id
+          elsif lower_match && upper_match
+            object_id >= lower_match[1].to_i && object_id <= upper_match[1].to_i
+          elsif lower_match
+            object_id >= lower_match[1].to_i
+          elsif upper_match
+            object_id <= upper_match[1].to_i
+          end
+        end
 
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
-          body: ::JSON.dump(body)
+          body: ::JSON.dump(response_body)
         )
       end
-    end
-
-    after :each do
-      CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
     end
 
     it 'should raise statement timeout error when the query batcher raise that exception' do
+      stub_arcgis_response_with_file('../fixtures/arcgis_response_valid.json')
       CartoDB::Importer2::QueryBatcher.any_instance
                                       .stubs(:execute_update)
                                       .raises(Sequel::DatabaseError, 'canceling statement due to statement timeout')
@@ -567,6 +597,7 @@ describe DataImport do
     end
 
     it 'should raise invalid data error when the query batcher raise any other exception' do
+      stub_arcgis_response_with_file('../fixtures/arcgis_response_valid.json')
       CartoDB::Importer2::QueryBatcher.any_instance
                                       .stubs(:execute_update)
                                       .raises(Sequel::DatabaseError, 'GEOSisValid(): InterruptedException: Interrupted!')
@@ -579,37 +610,6 @@ describe DataImport do
       data_import.run_import!
       data_import.state.should eq 'failure'
       data_import.error_code.should eq 1012
-    end
-
-    it 'should import this supposed invalid dataset for ogr2ogr 2.1.1' do
-      # IDs list of a layer
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_invalid.json"))
-        Typhoeus::Response.new(
-          code: 200,
-          headers: { 'Content-Type' => 'application/json' },
-          body: body
-        )
-      end
-
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_response_invalid.json"))
-        body = ::JSON.parse(body)
-
-        Typhoeus::Response.new(
-          code: 200,
-          headers: { 'Content-Type' => 'application/json' },
-          body: ::JSON.dump(body)
-        )
-      end
-
-      data_import = DataImport.create(
-        user_id:    @user.id,
-        service_name: 'arcgis',
-        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
-      )
-      data_import.run_import!
-      data_import.state.should eq 'complete'
     end
   end
 

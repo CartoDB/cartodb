@@ -117,6 +117,7 @@ describe Carto::RateLimit do
       @rate_limit.maps_anonymous.first.period = 3
 
       @rate_limit.save
+      @rate_limit.save_to_redis(@user)
 
       $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["1", "2", "3"]
     end

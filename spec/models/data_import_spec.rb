@@ -611,6 +611,18 @@ describe DataImport do
       data_import.state.should eq 'failure'
       data_import.error_code.should eq 1012
     end
+
+    it 'should import this supposed invalid dataset for ogr2ogr 2.1.1' do
+      stub_arcgis_response_with_file('../fixtures/arcgis_response_invalid.json')
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'complete'
+    end
   end
 
   describe 'log' do

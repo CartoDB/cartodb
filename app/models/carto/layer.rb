@@ -1,4 +1,5 @@
 require 'active_record'
+require 'active_record/connection_adapters/postgresql/oid/json'
 require_relative './carto_json_serializer'
 require_dependency 'carto/table_utils'
 require_dependency 'carto/query_rewriter'
@@ -59,12 +60,13 @@ module Carto
     include LayerTableDependencies
     include Carto::QueryRewriter
 
+    attribute :options, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+    attribute :infowindow, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+    attribute :tooltip, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+
     serialize :options, CartoJsonSerializer
-    serialize :options, JSON
     serialize :infowindow, CartoJsonSerializer
-    serialize :infowindow, JSON
     serialize :tooltip, CartoJsonSerializer
-    serialize :tooltip, JSON
 
     has_many :layers_maps, dependent: :destroy
     has_many :maps, through: :layers_maps, after_add: :after_added_to_map

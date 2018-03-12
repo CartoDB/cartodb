@@ -336,13 +336,13 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    state_machines (0.4.0)
-    state_machines-activemodel (0.4.0)
-      activemodel (>= 4.1, < 5.1)
-      state_machines (>= 0.4.0)
-    state_machines-activerecord (0.4.0)
-      activerecord (>= 4.1, < 5.1)
-      state_machines-activemodel (>= 0.3.0)
+    state_machines (0.5.0)
+    state_machines-activemodel (0.5.0)
+      activemodel (>= 4.1, < 5.2)
+      state_machines (>= 0.5.0)
+    state_machines-activerecord (0.5.0)
+      activerecord (>= 4.1, < 5.2)
+      state_machines-activemodel (>= 0.5.0)
     statsd-client (0.0.7)
     test-unit (3.1.7)
       power_assert
@@ -452,7 +452,7 @@ DEPENDENCIES
   simplecov (= 0.13.0)
   simplecov-json
   simplecov-rcov
-  state_machines-activerecord (= 0.4.0)
+  state_machines-activerecord (~> 0.5.0)
   statsd-client (= 0.0.7)
   test-unit
   thin

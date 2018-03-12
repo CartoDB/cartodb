@@ -259,7 +259,7 @@ class Table
 
       aux_cartodb_id_column = nil
 
-      [:objectid, :ogc_fid, :gid].each do |candidate_column|
+      [:ogc_fid, :gid].each do |candidate_column|
         break if aux_cartodb_id_column
         aux_cartodb_id_column = candidate_column if valid_cartodb_id_candidate?(candidate_column)
       end

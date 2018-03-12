@@ -9,12 +9,6 @@
   height: 107px; // match real widget content height, to avoid "jumpy" behavior
 }
 
-@media (max-width: 759px) {
-  .CDB-Widget-chart--fake {
-    height: 74px;
-  }
-}
-
 .CDB-Widget-chartItem--fake {
   @include flex-grow(1);
   display: inline-block;
@@ -87,7 +81,7 @@
   margin-left: 8px;
 }
 
-@media (min-width: 480px) and (max-width: 759px) {
+@media (min-width: $sMedia-s) and (max-width: $sMedia-l) {
   .CDB-Chart-staticTips {
     display: block;
   }
@@ -128,4 +122,14 @@
 
 .CDB-Chart-shadowBar {
   shape-rendering: crispEdges;
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Widget-chart--fake {
+    display: none;
+  }
+
+  .CDB-Widget-chartItem--fake {
+    display: none;
+  }
 }

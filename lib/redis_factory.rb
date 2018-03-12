@@ -39,7 +39,8 @@ class RedisFactory
     tables_metadata:     0,
     api_credentials:     3,
     users_metadata:      5,
-    redis_migrator_logs: 6
+    redis_migrator_logs: 6,
+    limits_metadata:     8
   }.freeze
 
   def self.conf

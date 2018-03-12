@@ -27,6 +27,11 @@
       "errorType": "warning"
     },
     {
+      "match": "^.*?column \"cartodb_id\" does not exist.*",
+      "replaceWith": "without-cartodb-id",
+      "errorType": "warning"
+    },
+    {
       "match": "ERROR: (column .*? does not exist)"
     }
   ]

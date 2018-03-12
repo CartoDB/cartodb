@@ -12,6 +12,13 @@
   border-bottom: 1px solid rgba(#000, 0.1);
 }
 
+.ApiKeys-list {
+  .Pagination {
+    justify-content: flex-end;
+    margin: 1rem 0;
+  }
+}
+
 .ApiKeys-list-item {
   display: flex;
   flex-direction: row;
@@ -68,6 +75,17 @@
 
 // -- Form
 
+.ApiKeysForm {
+  .CDB-Legend {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .Editor-formInner {
+    margin-top: 16px;
+  }
+}
+
 .ApiKeysForm-title {
   display: flex;
   flex-direction: row;
@@ -81,6 +99,18 @@
   overflow: auto;
 }
 
+.ApiKeysForm-grantsTable {
+  margin-top: 16px;
+
+  &.showOnlySelect {
+    [data-name='insert'],
+    [data-name='update'],
+    [data-name='delete'] {
+      display: none;
+    }
+  }
+}
+
 .ApiKeysForm-grantsTable-item {
   display: flex;
   box-sizing: border-box;
@@ -88,6 +118,10 @@
   width: 100%;
   padding: 12px 10px;
   border-bottom: 1px solid rgba(46, 60, 67, 0.08);
+
+  .Editor-formInner {
+    margin-top: 0;
+  }
 }
 
 .ApiKeysForm-box-modal {
@@ -95,7 +129,21 @@
   box-shadow: none;
 }
 
+.ApiKeys-MultiCheckbox {
+  margin-right: 12px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
 .Share-copy {
   position: absolute;
+  top: 50%;
   right: 0;
+  transform: translate3d(0, -50%, 0);
+}
+
+.Editor-formInput {
+  position: relative;
 }

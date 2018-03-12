@@ -167,6 +167,7 @@ defaults: &defaults
       api_credentials:     3
       users_metadata:      5
       redis_migrator_logs: 6
+      limits_metadata:     8
   org_metadata_api:
     host: 'localhost.lan'
     port: '3000'
@@ -205,8 +206,12 @@ defaults: &defaults
       url_ttl: 7200
       async_long_uploads: false
     uploads_path: 'public/uploads'
-    pg_dump_bin_path: 'pg_dump'
-    pg_restore_bin_path: 'pg_restore'
+    pg_dump_bin_path:
+      '9.5': 'pg_dump'
+      '10': 'pg_dump'
+    pg_restore_bin_path:
+      '9.5': 'pg_restore'
+      '10': 'pg_restore'
   exporter:
     exporter_temporal_folder: '/tmp/exporter'
     s3:

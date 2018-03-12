@@ -535,12 +535,8 @@ describe DataImport do
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
-          body: JSON.dump(
-            {
-                            objectIdFieldName: "OBJECTID",
-                            objectIds: json_file['features'].map { |f| f['attributes']['OBJECTID'] }
-            })
-        )
+          body: JSON.dump(objectIdFieldName: "OBJECTID",
+                          objectIds: json_file['features'].map { |f| f['attributes']['OBJECTID'] } ))
       end
 
       Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |request|

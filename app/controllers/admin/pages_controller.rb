@@ -131,7 +131,7 @@ class Admin::PagesController < Admin::AdminController
       @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
       @has_new_dashboard   = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
       @gmaps_query_string  = @viewed_user.google_maps_query_string
-      @needs_gmaps_lib     = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
+      @needs_gmaps_lib     = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
 
       @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
 

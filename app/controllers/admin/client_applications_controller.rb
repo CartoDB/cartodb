@@ -21,7 +21,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
   end
 
   def api_key
-    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('auth_api')
+    @has_new_dashboard = current_user.has_feature_flag?('auth_api')
 
     respond_to do |format|
       format.html { render 'api_key' }

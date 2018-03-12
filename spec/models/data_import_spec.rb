@@ -623,6 +623,18 @@ describe DataImport do
       data_import.run_import!
       data_import.state.should eq 'complete'
     end
+
+    it 'should import files with missing ogc_fid' do
+      stub_arcgis_response_with_file('../fixtures/arcgis_response_missing_ogc_fid.json')
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'complete'
+    end
   end
 
   describe 'log' do

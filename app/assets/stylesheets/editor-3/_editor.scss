@@ -153,6 +153,10 @@
 
       .CDB-Widget-content,
       .CDB-Widget-info {
+        display: block;
+      }
+
+      .CDB-Dropdown-item:first-child {
         display: none;
       }
     }

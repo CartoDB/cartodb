@@ -10,11 +10,11 @@ module CartoAPI
     end
 
     def get_visualization_v1(username:, name:, params: {})
-      JSON.parse(get(visualization_api_url(username, id: name, params: params)).body)
+      JSON.parse(get(carto_url(username, "/api/v1/viz/#{name}", params: params1)).body)
     end
 
     def get_visualizations_v1(username:, params: {})
-      JSON.parse(get(visualizations_api_url(username, params: params)).body)
+      JSON.parse(get(carto_url(username, '/api/v1/viz', params: params1)).body)
     end
 
     # Deprecated
@@ -27,14 +27,6 @@ module CartoAPI
     CONNECT_TIMEOUT = 45
     DEFAULT_TIMEOUT = 60
     NO_PAGE_LIMIT = 100000
-
-    def visualization_api_url(username, id:, params: {})
-      carto_url(username, "/api/v1/viz/#{id}", params: params)
-    end
-
-    def visualizations_api_url(username, params: nil)
-      carto_url(username, '/api/v1/viz', params: params)
-    end
 
     def carto_url(username, path, params: nil)
       uri = URI::HTTP.build(host: base_url(username), path: path, query: params && params.to_query)

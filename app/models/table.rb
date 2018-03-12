@@ -256,13 +256,7 @@ class Table
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
       #  - If cartodb_id does not exist, treat this field as the auxiliary column
-
-      aux_cartodb_id_column = nil
-
-      [:ogc_fid, :gid].each do |candidate_column|
-        break if aux_cartodb_id_column
-        aux_cartodb_id_column = candidate_column if valid_cartodb_id_candidate?(candidate_column)
-      end
+      aux_cartodb_id_column = [:ogc_fid, :gid].find { |col| valid_cartodb_id_candidate?(col) }
 
       # Remove primary key
       owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |user_database|
@@ -1209,14 +1203,14 @@ class Table
   private
 
   def valid_cartodb_id_candidate?(col_name)
-    return false unless flattened_schema.include?(col_name)
+    return false unless column_names.include?(col_name)
     owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
-      return db["SELECT COUNT(*) from #{qualified_table_name} where #{col_name} is null"].first[:count].zero?
+      return db["SELECT 1 FROM #{qualified_table_name} WHERE #{col_name} IS NULL LIMIT 1"].first.nil?
     end
   end
 
-  def flattened_schema
-    @flattened_schema ||= schema.present? ? schema.flatten : []
+  def column_names
+    schema.map(&:first)
   end
 
   def related_visualizations

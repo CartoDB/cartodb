@@ -1015,27 +1015,17 @@ class User < Sequel::Model
   end
 
   def update_rate_limits(rate_limit_attributes)
-    old_rate_limit = rate_limit
-
     if rate_limit_attributes
-      new_rate_limit = Carto::RateLimit.from_api_attributes(rate_limit_attributes)
-    else
-      new_rate_limit = nil
-    end
+      rate_limit = rate_limit || Carto::RateLimit.new
+      new_attributes = Carto::RateLimit.from_api_attributes(rate_limit_attributes).rate_limit_attributes
 
-    if new_rate_limit
-      if old_rate_limit
-        new_attributes = new_rate_limit.attributes.with_indifferent_access.slice(*Carto::RateLimit::RATE_LIMIT_ATTRIBUTES)
-        old_rate_limit.update_attributes!(new_attributes)
-      else
-        new_rate_limit.save!
-        self.rate_limit_id = new_rate_limit.id
-        save
-      end
+      rate_limit.update_attributes!(new_attributes)
+      self.rate_limit_id = rate_limit.id
     else
       self.rate_limit_id = nil
-      save
     end
+
+    save
   end
 
   def effective_rate_limit

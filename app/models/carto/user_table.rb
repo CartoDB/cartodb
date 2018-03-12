@@ -212,7 +212,7 @@ module Carto
     private
 
     def default_privacy_value
-      user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+      user.try(:default_dataset_privacy)
     end
 
     def set_default_table_privacy

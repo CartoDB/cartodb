@@ -149,6 +149,10 @@ class Carto::User < ActiveRecord::Base
     self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
 
+  def default_dataset_privacy
+    private_tables_enabled ? Carto::Visualization::PRIVACY_PRIVATE : Carto::Visualization::PRIVACY_PUBLIC
+  end
+
   # @return String public user url, which is also the base url for a given user
   def public_url(subdomain_override=nil, protocol_override=nil)
     base_subdomain = subdomain_override.nil? ? subdomain : subdomain_override

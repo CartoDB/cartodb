@@ -9,8 +9,8 @@ module CartoAPI
       @port = port
     end
 
-    def get_visualization_v1(username:, name:)
-      JSON.parse(get(visualization_api_url(username, id: name)).body)
+    def get_visualization_v1(username:, name:, params: {})
+      JSON.parse(get(visualization_api_url(username, id: name, params: params)).body)
     end
 
     def get_visualizations_v1(username:, params: {})
@@ -28,8 +28,8 @@ module CartoAPI
     DEFAULT_TIMEOUT = 60
     NO_PAGE_LIMIT = 100000
 
-    def visualization_api_url(username, id:)
-      carto_url(username, "/api/v1/viz/#{id}")
+    def visualization_api_url(username, id:, params: {})
+      carto_url(username, "/api/v1/viz/#{id}", params: params)
     end
 
     def visualizations_api_url(username, params: nil)

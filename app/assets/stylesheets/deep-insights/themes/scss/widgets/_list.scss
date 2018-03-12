@@ -53,11 +53,6 @@
   display: none;
 }
 
-.CDB-Widget-list {
-  display: felx;
-  flex-wrap: nowrap;
-}
-
 .CDB-Widget-list--noresults {
   @include display-flex();
   @include align-items(center);

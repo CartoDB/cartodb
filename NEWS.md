@@ -121,6 +121,7 @@ ion for time-series (#12670)
 * Limits V2
   * Add rate limits persistence (#13626)
   * Remove rate limits on user deletion (#13657)
+  * Sync price plans and rate limits (#13660)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)

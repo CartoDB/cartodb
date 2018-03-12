@@ -18,7 +18,12 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
 
   def update
     ActiveRecord::Base.transaction do
-      @account_type.rate_limit = @rate_limit
+      if @account_type.rate_limit
+        @account_type.rate_limit.update_attributes!(@rate_limit.rate_limit_attributes)
+      else
+        @account_type.rate_limit = @rate_limit
+      end
+
       @account_type.save
     end
 
@@ -38,7 +43,7 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
     account_type_params = params[:account_type]
 
     if account_type_params
-      @rate_limit = Carto::RateLimit.from_api_attributes(account_type_params[:rate_limit])
+      @rate_limit = Carto::RateLimit.from_api_attributes(account_type_params[:rate_limit] || {})
       account_type = account_type_params[:account_type]
     else
       account_type = params[:id]

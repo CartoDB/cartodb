@@ -51,7 +51,21 @@ describe Superadmin::AccountTypesController do
             superadmin_headers
 
         @account_type.reload
-      }.to change(@account_type, :rate_limit_id)
+        @account_type.rate_limit.api_attributes.should eq @rate_limits.api_attributes
+      }.to change(Carto::RateLimit, :count).by(0)
+    end
+
+    it 'should not update an account type with empty rate limits' do
+      @account_type.save!
+      rate_limit_id = @account_type.rate_limit_id
+
+      put superadmin_account_type_url(@account_type.account_type),
+          { account_type: { account_type: @account_type.account_type } }.to_json,
+          superadmin_headers do |response|
+
+        response.status.should == 500
+        @account_type.rate_limit_id.should eq rate_limit_id
+      end
     end
   end
 

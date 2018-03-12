@@ -34,9 +34,9 @@ describe Carto::RateLimit do
 
   after :each do
     User.any_instance.unstub(:save_rate_limits)
+    @user.destroy if @user
     @rate_limit.destroy if @rate_limit
     @rate_limit2.destroy if @rate_limit2
-    @user.destroy if @user
     @limits_feature_flag.destroy
   end
 
@@ -104,6 +104,7 @@ describe Carto::RateLimit do
     end
 
     it 'updates a rate_limit to redis' do
+      User.any_instance.unstub(:save_rate_limits)
       map_prefix = "limits:rate:store:#{@user.username}:maps:"
 
       @user.rate_limit_id = @rate_limit.id

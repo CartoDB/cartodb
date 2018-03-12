@@ -10,7 +10,7 @@ describe Carto::DataLibraryService do
       "\"attributions\":null,\"source\":\"\",\"license\":\"\",\"type\":\"table\",\"tags\":[\"production\"]" +
       ",\"description\":\"This must be PUBLIC for \\\"Public Library\\\" to work correctly\"," +
       "\"created_at\":\"2015-03-31T15:36:36+00:00\",\"updated_at\":\"2015-05-29T14:49:45+00:00\"," +
-      "\"title\":\"\",\"kind\":\"geom\",\"privacy\":\"PUBLIC\",\"likes\":0,\"liked\":false,"+
+      "\"title\":\"\",\"kind\":\"geom\",\"privacy\":\"PUBLIC\",\"likes\":0,\"liked\":false," +
       "\"permission\":{\"id\":\"da9b55a8-65d2-42a7-b30a-9847805fcb99\"," +
       "\"owner\":{\"id\":\"891c95dc-b1f3-47d2-ace0-12651259b811\",\"username\":\"common-data\"," +
       "\"name\":\"\",\"last_name\":null," +
@@ -34,7 +34,7 @@ describe Carto::DataLibraryService do
 
   describe '#load_dataset' do
     it 'loads a remote dataset into a Data Library' do
-      client = mock()
+      client = mock
       mocked_get_visualization_v1_response = JSON.parse(visualization_json)
       source_dataset = mocked_get_visualization_v1_response['name']
       params = {
@@ -46,22 +46,22 @@ describe Carto::DataLibraryService do
       }
 
       client.expects(:get_visualization_v1)
-        .with(username: params[:source_username],
-              name: params[:source_dataset],
-              params: { api_key: params[:source_api_key]} )
-        .returns(mocked_get_visualization_v1_response)
+            .with(username: params[:source_username],
+                  name: params[:source_dataset],
+                  params: { api_key: params[:source_api_key] })
+            .returns(mocked_get_visualization_v1_response)
       visualization = @carto_user1.visualizations
-                        .where(type: Carto::Visualization::TYPE_REMOTE)
-                        .where(name: source_dataset)
-                        .first
+                                  .where(type: Carto::Visualization::TYPE_REMOTE)
+                                  .where(name: source_dataset)
+                                  .first
       visualization.should_not be
 
       Carto::DataLibraryService.new.load_dataset!(client, **params)
 
       visualization = @carto_user1.visualizations
-                        .where(type: Carto::Visualization::TYPE_REMOTE)
-                        .where(name: source_dataset)
-                        .first
+                                  .where(type: Carto::Visualization::TYPE_REMOTE)
+                                  .where(name: source_dataset)
+                                  .first
       visualization.should be
       visualization.display_name.present?.should be_true # Data Library requires display name
       external_source = visualization.external_source

@@ -8,7 +8,7 @@ module Carto
       target_user = Carto::User.find_by_username(target_username)
 
       remote_visualization = carto_api_client.get_visualization_v1(
-        username: source_username, name: source_dataset, params: {api_key: source_api_key}
+        username: source_username, name: source_dataset, params: { api_key: source_api_key }
       )
       remote_table = remote_visualization['table']
       privacy = target_user.default_dataset_privacy
@@ -24,9 +24,8 @@ module Carto
         source: remote_visualization['source'],
         attributions: remote_visualization['attributions']
       )
-      sql_api_url = CartoDB::SQLApi
-                      .with_username_api_key(source_username, granted_api_key, privacy)
-                      .export_table_url(source_dataset)
+      sql_api_url = CartoDB::SQLApi.with_username_api_key(source_username, granted_api_key, privacy)
+                                   .export_table_url(source_dataset)
       external_source = Carto::ExternalSource.create!(
         visualization: visualization,
         import_url: sql_api_url,

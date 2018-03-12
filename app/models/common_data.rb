@@ -22,7 +22,7 @@ class CommonData
           client = CartoAPI::JsonClient.new(http_client_tag: 'common_data')
           response = begin
                        client.get_visualizations_v1_from_url(@visualizations_api_url)
-                     rescue Exception => e
+                     rescue => e
                        CartoDB.notify_exception(e)
                        nil
                      end

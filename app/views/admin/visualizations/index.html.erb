@@ -3,9 +3,7 @@
 <% end -%>
 <%= content_for(:js) do -%>
   <% if !@google_maps_query_string.blank? %>
-        <script type="text/javascript"
-            src="//maps.googleapis.com/maps/api/js?sensor=false&v=3.12&<%= @google_maps_query_string %>">
-        </script>
+    <%= insert_google_maps(@google_maps_query_string) %>
   <% end %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";

@@ -300,10 +300,101 @@ describe Carto::Api::WidgetsController do
         response.status.should eq 200
         response_widget_should_match_payload(response.body, payload)
 
-        loaded_widget = Carto::Widget.find(response.body[:id])
+        Carto::Widget.find(response.body[:id])
         response_widget_should_match_widget(response.body, Carto::Widget.find(response.body[:id]))
       end
       analysis.destroy
+    end
+  end
+
+  describe '#update_many' do
+    it 'updates many' do
+      widget2 = FactoryGirl.create(:widget, layer: @layer)
+
+      payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 200
+        response.body[0]['title'].should eq 'wadus'
+        Carto::Widget.find(response.body[0]['id']).title.should eq 'wadus'
+        response.body[1]['title'].should eq 'wadus2'
+        Carto::Widget.find(response.body[1]['id']).title.should eq 'wadus2'
+      end
+    end
+
+    it 'fails with 404 if widget is not found' do
+      payload = [serialize_widget(@widget).merge(title: 'wadus')]
+      @widget.destroy
+
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 404
+      end
+    end
+
+    it 'fails with 404 if widget does not belong to map' do
+      payload = [serialize_widget(@widget).merge(title: 'wadus')]
+      Carto::Widget.any_instance.stubs(:belongs_to_map?).with(@map.id).returns(false)
+
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 404
+        @widget.reload.title.should_not eq 'wadus'
+      end
+    end
+
+    it 'fails with 404 if not writable by user' do
+      payload = [serialize_widget(@widget).merge(title: 'wadus')]
+      Carto::Widget.any_instance.stubs(:writable_by_user?).returns(false)
+
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 403
+        @widget.reload.title.should_not eq 'wadus'
+      end
+    end
+
+    it 'fails if any of the widgets fails and doesn\'t update any' do
+      widget2 = FactoryGirl.create(:widget, layer: @layer)
+      Carto::Widget.stubs(:find).with(@widget.id).returns(@widget)
+      Carto::Widget.stubs(:find).with(widget2.id).raises(ActiveRecord::RecordNotFound.new)
+
+      payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
+      url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
+                                                       map_id: @map.id,
+                                                       api_key: @user1.api_key)
+      put_json url, payload, http_json_headers do |response|
+        response.status.should == 404
+        Carto::Widget.unstub(:find)
+        @widget.reload.title.should_not eq 'wadus'
+        widget2.reload.title.should_not eq 'wadus2'
+      end
+    end
+
+    def serialize_widget(w)
+      payload = {
+        id: w.id,
+        layer_id: w.layer_id,
+        type: w.type,
+        title: w.title,
+        options: w.options,
+        style: w.style
+      }
+      payload[:order] = w.order if w.order
+      payload[:source] = { id: w.source_id } if w.source_id
+
+      payload
     end
   end
 

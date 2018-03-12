@@ -12,6 +12,20 @@
   min-width: 1024px;
   height: 100vh;
   -webkit-font-smoothing: antialiased;
+
+  .CDB-Dashboard-canvas {
+    padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
+    background: #F2F6F9; // Canvas is out of widget themes
+  }
+
+  .CDB-Dashboard-belowMap {
+    margin-top: 8px;
+  }
+
+  .CDB-Widget-canvasInner {
+    position: relative;
+    margin-left: 0;
+  }
 }
 
 .Editor--topBar {
@@ -83,22 +97,12 @@
   display: block;
 }
 
-/* deep insights */
-.CDB-Dashboard-canvas {
-  flex: 1;
-  box-shadow: inset 10px 0 10px -10px rgba(#000, 0.3);
-}
-
-.CDB-Dashboard-canvas.is-dark {
-  background: #293A41;
-}
-
 /* Responsive views */
-@media (max-width: $sViewport-xxl) {
+@media (max-width: $sMedia-xxl) {
   .Editor {
     .CDB-Widget-canvas,
     .CDB-Widget {
-      width: 280px;
+      width: $mobileLayout;
     }
 
     .CDB-Widget.CDB-Widget--timeSeries {
@@ -111,13 +115,17 @@
     }
 
     .CDB-Widget-canvas {
-      min-width: 280px;
-      max-width: 280px;
+      min-width: $mobileLayout;
+      max-width: $mobileLayout;
+    }
+
+    .CDB-Widget-listItem {
+      width: $mobileLayout - 6px;
     }
   }
 }
 
-@media (max-width: $sViewport-xl) {
+@media (max-width: $sMedia-xl) {
   .Editor {
     .CDB-Widget.CDB-Widget--timeSeries {
       min-height: auto;
@@ -173,7 +181,7 @@
 
     .CDB-Widget-canvasInner {
       display: flex;
-      position: relative;
+      flex-direction: row;
     }
 
     .CDB-Widget-header,
@@ -183,18 +191,8 @@
       margin-left: 16px;
     }
 
-    .CDB-Widget-list {
-      display: flex;
-    }
-
     .CDB-Widget-listButton {
       padding: 4px 0;
-    }
-
-    .CDB-Widget-listGroup {
-      display: flex;
-      flex-wrap: wrap;
-      margin: 0 -8px;
     }
 
     /* one or two items */

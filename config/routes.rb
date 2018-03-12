@@ -574,6 +574,8 @@ CartoDB::Application.routes.draw do
       put 'me' => 'users#update_me', as: :api_v3_users_update_me
       delete 'me' => 'users#delete_me', as: :api_v3_users_delete_me
 
+      put 'maps/:map_id/widgets' => 'widgets#update_many', as: :api_v3_maps_layers_update_many_widgets
+
       scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
       end

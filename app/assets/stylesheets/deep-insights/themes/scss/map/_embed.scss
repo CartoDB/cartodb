@@ -1,22 +1,30 @@
-// Entry point for public maps
-// ----------------------------------------------
+@import '../widgets/tipsy-tooltip';
 
-@import 'tipsy-tooltip';
-
-#dashboard {
-  height: 100%;
-}
+$sEmbedTabs: 1rem;
+$cEmbedTabs-Primary: #FFF;
+$cEmbedTabs-Secondary: #DDD;
+$cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Embed-view {
   display: flex;
   flex-direction: column;
   height: 100%;
+
+  .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
+    margin-bottom: 0;
+    padding: $sEmbedTabs $sEmbedTabs 0;
+  }
 }
 
 .CDB-Embed-header {
-  padding: 1rem;
-  border-bottom: 1px solid #DDD;
-  background: white;
+  z-index: 3;
+  padding: $sEmbedTabs;
+  border-bottom: 1px solid $cEmbedTabs-Secondary;
+  background: $cEmbedTabs-Primary;
+
+  &.CDB-Embed-header--shadow {
+    box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
+  }
 
   h1 {
     max-width: 100%;
@@ -45,20 +53,31 @@
 
 .CDB-Embed-content {
   flex: 1;
-}
-
-.CDB-NavMenu-inner {
-  margin: 0;
-  padding: 1rem 1rem 0;
+  height: 100%;
 }
 
 .CDB-Embed-tab {
+  display: flex;
+  padding: 8px;
+
   &:not(.is-active) {
-    display: none !important;
+    display: none;
   }
 
   &.is-active {
     display: flex;
+    box-shadow: none;
+  }
+}
+
+.CDB-Embed-tabs {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: $cEmbedTabs-Primary;
+  box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
+
+  .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
+    border-bottom: 1px solid $cEmbedTabs-Secondary;
   }
 }
 
@@ -98,7 +117,37 @@
   padding: 16px 16px 0;
 }
 
-@media (min-width: 1200px) {
+.CDB-Embed-legends {
+  .CDB-Legends-canvas {
+    display: block !important;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    box-shadow: none;
+  }
+
+  .CDB-Legends-canvasInner {
+    height: 100%;
+    max-height: none;
+  }
+}
+
+@media (max-width: $sMedia-xl) {
+  .CDB-Embed-tab {
+    .CDB-Widget {
+      width: 250px;
+    }
+
+    .CDB-Widget.CDB-Widget--timeSeries {
+      width: auto;
+    }
+  }
+}
+
+@media (min-width: $sMedia-xl) {
   .CDB-Overlay-title {
     display: none;
 
@@ -139,7 +188,7 @@
   }
 }
 
-@media (min-width: 601px) {
+@media (min-width: $sMedia-min-w-vertical) {
   .CDB-Embed-header,
   .CDB-Embed-tabs,
   .CDB-Embed-legends {
@@ -147,10 +196,10 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: $sMedia-min-w-vertical - 1px) {
   .CDB-Embed-content {
-    // 103px = header + tabs height
-    height: calc(100% - 103px);
+    // 104px = header + tabs height
+    height: calc(100% - 104px);
   }
 
   .CDB-Overlay-title {
@@ -178,31 +227,12 @@
   }
 }
 
-// Override carto.js legends styles
-.CDB-Embed-legends {
-  .CDB-Legends-canvas {
-    display: block !important;
-    position: relative;
-    top: 0;
-    left: 0;
+@media (max-width: $sMedia-max-w-vertical) {
+  .CDB-Embed-tab {
+    display: flex;
     width: 100%;
-    height: 100%;
-    max-height: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .CDB-Legends-canvasInner {
-    height: 100%;
-    max-height: none;
-    border-radius: 0;
-  }
-}
-
-@media (max-width: 759px) {
-  body {
-    position: fixed !important;
-    width: 100%;
-    overflow: hidden; // Avoid scroll in small screens
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 }

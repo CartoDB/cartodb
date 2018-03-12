@@ -311,7 +311,7 @@
     "kmeans": {
       "title": "Calculating point clusters",
       "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the %{clusters} clusters you requested (or max rows if less).",
-      "description": "Point clustering is uses k-means to calculate a predefined number of clusters from your data."
+      "description": "Point clustering uses k-means to calculate a predefined number of clusters from your data."
     },
     "data-observatory-measure": {
       "title": "Enrich from the Data Observatory",

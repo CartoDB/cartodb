@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class Superadmin::PricePlansController < Superadmin::SuperadminController
+class Superadmin::AccountTypesController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :create, :update, :destroy
@@ -8,7 +8,6 @@ class Superadmin::PricePlansController < Superadmin::SuperadminController
   before_filter :get_account_type, only: [:create, :update, :destroy]
 
   def create
-    byebug
     ActiveRecord::Base.transaction do
       @account_type.rate_limit = @rate_limit
       @account_type.save
@@ -18,10 +17,7 @@ class Superadmin::PricePlansController < Superadmin::SuperadminController
   end
 
   def update
-    byebug
     ActiveRecord::Base.transaction do
-      @account_type.rate_limit.destroy
-      @rate_limit.save
       @account_type.rate_limit = @rate_limit
       @account_type.save
     end
@@ -30,9 +26,7 @@ class Superadmin::PricePlansController < Superadmin::SuperadminController
   end
 
   def destroy
-    byebug
     if @account_type.present?
-      @account_type.rate_limit.destroy
       @account_type.destroy
     end
     render json: @account_type, status: 204
@@ -41,12 +35,15 @@ class Superadmin::PricePlansController < Superadmin::SuperadminController
   private
 
   def get_account_type
-    byebug
-    price_plan_params = params[:price_plan]
+    account_type_params = params[:account_type]
 
-    @rate_limit = Carto::RateLimit.from_api_attributes(price_plan_params[:rate_limit])
+    if account_type_params
+      @rate_limit = Carto::RateLimit.from_api_attributes(account_type_params[:rate_limit])
+      account_type = account_type_params[:account_type]
+    else
+      account_type = params[:id]
+    end
 
-    account_type = price_plan_params[:account_type]
     if Carto::AccountType.exists?(account_type)
       @account_type = Carto::AccountType.find(account_type)
     else
@@ -54,5 +51,4 @@ class Superadmin::PricePlansController < Superadmin::SuperadminController
       @account_type.account_type = account_type
     end
   end
-
 end

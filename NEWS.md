@@ -151,6 +151,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)
+* Fix onboardings in layer content views (#13674)
 * Safe access to vis map for old visualizations without maps (#13665)
 * Don't fetch rows when fetching columns for analyses (#13654)
 * Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)

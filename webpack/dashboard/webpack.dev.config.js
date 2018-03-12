@@ -110,6 +110,7 @@ module.exports = env => {
           include: [
             resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
             resolve(__dirname, '../../', 'node_modules/tangram.cartodb'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/carto-node'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard')
           ],
           options: {

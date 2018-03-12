@@ -16,6 +16,10 @@ module Carto
 
     belongs_to :rate_limit, dependent: :destroy
 
+    after_save { update_to_redis if rate_limit_id_changed? }
+
+    after_destroy :delete_from_redis
+
     def pay_users
       ::User.where("upper(account_type) != '#{FREE}'").count
     end
@@ -47,6 +51,18 @@ module Carto
     def mailchimp?(_user)
       # Mailchimp is currently not supported
       false
+    end
+
+    def update_to_redis
+      User.where(account_type: account_type).where(rate_limit_id: nil).each do |user|
+        rate_limit.save_to_redis(user)
+      end
+    end
+
+    def delete_from_redis
+      User.where(account_type: account_type).where(rate_limit_id: nil).each do |user|
+        rate_limit.delete_from_redis(user)
+      end
     end
   end
 end

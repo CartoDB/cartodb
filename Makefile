@@ -247,6 +247,7 @@ WORKING_SPECS_9 = \
 
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
+	spec/models/carto/account_type_spec.rb \
 	spec/models/carto/analysis_spec.rb \
 	spec/models/carto/analysis_node_spec.rb \
 	spec/models/carto/api_key_spec.rb \

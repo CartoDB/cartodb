@@ -7,6 +7,7 @@ describe Carto::RateLimit do
   include CartoDB::Factories
 
   before :each do
+    @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
     User.any_instance.stubs(:save_rate_limits).returns(true)
     @user = FactoryGirl.create(:valid_user)
     @rate_limit = Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1, 2]),
@@ -36,6 +37,7 @@ describe Carto::RateLimit do
     @rate_limit.destroy if @rate_limit
     @rate_limit2.destroy if @rate_limit2
     @user.destroy if @user
+    @limits_feature_flag.destroy
   end
 
   describe '#create' do
@@ -99,6 +101,23 @@ describe Carto::RateLimit do
       rate_limit.maps_tile.second.max_burst.should eq 31
       rate_limit.maps_tile.second.count_per_period.should eq 33
       rate_limit.maps_tile.second.period.should eq 35
+    end
+
+    it 'updates a rate_limit to redis' do
+      map_prefix = "limits:rate:store:#{@user.username}:maps:"
+
+      @user.rate_limit_id = @rate_limit.id
+      @user.save
+
+      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
+
+      @rate_limit.maps_anonymous.first.max_burst = 1
+      @rate_limit.maps_anonymous.first.count_per_period = 2
+      @rate_limit.maps_anonymous.first.period = 3
+
+      @rate_limit.save
+
+      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["1", "2", "3"]
     end
 
     it 'is persisted correctly to redis' do

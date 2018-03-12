@@ -5,6 +5,7 @@ require_relative '../../acceptance_helper'
 describe Superadmin::AccountTypesController do
   describe '#create' do
     before(:each) do
+      Carto::AccountType.where(account_type: "PRO").each(&:destroy)
       @account_type = FactoryGirl.build(:account_type_pro)
       @account_type_param = {
         account_type: @account_type.account_type,
@@ -27,6 +28,7 @@ describe Superadmin::AccountTypesController do
 
   describe '#update' do
     before(:each) do
+      Carto::AccountType.where(account_type: "PRO").each(&:destroy)
       @account_type = FactoryGirl.build(:account_type_pro)
       @rate_limits = FactoryGirl.build(:rate_limits_custom)
       @account_type_param = {
@@ -55,6 +57,7 @@ describe Superadmin::AccountTypesController do
 
   describe '#destroy' do
     before(:each) do
+      Carto::AccountType.where(account_type: "PRO").each(&:destroy)
       @account_type = FactoryGirl.build(:account_type_pro)
     end
 

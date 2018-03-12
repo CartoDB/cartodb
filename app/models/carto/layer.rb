@@ -60,8 +60,11 @@ module Carto
     include Carto::QueryRewriter
 
     serialize :options, CartoJsonSerializer
+    serialize :options, JSON
     serialize :infowindow, CartoJsonSerializer
+    serialize :infowindow, JSON
     serialize :tooltip, CartoJsonSerializer
+    serialize :tooltip, JSON
 
     has_many :layers_maps, dependent: :destroy
     has_many :maps, through: :layers_maps, after_add: :after_added_to_map

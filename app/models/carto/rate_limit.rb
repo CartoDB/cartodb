@@ -27,6 +27,8 @@ module Carto
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
     RATE_LIMIT_ATTRIBUTES.each { |attr| validates attr, presence: true }
 
+    after_save :update_redis
+
     def self.from_api_attributes(attributes)
       rate_limit = RateLimit.new
       attributes.each { |k, v| rate_limit[k] = RateLimitValues.new(v) }
@@ -51,6 +53,25 @@ module Carto
 
     def api_attributes
       RATE_LIMIT_ATTRIBUTES.map { |attr| [attr.to_sym, self[attr].to_array] }.to_h
+    end
+
+    def destroy_completely(user)
+      destroy
+      delete_from_redis(user)
+    end
+
+    def delete_from_redis(user)
+      to_redis.each_key do |key|
+        $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
+      end
+    end
+
+    def update_redis
+      User.where(rate_limit_id: id).each do |user|
+        save_to_redis(user)
+      end
+
+      Carto::AccountType.where(rate_limit_id: id).each(&:update_to_redis)
     end
   end
 end

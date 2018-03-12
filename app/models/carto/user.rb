@@ -150,7 +150,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def default_dataset_privacy
-    private_tables_enabled ? Carto::Visualization::PRIVACY_PRIVATE : Carto::Visualization::PRIVACY_PUBLIC
+    private_tables_enabled ? Carto::UserTable::PRIVACY_PRIVATE : Carto::UserTable::PRIVACY_PUBLIC
   end
 
   # @return String public user url, which is also the base url for a given user

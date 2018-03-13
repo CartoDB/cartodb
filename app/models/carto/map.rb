@@ -21,7 +21,9 @@ class Carto::Map < ActiveRecord::Base
 
   belongs_to :user
 
-  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map
+  # Autosave disabled because this caused the `inverse_of` to break (visualization.map != self) until `reload`
+  # Fixed in Rails 5 https://github.com/rails/rails/pull/23197
+  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map, autosave: false
 
   # bounding_box_sw, bounding_box_new and center should probably be JSON serialized fields
   # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters

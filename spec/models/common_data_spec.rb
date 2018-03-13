@@ -1,4 +1,5 @@
 # coding: UTF-8
+
 require 'json'
 require_relative '../spec_helper'
 
@@ -33,11 +34,11 @@ describe CommonData do
     CartoDB::Logger.expects(:error).twice.with do |args|
       if args[:exception]
         args[:exception].should be_an_instance_of JSON::ParserError
-	count += 1
+        count += 1
       else
         args[:message].should eq 'common-data empty'
         args[:url].should eq 'http://common-data.example.com/api/v1/viz?type=table&privacy=public'
-	count -= 1
+        count -= 1
       end
     end
     count.should eq 0 # Error called twice, one with each argument set

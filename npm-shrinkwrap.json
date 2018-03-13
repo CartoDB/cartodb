@@ -384,7 +384,7 @@
     "cartodb.js": {
       "version": "4.0.0-beta.33",
       "from": "cartodb/cartodb.js#support-1379-fix-legends",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#ab0f4d045998c1ab5648e2f7dc16e3d46b5f255b"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#a32550846ed4dc55d10ed2053d10be7ff5f25a89"
     },
     "center-align": {
       "version": "0.1.3",

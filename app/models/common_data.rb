@@ -23,12 +23,12 @@ class CommonData
           response = begin
                        client.get_visualizations_v1_from_url(@visualizations_api_url)
                      rescue StandardError => e
-                       CartoDB.notify_exception(e)
+                       CartoDB::Logger.error(exception: e)
                        nil
                      end
           if response.code == 200
-            redis_cache.set(is_https_request, response.headers, response.response_body)
             @datasets = get_datasets(response.response_body)
+            redis_cache.set(is_https_request, response.headers, response.response_body)
           end
         else
           @datasets = get_datasets(cached_data[:body])
@@ -36,7 +36,7 @@ class CommonData
       end
     end
 
-    CartoDB.notify_error('common-data empty', url: @visualizations_api_url) if @datasets.empty?
+    CartoDB::Logger.error(message: 'common-data empty', url: @visualizations_api_url) if @datasets.empty?
 
     @datasets
   end
@@ -51,7 +51,7 @@ class CommonData
     begin
       rows = JSON.parse(json).fetch('visualizations', [])
     rescue StandardError => e
-      CartoDB.notify_exception(e)
+      CartoDB::Logger.error(exception: e)
       rows = []
     end
 

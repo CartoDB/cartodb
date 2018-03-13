@@ -125,11 +125,20 @@ namespace :cartodb do
       assert_valid_arg args, :service,    accepted_values: DS_SERVICES
       assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
 
-      service_quota_key = "soft_#{service}_limit="
-      user.send(service_quota_key, soft_limit)
-      user.save
+      set_soft_limit_for_user(user, service, soft_limit)
+    end
 
+    private
+
+    def set_soft_limit_for_user(user, service, soft_limit)
+      puts "#{soft_limit ? 'Enabling' : 'Disabling'} #{service.upcase} soft limit for #{user.username}"
+      user.send("#{service_soft_quota_key(service)}=", soft_limit)
+      user.save
       puts "Changed the user soft limit for service #{service} to #{soft_limit}."
+    end
+
+    def service_soft_quota_key(service)
+      "soft_#{service}_limit"
     end
   end
 end

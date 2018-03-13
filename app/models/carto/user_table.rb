@@ -212,7 +212,7 @@ module Carto
     private
 
     def default_privacy_value
-      user.try(:default_dataset_privacy)
+      user.try(:default_table_privacy)
     end
 
     def set_default_table_privacy

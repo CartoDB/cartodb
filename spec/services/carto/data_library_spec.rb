@@ -36,8 +36,8 @@ describe Carto::DataLibraryService do
     it 'loads a remote dataset into a Data Library' do
       client_p = { scheme: 'https', base_domain: 'waduscarto.com', port: 666 }
       client = CartoAPI::JsonClient.new(**client_p)
-      mocked_get_visualization_v1_response = JSON.parse(visualization_json)
-      source_dataset = mocked_get_visualization_v1_response['name']
+      mocked_get_visualization_v1_response = JSON.parse(visualization_json, symbolize_names: true)
+      source_dataset = mocked_get_visualization_v1_response[:name]
       params = {
         source_dataset: source_dataset,
         source_username: 'wadus-username',

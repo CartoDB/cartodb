@@ -12,29 +12,29 @@ module Carto
       remote_visualization = carto_api_client.get_visualization_v1(
         username: source_username, name: source_dataset, params: { api_key: source_api_key }
       )
-      remote_table = remote_visualization['table']
+      remote_table = remote_visualization[:table]
       privacy = target_user.default_dataset_privacy
       visualization = Carto::Visualization.create!(
-        name: remote_visualization['name'],
+        name: remote_visualization[:name],
         display_name: display_name(remote_visualization),
         user: target_user,
         type: Carto::Visualization::TYPE_REMOTE,
         privacy: privacy,
-        description: remote_visualization['description'],
-        tags: remote_visualization['tags'],
-        license: remote_visualization['license'],
-        source: remote_visualization['source'],
-        attributions: remote_visualization['attributions']
+        description: remote_visualization[:description],
+        tags: remote_visualization[:tags],
+        license: remote_visualization[:license],
+        source: remote_visualization[:source],
+        attributions: remote_visualization[:attributions]
       )
       base_url = "#{carto_api_client.scheme}://#{carto_api_client.base_url(source_username)}"
       sql_api_url = CartoDB::SQLApi.with_username_api_key(source_username, granted_api_key, privacy, base_url: base_url)
                                    .export_table_url(source_dataset)
-      external_source = Carto::ExternalSource.create!(
+      Carto::ExternalSource.create!(
         visualization: visualization,
         import_url: sql_api_url,
-        rows_counted: remote_table['row_count'],
-        size: remote_table['size'],
-        geometry_types: remote_table['geometry_types'],
+        rows_counted: remote_table[:row_count],
+        size: remote_table[:size],
+        geometry_types: remote_table[:geometry_types],
         username: target_username
       )
 
@@ -43,8 +43,8 @@ module Carto
 
     private
 
-    def display_name(vis)
-      vis['display_name'].presence || vis['name']
+    def display_name(remote_visualization)
+      remote_visualization[:display_name].presence || remote_visualization[:name]
     end
   end
 end

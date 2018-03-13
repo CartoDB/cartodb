@@ -12,14 +12,14 @@ module CartoAPI
     attr_reader :scheme
 
     def get_visualization_v1(username:, name:, params: {})
-      JSON.parse(get(carto_url(username, "/api/v1/viz/#{name}", params: params)).body)
+      parse(get(carto_url(username, "/api/v1/viz/#{name}", params: params)).body)
     end
 
     def get_visualizations_v1(username:, params: {})
-      JSON.parse(get(carto_url(username, '/api/v1/viz', params: params)).body)
+      parse(get(carto_url(username, '/api/v1/viz', params: params)).body)
     end
 
-    # Deprecated
+    # Deprecated, use get_visualizations_v1 instead (caller shouldn't care about the full response)
     def get_visualizations_v1_from_url(url)
       get(url)
     end
@@ -52,6 +52,10 @@ module CartoAPI
         followlocation: true
       )
       request.run
+    end
+
+    def parse(json)
+      JSON.parse(json, symbolize_names: true)
     end
   end
 end

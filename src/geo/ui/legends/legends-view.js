@@ -11,17 +11,19 @@ var LegendsView = View.extend({
 
   initialize: function (options) {
     if (!options.layersCollection) throw new Error('layersCollection is required');
-    this._layersCollection = options.layersCollection;
+    if (!options.settingsModel) throw new Error('settingsModel is required');
 
-    this._isRendered = false;
+    this._layersCollection = options.layersCollection;
     this.settingsModel = options.settingsModel;
+    this._isRendered = false;
+
     this._initBinds();
 
     this._layerLegendsViews = [];
   },
 
   _initBinds: function () {
-    this.listenTo(this._layersCollection, 'add remove layerMoved', this._onLegendsChanged);
+    this.listenTo(this._layersCollection, 'add remove layerMoved', this._onLayersChanged);
     this.listenTo(this.settingsModel, 'change', this._onSettingsModelChanged);
   },
 
@@ -107,7 +109,7 @@ var LegendsView = View.extend({
     this.$(this._container()).append(layerLegendsView.render().$el);
   },
 
-  _onLegendsChanged: function (layerModel) {
+  _onLayersChanged: function (layerModel) {
     // If view has already been rendered and a layer is added / removed
     if (this._isRendered && this._hasLegends(layerModel)) {
       this._clear();

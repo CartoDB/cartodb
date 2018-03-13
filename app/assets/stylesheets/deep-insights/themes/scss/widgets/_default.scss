@@ -148,12 +148,21 @@
     height: 2px;
   }
 
-  .CDB-Widget-body.is-collapsed {
-    height: 100%;
+  .CDB-Widget-body {
+    &.is-collapsed {
+      height: 100%;
 
-    .CDB-Widget-content,
-    .CDB-Widget-info {
-      display: block;
+      .CDB-Widget-content,
+      .CDB-Widget-info {
+        display: block;
+      }
+    }
+
+    .CDB-Dropdown-item:first-child {
+      > .CDB-Dropdown-link {
+        opacity: 0.24;
+        pointer-events: none;
+      }
     }
   }
 

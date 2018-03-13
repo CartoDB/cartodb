@@ -21,10 +21,8 @@ var LegendsView = View.extend({
   },
 
   _initBinds: function () {
-    this._layersCollection.on('add remove', this._onLayerAddedOrRemoved, this);
-    this.add_related_model(this._layersCollection);
-    this.settingsModel.on('change', this._onSettingsModelChanged, this);
-    this.add_related_model(this.settingsModel);
+    this.listenTo(this._layersCollection, 'add remove layerMoved', this._onLegendsChanged);
+    this.listenTo(this.settingsModel, 'change', this._onSettingsModelChanged);
   },
 
   render: function () {
@@ -109,7 +107,7 @@ var LegendsView = View.extend({
     this.$(this._container()).append(layerLegendsView.render().$el);
   },
 
-  _onLayerAddedOrRemoved: function (layerModel) {
+  _onLegendsChanged: function (layerModel) {
     // If view has already been rendered and a layer is added / removed
     if (this._isRendered && this._hasLegends(layerModel)) {
       this._clear();

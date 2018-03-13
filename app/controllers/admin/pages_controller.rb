@@ -32,7 +32,7 @@ class Admin::PagesController < Admin::AdminController
               :render_not_found
 
   before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
-  before_filter :get_viewed_user
+  before_filter :load_viewed_entity
   before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
@@ -381,11 +381,11 @@ class Admin::PagesController < Admin::AdminController
     @needs_gmaps_lib = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
 
-    ff_user = @viewed_user || @org.owner
+    ff_user = @viewed_user || @viewed_org.owner
     @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag('dashboard_migration')
 
     gmaps_user = @most_viewed_vis_map.try(:map).try(:user) || @viewed_user
-    @gmaps_query_string = gmaps_user ? gmaps_user.google_maps_query_string : @org.google_maps_key
+    @gmaps_query_string = gmaps_user ? gmaps_user.google_maps_query_string : @viewed_org.google_maps_key
   end
 
   def user_datasets_public_builder(user)
@@ -486,13 +486,13 @@ class Admin::PagesController < Admin::AdminController
     }
   end
 
-  def get_viewed_user
+  def load_viewed_entity
     username = CartoDB.extract_subdomain(request)
     @viewed_user = ::User.where(username: username).first
 
     if @viewed_user.nil?
       username = username.strip.downcase
-      @org = get_organization_if_exists(username)
+      @viewed_org = get_organization_if_exists(username)
     end
   end
 

@@ -15,12 +15,16 @@
   <div class="js-api-keys-form"></div>
   <div class="js-api-keys-tables"></div>
 
-  <footer class="FormAccount-footer">
-    <p class="FormAccount-footerText">Changes to the key permissions are not possible once key is generated</p>
+  <footer class="Editor-footer u-tSpace-m">
+    <p class="CDB-Text CDB-Size-medium u-altTextColor">Changes to the key permissions are not possible once key is generated</p>
+
     <% if (modelIsNew) { %>
       <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-submit">
         <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
       </button>
     <% } %>
   </footer>
+  <div class="error">
+    <span class="CDB-Text CDB-Size-small u-errorTextColor js-error"></span>
+  </div>
 </section>

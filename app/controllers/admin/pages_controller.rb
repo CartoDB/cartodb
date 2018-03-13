@@ -325,7 +325,7 @@ class Admin::PagesController < Admin::AdminController
                            && @viewed_user.has_feature_flag?('dashboard_migration')
                          end
 
-    @needs_gmaps_lib = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
+    @needs_gmaps_lib = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
 
     @gmaps_query_string = if @viewed_user.nil?

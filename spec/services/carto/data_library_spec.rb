@@ -68,6 +68,7 @@ describe Carto::DataLibraryService do
       visualization.tags.should eq ['production']
       external_source = visualization.external_source
       external_source.should be
+      external_source.visualization.should be
       import_url = "#{client_p[:scheme]}://#{params[:source_username]}.#{client_p[:base_domain]}"
       external_source.import_url.should start_with import_url
       external_source.geometry_types.should eq ['ST_MultiPolygon']

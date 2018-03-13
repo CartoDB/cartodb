@@ -15,24 +15,25 @@ module Carto
       remote_table = remote_visualization[:table]
       privacy = target_user.default_dataset_privacy
       remote_attributes = remote_visualization.slice(:name, :description, :tags, :license, :source, :attributions)
-      visualization = Carto::Visualization.create!(
-        remote_attributes.merge(
-          display_name: display_name(remote_visualization),
-          user: target_user,
-          type: Carto::Visualization::TYPE_REMOTE,
-          privacy: privacy
-        )
-      )
+
       base_url = "#{carto_api_client.scheme}://#{carto_api_client.base_url(source_username)}"
       sql_api_url = CartoDB::SQLApi.with_username_api_key(source_username, granted_api_key, privacy, base_url: base_url)
                                    .export_table_url(source_dataset)
-      Carto::ExternalSource.create!(
-        visualization: visualization,
+      external_source = Carto::ExternalSource.new(
         import_url: sql_api_url,
         rows_counted: remote_table[:row_count],
         size: remote_table[:size],
         geometry_types: remote_table[:geometry_types],
         username: target_username
+      )
+      visualization = Carto::Visualization.create!(
+        remote_attributes.merge(
+          display_name: display_name(remote_visualization),
+          user: target_user,
+          type: Carto::Visualization::TYPE_REMOTE,
+          privacy: privacy,
+          external_source: external_source
+        )
       )
 
       visualization

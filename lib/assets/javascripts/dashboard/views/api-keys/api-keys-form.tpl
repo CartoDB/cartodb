@@ -24,7 +24,6 @@
       </button>
     <% } %>
   </footer>
-  <div class="error">
-    <span class="CDB-Text CDB-Size-small u-errorTextColor js-error"></span>
+  <div class="CDB-Text CDB-Size-small u-errorTextColor js-error">
   </div>
 </section>

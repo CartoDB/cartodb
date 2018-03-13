@@ -28,8 +28,8 @@ describe Carto::DataLibraryService do
       "\"last_name\":null,\"avatar_url\":\"//wadus.net/cartodbui/assets/images/avatars/avatar_mountain_green.png\"," +
       "\"base_url\":\"https://common-data.carto.com\",\"google_maps_query_string\":\"\"," +
       "\"disqus_shortname\":\"\",\"viewer\":false,\"org_admin\":false,\"org_user\":false,\"remove_logo\":true}}," +
-      "\"geometry_types\":[],\"privacy\":\"PUBLIC\",\"updated_at\":\"2015-05-14T10:30:31+00:00\",\"size\":53248," +
-      "\"row_count\":124}}"
+      "\"geometry_types\":[\"ST_MultiPolygon\"],\"privacy\":\"PUBLIC\",\"updated_at\":\"2015-05-14T10:30:31+00:00\", " +
+      "\"size\":53248,\"row_count\":124}}"
   end
 
   describe '#load_dataset' do
@@ -65,10 +65,12 @@ describe Carto::DataLibraryService do
                                   .first
       visualization.should be
       visualization.display_name.present?.should be_true # Data Library requires display name
+      visualization.tags.should eq ['production']
       external_source = visualization.external_source
       external_source.should be
       import_url = "#{client_p[:scheme]}://#{params[:source_username]}.#{client_p[:base_domain]}"
       external_source.import_url.should start_with import_url
+      external_source.geometry_types.should eq ['ST_MultiPolygon']
 
       visualization.destroy
     end

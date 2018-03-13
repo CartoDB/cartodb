@@ -34,10 +34,9 @@ module Carto
         import_url: sql_api_url,
         rows_counted: remote_table['row_count'],
         size: remote_table['size'],
+        geometry_types: remote_table['geometry_types'],
         username: target_username
       )
-      # ActiveRecord array issue
-      external_source.update_attribute(:geometry_types, remote_table['geometry_types'])
 
       visualization
     end

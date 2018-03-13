@@ -96,10 +96,9 @@ module CartoDB
                   import_url: dataset['url'],
                   rows_counted: dataset['rows'],
                   size: dataset['size'],
+                  geometry_types: dataset['geometry_types'],
                   username: 'common-data'
                 )
-                # ActiveRecord array issue
-                external_source.update_attribute(:geometry_types, dataset['geometry_types'])
               end
             rescue => e
               CartoDB.notify_exception(e, {

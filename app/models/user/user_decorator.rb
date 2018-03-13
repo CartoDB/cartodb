@@ -126,6 +126,10 @@ module CartoDB
         location: location
       }
 
+      if google_maps_geocoder_enabled? && (!organization.present? || organization_owner?)
+        data[:google_maps_private_key] = google_maps_private_key
+      end
+
       if organization.present?
         data[:organization] = organization.to_poro
         data[:organization][:available_quota_for_user] = organization.unassigned_quota + quota_in_bytes

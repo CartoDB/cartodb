@@ -198,8 +198,7 @@ describe Carto::Api::UserPresenter do
       # > Diff:2015-06-23 17:27:02 +0200.==(2015-06-23 17:27:02 +0200) returned false even though the diff between
       #   2015-06-23 17:27:02 +0200 and 2015-06-23 17:27:02 +0200 is empty. Check the implementation of
       #   2015-06-23 17:27:02 +0200.==.
-      # TODO Skipped organization.created_at due to Rails 4 TZ issues
-      # new_data[:organization][:created_at].to_s.should == old_data[:organization][:created_at].to_s
+      new_data[:organization][:created_at].should == old_data[:organization][:created_at]
       new_data[:organization][:description].should == old_data[:organization][:description]
       new_data[:organization][:discus_shortname].should == old_data[:organization][:discus_shortname]
       new_data[:organization][:display_name].should == old_data[:organization][:display_name]

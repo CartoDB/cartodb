@@ -188,7 +188,7 @@ class SignupController < ApplicationController
   end
 
   def disable_if_ldap_configured
-    render_404 && return false if Carto::Ldap::Manager.new.configuration_present?
+    render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
   end
 
   def invitation

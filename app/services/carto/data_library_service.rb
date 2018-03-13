@@ -26,7 +26,8 @@ module Carto
         source: remote_visualization['source'],
         attributions: remote_visualization['attributions']
       )
-      sql_api_url = CartoDB::SQLApi.with_username_api_key(source_username, granted_api_key, privacy)
+      base_url = "#{carto_api_client.scheme}://#{carto_api_client.base_url(source_username)}"
+      sql_api_url = CartoDB::SQLApi.with_username_api_key(source_username, granted_api_key, privacy, base_url: base_url)
                                    .export_table_url(source_dataset)
       external_source = Carto::ExternalSource.create!(
         visualization: visualization,

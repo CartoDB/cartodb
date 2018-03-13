@@ -20,10 +20,10 @@ module CartoDB
     attr_reader   :response_code, :parsed_response
 
     # privacy: 'public' / 'private'
-    def self.with_username_api_key(username, api_key, privacy, protocol: 'https')
+    def self.with_username_api_key(username, api_key, privacy,
+                                   base_url: ::ApplicationHelper.sql_api_url(username, privacy))
       new(
-        base_url: ::ApplicationHelper.sql_api_url(username, privacy),
-        protocol: protocol,
+        base_url: base_url,
         username: username,
         api_key: api_key
       )

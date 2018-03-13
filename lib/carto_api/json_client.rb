@@ -9,6 +9,8 @@ module CartoAPI
       @port = port
     end
 
+    attr_reader :scheme
+
     def get_visualization_v1(username:, name:, params: {})
       JSON.parse(get(carto_url(username, "/api/v1/viz/#{name}", params: params)).body)
     end
@@ -22,6 +24,10 @@ module CartoAPI
       get(url)
     end
 
+    def base_url(username)
+      "#{username}.#{@base_domain}"
+    end
+
     private
 
     CONNECT_TIMEOUT = 45
@@ -33,10 +39,6 @@ module CartoAPI
       uri.scheme = @scheme if @scheme
       uri.port = @port if @port
       uri.to_s
-    end
-
-    def base_url(username)
-      "#{username}.#{@base_domain}"
     end
 
     def get(url)

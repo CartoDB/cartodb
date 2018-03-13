@@ -27,7 +27,7 @@ class SignupController < ApplicationController
 
   def create
     account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
-                      with_organization(@organization).
+                      with_organization(@organization, viewer: invitation.viewer).
                       with_invitation_token(params[:invitation_token])
 
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
@@ -183,7 +183,7 @@ class SignupController < ApplicationController
 
   def load_mandatory_organization
     load_organization
-    render_404 and return false unless @organization && (@organization.signup_page_enabled || valid_email_invitation_token?)
+    render_404 and return false unless @organization && (@organization.signup_page_enabled || invitation)
     check_organization_quotas
   end
 
@@ -191,17 +191,12 @@ class SignupController < ApplicationController
     render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
   end
 
-  def valid_email_invitation_token?
-    valid_email_invitation_token.present?
-  end
-
-  def valid_email_invitation_token
+  def invitation
+    return @invitation if @invitation
     email = (params[:user] && params[:user][:email]) || params[:email]
     token = params[:invitation_token]
-    if email && token
-      invitations = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
-      @invitation ||= invitations.find { |i| i.token(email) == token }
-    end
+    return if !email || !token
+    invitation = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
+    @invitation = invitation.find { |i| i.token(email) == token }
   end
-
 end

@@ -22,7 +22,7 @@ class CommonData
           client = CartoAPI::JsonClient.new(http_client_tag: 'common_data')
           response = begin
                        client.get_visualizations_v1_from_url(@visualizations_api_url)
-                     rescue => e
+                     rescue StandardError => e
                        CartoDB.notify_exception(e)
                        nil
                      end
@@ -36,6 +36,8 @@ class CommonData
       end
     end
 
+    CartoDB.notify_error('common-data empty', url: @visualizations_api_url) if @datasets.empty?
+
     @datasets
   end
 
@@ -48,11 +50,10 @@ class CommonData
   def get_datasets(json)
     begin
       rows = JSON.parse(json).fetch('visualizations', [])
-    rescue => e
+    rescue StandardError => e
       CartoDB.notify_exception(e)
       rows = []
     end
-    CartoDB.notify_error('common-data empty', { rows: rows, url: @visualizations_api_url}) if rows.nil? || rows.empty?
 
     datasets = []
     rows.each do |row|

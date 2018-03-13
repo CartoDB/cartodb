@@ -10,11 +10,11 @@ module CartoAPI
     end
 
     def get_visualization_v1(username:, name:, params: {})
-      JSON.parse(get(carto_url(username, "/api/v1/viz/#{name}", params: params1)).body)
+      JSON.parse(get(carto_url(username, "/api/v1/viz/#{name}", params: params)).body)
     end
 
     def get_visualizations_v1(username:, params: {})
-      JSON.parse(get(carto_url(username, '/api/v1/viz', params: params1)).body)
+      JSON.parse(get(carto_url(username, '/api/v1/viz', params: params)).body)
     end
 
     # Deprecated

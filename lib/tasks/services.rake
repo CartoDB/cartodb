@@ -128,6 +128,25 @@ namespace :cartodb do
       set_soft_limit_for_user(user, service, soft_limit)
     end
 
+    desc 'Assign the soft limit flag for a service to all users'
+    task :set_all_users_soft_limit, [:service, :soft_limit] => [:environment] do |_, args|
+      service = args[:service]
+      soft_limit = args[:soft_limit] == 'false' ? false : true
+
+      assert_valid_arg args, :service,    accepted_values: DS_SERVICES
+      assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
+
+      updated = SequelRails.connection.fetch(
+        "UPDATE
+          users
+        SET
+          #{service_soft_quota_key(service)} = #{soft_limit}
+        WHERE
+          #{service_soft_quota_key(service)} != #{soft_limit}"
+      ).update
+      puts "Updated #{updated} users"
+    end
+
     private
 
     def set_soft_limit_for_user(user, service, soft_limit)

@@ -136,6 +136,10 @@ namespace :cartodb do
       assert_valid_arg args, :service,    accepted_values: DS_SERVICES
       assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
 
+      puts "#{soft_limit ? 'En' : 'Dis'}abling #{service.upcase} soft limit for ALL USERS"
+      puts "Hit any key if you are sure of what you are doing"
+      STDIN.getc
+
       updated = SequelRails.connection.fetch(
         "UPDATE
           users

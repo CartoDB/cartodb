@@ -44,7 +44,7 @@ module Carto
     private
 
     def display_name(vis)
-      vis['display_name'].present? ? vis['display_name'] : vis['name']
+      vis['display_name'].presence || vis['name']
     end
   end
 end

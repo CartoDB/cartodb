@@ -64,7 +64,7 @@ describe Carto::DataLibraryService do
                                   .where(name: source_dataset)
                                   .first
       visualization.should be
-      visualization.display_name.present?.should be_true # Data Library requires display name
+      visualization.display_name.should eq visualization.name # The example doesn't have display_name, so name is used
       visualization.tags.should eq ['production']
       external_source = visualization.external_source
       external_source.should be

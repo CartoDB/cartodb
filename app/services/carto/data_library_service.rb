@@ -14,17 +14,14 @@ module Carto
       )
       remote_table = remote_visualization[:table]
       privacy = target_user.default_dataset_privacy
+      remote_attributes = remote_visualization.slice(:name, :description, :tags, :license, :source, :attributions)
       visualization = Carto::Visualization.create!(
-        name: remote_visualization[:name],
-        display_name: display_name(remote_visualization),
-        user: target_user,
-        type: Carto::Visualization::TYPE_REMOTE,
-        privacy: privacy,
-        description: remote_visualization[:description],
-        tags: remote_visualization[:tags],
-        license: remote_visualization[:license],
-        source: remote_visualization[:source],
-        attributions: remote_visualization[:attributions]
+        remote_attributes.merge(
+          display_name: display_name(remote_visualization),
+          user: target_user,
+          type: Carto::Visualization::TYPE_REMOTE,
+          privacy: privacy
+        )
       )
       base_url = "#{carto_api_client.scheme}://#{carto_api_client.base_url(source_username)}"
       sql_api_url = CartoDB::SQLApi.with_username_api_key(source_username, granted_api_key, privacy, base_url: base_url)

@@ -1016,16 +1016,19 @@ class User < Sequel::Model
 
   def update_rate_limits(rate_limit_attributes)
     if rate_limit_attributes
-      rate_limit = rate_limit || Carto::RateLimit.new
+      rate_limit = self.rate_limit || Carto::RateLimit.new
       new_attributes = Carto::RateLimit.from_api_attributes(rate_limit_attributes).rate_limit_attributes
 
       rate_limit.update_attributes!(new_attributes)
       self.rate_limit_id = rate_limit.id
     else
+      remove_rate_limit = self.rate_limit
       self.rate_limit_id = nil
     end
 
     save
+
+    remove_rate_limit.destroy_completely(self) if remove_rate_limit.present?
   end
 
   def effective_rate_limit

@@ -29,7 +29,7 @@ module Carto
 
     def self.from_api_attributes(attributes)
       rate_limit = RateLimit.new
-      attributes.each { |k, v| rate_limit[k] = RateLimitValues.new(v) }
+      rate_limit.rate_limit_attributes(attributes).each { |k, v| rate_limit[k] = RateLimitValues.new(v) }
       rate_limit
     end
 
@@ -64,8 +64,9 @@ module Carto
       end
     end
 
-    def rate_limit_attributes
-      attributes.with_indifferent_access.slice(*Carto::RateLimit::RATE_LIMIT_ATTRIBUTES)
+    def rate_limit_attributes(attrs = nil)
+      attrs ||= attributes
+      attrs.with_indifferent_access.slice(*Carto::RateLimit::RATE_LIMIT_ATTRIBUTES)
     end
   end
 end

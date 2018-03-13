@@ -5,16 +5,16 @@ require_relative '../../acceptance_helper'
 describe Superadmin::AccountTypesController do
   describe '#create' do
     before(:each) do
-      Carto::AccountType.where(account_type: "PRO").each(&:destroy)
-      @account_type = FactoryGirl.build(:account_type_pro)
+      @account_type = FactoryGirl.create(:account_type_pro)
       @account_type_param = {
-        account_type: @account_type.account_type,
+        account_type: "PERSONAL30",
         rate_limit: @account_type.rate_limit.api_attributes
       }
     end
 
     after(:each) do
       @account_type.destroy
+      Carto::AccountType.where(account_type: "PERSONAL30").each(&:destroy)
     end
 
     it 'should create account_type' do
@@ -24,13 +24,22 @@ describe Superadmin::AccountTypesController do
         response.status.should == 204
       }.to change(Carto::AccountType, :count).by(1)
     end
+
+    it 'should raise an exception if account_type already exists' do
+      @account_type_param[:account_type] = @account_type.account_type
+
+      post superadmin_account_types_url, { account_type: @account_type_param }.to_json, superadmin_headers
+
+      response.status.should == 500
+      JSON.parse(response.body)['errors']['message'].should =~ /duplicate key/
+    end
   end
 
   describe '#update' do
     before(:each) do
       Carto::AccountType.where(account_type: "PRO").each(&:destroy)
-      @account_type = FactoryGirl.build(:account_type_pro)
-      @rate_limits = FactoryGirl.build(:rate_limits_custom)
+      @account_type = FactoryGirl.create(:account_type_pro)
+      @rate_limits = FactoryGirl.create(:rate_limits_custom)
       @account_type_param = {
         account_type: @account_type.account_type,
         rate_limit: @rate_limits.api_attributes
@@ -43,8 +52,6 @@ describe Superadmin::AccountTypesController do
     end
 
     it 'should update an account type' do
-      @account_type.save!
-
       expect {
         put superadmin_account_type_url(@account_type.account_type),
             { account_type: @account_type_param }.to_json,
@@ -56,15 +63,24 @@ describe Superadmin::AccountTypesController do
     end
 
     it 'should not update an account type with empty rate limits' do
-      @account_type.save!
-      rate_limit_id = @account_type.rate_limit_id
-
-      put superadmin_account_type_url(@account_type.account_type),
-          { account_type: { account_type: @account_type.account_type } }.to_json,
-          superadmin_headers do |response|
+      api_attributes = @account_type.rate_limit.api_attributes
+      put_json superadmin_account_type_url(@account_type.account_type),
+               { account_type: { account_type: @account_type.account_type } }.to_json,
+               superadmin_headers do |response|
 
         response.status.should == 500
-        @account_type.rate_limit_id.should eq rate_limit_id
+        response.body[:error].should =~ /ERROR. rate_limit object is not valid/
+        @account_type.rate_limit.api_attributes.should eq api_attributes
+      end
+    end
+
+    it 'should raise an error if non-existent account type' do
+      put_json superadmin_account_type_url("non_existent"),
+               { account_type: { account_type: @account_type.account_type } }.to_json,
+               superadmin_headers do |response|
+
+        response.status.should == 404
+        response.body[:error].should =~ /ERROR. account_type not found/
       end
     end
   end
@@ -72,7 +88,7 @@ describe Superadmin::AccountTypesController do
   describe '#destroy' do
     before(:each) do
       Carto::AccountType.where(account_type: "PRO").each(&:destroy)
-      @account_type = FactoryGirl.build(:account_type_pro)
+      @account_type = FactoryGirl.create(:account_type_pro)
     end
 
     after(:each) do
@@ -80,11 +96,21 @@ describe Superadmin::AccountTypesController do
     end
 
     it 'should destroy account type' do
-      @account_type.save!
-
       expect {
         delete superadmin_account_type_url(@account_type.account_type), nil, superadmin_headers
       }.to change(Carto::AccountType, :count).by(-1)
+
+      expect {
+        Carto::AccountType.find(@account_type.id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'should raise an error if non-existent account type' do
+      delete_json superadmin_account_type_url("non_existent"), nil, superadmin_headers do |response|
+
+        response.status.should == 404
+        response.body[:error].should =~ /ERROR. account_type not found/
+      end
     end
   end
 end

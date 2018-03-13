@@ -2672,12 +2672,13 @@ describe User do
     end
   end
 
-  describe 'when creating rate limits' do
-    before :each do
+  describe '#rate limits' do
+    before :all do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = FactoryGirl.create(:account_type_free)
       @account_type_pro = FactoryGirl.create(:account_type_pro)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
+      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
       @user_rt = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
@@ -2696,7 +2697,7 @@ describe User do
       @sql_prefix = "limits:rate:store:#{@user_rt.username}:sql:"
     end
 
-    after :each do
+    after :all do
       @user_rt.destroy unless @user_rt.nil?
       @user_no_ff.destroy unless @user_no_ff.nil?
       @organization.destroy unless @organization.nil?
@@ -2706,6 +2707,7 @@ describe User do
       @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
       @rate_limits.destroy unless @rate_limits.nil?
       @rate_limits_custom.destroy unless @rate_limits_custom.nil?
+      @rate_limits_custom2.destroy unless @rate_limits_custom2.nil?
       @rate_limits_pro.destroy unless @rate_limits_pro.nil?
       @limits_feature_flag.destroy if @limits_feature_flag.exists?
     end
@@ -2838,6 +2840,53 @@ describe User do
 
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
+    end
+
+    it 'updates rate limits when user has no rate limits' do
+      user = FactoryGirl.create(:valid_user)
+      user.update_rate_limits(@rate_limits.api_attributes)
+
+      user.reload
+      user.rate_limit.should_not be_nil
+      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
+
+      user.destroy
+    end
+
+    it 'does nothing when user has no rate limits' do
+      user = FactoryGirl.create(:valid_user)
+      user.update_rate_limits(nil)
+
+      user.reload
+      user.rate_limit.should be_nil
+
+      user.destroy
+    end
+
+    it 'updates rate limits when user has rate limits' do
+      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
+      user.update_rate_limits(@rate_limits.api_attributes)
+      user.reload
+      user.rate_limit.should_not be_nil
+      user.rate_limit_id.should eq @rate_limits_custom2.id
+      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
+      @rate_limits.api_attributes.should eq @rate_limits_custom2.reload.api_attributes
+
+      user.destroy
+    end
+
+    it 'set rate limits to nil when user has rate limits' do
+      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      user.update_rate_limits(nil)
+
+      user.reload
+      user.rate_limit.should be_nil
+
+      expect {
+        Carto::RateLimit.find(@rate_limits.id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+
+      user.destroy
     end
   end
 

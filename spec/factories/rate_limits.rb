@@ -45,6 +45,29 @@ FactoryGirl.define do
     sql_job_delete       Carto::RateLimitValues.new([112, 113, 114])
   end
 
+  factory :rate_limits_custom2, class: Carto::RateLimit do
+    maps_anonymous       Carto::RateLimitValues.new([10, 11, 12])
+    maps_static          Carto::RateLimitValues.new([13, 14, 15])
+    maps_static_named    Carto::RateLimitValues.new([16, 17, 18])
+    maps_dataview        Carto::RateLimitValues.new([19, 110, 111])
+    maps_dataview_search Carto::RateLimitValues.new([19, 110, 111])
+    maps_analysis        Carto::RateLimitValues.new([112, 113, 114])
+    maps_tile            Carto::RateLimitValues.new([115, 116, 117, 230, 232, 234])
+    maps_attributes      Carto::RateLimitValues.new([118, 119, 120])
+    maps_named_list      Carto::RateLimitValues.new([121, 122, 123])
+    maps_named_create    Carto::RateLimitValues.new([124, 125, 126])
+    maps_named_get       Carto::RateLimitValues.new([127, 128, 129])
+    maps_named           Carto::RateLimitValues.new([130, 131, 132])
+    maps_named_update    Carto::RateLimitValues.new([133, 134, 135])
+    maps_named_delete    Carto::RateLimitValues.new([136, 137, 138])
+    maps_named_tiles     Carto::RateLimitValues.new([139, 140, 141])
+    sql_query            Carto::RateLimitValues.new([10, 11, 12])
+    sql_query_format     Carto::RateLimitValues.new([13, 14, 15])
+    sql_job_create       Carto::RateLimitValues.new([16, 17, 18])
+    sql_job_get          Carto::RateLimitValues.new([19, 110, 111])
+    sql_job_delete       Carto::RateLimitValues.new([112, 113, 114])
+  end
+
   factory :rate_limits_pro, class: Carto::RateLimit do
     maps_anonymous       Carto::RateLimitValues.new([1, 1, 2])
     maps_static          Carto::RateLimitValues.new([2, 4, 5])

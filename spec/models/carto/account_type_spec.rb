@@ -8,15 +8,11 @@ describe Carto::AccountType do
 
   before :each do
     @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
-    User.any_instance.stubs(:save_rate_limits).returns(true)
-    @user = FactoryGirl.create(:valid_user)
     @account_type = FactoryGirl.create(:account_type_pro)
   end
 
   after :each do
-    User.any_instance.unstub(:save_rate_limits)
-    @user.destroy if @user
-    @account_type.destroy if @user
+    @account_type.destroy if @account_type
     @limits_feature_flag.destroy
   end
 

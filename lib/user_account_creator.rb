@@ -84,7 +84,6 @@ module CartoDB
     end
 
     def with_organization(organization, viewer: false)
-      byebug
       @built = false
       @organization = organization
       @user = ::User.new_with_organization(organization, viewer: viewer)

@@ -188,7 +188,7 @@ class SignupController < ApplicationController
   end
 
   def disable_if_ldap_configured
-    render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
+    render_404 && return false if Carto::Ldap::Manager.new.configuration_present?
   end
 
   def invitation
@@ -196,7 +196,7 @@ class SignupController < ApplicationController
     email = (params[:user] && params[:user][:email]) || params[:email]
     token = params[:invitation_token]
     return if !email || !token
-    invitation = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
-    @invitation = invitation.find { |i| i.token(email) == token }
+    invitations = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
+    @invitation = invitations.find { |i| i.token(email) == token }
   end
 end

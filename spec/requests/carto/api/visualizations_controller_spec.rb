@@ -2,7 +2,6 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
-require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
 
 # TODO: Remove once Carto::Visualization is complete enough
@@ -21,9 +20,6 @@ describe Carto::Api::VisualizationsController do
   include Carto::Factories::Visualizations
   include VisualizationDestructionHelper
   include FeatureFlagHelper
-
-  it_behaves_like 'visualization controllers' do
-  end
 
   describe 'vizjson2 generator' do
     it_behaves_like 'vizjson generator' do
@@ -2572,6 +2568,26 @@ describe Carto::Api::VisualizationsController do
           visualization.reload
           visualization.password_protected?.should be_true
           visualization.password_valid?('the_pass').should be_true
+
+          visualization.destroy
+        end
+
+        it 'migrates visualizations to v3' do
+          _, _, table_visualization, visualization = create_full_visualization(@user)
+          visualization.update_attributes!(version: 2)
+          visualization.analyses.each(&:destroy)
+
+          payload = {
+            id: visualization.id,
+            version: 3
+          }
+          put_json api_v1_visualizations_update_url(id: visualization.id), payload do |response|
+            response.status.should be_success
+            expect(response.body[:version]).to eq 3
+          end
+
+          visualization.reload
+          expect(visualization.analyses.any?).to be_true
 
           visualization.destroy
         end

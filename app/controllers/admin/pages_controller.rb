@@ -318,10 +318,10 @@ class Admin::PagesController < Admin::AdminController
 
   def set_vars_for_public_dashboard
     @has_new_dashboard = if @viewed_user.nil?
-                           @org.builder_enabled \
+                           @org.builder_enabled? \
                            && @org.owner.has_feature_flag?('dashboard_migration')
                          else
-                           @viewed_user.builder_enabled \
+                           @viewed_user.builder_enabled? \
                            && @viewed_user.has_feature_flag?('dashboard_migration')
                          end
 

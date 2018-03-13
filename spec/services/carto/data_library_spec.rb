@@ -72,6 +72,7 @@ describe Carto::DataLibraryService do
       import_url = "#{client_p[:scheme]}://#{params[:source_username]}.#{client_p[:base_domain]}"
       external_source.import_url.should start_with import_url
       external_source.geometry_types.should eq ['ST_MultiPolygon']
+      external_source.username.should eq params[:source_username]
 
       visualization.destroy
     end

@@ -24,7 +24,7 @@ module Carto
         rows_counted: remote_table[:row_count],
         size: remote_table[:size],
         geometry_types: remote_table[:geometry_types],
-        username: target_username
+        username: source_username
       )
       visualization = Carto::Visualization.create!(
         remote_attributes.merge(

@@ -133,10 +133,10 @@ class User < Sequel::Model
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
 
-  def self.new_with_organization(organization)
+  def self.new_with_organization(organization, viewer: false)
     user = ::User.new
     user.organization = organization
-    user.quota_in_bytes = organization.default_quota_in_bytes
+    user.quota_in_bytes = viewer ? 0 : organization.default_quota_in_bytes
     user
   end
 
@@ -532,6 +532,16 @@ class User < Sequel::Model
     unless @org_id_for_org_wipe.nil?
       organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
+    end
+
+    # we need to wait for the deletion to be commited because of the mix of Sequel (user)
+    # and AR (rate_limit) models and rate_limit_id being a FK in the users table
+    db.after_commit do
+      begin
+        rate_limit.try(:destroy_completely, self)
+      rescue => e
+        CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
+      end
     end
   end
 
@@ -994,6 +1004,32 @@ class User < Sequel::Model
                           'db_public',                 database_timeout,
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
+    save_rate_limits
+  end
+
+  def save_rate_limits
+    return unless has_feature_flag?('limits_v2')
+    effective_rate_limit.save_to_redis(self)
+  rescue => e
+    CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)
+  end
+
+  def effective_rate_limit
+    rate_limit || effective_account_type.rate_limit
+  rescue ActiveRecord::RecordNotFound => e
+    CartoDB::Logger.error(message: 'Error retrieving user rate limits', exception: e)
+  end
+
+  def effective_account_type
+    organization_user? && organization.owner ? organization.owner.carto_account_type : carto_account_type
+  end
+
+  def rate_limit
+    Carto::RateLimit.find(rate_limit_id) if rate_limit_id
+  end
+
+  def carto_account_type
+    Carto::AccountType.find(account_type)
   end
 
   def get_auth_tokens
@@ -1723,8 +1759,8 @@ class User < Sequel::Model
   def create_api_keys
     carto_user = Carto::User.find(id)
 
-    carto_user.api_keys.create_master_key!
-    carto_user.api_keys.create_default_public_key!
+    carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
+    carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
   end
 
   private

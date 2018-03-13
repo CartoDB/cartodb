@@ -18,9 +18,7 @@
     <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard', 'user_feed' %>
 
     <% if @needs_gmaps_lib %>
-      <script type="text/javascript"
-          src="//maps.googleapis.com/maps/api/js?v=3.12<%= @gmaps_query_string %>">
-      </script>
+      <%= insert_google_maps(@gmaps_query_string) %>
     <% end %>
   </head>
   <body class="PublicBody PublicBody--grey">
@@ -66,7 +64,7 @@
       </script>
 
     <% if @has_new_dashboard %>
-      <%= javascript_include_tag 'common_dashboard', 'user_feed_new' %>
+      <%= javascript_include_tag 'common_dashboard', 'user_feed_new_vendor', 'user_feed_new' %>
     <% else %>
       <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
     <% end %>

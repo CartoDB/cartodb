@@ -3,9 +3,8 @@
 require File.expand_path('../boot', __FILE__)
 
 require "action_controller/railtie"
-#require "sequel-rails/railtie"
 require "action_mailer/railtie"
-require "active_record"
+require "active_record/railtie"
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
@@ -196,6 +195,11 @@ module CartoDB
     custom_app_views_paths.reverse.each do |custom_views_path|
       config.paths['app/views'].unshift(custom_views_path)
     end
+
+    # Sequel stores dates in the databse in the local timezone, AR should do the same
+    config.active_record.default_timezone = :local
+
+    config.active_record.raise_in_transactional_callbacks = true
   end
 end
 

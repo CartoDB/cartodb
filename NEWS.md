@@ -11,6 +11,10 @@ sudo make install
 This release changes the way Google ouath login works. If you are using it, you need to add the client_secret
 to the oauth.google_plus section of the configuration file.
 
+### NOTICE
+This releases updates the database connections, and `database.yml` needs to be updated to reflect it. The adapter
+should be replaced from `postgres` to `postgresql`. See `database.yml.sample` for an example.
+
 ### Features
 * Add search to widgets in mobile views (#13658)
 * Update multiple widgets at once (#13596)

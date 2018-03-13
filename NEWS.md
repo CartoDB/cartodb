@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
 * Update multiple widgets at once (#13596)
 * Adjust widget styles in embed maps movile view (#13487)
@@ -120,6 +121,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Limits V2
   * Add rate limits persistence (#13626)
+  * Remove rate limits on user deletion (#13657)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
@@ -150,6 +152,9 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix category widget search on Android (https://github.com/CartoDB/support/issues/1074)
+* Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)
+* Fix onboardings in layer content views (#13674)
 * Safe access to vis map for old visualizations without maps (#13665)
 * Don't fetch rows when fetching columns for analyses (#13654)
 * Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)

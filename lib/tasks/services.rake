@@ -118,7 +118,7 @@ namespace :cartodb do
     task :set_user_soft_limit, [:username, :service, :soft_limit] => [:environment] do |_task, args|
       username = args[:username]
       service = args[:service]
-      soft_limit = args[:soft_limit] == 'false' ? false : true
+      soft_limit = args[:soft_limit] != 'false'
       user = username && ::User.find(username: username)
 
       assert_valid_arg args, :username,   accepted_values: proc { user.present? }
@@ -131,7 +131,7 @@ namespace :cartodb do
     desc 'Assign the soft limit flag for a service to all users'
     task :set_all_users_soft_limit, [:service, :soft_limit] => [:environment] do |_, args|
       service = args[:service]
-      soft_limit = args[:soft_limit] == 'false' ? false : true
+      soft_limit = args[:soft_limit] != 'false'
 
       assert_valid_arg args, :service,    accepted_values: DS_SERVICES
       assert_valid_arg args, :soft_limit, accepted_values: ['true', 'false']
@@ -150,7 +150,7 @@ namespace :cartodb do
     private
 
     def set_soft_limit_for_user(user, service, soft_limit)
-      puts "#{soft_limit ? 'Enabling' : 'Disabling'} #{service.upcase} soft limit for #{user.username}"
+      puts "#{soft_limit ? 'En' : 'Dis'}abling #{service.upcase} soft limit for #{user.username}"
       user.send("#{service_soft_quota_key(service)}=", soft_limit)
       user.save
       puts "Changed the user soft limit for service #{service} to #{soft_limit}."

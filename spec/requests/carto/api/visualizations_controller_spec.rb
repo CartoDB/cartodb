@@ -2573,7 +2573,7 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'migrates visualizations to v3' do
-          _, _, table_visualization, visualization = create_full_visualization(@user)
+          _, _, _, visualization = create_full_visualization(@user)
           visualization.update_attributes!(version: 2)
           visualization.analyses.each(&:destroy)
 

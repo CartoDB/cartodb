@@ -150,14 +150,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def default_dataset_privacy
-    case default_table_privacy
-    when Carto::UserTable::PRIVACY_PUBLIC
-      Carto::Visualization::PRIVACY_PUBLIC
-    when Carto::UserTable::PRIVACY_LINK
-      Carto::Visualization::PRIVACY_LINK
-    else
-      Carto::Visualization::PRIVACY_PRIVATE
-    end
+    Carto::UserTable::PRIVACY_VALUES_TO_TEXTS[default_table_privacy]
   end
 
   def default_table_privacy

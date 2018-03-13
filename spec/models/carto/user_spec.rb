@@ -56,4 +56,14 @@ describe Carto::User do
       end
     end
   end
+
+  describe '#default_dataset_privacy' do
+    it 'returns the equivalent visualization privacy' do
+      no_private_tables_user = FactoryGirl.build(:carto_user, private_tables_enabled: false)
+      no_private_tables_user.default_dataset_privacy.should eq Carto::Visualization::PRIVACY_PUBLIC
+
+      private_tables_user = FactoryGirl.build(:carto_user, private_tables_enabled: true)
+      private_tables_user.default_dataset_privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
+    end
+  end
 end

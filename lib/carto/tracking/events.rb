@@ -27,9 +27,20 @@ module Carto
         end
 
         def required_properties
-          these_required_properties = self.class.instance_eval { @required_properties }
+          these_required_properties = self.class.instance_eval { @required_properties || [] }
 
-          these_required_properties || self.class.superclass.required_properties
+          these_required_properties + self.class.superclass.required_properties
+        end
+
+        def self.optional_properties(*optional_properties)
+          @optional_properties ||= []
+          @optional_properties += optional_properties
+        end
+
+        def optional_properties
+          these_optional_properties = self.class.instance_eval { @optional_properties || [] }
+
+          these_optional_properties + self.class.superclass.optional_properties
         end
 
         def report
@@ -43,6 +54,7 @@ module Carto
 
         def report!
           check_required_properties!
+          check_no_extra_properties!
           authorize!
 
           report_to_methods = methods.select do |method_name|
@@ -61,6 +73,16 @@ module Carto
 
           unless missing_properties.empty?
             message = "#{name} is missing the following properties: #{missing_properties.join(', ')}"
+
+            raise Carto::UnprocesableEntityError.new(message)
+          end
+        end
+
+        def check_no_extra_properties!
+          extra_properties = @format.to_hash.symbolize_keys.keys - required_properties - optional_properties
+
+          unless extra_properties.empty?
+            message = "#{name} is adding the following extra properties: #{extra_properties.join(', ')}"
 
             raise Carto::UnprocesableEntityError.new(message)
           end
@@ -102,7 +124,10 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class CreatedMap < MapEvent; end
+      class CreatedMap < MapEvent
+        required_properties :origin
+      end
+
       class DeletedMap < MapEvent; end
 
       class PublishedMap < Event
@@ -133,6 +158,7 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id
+        optional_properties :quota_overage
       end
 
       class ScoredTrendingMap < Event
@@ -161,7 +187,10 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class CreatedDataset < DatasetEvent; end
+      class CreatedDataset < DatasetEvent
+        required_properties :origin
+      end
+
       class DeletedDataset < DatasetEvent; end
 
       class AnalysisEvent < Event
@@ -184,7 +213,8 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id
+        required_properties :user_id, :visualization_id, :sql
+        optional_properties :node_id, :dataset_id
       end
 
       class AppliedCartocss < Event
@@ -193,16 +223,11 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id
+        required_properties :user_id, :visualization_id, :layer_id, :cartocss
       end
 
-      class ModifiedStyleForm < Event
-        include Carto::Tracking::Services::Hubspot
-
-        include Carto::Tracking::Validators::Visualization::Writable
-        include Carto::Tracking::Validators::User
-
-        required_properties :user_id, :visualization_id
+      class ModifiedStyleForm < AppliedCartocss
+        required_properties :style_properties
       end
 
       class CreatedWidget < Event
@@ -251,7 +276,7 @@ module Carto
         include Carto::Tracking::Validators::Layer
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :layer_id
+        required_properties :user_id, :visualization_id, :layer_id, :empty
       end
 
       class ChangedDefaultGeometry < Event
@@ -269,7 +294,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :previus_type, :type
+        required_properties :user_id, :visualization_id, :previous_agg_type, :agg_type
       end
 
       class UsedAdvancedMode < Event
@@ -278,7 +303,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :type
+        required_properties :user_id, :visualization_id, :mode_type
       end
 
       # Models a generic event for segment.

@@ -213,6 +213,10 @@ module Carto
           location: @user.location
         }
 
+        if @user.google_maps_geocoder_enabled? && (!@user.organization.present? || @user.organization_owner?)
+          data[:google_maps_private_key] = @user.google_maps_private_key
+        end
+
         if @user.organization.present?
           data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro
           data[:organization][:available_quota_for_user] = @user.organization.unassigned_quota + @user.quota_in_bytes

@@ -1,3 +1,5 @@
+require_relative '../../../services/sql-api/sql_api'
+
 module Carto
   class DataLibraryService
     # - source_api_key is used to retrieve metadata from the dataset

@@ -1,5 +1,6 @@
 require 'date'
 require_relative '../../app/services/carto/data_library_service'
+require_relative '../../lib/carto_api/json_client'
 
 namespace :cartodb do
 

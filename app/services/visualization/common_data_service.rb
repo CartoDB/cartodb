@@ -54,11 +54,15 @@ module CartoDB
         failed = 0
 
         carto_user = Carto::User.find(user.id)
-        remotes_by_name = Carto::Visualization.remotes.where(user_id: user.id).map { |v| [v.name, v] }.to_h
+        common_data_remotes_by_name = Carto::Visualization.remotes
+                                                          .where(user_id: user.id)
+                                                          .joins(:external_source)
+                                                          .where(external_sources: { username: 'common-data' })
+                                                          .map { |v| [v.name, v] }.to_h
         ActiveRecord::Base.transaction do
           get_datasets(visualizations_api_url).each do |dataset|
             begin
-              visualization = remotes_by_name.delete(dataset['name'])
+              visualization = common_data_remotes_by_name.delete(dataset['name'])
               if visualization
                 visualization.attributes = dataset_visualization_attributes(dataset)
                 if visualization.changed?
@@ -113,7 +117,7 @@ module CartoDB
           end
         end
 
-        remotes_by_name.each do |_, remote|
+        common_data_remotes_by_name.each do |_, remote|
           deleted += 1 if delete_remote_visualization(remote)
         end
 

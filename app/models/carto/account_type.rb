@@ -21,11 +21,7 @@ module Carto
     end
 
     def soft_geocoding_limit?(user)
-      if user[:soft_geocoding_limit].nil?
-        !(user.account_type.nil? || user.account_type =~ NO_SOFT_GEOCODING_PLANS_REGEXP)
-      else
-        user[:soft_geocoding_limit]
-      end
+      !!user[:soft_geocoding_limit]
     end
 
     def soft_here_isolines_limit?(user)

@@ -316,8 +316,8 @@ describe Carto::RateLimit do
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
-    it 'compares the same rate limits attributes' do
-      @rate_limit.different?(@rate_limit).should eq false
+    it 'compares the same rate limit instance' do
+      @rate_limit.should eq @rate_limit
     end
 
     it 'compares two different rate limits attributes' do
@@ -342,7 +342,7 @@ describe Carto::RateLimit do
                                               sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
                                               sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
 
-      @rate_limit.different?(@rate_limit2).should eq true
+      @rate_limit.should_not eq @rate_limit2
     end
 
     it 'compares two different rate limits with same attributes' do
@@ -367,7 +367,7 @@ describe Carto::RateLimit do
                                               sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
                                               sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
 
-      @rate_limit.different?(@rate_limit2).should eq false
+      @rate_limit.should eq @rate_limit2
     end
   end
 end

@@ -64,15 +64,15 @@ module Carto
       end
     end
 
-    def rate_limit_attributes(attrs = nil)
-      attrs ||= attributes
+    def rate_limit_attributes(attrs = attributes)
       attrs.with_indifferent_access.slice(*Carto::RateLimit::RATE_LIMIT_ATTRIBUTES)
     end
 
-    def different?(rate_limit)
-      rate_limit_attributes.lazy.zip(rate_limit.rate_limit_attributes).any? do |x, y|
-        x[1].to_array != y[1].to_array
-      end
+    def ==(rate_limit)
+      super(rate_limit) ||
+        rate_limit_attributes.lazy.zip(rate_limit.rate_limit_attributes).all? do |x, y|
+          x == y
+        end
     end
   end
 end

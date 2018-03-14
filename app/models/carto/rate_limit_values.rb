@@ -31,6 +31,10 @@ module Carto
       flat_map(&:to_array)
     end
 
+    def ==(other)
+      super(other) || to_array == other.try(:to_array)
+    end
+
     def to_redis_array
       RateLimitValues.dump(self)
     end

@@ -73,7 +73,7 @@ describe Superadmin::AccountTypesController do
                { account_type: { account_type: @account_type.account_type } }.to_json,
                superadmin_headers do |response|
 
-        response.status.should == 500
+        response.status.should == 422
         response.body[:error].should =~ /ERROR. rate_limit object is not valid/
         @account_type.rate_limit.api_attributes.should eq api_attributes
       end

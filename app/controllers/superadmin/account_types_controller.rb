@@ -18,7 +18,7 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
   end
 
   def update
-    if @account_type.rate_limit.different?(@rate_limit)
+    if @account_type.rate_limit != @rate_limit
       @account_type.rate_limit.update_attributes!(@rate_limit.rate_limit_attributes)
       ::Resque.enqueue(::Resque::UserJobs::RateLimitsJobs::SyncRedis, @account_type.account_type)
     end
@@ -45,6 +45,6 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
 
     @rate_limit = Carto::RateLimit.from_api_attributes(account_type_params[:rate_limit] || {})
 
-    render json: { error: 'ERROR. rate_limit object is not valid' }, status: 500 unless @rate_limit.valid?
+    render json: { error: 'ERROR. rate_limit object is not valid' }, status: 422 unless @rate_limit.valid?
   end
 end

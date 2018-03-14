@@ -152,38 +152,7 @@ Warden::Strategies.add(:api_authentication) do
         end
       end
     end
-    throw(:warden)
-  end
-end
-
-Warden::Strategies.add(:api_key) do
-  def valid?
-    params[:api_key].present?
-  end
-
-  # We don't want to store a session and send a response cookie
-  def store?
-    false
-  end
-
-  def authenticate!
-    begin
-      if (api_key = params[:api_key]) && api_key.present?
-        user_name = CartoDB.extract_subdomain(request)
-        if $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
-          user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
-          return fail! if user_id.blank?
-          user = ::User[user_id]
-          success!(user)
-        else
-          return fail!
-        end
-      else
-        return fail!
-      end
-    rescue
-      return fail!
-    end
+    fail!
   end
 end
 
@@ -294,14 +263,13 @@ Warden::Strategies.add(:user_creation) do
 end
 
 module Carto::Api::AuthApiAuthentication
-  @@from_header = false
-
-  def self.from_header?
-    @@from_header
+  # We don't want to store a session and send a response cookie
+  def store?
+    false
   end
 
-  def self.from_header=(value)
-    @@from_header = value
+  def valid?
+    base64_auth.present? || params[:api_key].present?
   end
 
   def base64_auth
@@ -310,55 +278,61 @@ module Carto::Api::AuthApiAuthentication
   end
 
   def authenticate_user(require_master_key)
-    decoded_auth = Base64.decode64(base64_auth)
-    user_name, token = decoded_auth.split(':')
-    return fail! unless user_name == CartoDB.extract_subdomain(request)
-
-    user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-    api_key = Carto::ApiKey.where(user_id: user_id, token: token)
+    user, token = user_and_token_from_request
+    api_key = user.api_keys.where(token: token)
     api_key = require_master_key ? api_key.master : api_key
-    return fail! unless api_key.exists?
 
-    Carto::Api::AuthApiAuthentication.from_header = true # TODO remove this when user's api_key field is removed
-    success!(::User[user_id])
+    # TODO: Remove this block when all api keys are in sync 'auth_api'
+    unless api_key.exists?
+      return success!(user) if user.api_key == token
+    end
+
+    return fail! unless api_key.exists?
+    success!(user)
   rescue
     fail!
   end
 
   def request_api_key
     return @request_api_key if @request_api_key
-    if Carto::Api::AuthApiAuthentication.from_header?
-      decoded_auth = Base64.decode64(base64_auth)
-      user_name, token = decoded_auth.split(':')
-      user_id = $users_metadata.HGET("rails:users:#{user_name}", 'id')
-      @request_api_key = Carto::ApiKey.where(user_id: user_id, token: token).first
-    elsif params[:api_key] # This is for keeping backwards compatibility until we remove api_key from user
-      api_key = params[:api_key]
-      user_name = CartoDB.extract_subdomain(request)
-      return unless $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
-      user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
-      @request_api_key = Carto::User.find(user_id).api_keys.create_in_memory_master
-    else
-      @request_api_key = current_user.api_keys.create_in_memory_master
+
+    user, token = user_and_token_from_request
+    @request_api_key = user.api_keys.where(token: token).first
+
+    # TODO: remove this block when all api keys are in sync 'auth_api'
+    if !@request_api_key && user.api_key == token
+      @request_api_key = user.api_keys.create_in_memory_master
     end
+
+    @request_api_key
   end
 
   private
 
   AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
+
+  def user_and_token_from_request
+    if base64_auth.present?
+      username, token = split_auth
+      return fail! unless username == CartoDB.extract_subdomain(request)
+    elsif params[:api_key]
+      token = params[:api_key]
+      username = CartoDB.extract_subdomain(request)
+    elsif current_user
+      token = current_user.api_key
+      username = current_user.username
+    end
+    [User[username: username], token]
+  end
+
+  def split_auth
+    decoded_auth = Base64.decode64(base64_auth)
+    decoded_auth.split(':')
+  end
 end
 
 Warden::Strategies.add(:auth_api) do
   include Carto::Api::AuthApiAuthentication
-
-  def valid?
-    base64_auth.present?
-  end
-
-  # We don't want to store a session and send a response cookie
-  def store?
-    false
-  end
 
   def authenticate!
     authenticate_user(true)
@@ -367,15 +341,6 @@ end
 
 Warden::Strategies.add(:any_auth_api) do
   include Carto::Api::AuthApiAuthentication
-
-  def valid?
-    base64_auth.present?
-  end
-
-  # We don't want to store a session and send a response cookie
-  def store?
-    false
-  end
 
   def authenticate!
     authenticate_user(false)

@@ -3,7 +3,7 @@
 
 .CDB-Widget-nav {
   width: 100%;
-  margin-top: $baseSize;
+  margin-top: $baseSize * 2;
 }
 
 .CDB-Widget-nav.is-hidden {
@@ -11,7 +11,7 @@
 }
 
 .CDB-Widget-navDots {
-  height: $baseSize;
+  height: auto;
 }
 
 .CDB-Widget-dot--navigation {
@@ -37,4 +37,13 @@
 .CDB-Widget-navArrows {
   width: 45px;
   height: 9px;
+}
+
+.CDB-Widget-pagination {
+  display: flex;
+}
+
+.CDB-Widget-paginationButton {
+  width: 16px;
+  height: 16px;
 }

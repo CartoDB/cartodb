@@ -1,13 +1,17 @@
 // Dashboard info
 // --------------------------------------------------
 
-/* CartoLogo */
+#dashboard {
+  height: 100%;
+}
+
+/* ~~~~~ CartoLogo ~~~~~ */
 
 .CDB-EmbedLogo-text {
   opacity: 0;
 }
 
-.CDB-EmbedLogo-imago {
+.CDB-EmbedLogo-image {
   @include transform(translateX(0));
 }
 
@@ -22,7 +26,7 @@
   fill: rgb(22, 41, 69);
 }
 
-.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-imago {
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-image {
   @include transform(translateX(37px));
 }
 
@@ -36,7 +40,7 @@
   fill: rgb(22, 41, 69);
 }
 
-/* Dashboard menu */
+/* ~~~~~ Dashboard menu ~~~~~ */
 
 .CDB-Dashboard-menuTexts {
   position: absolute;
@@ -64,7 +68,7 @@
 
 .CDB-Dashboard-menuInner {
   @include transition(width, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
-  position: fixed;
+  position: absolute;
   z-index: 4;
   top: 0;
   bottom: 0;
@@ -169,6 +173,7 @@
 
 .CDB-Dashboard-menuFooterTxt {
   @include inline-block();
+  width: 85%;
   opacity: 0;
 }
 
@@ -277,20 +282,25 @@
   display: none;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: $sMedia-xl) {
   .CDB-Dashboard-menu {
     display: block;
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-xl) {
   .CDB-Dashboard-hideMobile {
     display: none;
   }
 
   .CDB-Dashboard-menu {
     display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
     order: 4;
+    width: 100%;
+    height: 38px;
   }
 
   .CDB-Dashboard-menuInner {
@@ -312,6 +322,8 @@
   }
 
   .CDB-Dashboard-menuFooter {
+    @include display-flex();
+    @include align-items(center);
     position: static;
     width: auto;
   }
@@ -323,8 +335,10 @@
   }
 
   .CDB-Dashboard-menuFooterTxt {
+    width: 100%;
     opacity: 1;
     font-size: 10px;
+    line-height: 1;
   }
 
   .CDB-Dashboard-menuAvatar img {
@@ -376,7 +390,7 @@
     display: none;
   }
 
-  .CDB-EmbedLogo-imago {
+  .CDB-EmbedLogo-image {
     @include transform(translateX(37px));
   }
 
@@ -471,5 +485,11 @@
     width: auto;
     height: auto;
     margin-bottom: 32px;
+  }
+}
+
+@media (max-width: $sMedia-max-w-vertical) {
+  .CDB-Dashboard-menu {
+    position: fixed;
   }
 }

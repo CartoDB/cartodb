@@ -1028,7 +1028,7 @@ class User < Sequel::Model
 
     save
 
-    remove_rate_limit.destroy_completely(self) if remove_rate_limit.present?
+    remove_rate_limit.destroy if remove_rate_limit.present?
   end
 
   def effective_rate_limit

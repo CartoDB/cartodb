@@ -2881,6 +2881,7 @@ describe User do
     it 'set rate limits to nil when user has rate limits' do
       @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
       user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
+
       user.update_rate_limits(nil)
 
       user.reload
@@ -2892,8 +2893,28 @@ describe User do
 
       map_prefix = "limits:rate:store:#{user.username}:maps:"
       sql_prefix = "limits:rate:store:#{user.username}:sql:"
-      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
-      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
+
+      # limits reverted to the ones from the account type
+      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 2).should == ["3", "4", "5"]
+      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 2).should == ["6", "7", "8"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 2).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 2).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 2).should == ["12", "13", "14"]
+      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 5).should == ["15", "16", "17", "30", "32", "34"]
+      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 2).should == ["18", "19", "20"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 2).should == ["21", "22", "23"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 2).should == ["24", "25", "26"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 2).should == ["27", "28", "29"]
+      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 2).should == ["30", "31", "32"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 2).should == ["33", "34", "35"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 2).should == ["36", "37", "38"]
+      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 2).should == ["39", "40", "41"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 2).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 2).should == ["3", "4", "5"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["6", "7", "8"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
+      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
 
       user.destroy
     end

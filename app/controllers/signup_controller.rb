@@ -183,7 +183,7 @@ class SignupController < ApplicationController
 
   def load_mandatory_organization
     load_organization
-    render_404 and return false unless @organization && (@organization.signup_page_enabled || invitation)
+    return render_404 unless @organization && (@organization.signup_page_enabled || invitation)
     check_organization_quotas
   end
 
@@ -195,7 +195,7 @@ class SignupController < ApplicationController
     return @invitation if @invitation
     email = (params[:user] && params[:user][:email]) || params[:email]
     token = params[:invitation_token]
-    return if !email || !token
+    return unless email && token
     invitations = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
     @invitation = invitations.find { |i| i.token(email) == token }
   end

@@ -117,7 +117,7 @@ module CartoDB
           end
         end
 
-        common_data_remotes_by_name.each do |_, remote|
+        common_data_remotes_by_name.each_value do |remote|
           deleted += 1 if delete_remote_visualization(remote)
         end
 

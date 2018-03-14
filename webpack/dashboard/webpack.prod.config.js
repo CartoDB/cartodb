@@ -1,3 +1,8 @@
+// NOTE: this configuration file MUST NOT be loaded with `-p` or `--optimize-minimize` option.
+// This option includes an implicit call to UglifyJsPlugin and LoaderOptionsPlugin. Instead,
+// an explicit call is made in this file to these plugins with customized options that enables
+// more control of the output bundle in order to fix unexpected behavior in old browsers.
+
 const webpack = require('webpack');
 const {resolve} = require('path');
 const PACKAGE = require('../../package.json');
@@ -34,7 +39,11 @@ module.exports = env => {
         minChunks: isVendor
       }))
       .concat([
-      // Extract common chuncks from the 3 vendor files
+        new webpack.LoaderOptionsPlugin({
+          minimize: true
+        }),
+
+        // Extract common chuncks from the 3 vendor files
         new webpack.optimize.CommonsChunkPlugin({
           name: 'common_dashboard',
           chunks: Object.keys(entryPoints).map(n => `${n}_vendor`),

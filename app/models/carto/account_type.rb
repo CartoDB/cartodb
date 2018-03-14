@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Carto
-  class AccountType
+  class AccountType < ActiveRecord::Base
 
     FREE = 'FREE'.freeze
     BASIC = 'BASIC'.freeze
@@ -13,6 +13,8 @@ module Carto
     NO_SOFT_GEOCODING_PLANS = 'ACADEMIC|ACADEMY|STUDENT|INTERNAL|FREE|AMBASSADOR|PARTNER|MAGELLAN|ENTERPRISE|ORGANIZATION|PERSONAL30|Academy-350|COMMUNITY|CLASSROOM|Trial Account|ire|Site License|Basemap'.freeze
 
     NO_SOFT_GEOCODING_PLANS_REGEXP = /(#{NO_SOFT_GEOCODING_PLANS})/i
+
+    belongs_to :rate_limit
 
     def pay_users
       ::User.where("upper(account_type) != '#{FREE}'").count

@@ -60,9 +60,8 @@ module Resque
         @queue = :users
 
         def self.perform(account_type)
-          byebug
           rate_limit = Carto::AccountType.find(account_type).rate_limit
-          User.where(account_type: account_type, rate_limit_id: nil).find_each do |user|
+          Carto::User.where(account_type: account_type, rate_limit_id: nil).find_each do |user|
             rate_limit.save_to_redis(user)
           end
         end

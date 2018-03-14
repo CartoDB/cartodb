@@ -21,15 +21,16 @@ class CommonData
       cached_data = redis_cache.get(is_https_request)
       if cached_data.nil?
         client = CartoAPI::JsonClient.new(http_client_tag: 'common_data')
-        response = begin
-                     client.get_visualizations_v1_from_url(@visualizations_api_url)
-                   rescue StandardError => e
-                     CartoDB::Logger.error(exception: e)
-                     nil
-                   end
-        if response.code == 200
-          @datasets = get_datasets(response.response_body)
-          redis_cache.set(is_https_request, response.headers, response.response_body)
+        begin
+          response = client.get_visualizations_v1_from_url(@visualizations_api_url)
+          if response.code == 200
+            @datasets = get_datasets(response.response_body)
+            redis_cache.set(is_https_request, response.headers, response.response_body)
+          else
+            CartoDB::Logger.warning(message: "Error retrieving common data datasets", response: response.to_s)
+          end
+        rescue StandardError => e
+          CartoDB::Logger.error(exception: e)
         end
       else
         @datasets = get_datasets(cached_data[:body])

@@ -25,6 +25,8 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
       @account_type.save!
     end
 
+    ::Resque.enqueue(::Resque::RateLimitsJobs::UpdateRedis, @account_type.account_type)
+
     render json: @account_type, status: 204
   end
 

@@ -138,7 +138,6 @@
   },
   "browser": {
     "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js",
-    "filestyle": "./vendor/assets/javascripts/filestyle.js",
     "tagit": "./vendor/assets/javascripts/tag-it.js",
     "markdown": "./vendor/assets/javascripts/markdown.js",
     "dragster": "./vendor/assets/javascripts/dragster.js",

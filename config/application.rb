@@ -130,8 +130,6 @@ module CartoDB
       user_feed_new_vendor.js
       api_keys_new.js
       api_keys_new_vendor.js
-      mobile_apps_new.js
-      mobile_apps_new_vendor.js
       common_dashboard.js
 
       tipsy.js

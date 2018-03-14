@@ -2678,7 +2678,6 @@ describe User do
       @account_type = FactoryGirl.create(:account_type_free)
       @account_type_pro = FactoryGirl.create(:account_type_pro)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
-      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
       @user_rt = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
@@ -2709,6 +2708,15 @@ describe User do
       @rate_limits_custom.destroy unless @rate_limits_custom.nil?
       @rate_limits_custom2.destroy unless @rate_limits_custom2.nil?
       @rate_limits_pro.destroy unless @rate_limits_pro.nil?
+    end
+
+    before :each do
+      unless FeatureFlag.where(name: 'limits_v2').first.present?
+        @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
+      end
+    end
+
+    after :each do
       @limits_feature_flag.destroy if @limits_feature_flag.exists?
     end
 
@@ -2820,16 +2828,6 @@ describe User do
     it 'destroy rate limits' do
       user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
 
-      user2.destroy
-
-      expect {
-        Carto::RateLimit.find(user2.rate_limit_id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it 'destroys rate limits from redis' do
-      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
-
       map_prefix = "limits:rate:store:#{user2.username}:maps:"
       sql_prefix = "limits:rate:store:#{user2.username}:sql:"
 
@@ -2837,6 +2835,10 @@ describe User do
       $limits_metadata.EXISTS("#{sql_prefix}query").should eq 1
 
       user2.destroy
+
+      expect {
+        Carto::RateLimit.find(user2.rate_limit_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
 
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
@@ -2864,6 +2866,7 @@ describe User do
     end
 
     it 'updates rate limits when user has rate limits' do
+      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
       user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
       user.update_rate_limits(@rate_limits.api_attributes)
       user.reload
@@ -2876,14 +2879,15 @@ describe User do
     end
 
     it 'set rate limits to nil when user has rate limits' do
-      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
+      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
       user.update_rate_limits(nil)
 
       user.reload
       user.rate_limit.should be_nil
 
       expect {
-        Carto::RateLimit.find(@rate_limits.id)
+        Carto::RateLimit.find(@rate_limits_custom2.id)
       }.to raise_error(ActiveRecord::RecordNotFound)
 
       user.destroy

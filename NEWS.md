@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
 * Update multiple widgets at once (#13596)
 * Adjust widget styles in embed maps movile view (#13487)
@@ -120,6 +121,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Limits V2
   * Add rate limits persistence (#13626)
+  * Remove rate limits on user deletion (#13657)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
@@ -151,6 +153,14 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix typo in analyses copies (#13681)[https://github.com/CartoDB/cartodb/pull/13681]
+* Add helper text to mapbox basemap view (#13699)
+* Fix legends not refreshing when moving layers (#13696)
+* Fix broken api keys for organization users
+* Fix multiple bugs in widgets (#13686)
+* Fix category widget search on Android (https://github.com/CartoDB/support/issues/1074)
+* Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)
+* Fix onboardings in layer content views (#13674)
+* Safe access to vis map for old visualizations without maps (#13665)
 * Don't fetch rows when fetching columns for analyses (#13654)
 * Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)
 * Add isSourceType false by default to select-view (#13655)
@@ -478,6 +488,7 @@ ion for time-series (#12670)
 * Enable CSV exports for polygon and line datasets (#13196)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
+* Ensure v3 visualizations always have analyses (#13662)
 * Fix asset upload with special character in local storage (#13602)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
@@ -492,9 +503,11 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Data Library dashboard migration (#13608)
 * Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)

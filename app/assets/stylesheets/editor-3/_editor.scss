@@ -146,6 +146,13 @@
         padding: 8px 12px;
         font-size: 11px;
       }
+
+      .CDB-Dropdown-item:first-child {
+        > .CDB-Dropdown-link {
+          opacity: 0.24;
+          pointer-events: none;
+        }
+      }
     }
 
     .CDB-Widget-body.is-collapsed {
@@ -191,18 +198,8 @@
       margin-left: 16px;
     }
 
-    .CDB-Widget-list {
-      display: flex;
-    }
-
     .CDB-Widget-listButton {
       padding: 4px 0;
-    }
-
-    .CDB-Widget-listGroup {
-      display: flex;
-      flex-wrap: wrap;
-      margin: 0 -8px;
     }
 
     /* one or two items */

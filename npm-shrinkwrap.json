@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.68",
+  "version": "4.11.78",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -382,9 +382,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.33",
-      "from": "cartodb/cartodb.js#v4.0.0-beta.33",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#2348c2e4644210ab9004476bce81767c463d2a8a"
+      "version": "4.0.0-beta.34",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.34",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#d3ab68289edf2bb54ba141d97bfac248ec3b14fa"
     },
     "center-align": {
       "version": "0.1.3",
@@ -2430,9 +2430,9 @@
       }
     },
     "umd": {
-      "version": "3.0.1",
+      "version": "3.0.2",
       "from": "umd@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/umd/-/umd-3.0.1.tgz"
+      "resolved": "https://registry.npmjs.org/umd/-/umd-3.0.2.tgz"
     },
     "underscore": {
       "version": "1.8.3",

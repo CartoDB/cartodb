@@ -268,6 +268,7 @@ module.exports = function (grunt) {
     'compass',
     'copy:css_vendor_builder',
     'copy:css_builder',
+    'copy:css_dashboard',
     'sass',
     'concat:css'
   ]);

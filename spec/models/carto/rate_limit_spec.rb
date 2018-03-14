@@ -154,6 +154,24 @@ describe Carto::RateLimit do
       $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ["4", "4", "5"]
     end
 
+    it 'is removed correctly from redis' do
+      map_prefix = "limits:rate:store:#{@user.username}:maps:"
+
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
+
+      @rate_limit.save_to_redis(@user)
+
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
+
+      @rate_limit.destroy_completely(@user)
+
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
+
+      expect {
+        Carto::RateLimit.find(@rate_limit.id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
     it 'cannot crate a rate_limit with wrong number of rate limits' do
       expect {
         Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1]),

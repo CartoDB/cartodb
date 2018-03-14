@@ -7,7 +7,7 @@ module Resque
   module RateLimitsJobs
     class UpdateRedis
       extend ::Resque::Metrics
-      @queue = :rate_limits
+      @queue = :users
 
       def self.perform(account_type)
         rate_limit = Carto::AccountType.find(account_type).rate_limit

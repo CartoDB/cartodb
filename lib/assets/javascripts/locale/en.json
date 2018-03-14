@@ -447,7 +447,7 @@
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
-      "short-title": "Enrich from Data observatory",
+      "short-title": "Data Observatory",
       "age-and-gender": "Age and Gender",
       "boundaries": "Boundaries",
       "education": "Education",
@@ -485,15 +485,15 @@
       }
     },
     "merge": {
-      "title": "Add Columns from second Dataset",
+      "title": "Add Columns from Second Dataset",
       "short-title": "Add Columns"
     },
     "filter-by-node-column": {
       "title": "Link Second Layer",
-      "short-title": "Link Second Layer"
+      "short-title": "Link Layer"
     },
     "centroid": {
-      "title": "Centroid from geometries",
+      "title": "Create Centroids of Geometries",
       "short-title": "Centroid"
     },
     "group-points": {
@@ -502,11 +502,11 @@
     },
     "convex-hull": {
       "title": "Create Polygons from Points",
-      "short-title": "Convex Hull"
+      "short-title": "Create Polygons"
     },
     "concave-hull": {
       "title": "Concave Hull",
-      "short-title": "Concave Hull"
+      "short-title": "Create Polygons"
     },
     "bounding-box": {
       "title": "Bounding Box",
@@ -1883,7 +1883,7 @@
         "by-walk": "walk",
         "cancel-btn": "Cancel",
         "car": "Car",
-        "categorize-by": "Categorize by",
+        "categorize-by": "Categorize",
         "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
         "choose-similar-columns": "Choose similar columns to relate them",

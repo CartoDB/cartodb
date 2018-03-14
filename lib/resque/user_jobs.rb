@@ -41,9 +41,7 @@ module Resque
   end
 
   module UserJobs
-
     module Signup
-
       module NewUser
         @queue = :users
 
@@ -53,9 +51,22 @@ module Resque
           user_creation.set_owner_promotion(organization_owner_promotion)
           user_creation.next_creation_step! until user_creation.finished?
         end
-
       end
+    end
 
+    module RateLimitsJobs
+      module SyncRedis
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(account_type)
+          byebug
+          rate_limit = Carto::AccountType.find(account_type).rate_limit
+          User.where(account_type: account_type, rate_limit_id: nil).find_each do |user|
+            rate_limit.save_to_redis(user)
+          end
+        end
+      end
     end
 
     module Mail

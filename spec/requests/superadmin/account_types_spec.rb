@@ -54,7 +54,7 @@ describe Superadmin::AccountTypesController do
     it 'should update an account type' do
       ::Resque.expects(:enqueue)
               .once
-              .with(Resque::RateLimitsJobs::UpdateRedis, @account_type.account_type)
+              .with(Resque::UserJobs::RateLimitsJobs::SyncRedis, @account_type.account_type)
       expect {
         put superadmin_account_type_url(@account_type.account_type),
             { account_type: @account_type_param }.to_json,

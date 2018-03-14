@@ -2890,6 +2890,11 @@ describe User do
         Carto::RateLimit.find(@rate_limits_custom2.id)
       }.to raise_error(ActiveRecord::RecordNotFound)
 
+      map_prefix = "limits:rate:store:#{user.username}:maps:"
+      sql_prefix = "limits:rate:store:#{user.username}:sql:"
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
+
       user.destroy
     end
   end

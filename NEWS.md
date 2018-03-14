@@ -152,6 +152,10 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Add helper text to mapbox basemap view (#13699)
+* Fix legends not refreshing when moving layers (#13696)
+* Fix broken api keys for organization users
+* Fix multiple bugs in widgets (#13686)
 * Fix category widget search on Android (https://github.com/CartoDB/support/issues/1074)
 * Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)
 * Fix onboardings in layer content views (#13674)
@@ -483,6 +487,7 @@ ion for time-series (#12670)
 * Enable CSV exports for polygon and line datasets (#13196)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
+* Ensure v3 visualizations always have analyses (#13662)
 * Fix asset upload with special character in local storage (#13602)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
@@ -497,9 +502,11 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Data Library dashboard migration (#13608)
 * Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)

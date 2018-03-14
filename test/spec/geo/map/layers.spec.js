@@ -141,6 +141,14 @@ describe('geo/map/layers', function () {
       expect(movedLayer.get('title')).toBe('CARTO 2');
     });
 
+    it('should move a layer from one position to other', function () {
+      spyOn(layers, 'trigger');
+
+      var movedLayer = layers.moveCartoDBLayer(1, 0);
+
+      expect(layers.trigger).toHaveBeenCalledWith('layerMoved', movedLayer);
+    });
+
     it('should not move anything if the position is the same', function () {
       var movedLayer = layers.moveCartoDBLayer(1, 1);
       expect(movedLayer).toBeFalsy();

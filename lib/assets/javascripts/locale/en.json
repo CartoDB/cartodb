@@ -262,11 +262,11 @@
     "new-columns-included": "New columns has been included with your original data.",
     "new-columns-included-based-on-input": "New columns have been included with your original data based on the columns chosen for the input.",
     "sampling": {
-      "title": "Subsample of rows",
+      "title": "Subsample Percent of rows",
       "description": "A sample of your original table was randomly selected to give approximately a percentage of the rows from your input dataset."
     },
     "merge": {
-      "title": "Add Columns from 2nd Dataset",
+      "title": "Add Columns from Second Dataset",
       "description": "This analysis performed a columnar JOIN in order to get columns from two different tables."
     },
     "intersection": {
@@ -275,7 +275,7 @@
       "source-cartodb-id": "This number represents the cartodb_id of the source geometry"
     },
     "area-of-influence": {
-      "title": "Create Travel/Distance Buffers",
+      "title": "Create Travel or Distance Buffers",
       "description": "Create travel or distance buffers creates polygons according to the parameters set by the user.",
       "the-geom": "This column was updated to show the travel or distance buffers requested."
     },
@@ -286,14 +286,15 @@
       "extra-column": "This column is added if {operation_type} is chosen with column {column_name}"
     },
     "filter": {
-      "title": "Row filtering",
+      "title": "Filter by Column Value",
       "description": "Row filtering allows you to quickly narrow down the total data you display on a map or input into an analysis node."
     },
     "filter-by-node-column": {
       "title": "Link Second Layer",
-      "description": "Link second layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
+      "description": "Link Second layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
     },
     "spatial-markov-trend": {
+      "title": "Predict Trends and Volatility",
       "trend": "The normalized trend for each geometry",
       "trend_up": "The probability that a geometry's value will move to a higher class",
       "trend_down": "The probability that a geometry's value will move to a lower class",
@@ -309,7 +310,7 @@
       "vals": "Value used in analysis. If a denominator is entered, this is the 'standardized' rate (centered on mean, normalized by standard deviation)."
     },
     "kmeans": {
-      "title": "Calculating point clusters",
+      "title": "Calculate Clusters of Points",
       "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the %{clusters} clusters you requested (or max rows if less).",
       "description": "Point clustering is uses k-means to calculate a predefined number of clusters from your data."
     },

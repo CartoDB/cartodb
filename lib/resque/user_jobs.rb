@@ -57,13 +57,16 @@ module Resque
     module RateLimitsJobs
       module SyncRedis
         extend ::Resque::Metrics
-        @queue = :users
+        @queue = :batch_updates
 
         def self.perform(account_type)
           rate_limit = Carto::AccountType.find(account_type).rate_limit
           Carto::User.where(account_type: account_type, rate_limit_id: nil).find_each do |user|
             rate_limit.save_to_redis(user)
           end
+        rescue => e
+          CartoDB::Logger.error(exception: e, message: 'Error syncing rate limits to redis', account_type: account_type)
+          raise e
         end
       end
     end

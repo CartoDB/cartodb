@@ -152,6 +152,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix legends not refreshing when moving layers (#13696)
 * Fix multiple bugs in widgets (#13686)
 * Fix category widget search on Android (https://github.com/CartoDB/support/issues/1074)
 * Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)

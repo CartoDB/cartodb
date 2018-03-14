@@ -15,7 +15,8 @@ const isVendor = (module, count) => {
 
 const entryPoints = {
   user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js'),
-  api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js')
+  api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js'),
+  mobile_apps_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/mobile-apps.js')
 };
 
 module.exports = env => {

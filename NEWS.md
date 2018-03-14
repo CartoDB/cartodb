@@ -838,6 +838,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed incorrect analysis node being selected after deleting (#11899)
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Set `oft_geocoding_limit` to default to false.
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

@@ -825,8 +825,8 @@
           "couldnt-validate": "We couldn't validate this. If you're sure it contains data click \"add basemap\""
         },
         "mapbox": {
-          "insert": "Insert your Mapbox URL",
-          "enter": "Enter a URL",
+          "insert": "Add Mapbox Style basemap",
+          "enter": "Mapbox Style URL",
           "error": "Error retrieving your basemap. Please check your Mapbox URL.",
           "invalid": "This URL is not valid."
         },

@@ -90,6 +90,25 @@ describe Superadmin::AccountTypesController do
         response.body[:error].should =~ /ERROR. account_type not found/
       end
     end
+
+    it 'should not sync redis if rate limits do not change' do
+      ::Resque.expects(:enqueue).never
+
+      current_rate_limits = @account_type.rate_limit.api_attributes
+      @account_type_param = {
+        account_type: @account_type.account_type,
+        rate_limit: current_rate_limits
+      }
+
+      expect {
+        put superadmin_account_type_url(@account_type.account_type),
+            { account_type: @account_type_param }.to_json,
+            superadmin_headers
+
+        @account_type.reload
+        @account_type.rate_limit.api_attributes.should eq current_rate_limits
+      }.to_not raise_error
+    end
   end
 
   describe '#destroy' do

@@ -18,14 +18,10 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
   end
 
   def update
-    if @account_type.rate_limit
+    if @account_type.rate_limit.different?(@rate_limit)
       @account_type.rate_limit.update_attributes!(@rate_limit.rate_limit_attributes)
-    else
-      @account_type.rate_limit = @rate_limit
-      @account_type.save!
+      ::Resque.enqueue(::Resque::UserJobs::RateLimitsJobs::SyncRedis, @account_type.account_type)
     end
-
-    ::Resque.enqueue(::Resque::UserJobs::RateLimitsJobs::SyncRedis, @account_type.account_type)
 
     render json: @account_type, status: 204
   end

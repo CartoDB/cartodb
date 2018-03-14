@@ -37,9 +37,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def show
+    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
   end
 
   def new
+    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
     @mobile_app = Carto::MobileApp.new
   end
 

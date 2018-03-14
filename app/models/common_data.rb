@@ -12,31 +12,31 @@ class CommonData
   end
 
   def datasets
+    return @datasets unless @datasets.nil?
 
-    if @datasets.nil?
-      @datasets = []
-      if is_enabled?
-        is_https_request = (@visualizations_api_url =~ /^https:\/\//)
-        cached_data = redis_cache.get(is_https_request)
-        if cached_data.nil?
-          client = CartoAPI::JsonClient.new(http_client_tag: 'common_data')
-          response = begin
-                       client.get_visualizations_v1_from_url(@visualizations_api_url)
-                     rescue StandardError => e
-                       CartoDB::Logger.error(exception: e)
-                       nil
-                     end
-          if response.code == 200
-            @datasets = get_datasets(response.response_body)
-            redis_cache.set(is_https_request, response.headers, response.response_body)
-          end
-        else
-          @datasets = get_datasets(cached_data[:body])
+    @datasets = []
+
+    if is_enabled?
+      is_https_request = (@visualizations_api_url =~ /^https:\/\//)
+      cached_data = redis_cache.get(is_https_request)
+      if cached_data.nil?
+        client = CartoAPI::JsonClient.new(http_client_tag: 'common_data')
+        response = begin
+                     client.get_visualizations_v1_from_url(@visualizations_api_url)
+                   rescue StandardError => e
+                     CartoDB::Logger.error(exception: e)
+                     nil
+                   end
+        if response.code == 200
+          @datasets = get_datasets(response.response_body)
+          redis_cache.set(is_https_request, response.headers, response.response_body)
         end
+      else
+        @datasets = get_datasets(cached_data[:body])
       end
-    end
 
-    CartoDB::Logger.error(message: 'common-data empty', url: @visualizations_api_url) if @datasets.empty?
+      CartoDB::Logger.error(message: 'common-data empty', url: @visualizations_api_url) if @datasets.empty?
+    end
 
     @datasets
   end

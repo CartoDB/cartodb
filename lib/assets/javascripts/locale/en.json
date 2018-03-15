@@ -276,7 +276,7 @@
     },
     "area-of-influence": {
       "title": "Create Travel or Distance Buffers",
-      "description": "Create travel or distance buffers creates polygons according to the parameters set by the user.",
+      "description": "Create Travel or Distance Buffers creates polygons according to the parameters set by the user.",
       "the-geom": "This column was updated to show the travel or distance buffers requested."
     },
     "aggregate-intersection": {
@@ -291,7 +291,7 @@
     },
     "filter-by-node-column": {
       "title": "Link Second Layer",
-      "description": "Link Second layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
+      "description": "Link Second Layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
     },
     "spatial-markov-trend": {
       "title": "Predict Trends and Volatility",

@@ -1,13 +1,15 @@
 require 'json'
 require 'carto/export/layer_exporter'
 require 'carto/export/data_import_exporter'
+require 'carto/export/rate_limit_exporter'
 
 # Version History
 # 1.0.0: export user metadata
 # 1.0.1: export search tweets
+# 1.0.3: export rate limits
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.2'.freeze
+    CURRENT_VERSION = '1.0.3'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -86,6 +88,8 @@ module Carto
 
       user.layers = build_layers_from_hash(exported_user[:layers])
 
+      user.rate_limit_id = build_rate_limit_from_hash(exported_user[:rate_limit]).try(:id)
+
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
 
@@ -154,6 +158,8 @@ module Carto
       user_hash[:search_tweets] = user.search_tweets.map { |st| export_search_tweet(st) }
 
       user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
+
+      user_hash[:rate_limit] = export_rate_limit(user.rate_limit) if user.rate_limit
 
       # TODO
       # Organization notifications

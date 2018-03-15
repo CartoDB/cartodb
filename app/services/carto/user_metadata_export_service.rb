@@ -40,6 +40,7 @@ module Carto
     include UserMetadataExportServiceConfiguration
     include LayerImporter
     include DataImportImporter
+    include RateLimitImporter
 
     def build_user_from_json_export(exported_json_string)
       build_user_from_hash_export(parse_json(exported_json_string))
@@ -132,6 +133,7 @@ module Carto
     include UserMetadataExportServiceConfiguration
     include LayerExporter
     include DataImportExporter
+    include RateLimitExporter
 
     def export_user_json_string(user)
       export_user_json_hash(user).to_json

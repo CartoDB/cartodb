@@ -76,6 +76,17 @@ describe Carto::UserMetadataExportService do
     end
   end
 
+  describe 'import v 1.0.3' do
+    it 'imports correctly' do
+      byebug
+      export = full_export_1_0_3
+      export[:user] = export[:user].reject { |entry| entry == :api_keys }
+      user = service.build_user_from_hash_export(export)
+      user.save!
+      user.destroy
+    end
+  end
+
   describe '#user export' do
     before(:all) do
       create_user_with_basemaps_assets_visualizations
@@ -467,5 +478,33 @@ describe Carto::UserMetadataExportService do
         ]
       }
     }
+  end
+
+  let(:full_export_1_0_3) do
+    full_export_1_0_3 = full_export.merge(version: "1.0.3")
+    full_export_1_0_3[:user][:rate_limit] = {
+                                              id: "44d9db90-e12a-4764-85a4-fee012a98333",
+                                              maps_anonymous: [0, 1, 2],
+                                              maps_static: [0, 1, 2],
+                                              maps_static_named: [0, 1, 2],
+                                              maps_dataview: [0, 1, 2],
+                                              maps_dataview_search: [0, 1, 2],
+                                              maps_analysis: [0, 1, 2],
+                                              maps_tile: [0, 1, 2],
+                                              maps_attributes: [0, 1, 2],
+                                              maps_named_list: [0, 1, 2],
+                                              maps_named_create: [0, 1, 2],
+                                              maps_named_get: [0, 1, 2],
+                                              maps_named: [0, 1, 2],
+                                              maps_named_update: [0, 1, 2],
+                                              maps_named_delete: [0, 1, 2],
+                                              maps_named_tiles: [0, 1, 2],
+                                              sql_query: [0, 1, 2],
+                                              sql_query_format: [0, 1, 2],
+                                              sql_job_create: [0, 1, 2],
+                                              sql_job_get: [0, 1, 2],
+                                              sql_job_delete: [0, 1, 2]
+                                            }
+    full_export_1_0_3
   end
 end

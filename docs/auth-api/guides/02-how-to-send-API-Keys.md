@@ -18,7 +18,7 @@ The examples shown to illustrate the different methods of how to send API Keys, 
 
 Basic Access Authentication is the simplest technique of handling access control and authorization in a standardized way. It consists essentially of an `HTTP Authorization Basic` header followed by the user credentials (username and password) encoded using base64.
 
-If that looks complicated to you, don’t worry. Most client software provide simple mechanisms to use HTTP Basic Authentication, like [curl](https://ec.haxx.se/http-auth.html), [Request](https://github.com/request/request#http-authentication) (JavaScript) and [Requests](http://docs.python-requests.org/en/master/user/authentication/#basic-authentication) (Python)
+If that looks complicated to you, don’t worry. Most client software provide simple mechanisms to use HTTP Basic Authentication, like [curl](https://ec.haxx.se/http-auth.html), [Request](https://github.com/request/request#http-authentication) (JavaScript) and [Requests](http://docs.python-requests.org/en/master/user/authentication/#basic-authentication) (Python).
 
 For requests to Carto’s APIs, take the API Key as the password, and the username as the user who issued that API Key.
 
@@ -43,7 +43,7 @@ request.get('https://username.carto.com/endpoint/', {
 });
 ```
 
-###### Requests (Python)
+##### Requests (Python)
 ```python
 r = requests.get('https://username.carto.com/endpoint/', auth=(username, 1234567890123456789012345678901234567890))
 
@@ -75,4 +75,4 @@ If (for some mysterious reason) you submit the API Key with more than one of the
 2. URL query string parameter 
 3. Request body field 
 
-Likewise, for security reasons and future-proofing, we recommend that you use that same order when selecting a method for sending the API Key. In other words, favour the use of HTTP Basic Authentication over the URL query string, and try to avoid the body field (we support this method just for backwards compatibility). 
+Likewise, for security reasons and future-proofing, we recommend that you use that same order when choosing a method for sending the API Key. In other words, favour the use of HTTP Basic Authentication over the URL query string, and try to avoid the body field (we support this method just for backwards compatibility). 

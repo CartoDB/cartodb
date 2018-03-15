@@ -157,6 +157,7 @@ module Carto
             layers.push(layer)
           end
         end
+        visualization.map.layers.clear
         visualization.map.layers_maps.clear
         layers.each { |l| visualization.map.layers << l }
       end

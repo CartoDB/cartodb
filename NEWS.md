@@ -153,6 +153,8 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Add loading state to API Keys form button
+* Fix widgets disabled state (#13707)
+* Fix embed maps footer when there is no toolbar (#13704)
 * Add helper text to mapbox basemap view (#13699)
 * Fix legends not refreshing when moving layers (#13696)
 * Fix broken api keys for organization users
@@ -507,6 +509,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Data Library dashboard migration (#13608)
 * Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
@@ -845,6 +848,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed incorrect analysis node being selected after deleting (#11899)
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Set `soft_geocoding_limit` to default to false.
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

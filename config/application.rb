@@ -200,6 +200,9 @@ module CartoDB
     config.active_record.default_timezone = :local
 
     config.active_record.raise_in_transactional_callbacks = true
+
+    # Put sequel db tasks into its own namespace
+    config.sequel.load_database_tasks = :sequel
   end
 end
 

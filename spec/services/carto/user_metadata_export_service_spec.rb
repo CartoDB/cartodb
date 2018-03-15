@@ -56,10 +56,11 @@ describe Carto::UserMetadataExportService do
     user = ::User[@user.id]
     user.rate_limit_id = FactoryGirl.create(:rate_limits).id
     user.save
+    @user.reload
   end
 
-  def destroy_user
-    gum = CartoDB::GeocoderUsageMetrics.new(@user.username)
+  def destroy_user(user = @user)
+    gum = CartoDB::GeocoderUsageMetrics.new(user.username)
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
@@ -72,7 +73,7 @@ describe Carto::UserMetadataExportService do
       st.data_import.destroy
       st.destroy
     end
-    @user.destroy
+    user.destroy
   end
 
   let(:service) { Carto::UserMetadataExportService.new }
@@ -154,28 +155,13 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#user export + import' do
-    def export_import(user)
-      export = service.export_user_json_hash(user)
-      expect_export_matches_user(export[:user], user)
-      source_user = user.attributes
-      destroy_user
-
-      imported_user = service.build_user_from_hash_export(export)
-      service.save_imported_user(imported_user)
-      imported_user.reload
-
-      search_tweets = service.build_search_tweets_from_hash_export(export)
-      search_tweets.each { |st| service.save_imported_search_tweet(st, imported_user) }
-
-      expect_export_matches_user(export[:user], imported_user)
-      compare_excluding_dates(imported_user.attributes, source_user)
-    end
-
     it 'export + import' do
       create_user_with_basemaps_assets_visualizations
       export_import(@user)
     end
+  end
 
+  describe '#user export + import with rate limits' do
     it 'export + import with rate limits' do
       create_user_with_rate_limits
       export_import(@user)
@@ -183,74 +169,8 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#full export + import (user and visualizations)' do
-    def full_export_import(path)
-      @visualization.mark_as_vizjson2
-      service.export_to_directory(@user, path)
-      source_user = @user.attributes
-
-      source_visualizations = @user.visualizations.order(:id).map(&:attributes)
-      source_tweets = @user.search_tweets.map(&:attributes)
-      destroy_user
-
-      # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
-      source_visualizations.select { |v| v['type'] == 'table' }.each do |v|
-        @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
-      end
-
-      # Clean redis for vizjson2 marking
-      $tables_metadata.del(Carto::Visualization::V2_VISUALIZATIONS_REDIS_KEY)
-      expect(@visualization.uses_vizjson2?).to be_false
-
-      imported_user = service.import_from_directory(path)
-      service.import_metadata_from_directory(imported_user, path)
-
-      compare_excluding_dates(imported_user.attributes, source_user)
-      expect_redis_restored(imported_user)
-      expect(imported_user.visualizations.count).to eq source_visualizations.count
-      imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
-        compare_excluding_dates_and_ids(v1.attributes, v2)
-      end
-
-      expect(@visualization.uses_vizjson2?).to be_true
-      imported_user.search_tweets.zip(source_tweets).each do |st1, st2|
-        expect(st1.user_id).to eq imported_user.id
-        expect(st1.service_item_id).to eq st2['service_item_id']
-        expect(st1.retrieved_items).to eq st2['retrieved_items']
-        expect(st1.state).to eq st2['state']
-      end
-    end
-
-    def full_export_import_viewer(path)
-      @user.update_attributes(viewer: true)
-      ::User[@user.id].reload # Refresh Sequel cache
-      service.export_to_directory(@user, path)
-      source_user = @user.attributes
-
-      source_visualizations = @user.visualizations.order(:id).map(&:attributes)
-      source_tweets = @user.search_tweets.map(&:attributes)
-      @user.update_attributes(viewer: false) # For destruction purposes
-      destroy_user
-
-      # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
-      source_visualizations.select { |v| v['type'] == 'table' }.each do |v|
-        @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
-      end
-
-      imported_user = service.import_from_directory(path)
-      service.import_metadata_from_directory(imported_user, path)
-
-      compare_excluding_dates(imported_user.attributes, source_user)
-      expect_redis_restored(imported_user)
-      expect(imported_user.visualizations.count).to eq source_visualizations.count
-      imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
-        compare_excluding_dates_and_ids(v1.attributes, v2)
-      end
-      imported_user.search_tweets.zip(source_tweets).each do |st1, st2|
-        expect(st1.user_id).to eq imported_user.id
-        expect(st1.service_item_id).to eq st2['service_item_id']
-        expect(st1.retrieved_items).to eq st2['retrieved_items']
-        expect(st1.state).to eq st2['state']
-      end
+    after :each do
+      destroy_user(@imported_user)
     end
 
     it 'export + import user and visualizations' do
@@ -260,19 +180,25 @@ describe Carto::UserMetadataExportService do
       end
     end
 
+    it 'export + import user and visualizations for a viewer user' do
+      Dir.mktmpdir do |path|
+        create_user_with_basemaps_assets_visualizations
+        full_export_import_viewer(path)
+      end
+    end
+  end
+
+  describe '#full export + import (user and visualizations) with rate limits' do
+    after :each do
+      destroy_user(@imported_user)
+    end
+
     it 'export + import user with rate limit and visualizations' do
       Dir.mktmpdir do |path|
         create_user_with_rate_limits
         full_export_import(path)
 
         expect_rate_limits_saved_to_redis(@user.username)
-      end
-    end
-
-    it 'export + import user and visualizations for a viewer user' do
-      Dir.mktmpdir do |path|
-        create_user_with_basemaps_assets_visualizations
-        full_export_import_viewer(path)
       end
     end
 
@@ -360,6 +286,93 @@ describe Carto::UserMetadataExportService do
     user = service.build_user_from_hash_export(export)
     user.save!
     user.destroy
+  end
+
+  def export_import(user)
+    export = service.export_user_json_hash(user)
+    expect_export_matches_user(export[:user], user)
+    source_user = user.attributes
+    destroy_user
+
+    imported_user = service.build_user_from_hash_export(export)
+    service.save_imported_user(imported_user)
+    imported_user.reload
+
+    search_tweets = service.build_search_tweets_from_hash_export(export)
+    search_tweets.each { |st| service.save_imported_search_tweet(st, imported_user) }
+
+    expect_export_matches_user(export[:user], imported_user)
+    compare_excluding_dates(imported_user.attributes, source_user)
+  end
+
+  def full_export_import(path)
+    @visualization.mark_as_vizjson2
+    service.export_to_directory(@user, path)
+    source_user = @user.attributes
+
+    source_visualizations = @user.visualizations.order(:id).map(&:attributes)
+    source_tweets = @user.search_tweets.map(&:attributes)
+    destroy_user
+
+    # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
+    source_visualizations.select { |v| v['type'] == 'table' }.each do |v|
+      @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
+    end
+
+    # Clean redis for vizjson2 marking
+    $tables_metadata.del(Carto::Visualization::V2_VISUALIZATIONS_REDIS_KEY)
+    expect(@visualization.uses_vizjson2?).to be_false
+
+    @imported_user = service.import_from_directory(path)
+    service.import_metadata_from_directory(@imported_user, path)
+
+    compare_excluding_dates(@imported_user.attributes, source_user)
+    expect_redis_restored(@imported_user)
+    expect(@imported_user.visualizations.count).to eq source_visualizations.count
+    @imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
+      compare_excluding_dates_and_ids(v1.attributes, v2)
+    end
+
+    expect(@visualization.uses_vizjson2?).to be_true
+    @imported_user.search_tweets.zip(source_tweets).each do |st1, st2|
+      expect(st1.user_id).to eq @imported_user.id
+      expect(st1.service_item_id).to eq st2['service_item_id']
+      expect(st1.retrieved_items).to eq st2['retrieved_items']
+      expect(st1.state).to eq st2['state']
+    end
+  end
+
+  def full_export_import_viewer(path)
+    @user.update_attributes(viewer: true)
+    ::User[@user.id].reload # Refresh Sequel cache
+    service.export_to_directory(@user, path)
+    source_user = @user.attributes
+
+    source_visualizations = @user.visualizations.order(:id).map(&:attributes)
+    source_tweets = @user.search_tweets.map(&:attributes)
+    @user.update_attributes(viewer: false) # For destruction purposes
+    destroy_user
+
+    # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
+    source_visualizations.select { |v| v['type'] == 'table' }.each do |v|
+      @user.in_database.execute("CREATE TABLE #{v['name']} (cartodb_id int)")
+    end
+
+    @imported_user = service.import_from_directory(path)
+    service.import_metadata_from_directory(@imported_user, path)
+
+    compare_excluding_dates(@imported_user.attributes, source_user)
+    expect_redis_restored(@imported_user)
+    expect(@imported_user.visualizations.count).to eq source_visualizations.count
+    @imported_user.visualizations.order(:id).zip(source_visualizations).each do |v1, v2|
+      compare_excluding_dates_and_ids(v1.attributes, v2)
+    end
+    @imported_user.search_tweets.zip(source_tweets).each do |st1, st2|
+      expect(st1.user_id).to eq @imported_user.id
+      expect(st1.service_item_id).to eq st2['service_item_id']
+      expect(st1.retrieved_items).to eq st2['retrieved_items']
+      expect(st1.state).to eq st2['state']
+    end
   end
 
   let(:full_export) do

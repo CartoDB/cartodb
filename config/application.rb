@@ -203,6 +203,9 @@ module CartoDB
 
     # Put sequel db tasks into its own namespace
     config.sequel.load_database_tasks = :sequel
+
+    # Disable ActiveRecord caching. We didn't have this on Rails 3, so just to be safe. We may be able to enable it.
+    config.app_middleware.delete("ActiveRecord::QueryCache")
   end
 end
 

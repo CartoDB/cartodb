@@ -25,10 +25,10 @@ module CartoDB
     ].freeze
 
     GEOCODER_KEYS = {
-      mapbox: :geocoder_mapbox,
-      heremaps: :geocoder_here,
-      mapzen: :geocoder_mapzen,
-      google: :geocoder_google
+      "mapbox" => :geocoder_mapbox,
+      "heremaps" => :geocoder_here,
+      "mapzen" => :geocoder_mapzen,
+      "google" => :geocoder_google
     }.freeze
 
 

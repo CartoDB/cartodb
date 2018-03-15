@@ -21,8 +21,8 @@ module CartoDB
     ].freeze
 
     ROUTING_KEYS = {
-      mapbox: :routing_mapbox,
-      mapzen: :routing_mapzen
+      "mapbox" => :routing_mapbox,
+      "mapzen" => :routing_mapzen
     }.freeze
 
     def initialize(username, orgname = nil, redis = $geocoder_metrics)

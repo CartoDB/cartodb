@@ -23,9 +23,9 @@ module CartoDB
     ].freeze
 
     ISOLINES_KEYS = {
-      mapbox: :mapbox_isolines,
-      heremaps: :here_isolines,
-      mapzen: :mapzen_isolines
+      "mapbox" => :mapbox_isolines,
+      "heremaps" => :here_isolines,
+      "mapzen" => :mapzen_isolines
     }.freeze
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)

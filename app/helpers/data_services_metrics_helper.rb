@@ -79,7 +79,7 @@ module DataServicesMetricsHelper
   def get_routing_data(user, from, to)
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
-    routing_key = CartoDB::RoutingUsageMetrics::ROUTINGS_KEYS.fetch(user.routing_provider, :routing_mapbox)
+    routing_key = CartoDB::RoutingUsageMetrics::ROUTING_KEYS.fetch(user.routing_provider, :routing_mapbox)
     success = usage_metrics.get_sum_by_date_range(routing_key, :success_responses, from, to)
     empty = usage_metrics.get_sum_by_date_range(routing_key, :empty_responses, from, to)
     success + empty

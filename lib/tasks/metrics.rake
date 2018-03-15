@@ -18,7 +18,7 @@ namespace :cartodb do
       if provider.nil? || from.nil? || to.nil?
         raise "Either the provider or one of the dates is not provided as argument"
       end
-      if not PROVIDERS.include?(provider)
+      unless PROVIDERS.include?(provider)
         raise "The provider passed as argument is not correct. The accepted values are #{DS_PROVIDERS}"
       end
       default_output_file = "/tmp/ds_metrics_#{provider}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
@@ -27,16 +27,18 @@ namespace :cartodb do
       date_to = to.strftime('%Y-%m-%d')
       CSV.open(output_file, "wb") do |csv|
         SERVICES.each do |service, data|
-          Carto::User.where("#{data[:column]} = '#{provider}'").each do |user|
+          Carto::User.where(data[:column] => provider).find_each do |user|
             usage = nil
             organization_name = nil
-            if user.organization_user? && user.organization_owner?
+            if user.organization_owner?
               usage = user.organization.public_send(data[:method], to: to, from: from)
               organization_name = user.organization.name
             elsif not user.organization_user?
               usage = user.public_send(data[:method], {to: to, from: from})
             end
-            csv << [provider, service, date_from, date_to, organization_name, user.username, usage] if usage > 0
+            if !usage.nil? and usage > 0
+              csv << [provider, service, date_from, date_to, organization_name, user.username, usage]
+            end
           end
         end
       end

@@ -9,7 +9,7 @@
     </span>
   <% } %>
 
-  <span class="CDB-Text CDB-Size-medium u-lSpace u-ellipsLongText">
+  <span class="CDB-Text CDB-Size-medium u-lSpace">
     <%= nodeTitle %>
   </span>
 

@@ -25,9 +25,9 @@ module CartoDB
 
         def create_db
           begin
-            connection.run("CREATE DATABASE \"#{ @options[:create_db] }\"
+            connection.run("CREATE DATABASE \"#{@options[:create_db]}\"
             WITH TEMPLATE = template_postgis
-            OWNER = #{ @options[:username] }
+            OWNER = #{@options[:username]}
             ENCODING = 'UTF8'
             CONNECTION LIMIT=-1")
           rescue Sequel::DatabaseError => e

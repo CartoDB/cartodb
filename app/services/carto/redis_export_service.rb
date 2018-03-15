@@ -2,9 +2,10 @@ require 'json'
 
 # Version History
 # 1.0.0: export organization metadata
+# 1.0.1: export limits metadata
 module Carto
   module RedisExportServiceConfiguration
-    CURRENT_VERSION = '1.0.0'.freeze
+    CURRENT_VERSION = '1.0.1'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -38,20 +39,22 @@ module Carto
 
     def restore_redis(redis_export)
       restore_keys($users_metadata, redis_export[:users_metadata])
+      restore_keys($limits_metadata, redis_export[:limits_metadata])
     end
 
     def remove_redis(redis_export)
       remove_keys($users_metadata, redis_export[:users_metadata])
+      remove_keys($limits_metadata, redis_export[:limits_metadata])
     end
 
     def restore_keys(redis_db, redis_keys)
-      redis_keys.each do |key, value|
+      redis_keys.try(:each) do |key, value|
         redis_db.restore(key, value[:ttl], Base64.decode64(value[:value]))
       end
     end
 
     def remove_keys(redis_db, redis_keys)
-      redis_keys.each do |key|
+      redis_keys.try(:each) do |key|
         redis_db.del(key)
       end
     end
@@ -92,12 +95,13 @@ module Carto
 
     def export_user(user)
       {
-        users_metadata: export_dataservices("user:#{user.username}")
+        users_metadata: export_dataservices("user:#{user.username}"),
+        limits_metadata: export_dataservices("limits:rate:store:#{user.username}", $limits_metadata)
       }
     end
 
-    def export_dataservices(prefix)
-      $users_metadata.keys("#{prefix}:*").map { |key| export_key($users_metadata, key) }.reduce({}, &:merge)
+    def export_dataservices(prefix, redis_db = $users_metadata)
+      $users_metadata.keys("#{prefix}:*").map { |key| export_key(redis_db, key) }.reduce({}, &:merge)
     end
 
     def export_key(redis_db, key)

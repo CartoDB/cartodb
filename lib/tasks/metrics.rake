@@ -25,7 +25,7 @@ namespace :cartodb do
       output_file = args[:output_file].blank? ? default_output_file : args[:output_file]
       date_from = from.strftime('%Y-%m-%d')
       date_to = to.strftime('%Y-%m-%d')
-      CSV.open(output_file, "ab") do |csv|
+      CSV.open(output_file, "wb") do |csv|
         SERVICES.each do |service, data|
           Carto::User.where("#{data[:column]} = '#{provider}'").each do |user|
             usage = nil

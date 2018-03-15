@@ -152,7 +152,6 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
-* Fix typo in analyses copies (#13681)[https://github.com/CartoDB/cartodb/pull/13681]
 * Add helper text to mapbox basemap view (#13699)
 * Fix legends not refreshing when moving layers (#13696)
 * Fix broken api keys for organization users

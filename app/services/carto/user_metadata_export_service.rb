@@ -161,7 +161,7 @@ module Carto
 
       user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
 
-      user_hash[:rate_limit] = export_rate_limit(user.rate_limit) if user.rate_limit
+      user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
 
       # TODO
       # Organization notifications

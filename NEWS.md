@@ -153,6 +153,8 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Use Promises in query models to handle async states (#13478)
+* Add loading state to API Keys form button
+* Fix widgets disabled state (#13707)
 * Fix embed maps footer when there is no toolbar (#13704)
 * Add helper text to mapbox basemap view (#13699)
 * Fix legends not refreshing when moving layers (#13696)

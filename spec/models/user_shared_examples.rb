@@ -60,6 +60,7 @@ shared_examples_for "user models" do
 
     it 'calculates the remaining quota for a non-org user correctly' do
       @user1.geocoding_quota = 500
+      @user1.geocoder_provider = 'heremaps'
       @user1.save
 
       user1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil)
@@ -71,6 +72,8 @@ shared_examples_for "user models" do
     it 'takes into account geocodings performed by the org users #4033' do
       @organization.geocoding_quota = 500
       @organization.save.reload
+      @organization.owner.geocoder_provider = 'heremaps'
+      @organization.owner.save.reload
 
       org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
         @org_user_1.username,
@@ -99,11 +102,13 @@ shared_examples_for "user models" do
       DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.geocoding_quota = 500
+      @user1.geocoder_provider = 'heremaps'
       @user1.period_end_date = (DateTime.current + 1) << 1
       @user1.save.reload
       @organization.geocoding_quota = 500
       @organization.save.reload
       @organization.owner.period_end_date = (DateTime.current + 1) << 1
+      @organization.owner.geocoder_provider = 'heremaps'
       @organization.owner.save.reload
     end
 
@@ -138,6 +143,7 @@ shared_examples_for "user models" do
     it 'calculates the used geocoding quota for an organization' do
       usage_metrics_1 = CartoDB::GeocoderUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::GeocoderUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
+      @organization.owner.geocoder_provider = 'heremaps'
       # We are going to get the organization data show we could use both usage_metrics objects
       CartoDB::GeocoderUsageMetrics.stubs(:new).returns(usage_metrics_1)
       Geocoding.new(kind: 'high-resolution',
@@ -183,10 +189,12 @@ shared_examples_for "user models" do
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (DateTime.current + 1) << 1
+      @user1.isolines_provider = 'heremaps'
       @user1.save.reload
       @organization.here_isolines_quota = 500
       @organization.save.reload
       @organization.owner.period_end_date = (DateTime.current + 1) << 1
+      @organization.owner.isolines_provider = 'heremaps'
       @organization.owner.save.reload
     end
 
@@ -223,10 +231,12 @@ shared_examples_for "user models" do
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (DateTime.current + 1) << 1
+      @user1.isolines_provider = 'heremaps'
       @user1.save.reload
       @organization.here_isolines_quota = 500
       @organization.save.reload
       @organization.owner.period_end_date = (DateTime.current + 1) << 1
+      @organization.owner.isolines_provider = 'heremaps'
       @organization.owner.save.reload
     end
 
@@ -442,7 +452,7 @@ shared_examples_for "user models" do
     end
   end
 
-  describe 'User#remaining mapzen routing quota' do
+  describe 'User#remaining routing quota' do
     include_context 'users helper'
     include_context 'organization with users helper'
 
@@ -453,10 +463,12 @@ shared_examples_for "user models" do
       @mock_redis = MockRedis.new
       @user1.mapzen_routing_quota = 500
       @user1.period_end_date = (DateTime.current + 1) << 1
+      @user1.routing_provider = 'mapbox'
       @user1.save.reload
       @organization.mapzen_routing_quota = 500
       @organization.save.reload
       @organization.owner.period_end_date = (DateTime.current + 1) << 1
+      @organization.owner.routing_provider = 'mapbox'
       @organization.owner.save.reload
     end
 
@@ -464,29 +476,29 @@ shared_examples_for "user models" do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
       CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
 
-      usage_metrics.incr(:routing_mapzen, :total_requests, 100, DateTime.current)
-      usage_metrics.incr(:routing_mapzen, :success_responses, 100, DateTime.current)
+      usage_metrics.incr(:routing_mapbox, :total_requests, 100, DateTime.current)
+      usage_metrics.incr(:routing_mapbox, :success_responses, 100, DateTime.current)
 
       @user1.remaining_mapzen_routing_quota.should == 400
     end
 
-    it 'takes into account mapzen routing requests performed by the org users' do
+    it 'takes into account routing requests performed by the org users' do
       usage_metrics_1 = CartoDB::RoutingUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::RoutingUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
       CartoDB::RoutingUsageMetrics.stubs(:new).
         with(@organization.owner.username, @organization.name).
         returns(usage_metrics_1)
-      usage_metrics_1.incr(:routing_mapzen, :total_requests, 100, DateTime.current)
-      usage_metrics_1.incr(:routing_mapzen, :success_responses, 100, DateTime.current)
-      usage_metrics_2.incr(:routing_mapzen, :total_requests, 100, DateTime.current)
-      usage_metrics_2.incr(:routing_mapzen, :success_responses, 100, DateTime.current)
+      usage_metrics_1.incr(:routing_mapbox, :total_requests, 100, DateTime.current)
+      usage_metrics_1.incr(:routing_mapbox, :success_responses, 100, DateTime.current)
+      usage_metrics_2.incr(:routing_mapbox, :total_requests, 100, DateTime.current)
+      usage_metrics_2.incr(:routing_mapbox, :success_responses, 100, DateTime.current)
 
       @org_user_1.remaining_mapzen_routing_quota.should == 300
       @org_user_2.remaining_mapzen_routing_quota.should == 300
     end
   end
 
-  describe 'User#used_mapzen_routing_quota' do
+  describe 'User#used_routing_quota' do
     include_context 'users helper'
     include_context 'organization with users helper'
 
@@ -497,20 +509,22 @@ shared_examples_for "user models" do
       @mock_redis = MockRedis.new
       @user1.mapzen_routing_quota = 500
       @user1.period_end_date = (DateTime.current + 1) << 1
+      @user1.routing_provider = 'mapbox'
       @user1.save.reload
       @organization.mapzen_routing_quota = 500
       @organization.save.reload
       @organization.owner.period_end_date = (DateTime.current + 1) << 1
+      @organization.owner.routing_provider = 'mapbox'
       @organization.owner.save.reload
     end
 
     it 'calculates the used mapzen routing quota in the current billing cycle' do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
       CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
-      usage_metrics.incr(:routing_mapzen, :total_requests, 10, DateTime.current)
-      usage_metrics.incr(:routing_mapzen, :total_requests, 100, (DateTime.current - 2))
-      usage_metrics.incr(:routing_mapzen, :success_responses, 10, DateTime.current)
-      usage_metrics.incr(:routing_mapzen, :success_responses, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapbox, :total_requests, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapbox, :total_requests, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapbox, :success_responses, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapbox, :success_responses, 100, (DateTime.current - 2))
 
       @user1.get_mapzen_routing_calls.should == 110
     end
@@ -521,10 +535,10 @@ shared_examples_for "user models" do
       CartoDB::RoutingUsageMetrics.stubs(:new).
         with(@organization.owner.username, @organization.name).
         returns(usage_metrics_1)
-      usage_metrics_1.incr(:routing_mapzen, :total_requests, 100, DateTime.current)
-      usage_metrics_2.incr(:routing_mapzen, :total_requests, 120, DateTime.current - 1)
-      usage_metrics_1.incr(:routing_mapzen, :success_responses, 100, DateTime.current)
-      usage_metrics_2.incr(:routing_mapzen, :success_responses, 120, DateTime.current - 1)
+      usage_metrics_1.incr(:routing_mapbox, :total_requests, 100, DateTime.current)
+      usage_metrics_2.incr(:routing_mapbox, :total_requests, 120, DateTime.current - 1)
+      usage_metrics_1.incr(:routing_mapbox, :success_responses, 100, DateTime.current)
+      usage_metrics_2.incr(:routing_mapbox, :success_responses, 120, DateTime.current - 1)
 
       @organization.get_mapzen_routing_calls.should == 220
     end
@@ -532,11 +546,11 @@ shared_examples_for "user models" do
     it 'calculates the used mapzen routing quota in the current billing cycle including empty requests' do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
       CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
-      usage_metrics.incr(:routing_mapzen, :total_requests, 10, DateTime.current)
-      usage_metrics.incr(:routing_mapzen, :total_requests, 100, (DateTime.current - 2))
-      usage_metrics.incr(:routing_mapzen, :success_responses, 10, DateTime.current)
-      usage_metrics.incr(:routing_mapzen, :success_responses, 100, (DateTime.current - 2))
-      usage_metrics.incr(:routing_mapzen, :empty_responses, 10, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapbox, :total_requests, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapbox, :total_requests, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapbox, :success_responses, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapbox, :success_responses, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapbox, :empty_responses, 10, (DateTime.current - 2))
 
       @user1.get_mapzen_routing_calls.should == 120
     end

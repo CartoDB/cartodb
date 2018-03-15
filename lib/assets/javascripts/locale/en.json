@@ -262,8 +262,8 @@
     "new-columns-included": "New columns has been included with your original data.",
     "new-columns-included-based-on-input": "New columns have been included with your original data based on the columns chosen for the input.",
     "sampling": {
-      "title": "Subsample Percent of rows",
-      "description": "A sample of your original table was randomly selected to give approximately a percentage of the rows from your input dataset."
+      "title": "Subsample Percent of Rows",
+      "description": "A sample of your original table was randomly selected to give approximately a percentage of the rows from your base dataset."
     },
     "merge": {
       "title": "Add Columns from Second Dataset",
@@ -271,8 +271,8 @@
     },
     "intersection": {
       "title": "Select Points in Polygons",
-      "description": "This analysis performs a spatial intersection, returning only the rows from the target layer which intersect with geometries in the source layer.",
-      "source-cartodb-id": "This number represents the cartodb_id of the source geometry"
+      "description": "This analysis performs a spatial intersection, returning only the rows from the target layer which intersect with geometries in the base layer.",
+      "source-cartodb-id": "This number represents the cartodb_id of the base geometry."
     },
     "area-of-influence": {
       "title": "Create Travel or Distance Buffers",
@@ -281,30 +281,30 @@
     },
     "aggregate-intersection": {
       "title": "Intersect and Aggregate",
-      "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the source layer.",
-      "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation",
-      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}"
+      "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the base layer.",
+      "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation.",
+      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}."
     },
     "filter": {
       "title": "Filter by Column Value",
-      "description": "Row filtering allows you to quickly narrow down the total data you display on a map or input into an analysis node."
+      "description": "Filter by Column Value allows you to quickly narrow down the total data you display on a map or input into an analysis node."
     },
     "filter-by-node-column": {
       "title": "Link Second Layer",
-      "description": "Link Second Layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
+      "description": "Link Second Layer allows you to filter the data in your layer by propagating the filters in the target layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
     },
     "spatial-markov-trend": {
       "title": "Predict Trends and Volatility",
-      "trend": "The normalized trend for each geometry",
-      "trend_up": "The probability that a geometry's value will move to a higher class",
-      "trend_down": "The probability that a geometry's value will move to a lower class",
-      "volatility": "A measure of the potential for a geometry to possess values in other classes",
+      "trend": "The normalized trend for each geometry.",
+      "trend_up": "The probability that a geometry's value will move to a higher class.",
+      "trend_down": "The probability that a geometry's value will move to a lower class.",
+      "volatility": "A measure of the potential for a geometry to possess values in other classes.",
       "description": "Trends and volatility are calculated based on the time series data input. Trends calculated from inputs with a longer history are more precise. Inputs for the time column should equally spaced (e.g., all one week/month/year apart)."
     },
     "moran": {
       "title": "Detect Outliers and Clusters",
       "description": "Detect Outliers and Clusters finds areas in your data where clusters of high values or low values exist, as well as areas which are dissimilar from their neighbors.",
-      "quads": "Classification of the geometry from the analysis",
+      "quads": "Classification of the geometry from the analysis.",
       "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
       "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
       "vals": "Value used in analysis. If a denominator is entered, this is the 'standardized' rate (centered on mean, normalized by standard deviation)."
@@ -312,30 +312,30 @@
     "kmeans": {
       "title": "Calculate Clusters of Points",
       "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the %{clusters} clusters you requested (or max rows if less).",
-      "description": "Point clustering is uses k-means to calculate a predefined number of clusters from your data."
+      "description": "Point clustering uses k-means to calculate a predefined number of clusters from your data."
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
-      "custom-column": "This column contains the data requested from the Data Observatory",
+      "custom-column": "This column contains the data requested from the Data Observatory.",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
     },
     "data-observatory-multiple-measures": {
       "title": "Enrich from the Data Observatory",
-      "custom-columns": "These columns contain the data requested from the Data Observatory",
+      "custom-columns": "These columns contain the data requested from the Data Observatory.",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measures requested."
     },
     "connect-with-lines": {
       "title": "Create Lines from Points",
-      "description": "Create lines from points using a single point, column values, or a second layer.",
+      "description": "Create Lines from Points using a single point, column values, or a second layer.",
       "the-geom": "This column was updated to be lines according to the method chosen.",
-      "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order",
-      "line-source-to-target": "Link a source point to a target point based on a shared attribute",
+      "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order.",
+      "line-source-to-target": "Link a source point to a target point based on a shared attribute.",
       "line-to-single-point": "Connect the coordinate from latitude and longitude columns to the point geometry (`the_geom`) in your dataset."
     },
     "group-points": {
       "title": "Create Polygons from Points",
-      "the-geom": "This column was updated to polygons encompassing the input points.",
-      "category": "This will be the category over which the polygons were calculated",
+      "the-geom": "This column was updated to polygons encompassing the base points.",
+      "category": "This will be the category over which the polygons were calculated.",
       "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
@@ -345,17 +345,17 @@
     },
     "centroid": {
       "title": "Create Centroids of Geometries",
-      "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain.",
-      "the-geom": "Point geometries representing the centroid(s) of your input data.",
+      "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Categorize, Weight, and Operation, you can change how they are calculated and what information the result will contain.",
+      "the-geom": "Point geometries representing the centroid(s) of your base layer.",
       "aggregated-value": "Stores the aggregate value for each centroid.",
-      "non-aggregated-value": "Contains the count of features considered for each centroid",
-      "category": "Stores the category value for each centroid from the source dataset"
+      "non-aggregated-value": "Contains the count of features considered for each centroid.",
+      "category": "Stores the category value for each centroid from the base layer."
     },
     "closest": {
+      "title": "Find Nearest",
       "description": "Select points from second dataset nearest to the geometries in current layer.",
-      "source_cdb_id": "This column has been created with the related points id from the source table.",
-      "the-geom": "This column has been updated with the target table geometries.",
-      "title": "Find Nearest"
+      "source_cdb_id": "This column has been created with the related points id from the base layer.",
+      "the-geom": "This column has been updated with the target table geometries."
     }
   },
   "timezones": {

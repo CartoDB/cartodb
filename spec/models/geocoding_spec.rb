@@ -4,7 +4,7 @@ require 'mock_redis'
 
 describe Geocoding do
   before(:all) do
-    @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500, geocoder_provider: 'heremaps')
+    @user = create_user(geocoding_quota: 200, geocoding_block_price: 1500, geocoder_provider: 'heremaps')
 
     bypass_named_maps
     @table = FactoryGirl.create(:user_table, user_id: @user.id)

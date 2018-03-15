@@ -9,8 +9,7 @@ module CartoDB
     module Factories
       class PGConnection
         def initialize(options = {})
-          @options = SequelRails.configuration.environment_for(Rails.env)
-          @options['user'] ||= @options.delete('username')
+          @options = SequelRails.configuration.environment_for(Rails.env).merge(options)
           create_db if options[:create_db]
         end
 
@@ -28,7 +27,7 @@ module CartoDB
           begin
             connection.run("CREATE DATABASE \"#{ @options[:create_db] }\"
             WITH TEMPLATE = template_postgis
-            OWNER = #{ @options[:user] }
+            OWNER = #{ @options[:username] }
             ENCODING = 'UTF8'
             CONNECTION LIMIT=-1")
           rescue Sequel::DatabaseError => e

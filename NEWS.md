@@ -506,6 +506,7 @@ ion for time-series (#12670)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
+* Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals

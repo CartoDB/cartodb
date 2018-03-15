@@ -153,6 +153,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix widgets disabled state (#13707)
+* Fix embed maps footer when there is no toolbar (#13704)
 * Add helper text to mapbox basemap view (#13699)
 * Fix legends not refreshing when moving layers (#13696)
 * Fix broken api keys for organization users

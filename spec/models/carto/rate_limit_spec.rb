@@ -25,6 +25,7 @@ describe Carto::RateLimit do
                                            maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                            maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                            maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                           maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                            sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                            sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                            sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
@@ -66,6 +67,7 @@ describe Carto::RateLimit do
       rate_limit.maps_named_update.first.to_array.should eq [36, 37, 38]
       rate_limit.maps_named_delete.first.to_array.should eq [39, 40, 41]
       rate_limit.maps_named_tiles.first.to_array.should eq [10, 11, 12]
+      rate_limit.maps_analysis_catalog.first.to_array.should eq [10, 11, 12]
       rate_limit.sql_query.first.to_array.should eq [13, 14, 15]
       rate_limit.sql_query_format.first.to_array.should eq [16, 17, 18]
       rate_limit.sql_job_create.first.to_array.should eq [19, 110, 111]
@@ -141,6 +143,7 @@ describe Carto::RateLimit do
       $limits_metadata.EXISTS("#{map_prefix}named_update").should eq 0
       $limits_metadata.EXISTS("#{map_prefix}named_delete").should eq 0
       $limits_metadata.EXISTS("#{map_prefix}named_tiles").should eq 0
+      $limits_metadata.EXISTS("#{map_prefix}analysis_catalog").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}query_format").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}job_create").should eq 0
@@ -164,6 +167,7 @@ describe Carto::RateLimit do
       $limits_metadata.LRANGE("#{map_prefix}named_update", 0, 2).should == ["36", "37", "38"]
       $limits_metadata.LRANGE("#{map_prefix}named_delete", 0, 2).should == ["39", "40", "41"]
       $limits_metadata.LRANGE("#{map_prefix}named_tiles", 0, 2).should == ["10", "11", "12"]
+      $limits_metadata.LRANGE("#{map_prefix}analysis_catalog", 0, 2).should == ["10", "11", "12"]
       $limits_metadata.LRANGE("#{sql_prefix}query", 0, 2).should == ["13", "14", "15"]
       $limits_metadata.LRANGE("#{sql_prefix}query_format", 0, 2).should == ["16", "17", "18"]
       $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ["19", "110", "111"]
@@ -210,6 +214,7 @@ describe Carto::RateLimit do
                                  maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                  maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                  maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                 maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                  sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                  sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                  sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
@@ -233,6 +238,7 @@ describe Carto::RateLimit do
                                  maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                  maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                  maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                 maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                  sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                  sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                  sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
@@ -257,6 +263,7 @@ describe Carto::RateLimit do
                                                 maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                                 maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                                 maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                                maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                                 sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                                 sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                                 sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
@@ -282,6 +289,7 @@ describe Carto::RateLimit do
                                                 maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                                 maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                                 maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                                maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                                 sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                                 sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                                 sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
@@ -306,6 +314,7 @@ describe Carto::RateLimit do
                                                   maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                                   maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                                   maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                                  maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                                   sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                                   sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                                   sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
@@ -336,6 +345,7 @@ describe Carto::RateLimit do
                                               maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                               maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                               maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                              maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                               sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                               sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                               sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
@@ -361,6 +371,7 @@ describe Carto::RateLimit do
                                               maps_named_update: Carto::RateLimitValues.new([36, 37, 38]),
                                               maps_named_delete: Carto::RateLimitValues.new([39, 40, 41]),
                                               maps_named_tiles: Carto::RateLimitValues.new([10, 11, 12]),
+                                              maps_analysis_catalog: Carto::RateLimitValues.new([10, 11, 12]),
                                               sql_query: Carto::RateLimitValues.new([13, 14, 15]),
                                               sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                               sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),

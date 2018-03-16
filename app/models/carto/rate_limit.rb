@@ -18,6 +18,7 @@ module Carto
                              :maps_named_update,
                              :maps_named_delete,
                              :maps_named_tiles,
+                             :maps_analysis_catalog,
                              :sql_query,
                              :sql_query_format,
                              :sql_job_create,

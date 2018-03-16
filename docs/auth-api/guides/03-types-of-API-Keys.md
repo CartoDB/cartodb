@@ -70,7 +70,7 @@ Master keys are a very special kind of API Keys. As it happens with the Default 
 
   
 
-The special thing about Master API Keys is that they grant access to EVERYTHING: APIs and Datasets (read/insert/create/delete). Additionally, a Master API Key is required to access most of the Auth API endpoints.
+The special thing about Master API Keys is that they grant access to EVERYTHING: APIs and Datasets (select/insert/create/delete). Additionally, a Master API Key is required to access most of the Auth API endpoints.
 
   
 

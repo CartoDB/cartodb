@@ -323,6 +323,7 @@ $tableBorderColor: $cSecondaryLine;
     &::after {
       content: '';
       position: absolute;
+      top: 0;
       right: 0;
       width: 1px;
       height: $halfBaseSize * 7;
@@ -337,6 +338,7 @@ $tableBorderColor: $cSecondaryLine;
     &::before {
       content: '';
       position: absolute;
+      top: 0;
       left: -1px;
       width: 1px;
       height: $halfBaseSize * 7;

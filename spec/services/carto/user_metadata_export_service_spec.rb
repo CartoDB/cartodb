@@ -135,33 +135,42 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#user import' do
+    after :each do
+      if @search_tweets
+        @search_tweets.each do |st|
+          st.data_import.destroy
+          st.destroy
+        end
+      end
+    end
+
     it 'imports' do
       user = service.build_user_from_hash_export(full_export)
-      search_tweets = service.build_search_tweets_from_hash_export(full_export)
-      search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
+      @search_tweets = service.build_search_tweets_from_hash_export(full_export)
+      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
 
       expect_export_matches_user(full_export[:user], user)
     end
-  end
 
-  describe '#user import with rate limits' do
-    it 'imports' do
+    it 'imports with rate limits' do
       user = service.build_user_from_hash_export(full_export_one_zero_three)
-      search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_three)
-      search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
+      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_three)
+      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
 
       expect_export_matches_user(full_export_one_zero_three[:user], user)
     end
   end
 
   describe '#user export + import' do
+    after :each do
+      destroy_user
+    end
+
     it 'export + import' do
       create_user_with_basemaps_assets_visualizations
       export_import(@user)
     end
-  end
 
-  describe '#user export + import with rate limits' do
     it 'export + import with rate limits' do
       create_user_with_rate_limits
       export_import(@user)

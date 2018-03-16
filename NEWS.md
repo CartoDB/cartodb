@@ -101,6 +101,7 @@ ion for time-series (#12670)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* New Tooling to gather Dataservices' provider metrics (#13710)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
 * Visualization endpoint now returns related canonical visualizations under demand (#12910)
@@ -123,6 +124,7 @@ ion for time-series (#12670)
   * Add rate limits persistence (#13626)
   * Remove rate limits on user deletion (#13657)
   * Sync price plans and rate limits (#13660)
+  * Add rate limit index to account_types (#13664)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
@@ -153,6 +155,12 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix "Add new analysis" button in IE (CartoDB/onpremises/issues/485)
+* Fix button when addign new widgets (CartoDB/onpremises/issues/513)
+* Fix private map view styles in IE (CartoDB/onpremises/issues/499)
+* Fix privacy modal styles in IE (CartoDB/onpremises/issues/505)
+* Fix auto align in tooltips in IE (CartoDB/onpremises/issues/519)
+* Fix arrows styles for IE in dataset view (CartoDB/onpremises/issues/521)
 * Add loading state to API Keys form button
 * Fix widgets disabled state (#13707)
 * Fix embed maps footer when there is no toolbar (#13704)

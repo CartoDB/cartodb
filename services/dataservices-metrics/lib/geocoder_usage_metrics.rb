@@ -13,7 +13,7 @@ module CartoDB
       :failed_responses,
       :success_responses,
       :empty_responses,
-    ]
+    ].freeze
 
     VALID_SERVICES = [
       :geocoder_internal,
@@ -22,7 +22,15 @@ module CartoDB
       :geocoder_cache,
       :geocoder_mapzen,
       :geocoder_mapbox
-    ]
+    ].freeze
+
+    GEOCODER_KEYS = {
+      "mapbox" => :geocoder_mapbox,
+      "heremaps" => :geocoder_here,
+      "mapzen" => :geocoder_mapzen,
+      "google" => :geocoder_google
+    }.freeze
+
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)
       super(username, orgname, redis)

@@ -643,6 +643,7 @@ describe User do
   describe '#get_geocoding_calls' do
     before do
       delete_user_data @user
+      @user.geocoder_provider = 'heremaps'
       @user.stubs(:last_billing_cycle).returns(Date.today)
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil, @mock_redis)
@@ -670,6 +671,7 @@ describe User do
   describe '#get_here_isolines_calls' do
     before do
       delete_user_data @user
+      @user.isolines_provider = 'heremaps'
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
       CartoDB::IsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)

@@ -120,6 +120,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Limits V2
   * Add rate limits persistence (#13626)
+  * Include rate limits in user migration (#13712)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)

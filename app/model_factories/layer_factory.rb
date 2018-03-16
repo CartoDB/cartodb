@@ -47,9 +47,8 @@ module ModelFactories
         kind: 'tiled',
         options: base_layer.options.except('className', 'labels').merge(
           'type' => 'Tiled',
-          'name' => "#{base_layer.options['name']} Labels",
-          **base_layer.options['labels']
-        )
+          'name' => "#{base_layer.options['name']} Labels"
+        ).merge(base_layer.options['labels'])
       )
     end
 

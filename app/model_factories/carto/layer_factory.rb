@@ -18,9 +18,8 @@ module Carto
         kind: 'tiled',
         options: base_layer_options.except('className', 'labels').merge(
           'type' => 'Tiled',
-          'name' => "#{base_layer_options['name']} Labels",
-          **base_layer_options['labels']
-        )
+          'name' => "#{base_layer_options['name']} Labels"
+        ).merge(base_layer_options['labels'])
       )
     end
 

@@ -2,10 +2,9 @@ require 'json'
 
 # Version History
 # 1.0.0: export organization metadata
-# 1.0.1: export limits metadata
 module Carto
   module RedisExportServiceConfiguration
-    CURRENT_VERSION = '1.0.1'.freeze
+    CURRENT_VERSION = '1.0.0'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -39,12 +38,10 @@ module Carto
 
     def restore_redis(redis_export)
       restore_keys($users_metadata, redis_export[:users_metadata])
-      restore_keys($limits_metadata, redis_export[:limits_metadata])
     end
 
     def remove_redis(redis_export)
       remove_keys($users_metadata, redis_export[:users_metadata])
-      remove_keys($limits_metadata, redis_export[:limits_metadata])
     end
 
     def restore_keys(redis_db, redis_keys)
@@ -95,8 +92,7 @@ module Carto
 
     def export_user(user)
       {
-        users_metadata: export_dataservices("user:#{user.username}"),
-        limits_metadata: export_dataservices("limits:rate:store:#{user.username}", $limits_metadata)
+        users_metadata: export_dataservices("user:#{user.username}")
       }
     end
 

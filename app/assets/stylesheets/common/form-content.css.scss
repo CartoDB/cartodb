@@ -198,6 +198,10 @@ $sLabel-width: 140px;
   margin: 0;
 }
 
+.Form-rowData--noMinHeight {
+  min-height: 0;
+}
+
 // RowData sizes
 .Form-rowData--full {
   width: 100%;

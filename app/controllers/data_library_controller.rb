@@ -10,6 +10,7 @@ class DataLibraryController < ApplicationController
     render_404 and return if @viewed_user.nil? || (Cartodb.get_config(:data_library, 'username') && (Cartodb.config[:data_library]['username'] != @viewed_user.username))
 
     @dataset_base_url = (Rails.env.production? || Rails.env.staging?) ? "#{request.protocol}#{CartoDB.account_host}/dataset/" : "#{@viewed_user.public_url(nil, request.protocol == "https://" ? "https" : "http")}/tables/"
+    @has_new_dashboard = @viewed_user.has_feature_flag?('dashboard_migration')
 
     respond_to do |format|
       format.html { render 'index' }

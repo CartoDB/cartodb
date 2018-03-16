@@ -7,10 +7,6 @@ require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require 'helpers/unique_names_helper'
 
-# INFO: THIS TEST SUITE SHOULD NOT GET NEW TESTS. In order to test visualization controller
-# add the specs to ./spec/requests/api/json/visualizations_controller_shared_examples.rb instead.
-# You can then run it with ./spec/requests/api/json/visualizations_controller_specs.rb and
-# ./spec/requests/carto/api/visualizations_controller_specs.rb.
 describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper
   include Rack::Test::Methods

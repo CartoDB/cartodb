@@ -64,7 +64,7 @@
       </script>
 
     <% if @has_new_dashboard %>
-      <%= javascript_include_tag 'common_dashboard', 'user_feed_new' %>
+      <%= javascript_include_tag 'common_dashboard', 'user_feed_new_vendor', 'user_feed_new' %>
     <% else %>
       <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
     <% end %>

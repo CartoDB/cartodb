@@ -825,8 +825,8 @@
           "couldnt-validate": "We couldn't validate this. If you're sure it contains data click \"add basemap\""
         },
         "mapbox": {
-          "insert": "Insert your Mapbox URL",
-          "enter": "Enter a URL",
+          "insert": "Add Mapbox Style basemap",
+          "enter": "Mapbox Style URL",
           "error": "Error retrieving your basemap. Please check your Mapbox URL.",
           "invalid": "This URL is not valid."
         },
@@ -2231,9 +2231,9 @@
         "between": "Between",
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
-        "is-greater-or-equal-than": "Is greater or equal than",
+        "is-greater-or-equal-than": "Is greater than or equal to",
         "is-less-than": "Is less than",
-        "is-less-or-equal-than": "Is less or equal than"
+        "is-less-or-equal-than": "Is less than or equal to"
       },
       "notifier": {
         "center-map": {
@@ -2767,7 +2767,8 @@
       "sample": "sample",
       "errors": {
         "timeout": "Your analysis has taken too long. Try to %{sample} your data or %{contact} for further assistance",
-        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist",
+        "without-cartodb-id": "The column \"cartodb_id\" does not exist"
       }
     },
     "widgets": {

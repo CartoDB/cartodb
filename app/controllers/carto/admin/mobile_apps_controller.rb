@@ -29,6 +29,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_apps = response[:mobile_apps].map { |a| Carto::MobileApp.new(a) }
     @open_monthly_users = response[:monthly_users][:open]
     @private_monthly_users = response[:monthly_users][:private]
+    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
   rescue CartoDB::CentralCommunicationFailure => e
     @mobile_apps = []
     CartoDB::Logger.error(message: 'Error loading mobile apps from Central', exception: e)

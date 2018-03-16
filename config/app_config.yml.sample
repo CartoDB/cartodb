@@ -167,6 +167,7 @@ defaults: &defaults
       api_credentials:     3
       users_metadata:      5
       redis_migrator_logs: 6
+      limits_metadata:     8
   org_metadata_api:
     host: 'localhost.lan'
     port: '3000'

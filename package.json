@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.73.onpremiseie.1",
+  "version": "4.11.73.onpremiseie.2",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -65,7 +65,7 @@
     "bluebird": "3.5.0",
     "brfs": "^1.4.3",
     "browserify-resolutions": "1.1.0",
-    "cartoassets": "CartoDB/CartoAssets#master",
+    "cartoassets": "CartoDB/CartoAssets#fix-option-input-top",
     "colors": "1.1.2",
     "csswring": "^3.0.5",
     "eslint": "~4.8.0",

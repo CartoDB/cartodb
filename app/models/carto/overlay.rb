@@ -69,7 +69,7 @@ module Carto
     def invalidate_cache
       # Using `send` to avoid making it public. A future refactor should make this call unnecessary
       # Visualization might not exist during creation, as the overlays are created before the visualization
-      visualization.try(:send, :perform_invalidations)
+      visualization.try(:invalidate_after_commit)
     end
   end
 end

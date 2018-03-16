@@ -314,7 +314,7 @@ describe Carto::Visualization do
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: map)
       FactoryGirl.create(:widget, layer: visualization.data_layers.first)
       FactoryGirl.create(:analysis, visualization: visualization, user: @carto_user)
-      FactoryGirl.create(:carto_overlay, visualization: visualization)
+      FactoryGirl.create(:carto_search_overlay, visualization: visualization)
       FactoryGirl.create(:carto_synchronization, visualization: visualization)
       visualization.create_mapcap!
       visualization.state.save

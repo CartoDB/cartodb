@@ -325,7 +325,7 @@ $tableBorderColor: $cSecondaryLine;
       position: absolute;
       right: 0;
       width: 1px;
-      height: 14px;
+      height: $halfBaseSize * 7;
       background: #F9F9F9;
     }
   }
@@ -339,7 +339,7 @@ $tableBorderColor: $cSecondaryLine;
       position: absolute;
       left: -1px;
       width: 1px;
-      height: 14px;
+      height: $halfBaseSize * 7;
       background: $cThirdBackground;
     }
   }

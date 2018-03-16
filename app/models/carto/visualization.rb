@@ -57,7 +57,8 @@ class Carto::Visualization < ActiveRecord::Base
   self.inheritance_column = :_type
 
   belongs_to :user, -> { select(Carto::User::DEFAULT_SELECT) }, inverse_of: :visualizations
-  belongs_to :full_user, -> { readonly(true) }, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations
+  belongs_to :full_user, -> { readonly(true) }, class_name: Carto::User, inverse_of: :visualizations,
+                                                primary_key: :id, foreign_key: :user_id
 
   belongs_to :permission, inverse_of: :visualization, dependent: :destroy
 
@@ -570,7 +571,9 @@ class Carto::Visualization < ActiveRecord::Base
   def invalidate_after_commit
     # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
     # performs the actual invalidations. This takes this operation outside of the DB transaction to avoid long locks
-    raise 'invalidate_after_commit should be called within a transaction' if self.class.connection.open_transactions.zero?
+    if self.class.connection.open_transactions.zero?
+      raise 'invalidate_after_commit should be called within a transaction'
+    end
     add_to_transaction
     true
   end

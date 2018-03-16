@@ -158,7 +158,7 @@ describe Carto::Api::UserPresenter do
     new_data[:import_count].should == old_data[:import_count]
     new_viz_date = new_data[:last_visualization_created_at].to_s
     old_viz_date = old_data[:last_visualization_created_at].to_s
-    DateTime.parse(new_viz_date).should eq DateTime.parse(old_viz_date) unless old_viz_date.blank? && new_viz_date.blank?
+    Time.parse(new_viz_date).should eq Time.parse(old_viz_date) unless old_viz_date.blank? && new_viz_date.blank?
     new_data[:quota_in_bytes].should == old_data[:quota_in_bytes]
     new_data[:db_size_in_bytes].should == old_data[:db_size_in_bytes]
     new_data[:db_size_in_megabytes].should == old_data[:db_size_in_megabytes]

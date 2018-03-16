@@ -234,13 +234,15 @@ describe Carto::Superadmin::OrganizationsController do
     end
 
     it 'returns only requested services' do
-      get_json(usage_superadmin_organization_url(@organization.id), { services: [:mapviews] }, superadmin_headers) do |response|
+      payload = { services: [:mapviews] }
+      get_json(usage_superadmin_organization_url(@organization.id), payload, superadmin_headers) do |response|
         response.body.keys.should eq [:mapviews]
       end
     end
 
     it 'returns an error for invalid services array format' do
-      get_json(usage_superadmin_organization_url(@organization.id), { services: 'wadus' }, superadmin_headers) do |response|
+      payload = { services: 'wadus' }
+      get_json(usage_superadmin_organization_url(@organization.id), payload, superadmin_headers) do |response|
         response.status.should eq 422
       end
     end

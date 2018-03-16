@@ -111,12 +111,14 @@ describe Geocoding do
     it 'sends a payload with duration information' do
       def is_metrics_payload?(str)
         payload = JSON.parse(str)
-        payload.key?('queue_time') && payload.key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
+        payload.key?('queue_time') && payload.key?('processing_time') &&
+          payload['queue_time'] > 0 && payload['processing_time'] > 0
       rescue JSON::ParserError
         false
       end
 
-      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, kind: 'admin0',
+                                                 geometry_type: 'polygon', formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:run).returns true
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:process_results).returns true

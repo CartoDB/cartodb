@@ -32,7 +32,7 @@ module Carto
     end
 
     def ==(other)
-      super(other) || to_array == other.try(:to_array)
+      other.class == self.class && to_array == other.try(:to_array)
     end
 
     def to_redis_array

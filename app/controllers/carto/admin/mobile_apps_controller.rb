@@ -29,7 +29,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_apps = response[:mobile_apps].map { |a| Carto::MobileApp.new(a) }
     @open_monthly_users = response[:monthly_users][:open]
     @private_monthly_users = response[:monthly_users][:private]
-    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
+    @has_new_dashboard = check_new_dashboard()
   rescue CartoDB::CentralCommunicationFailure => e
     @mobile_apps = []
     CartoDB::Logger.error(message: 'Error loading mobile apps from Central', exception: e)
@@ -37,11 +37,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def show
-    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
+    @has_new_dashboard = check_new_dashboard()
   end
 
   def new
-    @has_new_dashboard = current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
+    @has_new_dashboard = check_new_dashboard()
     @mobile_app = Carto::MobileApp.new
   end
 
@@ -149,5 +149,9 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     else
       "#{relative_url_root}/images/avatars/mobile_app_default_avatar.png"
     end
+  end
+
+  def check_new_dashboard
+    current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
   end
 end

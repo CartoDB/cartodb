@@ -84,7 +84,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def json_for_api_key(api_key)
     Carto::Api::ApiKeyPresenter.new(api_key).to_poro.merge(
       _links: {
-        self: api_key_url(id: api_key.name)
+        self: api_key_url(id: CGI::escape(api_key.name))
       }
     )
   end

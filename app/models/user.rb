@@ -137,6 +137,7 @@ class User < Sequel::Model
     user = ::User.new
     user.organization = organization
     user.quota_in_bytes = viewer ? 0 : organization.default_quota_in_bytes
+    user.viewer = viewer
     user
   end
 

@@ -43,16 +43,16 @@ describe Carto::User do
     end
 
     it 'false for free accounts' do
-      @carto_user.account_type = Carto::AccountType::FREE
+      @carto_user.account_type = 'FREE'
 
       @carto_user.soft_geocoding_limit?.should be_false
     end
 
-    it 'true for BASIC and PRO accounts' do
-      [Carto::AccountType::BASIC, Carto::AccountType::PRO].each do |account_type|
+    it 'false for BASIC and PRO accounts' do
+      ['BASIC', 'PRO'].each do |account_type|
         @carto_user.account_type = account_type
 
-        @carto_user.soft_geocoding_limit?.should be_true
+        @carto_user.soft_geocoding_limit?.should be_false
       end
     end
   end

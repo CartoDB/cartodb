@@ -83,10 +83,10 @@ module CartoDB
       with_param(PARAM_ORG_ADMIN, value)
     end
 
-    def with_organization(organization)
+    def with_organization(organization, viewer: false)
       @built = false
       @organization = organization
-      @user = ::User.new_with_organization(organization)
+      @user = ::User.new_with_organization(organization, viewer: viewer)
       self
     end
 

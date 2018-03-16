@@ -65,6 +65,14 @@ describe('geo/ui/legends/legends-view', function () {
     expect(getLayerLegendTitles(this.legendsView)).toEqual(['Torque Layer #3', 'CartoDB Layer #2', 'CartoDB Layer #1']);
   });
 
+  it('should re-render when a layer with legends is moved', function () {
+    expect(getLayerLegendTitles(this.legendsView)).toEqual(['Torque Layer #3', 'CartoDB Layer #2', 'CartoDB Layer #1']);
+
+    this.layersCollection.moveCartoDBLayer(2, 1);
+
+    expect(getLayerLegendTitles(this.legendsView)).toEqual(['Torque Layer #3', 'CartoDB Layer #1', 'CartoDB Layer #2']);
+  });
+
   it('should show legends if showLegends is true', function () {
     this.settingsModel.set('showLegends', true);
     expect(this.legendsView.$('.Legends').length).toBe(3);

@@ -91,6 +91,8 @@ var Layers = Backbone.Collection.extend({
       silent: true
     });
 
+    this.trigger('layerMoved', movingLayer);
+
     return movingLayer;
   }
 });

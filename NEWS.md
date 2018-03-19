@@ -154,6 +154,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Do not add new notifications if notification content already exists (#13407)
 * Fix histogram widgets collapsing (#13705)
 * Use Promises in query models to handle async states (#13478)
 * Fix "Add new analysis" button in IE (CartoDB/onpremises/issues/485)

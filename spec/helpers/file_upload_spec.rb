@@ -20,7 +20,7 @@ describe 'CartoDB::FileUpload' do
 
     file_upload = CartoDB::FileUpload.new(Cartodb.get_config(:user_migrator, :uploads_path))
 
-    expect do
+    expect {
       file_upload.upload_file_to_storage(
         file_param: Tempfile.new('foo').path,
         s3_config: s3_config,
@@ -28,7 +28,7 @@ describe 'CartoDB::FileUpload' do
         force_s3_upload: true,
         random_token: Cartodb.get_config(:user_migrator, :uploads_path)
       )
-    end.to raise_error(AWS::S3::Errors::RequestTimeout)
+    }.to raise_error(AWS::S3::Errors::RequestTimeout)
   end
 
   def should_upload_to_s3
@@ -43,7 +43,7 @@ describe 'CartoDB::FileUpload' do
     bucket_mock.expects(:objects).once.returns(objects_array_mock)
 
     s3_mock = Object.new
-    s3_mock.expects(:buckets).once.returns({'some_bucket_name' => bucket_mock})
+    s3_mock.expects(:buckets).once.returns('some_bucket_name' => bucket_mock)
 
     AWS::S3.stubs(:new).raises(AWS::S3::Errors::RequestTimeout.new).then.returns(s3_mock)
   end

@@ -323,9 +323,10 @@ $tableBorderColor: $cSecondaryLine;
     &::after {
       content: '';
       position: absolute;
+      top: 0;
       right: 0;
       width: 1px;
-      height: calc(100% - 4px);
+      height: $halfBaseSize * 7;
       background: #F9F9F9;
     }
   }
@@ -337,9 +338,10 @@ $tableBorderColor: $cSecondaryLine;
     &::before {
       content: '';
       position: absolute;
+      top: 0;
       left: -1px;
       width: 1px;
-      height: calc(100% - 4px);
+      height: $halfBaseSize * 7;
       background: $cThirdBackground;
     }
   }

@@ -607,7 +607,7 @@ class DataImport < Sequel::Model
   end
 
   def pg_options
-    Rails.configuration.database_configuration[Rails.env].symbolize_keys
+    SequelRails.configuration.environment_for(Rails.env)
       .merge(
         username: current_user.database_username,
         password: current_user.database_password,

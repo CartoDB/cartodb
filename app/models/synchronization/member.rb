@@ -486,7 +486,7 @@ module CartoDB
       end
 
       def pg_options
-        Rails.configuration.database_configuration[Rails.env].symbolize_keys
+        SequelRails.configuration.environment_for(Rails.env)
           .merge(
             username:     user.database_username,
             password: user.database_password,

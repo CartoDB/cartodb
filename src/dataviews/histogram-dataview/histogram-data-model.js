@@ -13,7 +13,8 @@ module.exports = Model.extend({
     url: '',
     data: [],
     localTimezone: false,
-    localOffset: 0
+    localOffset: 0,
+    hasBeenFetched: false
   },
 
   url: function () {
@@ -49,7 +50,6 @@ module.exports = Model.extend({
   },
 
   initialize: function () {
-    this.hasBeenFetched = false;
     this.sync = BackboneAbortSync.bind(this);
     this._initBinds();
   },
@@ -80,7 +80,7 @@ module.exports = Model.extend({
     });
 
     this.on('sync', function () {
-      this.hasBeenFetched = true;
+      this.set('hasBeenFetched', true);
     });
   },
 

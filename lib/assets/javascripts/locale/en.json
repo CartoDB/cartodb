@@ -2782,9 +2782,10 @@
       }
     },
     "widgets": {
-      "add": "Widget successfully added",
+      "add_pluralize": "Widget successfully added |||| Widgets successfully added",
       "replace": "Widget successfully replaced",
-      "delete": "Widget deleted correctly",
+      "replace_pluralize": "Widget successfully replaced |||| Widgets successfully replaced",
+      "delete_pluralize": "Widget deleted correctly",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"
@@ -2796,7 +2797,8 @@
     },
     "layer": {
       "error": "Layer error: %{error}",
-      "added": "Layer added successfully"
+      "added": "Layer added successfully",
+      "added_pluralize": "Layer added successfully |||| Layers added successfully"
     },
     "cartocss": {
       "error": {

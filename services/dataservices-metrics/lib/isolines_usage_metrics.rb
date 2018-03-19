@@ -14,13 +14,19 @@ module CartoDB
       :success_responses,
       :empty_responses,
       :isolines_generated
-    ]
+    ].freeze
 
     VALID_SERVICES = [
       :here_isolines,
       :mapzen_isolines,
       :mapbox_isolines
-    ]
+    ].freeze
+
+    ISOLINES_KEYS = {
+      "mapbox" => :mapbox_isolines,
+      "heremaps" => :here_isolines,
+      "mapzen" => :mapzen_isolines
+    }.freeze
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)
       super(username, orgname, redis)

@@ -641,6 +641,7 @@ describe User do
   describe '#get_geocoding_calls' do
     before do
       delete_user_data @user
+      @user.geocoder_provider = 'heremaps'
       @user.stubs(:last_billing_cycle).returns(Date.today)
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil, @mock_redis)
@@ -668,6 +669,7 @@ describe User do
   describe '#get_here_isolines_calls' do
     before do
       delete_user_data @user
+      @user.isolines_provider = 'heremaps'
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
       CartoDB::IsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
@@ -2677,8 +2679,10 @@ describe User do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = FactoryGirl.create(:account_type_free)
       @account_type_pro = FactoryGirl.create(:account_type_pro)
-      @user = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)
-      @rate_limits = FactoryGirl.create(:rate_limits_custom)
+      @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
+      @rate_limits = FactoryGirl.create(:rate_limits)
+      @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
+      @user_rt = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       @organization = FactoryGirl.create(:organization)
 
       owner = FactoryGirl.create(:user, account_type: 'PRO')
@@ -2690,12 +2694,12 @@ describe User do
       @user_org.enabled = true
       @user_org.save
 
-      @map_prefix = "limits:rate:store:#{@user.username}:maps:"
-      @sql_prefix = "limits:rate:store:#{@user.username}:sql:"
+      @map_prefix = "limits:rate:store:#{@user_rt.username}:maps:"
+      @sql_prefix = "limits:rate:store:#{@user_rt.username}:sql:"
     end
 
     after :each do
-      @user.destroy unless @user.nil?
+      @user_rt.destroy unless @user_rt.nil?
       @user_no_ff.destroy unless @user_no_ff.nil?
       @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
@@ -2703,12 +2707,14 @@ describe User do
       @account_type.rate_limit.destroy unless @account_type.nil?
       @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
       @rate_limits.destroy unless @rate_limits.nil?
+      @rate_limits_custom.destroy unless @rate_limits_custom.nil?
+      @rate_limits_pro.destroy unless @rate_limits_pro.nil?
       @limits_feature_flag.destroy if @limits_feature_flag.exists?
     end
 
     it 'does not create rate limits if feature flag is not enabled' do
-      @limits_feature_flag.destroy unless @limits_feature_flag.nil?
-      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @account_type.rate_limit.id)
+      @limits_feature_flag.destroy
+      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
@@ -2760,8 +2766,8 @@ describe User do
       $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
 
-      @user.rate_limit_id = @rate_limits.id
-      @user.save
+      @user_rt.rate_limit_id = @rate_limits_custom.id
+      @user_rt.save
 
       $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["10", "11", "12"]
       $limits_metadata.LRANGE("#{@map_prefix}static", 0, 2).should == ["13", "14", "15"]
@@ -2809,6 +2815,31 @@ describe User do
       $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["3", "7", "8"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["4", "10", "11"]
       $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["5", "13", "14"]
+    end
+
+    it 'destroy rate limits' do
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
+
+      user2.destroy
+
+      expect {
+        Carto::RateLimit.find(user2.rate_limit_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'destroys rate limits from redis' do
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
+
+      map_prefix = "limits:rate:store:#{user2.username}:maps:"
+      sql_prefix = "limits:rate:store:#{user2.username}:sql:"
+
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 1
+
+      user2.destroy
+
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
     end
   end
 

@@ -16,6 +16,7 @@ This releases updates the database connections, and `database.yml` needs to be u
 should be replaced from `postgres` to `postgresql`. See `database.yml.sample` for an example.
 
 ### Features
+* Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
 * Update multiple widgets at once (#13596)
 * Adjust widget styles in embed maps movile view (#13487)
@@ -104,6 +105,7 @@ ion for time-series (#12670)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* New Tooling to gather Dataservices' provider metrics (#13710)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
 * Visualization endpoint now returns related canonical visualizations under demand (#12910)
@@ -124,6 +126,8 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Limits V2
   * Add rate limits persistence (#13626)
+  * Remove rate limits on user deletion (#13657)
+  * Add rate limit index to account_types (#13664)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
@@ -154,6 +158,24 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Use Promises in query models to handle async states (#13478)
+* Fix "Add new analysis" button in IE (CartoDB/onpremises/issues/485)
+* Fix button when addign new widgets (CartoDB/onpremises/issues/513)
+* Fix private map view styles in IE (CartoDB/onpremises/issues/499)
+* Fix privacy modal styles in IE (CartoDB/onpremises/issues/505)
+* Fix auto align in tooltips in IE (CartoDB/onpremises/issues/519)
+* Fix arrows styles for IE in dataset view (CartoDB/onpremises/issues/521)
+* Add loading state to API Keys form button
+* Fix widgets disabled state (#13707)
+* Fix embed maps footer when there is no toolbar (#13704)
+* Add helper text to mapbox basemap view (#13699)
+* Fix legends not refreshing when moving layers (#13696)
+* Fix broken api keys for organization users
+* Fix multiple bugs in widgets (#13686)
+* Fix category widget search on Android (https://github.com/CartoDB/support/issues/1074)
+* Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)
+* Fix onboardings in layer content views (#13674)
+* Safe access to vis map for old visualizations without maps (#13665)
 * Don't fetch rows when fetching columns for analyses (#13654)
 * Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)
 * Add isSourceType false by default to select-view (#13655)
@@ -481,6 +503,7 @@ ion for time-series (#12670)
 * Enable CSV exports for polygon and line datasets (#13196)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
+* Ensure v3 visualizations always have analyses (#13662)
 * Fix asset upload with special character in local storage (#13602)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
@@ -495,9 +518,12 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
+* Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Data Library dashboard migration (#13608)
 * Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
@@ -837,6 +863,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed incorrect analysis node being selected after deleting (#11899)
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Set `soft_geocoding_limit` to default to false.
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

@@ -4,7 +4,7 @@ require 'mock_redis'
 
 describe Geocoding do
   before(:all) do
-    @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
+    @user = create_user(geocoding_quota: 200, geocoding_block_price: 1500, geocoder_provider: 'heremaps')
 
     bypass_named_maps
     @table = FactoryGirl.create(:user_table, user_id: @user.id)
@@ -227,7 +227,9 @@ describe Geocoding do
     end
 
     it 'returns the remaining quota for the organization if the user has hard limit and belongs to an org' do
-      organization = create_organization_with_users(:geocoding_quota => 150)
+      organization = create_organization_with_users(geocoding_quota: 150)
+      organization.owner.geocoder_provider = 'heremaps'
+      organization.owner.save.reload
       org_user = organization.users.last
       org_user.stubs('soft_geocoding_limit?').returns(false)
       org_geocoding = FactoryGirl.build(:geocoding, user: org_user)
@@ -360,7 +362,4 @@ describe Geocoding do
     end
   end
 
-  describe '#successful_rows' do
-
-  end
 end

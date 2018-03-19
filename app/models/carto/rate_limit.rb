@@ -42,5 +42,16 @@ module Carto
         $limits_metadata.RPUSH "limits:rate:store:#{user.username}:#{key}", value
       end
     end
+
+    def destroy_completely(user)
+      destroy
+      delete_from_redis(user)
+    end
+
+    def delete_from_redis(user)
+      to_redis.each_key do |key|
+        $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
+      end
+    end
   end
 end

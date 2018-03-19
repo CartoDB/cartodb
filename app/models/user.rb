@@ -138,6 +138,7 @@ class User < Sequel::Model
     user = ::User.new
     user.organization = organization
     user.quota_in_bytes = viewer ? 0 : organization.default_quota_in_bytes
+    user.viewer = viewer
     user
   end
 
@@ -536,6 +537,16 @@ class User < Sequel::Model
     unless @org_id_for_org_wipe.nil?
       organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
+    end
+
+    # we need to wait for the deletion to be commited because of the mix of Sequel (user)
+    # and AR (rate_limit) models and rate_limit_id being a FK in the users table
+    db.after_commit do
+      begin
+        rate_limit.try(:destroy_completely, self)
+      rescue => e
+        CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
+      end
     end
   end
 

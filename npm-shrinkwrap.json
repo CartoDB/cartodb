@@ -384,7 +384,7 @@
     "cartodb.js": {
       "version": "4.0.0-beta.34",
       "from": "cartodb/cartodb.js#add-fetched-flag-histogram",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#8fcce1265e58ea3598edae4ccd86c13937513802"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#33b5819d71324331f1725f45c5fd1c550d911ab8"
     },
     "center-align": {
       "version": "0.1.3",

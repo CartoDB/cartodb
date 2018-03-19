@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.8-5.widgetscollapse",
+  "version": "4.11.85",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -382,9 +382,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.34",
-      "from": "cartodb/cartodb.js#add-fetched-flag-histogram",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#33b5819d71324331f1725f45c5fd1c550d911ab8"
+      "version": "4.0.0-beta.35",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.35",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e5f384f33635da1b6b029965a694fdbaa7afdf79"
     },
     "center-align": {
       "version": "0.1.3",

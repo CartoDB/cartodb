@@ -94,7 +94,7 @@ module CartoDB
       results
     end
 
-    def upload_file_to_s3(filepath, filename, token, s3_config, retries: 0)
+    def upload_file_to_s3(filepath, filename, token, s3_config, retries: 0, max_attempts: MAX_S3_UPLOAD_ATTEMPTS)
       s3_config_hash = {
         access_key_id: s3_config['access_key_id'],
         secret_access_key: s3_config['secret_access_key'],
@@ -121,7 +121,7 @@ module CartoDB
       end
     rescue AWS::S3::Errors::RequestTimeout => e
       attempts = retries + 1
-      if attempts < MAX_S3_UPLOAD_ATTEMPTS
+      if attempts < max_attempts
         return upload_file_to_s3(filepath, filename, token, s3_config, retries: attempts)
       end
 

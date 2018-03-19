@@ -13,7 +13,8 @@ module.exports = Model.extend({
     url: '',
     data: [],
     localTimezone: false,
-    localOffset: 0
+    localOffset: 0,
+    hasBeenFetched: false
   },
 
   url: function () {
@@ -76,6 +77,10 @@ module.exports = Model.extend({
 
     this.on('change:column', function () {
       this.set('aggregation', 'auto', { silent: true });
+    });
+
+    this.on('sync', function () {
+      this.set('hasBeenFetched', true);
     });
   },
 

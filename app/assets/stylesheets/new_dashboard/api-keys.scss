@@ -147,3 +147,12 @@
 .Editor-formInput {
   position: relative;
 }
+
+.Editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid #DDD;
+}

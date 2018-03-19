@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.84-12845-01",
+  "version": "4.11.85-12845-01",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -517,9 +517,9 @@
       "resolved": "https://registry.npmjs.org/combine-source-map/-/combine-source-map-0.8.0.tgz"
     },
     "commander": {
-      "version": "2.14.1",
-      "from": "commander@>=2.14.0 <2.15.0",
-      "resolved": "https://registry.npmjs.org/commander/-/commander-2.14.1.tgz"
+      "version": "2.15.0",
+      "from": "commander@>=2.15.0 <2.16.0",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.15.0.tgz"
     },
     "component-emitter": {
       "version": "1.2.1",
@@ -1100,9 +1100,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.6.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.10",
+      "version": "3.5.11",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.10.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.11.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",
@@ -2281,9 +2281,9 @@
       "resolved": "https://registry.npmjs.org/stream-combiner2/-/stream-combiner2-1.1.1.tgz"
     },
     "stream-http": {
-      "version": "2.8.0",
+      "version": "2.8.1",
       "from": "stream-http@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.8.0.tgz"
+      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.8.1.tgz"
     },
     "stream-splicer": {
       "version": "2.0.0",
@@ -2423,9 +2423,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.3.14",
+      "version": "3.3.15",
       "from": "uglify-js@>=3.3.0 <3.4.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.14.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.15.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",
@@ -2435,9 +2435,9 @@
       }
     },
     "umd": {
-      "version": "3.0.2",
+      "version": "3.0.3",
       "from": "umd@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/umd/-/umd-3.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/umd/-/umd-3.0.3.tgz"
     },
     "underscore": {
       "version": "1.8.3",

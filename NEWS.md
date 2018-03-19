@@ -160,6 +160,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Use Promises in query models to handle async states (#13478)
 * Fix "Add new analysis" button in IE (CartoDB/onpremises/issues/485)
 * Fix button when addign new widgets (CartoDB/onpremises/issues/513)
 * Fix private map view styles in IE (CartoDB/onpremises/issues/499)

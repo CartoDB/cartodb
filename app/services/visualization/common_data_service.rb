@@ -57,6 +57,7 @@ module CartoDB
         common_data_remotes_by_name = Carto::Visualization.remotes
                                                           .where(user_id: user.id)
                                                           .joins(:external_source)
+                                                          .readonly(false) # joins causes readonly
                                                           .where(external_sources: { username: 'common-data' })
                                                           .map { |v| [v.name, v] }.to_h
         ActiveRecord::Base.transaction do

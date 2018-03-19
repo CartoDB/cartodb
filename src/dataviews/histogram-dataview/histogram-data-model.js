@@ -49,6 +49,7 @@ module.exports = Model.extend({
   },
 
   initialize: function () {
+    this.hasBeenFetched = false;
     this.sync = BackboneAbortSync.bind(this);
     this._initBinds();
   },
@@ -76,6 +77,10 @@ module.exports = Model.extend({
 
     this.on('change:column', function () {
       this.set('aggregation', 'auto', { silent: true });
+    });
+
+    this.on('sync', function () {
+      this.hasBeenFetched = true;
     });
   },
 

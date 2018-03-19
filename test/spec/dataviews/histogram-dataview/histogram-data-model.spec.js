@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var HistogramDataModel = require('../../../../src/dataviews/histogram-dataview/histogram-data-model');
 
-fdescribe('dataviews/histogram-data-model', function () {
+describe('dataviews/histogram-data-model', function () {
   var apiKey = 'ac3560ef-78f8-45d8-b043-5544f8a76753';
   var url = 'https://carto.geo';
   var defaultBins = 45;

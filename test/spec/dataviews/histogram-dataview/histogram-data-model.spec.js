@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var HistogramDataModel = require('../../../../src/dataviews/histogram-dataview/histogram-data-model');
 
-describe('dataviews/histogram-data-model', function () {
+fdescribe('dataviews/histogram-data-model', function () {
   var apiKey = 'ac3560ef-78f8-45d8-b043-5544f8a76753';
   var url = 'https://carto.geo';
   var defaultBins = 45;
@@ -25,6 +25,7 @@ describe('dataviews/histogram-data-model', function () {
     expect(this.model.get('data').length).toBe(0);
     expect(this.model.get('localTimezone')).toBe(false);
     expect(this.model.get('localOffset')).toBe(0);
+    expect(this.model.get('hasBeenFetched')).toBe(false);
   });
 
   describe('._initBinds', function () {
@@ -76,6 +77,14 @@ describe('dataviews/histogram-data-model', function () {
       this.model.set('localTimezone', !originalValue);
 
       expect(this.model.fetch).toHaveBeenCalled();
+    });
+
+    it('should set `hasBeenFetched` to true when a sync event is triggered', function () {
+      this.model.set('hasBeenFetched', false, { silent: true });
+
+      this.model.trigger('sync');
+
+      expect(this.model.get('hasBeenFetched')).toBe(true);
     });
   });
 

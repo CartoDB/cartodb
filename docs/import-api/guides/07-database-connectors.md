@@ -18,7 +18,7 @@ You can use the MySQL Connector to:
 
 To use the MySQL Connector, you must include a `connector` parameter with the following attributes:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "mysql",
@@ -32,7 +32,7 @@ To use the MySQL Connector, you must include a `connector` parameter with the fo
     "encoding": "iso88591"
   }
 }
-{% endhighlight %}
+```
 
 #### Supported Versions
 
@@ -76,7 +76,7 @@ interval | The number of seconds for the synchronization period. *Note*: Sync in
 
 **Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "mysql",
@@ -91,7 +91,7 @@ interval | The number of seconds for the synchronization period. *Note*: Sync in
   },
   "interval": 2592000
 }
-{% endhighlight %}
+```
 
 #### Connect to a Table
 
@@ -107,7 +107,7 @@ The following example displays how to request an external MySQL table.
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "mysql",
@@ -121,18 +121,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "encoding": "iso88591"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 As when importing files, the response returns a success value if the connection is correctly registered (enqueued to processed):
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "aef9925c-31dd-11e4-a95e-0edbca4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
 
@@ -149,7 +149,7 @@ The following example displays how to connect to MySQL through a SQL query.
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "mysql",
@@ -164,13 +164,13 @@ curl -v -H "Content-Type: application/json" -d '{
     "encoding": "iso88591"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 **Tip:** If you are using `curl` and need to have single quotes in your SQL query, you must substitute each single quote by the sequence `'"'"'`. For example, if the query is `SELECT * FROM remote_table WHERE value = '1'``
 
 Enter it as:
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "mysql",
@@ -185,18 +185,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "encoding": "iso88591"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 The results indicate if the connection was registered successfully, and includes the identifier that references the connection process.
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "cde6525c-31dd-11e4-a95e-0edbcc4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 #### Syncing a Connection
 
@@ -209,7 +209,7 @@ The following example displays how to sync data through an external MySQL databa
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "mysql",
@@ -224,7 +224,7 @@ curl -v -H "Content-Type: application/json" -d '{
   },
   "interval": 2592000
 }' "https://{username}.carto.com/api/v1/synchronizations/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
@@ -257,7 +257,7 @@ content_guessing | Deprecated (unused for connectors).
 visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
-{% highlight javascript %}
+```javascript
 {
   "data_import":{
     "endpoint":"/api/v1/imports",
@@ -289,7 +289,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
   "from_external_source":false
   }
 }
-{% endhighlight %}
+```
 
 ### The PostgreSQL Connector
 
@@ -303,7 +303,7 @@ You can use the PostgreSQL Connector to:
 
 To use the PostgreSQL Connector, you must include a `connector` parameter with the following attributes:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "postgres",
@@ -317,7 +317,7 @@ To use the PostgreSQL Connector, you must include a `connector` parameter with t
     "table": "pgtable"
   }
 }
-{% endhighlight %}
+```
 
 #### Supported Versions
 
@@ -369,7 +369,7 @@ interval | The number of seconds for the synchronization period. _The Sync inter
 
 **Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "postgres",
@@ -383,7 +383,7 @@ interval | The number of seconds for the synchronization period. _The Sync inter
   },
   "interval": 2592000
 }
-{% endhighlight %}
+```
 
 #### Connect to a Table
 
@@ -399,7 +399,7 @@ The following example displays how to request an external PostgreSQL table.
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "postgres",
@@ -412,18 +412,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "table": "pgtable"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 As when importing files, the response returns a success value if the connection is correctly registered (enqueued to processed):
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "aef9925c-31dd-11e4-a95e-0edbca4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
 
@@ -439,7 +439,7 @@ The following example displays how to connect to PostgreSQL through a SQL query.
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "postgres",
@@ -453,13 +453,13 @@ curl -v -H "Content-Type: application/json" -d '{
     "sql_query": "SELECT * FROM remote_table WHERE value = 1"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 **Tip:** If you are using `curl` and need to have single quotes in your SQL query, you must substitute each single quote by the sequence `'"'"'`. For example, if the query is `SELECT * FROM remote_table WHERE value = '1'``
 
 Enter it as:
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "postgres",
@@ -473,18 +473,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "sql_query": "SELECT * FROM remote_table WHERE value = '"'"'1'"'"'"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 The results indicate if the connection was registered successfully, and includes the identifier that references the connection process.
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "cde6525c-31dd-11e4-a95e-0edbcc4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 #### Syncing a Connection
 
@@ -497,7 +497,7 @@ The following example displays how to sync data through an external PostgreSQL d
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "postgres",
@@ -511,7 +511,7 @@ curl -v -H "Content-Type: application/json" -d '{
   },
   "interval": 2592000
 }' "https://{username}.carto.com/api/v1/synchronizations/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
@@ -544,7 +544,7 @@ content_guessing | Deprecated (unused for connectors).
 visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
-{% highlight javascript %}
+```javascript
 {
   "data_import":{
     "endpoint":"/api/v1/imports",
@@ -576,7 +576,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
   "from_external_source":false
   }
 }
-{% endhighlight %}
+```
 
 ### The Microsoft SQL Server Connector
 
@@ -590,7 +590,7 @@ You can use the Microsoft SQL Server Connector to:
 
 To use the Microsoft SQL Server Connector, you must include a `connector` parameter with the following attributes:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "sqlserver",
@@ -604,7 +604,7 @@ To use the Microsoft SQL Server Connector, you must include a `connector` parame
     "table": "mstable"
   }
 }
-{% endhighlight %}
+```
 
 #### Supported Versions
 
@@ -647,7 +647,7 @@ interval | The number of seconds for the synchronization period._Sync interval m
 
 **Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "sqlserver",
@@ -661,7 +661,7 @@ interval | The number of seconds for the synchronization period._Sync interval m
   },
   "interval": 2592000
 }
-{% endhighlight %}
+```
 
 #### Connect to a Table
 
@@ -677,7 +677,7 @@ The following example displays how to request an external Microsoft SQL Server t
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "sqlserver",
@@ -690,18 +690,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "table": "mstable"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 As when importing files, the response returns a success value if the connection is correctly registered (enqueued to processed):
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "aef9925c-31dd-11e4-a95e-0edbca4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
 
@@ -717,7 +717,7 @@ The following example displays how to connect to Microsoft SQL Server through a 
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "sqlserver",
@@ -731,13 +731,13 @@ curl -v -H "Content-Type: application/json" -d '{
     "sql_query": "SELECT * FROM remote_table WHERE value = 1"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 **Tip:** If you are using `curl` and need to have single quotes in your SQL query, you must substitute each single quote by the sequence `'"'"'`. For example, if the query is `SELECT * FROM remote_table WHERE value = '1'``
 
 Enter it as:
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "sqlserver",
@@ -751,18 +751,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "sql_query": "SELECT * FROM remote_table WHERE value = '"'"'1'"'"'"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 The results indicate if the connection was registered successfully, and includes the identifier that references the connection process.
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "cde6525c-31dd-11e4-a95e-0edbcc4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 #### Syncing a Connection
 
@@ -774,7 +774,7 @@ The following example displays how to sync data through an external Microsoft SQ
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "sqlserver",
@@ -788,7 +788,7 @@ curl -v -H "Content-Type: application/json" -d '{
   },
   "interval": 2592000
 }' "https://{username}.carto.com/api/v1/synchronizations/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
@@ -821,7 +821,7 @@ content_guessing | Deprecated (unused for connectors).
 visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
-{% highlight javascript %}
+```javascript
 {
   "data_import":{
     "endpoint":"/api/v1/imports",
@@ -853,7 +853,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
   "from_external_source":false
   }
 }
-{% endhighlight %}
+```
 
 ### The Hive Connector
 
@@ -867,7 +867,7 @@ You can use the Hive Connector to:
 
 To use the Hive Connector, you must include a `connector` parameter with the following attributes:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "hive",
@@ -881,7 +881,7 @@ To use the Hive Connector, you must include a `connector` parameter with the fol
     "table": "hs2table"
   }
 }
-{% endhighlight %}
+```
 
 #### Supported Versions
 
@@ -926,7 +926,7 @@ interval | The number of seconds for the synchronization period. _Sync interval 
 
 **Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
-{% highlight javascript %}
+```javascript
 {
   "connector": {
     "provider": "hive",
@@ -940,7 +940,7 @@ interval | The number of seconds for the synchronization period. _Sync interval 
   },
   "interval": 2592000
 }
-{% endhighlight %}
+```
 
 #### Connect to a Table
 
@@ -956,7 +956,7 @@ The following example displays how to request an external Hive table.
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "hive",
@@ -969,18 +969,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "table": "hs2table"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 As when importing files, the response returns a success value if the connection is correctly registered (enqueued to processed):
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "aef9925c-31dd-11e4-a95e-0edbca4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
 
@@ -996,7 +996,7 @@ The following example displays how to connect to Hive through a SQL query.
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "hive",
@@ -1010,13 +1010,13 @@ curl -v -H "Content-Type: application/json" -d '{
     "sql_query": "SELECT * FROM remote_table WHERE value = 1"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 **Tip:** If you are using `curl` and need to have single quotes in your SQL query, you must substitute each single quote by the sequence `'"'"'`. For example, if the query is `SELECT * FROM remote_table WHERE value = '1'``
 
 Enter it as:
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "hive",
@@ -1030,18 +1030,18 @@ curl -v -H "Content-Type: application/json" -d '{
     "sql_query": "SELECT * FROM remote_table WHERE value = '"'"'1'"'"'"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
 The results indicate if the connection was registered successfully, and includes the identifier that references the connection process.
 
-{% highlight javascript %}
+```javascript
 {
   "item_queue_id": "cde6525c-31dd-11e4-a95e-0edbcc4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 #### Syncing a Connection
 
@@ -1053,7 +1053,7 @@ The following example displays how to sync data through an external Hive databas
 
 ###### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "hive",
@@ -1067,7 +1067,7 @@ curl -v -H "Content-Type: application/json" -d '{
   },
   "interval": 2592000
 }' "https://{username}.carto.com/api/v1/synchronizations/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ###### Response
 
@@ -1100,7 +1100,7 @@ content_guessing | Deprecated (unused for connectors).
 visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
-{% highlight javascript %}
+```javascript
 {
   "data_import":{
     "endpoint":"/api/v1/imports",
@@ -1132,7 +1132,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
   "from_external_source":false
   }
 }
-{% endhighlight %}
+```
 
 ### Limitations and Restrictions
 

@@ -8,7 +8,7 @@ Sync tables are available for certain CARTO plans. These tables store data from 
 
 {% highlight html %}
 GET /api/v1/synchronizations
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -54,13 +54,13 @@ Finally, the array includes a **total_entries** element that indicates the numbe
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v "https://{username}.carto.com/api/v1/synchronizations/?api_key={account API Key}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "synchronizations": [
     {
@@ -92,7 +92,7 @@ curl -v "https://{username}.carto.com/api/v1/synchronizations/?api_key={account 
   ],
   "total_entries": 1
 }
-{% endhighlight %}
+```
 
 ---
 
@@ -102,7 +102,7 @@ curl -v "https://{username}.carto.com/api/v1/synchronizations/?api_key={account 
 
 {% highlight html %}
 POST /api/v1/synchronizations
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -152,13 +152,13 @@ from_external_source | A boolean indicating whether the Sync Table is connected 
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{"url":"https://public.url.to.file/sample_file", "interval":"3600"}' "https://{username}.carto.com/api/v1/synchronizations/?api_key={account API Key}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "data_import": {
     "endpoint": "/api/v1/imports",
@@ -189,7 +189,7 @@ curl -v -H "Content-Type: application/json" -d '{"url":"https://public.url.to.fi
   "visualization_id": null,
   "from_external_source": false
 }
-{% endhighlight %}
+```
 
 ---
 
@@ -199,9 +199,9 @@ A sync table can be converted to a standard dataset (a dataset that never gets s
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 DELETE /api/v1/synchronizations/<import_id>
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -214,9 +214,9 @@ Target table import id | The unique alphanumeric identifier of the target sync d
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -X "DELETE" https://{username}.carto.com/api/v1/synchronizations/{import_id}?api_key={account API Key}"
-{% endhighlight %}
+```
 
 ##### Response
 
@@ -230,9 +230,9 @@ A large synced table may take some time to get fully synced. In the meantime, it
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 GET /api/v1/synchronizations/<import_id>/sync_now
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -253,17 +253,17 @@ state | A string value indicating the status of the synchronization. It can have
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -X "GET" "https://{username}.carto.com/api/v1/synchronizations/{import_id}/sync_now?api_key={account API Key}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "state": "syncing"
 }
-{% endhighlight %}
+```
 
 ---
 
@@ -273,9 +273,9 @@ Sync tables have their contents synchronized with the source file in periodic ti
 
 #### Definition
 
-{% highlight bash %}
+```bash
 PUT /api/v1/synchronizations/<import_id>/sync_now
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -297,15 +297,15 @@ synchronization_id | A unique alphanumeric identifier referring to the queue ele
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -X "PUT" "https://{username}.carto.com/api/v1/synchronizations/<import_id>/sync_now?api_key={account API Key}" -H "Content-Length:0"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight bash %}
+```bash
 {
   "enqueued": true,
   "synchronization_id": "1234abcd-aaaa-2222-4444-dcba4321a1b2"
 }
-{% endhighlight %}
+```

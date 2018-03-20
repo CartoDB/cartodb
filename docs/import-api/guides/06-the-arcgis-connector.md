@@ -10,13 +10,13 @@ ArcGIS&trade; layers stored in ArcGIS Server&trade; can get imported as CARTO da
 
 {% highlight html %}
 http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/<layer_ID>
-{% endhighlight %}
+```
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 POST api/v1/imports 
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -40,31 +40,31 @@ success | A boolean value indicating whether the import process was successfully
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{"interval":"0","service_item_id": "http://url.to.arcgis.server.layer", "service_name": "arcgis", "value": "http://url.to.arcgis.server.layer"}' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "item_queue_id": "d676fd50-b774-4052-a4f1-e56ac6a4300e",
   "success": true
 }
-{% endhighlight %}
+```
 
 ### Syncing an ArcGIS&trade; Layer
 
 An ArcGIS&trade; layer can get imported to a CARTO account as a synchronized table. The target ArcGIS&trade; layer must be (PUBLIC) and accessible via an ArcGIS&trade; API REST URL, using the following structure:
 {% highlight html %}
 http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/<layer_ID>
-{% endhighlight %}
+```
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 POST /api/v1/synchronizations
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -112,13 +112,13 @@ from_external_source | A boolean indicating whether the Sync Table is connected 
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{"interval":"604800","service_item_id": "http://url.to.arcgis.server.layer", "service_name": "arcgis", "url":""}' "https://{username}.carto.com/api/v1/synchronizations?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "endpoint":"/api/v1/imports",
   "item_queue_id":"4ff4abdd-9d37-4b7a-8e13-fb00376e2a58",
@@ -147,7 +147,7 @@ curl -v -H "Content-Type: application/json" -d '{"interval":"604800","service_it
   "visualization_id": "2954fa60-5a02-11e5-888a-0e5e07bb5d8a",
   "from_external_source": false
 }
-{% endhighlight %}
+```
 
 ### Import an ArcGIS&trade; Dataset
 
@@ -155,13 +155,13 @@ This option allows you to programmatically import a complete set of layers belon
 
 {% highlight html %}
 http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/
-{% endhighlight %}
+```
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 POST api/v1/imports 
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -185,15 +185,15 @@ success | A boolean value indicating whether the file import succeeded or not.
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{"interval":"0","service_item_id": "http://url.to.arcgis.server.dataset", "service_name": "arcgis", "value": "http://url.to.arcgis.server.dataset"}' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "item_queue_id": "c478fd50-f984-4091-d1f2-e72ac6c4333e",
   "success": true
 }
-{% endhighlight %}
+```

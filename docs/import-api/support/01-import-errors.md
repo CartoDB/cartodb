@@ -1,3 +1,11 @@
+---
+title: Import Errors
+title_meta: Import API — Import Errors
+description: Known error codes and solutions to help you troubleshoot why your import may have failed.
+permalink: /carto-engine/import-api/import-errors/
+redirect_from:
+  - /cartodb-platform/import-api/import-errors/
+---
 ## Import Errors
 
 You may receive an error during the import process when connecting a dataset. This section contains any known error codes, and provides descriptions to help you troubleshoot why your import may have failed. Please [contact us](mailto:support@carto.com) if you need assistance.
@@ -22,7 +30,7 @@ The following table contains a list of known errors codes and possible solutions
     </tr>
     <tr>
       <td>1002</td>
-      <td>Unsupported file type - Check our list of supported files. See if you can convert your file to one of these file types.</td>
+      <td>Unsupported file type - Check our <a href="/docs/carto-engine/import-api/importing-geospatial-data/#supported-geospatial-data-formats">list of supported files</a>. See if you can convert your file to one of these file types. If importing from a URL, make sure the remote server is returning the appropriate HTTP Content Type headers for the file type.</td>
     </tr>
     <tr>
       <td>1003</td>
@@ -119,7 +127,7 @@ The following table contains a list of known errors codes and possible solutions
     <tr>
       <td>2002</td>
       <td>Encoding detection error - We couldn't detect the encoding of your file. Please, try saving your file with encoding UTF-8 or <a href='mailto:support@carto?subject=Encoding error in import'>contact us</a> and we will help you to load your data.</td>
-    </tr>    
+    </tr>
     <tr>
       <td>2003</td>
       <td>Malformed CSV - The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV.</td>
@@ -155,7 +163,7 @@ The following table contains a list of known errors codes and possible solutions
     <tr>
       <td>2011</td>
       <td>Invalid `cartodb_id` column - The import failed because your table contains an invalid `cartodb_id` column. If you want to use it as a primary key, its values must be integers, non-null, and unique. Otherwise, try renaming your current `cartodb_id` column.</td>
-    </tr> 
+    </tr>
     <tr>
       <td>3007</td>
       <td>JSON may not be valid GeoJSON - We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.</td>
@@ -223,6 +231,10 @@ The following table contains a list of known errors codes and possible solutions
     <tr>
       <td>6670</td>
       <td>Too many map templates - You reached the limit of Named Map templates. If you are programatically generating these templates, check how to delete them in the <a href="http://docs.carto.com/carto-engine/maps-api/named-maps/#delete">Maps API documentation</a>. Otherwise, contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@carto.com</a>.</td>
+    </tr>
+    <tr>
+      <td>6671</td>
+      <td>Stuck import job - The import job was stuck and we marked it as failed. Please try again and contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20import%20stuck%20error'>support@carto.com</a> if the problem persists.</td>
     </tr>
     <tr>
       <td>99999</td>

@@ -6,9 +6,9 @@ A standard import stores the data you upload from files with [valid formats](htt
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 POST api/v1/imports 
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -48,36 +48,36 @@ success | A boolean value indicating whether the import process was started or n
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -F file=@/path/to/local/file "https://{account}.carto.com/api/v1/imports/?api_key={account API Key}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "item_queue_id": "9906bce0-f1a3-4b07-be71-818f4bfd7673",
   "success": true
 }
-{% endhighlight %}
+```
 
 #### URL Upload Example
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{"url":"https://remotehost.url/path/to/remotefile"}'
 "https://{account}.carto.com/api/v1/imports/?api_key={account API Key}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "item_queue_id": "9906bce0-f1a3-4b07-be71-818f4bfd7673",
   "success": true
 }
-{% endhighlight %}
+```
 
 
 ### Check the status of an import process
@@ -86,9 +86,9 @@ When uploading a file for import, it may take some time due to the file's size a
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 GET /api/v1/imports/<import_id>
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -129,13 +129,13 @@ is_raster | A boolean value indicating whether the imported table contains raste
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v "https://{account}.carto.com/api/v1/imports/{import_id}?api_key={account API Key}
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   id: "029a6053-b2fb-43dd-baa6-805d679c404f",
   user_id: "ca8c5ace-d573-450b-8a43-6c7eafadd80e",
@@ -163,7 +163,7 @@ curl -v "https://{account}.carto.com/api/v1/imports/{import_id}?api_key={account
   warnings: null,
   is_raster: false
 }
-{% endhighlight %}
+```
 
 ---
 
@@ -173,9 +173,9 @@ Lists the import identifiers of the files that are being imported in the targete
 
 ##### Definition
 
-{% highlight bash %}
+```bash
 GET /api/v1/imports/
-{% endhighlight %}
+```
 
 ##### Params
 
@@ -196,17 +196,17 @@ success | A boolean value indicating if the request was successful.
 
 ##### Call
 
-{% highlight bash %}
+```bash
 curl -v "https://{account}.carto.com/api/v1/imports/?api_key={account API Key}"
-{% endhighlight %}
+```
 
 ##### Response
 
-{% highlight javascript %}
+```
 {
   "imports": [
     "1234abcd-1234-1a2b-3c4d-4321dcba5678"
     ],
   "success": true
 }
-{% endhighlight %}
+```

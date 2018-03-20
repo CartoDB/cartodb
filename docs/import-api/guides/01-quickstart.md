@@ -8,10 +8,10 @@ Suppose you have a CARTO account whose username is *documentation*, and you want
 
 #### Call
 
-{% highlight bash %}
+```bash
 curl -v -F file=@/home/documentation/Documents/prism_tour.csv
 "https://documentation.carto.com/api/v1/imports/?api_key=3102343c42da0f1ffe6014594acea8b1c4e7fd64"
-{% endhighlight %}
+```
 
 Note that the *api_key* element has an alphanumeric value that is exclusive to the *documentation* CARTO account.
 
@@ -19,14 +19,14 @@ The response to this request appears in the following format, where a successful
 
 #### Response
 
-{% highlight javascript %}
+```
 {
   "item_queue_id": "efa9925c-31dd-11e4-a95e-0edbca4b5057",
   "success": true
 }
-{% endhighlight %}
+```
 
-The `item_queue_id` value is a unique identifier that references the import process. Once this process has started, its information can be obtained doing a request to the imports endpoint as explained in the ["Check the status of an import process]({{ site.baseurl }}/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) section.
+The `item_queue_id` value is a unique identifier that references the import process. Once this process has started, its information can be obtained doing a request to the imports endpoint as explained in the ["Check the status of an import process](https://carto.com/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) section.
 
 ### Uploading from a Remote URL
 
@@ -34,21 +34,21 @@ Suppose you have a server at the hostname *examplehost.com*, with a csv named *s
 
 #### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{"url":"https://examplehost.com/sample.csv"}'
 "https://documentation.carto.com/api/v1/imports/?api_key=3102343c42da0f1ffe6014594acea8b1c4e7fd64"
-{% endhighlight %}
+```
 
 The response to this request returns the following format, returning a success value if the import process is correctly enqueued:
 
 #### Response
 
-{% highlight javascript %}
+```
 {
   "item_queue_id": "efa9925c-31dd-11e4-a95e-0edbca4b5057",
   "success": true
 }
-{% endhighlight %}
+```
 
 ### Connecting to a Database
 
@@ -56,7 +56,7 @@ Suppose you have an external MySQL database named _mydb_ that you want to connec
 
 #### Call
 
-{% highlight bash %}
+```bash
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "mysql",
@@ -69,15 +69,15 @@ curl -v -H "Content-Type: application/json" -d '{
     "table": "mytable"
   }
 }' "https://documentation.carto.com/api/v1/imports/?api_key=3102343c42da0f1ffe6014594acea8b1c4e7fd64"
-{% endhighlight %}
+```
 
 #### Response
 
-{% highlight javascript %}
+```
 {
   "item_queue_id": "tyf9925c-32dd-11f4-a95f-0fdbca4b5058",
   "success": true
 }
-{% endhighlight %}
+```
 
 For details, see [Database Connectors](/docs/carto-engine/import-api/database-connectors/).

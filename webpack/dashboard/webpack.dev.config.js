@@ -18,6 +18,8 @@ const entryPoints = {
   api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js'),
   data_library_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/data-library.js'),
   mobile_apps_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/mobile-apps.js'),
+  sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
+  confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
   account_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/account.js')
 };
 

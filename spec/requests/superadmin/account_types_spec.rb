@@ -21,7 +21,7 @@ describe Superadmin::AccountTypesController do
       expect {
         post superadmin_account_types_url, { account_type: @account_type_param }.to_json, superadmin_headers
 
-        response.status.should == 204
+        response.status.should == 200
       }.to change(Carto::AccountType, :count).by(1)
     end
 

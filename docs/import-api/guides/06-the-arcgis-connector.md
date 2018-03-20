@@ -8,7 +8,7 @@ The ArcGIS&trade; Connector allows you to import ArcGIS&trade; layers into a CAR
 
 ArcGIS&trade; layers stored in ArcGIS Server&trade; can get imported as CARTO datasets. Such layers must be (PUBLIC) and accessible via an **ArcGIS&trade; API REST URL**, using the following structure:
 
-{% highlight html %}
+```html
 http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/<layer_ID>
 ```
 
@@ -56,7 +56,7 @@ curl -v -H "Content-Type: application/json" -d '{"interval":"0","service_item_id
 ### Syncing an ArcGIS&trade; Layer
 
 An ArcGIS&trade; layer can get imported to a CARTO account as a synchronized table. The target ArcGIS&trade; layer must be (PUBLIC) and accessible via an ArcGIS&trade; API REST URL, using the following structure:
-{% highlight html %}
+```html
 http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/<layer_ID>
 ```
 
@@ -153,7 +153,7 @@ curl -v -H "Content-Type: application/json" -d '{"interval":"604800","service_it
 
 This option allows you to programmatically import a complete set of layers belonging to an ArcGIS&trade; dataset (as opposed to using CARTO Builder ArcGIS Server&trade; Connect Dataset option). Such a dataset must be (PUBLIC) and accessible via an ArcGIS&trade; API REST URL, using the following structure:
 
-{% highlight html %}
+```html
 http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/
 ```
 

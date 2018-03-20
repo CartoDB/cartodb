@@ -6,7 +6,7 @@ Sync tables are available for certain CARTO plans. These tables store data from 
 
 ##### Definition
 
-{% highlight html %}
+```html
 GET /api/v1/synchronizations
 ```
 
@@ -60,7 +60,7 @@ curl -v "https://{username}.carto.com/api/v1/synchronizations/?api_key={account 
 
 ##### Response
 
-```
+```javascript
 {
   "synchronizations": [
     {
@@ -100,7 +100,7 @@ curl -v "https://{username}.carto.com/api/v1/synchronizations/?api_key={account 
 
 ##### Definition
 
-{% highlight html %}
+```html
 POST /api/v1/synchronizations
 ```
 

@@ -517,9 +517,9 @@
       "resolved": "https://registry.npmjs.org/combine-source-map/-/combine-source-map-0.8.0.tgz"
     },
     "commander": {
-      "version": "2.15.0",
+      "version": "2.15.1",
       "from": "commander@>=2.15.0 <2.16.0",
-      "resolved": "https://registry.npmjs.org/commander/-/commander-2.15.0.tgz"
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.15.1.tgz"
     },
     "component-emitter": {
       "version": "1.2.1",
@@ -1100,9 +1100,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.6.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.11",
+      "version": "3.5.12",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.11.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.12.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",
@@ -2015,9 +2015,9 @@
       "resolved": "https://registry.npmjs.org/require-main-filename/-/require-main-filename-1.0.1.tgz"
     },
     "resolve": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "from": "resolve@>=1.1.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.6.0.tgz"
     },
     "resolve-url": {
       "version": "0.2.1",
@@ -2087,9 +2087,9 @@
       "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
     },
     "sha.js": {
-      "version": "2.4.10",
+      "version": "2.4.11",
       "from": "sha.js@>=2.4.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.10.tgz"
+      "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.11.tgz"
     },
     "shasum": {
       "version": "1.0.2",

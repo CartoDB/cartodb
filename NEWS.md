@@ -521,6 +521,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Account migration (#13501)
 * Data Library dashboard migration (#13608)
 * Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)

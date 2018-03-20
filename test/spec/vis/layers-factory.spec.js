@@ -94,7 +94,7 @@ describe('vis/layers-factory', function () {
     });
 
     var urlTemplate = 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png';
-    var urlTemplateRetina = 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png';
+    var urlTemplate2x = 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png';
 
     _.each({
       'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
@@ -151,10 +151,10 @@ describe('vis/layers-factory', function () {
 
     describe('Is high resolution screen', function () {
       beforeEach(function () {
-        spyOn(LayersFactory, 'isRetina').and.returnValue(true);
+        spyOn(LayersFactory, 'isHdpi').and.returnValue(true);
       });
 
-      it('should not convert to ' + urlTemplateRetina + ' if urlTemplateRetina is not defined', function () {
+      it('should not convert to ' + urlTemplate2x + ' if urlTemplate2x is not defined', function () {
         var layerModel = layersFactory.createLayer('tiled', {
           urlTemplate: urlTemplate
         });
@@ -162,25 +162,25 @@ describe('vis/layers-factory', function () {
         expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
       });
 
-      it('should convert to ' + urlTemplateRetina + ' if urlTemplateRetina is defined', function () {
+      it('should convert to ' + urlTemplate2x + ' if urlTemplate2x is defined', function () {
         var layerModel = layersFactory.createLayer('tiled', {
           urlTemplate: urlTemplate,
-          urlTemplateRetina: urlTemplateRetina
+          urlTemplate2x: urlTemplate2x
         });
 
-        expect(layerModel.get('urlTemplate')).toEqual(urlTemplateRetina);
+        expect(layerModel.get('urlTemplate')).toEqual(urlTemplate2x);
       });
     });
 
     describe('Is not high resolution screen', function () {
       beforeEach(function () {
-        spyOn(LayersFactory, 'isRetina').and.returnValue(false);
+        spyOn(LayersFactory, 'isHdpi').and.returnValue(false);
       });
 
-      it('should not convert to ' + urlTemplateRetina + '', function () {
+      it('should not convert to ' + urlTemplate2x + '', function () {
         var layerModel = layersFactory.createLayer('tiled', {
           urlTemplate: urlTemplate,
-          urlTemplateRetina: urlTemplateRetina
+          urlTemplate2x: urlTemplate2x
         });
 
         expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);

@@ -15,7 +15,7 @@ To execute an authorized request, `api_key=YOURAPIKEY` should be added to the re
 
 Errors are reported using standard HTTP codes and extended information encoded in the HTML language, as shown in the following example:
 
-{% highlight html %}
+```html
 <html>
   <head>
     <title>411 Length Required</title>

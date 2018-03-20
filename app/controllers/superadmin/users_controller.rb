@@ -43,7 +43,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.set_fields_from_central(user_param, :create)
     @user.enabled = true
 
-    @user.rate_limit_id = create_rate_limits(user_param[:rate_limit]).id if user_param[:rate_limit]
+    @user.rate_limit_id = create_rate_limits(user_param[:rate_limit]).id if user_param[:rate_limit].present?
     if @user.save
       @user.reload
       CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?

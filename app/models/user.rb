@@ -1016,7 +1016,7 @@ class User < Sequel::Model
   end
 
   def update_rate_limits(rate_limit_attributes)
-    if rate_limit_attributes
+    if rate_limit_attributes.present?
       rate_limit = self.rate_limit || Carto::RateLimit.new
       new_attributes = Carto::RateLimit.from_api_attributes(rate_limit_attributes).rate_limit_attributes
 

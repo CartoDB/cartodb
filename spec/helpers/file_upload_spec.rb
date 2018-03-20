@@ -6,7 +6,7 @@ describe 'CartoDB::FileUpload' do
 
     should_upload_to_s3_after_retrying
 
-    file_upload.upload_file_to_s3(file.path, 'wadus','some_token', s3_config)
+    file_upload.upload_file_to_s3(file.path, 'wadus', 'some_token', s3_config)
   end
 
   it 'retries CartoDB::FileUpload::MAX_S3_UPLOAD_ATTEMPTS at most' do
@@ -15,7 +15,7 @@ describe 'CartoDB::FileUpload' do
     file_upload = CartoDB::FileUpload.new(Cartodb.get_config(:user_migrator, :uploads_path))
 
     expect {
-      file_upload.upload_file_to_s3(file.path, 'wadus','some_token', s3_config)
+      file_upload.upload_file_to_s3(file.path, 'wadus', 'some_token', s3_config)
     }.to raise_error(AWS::S3::Errors::RequestTimeout)
   end
 

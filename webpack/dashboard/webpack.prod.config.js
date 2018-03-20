@@ -20,7 +20,8 @@ const entryPoints = {
   sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
   confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
   mobile_apps_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/mobile-apps.js'),
-  account_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/account.js')
+  account_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/account.js'),
+  organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js')
 };
 
 module.exports = env => {

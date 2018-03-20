@@ -69,7 +69,9 @@
 }
 
 .OptionCard--blocky .OptionCard-desc {
-  margin-bottom: 0;
+  width: 100%;
+  margin-top: $sMargin-elementInline;
+  margin-bottom: -$sMargin-elementInline;
 }
 
 .OptionCard--onlyIcons {
@@ -112,6 +114,7 @@
 }
 
 .OptionCard-desc {
+  width: 100%;
   margin-bottom: $sMargin-elementInline;
 }
 

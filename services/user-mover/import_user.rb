@@ -17,7 +17,7 @@ module CartoDB
       attr_reader :logger
 
       def initialize(options)
-        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true }
+        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true, metadata_only: false }
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
@@ -159,7 +159,7 @@ module CartoDB
           throw e
         end
 
-        if @options[:data]
+        if @options[:data] && !@options[:metadata_only]
           # Password should be passed here too
           create_user(@target_dbuser)
           create_org_role(@target_dbname) # Create org role for the original org
@@ -212,7 +212,7 @@ module CartoDB
           end
         end
 
-        if @options[:data]
+        if @options[:data] && !@options[:metadata_only]
           configure_database(@target_dbhost)
         end
 

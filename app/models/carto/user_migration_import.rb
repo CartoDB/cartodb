@@ -72,7 +72,7 @@ module Carto
 
     def import(service, package)
       import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
-      raise "DB already exists at DB host" if import_job.db_exists?
+      raise "DB already exists at DB host" if import_job.db_exists? && !metadata_only?
 
       imported = do_import_metadata(package, service) if import_metadata?
 
@@ -183,7 +183,8 @@ module Carto
         mode: :import,
         logger: log.logger,
         import_job_logger: log.logger,
-        update_metadata: !dry
+        update_metadata: !dry,
+        metadata_only: metadata_only?
       }
     end
 

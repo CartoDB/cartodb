@@ -155,7 +155,7 @@ namespace :carto do
             next true unless base_layers.count.between?(1, 2) # Other kind of basemaps (e.g: plain color), skip
             bottom_layer, labels_layer = base_layers.sort_by(&:order)
 
-            class_name = bottom_layer.options[:className]
+            class_name = bottom_layer.options['className']
             attributes = basemaps_by_class_name[class_name]
             next true unless attributes # Unknown basemap class: do nothing (e.g: custom basemap)
 

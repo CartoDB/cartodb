@@ -12,6 +12,7 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### Features
+* Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
 * Update multiple widgets at once (#13596)
@@ -155,6 +156,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Do not add new notifications if notification content already exists (#13407)
+* Fix SQL function analysis error with dragged source (https://github.com/CartoDB/cartodb/pull/13732)
 * Fix histogram widgets collapsing (#13705)
 * Use Promises in query models to handle async states (#13478)
 * Fix "Add new analysis" button in IE (CartoDB/onpremises/issues/485)
@@ -521,6 +523,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Account migration (#13501)
 * Data Library dashboard migration (#13608)
 * Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)

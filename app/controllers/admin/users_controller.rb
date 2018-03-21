@@ -36,7 +36,9 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    return render(file: "public/static/account/index.html", layout: false) if current_user.has_feature_flag?('static_account')
+    if current_user.has_feature_flag?('dashboard_migration')
+      return render(file: "public/static/account_migration/index.html", layout: false)
+    end
 
     respond_to do |format|
       format.html { render 'account' }

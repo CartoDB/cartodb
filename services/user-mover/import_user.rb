@@ -140,7 +140,7 @@ module CartoDB
           rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
           rollback_redis("user_#{@target_userid}_metadata_undo.redis")
         end
-        if @options[:data]
+        if @options[:data] && !@options[:metadata_only]
           drop_database(@target_dbname) if @options[:drop_database] && !@options[:schema_mode]
           drop_role(@target_dbuser) if @options[:drop_roles]
         end
@@ -276,7 +276,7 @@ module CartoDB
                         logger: @logger, metadata: @options[:metadata], data: false).run!
         end
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
-        if @options[:data]
+        if @options[:data] && !@options[:metadata_only]
           drop_database(db) if @options[:drop_database]
           if @options[:drop_roles]
             drop_role(org_role_name(db))

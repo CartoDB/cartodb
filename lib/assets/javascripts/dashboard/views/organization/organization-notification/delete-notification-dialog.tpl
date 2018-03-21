@@ -21,7 +21,7 @@
             </button>
           </li>
           <li class="Modal-listActionsitem">
-            <button class="CDB-Button CDB-Button--primary CDB-Button--big js-ok">
+            <button class="CDB-Button CDB-Button--primary CDB-Button--big js-submit">
               <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Ok, remove it</span>
             </button>
           </li>

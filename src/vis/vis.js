@@ -174,8 +174,8 @@ var VisModel = Backbone.Model.extend({
     // Create the public Dataview Factory
     // TODO: create dataviews more explicitly
     this.dataviews = new DataviewsFactory({
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken')
+      apiKey: windshaftSettings.apiKey,
+      authToken: windshaftSettings.authToken
     }, {
       map: this.map,
       engine: this._engine,

@@ -60,7 +60,7 @@ module.exports = DataviewModelBase.extend({
       offset: this.get('offset'),
       column_type: this.get('column_type'),
       apiKey: opts && opts.engine && opts.engine.getApiKey(),
-      authToken: this.get('authToken'),
+      authToken: opts && opts.engine && opts.engine.getAuthToken(),
       localTimezone: this.get('localTimezone'),
       localOffset: this._localOffset
     });

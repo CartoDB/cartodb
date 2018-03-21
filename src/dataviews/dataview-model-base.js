@@ -34,8 +34,8 @@ module.exports = Model.extend({
 
     if (this._engine.getApiKey()) {
       params.push('api_key=' + this._engine.getApiKey());
-    } else if (this.get('authToken')) {
-      var authToken = this.get('authToken');
+    } else if (this._engine.getAuthToken()) {
+      var authToken = this._engine.getAuthToken();
       if (authToken instanceof Array) {
         _.each(authToken, function (token) {
           params.push('auth_token[]=' + token);

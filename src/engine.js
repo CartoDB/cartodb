@@ -84,6 +84,13 @@ Engine.prototype.getApiKey = function () {
 };
 
 /**
+ * Returns the Auth token attached to the engine
+ */
+Engine.prototype.getAuthToken = function () {
+  return this._windshaftSettings && this._windshaftSettings.authToken;
+};
+
+/**
  * Bind a callback function to an event. The callback will be invoked whenever the event is fired.
  *
  * @param {string} event - The name of the event that triggers the callback execution.

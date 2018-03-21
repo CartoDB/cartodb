@@ -32,8 +32,8 @@ module.exports = Model.extend({
       this._getDataviewSpecificURLParams()
     );
 
-    if (this.get('apiKey')) {
-      params.push('api_key=' + this.get('apiKey'));
+    if (this._engine.getApiKey()) {
+      params.push('api_key=' + this._engine.getApiKey());
     } else if (this.get('authToken')) {
       var authToken = this.get('authToken');
       if (authToken instanceof Array) {

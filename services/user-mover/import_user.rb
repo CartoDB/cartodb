@@ -225,18 +225,19 @@ module CartoDB
       end
 
       def import_org
-        import_metadata("org_#{@organization_id}_metadata.sql") if @options[:metadata]
-        create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
-        @pack_config['groups'].each do |group|
-          create_role(group['database_role'])
+        if !@config[:metadata_only]
+          import_metadata("org_#{@organization_id}_metadata.sql") if @options[:metadata]
+          create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
+          @pack_config['groups'].each do |group|
+            create_role(group['database_role'])
+          end
+          @pack_config['users'].each do |user|
+            # Password should be passed here too
+            create_user(database_username(user['id']))
+            create_public_db_user(user['id'], user['database_schema'])
+            grant_user_org_role(database_username(user['id']), user['database_name'])
+          end
         end
-        @pack_config['users'].each do |user|
-          # Password should be passed here too
-          create_user(database_username(user['id']))
-          create_public_db_user(user['id'], user['database_schema'])
-          grant_user_org_role(database_username(user['id']), user['database_name'])
-        end
-
 
         org_user_ids = @pack_config['users'].map{|u| u['id']}
         # We set the owner to be imported first (if schemas are not split, this will also import the whole org database)
@@ -273,7 +274,10 @@ module CartoDB
                         mode: :rollback,
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
-                        logger: @logger, metadata: @options[:metadata], data: false).run!
+                        logger: @logger,
+                        metadata: @options[:metadata],
+                        metadata_only: @options[:metadata_only],
+                        data: false).run!
         end
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
         if @options[:data] && !@options[:metadata_only]

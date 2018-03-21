@@ -130,11 +130,11 @@ namespace :carto do
 
       basemaps = Cartodb.get_config(:basemaps)
 
-      basemaps_by_class_name = basemaps.flat_map { |category, classes|
-        classes.map do |_, attributes|
+      basemaps_by_class_name = basemaps.flat_map { |_, classes|
+        classes.map { |_, attributes|
           class_name = attributes['className']
           [class_name, attributes] if class_name.present? && class_name != 'googlemaps'
-        end.compact
+        }.compact
       }.compact.to_h
 
       puts "Updating base layer urls"
@@ -178,7 +178,7 @@ namespace :carto do
           end
 
           raise 'MapcappedVisualizationUpdater returned false' unless success
-        rescue => e
+        rescue StandardError => e
           errors += 1
           STDERR.puts "Error updating visualization #{visualization.id}: #{e.inspect}. #{e.backtrace.join(',')}"
         end

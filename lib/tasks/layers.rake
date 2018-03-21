@@ -123,5 +123,68 @@ namespace :carto do
 
       puts "Finished. Total: #{total}. Errors: #{errors}"
     end
+
+    desc "Syncs all layers with the configuration from app_config"
+    task sync_basemaps_from_app_config: :environment do
+      include Carto::MapcappedVisualizationUpdater
+
+      basemaps = Cartodb.get_config(:basemaps)
+
+      basemaps_by_class_name = basemaps.flat_map { |category, classes|
+        classes.map do |_, attributes|
+          class_name = attributes['className']
+          [class_name, attributes] if class_name.present? && class_name != 'googlemaps'
+        end.compact
+      }.compact.to_h
+
+      puts "Updating base layer urls"
+      viz_dataset = Carto::Visualization.where(type: ['table', 'derived'])
+      total = viz_dataset.count
+      acc = 0
+      updated = 0
+      errors = 0
+
+      puts "Updating #{total} visualizations"
+      viz_dataset.eager_load(map: :layers).eager_load(:user).find_each do |visualization|
+        acc += 1
+        puts "#{acc} / #{total}" if (acc % 100).zero?
+        next unless visualization.user
+        begin
+          success = update_visualization_and_mapcap(visualization) do |vis, persisted|
+            base_layers = vis.layers.select(&:tiled?)
+            next true unless base_layers.count.between?(1, 2) # Other kind of basemaps (e.g: plain color), skip
+            bottom_layer, labels_layer = base_layers.sort_by(&:order)
+
+            class_name = bottom_layer.options[:className]
+            attributes = basemaps_by_class_name[class_name]
+            next true unless attributes # Unknown basemap class: do nothing (e.g: custom basemap)
+
+            bottom_layer.options = attributes.except('default')
+            bottom_layer.save! if persisted
+
+            if labels_layer && attributes['labels']
+              default_labels_layer = Carto::LayerFactory.build_default_labels_layer(bottom_layer)
+              labels_layer.options = default_labels_layer.options
+              labels_layer.save! if persisted
+            elsif labels_layer
+              STDERR.puts "WARN: Visualization #{vis.id} has label but basemap class #{class_name} does not"
+            elsif attributes['labels']
+              STDERR.puts "WARN: Basemap class #{class_name} has label but visualization #{vis.id} does not"
+            end
+
+            updated += 1
+
+            true
+          end
+
+          raise 'MapcappedVisualizationUpdater returned false' unless success
+        rescue => e
+          errors += 1
+          STDERR.puts "Error updating visualization #{visualization.id}: #{e.inspect}. #{e.backtrace.join(',')}"
+        end
+      end
+
+      puts "Finished. Total: #{total}. Updated: #{updated}. Errors: #{errors}"
+    end
   end
 end

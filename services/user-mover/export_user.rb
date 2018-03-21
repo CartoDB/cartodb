@@ -490,7 +490,7 @@ module CartoDB
             export_log[:db_size] = get_db_size(@database_name)
             dump_user_metadata if @options[:metadata]
             redis_conn.quit
-            if @options[:data]
+            if @options[:data] && !@options[:metadata_only]
               DumpJob.new(
                 user_pg_conn,
                 @user_data['database_host'] || '127.0.0.1',
@@ -533,7 +533,7 @@ module CartoDB
             export_log[:db_source] ||= @database_host
             export_log[:db_size] ||= get_db_size(@database_name)
 
-            if @options[:data] && !@options[:split_user_schemas]
+            if @options[:data] && !@options[:split_user_schemas] && !@options[:metadata_only]
               DumpJob.new(
                 user_pg_conn,
                 @database_host,

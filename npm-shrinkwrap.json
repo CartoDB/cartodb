@@ -382,9 +382,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.34",
+      "version": "4.0.0-beta.36",
       "from": "cartodb/cartodb.js#13683-add-default-point-aggregation",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#940bfae1a3e1cf2f02b1c6ffb58fdad9af02cc66"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#69e89eb8fa03f3346ae4b20f1be2079fcd5af82d"
     },
     "center-align": {
       "version": "0.1.3",
@@ -1162,14 +1162,19 @@
       "resolved": "https://registry.npmjs.org/inline-source-map/-/inline-source-map-0.6.2.tgz"
     },
     "insert-module-globals": {
-      "version": "7.0.2",
+      "version": "7.0.3",
       "from": "insert-module-globals@>=7.0.0 <8.0.0",
-      "resolved": "https://registry.npmjs.org/insert-module-globals/-/insert-module-globals-7.0.2.tgz",
+      "resolved": "https://registry.npmjs.org/insert-module-globals/-/insert-module-globals-7.0.3.tgz",
       "dependencies": {
         "combine-source-map": {
           "version": "0.7.2",
           "from": "combine-source-map@>=0.7.1 <0.8.0",
           "resolved": "https://registry.npmjs.org/combine-source-map/-/combine-source-map-0.7.2.tgz"
+        },
+        "concat-stream": {
+          "version": "1.6.1",
+          "from": "concat-stream@>=1.6.1 <2.0.0",
+          "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.1.tgz"
         }
       }
     },

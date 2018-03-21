@@ -16,6 +16,8 @@ This upgrade changes the configuration format of basemaps. You must replace all 
 recommended that you replace the `basemaps` section completely, since this release also adds supports for high
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
 
+You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to synchronize existing layers.
+
 ### Features
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)

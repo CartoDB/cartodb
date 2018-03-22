@@ -300,7 +300,7 @@ module Carto::Api::AuthApiAuthentication
     @request_api_key = user.api_keys.where(token: token).first
 
     # TODO: remove this block when all api keys are in sync 'auth_api'
-    if !@request_api_key && user.api_key == token
+    if !@request_api_key && current_user
       @request_api_key = user.api_keys.create_in_memory_master
     end
 

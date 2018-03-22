@@ -689,6 +689,20 @@ describe Carto::Api::ApiKeysController do
           response.body[:result].first['token'].should eq regular_api_key.token
         end
       end
+
+      it 'with cookie and invalid api key shows everything' do
+        host! "#{@carto_user.username}.localhost.lan"
+        login_as(@carto_user, scope: @carto_user.username)
+        fake_regular_key = regular_api_key.dup
+        fake_regular_key.token = 'fake'
+
+        get_json api_keys_url, nil, json_headers_for_key(fake_regular_key) do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 3
+          response.body[:count].should eq 3
+          response.body[:result].length.should eq 3
+        end
+      end
     end
 
     describe '#show' do

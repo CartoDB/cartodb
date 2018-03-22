@@ -8,6 +8,7 @@ module Carto
                       source_dataset:, source_username:, source_api_key:,
                       target_username:, granted_api_key:)
       target_user = Carto::User.find_by_username(target_username)
+      raise Carto::LoadError("User not found: #{target_username}") unless target_user
 
       remote_visualization = carto_api_client.get_visualization_v1(
         username: source_username, name: source_dataset, params: { api_key: source_api_key }

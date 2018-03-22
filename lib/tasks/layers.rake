@@ -130,11 +130,15 @@ namespace :carto do
 
       basemaps = Cartodb.get_config(:basemaps)
 
-      basemaps_by_class_name = basemaps.flat_map { |_, classes|
-        classes.map { |_, attributes|
-          class_name = attributes['className']
-          [class_name, attributes] if class_name.present? && class_name != 'googlemaps'
-        }.compact
+      basemaps_by_class_name = basemaps.flat_map { |category, classes|
+        if category != 'GMaps'
+          classes.map { |_, attributes|
+            class_name = attributes['className']
+            [class_name, attributes] if class_name.present?
+          }.compact
+        else
+          []
+        end
       }.compact.to_h
 
       puts "Updating base layer urls"

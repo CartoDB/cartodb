@@ -2799,8 +2799,7 @@
     },
     "layer": {
       "error": "Layer error: %{error}",
-      "added": "Layer added successfully",
-      "added_pluralize": "Layer added successfully |||| Layers added successfully"
+      "added": "Layer added successfully"
     },
     "cartocss": {
       "error": {

@@ -24,10 +24,6 @@ var VisModel = Backbone.Model.extend({
 
   initialize: function () {
     this._loadingObjects = [];
-
-    // this._layersCollection = new LayersCollection();
-    // this._dataviewsCollection = new DataviewsCollection();
-
     this.overlaysCollection = new Backbone.Collection();
     this.settings = new SettingsModel();
     this._instantiateMapWasCalled = false;

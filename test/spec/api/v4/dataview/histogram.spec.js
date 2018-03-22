@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 var carto = require('../../../../../src/api/v4/index');
+var createEngine = require('../../../fixtures/engine.fixture.js');
 
 function createHistogramInternalModelMock (options) {
   options = options || {};
@@ -52,16 +53,6 @@ function createHistogramInternalModelMock (options) {
 
 function createSourceMock () {
   return new carto.source.Dataset('ne_10m_populated_places_simple');
-}
-
-function createEngineMock () {
-  var engine = {
-    name: 'Engine mock',
-    reload: function () {}
-  };
-  spyOn(engine, 'reload');
-
-  return engine;
 }
 
 describe('api/v4/dataview/histogram', function () {
@@ -225,7 +216,7 @@ describe('api/v4/dataview/histogram', function () {
       dataview.on('binsChanged', binsChangedSpy);
 
       expect(binsChangedSpy).not.toHaveBeenCalled();
-      dataview.$setEngine(createEngineMock());
+      dataview.$setEngine(createEngine());
       dataview.setBins(11);
 
       expect(binsChangedSpy).toHaveBeenCalledWith(11);
@@ -238,7 +229,7 @@ describe('api/v4/dataview/histogram', function () {
 
     beforeEach(function () {
       dataview = new carto.dataview.Histogram(source, 'population');
-      engine = createEngineMock();
+      engine = createEngine();
     });
 
     it('creates the internal model', function () {
@@ -255,7 +246,7 @@ describe('api/v4/dataview/histogram', function () {
       expect(internalModel.isEnabled()).toBe(false);
       expect(internalModel._bboxFilter).toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(true);
-      expect(internalModel._engine.name).toEqual('Engine mock');
+      expect(internalModel._engine).toBe(engine);
     });
 
     it('creates the internal model with no bounding box if not provided', function () {

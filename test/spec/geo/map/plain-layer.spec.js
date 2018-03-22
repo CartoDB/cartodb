@@ -6,7 +6,6 @@ describe('PlainLayer', function () {
   var engineMock;
   beforeEach(function () {
     engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
   });
 
   it('should be type plain', function () {

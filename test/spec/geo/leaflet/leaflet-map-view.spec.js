@@ -11,7 +11,7 @@ var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
 var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
-var MockFactory = require('../../../helpers/mockFactory');
+var createEngine = require('../../fixtures/engine.fixture.js');
 
 describe('geo/leaflet/leaflet-map-view', function () {
   var mapView;
@@ -58,7 +58,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
 
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
   });
 
   it('should change bounds when center is set', function () {

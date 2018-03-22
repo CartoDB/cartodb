@@ -2785,13 +2785,15 @@
       "add_pluralize": "Widget successfully added |||| Widgets successfully added",
       "replace": "Widget successfully replaced",
       "replace_pluralize": "Widget successfully replaced |||| Widgets successfully replaced",
-      "delete_pluralize": "Widget deleted correctly",
+      "delete_pluralize": "Widget deleted correctly |||| Widgets deleted correctly",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"
       },
       "loading": "Adding widget…",
+      "loading_pluralize": "Adding widget… |||| Adding widgets...",
       "updating": "Updating widget…",
+      "updating_pluralize": "Updating widget… |||| Updating widgets...",
       "restoring": "Restoring widgets…",
       "restored": "Widgets restored"
     },

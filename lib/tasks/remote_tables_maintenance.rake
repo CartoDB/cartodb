@@ -130,7 +130,7 @@ namespace :cartodb do
 
       puts "Removing common data visualizations for users with last activity between #{start_date} and #{end_date}"
       query = Carto::User.where("COALESCE(dashboard_viewed_at, created_at) BETWEEN '#{start_date}' AND '#{end_date}'")
-                         .where(account_type: Carto::AccountType::FREE)
+                         .where(account_type: 'FREE')
       user_count = query.count
       puts "#{user_count} users will be affected. Starting in 10 seconds unless canceled (ctrl+C)"
       sleep 10

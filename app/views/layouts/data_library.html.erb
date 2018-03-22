@@ -40,7 +40,11 @@
     </script>
 
     <%= insert_trackjs() %>
-    <%= javascript_include_tag 'cdb.js', 'templates', 'data_library_deps', 'data_library' %>
+    <% if @has_new_dashboard %>
+      <%= javascript_include_tag 'common_dashboard', 'data_library_new_vendor', 'data_library_new' %>
+    <% else %>
+      <%= javascript_include_tag 'cdb.js', 'templates', 'data_library_deps', 'data_library' %>
+    <% end %>
     <%= yield :js %>
     <%= insert_google_analytics('primary', true) %>
     <%= insert_hubspot() %>

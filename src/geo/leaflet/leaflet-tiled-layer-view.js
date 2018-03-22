@@ -2,26 +2,6 @@
 var _ = require('underscore');
 var LeafletLayerView = require('./leaflet-layer-view');
 
-var generateLeafletLayerOptions = function (layerModel) {
-  return {
-    tms: !!layerModel.get('tms'),
-    attribution: layerModel.get('attribution'),
-    minZoom: layerModel.get('minZoom'),
-    maxZoom: layerModel.get('maxZoom'),
-    subdomains: layerModel.get('subdomains') || 'abc',
-    errorTileUrl: layerModel.get('errorTileUrl'),
-    opacity: layerModel.get('opacity')
-  };
-};
-
-var generateLeafletUrlTemplate = function (layerModel) {
-  if (window.devicePixelRatio > 1 && layerModel.get('urlTemplate2x')) {
-    return layerModel.get('urlTemplate2x');
-  } else {
-    return layerModel.get('urlTemplate')
-  }
-}
-
 var LeafletTiledLayerView = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
 
@@ -45,7 +25,7 @@ LeafletTiledLayerView.prototype = _.extend(
   LeafletLayerView.prototype,
   {
     _createLeafletLayer: function () {
-      return new L.TileLayer(generateLeafletUrlTemplate(this.model), generateLeafletLayerOptions(this.model));
+      return new L.TileLayer(_getUrlTemplate(this._isHdpi(), this.model), _generateLeafletLayerOptions.call(this, this.model));
     },
 
     _onAdd: function () {
@@ -57,12 +37,34 @@ LeafletTiledLayerView.prototype = _.extend(
     },
 
     _modelUpdated: function () {
-      L.Util.setOptions(this.leafletLayer, generateLeafletLayerOptions(this.model));
-      this.leafletLayer.setUrl(generateLeafletUrlTemplate(this.model));
+      L.Util.setOptions(this.leafletLayer, _generateLeafletLayerOptions.call(this, this.model));
+      this.leafletLayer.setUrl(_getUrlTemplate(this._isHdpi(), this.model));
+    },
+
+    _isHdpi: function () {
+      return window && window.devicePixelRatio && window.devicePixelRatio > 1;
     }
   }
 );
 
 LeafletTiledLayerView.prototype.constructor = LeafletTiledLayerView;
+
+var _generateLeafletLayerOptions = function (layerModel) {
+  return {
+    tms: !!layerModel.get('tms'),
+    attribution: layerModel.get('attribution'),
+    minZoom: layerModel.get('minZoom'),
+    maxZoom: layerModel.get('maxZoom'),
+    subdomains: layerModel.get('subdomains') || 'abc',
+    errorTileUrl: layerModel.get('errorTileUrl'),
+    opacity: layerModel.get('opacity')
+  };
+};
+
+var _getUrlTemplate = function (isHdpi, layerModel) {
+  return isHdpi && layerModel.get('urlTemplate2x')
+    ? layerModel.get('urlTemplate2x')
+    : layerModel.get('urlTemplate');
+};
 
 module.exports = LeafletTiledLayerView;

@@ -93,9 +93,6 @@ describe('vis/layers-factory', function () {
       expect(layerModel.get('type')).toEqual('Tiled');
     });
 
-    var urlTemplate = 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png';
-    var urlTemplate2x = 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png';
-
     _.each({
       'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
       'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
@@ -146,44 +143,6 @@ describe('vis/layers-factory', function () {
 
           expect(layerModel.get('urlTemplate')).toEqual(httpUrlTemplate);
         });
-      });
-    });
-
-    describe('Is high resolution screen', function () {
-      beforeEach(function () {
-        spyOn(LayersFactory, 'isHdpi').and.returnValue(true);
-      });
-
-      it('should not convert to ' + urlTemplate2x + ' if urlTemplate2x is not defined', function () {
-        var layerModel = layersFactory.createLayer('tiled', {
-          urlTemplate: urlTemplate
-        });
-
-        expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
-      });
-
-      it('should convert to ' + urlTemplate2x + ' if urlTemplate2x is defined', function () {
-        var layerModel = layersFactory.createLayer('tiled', {
-          urlTemplate: urlTemplate,
-          urlTemplate2x: urlTemplate2x
-        });
-
-        expect(layerModel.get('urlTemplate')).toEqual(urlTemplate2x);
-      });
-    });
-
-    describe('Is not high resolution screen', function () {
-      beforeEach(function () {
-        spyOn(LayersFactory, 'isHdpi').and.returnValue(false);
-      });
-
-      it('should not convert to ' + urlTemplate2x + '', function () {
-        var layerModel = layersFactory.createLayer('tiled', {
-          urlTemplate: urlTemplate,
-          urlTemplate2x: urlTemplate2x
-        });
-
-        expect(layerModel.get('urlTemplate')).toEqual(urlTemplate);
       });
     });
   });

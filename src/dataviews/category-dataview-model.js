@@ -37,7 +37,7 @@ module.exports = DataviewModelBase.extend({
     // Internal model for calculating total amount of values in the category
     this._rangeModel = new CategoryModelRange({
       apiKey: this._engine.getApiKey(),
-      authToken: this.get('authToken')
+      authToken: this._engine.getAuthToken()
     });
 
     this._data = new CategoriesCollection(null, {
@@ -46,7 +46,7 @@ module.exports = DataviewModelBase.extend({
 
     this._searchModel = new SearchModel({
       apiKey: this._engine.getApiKey(),
-      authToken: this.get('authToken')
+      authToken: this._engine.getAuthToken()
     }, {
       aggregationModel: this
     });

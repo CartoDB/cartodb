@@ -198,7 +198,7 @@ module Carto
     end
 
     def supports_labels_layer?
-      basemap? && options["labels"] && options["labels"]["url"]
+      basemap? && options["labels"] && options["labels"]["urlTemplate"]
     end
 
     def map

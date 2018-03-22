@@ -626,6 +626,187 @@ describe 'UserMigration' do
     end
   end
 
+  describe 'metadata_only' do
+    it 'exports and imports user with viz' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      source_visualizations = carto_user.visualizations.map(&:name).sort
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        metadata_only: true
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      remove_user(carto_user)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        metadata_only: true,
+        dry: false
+      )
+
+      import.run_import
+
+      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+      carto_user = Carto::User.find(user_attributes['id'])
+
+      attributes_to_test(user_attributes).each do |attribute|
+        expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
+      end
+      expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
+
+      Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?.should eq true
+
+      user.destroy_cascade
+    end
+
+    it 'toes not remove database when visuaization import fails' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        metadata_only: true
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      remove_user(carto_user)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        metadata_only: true,
+        dry: false
+      )
+
+      Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+
+      import.run_import
+
+      config = CartoDB::DataMover::Config.config
+      PG.connect(host: user_attributes['database_host'],
+                 user: config[:dbuser],
+                 dbname: user_attributes['database_name'],
+                 port: config[:dbport],
+                 connect_timeout: config[:connect_timeout])
+    end
+
+    describe 'with orgs' do
+      include_context 'organization with users helper'
+      it 'exports and imports org with users with viz' do
+        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        export = Carto::UserMigrationExport.create(
+          organization: @carto_organization,
+          export_metadata: true,
+          metadata_only: true
+        )
+        export.run_export
+
+        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+        database_host = @carto_organization.owner.database_host
+
+        @carto_organization.users.each { |u| remove_user(u) }
+        @carto_organization.delete
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: database_host,
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          metadata_only: true,
+          dry: false
+        )
+
+        import.run_import
+
+        puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+        expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+        @carto_organization.users.each do |u|
+          Carto::GhostTablesManager.new(u.id).user_tables_synced_with_db?.should eq true
+        end
+      end
+
+      it 'does not drop database if visualizations import fails' do
+        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        export = Carto::UserMigrationExport.create(
+          organization: @carto_organization,
+          export_metadata: true,
+          metadata_only: true
+        )
+        export.run_export
+
+        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+        database_host = @carto_organization.owner.database_host
+
+        db_host = @carto_organization.owner.database_host
+        db_name = @carto_organization.database_name
+
+        @carto_organization.users.each { |u| remove_user(u) }
+        @carto_organization.delete
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: database_host,
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          metadata_only: true,
+          dry: false
+        )
+
+        Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+
+        import.run_import
+
+        config = CartoDB::DataMover::Config.config
+        PG.connect(host: db_host,
+                   user: config[:dbuser],
+                   dbname: db_name,
+                   port: config[:dbport],
+                   connect_timeout: config[:connect_timeout])
+      end
+    end
+
+    def remove_user(carto_user)
+      Carto::Visualization.where(user_id: carto_user.id).each do |v|
+        v.overlays.each(&:delete)
+        v.delete
+      end
+      gum = CartoDB::GeocoderUsageMetrics.new(carto_user.username)
+      $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
+      carto_user.delete
+    end
+  end
+
   def drop_database(user)
     conn = user.in_database(as: :cluster_admin)
     user.db_service.drop_database_and_user(conn)

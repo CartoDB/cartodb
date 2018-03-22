@@ -299,9 +299,10 @@ module Carto::Api::AuthApiAuthentication
     user, token = user_and_token_from_request
     @request_api_key = user.api_keys.where(token: token).first
 
-    # TODO: remove this block when all api keys are in sync 'auth_api'
+    # If user is logged in though other means, assume a master key
+    # TODO: switch to real master api key when all api keys are in sync (FF 'auth_api')
     if !@request_api_key && current_user
-      @request_api_key = user.api_keys.create_in_memory_master
+      @request_api_key = current_user.api_keys.create_in_memory_master
     end
 
     @request_api_key
@@ -318,9 +319,6 @@ module Carto::Api::AuthApiAuthentication
     elsif params[:api_key]
       token = params[:api_key]
       username = CartoDB.extract_subdomain(request)
-    elsif current_user
-      token = current_user.api_key
-      username = current_user.username
     end
     [User[username: username], token]
   end

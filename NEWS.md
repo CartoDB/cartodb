@@ -709,6 +709,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config
+* Metadata only user migrations
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes

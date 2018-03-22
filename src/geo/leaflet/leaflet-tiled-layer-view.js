@@ -14,6 +14,14 @@ var generateLeafletLayerOptions = function (layerModel) {
   };
 };
 
+var generateLeafletUrlTemplate = function (layerModel) {
+  if (window.devicePixelRatio > 1 && layerModel.get('urlTemplate2x')) {
+    return layerModel.get('urlTemplate2x');
+  } else {
+    return layerModel.get('urlTemplate')
+  }
+}
+
 var LeafletTiledLayerView = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
 
@@ -37,7 +45,7 @@ LeafletTiledLayerView.prototype = _.extend(
   LeafletLayerView.prototype,
   {
     _createLeafletLayer: function () {
-      return new L.TileLayer(this.model.get('urlTemplate'), generateLeafletLayerOptions(this.model));
+      return new L.TileLayer(generateLeafletUrlTemplate(this.model), generateLeafletLayerOptions(this.model));
     },
 
     _onAdd: function () {
@@ -50,7 +58,7 @@ LeafletTiledLayerView.prototype = _.extend(
 
     _modelUpdated: function () {
       L.Util.setOptions(this.leafletLayer, generateLeafletLayerOptions(this.model));
-      this.leafletLayer.setUrl(this.model.get('urlTemplate'));
+      this.leafletLayer.setUrl(generateLeafletUrlTemplate(this.model));
     }
   }
 );

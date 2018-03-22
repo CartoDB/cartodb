@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Engine = require('../../src/engine');
 var MockFactory = require('../helpers/mockFactory');
+var createEngine = require('../spec/fixtures/engine.fixture.js');
 var FAKE_RESPONSE = require('./windshaft/response.mock');
 var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
 var Dataview = require('../../src/dataviews/dataview-model-base');
@@ -11,7 +12,7 @@ describe('Engine', function () {
   var engineMock;
 
   beforeEach(function () {
-    engineMock = MockFactory.createEngine({
+    engineMock = createEngine({
       spyReload: false,
       username: 'fake-username'
     });
@@ -302,7 +303,7 @@ describe('Engine', function () {
   describe('.getApiKey', function () {
     it('should return the internal API key', function () {
       var apiKey = 'qwud2iu2';
-      var anotherEngine = MockFactory.createEngine({
+      var anotherEngine = createEngine({
         apiKey: apiKey
       });
 
@@ -315,7 +316,7 @@ describe('Engine', function () {
   describe('.getAuthToken', function () {
     it('should return the internal auth token', function () {
       var authToken = ['covfefe', 'location'];
-      var anotherEngine = MockFactory.createEngine({
+      var anotherEngine = createEngine({
         apiKey: null,
         authToken: authToken
       });

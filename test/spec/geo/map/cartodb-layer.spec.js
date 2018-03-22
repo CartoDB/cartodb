@@ -1,13 +1,13 @@
 var _ = require('underscore');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
-var MockFactory = require('../../../helpers/mockFactory');
+var createEngine = require('../../fixtures/engine.fixture.js');
 
 describe('geo/map/cartodb-layer', function () {
   var engineMock;
 
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
   });
 
   sharedTestsForInteractiveLayers(CartoDBLayer);

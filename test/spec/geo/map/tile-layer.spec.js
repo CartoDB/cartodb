@@ -1,12 +1,12 @@
 var TileLayer = require('../../../../src/geo/map/tile-layer');
-var MockFactory = require('../../../helpers/mockFactory');
+var createEngine = require('../../fixtures/engine.fixture.js');
 
 describe('TileLayer', function () {
   var engineMock;
   var layer;
 
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     layer = new TileLayer(null, { engine: engineMock });
   });
 

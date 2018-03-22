@@ -10,7 +10,7 @@ var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var Dataview = require('../../../src/dataviews/dataview-model-base');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var MapModel = require('../../../src/geo/map');
-var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 var BoundingBoxFilter = require('../../../src/windshaft/filters/bounding-box');
 var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 
@@ -21,7 +21,7 @@ describe('src//model-updater', function () {
   var windshaftSettings;
 
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
 
     windshaftSettings = {
       urlTemplate: 'http://{user}.cartodb.com:80',

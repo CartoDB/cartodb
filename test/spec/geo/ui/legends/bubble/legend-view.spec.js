@@ -1,11 +1,11 @@
 var LegendViewBubble = require('../../../../../../src/geo/ui/legends/bubble/legend-view.js');
 var BubbleLegendModel = require('../../../../../../src/geo/map/legends/bubble-legend-model.js');
-var MockFactory = require('../../../../../helpers/mockFactory');
+var createEngine = require('../../../../fixtures/engine.fixture.js');
 
 describe('geo/ui/legends/bubbles/legend-view.js', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     this.model = new BubbleLegendModel({
       title: 'Bubble',
       type: 'bubble',

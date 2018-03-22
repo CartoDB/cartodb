@@ -6,6 +6,7 @@ var TorqueLayer = require('../../../../../src/geo/map/torque-layer');
 var GMapsBaseLayer = require('../../../../../src/geo/map/gmaps-base-layer');
 var LayersSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/layers-serializer');
 var MockFactory = require('../../../../helpers/mockFactory');
+var createEngine = require('../../../fixtures/engine.fixture.js');
 
 describe('layers-serializer', function () {
   describe('.serialize', function () {
@@ -16,7 +17,7 @@ describe('layers-serializer', function () {
     // Create all test objects once
     beforeAll(function () {
       layersCollection = new Backbone.Collection();
-      engineMock = MockFactory.createEngine();
+      engineMock = createEngine();
       sourceMock = MockFactory.createAnalysisModel({ id: 'a1' });
     });
 

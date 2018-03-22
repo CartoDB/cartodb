@@ -14,7 +14,7 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
     @account_type.rate_limit = @rate_limit
     @account_type.save!
 
-    render json: @account_type, status: 200
+    render json: @account_type, status: 201
   end
 
   def update
@@ -23,7 +23,7 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
       ::Resque.enqueue(::Resque::UserJobs::RateLimitsJobs::SyncRedis, @account_type.account_type)
     end
 
-    render json: @account_type, status: 201
+    render json: @account_type, status: 200
   end
 
   def destroy

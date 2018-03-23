@@ -319,7 +319,7 @@ module Carto::Api::AuthApiAuthentication
 
     if base64_auth.present?
       username, token = split_auth
-      return fail! unless username == CartoDB.extract_subdomain(request)
+      return unless username == CartoDB.extract_subdomain(request)
     elsif params[:api_key]
       token = params[:api_key]
       username = CartoDB.extract_subdomain(request)

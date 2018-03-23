@@ -17,7 +17,7 @@ module Carto
           organization_id: params[:organization_id],
           import_metadata: params[:import_metadata] == 'true',
           dry:             false,
-          import_data:     params[:import_data] == 'true'
+          import_data:     params[:import_data] != 'false'
         )
         if import.save
           import.enqueue

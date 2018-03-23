@@ -36,7 +36,6 @@ describe('src/vis/tooltip-manager.js', function () {
     });
 
     engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
 
     this.tooltipModel = new TooltipModel();
     this.infowindowModel = new InfowindowModel();

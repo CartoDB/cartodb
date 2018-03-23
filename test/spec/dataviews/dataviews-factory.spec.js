@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewsFactory = require('../../../src/dataviews/dataviews-factory');
 var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 var source = MockFactory.createAnalysisModel({ id: 'a0' });
 
@@ -26,7 +27,7 @@ describe('dataviews/dataviews-factory', function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
       map: createMapMock(),
-      engine: {},
+      engine: createEngine(),
       dataviewsCollection: this.dataviewsCollection
     });
   });
@@ -54,41 +55,31 @@ describe('dataviews/dataviews-factory', function () {
       }.bind(this)).toThrowError(requiredAttributes[0] + ' is required');
     });
 
-    it(factoryMethod + ' should set the apiKey attribute on the dataview if present', function () {
-      this.factory = new DataviewsFactory({
-        apiKey: 'THE_API_KEY'
-      }, {
+    it(factoryMethod + ' should set the engine to get the apiKey attribute on the dataview', function () {
+      this.factory = new DataviewsFactory({}, {
         map: createMapMock(),
-        engine: {},
+        engine: createEngine(),
         dataviewsCollection: this.dataviewsCollection
       });
 
       var attributes = generateFakeAttributes(requiredAttributes);
       var model = this.factory[factoryMethod](attributes);
 
-      expect(model.get('apiKey')).toEqual('THE_API_KEY');
+      expect(model._engine.getApiKey()).toEqual('API_KEY');
     });
 
-    it(factoryMethod + ' should set the authToken', function () {
-      this.factory.set({
-        authToken: 'AUTH_TOKEN'
+    it(factoryMethod + ' should set the engine to get the authToken attribute on the dataview', function () {
+      var engine = createEngine({ apiKey: null });
+      this.factory = new DataviewsFactory({}, {
+        map: createMapMock(),
+        engine: engine,
+        dataviewsCollection: this.dataviewsCollection
       });
 
       var attributes = generateFakeAttributes(requiredAttributes);
       var model = this.factory[factoryMethod](attributes);
 
-      expect(model.get('authToken')).toEqual('AUTH_TOKEN');
-    });
-
-    it(factoryMethod + ' should set the apiKey', function () {
-      this.factory.set({
-        apiKey: 'API_KEY'
-      });
-
-      var attributes = generateFakeAttributes(requiredAttributes);
-      var model = this.factory[factoryMethod](attributes);
-
-      expect(model.get('apiKey')).toEqual('API_KEY');
+      expect(model._engine.getAuthToken()).toEqual(engine.getAuthToken());
     });
   }, this);
 });

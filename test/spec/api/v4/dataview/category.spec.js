@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 var carto = require('../../../../../src/api/v4/index');
+var createEngine = require('../../../fixtures/engine.fixture.js');
 
 function createInternalModelMock () {
   var internalModelMock = {
@@ -35,16 +36,6 @@ function createInternalModelMock () {
 
 function createSourceMock () {
   return new carto.source.Dataset('foo');
-}
-
-function createEngineMock () {
-  var engine = {
-    name: 'Engine mock',
-    reload: function () {}
-  };
-  spyOn(engine, 'reload');
-
-  return engine;
 }
 
 describe('api/v4/dataview/category', function () {
@@ -169,7 +160,7 @@ describe('api/v4/dataview/category', function () {
       dataview.on('limitChanged', limitChangedSpy);
 
       expect(limitChangedSpy).not.toHaveBeenCalled();
-      dataview.$setEngine(createEngineMock());
+      dataview.$setEngine(createEngine());
       dataview.setLimit(7);
 
       expect(limitChangedSpy).toHaveBeenCalledWith(7);
@@ -221,7 +212,7 @@ describe('api/v4/dataview/category', function () {
       dataview.on('operationChanged', operationChangedSpy);
 
       expect(operationChangedSpy).not.toHaveBeenCalled();
-      dataview.$setEngine(createEngineMock());
+      dataview.$setEngine(createEngine());
       dataview.setOperation(carto.operation.AVG);
 
       expect(operationChangedSpy).toHaveBeenCalledWith(carto.operation.AVG);
@@ -284,7 +275,7 @@ describe('api/v4/dataview/category', function () {
       dataview.on('operationColumnChanged', operationColumnChangedSpy);
 
       expect(operationColumnChangedSpy).not.toHaveBeenCalled();
-      dataview.$setEngine(createEngineMock());
+      dataview.$setEngine(createEngine());
       dataview.setOperationColumn('column2');
 
       expect(operationColumnChangedSpy).toHaveBeenCalledWith('column2');
@@ -344,7 +335,7 @@ describe('api/v4/dataview/category', function () {
         operation: carto.operation.MIN,
         operationColumn: 'column-test'
       });
-      engine = createEngineMock();
+      engine = createEngine();
     });
 
     it('creates the internal model', function () {
@@ -362,7 +353,7 @@ describe('api/v4/dataview/category', function () {
       expect(internalModel.isEnabled()).toBe(false);
       expect(internalModel._bboxFilter).toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(true);
-      expect(internalModel._engine.name).toEqual('Engine mock');
+      expect(internalModel._engine).toBe(engine);
     });
 
     it('creates the internal model with no bounding box if not provided', function () {

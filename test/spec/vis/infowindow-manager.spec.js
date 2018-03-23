@@ -57,7 +57,6 @@ describe('src/vis/infowindow-manager.js', function () {
     });
 
     engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
 
     this.infowindowManager = new InfowindowManager({ // eslint-disable-line
       engine: engineMock,

@@ -5,6 +5,7 @@ var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-
 var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 var helper = require('../../../src/dataviews/helpers/histogram-helper');
 var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 function randomString (length, chars) {
   var result = '';
@@ -14,11 +15,13 @@ function randomString (length, chars) {
 
 describe('dataviews/histogram-dataview-model', function () {
   var engineMock;
+  var apiKeyQueryParam;
+
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'on']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
+    engineMock = createEngine({});
+    apiKeyQueryParam = 'api_key=' + engineMock.getApiKey();
 
     this.filter = new WindshaftFiltersRange();
     this.bboxFilter = new WindshaftFiltersBoundingBox(new MapModelBoundingBoxAdapter(this.map));
@@ -69,7 +72,6 @@ describe('dataviews/histogram-dataview-model', function () {
 
   it('should set the api_key attribute on the internal models', function () {
     this.model = new HistogramDataviewModel({
-      apiKey: 'API_KEY',
       source: this.source
     }, {
       engine: engineMock,
@@ -77,7 +79,7 @@ describe('dataviews/histogram-dataview-model', function () {
       bboxFilter: this.bboxFilter
     });
 
-    expect(this.model._totals.get('apiKey')).toEqual('API_KEY');
+    expect(this.model._totals.get('apiKey')).toEqual(engineMock.getApiKey());
   });
 
   describe('should get the correct histogram shape', function () {
@@ -473,7 +475,7 @@ describe('dataviews/histogram-dataview-model', function () {
     });
 
     it('should include bbox', function () {
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&' + apiKeyQueryParam);
     });
 
     describe('column type is number', function () {
@@ -486,7 +488,7 @@ describe('dataviews/histogram-dataview-model', function () {
             column_type: 'number'
           });
 
-          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&start=11&end=22');
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&start=11&end=22&' + apiKeyQueryParam);
         });
 
         it('should include bins', function () {
@@ -495,7 +497,7 @@ describe('dataviews/histogram-dataview-model', function () {
             column_type: 'number'
           });
 
-          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33');
+          expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=33&' + apiKeyQueryParam);
         });
       });
 
@@ -508,11 +510,11 @@ describe('dataviews/histogram-dataview-model', function () {
           column_type: 'number'
         });
 
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=25&start=0&end=10');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=25&start=0&end=10&' + apiKeyQueryParam);
 
         this.model.enableFilter();
 
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1&bins=25');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1&bins=25&' + apiKeyQueryParam);
       });
     });
 
@@ -524,7 +526,7 @@ describe('dataviews/histogram-dataview-model', function () {
           column_type: 'date'
         });
 
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&' + apiKeyQueryParam);
       });
 
       it('should include aggregation auto if column type is date and no aggregation set', function () {
@@ -532,7 +534,7 @@ describe('dataviews/histogram-dataview-model', function () {
           aggregation: undefined,
           column_type: 'date'
         });
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=auto');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&aggregation=auto&' + apiKeyQueryParam);
       });
 
       it('should use offset if present', function () {
@@ -545,7 +547,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
         var url = this.model.url();
 
-        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=7200');
+        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=7200&' + apiKeyQueryParam);
       });
 
       it('should use local offset if localTimezone is true', function () {
@@ -559,7 +561,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
         var url = this.model.url();
 
-        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=43200');
+        expect(url).toEqual('http://example.com?bbox=2,1,4,3&aggregation=month&offset=43200&' + apiKeyQueryParam);
       });
     });
   });

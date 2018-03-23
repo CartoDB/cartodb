@@ -77,14 +77,7 @@ module.exports = Model.extend({
   },
 
   _generateAttrsForDataview: function (attrs, whitelistedAttrs) {
-    attrs = _.pick(attrs, whitelistedAttrs);
-    if (this.get('apiKey')) {
-      attrs.apiKey = this.get('apiKey');
-    }
-    if (this.get('authToken')) {
-      attrs.authToken = this.get('authToken');
-    }
-    return attrs;
+    return _.pick(attrs, whitelistedAttrs);
   },
 
   _newModel: function (m) {

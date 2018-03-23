@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var VisModel = require('../../src/vis/vis');
 var AnalysisModel = require('../../src/analysis/analysis-model');
-var Engine = require('../../src/engine');
+var createEngineFixture = require('../spec/fixtures/engine.fixture.js');
 
 // We use a "fake" reference instead of the one in src/analysis/camshaft-reference
 // to ensure that tests won't break if the real thing changes
@@ -54,8 +54,8 @@ function createVisModel () {
   return new VisModel();
 }
 
-function createEngine () {
-  return new Engine({ serverUrl: 'http://example.com', username: 'fake-username', apiKey: 'fake-api-key', statTag: 'fake-stat-tag' });
+function createEngine (opts) {
+  return createEngineFixture(opts);
 }
 
 module.exports = {

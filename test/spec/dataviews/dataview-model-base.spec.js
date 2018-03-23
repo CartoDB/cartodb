@@ -7,6 +7,7 @@ var WindshaftFiltersBoundingBox = require('../../../src/windshaft/filters/boundi
 var AnalysisService = require('../../../src/analysis/analysis-service');
 var MapModelBoundingBoxAdapter = require('../../../src/geo/adapters/map-model-bounding-box-adapter');
 var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 var fakeCamshaftReference = {
   getSourceNamesForAnalysisType: function (analysisType) {
@@ -40,6 +41,7 @@ var fakeCamshaftReference = {
 
 describe('dataviews/dataview-model-base', function () {
   var engineMock;
+  var apiKeyQueryParam;
 
   beforeEach(function () {
     this.map = new MapModel(null, {
@@ -48,16 +50,11 @@ describe('dataviews/dataview-model-base', function () {
     this.map.setBounds([[102, 200], [300, 400]]);
 
     this.vis = new VisModel();
-    engineMock = this.vis._createEngine({
-      urlTemplate: 'fakeUrlTemplate',
-      userName: 'fakeUsername',
-      statTag: 'fakeStatTag',
-      apiKey: 'fakeApiKey',
-      authToken: 'fakeAuthToken',
-      templateName: 'fakeTemplateName'
-    });
+    engineMock = createEngine();
+    this.vis._layersCollection = engineMock._layersCollection;
+    this.vis._dataviewsCollection = engineMock._dataviewsCollection;
+    apiKeyQueryParam = 'api_key=' + engineMock.getApiKey();
 
-    spyOn(engineMock, 'reload');
     this.vis._onMapInstantiatedForTheFirstTime();
 
     this.analysisService = new AnalysisService({
@@ -91,7 +88,8 @@ describe('dataviews/dataview-model-base', function () {
       this.map.setBounds([['south', 'west'], ['north', 'east']]);
 
       this.model.set('url', 'http://example.com');
-      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north');
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&' + apiKeyQueryParam);
     });
 
     it('should allow subclasses to define specific URL params', function () {
@@ -101,7 +99,7 @@ describe('dataviews/dataview-model-base', function () {
 
       spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d');
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&' + apiKeyQueryParam);
     });
 
     it('should append an api_key param if apiKey attr is present (and not use the auth_token)', function () {
@@ -115,20 +113,17 @@ describe('dataviews/dataview-model-base', function () {
 
       spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&api_key=THE_API_KEY');
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&' + apiKeyQueryParam);
     });
 
     it('should append an auth_token param if authToken is present', function () {
       this.map.setBounds([['south', 'west'], ['north', 'east']]);
-
-      this.model.set({
-        url: 'http://example.com',
-        authToken: 'THE_AUTH_TOKEN'
-      });
+      this.model.set({ url: 'http://example.com' });
+      delete this.model._engine._windshaftSettings.apiKey;
 
       spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&auth_token=THE_AUTH_TOKEN');
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&auth_token[]=fabada&auth_token[]=coffee');
     });
   });
 

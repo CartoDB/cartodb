@@ -387,9 +387,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.36",
-      "from": "cartodb/cartodb.js#2071-dataviews-auth",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#966aa730957986f10b133a362885d45e96c29731"
+      "version": "4.0.0-beta.37",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.37",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#5829b04e563d1e6f715356bb914a8a12586ed079"
     },
     "center-align": {
       "version": "0.1.3",
@@ -409,9 +409,9 @@
       }
     },
     "chokidar": {
-      "version": "2.0.2",
+      "version": "2.0.3",
       "from": "chokidar@>=2.0.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-2.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-2.0.3.tgz"
     },
     "cipher-base": {
       "version": "1.0.4",
@@ -1466,9 +1466,9 @@
       "resolved": "https://registry.npmjs.org/memory-fs/-/memory-fs-0.4.1.tgz"
     },
     "micromatch": {
-      "version": "3.1.9",
+      "version": "3.1.10",
       "from": "micromatch@>=3.1.4 <4.0.0",
-      "resolved": "https://registry.npmjs.org/micromatch/-/micromatch-3.1.9.tgz",
+      "resolved": "https://registry.npmjs.org/micromatch/-/micromatch-3.1.10.tgz",
       "dependencies": {
         "kind-of": {
           "version": "6.0.2",
@@ -2384,7 +2384,7 @@
     },
     "to-regex": {
       "version": "3.0.2",
-      "from": "to-regex@>=3.0.1 <4.0.0",
+      "from": "to-regex@>=3.0.2 <4.0.0",
       "resolved": "https://registry.npmjs.org/to-regex/-/to-regex-3.0.2.tgz"
     },
     "to-regex-range": {

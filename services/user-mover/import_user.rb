@@ -17,7 +17,7 @@ module CartoDB
       attr_reader :logger
 
       def initialize(options)
-        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true, metadata_only: false }
+        default_options = { data: true, metadata: true, set_banner: true, update_metadata: true }
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
@@ -140,7 +140,7 @@ module CartoDB
           rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
           rollback_redis("user_#{@target_userid}_metadata_undo.redis")
         end
-        if @options[:data] && !@options[:metadata_only]
+        if @options[:data]
           drop_database(@target_dbname) if @options[:drop_database] && !@options[:schema_mode]
           drop_role(@target_dbuser) if @options[:drop_roles]
         end
@@ -159,7 +159,7 @@ module CartoDB
           throw e
         end
 
-        if @options[:data] && !@options[:metadata_only]
+        if @options[:data]
           # Password should be passed here too
           create_user(@target_dbuser)
           create_org_role(@target_dbname) # Create org role for the original org
@@ -212,7 +212,7 @@ module CartoDB
           end
         end
 
-        if @options[:data] && !@options[:metadata_only]
+        if @options[:data]
           configure_database(@target_dbhost)
         end
 
@@ -225,18 +225,16 @@ module CartoDB
       end
 
       def import_org
-        if !@config[:metadata_only]
-          import_metadata("org_#{@organization_id}_metadata.sql") if @options[:metadata]
-          create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
-          @pack_config['groups'].each do |group|
-            create_role(group['database_role'])
-          end
-          @pack_config['users'].each do |user|
-            # Password should be passed here too
-            create_user(database_username(user['id']))
-            create_public_db_user(user['id'], user['database_schema'])
-            grant_user_org_role(database_username(user['id']), user['database_name'])
-          end
+        import_metadata("org_#{@organization_id}_metadata.sql") if @options[:metadata]
+        create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
+        @pack_config['groups'].each do |group|
+          create_role(group['database_role'])
+        end
+        @pack_config['users'].each do |user|
+          # Password should be passed here too
+          create_user(database_username(user['id']))
+          create_public_db_user(user['id'], user['database_schema'])
+          grant_user_org_role(database_username(user['id']), user['database_name'])
         end
 
         org_user_ids = @pack_config['users'].map{|u| u['id']}
@@ -276,11 +274,10 @@ module CartoDB
                         target_org: @pack_config['organization']['name'],
                         logger: @logger,
                         metadata: @options[:metadata],
-                        metadata_only: @options[:metadata_only],
                         data: false).run!
         end
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
-        if @options[:data] && !@options[:metadata_only]
+        if @options[:data]
           drop_database(db) if @options[:drop_database]
           if @options[:drop_roles]
             drop_role(org_role_name(db))

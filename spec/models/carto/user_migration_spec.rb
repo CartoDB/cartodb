@@ -674,7 +674,7 @@ describe 'UserMigration' do
       user.destroy_cascade
     end
 
-    it 'toes not remove database when visuaization import fails' do
+    it 'does not remove database when visuaization import fails' do
       user = create_user_with_visualizations
 
       carto_user = Carto::User.find(user.id)

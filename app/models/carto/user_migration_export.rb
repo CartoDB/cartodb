@@ -39,12 +39,15 @@ module Carto
                   UserMigrationPackage.for_export(id, log)
                 end
 
-      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(package.data_dir))
+      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(package.data_dir)) if export_data?
 
       run_metadata_export(package.meta_dir) if export_metadata?
 
-      log.append("=== Uploading #{id}/#{export_job.json_file} ===")
-      update_attributes(state: STATE_UPLOADING, json_file: "#{id}/#{export_job.json_file}")
+      log.append("=== Uploading ===")
+      update_attributes(
+        state: STATE_UPLOADING,
+        json_file: export_data? ? "#{id}/#{export_job.json_file}" : 'no_data_exported'
+      )
       uploaded_path = package.upload
 
       state = uploaded_path.present? ? STATE_COMPLETE : STATE_FAILURE

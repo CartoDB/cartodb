@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.21.0`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.22.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -162,6 +162,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
+* Do not add new notifications if notification content already exists (#13407)
 * Fix widgets size in Builder (#13682)
 * Fix SQL function analysis error with dragged source (https://github.com/CartoDB/cartodb/pull/13732)
 * Fix histogram widgets collapsing (#13705)

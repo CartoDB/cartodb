@@ -14,6 +14,7 @@ describe('leaflet-tiled-layer-view', function () {
         minZoom: 0,
         tms: false
       });
+
       this.leafletMap = jasmine.createSpy('leafletMap');
       this.layerView = new LeafletTiledLayerView(this.layerModel, {
         nativeMap: this.leafletMap
@@ -122,14 +123,6 @@ describe('leaflet-tiled-layer-view', function () {
         this.layerModel.set({
           urlTemplate: 'http://hello.com',
           urlTemplate2x: 'http://hello.com2x'
-        });
-
-        expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
-      });
-
-      it('should update the model correctly if high resolution template is not enabled', function () {
-        this.layerModel.set({
-          urlTemplate: 'http://hello.com'
         });
 
         expect(this.layerView.leafletLayer._url).toBe('http://hello.com');

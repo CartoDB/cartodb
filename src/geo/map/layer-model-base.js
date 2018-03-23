@@ -20,10 +20,6 @@ var MapLayer = Model.extend({
   update: function (attrs, options) {
     options = options || {};
 
-    if (!attrs.hasOwnProperty('urlTemplate2x') && this.get('urlTemplate2x')) {
-      this.unset('urlTemplate2x', { silent: true });
-    }
-
     // TODO: Pick the attributes for the specific type of layer
     // Eg: this.set(_.pick(attrs, this.ATTR_NAMES))
     this.set(attrs, {

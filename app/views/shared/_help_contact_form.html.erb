@@ -1,0 +1,20 @@
+ <script>
+//<![CDATA[
+var sbhost = (("https:" == document.location.protocol) ? "https://" : "http://");
+document.write(unescape("%3Cscript src='" + sbhost +"d3932137p5ikt7.cloudfront.net/widget_v3/loader.min.js' type='text/javascript'%3E%3C/script%3E"));//]]>
+</script>
+
+<script>
+if (userModel.featureEnabled('help_form') && userModel.get('account_type') === 'PERSONAL30') {
+  sb_contact_form('initialize',{
+    company: 'cartodb',
+    height: '500px',
+    position: 'bottom',
+    locale: 'en',
+    captcha: 'true',
+    forwarding_address_id: '12554',
+    name: userModel.get('name'),
+    email: userModel.get('email')
+  });
+}
+</script>

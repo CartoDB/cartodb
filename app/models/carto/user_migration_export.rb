@@ -24,7 +24,7 @@ module Carto
 
     validates :state, inclusion: { in: VALID_STATES }
     validate  :user_or_organization_present
-    validate  :validate_metadata_only
+    validate  :validate_export_data
 
     def run_export
       check_valid_user(user) if user && export_metadata
@@ -113,7 +113,7 @@ module Carto
         export_job_logger: log.logger,
         logger: log.logger,
         metadata: false,
-        metadata_only: metadata_only?
+        data: export_data?
       )
     end
 
@@ -123,8 +123,8 @@ module Carto
       end
     end
 
-    def validate_metadata_only
-      errors.add(:export_metadata, 'needs to be true if metadata_only is set to true') if metadata_only? && !export_metadata?
+    def validate_export_data
+      errors.add(:export_metadata, 'needs to be true if export_data is set to false') if !export_data? && !export_metadata?
     end
 
     def set_defaults

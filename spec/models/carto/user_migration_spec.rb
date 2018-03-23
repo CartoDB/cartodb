@@ -626,7 +626,7 @@ describe 'UserMigration' do
     end
   end
 
-  describe 'metadata_only' do
+  describe 'export_data being false' do
     it 'exports and imports user with viz' do
       user = create_user_with_visualizations
 
@@ -638,7 +638,7 @@ describe 'UserMigration' do
       export = Carto::UserMigrationExport.create(
         user: carto_user,
         export_metadata: true,
-        metadata_only: true
+        export_data: false
       )
       export.run_export
 
@@ -653,7 +653,7 @@ describe 'UserMigration' do
         org_import: false,
         json_file: export.json_file,
         import_metadata: true,
-        metadata_only: true,
+        import_data: false,
         dry: false
       )
 
@@ -683,7 +683,7 @@ describe 'UserMigration' do
       export = Carto::UserMigrationExport.create(
         user: carto_user,
         export_metadata: true,
-        metadata_only: true
+        export_data: false
       )
       export.run_export
 
@@ -698,7 +698,7 @@ describe 'UserMigration' do
         org_import: false,
         json_file: export.json_file,
         import_metadata: true,
-        metadata_only: true,
+        import_data: false,
         dry: false
       )
 
@@ -721,7 +721,7 @@ describe 'UserMigration' do
         export = Carto::UserMigrationExport.create(
           organization: @carto_organization,
           export_metadata: true,
-          metadata_only: true
+          export_data: false
         )
         export.run_export
 
@@ -739,7 +739,7 @@ describe 'UserMigration' do
           org_import: true,
           json_file: export.json_file,
           import_metadata: true,
-          metadata_only: true,
+          import_data: false,
           dry: false
         )
 
@@ -758,7 +758,7 @@ describe 'UserMigration' do
         export = Carto::UserMigrationExport.create(
           organization: @carto_organization,
           export_metadata: true,
-          metadata_only: true
+          export_data: false
         )
         export.run_export
 
@@ -779,7 +779,7 @@ describe 'UserMigration' do
           org_import: true,
           json_file: export.json_file,
           import_metadata: true,
-          metadata_only: true,
+          import_data: false,
           dry: false
         )
 

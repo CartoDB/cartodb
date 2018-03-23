@@ -27,7 +27,7 @@ namespace :cartodb do
           import_params = {
             org_import: ume.organization.present?,
             import_metadata: ume.export_metadata,
-            metadata_only: ume.metadata_only?,
+            import_data: ume.export_data?,
             exported_file: ume.exported_file,
             json_file: ume.json_file,
             dry: false,
@@ -56,7 +56,7 @@ namespace :cartodb do
         ume = Carto::UserMigrationExport.new(
           organization: organization,
           export_metadata: export_metadata,
-          metadata_only: metadata_only
+          export_data: !metadata_only
         )
         run_user_migrator_export_job(ume)
       end
@@ -71,7 +71,7 @@ namespace :cartodb do
         ume = Carto::UserMigrationExport.new(
           user: user,
           export_metadata: export_metadata,
-          metadata_only: metadata_only
+          export_data: !metadata_only
         )
         run_user_migrator_export_job(ume)
       end

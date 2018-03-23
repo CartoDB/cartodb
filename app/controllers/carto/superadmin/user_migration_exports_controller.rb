@@ -13,7 +13,7 @@ module Carto
           organization_id: params[:organization_id],
           export_metadata: params[:export_metadata] == true || params[:export_metadata] == 'true',
           backup: params[:backup] == true || params[:backup] == 'true',
-          metadata_only: params[:metadata_only] == 'true'
+          export_data: params[:export_data] == 'true'
         )
         if export.save
           export.enqueue

@@ -27,6 +27,7 @@ module Carto
     validates :json_file, presence: true
     validate :valid_org_import
     validate :valid_dry_settings
+    validate :validate_import_data
 
     def run_import
       raise errors.full_messages.join(', ') unless valid?
@@ -68,6 +69,10 @@ module Carto
 
     def valid_dry_settings
       errors.add(:dry, 'dry cannot be true while import_metadata is true') if import_metadata && dry
+    end
+
+    def validate_import_data
+      errors.add(:import_metadata, 'needs to be true if export_data is set to false') if !import_data? && !import_metadata?
     end
 
     def import(service, package)

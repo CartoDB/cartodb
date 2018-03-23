@@ -16,7 +16,11 @@ const isVendor = (module, count) => {
 const entryPoints = {
   user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js'),
   api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js'),
-  data_library_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/data-library.js')
+  data_library_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/data-library.js'),
+  sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
+  confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
+  mobile_apps_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/mobile-apps.js'),
+  account_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/account.js')
 };
 
 module.exports = env => {
@@ -123,6 +127,7 @@ module.exports = env => {
           include: [
             resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
             resolve(__dirname, '../../', 'node_modules/tangram.cartodb'),
+            resolve(__dirname, '../../', 'lib/assets/javascripts/carto-node'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard')
           ],
           options: {

@@ -28,8 +28,8 @@
   </div>
 
   <ul class="u-flex u-tSpace-xl">
-    <% if (isEmpty) { %>
-      <li class="Editor-HeaderInfo-emptyLayer js-emptylayer"></li>
+    <% if (isEmpty || canBeGeoreferenced) { %>
+      <li class="Editor-HeaderInfo-emptyLayer js-warningIcon"></li>
     <% } %>
     <li class="u-rSpace">
       <button class="Editor-HeaderInfo-zoom CDB-Shape js-zoom">

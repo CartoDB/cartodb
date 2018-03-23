@@ -1760,6 +1760,16 @@
         "layer-options": "Layer options",
         "basemap-options": "Basemap options"
       },
+      "warnings": {
+        "no-data": {
+          "message": "No data available.",
+          "action-message": "There are no results for the combination of analyses applied to your data. Try tweaking them."
+        },
+        "geocode": {
+          "message": "There is no geometry in your data.",
+          "action-message": "Apply a Geocode analysis or manually add geometry data to visualize on the map."
+        }
+      },
       "errors": {
         "broken-node": "Broken node",
         "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"

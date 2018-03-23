@@ -11,7 +11,13 @@ sudo make install
 This release changes the way Google ouath login works. If you are using it, you need to add the client_secret
 to the oauth.google_plus section of the configuration file.
 
+### NOTICE
+This upgrade changes the configuration format of basemaps. You must replace all `url` keys for `urlTemplate`. It is
+recommended that you replace the `basemaps` section completely, since this release also adds supports for high
+resolution maps, which have added `urlTemplate2x` keys to the configuration.
+
 ### Features
+* Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
 * Update multiple widgets at once (#13596)
@@ -117,6 +123,7 @@ ion for time-series (#12670)
 * Improve legends error (cartodb.js#1758)
 * Updates Dataservices API client default version to `0.22.0`
 * Improve user migrator
+* Support high-resolution basemaps (#12845)
 * Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
 * Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
@@ -155,6 +162,10 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix widgets size in Builder (#13682)
+* Fix SQL function analysis error with dragged source (https://github.com/CartoDB/cartodb/pull/13732)
+* Fix histogram widgets collapsing (#13705)
+* Use Promises in query models to handle async states (#13478)
 * Fix "Add new analysis" button in IE (CartoDB/onpremises/issues/485)
 * Fix button when addign new widgets (CartoDB/onpremises/issues/513)
 * Fix private map view styles in IE (CartoDB/onpremises/issues/499)
@@ -503,6 +514,7 @@ ion for time-series (#12670)
 * Fix asset upload with special character in local storage (#13602)
 * Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
+* Always use `urlTemplate` basemap attribute (deprecate `url`) (#13748)
 * Make new widgets appear on top (#13244)
 * Add indices to `layers` relations for performance (#13669)
 * Fix imports with local storage and special characters (#13604)
@@ -519,6 +531,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Account migration (#13501)
 * Data Library dashboard migration (#13608)
 * Improve spec bundles / process
 * Replace SCSS-Lint with Stylelint (#13165)

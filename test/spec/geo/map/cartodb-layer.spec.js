@@ -8,7 +8,6 @@ describe('geo/map/cartodb-layer', function () {
 
   beforeEach(function () {
     engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
   });
 
   sharedTestsForInteractiveLayers(CartoDBLayer);

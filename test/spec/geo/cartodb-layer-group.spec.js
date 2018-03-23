@@ -6,15 +6,14 @@ var TileLayer = require('../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
-var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 describe('geo/cartodb-layer-group', function () {
   var engineMock;
 
   beforeEach(function () {
     this.layersCollection = new Layers();
-    engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
+    engineMock = createEngine();
 
     this.cartoDBLayerGroup = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection

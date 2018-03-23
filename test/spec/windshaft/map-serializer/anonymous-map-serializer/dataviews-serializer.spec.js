@@ -4,6 +4,7 @@ var HistogramDataviewModel = require('../../../../../src/dataviews/histogram-dat
 var FormulaDataviewModel = require('../../../../../src/dataviews/formula-dataview-model');
 var MockFactory = require('../../../../helpers/mockFactory');
 var DataviewsSerializer = require('../../../../../src/windshaft/map-serializer/anonymous-map-serializer/dataviews-serializer');
+var createEngine = require('../../../fixtures/engine.fixture.js');
 
 describe('dataviews-serializer', function () {
   describe('.serialize', function () {
@@ -13,7 +14,7 @@ describe('dataviews-serializer', function () {
     var analysis;
 
     beforeEach(function () {
-      engineMock = new Backbone.Model();
+      engineMock = createEngine();
       map = new Backbone.Model();
       layer = new Backbone.Model();
       analysis = MockFactory.createAnalysisModel({ id: 'a0' });

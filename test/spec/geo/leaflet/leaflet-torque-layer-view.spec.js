@@ -6,6 +6,7 @@ var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var MockFactory = require('../../../helpers/mockFactory');
+var createEngine = require('../../fixtures/engine.fixture.js');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 
 describe('geo/leaflet/leaflet-torque-layer-view', function () {
@@ -16,7 +17,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       'height': '200px',
       'width': '200px'
     });
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     this.map = new Map(null, {
       layersFactory: {}
     });

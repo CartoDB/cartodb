@@ -7,7 +7,6 @@ describe('TileLayer', function () {
 
   beforeEach(function () {
     engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
     layer = new TileLayer(null, { engine: engineMock });
   });
 

@@ -59,8 +59,8 @@ module.exports = DataviewModelBase.extend({
       aggregation: this.get('aggregation'),
       offset: this.get('offset'),
       column_type: this.get('column_type'),
-      apiKey: this.get('apiKey'),
-      authToken: this.get('authToken'),
+      apiKey: opts && opts.engine && opts.engine.getApiKey(),
+      authToken: opts && opts.engine && opts.engine.getAuthToken(),
       localTimezone: this.get('localTimezone'),
       localOffset: this._localOffset
     });

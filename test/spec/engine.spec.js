@@ -11,7 +11,10 @@ describe('Engine', function () {
   var engineMock;
 
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = MockFactory.createEngine({
+      spyReload: false,
+      username: 'fake-username'
+    });
   });
 
   describe('Constructor', function () {
@@ -111,7 +114,7 @@ describe('Engine', function () {
     it('should perform a request with the state encoded in a payload (no layers, no dataviews) ', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
-        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%5D%7D&stat_tag=fake-stat-tag&api_key=fake-api-key';
+        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%5D%7D&stat_tag=fake-stat-tag&api_key=' + engineMock.getApiKey();
         expect(actual).toEqual(expected);
         done();
       });
@@ -121,7 +124,7 @@ describe('Engine', function () {
     it('should perform a request with the state encoded in a payload (single layer) ', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
-        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%7B%22type%22%3A%22mapnik%22%2C%22options%22%3A%7B%22cartocss_version%22%3A%222.1.0%22%2C%22source%22%3A%7B%22id%22%3A%22a1%22%7D%2C%22interactivity%22%3A%5B%22cartodb_id%22%5D%7D%7D%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%7B%22id%22%3A%22a1%22%2C%22type%22%3A%22source%22%2C%22params%22%3A%7B%22query%22%3A%22SELECT%20*%20FROM%20table%22%7D%7D%5D%7D&stat_tag=fake-stat-tag&api_key=fake-api-key';
+        var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%7B%22type%22%3A%22mapnik%22%2C%22options%22%3A%7B%22cartocss_version%22%3A%222.1.0%22%2C%22source%22%3A%7B%22id%22%3A%22a1%22%7D%2C%22interactivity%22%3A%5B%22cartodb_id%22%5D%7D%7D%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%7B%22id%22%3A%22a1%22%2C%22type%22%3A%22source%22%2C%22params%22%3A%7B%22query%22%3A%22SELECT%20*%20FROM%20table%22%7D%7D%5D%7D&stat_tag=fake-stat-tag&api_key=' + engineMock.getApiKey();
         expect(actual).toEqual(expected);
         done();
       });
@@ -293,6 +296,33 @@ describe('Engine', function () {
         origin: 'windshaft',
         _error: 'an error'
       }));
+    });
+  });
+
+  describe('.getApiKey', function () {
+    it('should return the internal API key', function () {
+      var apiKey = 'qwud2iu2';
+      var anotherEngine = MockFactory.createEngine({
+        apiKey: apiKey
+      });
+
+      var returnedKey = anotherEngine.getApiKey();
+
+      expect(returnedKey).toBe(apiKey);
+    });
+  });
+
+  describe('.getAuthToken', function () {
+    it('should return the internal auth token', function () {
+      var authToken = ['covfefe', 'location'];
+      var anotherEngine = MockFactory.createEngine({
+        apiKey: null,
+        authToken: authToken
+      });
+
+      var returnedAuthToken = anotherEngine.getAuthToken();
+
+      expect(returnedAuthToken).toBe(authToken);
     });
   });
 });

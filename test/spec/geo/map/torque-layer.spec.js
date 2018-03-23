@@ -7,7 +7,6 @@ describe('geo/map/torque-layer', function () {
   var engineMock;
   beforeEach(function () {
     engineMock = MockFactory.createEngine();
-    spyOn(engineMock, 'reload');
   });
 
   sharedTestsForInteractiveLayers(TorqueLayer);

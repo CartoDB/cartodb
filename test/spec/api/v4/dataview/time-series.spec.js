@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
 var carto = require('../../../../../src/api/v4/index');
+var createEngine = require('../../../fixtures/engine.fixture.js');
 
 function createHistogramInternalModelMock (options) {
   options = options || {};
@@ -55,16 +56,6 @@ function createHistogramInternalModelMock (options) {
 
 function createSourceMock () {
   return new carto.source.Dataset('ne_10m_populated_places_simple');
-}
-
-function createEngineMock () {
-  var engine = {
-    name: 'Engine mock',
-    reload: function () {}
-  };
-  spyOn(engine, 'reload');
-
-  return engine;
 }
 
 describe('api/v4/dataview/time-series', function () {
@@ -255,7 +246,7 @@ describe('api/v4/dataview/time-series', function () {
       dataview.on('aggregationChanged', aggregationChangedSpy);
 
       expect(aggregationChangedSpy).not.toHaveBeenCalled();
-      dataview.$setEngine(createEngineMock());
+      dataview.$setEngine(createEngine());
       dataview.setAggregation(carto.dataview.timeAggregation.HOUR);
 
       expect(aggregationChangedSpy).toHaveBeenCalledWith(carto.dataview.timeAggregation.HOUR);
@@ -330,7 +321,7 @@ describe('api/v4/dataview/time-series', function () {
 
     beforeEach(function () {
       dataview = new carto.dataview.TimeSeries(source, 'population');
-      engine = createEngineMock();
+      engine = createEngine();
     });
 
     it('creates the internal model', function () {
@@ -351,7 +342,7 @@ describe('api/v4/dataview/time-series', function () {
       expect(internalModel.isEnabled()).toBe(false);
       expect(internalModel._bboxFilter).toBeDefined();
       expect(internalModel.syncsOnBoundingBoxChanges()).toBe(true);
-      expect(internalModel._engine.name).toEqual('Engine mock');
+      expect(internalModel._engine).toBe(engine);
     });
 
     it('creates the internal model with no bounding box if not provided', function () {

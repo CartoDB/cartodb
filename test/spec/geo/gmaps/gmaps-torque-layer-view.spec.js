@@ -7,11 +7,12 @@ var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var MockFactory = require('../../../helpers/mockFactory');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 var torque = require('torque.js');
+var createEngine = require('../../fixtures/engine.fixture.js');
 
 describe('geo/gmaps/gmaps-torque-layer-view', function () {
   beforeEach(function () {
     var container = $('<div>').css('height', '200px');
-    var engineMock = MockFactory.createEngine();
+    var engineMock = createEngine();
     this.map = new Map(null, {
       layersFactory: {}
     });

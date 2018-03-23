@@ -387,9 +387,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.37",
-      "from": "cartodb/cartodb.js#v4.0.0-beta.37",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#5829b04e563d1e6f715356bb914a8a12586ed079"
+      "version": "4.0.0-beta.38",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.38",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#5b921bb45336c083d9129924cb7115e789f6f172"
     },
     "center-align": {
       "version": "0.1.3",

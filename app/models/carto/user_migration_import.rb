@@ -76,8 +76,10 @@ module Carto
     end
 
     def import(service, package)
-      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
-      raise "DB already exists at DB host" if import_job.db_exists? && import_data?
+      if import_data?
+        import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+        raise "DB already exists at DB host" if import_job.db_exists?
+      end
 
       imported = do_import_metadata(package, service) if import_metadata?
 

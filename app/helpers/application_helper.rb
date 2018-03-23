@@ -144,7 +144,7 @@ module ApplicationHelper
   def raise_on_asset_absence *sources
     sources.flatten.each do |source|
       next if source == {:media => "all"}
-      raise "Hey, #{source} is not in the precompile list. This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
+      raise "Hey, #{source} is not in the precompile list (check application.rb). This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
         if matcher.is_a? Proc
           matcher.call(source)
         elsif matcher.is_a? Regexp

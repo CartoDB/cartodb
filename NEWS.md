@@ -162,6 +162,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Load FullStory script for users on the PERSONAL30 plan (https://github.com/CartoDB/cartodb/pull/13753)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
 * Do not add new notifications if notification content already exists (#13407)
 * Fix widgets size in Builder (#13682)

@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
 
 describe('leaflet-tiled-layer-view', function () {
-  describe('does not support high resolution screens', function () {
+  describe('when does not support high resolution screens', function () {
     beforeEach(function () {
       this.layerModel = new Backbone.Model({
         urlTemplate: 'http://whatever.com',
@@ -71,7 +71,7 @@ describe('leaflet-tiled-layer-view', function () {
     });
   });
 
-  describe('supports high resolution screens', function () {
+  describe('when supports high resolution screens', function () {
     beforeEach(function () {
       this.layerModel = new Backbone.Model({
         urlTemplate: 'http://whatever.com',
@@ -90,43 +90,49 @@ describe('leaflet-tiled-layer-view', function () {
       });
     });
 
-    describe('is high resolution screen', function () {
-      describe('._modelUpdated', function () {
-        it('to a model without high resolution enabled', function () {
-          spyOn(this.layerView, '_isHdpi').and.returnValue(false);
+    describe('when is high resolution screen', function () {
+      beforeEach(function () {
+        spyOn(this.layerView, '_isHdpi').and.returnValue(true);
+      });
 
-          this.layerModel.set({
-            urlTemplate: 'http://hello.com'
-          });
-
-          expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
+      it('should update the model correctly if high resolution template is enabled', function () {
+        this.layerModel.set({
+          urlTemplate: 'http://hello.com',
+          urlTemplate2x: 'http://hello.com2x'
         });
 
-        it('to a model with high resolution enabled', function () {
-          spyOn(this.layerView, '_isHdpi').and.returnValue(true);
+        expect(this.layerView.leafletLayer._url).toBe('http://hello.com2x');
+      });
 
-          this.layerModel.set({
-            urlTemplate: 'http://hello.com',
-            urlTemplate2x: 'http://hello.com2x'
-          });
-
-          expect(this.layerView.leafletLayer._url).toBe('http://hello.com2x');
+      it('should update the model correctly if high resolution template is not enabled', function () {
+        this.layerModel.set({
+          urlTemplate: 'http://hello.com'
         });
+
+        expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
       });
     });
 
-    describe('is not high resolution screen', function () {
-      describe('._modelUpdated', function () {
-        it('to a model with high resolution enabled', function () {
-          spyOn(this.layerView, '_isHdpi').and.returnValue(false);
+    describe('when it is not a high resolution screen', function () {
+      beforeEach(function () {
+        spyOn(this.layerView, '_isHdpi').and.returnValue(false);
+      });
 
-          this.layerModel.set({
-            urlTemplate: 'http://hello.com',
-            urlTemplate2x: 'http://hello.com2x'
-          });
-
-          expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
+      it('should update the model correctly if high resolution template is enabled', function () {
+        this.layerModel.set({
+          urlTemplate: 'http://hello.com',
+          urlTemplate2x: 'http://hello.com2x'
         });
+
+        expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
+      });
+
+      it('should update the model correctly if high resolution template is not enabled', function () {
+        this.layerModel.set({
+          urlTemplate: 'http://hello.com'
+        });
+
+        expect(this.layerView.leafletLayer._url).toBe('http://hello.com');
       });
     });
   });

@@ -695,6 +695,7 @@ describe Carto::Api::ApiKeysController do
         login_as(@carto_user, scope: @carto_user.username)
         fake_regular_key = regular_api_key.dup
         fake_regular_key.token = 'fake'
+        fake_regular_key.user.username = 'fakest'
 
         get_json api_keys_url, nil, json_headers_for_key(fake_regular_key) do |response|
           response.status.should eq 200

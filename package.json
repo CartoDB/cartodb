@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.98-1",
+  "version": "4.11.98-2",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -26,11 +26,7 @@
     "carto-zera": "1.0.2",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
-<<<<<<< HEAD
     "cartodb.js": "CartoDB/cartodb.js#hdpi-tiled-layers",
-=======
-    "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.37",
->>>>>>> master
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "d3-interpolate": "^1.1.6",

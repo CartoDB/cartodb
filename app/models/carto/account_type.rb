@@ -2,7 +2,8 @@
 
 module Carto
   class AccountType < ActiveRecord::Base
-    belongs_to :rate_limit
+
+    belongs_to :rate_limit, dependent: :destroy
 
     def soft_geocoding_limit?(user)
       !!user[:soft_geocoding_limit]

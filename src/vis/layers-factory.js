@@ -55,13 +55,9 @@ var LAYER_CONSTRUCTORS = {
   tiled: function (attrs, options) {
     checkProperties(attrs, ['urlTemplate']);
 
-    var layerUrl = LayersFactory.isHdpi() && attrs.urlTemplate2x
-      ? attrs.urlTemplate2x
-      : attrs.urlTemplate;
-
     attrs.urlTemplate = LayersFactory.isHttps()
-      ? transformToHTTPS(layerUrl)
-      : transformToHTTP(layerUrl);
+      ? transformToHTTPS(attrs.urlTemplate)
+      : transformToHTTP(attrs.urlTemplate);
 
     return new TileLayer(attrs, { engine: options.engine });
   },
@@ -152,10 +148,6 @@ LayersFactory.prototype.createLayer = function (type, attrs) {
 
 LayersFactory.isHttps = function () {
   return (window && window.location.protocol && window.location.protocol === 'https:') || false;
-};
-
-LayersFactory.isHdpi = function () {
-  return window.devicePixelRatio > 1;
 };
 
 module.exports = LayersFactory;

@@ -6,6 +6,7 @@ module CartoDB
     DEFAULT_UPLOADS_PATH = 'public/uploads'
     FILE_ENCODING = 'utf-8'
     MAX_SYNC_UPLOAD_S3_FILE_SIZE = 52428800 # bytes
+    MAX_S3_UPLOAD_ATTEMPTS = 3
 
     def initialize(uploads_path = nil)
       @uploads_path = uploads_path || DEFAULT_UPLOADS_PATH
@@ -93,7 +94,7 @@ module CartoDB
       results
     end
 
-    def upload_file_to_s3(filepath, filename, token, s3_config)
+    def upload_file_to_s3(filepath, filename, token, s3_config, retries: 0, max_attempts: MAX_S3_UPLOAD_ATTEMPTS)
       s3_config_hash = {
         access_key_id: s3_config['access_key_id'],
         secret_access_key: s3_config['secret_access_key'],
@@ -118,6 +119,13 @@ module CartoDB
       else
         o.url_for(:get, expires: s3_config['url_ttl']).to_s
       end
+    rescue AWS::S3::Errors::RequestTimeout => e
+      attempts = retries + 1
+      if attempts < max_attempts
+        return upload_file_to_s3(filepath, filename, token, s3_config, retries: attempts)
+      end
+
+      raise e
     end
 
     private

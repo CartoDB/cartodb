@@ -1,4 +1,5 @@
 <div class="Filters is-relative">
+  <span class="Filters-separator"></span>
   <div class="Filters-inner">
     <div class="Filters-row">
       <ul class="Filters-group CDB-Text CDB-Size-medium">

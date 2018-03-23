@@ -43,6 +43,7 @@ namespace :cartodb do
           puts "Don't forget to update the database host"
         else
           puts ume.log.entries
+          raise 'Failed Export!'
         end
       end
 

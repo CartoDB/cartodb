@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.96-1",
+  "version": "4.11.98-1",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -387,9 +387,15 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
+<<<<<<< HEAD
       "version": "4.0.0-beta.36",
       "from": "cartodb/cartodb.js#hdpi-tiled-layers",
       "resolved": "git://github.com/cartodb/cartodb.js.git#3267e0866eca74b9bc1548663a561d725f0fae43"
+=======
+      "version": "4.0.0-beta.37",
+      "from": "cartodb/cartodb.js#v4.0.0-beta.37",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#5829b04e563d1e6f715356bb914a8a12586ed079"
+>>>>>>> master
     },
     "center-align": {
       "version": "0.1.3",

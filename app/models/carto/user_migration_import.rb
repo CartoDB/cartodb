@@ -137,6 +137,7 @@ module Carto
     end
 
     def rollback_import_data(package)
+      return unless import_data?
       org_import? ? self.organization = nil : self.user = nil
       save!
 

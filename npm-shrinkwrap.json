@@ -387,9 +387,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.37",
+      "version": "4.0.0-beta.36",
       "from": "cartodb/cartodb.js#hdpi-tiled-layers",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#3267e0866eca74b9bc1548663a561d725f0fae43"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9b64037706025f78e53a6044f2b125c703f65564"
     },
     "center-align": {
       "version": "0.1.3",

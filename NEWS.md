@@ -162,6 +162,9 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix alignment for formula widget edit form (CartoDB/onpremises/issues/511)
+* Fix copies order in html legends editor (CartoDB/onpremises/issues/504)
+* Fix export view template showing glitch in IE and Firefox(CartoDB/onpremises/issues/484)
 * Fix saving hdpi url templates when not needed (#13746)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
 * Do not add new notifications if notification content already exists (#13407)

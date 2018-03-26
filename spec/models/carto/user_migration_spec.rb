@@ -802,7 +802,7 @@ describe 'UserMigration' do
         v.delete
       end
       gum = CartoDB::GeocoderUsageMetrics.new(carto_user.username)
-      $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
+      $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.now))
       carto_user.delete
     end
   end

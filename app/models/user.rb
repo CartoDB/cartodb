@@ -137,6 +137,7 @@ class User < Sequel::Model
     user = ::User.new
     user.organization = organization
     user.quota_in_bytes = viewer ? 0 : organization.default_quota_in_bytes
+    user.viewer = viewer
     user
   end
 
@@ -532,6 +533,16 @@ class User < Sequel::Model
     unless @org_id_for_org_wipe.nil?
       organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
+    end
+
+    # we need to wait for the deletion to be commited because of the mix of Sequel (user)
+    # and AR (rate_limit) models and rate_limit_id being a FK in the users table
+    db.after_commit do
+      begin
+        rate_limit.try(:destroy_completely, self)
+      rescue => e
+        CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
+      end
     end
   end
 
@@ -994,6 +1005,49 @@ class User < Sequel::Model
                           'db_public',                 database_timeout,
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
+    save_rate_limits
+  end
+
+  def save_rate_limits
+    return unless has_feature_flag?('limits_v2')
+    effective_rate_limit.save_to_redis(self)
+  rescue => e
+    CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)
+  end
+
+  def update_rate_limits(rate_limit_attributes)
+    if rate_limit_attributes.present?
+      rate_limit = self.rate_limit || Carto::RateLimit.new
+      new_attributes = Carto::RateLimit.from_api_attributes(rate_limit_attributes).rate_limit_attributes
+
+      rate_limit.update_attributes!(new_attributes)
+      self.rate_limit_id = rate_limit.id
+    else
+      remove_rate_limit = self.rate_limit
+      self.rate_limit_id = nil
+    end
+
+    save
+
+    remove_rate_limit.destroy if remove_rate_limit.present?
+  end
+
+  def effective_rate_limit
+    rate_limit || effective_account_type.rate_limit
+  rescue ActiveRecord::RecordNotFound => e
+    CartoDB::Logger.error(message: 'Error retrieving user rate limits', exception: e)
+  end
+
+  def effective_account_type
+    organization_user? && organization.owner ? organization.owner.carto_account_type : carto_account_type
+  end
+
+  def rate_limit
+    Carto::RateLimit.find(rate_limit_id) if rate_limit_id
+  end
+
+  def carto_account_type
+    Carto::AccountType.find(account_type)
   end
 
   def get_auth_tokens

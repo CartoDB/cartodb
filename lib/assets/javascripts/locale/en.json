@@ -2368,8 +2368,8 @@
         "errors": {
           "empty": "Template can't be empty."
         },
-        "pre-html": "<!-- insert your custom html code above this line -->",
-        "post-html": "<!-- insert your custom html code below this line -->"
+        "pre-html": "<!-- insert your custom html code below this line -->",
+        "post-html": "<!-- insert your custom html code above this line -->"
       },
       "menu-tab-pane-labels": {
         "color": "color",

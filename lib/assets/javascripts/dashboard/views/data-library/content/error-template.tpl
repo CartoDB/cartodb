@@ -3,7 +3,6 @@
     <i class="CDB-IconFont CDB-IconFont-cockroach"></i>
   </div>
   <% if (msg) { %>
-    // TODO: Check if it works when msg is not present when template is instanciated.
     <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= msg %></p>
   <% } %>
   <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl">Oouch! There has been an error</h4>

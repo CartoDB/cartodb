@@ -27,6 +27,7 @@ module Carto
 
     def run_export
       check_valid_user(user) if user && export_metadata
+      check_user_tables
       check_valid_organization(organization) if organization && export_metadata
 
       log.append("=== Exporting #{organization ? 'user' : 'org'} data ===")
@@ -71,9 +72,15 @@ module Carto
       unless Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?
         raise "Cannot export if tables aren't synched with db. Please run ghost tables."
       end
+    end
 
-      vs = user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).select { |v| v.table.nil? }
-      raise "Can't export. Vizs without user table: #{vs.map(&:id)}" unless vs.empty?
+    def check_user_tables
+      user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).each do |v|
+        if v.table.nil?
+          v.delete
+          log.append("=== Can't export. Viz without user table: #{v.id} ===")
+        end
+      end
     end
 
     def check_valid_organization(organization)

@@ -16,7 +16,7 @@
           </li>
         <% end %>
         <li class="Filters-typeItem">
-          <a href="<%= current_user_url('organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
+          <a href="<%= current_user_url('organization_users') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
             <%= current_user.organization.users.count %>/<%= current_user.organization.total_seats %> users
           </a>
         </li>

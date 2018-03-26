@@ -161,6 +161,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix wrong dataset header width in chrome (https://github.com/CartoDB/support/issues/1398)
 * Fix widgets size in Builder (#13682)
 * Fix SQL function analysis error with dragged source (https://github.com/CartoDB/cartodb/pull/13732)
 * Fix histogram widgets collapsing (#13705)

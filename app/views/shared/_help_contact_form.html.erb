@@ -5,16 +5,21 @@ document.write(unescape("%3Cscript src='" + sbhost +"d3932137p5ikt7.cloudfront.n
 </script>
 
 <script>
-if (userModel.featureEnabled('help_form') && userModel.get('account_type') === 'PERSONAL30') {
-  sb_contact_form('initialize',{
-    company: 'cartodb',
-    height: '500px',
-    position: 'bottom',
-    locale: 'en',
-    captcha: 'true',
-    forwarding_address_id: '12554',
-    name: userModel.get('name'),
-    email: userModel.get('email')
-  });
-}
+  var userData = userData || user_data;
+  if (userData) {
+    var userHasHelpFormEnabled = userData.feature_flags && userData.feature_flags.indexOf('help_contact_form');
+    var isProfessionalTrialUser = userData.account_type === 'PERSONAL30';
+    if (userHasHelpFormEnabled && isProfessionalTrialUser) {
+      sb_contact_form('initialize',{
+        company: 'cartodb',
+        height: '500px',
+        position: 'bottom',
+        locale: 'en',
+        captcha: 'true',
+        forwarding_address_id: '12554',
+        name: userData.name,
+        email: userData.email
+      });
+    }
+  }
 </script>

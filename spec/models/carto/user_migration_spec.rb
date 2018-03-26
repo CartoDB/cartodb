@@ -364,7 +364,7 @@ describe 'UserMigration' do
     @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
 
     carto_user.tables.exists?(name: @table.name).should be
-    debugger
+
     user.in_database.execute("DROP TABLE #{@table.name}")
     # The table is still registered after the deletion
     carto_user.reload

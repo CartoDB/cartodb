@@ -355,7 +355,7 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
-  it 'fixes export users with datasets without a physical table if metadata export is requested (see #13721)' do
+  it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save

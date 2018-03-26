@@ -365,7 +365,6 @@ describe 'UserMigration' do
     @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
 
     carto_user.tables.exists?(name: @table.name).should be
-
     user.in_database.execute("DROP TABLE #{@table.name}")
     # The table is still registered after the deletion
     carto_user.reload
@@ -392,9 +391,9 @@ describe 'UserMigration' do
     carto_user = Carto::User.find(user.id)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
+
     @table.delete
     user.in_database.execute("DROP TABLE #{@table.name}")
-
     # The canonical visualization is still registered after the deletion
     @table_visualization.reload
     @table_visualization.should be

@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.21.0`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.22.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -130,6 +130,7 @@ ion for time-series (#12670)
 * Limits V2
   * Add rate limits persistence (#13626)
   * Remove rate limits on user deletion (#13657)
+  * Sync price plans and rate limits (#13660)
   * Add rate limit index to account_types (#13664)
 * Auth API
   * Keys creation (#13170)
@@ -161,6 +162,9 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix saving hdpi url templates when not needed (#13746)
+* Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
+* Do not add new notifications if notification content already exists (#13407)
 * Fix widgets size in Builder (#13682)
 * Fix SQL function analysis error with dragged source (https://github.com/CartoDB/cartodb/pull/13732)
 * Fix histogram widgets collapsing (#13705)

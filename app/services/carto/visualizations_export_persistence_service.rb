@@ -88,7 +88,6 @@ module Carto
           layer.save if changed
         end
 
-
         if map
           map.data_layers.each(&:register_table_dependencies)
 

@@ -97,6 +97,8 @@ describe "Assets API" do
   end
 
   it "deletes an asset" do
+    Asset.any_instance.stubs('use_s3?').returns(false)
+
     FactoryGirl.create(:asset, user_id: @user.id)
     @user.reload
     delete_json(api_v1_users_assets_destroy_url(user_id: @user.id, id: @user.assets.first.id), params) do |response|

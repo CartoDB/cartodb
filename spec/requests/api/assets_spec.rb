@@ -100,6 +100,7 @@ describe "Assets API" do
     FactoryGirl.create(:asset, user_id: @user.id)
     @user.reload
     delete_json(api_v1_users_assets_destroy_url(user_id: @user.id, id: @user.assets.first.id), params) do |response|
+      response.body.should == {}
       response.status.should be_success
       @user.reload
       @user.assets.count.should == 0

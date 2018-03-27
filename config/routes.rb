@@ -535,6 +535,7 @@ CartoDB::Application.routes.draw do
     resources :organizations
     resources :synchronizations
     resources :feature_flags
+    resources :account_types, only: [:create, :update, :destroy]
   end
 
   scope module: 'carto' do

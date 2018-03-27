@@ -1,7 +1,7 @@
 <form>
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">1</div>
-    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="source,function_name">
+    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="primary_source,function_name">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.deprecated-sql-function.title') %></h2>
       </div>

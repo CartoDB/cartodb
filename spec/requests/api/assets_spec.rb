@@ -4,10 +4,6 @@ require 'spec_helper'
 
 describe "Assets API" do
 
-  before(:all) do
-    AWS.stub!
-  end
-
   before(:each) do
     @user = FactoryGirl.create(:valid_user)
 

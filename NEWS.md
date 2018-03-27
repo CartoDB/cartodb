@@ -17,6 +17,7 @@ recommended that you replace the `basemaps` section completely, since this relea
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
 
 ### Features
+* Profile page migration (#13726)
 * Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
@@ -32,6 +33,7 @@ resolution maps, which have added `urlTemplate2x` keys to the configuration.
 * Disable following analysis steps (#13311)
 * Enable deleting geometry anchors in edit mode (#11341)
 * Fix marker bugs (#1207)
+* Improve copies for analyses, move MORE INFO link (#13384)
 * Add routing to widgets
 * When editing a widget, disable the other ones (#13374)
 * Back button support (#13115)
@@ -163,8 +165,11 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Load FullStory script for users on the PERSONAL30 plan (https://github.com/CartoDB/cartodb/pull/13753)
+* Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))
+* Fix saving hdpi url templates when not needed (#13746)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
 * Do not add new notifications if notification content already exists (#13407)
+* Fix wrong dataset header width in chrome (https://github.com/CartoDB/support/issues/1398)
 * Fix widgets size in Builder (#13682)
 * Fix SQL function analysis error with dragged source (https://github.com/CartoDB/cartodb/pull/13732)
 * Fix histogram widgets collapsing (#13705)

@@ -101,7 +101,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Overlay-inner {
   display: none;
-  margin-top: 8px;
+  margin-top: 16px;
 
   &.is-active {
     display: block;
@@ -114,7 +114,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 // Override carto.js legends styles
 .CDB-Legends-canvas .CDB-Legends-canvasInner {
-  padding: 16px 16px 0;
+  padding: 12px 16px 0 16px;
 }
 
 .CDB-Embed-legends {
@@ -183,7 +183,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     }
 
     .CDB-Legends-canvasInner {
-      padding: 24px 24px 0;
+      padding: 12px 16px 0 16px;
     }
   }
 }

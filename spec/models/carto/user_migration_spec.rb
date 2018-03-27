@@ -355,7 +355,7 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
-  it 'doesn\'t export users with datasets without a physical table if metadata export is requested (see #12588)' do
+  it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -367,16 +367,13 @@ describe 'UserMigration' do
     user.in_database.execute("DROP TABLE #{@table.name}")
     # The table is still registered after the deletion
     carto_user.reload
+
     carto_user.tables.exists?(name: @table.name).should be
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
+    export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
     export.destroy
 
@@ -449,7 +446,7 @@ describe 'UserMigration' do
     it_should_behave_like 'migrating metadata', true
     it_should_behave_like 'migrating metadata', false
 
-    it 'doesn\'t export orgs with datasets without physical table if metadata export is requested (see #12588)' do
+    it 'exports orgs with datasets without physical table if metadata export is requested (see #13721)' do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
 
       @carto_org_user_1.tables.exists?(name: @table.name).should be
@@ -460,12 +457,7 @@ describe 'UserMigration' do
 
       export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
       export.run_export
-      export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-      expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-      export.destroy
-
-      export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: false)
-      export.run_export
+      export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
     end

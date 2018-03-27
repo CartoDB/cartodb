@@ -72,9 +72,7 @@ module Carto
     private
 
     def check_valid_user(user)
-      unless Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?
-        raise "Cannot export if tables aren't synched with db. Please run ghost tables."
-      end
+      Carto::GhostTablesManager.new(user.id).link_ghost_tables_synchronously
     end
 
     def remove_orphan_visualizations

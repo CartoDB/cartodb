@@ -23,9 +23,9 @@ module Carto
         identifier = File.join(namespace, filename)
 
         s3_object = bucket.object(identifier)
-        File.open(file.path, 'rb') do |file|
+        File.open(file.path, 'rb') do |f|
           s3_object.put(
-            body: file,
+            body: f,
             acl: 'public-read',
             content_type: mime_type
           )

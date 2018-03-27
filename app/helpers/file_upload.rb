@@ -1,4 +1,5 @@
 # coding: utf-8
+
 require 'aws-sdk-s3'
 
 module CartoDB
@@ -98,7 +99,7 @@ module CartoDB
       s3_config_hash = {
         access_key_id: s3_config['access_key_id'],
         secret_access_key: s3_config['secret_access_key'],
-        http_proxy: s3_config['proxy_uri'].present? ?  s3_config['proxy_uri'] : nil,
+        http_proxy: s3_config['proxy_uri'].present? ? s3_config['proxy_uri'] : nil,
         region: s3_config['region']
       }
       # This allows to override the S3 endpoint in case a non AWS compatible
@@ -117,7 +118,7 @@ module CartoDB
 
       options = { expires_in: s3_config['url_ttl'] }
       content_disposition = s3_config['content-disposition']
-      options.merge!(response_content_disposition: content_disposition) if content_disposition.present?
+      options[:response_content_disposition] = content_disposition if content_disposition.present?
       obj.presigned_url(:get, options)
     end
 

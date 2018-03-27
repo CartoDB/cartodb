@@ -79,11 +79,11 @@ module Carto
 
     def check_user_tables
       user.visualizations.where("type = '#{Carto::Visualization::TYPE_CANONICAL}'").\
-      joins("LEFT JOIN user_tables on visualizations.map_id = user_tables.map_id").\
-      where("user_tables.map_id IS NULL").each do |v|
-        v.delete
-        log.append("=== Can't export. Viz without user table: #{v.id} ===")
-      end
+        joins("LEFT JOIN user_tables on visualizations.map_id = user_tables.map_id").\
+        where("user_tables.map_id IS NULL").each do |v|
+          v.delete
+          log.append("=== Can't export. Viz without user table: #{v.id} ===")
+        end
     end
 
     def check_valid_organization(organization)

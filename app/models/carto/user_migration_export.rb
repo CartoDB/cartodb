@@ -28,7 +28,7 @@ module Carto
     def run_export
       if user && export_metadata
         check_valid_user(user)
-        check_user_tables
+        remove_orphan_visualizations
       end
 
       check_valid_organization(organization) if organization && export_metadata
@@ -77,7 +77,7 @@ module Carto
       end
     end
 
-    def check_user_tables
+    def remove_orphan_visualizations
       user.visualizations.where("type = '#{Carto::Visualization::TYPE_CANONICAL}'").\
         joins("LEFT JOIN user_tables on visualizations.map_id = user_tables.map_id").\
         where("user_tables.map_id IS NULL").each do |v|

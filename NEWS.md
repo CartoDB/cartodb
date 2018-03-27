@@ -17,6 +17,7 @@ recommended that you replace the `basemaps` section completely, since this relea
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
 
 ### Features
+* Profile page migration (#13726)
 * Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
@@ -163,6 +164,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Allows import of an exported dataset with external data imports without a syncronization (#13766)
+* Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))
 * Fix saving hdpi url templates when not needed (#13746)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
 * Do not add new notifications if notification content already exists (#13407)

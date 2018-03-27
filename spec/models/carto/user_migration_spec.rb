@@ -177,7 +177,6 @@ describe 'UserMigration' do
   describe 'failing organization organizations should rollback' do
     include_context 'organization with users helper'
     before :all do
-      Carto::UserMigrationExport.any_instance.stubs(:check_user_tables).returns(true)
       owner = @carto_organization.owner
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
       data_import = DataImport.create(
@@ -415,7 +414,6 @@ describe 'UserMigration' do
 
     shared_examples_for 'migrating metadata' do |migrate_metadata|
       it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
-        Carto::UserMigrationExport.any_instance.stubs(:check_user_tables).returns(true)
         table1 = create_table(user_id: @carto_org_user_1.id)
         records.each { |row| table1.insert_row!(row) }
 
@@ -452,7 +450,6 @@ describe 'UserMigration' do
     it_should_behave_like 'migrating metadata', false
 
     it 'doesn\'t export orgs with datasets without physical table if metadata export is requested (see #12588)' do
-      Carto::UserMigrationExport.any_instance.stubs(:check_user_tables).returns(true)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
 
       @carto_org_user_1.tables.exists?(name: @table.name).should be

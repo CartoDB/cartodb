@@ -26,8 +26,11 @@ module Carto
     validate  :user_or_organization_present
 
     def run_export
-      check_valid_user(user) if user && export_metadata
-      check_user_tables
+      if user && export_metadata
+        check_valid_user(user)
+        check_user_tables
+      end
+
       check_valid_organization(organization) if organization && export_metadata
 
       log.append("=== Exporting #{organization ? 'user' : 'org'} data ===")

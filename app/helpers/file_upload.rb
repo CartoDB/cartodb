@@ -110,8 +110,10 @@ module CartoDB
 
       s3 = Aws::S3::Resource.new
       obj = s3.bucket(s3_config['bucket_name']).object("#{token}/#{File.basename(filename)}")
-      obj.upload_file(Pathname.new(filepath).to_s)
-      obj.acl.put(acl: 'authenticated-read')
+
+      File.open(filepath, 'rb') do |file|
+        obj.put(body: file, acl: 'authenticated-read')
+      end
 
       options = { expires_in: s3_config['url_ttl'] }
       content_disposition = s3_config['content-disposition']

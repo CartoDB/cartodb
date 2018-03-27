@@ -226,6 +226,7 @@ WORKING_SPECS_9 = \
 	spec/requests/superadmin/organizations_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/requests/superadmin/platform_controller_spec.rb \
+	spec/requests/superadmin/account_types_spec.rb \
 	spec/requests/api/visualizations_spec.rb \
 	spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
@@ -248,6 +249,7 @@ WORKING_SPECS_9 = \
 
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
+	spec/models/carto/account_type_spec.rb \
 	spec/models/carto/analysis_spec.rb \
 	spec/models/carto/analysis_node_spec.rb \
 	spec/models/carto/api_key_spec.rb \

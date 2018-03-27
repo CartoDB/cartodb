@@ -39,13 +39,15 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def create
     @user = ::User.new
 
-    @user.set_fields_from_central(params[:user], :create)
+    user_param = params[:user]
+    @user.set_fields_from_central(user_param, :create)
     @user.enabled = true
 
+    @user.rate_limit_id = create_rate_limits(user_param[:rate_limit]).id if user_param[:rate_limit].present?
     if @user.save
       @user.reload
       CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
-      @user.set_relationships_from_central(params[:user])
+      @user.set_relationships_from_central(user_param)
     end
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(
@@ -61,6 +63,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.set_relationships_from_central(user_param)
     @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
 
+    @user.update_rate_limits(user_param[:rate_limit])
     @user.save
     respond_with(:superadmin, @user)
   end
@@ -204,6 +207,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def get_carto_user
     @user = Carto::User.where(id: params[:id]).first
     render json: { error: 'User not found' }, status: 404 unless @user
+  end
+
+  def create_rate_limits(rate_limit_attributes)
+    rate_limit = Carto::RateLimit.from_api_attributes(rate_limit_attributes)
+    rate_limit.save!
+    rate_limit
   end
 
 end # Superadmin::UsersController

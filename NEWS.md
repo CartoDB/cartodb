@@ -17,6 +17,7 @@ recommended that you replace the `basemaps` section completely, since this relea
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
 
 ### Features
+* Organization page migration (#13742)
 * Profile page migration (#13726)
 * Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)

@@ -33,6 +33,7 @@ resolution maps, which have added `urlTemplate2x` keys to the configuration.
 * Disable following analysis steps (#13311)
 * Enable deleting geometry anchors in edit mode (#11341)
 * Fix marker bugs (#1207)
+* Improve copies for analyses, move MORE INFO link (#13384)
 * Add routing to widgets
 * When editing a widget, disable the other ones (#13374)
 * Back button support (#13115)
@@ -90,6 +91,7 @@ ion for time-series (#12670)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
+* Tooling to add arbitrary datasets to Data Library (#13666)
 * New loading button styles (#12132)
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12588, #12380, #12510)
 * Start using ::outline symbolizer for polygon stroke (#12412)
@@ -164,6 +166,8 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Skip canonical viz with missing tables from on metadata export
+* Show layer selector in the legends tab on small breakpoint (https://github.com/CartoDB/support/issues/1412)
+* Allows import of an exported dataset with external data imports without a syncronization (#13766)
 * Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))
 * Fix saving hdpi url templates when not needed (#13746)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)

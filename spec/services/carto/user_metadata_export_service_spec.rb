@@ -187,7 +187,7 @@ describe Carto::UserMetadataExportService do
         # At this point, the user database is still there, but the tables got destroyed.
         # We recreate a dummy one for the visualization we did export
         canonical_with_table = source_visualizations.find do |v|
-           v['type'] == 'table' && v['name'] != canonical_without_table['name']
+          v['type'] == 'table' && v['name'] != canonical_without_table['name']
         end
         @user.in_database.execute("CREATE TABLE #{canonical_with_table['name']} (cartodb_id int)")
 

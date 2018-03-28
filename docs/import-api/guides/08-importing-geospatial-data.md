@@ -14,7 +14,7 @@ When a file is imported, it is transformed into a dataset that can be processed 
 * **the_geom_webmercator**
   * This column stores the geometries transformed into the EPSG 3857 projection, and is used for rendering purposes
 * **_feature_count**
-  * This column is automatically created when overview representations of data are created (for datasets containing more than 500,000 points). For details, see [Back-End Data Overviews](https://carto.com/docs/tips-and-tricks/back-end-data-performance/#back-end-data-overviews)
+  * This column is automatically created when overview representations of data are created (for datasets containing more than 500,000 points).
 
 When a dataset is exported from CARTO, it includes the `cartodb_id` and `the_geom` columns, which will be reused if the dataset is then imported to the system. This ensures that importing an exported dataset contains the original exported dataset content and row order.
 
@@ -30,7 +30,7 @@ Apply the following naming conventions for datasets in CARTO, and avoid using th
 
 ##### Reserved Words
 
-There are certain words reserved in the system that cannot be used to name columns or datasets, mainly the [PostgreSQL reserved words](http://www.postgresql.org/docs/9.0/static/sql-keywords-appendix.html). Any names that conflict with a reserved word are prefixed with an underscore (_) automatically.
+There are certain words reserved in the system that cannot be used to name columns or datasets, mainly the PostgreSQL reserved words. Any names that conflict with a reserved word are prefixed with an underscore (_) automatically.
 
 ### Import Guessing
 
@@ -48,7 +48,7 @@ CARTO includes guessing functionality during the import process. This is useful 
 
   Files that contain country, city, IP address information can be automatically geocoded by the system, if the content guessing option is enabled. This automatic geocoding only occurs if there is not a big proportion of repeated, or null values, in a column. Content guessing does not require the target columns to be named in a special way (such as "country" or "city"), CARTO inspects the different available columns and identifies which of them can be guessed geospatially.
 
-**Tip:** For information about how to granularly configure the guessing options for your import process, view the [upload file parameters](https://carto.com/docs/carto-engine/import-api/standard-tables/).
+**Tip:** For information about how to granularly configure the guessing options for your import process, view the upload file parameters on the standard tables section.
 
 ### Supported Geospatial Data Formats
 
@@ -146,7 +146,7 @@ The MapInfo file format is geospatial vector data developed by MapInfo, which su
 
 #### CARTO
 
-CARTO files are CARTO generated map visualization files. This .carto file includes the dataset and visualization definition, which contains any SQL queries, CartoCSS, basemaps, attributions, metadata, and styling that was applied to a map. This is useful for downloading complete CARTO visualizations that you can share or import. For details, see [Export Map](https://carto.com/learn/guides/intro/exporting-carto-maps).
+CARTO files are CARTO generated map visualization files. This .carto file includes the dataset and visualization definition, which contains any SQL queries, CartoCSS, basemaps, attributions, metadata, and styling that was applied to a map. This is useful for downloading complete CARTO visualizations that you can share or import.
 
 ### Multilayer Uploads
 

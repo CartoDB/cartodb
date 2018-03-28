@@ -1,8 +1,8 @@
 ## CARTO Map Visualizations
 
-The *Export map* option enables you to download a map, and the connected dataset, as a [.carto file](https://carto.com/docs/carto-engine/import-api/importing-geospatial-data/#supported-geospatial-data-formats). This is useful for downloading complete CARTO visualizations that you can share or import.
+The *Export map* option enables you to download a map, and the connected dataset, as a .carto file. This is useful for downloading complete CARTO visualizations that you can share or import.
 
-**Note:** The Import API export visualization command only works for maps created from _[Your maps](https://carto.com/docs/carto-editor/dashboard/#your-maps-dashboard)_ dashboard.
+**Note:** The Import API export visualization command only works for maps created from your dashboard.
 
 A cURL POST request allows you to export the visualization, which you will have to poll with a GET command until the state is `complete`.
 
@@ -69,6 +69,6 @@ curl -H 'Content-Type: application/json' https://{username}.carto.com/api/v3/vis
 
 ### Import a CARTO Visualization
 
-To import a .carto visualization, you can use the standard Import API procedure for [uploading a local file](https://carto.com/docs/carto-engine/import-api/quickstart/#uploading-a-local-file).
+To import a .carto visualization, you can use the standard Import API procedure for uploading a local file.
 
-See the [Import Errors](https://carto.com/docs/carto-engine/import-api/import-errors/#import-errors) section to troubleshoot any importing errors.
+See the import errors list on Support section to troubleshoot any importing errors.

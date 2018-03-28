@@ -1,11 +1,4 @@
----
-title: Import Errors
-title_meta: Import API — Import Errors
-description: Known error codes and solutions to help you troubleshoot why your import may have failed.
-permalink: /carto-engine/import-api/import-errors/
-redirect_from:
-  - /cartodb-platform/import-api/import-errors/
----
+
 ## Import Errors
 
 You may receive an error during the import process when connecting a dataset. This section contains any known error codes, and provides descriptions to help you troubleshoot why your import may have failed. Please [contact us](mailto:support@carto.com) if you need assistance.

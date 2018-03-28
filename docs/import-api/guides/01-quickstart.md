@@ -1,6 +1,6 @@
 ## Quickstart
 
-For this example (and the rest of the ones illustrated in this document) we will be using a command-line tool known as `cURL`. For more info about this tool see [this blog post](http://quickleft.com/blog/command-line-tutorials-curl) or type `man curl` in bash.
+For this example (and the rest of the ones illustrated here) we will be using a command-line tool known as `cURL`. For more info about this tool see [this blog post](http://quickleft.com/blog/command-line-tutorials-curl) or type `man curl` in bash.
 
 ### Uploading a Local File
 
@@ -79,5 +79,3 @@ curl -v -H "Content-Type: application/json" -d '{
   "success": true
 }
 ```
-
-For details, see [Database Connectors](/docs/carto-engine/import-api/database-connectors/).

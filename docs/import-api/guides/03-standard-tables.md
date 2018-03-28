@@ -1,6 +1,6 @@
 ## Standard Tables
 
-A standard import stores the data you upload from files with [valid formats](https://carto.com/docs/carto-engine/import-api/importing-geospatial-data#supported-geospatial-data-formats), creating tables at CARTO. These are the default tables used to store the data of the uploaded files (that will be used to create datasets and maps). Any CARTO user may create, manipulate, and delete their own datasets.
+A standard import stores the data you upload from files with valid formats, creating tables at CARTO. These are the default tables used to store the data of the uploaded files (that will be used to create datasets and maps). Any CARTO user may create, manipulate, and delete their own datasets.
 
 ### Upload file
 

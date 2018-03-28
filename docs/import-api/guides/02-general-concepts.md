@@ -30,4 +30,4 @@ Errors are reported using standard HTTP codes and extended information encoded i
 </html>
 ```
 
-Depending on the specific case, additional information regarding the error may be presented. See [Import Errors](https://carto.com/docs/carto-engine/import-api/import-errors/) for details about known error codes and solutions.
+Depending on the specific case, additional information regarding the error may be presented. See support section for details about known error codes and solutions.

@@ -164,7 +164,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
-* Load FullStory script for users on the PERSONAL30 plan (https://github.com/CartoDB/cartodb/pull/13753)
+* FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
 * Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))
 * Fix saving hdpi url templates when not needed (#13746)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)

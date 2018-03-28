@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.99-511-2",
+  "version": "4.11.102-511-1",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -1142,9 +1142,9 @@
       "resolved": "https://registry.npmjs.org/https-browserify/-/https-browserify-0.0.1.tgz"
     },
     "ieee754": {
-      "version": "1.1.10",
+      "version": "1.1.11",
       "from": "ieee754@>=1.1.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/ieee754/-/ieee754-1.1.10.tgz"
+      "resolved": "https://registry.npmjs.org/ieee754/-/ieee754-1.1.11.tgz"
     },
     "indexof": {
       "version": "0.0.1",

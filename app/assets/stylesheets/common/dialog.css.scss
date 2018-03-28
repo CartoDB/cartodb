@@ -24,7 +24,7 @@ body.is-inDialog {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 40px);
 }
 
 /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */

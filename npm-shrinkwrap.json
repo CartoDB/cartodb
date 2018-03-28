@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.102-13683-03",
+  "version": "4.11.102-13683-04",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -132,9 +132,9 @@
       "resolved": "https://registry.npmjs.org/async-each/-/async-each-1.0.1.tgz"
     },
     "atob": {
-      "version": "2.0.3",
+      "version": "2.1.0",
       "from": "atob@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/atob/-/atob-2.0.3.tgz"
+      "resolved": "https://registry.npmjs.org/atob/-/atob-2.1.0.tgz"
     },
     "backbone": {
       "version": "1.2.3",
@@ -387,9 +387,9 @@
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
-      "version": "4.0.0-beta.36-13683-01",
+      "version": "4.0.0-beta.36-13683-02",
       "from": "cartodb/cartodb.js#13683-add-default-point-aggregation",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#5d24c3a146746fd368d4706bdb19f394f9c7aadf"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#aa0e2e9b5a8e53e15b25cc0d22a7953699f3f98a"
     },
     "center-align": {
       "version": "0.1.3",

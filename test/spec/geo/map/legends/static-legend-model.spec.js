@@ -1,5 +1,5 @@
 var StaticLegendModelBase = require('../../../../../src/geo/map/legends/static-legend-model-base');
-var MockFactory = require('../../../../helpers/mockFactory');
+var createEngine = require('../../../fixtures/engine.fixture.js');
 var Engine = require('../../../../../src/engine');
 var MyLegendModel = StaticLegendModelBase.extend({ TYPE: 'type' });
 
@@ -7,7 +7,7 @@ describe('src/geo/map/legends/static-legend-model-base', function () {
   var engineMock;
   var legendModel;
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     legendModel = new MyLegendModel({}, { engine: engineMock });
   });
 

@@ -5,7 +5,7 @@ var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
 var TooltipManager = require('../../../src/vis/tooltip-manager');
-var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 var simulateFeatureOverEvent = function (layerView, data) {
   layerView.trigger('featureOver', {
@@ -35,7 +35,7 @@ describe('src/vis/tooltip-manager.js', function () {
       })
     });
 
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
 
     this.tooltipModel = new TooltipModel();
     this.infowindowModel = new InfowindowModel();

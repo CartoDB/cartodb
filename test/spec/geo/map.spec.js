@@ -8,7 +8,7 @@ var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var LayersFactory = require('../../../src/vis/layers-factory');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
-var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 var Point = require('../../../src/geo/geometry-models/point');
 var Polyline = require('../../../src/geo/geometry-models/polyline');
@@ -32,7 +32,7 @@ describe('core/geo/map', function () {
   var engineMock;
 
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     this.map = map = new Map(null, { layersFactory: fakeLayersFactory });
   });
 

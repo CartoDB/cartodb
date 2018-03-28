@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var MockFactory = require('../../../helpers/mockFactory');
+var createEngine = require('../../fixtures/engine.fixture.js');
 
 module.exports = function (LayerModel) {
   var layer;
@@ -8,7 +9,7 @@ module.exports = function (LayerModel) {
 
   beforeEach(function () {
     source = MockFactory.createAnalysisModel({ id: 'a0' });
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     layer = new LayerModel({source: source}, { engine: engineMock });
   });
 

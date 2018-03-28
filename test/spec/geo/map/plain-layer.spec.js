@@ -1,11 +1,11 @@
 var _ = require('underscore');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
-var MockFactory = require('../../../helpers/mockFactory');
+var createEngine = require('../../fixtures/engine.fixture.js');
 
 describe('PlainLayer', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
   });
 
   it('should be type plain', function () {

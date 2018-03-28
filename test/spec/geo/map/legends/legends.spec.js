@@ -1,10 +1,10 @@
 var Legends = require('../../../../../src/geo/map/legends/legends');
-var MockFactory = require('../../../../helpers/mockFactory');
+var createEngine = require('../../../fixtures/engine.fixture.js');
 
 describe('geo/map/legends/legends', function () {
   var engineMock;
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     this.legends = new Legends([
       {
         type: 'bubble',

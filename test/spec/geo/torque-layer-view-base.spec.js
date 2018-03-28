@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var TorqueLayerViewBase = require('../../../src/geo/torque-layer-view-base');
 var _ = require('underscore');
-var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 describe('geo/torque-layer-base-view', function () {
   var engineMock;
@@ -10,7 +10,7 @@ describe('geo/torque-layer-base-view', function () {
     spyOn(TorqueLayerViewBase, '_cartoCSSChanged').and.callThrough();
     spyOn(TorqueLayerViewBase, '_onUpdateDuration').and.callThrough();
 
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     this.model = new TorqueLayer({
       type: 'torque',
       query: 'select * from table',

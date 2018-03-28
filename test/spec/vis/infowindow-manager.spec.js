@@ -6,7 +6,7 @@ var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var TooltipModel = require('../../../src/geo/ui/tooltip-model');
 var InfowindowModel = require('../../../src/geo/ui/infowindow-model');
 var InfowindowManager = require('../../../src/vis/infowindow-manager');
-var MockFactory = require('../../helpers/mockFactory');
+var createEngine = require('../fixtures/engine.fixture.js');
 
 var createCartoDBLayer = function (engine, infowindowAttrs) {
   infowindowAttrs = infowindowAttrs || {
@@ -56,7 +56,7 @@ describe('src/vis/infowindow-manager.js', function () {
       callback(data);
     });
 
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
 
     this.infowindowManager = new InfowindowManager({ // eslint-disable-line
       engine: engineMock,

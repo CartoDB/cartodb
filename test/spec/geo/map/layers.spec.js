@@ -3,14 +3,14 @@ var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
-var MockFactory = require('../../../helpers/mockFactory');
+var createEngine = require('../../fixtures/engine.fixture.js');
 
 describe('geo/map/layers', function () {
   var layers;
   var engineMock;
 
   beforeEach(function () {
-    engineMock = MockFactory.createEngine();
+    engineMock = createEngine();
     layers = new Layers();
   });
 

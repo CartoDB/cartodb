@@ -37,7 +37,7 @@
 .OptionCard--blocky {
   position: relative;
   max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
-  padding: 33px 33px 27px;
+  padding: 32px 32px 27px;
 }
 
 .OptionCard--code {
@@ -69,7 +69,9 @@
 }
 
 .OptionCard--blocky .OptionCard-desc {
-  margin-bottom: 0;
+  width: 100%;
+  margin-top: $sMargin-elementInline;
+  margin-bottom: -$sMargin-elementInline;
 }
 
 .OptionCard--onlyIcons {
@@ -112,6 +114,7 @@
 }
 
 .OptionCard-desc {
+  width: 100%;
   margin-bottom: $sMargin-elementInline;
 }
 

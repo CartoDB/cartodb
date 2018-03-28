@@ -439,7 +439,7 @@ components:
           items:
             type: string
             enum:
-              - read
+              - select
               - insert
               - update
               - delete

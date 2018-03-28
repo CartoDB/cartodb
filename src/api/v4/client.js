@@ -25,12 +25,18 @@ function getValidationError (code) {
  * @param {object} settings
  * @param {string} settings.apiKey - API key used to authenticate against CARTO
  * @param {string} settings.username - Name of the user
- * @param {string} [settings.serverUrl] - URL of the windshaft server
+ * @param {string} [settings.serverUrl] - URL of the windshaft server. Only needed in custom installations. Pattern: `https:\\{username}.yourinstance.com` or `https://your.carto.instance/user/{username}`, depending on your environment.
  *
  * @example
  * var client = new carto.Client({
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE'
+ * });
+ * 
+ * var client = new carto.Client({
+ *   apiKey: 'YOUR_API_KEY_HERE',
+ *   username: 'YOUR_USERNAME_HERE',
+ *   serverUrl: 'https://YOUR.CARTO.INSTANCE/user/YOUR_USERNAME_HERE'
  * });
  *
  * @constructor

@@ -26,10 +26,7 @@ module Carto
     validate  :user_or_organization_present
 
     def run_export
-      if user && export_metadata
-        check_valid_user(user)
-        remove_orphan_visualizations
-      end
+      check_valid_user(user) if user && export_metadata
 
       check_valid_organization(organization) if organization && export_metadata
 
@@ -73,15 +70,6 @@ module Carto
 
     def check_valid_user(user)
       Carto::GhostTablesManager.new(user.id).link_ghost_tables_synchronously
-    end
-
-    def remove_orphan_visualizations
-      user.visualizations.where("type = '#{Carto::Visualization::TYPE_CANONICAL}'").\
-        joins("LEFT JOIN user_tables on visualizations.map_id = user_tables.map_id").\
-        where("user_tables.map_id IS NULL").each do |v|
-          v.delete
-          log.append("=== Can't export. Viz without user table: #{v.id} ===")
-        end
     end
 
     def check_valid_organization(organization)

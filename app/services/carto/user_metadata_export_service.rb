@@ -287,6 +287,8 @@ module Carto
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
       user.visualizations.where(type: type).each do |visualization|
+        next if visualization.type == Carto::Visualization::TYPE_CANONICAL && visualization.user_table.nil?
+
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
           visualization.id, user
         )

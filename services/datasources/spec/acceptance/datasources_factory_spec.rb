@@ -46,4 +46,33 @@ describe DatasourcesFactory do
     end
   end
 
+  describe '#customized_config?' do
+    let(:twitter_datasource) { CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME }
+
+    before(:each) do
+      @config = get_config
+    end
+
+    it 'returns false for a random user' do
+      user = FactoryGirl.build(:carto_user, username: 'wadus')
+      DatasourcesFactory.customized_config?(twitter_datasource, user).should be_false
+    end
+
+    it 'returns true for a user with custom config' do
+      user = FactoryGirl.build(:carto_user, username: 'wadus')
+      @config['datasource_search']['twitter_search']['customized_user_list'] = [user.username]
+      DatasourcesFactory.set_config(@config)
+
+      DatasourcesFactory.customized_config?(twitter_datasource, user).should be_true
+    end
+
+    it 'returns true for a user in an organization with custom config' do
+      organization = FactoryGirl.build(:organization, name: 'wadus-org')
+      user = FactoryGirl.build(:carto_user, username: 'nowadus', organization: organization)
+      @config['datasource_search']['twitter_search']['customized_orgs_list'] = [organization.name]
+      DatasourcesFactory.set_config(@config)
+
+      DatasourcesFactory.customized_config?(twitter_datasource, user).should be_true
+    end
+  end
 end

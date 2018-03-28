@@ -1333,8 +1333,10 @@
         },
         "footer": {
           "guessing-desc": "Let CARTO automatically guess data types and content on import.",
-          "twitter-desc": "To get access to historical data (older than 30 days) you need to",
-          "contact-team": "contact our team",
+          "deprecated-connector": "Deprecated connector.",
+          "twitter-contact-support": "Please <a href='mailto:support@carto.com'>contact support</a> should you need Twitter data.",
+          "twitter-how-to-historical": "To get access to historical data (older than 30 days) you need to",
+          "contact-team": "<a href='mailto:support@carto.com'>contact our team</a>",
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
           "privacy-change": "Your new dataset will be %{privacy}",
           "privacy-click": "Click to change it to %{nextPrivacy}",

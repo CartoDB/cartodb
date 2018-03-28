@@ -165,6 +165,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Allows import of an exported dataset with external data imports without a syncronization (#13766)
 * Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))
 * Fix saving hdpi url templates when not needed (#13746)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)

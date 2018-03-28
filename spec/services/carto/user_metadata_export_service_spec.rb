@@ -169,29 +169,32 @@ describe Carto::UserMetadataExportService do
       end
     end
 
-  describe '#export_user_visualizations_to_directory' do
-    it 'doesnt export canonical visualizations without a user table' do
+  describe '#full export + import (user and visualizations)' do
+    it 'export + import user and visualizations' do
       Dir.mktmpdir do |path|
-        # user setup
         create_user_with_basemaps_assets_visualizations
+        # Set up fake visualizations
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)
-        # destroy user_table
         canonical_without_table = source_visualizations.find { |v| v['type'] == 'table' }
         UserTable.where(name: canonical_without_table['name']).delete
         @user.in_database.execute("DROP TABLE #{canonical_without_table['name']}")
-        # export and destroy before import
+
+        # Export and destroy user before import
         exported_user = service.export_to_directory(@user, path)
 
         destroy_user
 
-        # At this point, the user database is still there, but the tables got destroyed. We recreate a dummy one for the canonical table we exported
-        canonical_with_table = source_visualizations.find { |v| v['type'] == 'table' && v['name'] != canonical_without_table['name'] }
+        # At this point, the user database is still there, but the tables got destroyed.
+        # We recreate a dummy one for the visualization we did export
+        canonical_with_table = source_visualizations.find { |v| v['type'] == 'table' &&\
+           v['name'] != canonical_without_table['name'] }
         @user.in_database.execute("CREATE TABLE #{canonical_with_table['name']} (cartodb_id int)")
-        # we import the visualizations that got exported
+
+        # We import the visualizations
         imported_user = service.import_from_directory(path)
         service.import_metadata_from_directory(imported_user, path)
 
-        expect(imported_user.visualizations.count).to eq source_visualizations.count -1
+        expect(imported_user.visualizations.count).to eq source_visualizations.count - 1
       end
     end
   end

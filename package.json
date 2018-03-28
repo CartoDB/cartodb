@@ -24,6 +24,7 @@
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
     "carto-zera": "1.0.2",
+    "carto.js": "^4.0.0-beta.37",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.32",

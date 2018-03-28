@@ -1,4 +1,11 @@
-<td class="Table-cellItem" data-attribute="<%- columnName %>" title="<%- value %>" data-clipboard-text='<%- value %>'>
+<!--
+  .fs-hide class excludes the contents of this cell, which
+  might contain sensitive data, from FullStory recordings.
+
+  More info:
+    https://help.fullstory.com/technical-questions/exclude-elements
+-->
+<td class="Table-cellItem fs-hide" data-attribute="<%- columnName %>" title="<%- value %>" data-clipboard-text='<%- value %>'>
   <div class="
       Table-cell u-flex u-justifySpace
       <%- columnName === 'cartodb_id' || (type === 'geometry' && geometry !== 'point') ? 'Table-cell--short' : '' %>

@@ -118,9 +118,22 @@ module ApplicationHelper
   end
 
   def insert_fullstory
-    if Cartodb.get_config(:fullstory, 'org').present? && current_user &&
-      ['FREE', 'PERSONAL30'].include?(current_user.account_type.upcase) && params[:cookies] != '0'
-      render(partial: 'shared/fullstory', locals: { org: Cartodb.get_config(:fullstory, 'org') })
+    # Make sure the following date is after Jan 29, 2015,
+    # which is the date where a message to accept the Terms and
+    # conditions and the Privacy policy was included in the Signup page.
+    # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
+    min_signed_up_date = Date.new(2017,01,01)
+    fullstory_org = Cartodb.get_config(:fullstory, 'org')
+    user_plan_supported = current_user &&
+      ['FREE', 'PERSONAL30'].include?(current_user.account_type.upcase)
+    user_signed_up_after_min_signed_up_date = current_user &&
+      current_user.created_at > min_signed_up_date
+
+    if fullstory_org.present? &&
+      user_plan_supported &&
+      user_signed_up_after_min_signed_up_date &&
+      params[:cookies] != '0'
+      render(partial: 'shared/fullstory', locals: { org: fullstory_org })
     end
   end
 

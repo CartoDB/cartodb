@@ -24,6 +24,7 @@ body.is-inDialog {
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: 100%;
 }
 
 /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
@@ -162,7 +163,6 @@ body.is-inDialog {
 
 .Dialog-footer {
   padding: $sMargin-group 0;
-  background: $cStructure-grayBkg;
   text-align: center;
 }
 

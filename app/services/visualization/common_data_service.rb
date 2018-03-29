@@ -54,11 +54,16 @@ module CartoDB
         failed = 0
 
         carto_user = Carto::User.find(user.id)
-        remotes_by_name = Carto::Visualization.remotes.where(user_id: user.id).map { |v| [v.name, v] }.to_h
+        common_data_remotes_by_name = Carto::Visualization.remotes
+                                                          .where(user_id: user.id)
+                                                          .joins(:external_source)
+                                                          .readonly(false) # joins causes readonly
+                                                          .where(external_sources: { username: 'common-data' })
+                                                          .map { |v| [v.name, v] }.to_h
         ActiveRecord::Base.transaction do
           get_datasets(visualizations_api_url).each do |dataset|
             begin
-              visualization = remotes_by_name.delete(dataset['name'])
+              visualization = common_data_remotes_by_name.delete(dataset['name'])
               if visualization
                 visualization.attributes = dataset_visualization_attributes(dataset)
                 if visualization.changed?
@@ -96,10 +101,9 @@ module CartoDB
                   import_url: dataset['url'],
                   rows_counted: dataset['rows'],
                   size: dataset['size'],
+                  geometry_types: dataset['geometry_types'],
                   username: 'common-data'
                 )
-                # ActiveRecord array issue
-                external_source.update_attribute(:geometry_types, dataset['geometry_types'])
               end
             rescue => e
               CartoDB.notify_exception(e, {
@@ -114,7 +118,7 @@ module CartoDB
           end
         end
 
-        remotes_by_name.each do |_, remote|
+        common_data_remotes_by_name.each_value do |remote|
           deleted += 1 if delete_remote_visualization(remote)
         end
 

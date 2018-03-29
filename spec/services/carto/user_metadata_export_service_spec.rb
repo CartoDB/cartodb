@@ -608,6 +608,7 @@ describe Carto::UserMetadataExportService do
                                          maps_named_update: [0, 1, 2],
                                          maps_named_delete: [0, 1, 2],
                                          maps_named_tiles: [0, 1, 2],
+                                         maps_analysis_catalog: [0, 1, 2],
                                          sql_query: [0, 1, 2],
                                          sql_query_format: [0, 1, 2],
                                          sql_job_create: [0, 1, 2],

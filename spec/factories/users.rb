@@ -58,8 +58,13 @@ FactoryGirl.define do
     factory :valid_user, traits: [:valid]
     factory :locked_user, traits: [:valid, :locked]
 
+    before(:build) do
+      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    end
+
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
     end
   end
 
@@ -77,8 +82,13 @@ FactoryGirl.define do
     id { UUIDTools::UUID.timestamp_create.to_s }
     builder_enabled nil # Most tests still assume editor
 
+    before(:build) do
+      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    end
+
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
     end
 
     after(:build) do |carto_user|

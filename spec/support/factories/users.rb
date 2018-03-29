@@ -135,7 +135,8 @@ module CartoDB
         password: username,
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
-        organization: organization
+        organization: organization,
+        account_type: 'ORGANIZATION USER'
       )
       user.save.reload
       organization.reload if organization

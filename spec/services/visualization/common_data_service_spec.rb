@@ -133,27 +133,40 @@ describe CartoDB::Visualization::CommonDataService do
   end
 
   describe 'destroying common data remote visualizations' do
-    it 'should not delete remote visualizations that have been imported' do
-      data_import = FactoryGirl.create(:data_import, user_id: @user.id)
+    it 'delete remote visualizations that have been imported but keep the import' do
+      viz = FactoryGirl.create(:carto_table_visualization, user_id: @user.id)
+      data_import = FactoryGirl.create(:data_import, user_id: @user.id, visualization_id: viz.id)
       external_data_import = FactoryGirl.create(:external_data_import_with_external_source, data_import: data_import)
       visualization = external_data_import.external_source.visualization
-      CartoDB::Logger.expects(:warning)
-          .with(message: "Couldn't delete #{visualization.id} visualization because it's been imported")
-      service.send(:delete_remote_visualization, visualization).should be_false
-      Carto::Visualization.find(visualization.id).should be
+
+      service.send(:delete_remote_visualization, visualization).should be_true
+
+      Carto::Visualization.where(id: visualization.id).should be_empty
+      Carto::ExternalSource.where(id: external_data_import.external_source.id).should be_empty
+      Carto::ExternalDataImport.where(id: external_data_import.id).should be_empty
+
+      Carto::DataImport.where(id: data_import.id).first.should_not be_nil
+      Carto::Visualization.where(id: viz.id).first.should_not be_nil
     end
 
-    it 'should not delete remote visualizations that have been synced' do
-      data_import = FactoryGirl.create(:data_import, user_id: @user.id)
-      sync = FactoryGirl.create(:carto_synchronization, user_id: @user.id)
+    it 'delete remote visualizations that have been synced and the sync but keep the import' do
+      viz = FactoryGirl.create(:carto_table_visualization, user_id: @user.id)
+      data_import = FactoryGirl.create(:data_import, user_id: @user.id, visualization_id: viz.id)
+      sync = FactoryGirl.create(:carto_synchronization, user_id: @user.id, visualization_id: viz.id)
       external_data_import = FactoryGirl.create(:external_data_import_with_external_source,
                                                 data_import: data_import,
                                                 synchronization: sync)
       visualization = external_data_import.external_source.visualization
-      CartoDB::Logger.expects(:warning)
-          .with(message: "Couldn't delete #{visualization.id} visualization because it's been imported")
-      service.send(:delete_remote_visualization, visualization).should be_false
-      Carto::Visualization.find(visualization.id).should be
+
+      service.send(:delete_remote_visualization, visualization).should be_true
+
+      Carto::Visualization.where(id: visualization.id).should be_empty
+      Carto::ExternalSource.where(id: external_data_import.external_source.id).should be_empty
+      Carto::ExternalDataImport.where(id: external_data_import.id).should be_empty
+      Carto::Synchronization.where(id: sync.id).should be_empty
+
+      Carto::DataImport.where(id: data_import.id).first.should_not be_nil
+      Carto::Visualization.where(id: viz.id).first.should_not be_nil
     end
   end
 end

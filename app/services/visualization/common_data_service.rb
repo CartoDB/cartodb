@@ -163,7 +163,8 @@ module CartoDB
         rescue => e
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
           if match.present? && match >= 0
-            # TODO: "mark as deleted" or similar to disable old, imported visualizations
+            # After #13667 this should no longer happen: deleting remote visualizations is propagated, and external
+            # sources, external data imports and syncs are deleted
             CartoDB::Logger.warning(message: "Couldn't delete #{visualization.id} visualization because it's been imported")
             false
           else

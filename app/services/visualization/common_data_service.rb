@@ -159,6 +159,9 @@ module CartoDB
 
       def get_datasets(visualizations_api_url)
         @datasets ||= CommonDataSingleton.instance.datasets(visualizations_api_url)
+      rescue StandardError => e
+        CartoDB::Logger.error(message: "Loading common data failed", exception: e)
+        raise e
       end
 
       def delete_remote_visualization(visualization)

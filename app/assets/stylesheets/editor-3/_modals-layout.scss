@@ -90,6 +90,11 @@
   padding-top: $baseSize * 3;
 }
 
+.Dialog-contentWrapper.Dialog-contentWrapper--withHeaderWrapper {
+  $headerWrapperSize: $baseSize * 3 + 16px; //header padding top + header text line height
+  height: calc(100% - #{$headerWrapperSize});
+}
+
 .Modal-inner--with-navigation {
   padding: 32px 0 0;
 }

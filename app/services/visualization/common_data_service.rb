@@ -47,7 +47,7 @@ module CartoDB
       def load_common_data_for_user(user, visualizations_api_url)
         update_user_date_flag(user)
 
-        datasets = get_datasets(visualizations_api_url) rescue nil
+        datasets = get_datasets(visualizations_api_url)
         # As deletion would delete all user syncs, if the endpoint fails or return nothing, just do nothing.
         # The user date flag is updated to avoid DDoS-ing.
         return nil unless datasets.present?
@@ -161,7 +161,7 @@ module CartoDB
         @datasets ||= CommonDataSingleton.instance.datasets(visualizations_api_url)
       rescue StandardError => e
         CartoDB::Logger.error(message: "Loading common data failed", exception: e)
-        raise e
+        nil
       end
 
       def delete_remote_visualization(visualization)
@@ -173,7 +173,7 @@ module CartoDB
           if match.present? && match >= 0
             # After #13667 this should no longer happen: deleting remote visualizations is propagated, and external
             # sources, external data imports and syncs are deleted
-            CartoDB::Logger.warning(message: "Couldn't delete #{visualization.id} visualization because it's been imported")
+            CartoDB::Logger.warning(message: "Couldn't delete #{visualization.id} viz because it's been imported")
             false
           else
             CartoDB.notify_error(

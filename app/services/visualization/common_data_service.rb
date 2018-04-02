@@ -47,6 +47,11 @@ module CartoDB
       def load_common_data_for_user(user, visualizations_api_url)
         update_user_date_flag(user)
 
+        datasets = get_datasets(visualizations_api_url) rescue nil
+        # As deletion would delete all user syncs, if the endpoint fails or return nothing, just do nothing.
+        # The user date flag is updated to avoid DDoS-ing.
+        return nil unless datasets.present?
+
         added = 0
         updated = 0
         not_modified = 0
@@ -61,7 +66,7 @@ module CartoDB
                                                           .where(external_sources: { username: 'common-data' })
                                                           .map { |v| [v.name, v] }.to_h
         ActiveRecord::Base.transaction do
-          get_datasets(visualizations_api_url).each do |dataset|
+          datasets.each do |dataset|
             begin
               visualization = common_data_remotes_by_name.delete(dataset['name'])
               if visualization

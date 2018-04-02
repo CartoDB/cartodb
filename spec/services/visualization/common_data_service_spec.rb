@@ -118,6 +118,26 @@ describe CartoDB::Visualization::CommonDataService do
     expect(remote_visualizations(@user).first.name).to eq 'ds1'
   end
 
+  it 'should not delete anything if common data datasets fetching fails or it\'s empty' do
+    service.stubs(:get_datasets).returns([dataset('ds1'), dataset('ds2')])
+    service.load_common_data_for_user(@user, 'some_url')
+    expect(remote_visualizations(@user).count).to eq 2
+
+    Carto::ExternalSource.count.should eq 2
+
+    service.stubs(:get_datasets).returns([])
+    service.load_common_data_for_user(@user, 'some_url').should be_nil
+
+    Carto::ExternalSource.count.should eq 2
+    expect(remote_visualizations(@user).count).to eq 2
+
+    service.stubs(:get_datasets).raises("error!")
+    service.load_common_data_for_user(@user, 'some_url').should be_nil
+
+    Carto::ExternalSource.count.should eq 2
+    expect(remote_visualizations(@user).count).to eq 2
+  end
+
   it 'should fail when missing some fields, but still import the rest' do
     service.stubs(:get_datasets).returns([dataset('ds1'), {}])
     added, updated, not_modified, deleted, failed = service.load_common_data_for_user(@user, 'some_url')

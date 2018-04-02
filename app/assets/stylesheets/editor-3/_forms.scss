@@ -138,13 +138,13 @@
   display: flex;
   align-items: center;
   width: 92px;
+  height: 32px;
   min-height: 32px;
   margin-right: 12px;
 }
 
 /* move to CartoAssets */
 .Editor-checkerInput .CDB-Checkbox-face {
-  flex: 0 0 16px;
   width: 16px; // Forcing to be at least that width
   min-width: 0;
 }

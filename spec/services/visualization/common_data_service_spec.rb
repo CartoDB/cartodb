@@ -131,4 +131,29 @@ describe CartoDB::Visualization::CommonDataService do
     expect(remote_visualizations(@user).count).to eq 1
     expect(remote_visualizations(@user).first.name).to eq 'ds1'
   end
+
+  describe 'destroying common data remote visualizations' do
+    it 'should not delete remote visualizations that have been imported' do
+      data_import = FactoryGirl.create(:data_import, user_id: @user.id)
+      external_data_import = FactoryGirl.create(:external_data_import_with_external_source, data_import: data_import)
+      visualization = external_data_import.external_source.visualization
+      CartoDB::Logger.expects(:warning)
+          .with(message: "Couldn't delete #{visualization.id} visualization because it's been imported")
+      service.send(:delete_remote_visualization, visualization).should be_false
+      Carto::Visualization.find(visualization.id).should be
+    end
+
+    it 'should not delete remote visualizations that have been synced' do
+      data_import = FactoryGirl.create(:data_import, user_id: @user.id)
+      sync = FactoryGirl.create(:carto_synchronization, user_id: @user.id)
+      external_data_import = FactoryGirl.create(:external_data_import_with_external_source,
+                                                data_import: data_import,
+                                                synchronization: sync)
+      visualization = external_data_import.external_source.visualization
+      CartoDB::Logger.expects(:warning)
+          .with(message: "Couldn't delete #{visualization.id} visualization because it's been imported")
+      service.send(:delete_remote_visualization, visualization).should be_false
+      Carto::Visualization.find(visualization.id).should be
+    end
+  end
 end

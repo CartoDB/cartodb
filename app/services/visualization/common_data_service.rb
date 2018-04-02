@@ -164,7 +164,7 @@ module CartoDB
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
           if match.present? && match >= 0
             # TODO: "mark as deleted" or similar to disable old, imported visualizations
-            puts "Couldn't delete #{visualization.id} visualization because it's been imported"
+            CartoDB::Logger.warning(message: "Couldn't delete #{visualization.id} visualization because it's been imported")
             false
           else
             CartoDB.notify_error(

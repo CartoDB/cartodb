@@ -1,6 +1,8 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+$headerWrapperSize: $baseSize * 3 + 16px; //header padding top + header text line height
+
 .Modal {
   display: flex;
   flex-direction: column;
@@ -74,9 +76,12 @@
   margin: 0 auto;
 }
 
-.Modal-footerContainer,
 .Modal-header {
   padding: $baseSize * 3 0;
+}
+
+.Modal-footerContainer {
+  padding: $baseSize * 3 0 0;
 }
 
 .Dialog-contentWrapper--withBreadcrumbs .Modal-header {
@@ -84,15 +89,16 @@
 }
 
 .Dialog-headerWrapper {
+  box-sizing: border-box;
   flex: 0 0 auto;
   width: 940px;
-  margin: 0 auto;
-  padding-top: $baseSize * 3;
+  margin: $baseSize * 3 auto 0 auto;
 }
 
 .Dialog-contentWrapper.Dialog-contentWrapper--withHeaderWrapper {
-  $headerWrapperSize: $baseSize * 3 + 16px; //header padding top + header text line height
-  height: calc(100% - #{$headerWrapperSize});
+  .Modal-footerContainer {
+    margin-bottom: $headerWrapperSize * 2;
+  }
 }
 
 .Modal-inner--with-navigation {

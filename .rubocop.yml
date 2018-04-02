@@ -286,7 +286,7 @@ Style/TrailingCommaInArguments:
   Enabled: true
   EnforcedStyleForMultiline: no_comma
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInHashLiteral:
   Enabled: true
   EnforcedStyleForMultiline: no_comma
 

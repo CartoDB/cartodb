@@ -50,22 +50,27 @@ body.public {
   }
 
   div.panes {
-    position: initial;
+    position: static;
     max-height: 100%;
     margin: 8px;
     clear: both;
     overflow-x: auto;
     overflow-y: hidden;
 
-    &:last-child {
+    &.pane_map {
       margin-left: 0;
     }
 
     @media (max-width: $sMedia-desktop) {
       display: none;
+      margin: 16px;
 
       &.is-active {
         display: block;
+      }
+
+      &.pane_map {
+        margin-left: 16px;
       }
     }
 

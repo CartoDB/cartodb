@@ -153,6 +153,7 @@ ion for time-series (#12670)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
   * API Keys are exported and imported (#13346)
+  * 500 error when mixing auth mechanisms (#13723)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
@@ -166,6 +167,9 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Skip canonical viz with missing tables from metadata export
+* Fix alignment for formula widget edit form (CartoDB/onpremises/issues/511)
+* Fix copies order in html legends editor (CartoDB/onpremises/issues/504)
+* Fix export view template showing glitch in IE and Firefox(CartoDB/onpremises/issues/484)
 * Show layer selector in the legends tab on small breakpoint (https://github.com/CartoDB/support/issues/1412)
 * Allows import of an exported dataset with external data imports without a syncronization (#13766)
 * Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))

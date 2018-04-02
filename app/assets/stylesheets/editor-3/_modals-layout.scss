@@ -32,11 +32,11 @@ $headerWrapperSize: $baseSize * 3 + 16px; //header padding top + header text lin
 }
 
 .Modal-container--analysis .ScrollView {
-  padding-bottom: 250px;
+  padding-bottom: 250px + $baseSize * 3;
 }
 
 .Modal-container--analysis .ScrollView-shadow--bottom {
-  bottom: 250px;
+  bottom: 250px + $baseSize * 3;
 }
 
 .Modal-footer,
@@ -97,7 +97,7 @@ $headerWrapperSize: $baseSize * 3 + 16px; //header padding top + header text lin
 
 .Dialog-contentWrapper.Dialog-contentWrapper--withHeaderWrapper {
   .Modal-footerContainer {
-    margin-bottom: $headerWrapperSize * 2;
+    margin-bottom: $headerWrapperSize + 30px;
   }
 }
 

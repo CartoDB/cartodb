@@ -75,14 +75,13 @@
   <div class="CDB-Text PublicMap-map js-map" id="map">
     <div class="Spinner Spinner--center js-spinner"></div>
 
-    <div class="panes pane_table u-hideOnTablet"></div>
-    <div class="panes pane_map u-hideOnTablet"></div>
-    <div class="panes panes_mobile u-showOnTablet"></div>
+    <div class="panes pane_table"></div>
+    <div class="panes pane_map"></div>
 
     <div class="navigation u-showOnTablet">
       <ul>
-        <li><a href="#/table" class=" tab selected u-valign"><i class="Navmenu-tableIcon CDB-IconFont CDB-IconFont-table u-iblock u-malign"></i></a></li>
-        <li><a href="#/map" class="u-valign"><i class="CDB-IconFont CDB-IconFont-map u-iblock u-malign"></i></a></li>
+        <li><a href="#/table" data-pane="table" class=" tab selected u-valign"><i class="Navmenu-tableIcon CDB-IconFont CDB-IconFont-table u-iblock u-malign"></i></a></li>
+        <li><a href="#/map" data-pane="map" class="u-valign"><i class="CDB-IconFont CDB-IconFont-map u-iblock u-malign"></i></a></li>
       </ul>
     </div>
   </div>

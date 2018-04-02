@@ -162,6 +162,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
 * Fix saving hdpi url templates when not needed (#13746)
 * Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
 * Do not add new notifications if notification content already exists (#13407)

@@ -169,8 +169,8 @@ describe Carto::UserMetadataExportService do
       end
     end
 
-  describe '#full export + import (user and visualizations)' do
-    it 'export + import user and visualizations' do
+  describe '#export_user_visualizations_to_directory' do
+    it 'skips a canonical visualization without a user table' do
       Dir.mktmpdir do |path|
         create_user_with_basemaps_assets_visualizations
         # Set up fake visualizations

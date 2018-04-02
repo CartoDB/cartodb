@@ -165,7 +165,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
-* Skip canonical viz with missing tables from on metadata export
+* Skip canonical viz with missing tables from metadata export
 * Show layer selector in the legends tab on small breakpoint (https://github.com/CartoDB/support/issues/1412)
 * Allows import of an exported dataset with external data imports without a syncronization (#13766)
 * Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))

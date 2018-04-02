@@ -32,7 +32,7 @@ describe Carto::DataLibraryService do
       "\"size\":53248,\"row_count\":124}}"
   end
 
-  describe '#load_dataset' do
+  describe '#load_dataset!' do
     it 'loads a remote dataset into a Data Library' do
       client_p = { scheme: 'https', base_domain: 'waduscarto.com', port: 666 }
       client = CartoAPI::JsonClient.new(**client_p)
@@ -75,6 +75,58 @@ describe Carto::DataLibraryService do
       external_source.username.should eq params[:source_username]
 
       visualization.destroy
+    end
+  end
+
+  let(:api_keys_response) do
+    {
+      total: 1,
+      count: 1,
+      result: [
+        {
+          name: "test_ro_untitled_table_39",
+          user: { username: "juanignaciosl" },
+          type: "regular",
+          token: "z17KQqbcdbDfIYcD4FTw",
+          grants: [
+            { type: "apis", apis: ["maps", "sql"] },
+            { type: "database", tables: [
+              { schema: "juanignaciosl", name: "untitled_table_30", permissions: ["select"] }
+            ] }
+          ],
+          created_at: "2018-03-23 14:45:00 +0000",
+          updated_at: "2018-03-23 14:45:00 +0000",
+          _links: { :self => "https://juanignaciosl.wcarto.com/api/v3/api_keys/test_ro_untitled_table_39" }
+        }
+      ],
+      _links: {
+        first: { :href => "https://juanignaciosl.wcarto.com/api/v3/api_keys?order=updated_at&page=1&per_page=100000" },
+        last: { :href => "https://juanignaciosl.wcarto.com/api/v3/api_keys?order=updated_at&page=1&per_page=100000" }
+      }
+    }
+  end
+
+  describe '#load_datasets!' do
+    it 'loads remote datasets from an API key into a Data Library' do
+      client_p = { scheme: 'https', base_domain: 'wcarto.com', port: 666 }
+      client = CartoAPI::JsonClient.new(**client_p)
+      source_dataset = api_keys_response[:result][0][:grants][1][:tables][0][:name]
+      params = {
+        source_username: 'wadus-username',
+        source_api_key: 'rewadus-api_key',
+        target_username: @carto_user1.username,
+        granted_api_key: 'wadus-api_key'
+      }
+
+      client.expects(:get_api_keys_v3)
+            .with(username: params[:source_username],
+                  params: { api_key: params[:granted_api_key] })
+            .returns(api_keys_response)
+
+      service = Carto::DataLibraryService.new
+      params_load_one = { source_dataset: source_dataset }.merge(params)
+      service.expects(:load_dataset!).once.with(client, **params_load_one)
+      service.load_datasets!(client, **params)
     end
   end
 end

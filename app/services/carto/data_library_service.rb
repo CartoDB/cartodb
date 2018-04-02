@@ -40,6 +40,26 @@ module Carto
       visualization
     end
 
+    def load_datasets!(carto_api_client,
+                       source_username:, source_api_key:,
+                       target_username:, granted_api_key:)
+      api_keys = carto_api_client.get_api_keys_v3(username: source_username, params: { api_key: granted_api_key })
+      api_keys[:result].each do |api_key|
+        database_grants = api_key[:grants].select { |g| g[:type] == 'database' }
+        database_grants.each do |database_grant|
+          tables = database_grant[:tables]
+          tables.each do |table|
+            if table[:permissions].include?('select')
+              load_dataset!(carto_api_client,
+                            source_dataset: table[:name],
+                            source_username: source_username, source_api_key: source_api_key,
+                            target_username: target_username, granted_api_key: granted_api_key)
+            end
+          end
+        end
+      end
+    end
+
     private
 
     def display_name(remote_visualization)

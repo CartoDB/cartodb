@@ -14,7 +14,9 @@ describe CartoDB::Visualization::CommonDataService do
     remote_visualizations(@user).each(&:destroy)
   end
 
-  let(:service) { CartoDB::Visualization::CommonDataService.new }
+  def service
+    CartoDB::Visualization::CommonDataService.new
+  end
 
   def remote_visualizations(user)
     Carto::Visualization.where(user_id: user.id, type: Carto::Visualization::TYPE_REMOTE)
@@ -36,8 +38,12 @@ describe CartoDB::Visualization::CommonDataService do
     }.stringify_keys
   end
 
+  def stub_datasets(datasets)
+    CommonDataSingleton.instance.stubs(:datasets).returns(datasets)
+  end
+
   it 'should import common data datasets' do
-    service.stubs(:get_datasets).returns([dataset('ds1')])
+    stub_datasets([dataset('ds1')])
     added, updated, not_modified, deleted, failed = service.load_common_data_for_user(@user, 'some_url')
 
     expect(added).to eq 1
@@ -56,17 +62,17 @@ describe CartoDB::Visualization::CommonDataService do
     # This would trigger an exception because of data integrity
     expect {
       ActiveRecord::Base.transaction do
-        service.stubs(:get_datasets).returns([dataset('ds1')])
+        stub_datasets([dataset('ds1')])
         service.load_common_data_for_user(@user, 'some_url')
       end
     }.not_to raise_error
   end
 
   it 'should update common data datasets' do
-    service.stubs(:get_datasets).returns([dataset('ds1')])
+    stub_datasets([dataset('ds1')])
     service.load_common_data_for_user(@user, 'some_url')
 
-    service.stubs(:get_datasets).returns([dataset('ds1', description: 'desc')])
+    stub_datasets([dataset('ds1', description: 'desc')])
     added, updated, not_modified, deleted, failed = service.load_common_data_for_user(@user, 'some_url')
 
     expect(added).to eq 0
@@ -81,7 +87,7 @@ describe CartoDB::Visualization::CommonDataService do
   end
 
   it 'should not touch unmodified common data datasets' do
-    service.stubs(:get_datasets).returns([dataset('ds1')])
+    stub_datasets([dataset('ds1')])
     service.load_common_data_for_user(@user, 'some_url')
 
     added, updated, not_modified, deleted, failed = service.load_common_data_for_user(@user, 'some_url')
@@ -97,13 +103,13 @@ describe CartoDB::Visualization::CommonDataService do
   end
 
   it 'should delete removed common data datasets' do
-    service.stubs(:get_datasets).returns([dataset('ds1'), dataset('ds2')])
+    stub_datasets([dataset('ds1'), dataset('ds2')])
     service.load_common_data_for_user(@user, 'some_url')
     expect(remote_visualizations(@user).count).to eq 2
 
     Carto::ExternalSource.count.should eq 2
 
-    service.stubs(:get_datasets).returns([dataset('ds1')])
+    stub_datasets([dataset('ds1')])
     added, updated, not_modified, deleted, failed = service.load_common_data_for_user(@user, 'some_url')
 
     expect(added).to eq 0
@@ -119,19 +125,21 @@ describe CartoDB::Visualization::CommonDataService do
   end
 
   it 'should not delete anything if common data datasets fetching fails or it\'s empty' do
-    service.stubs(:get_datasets).returns([dataset('ds1'), dataset('ds2')])
+    stub_datasets([dataset('ds1'), dataset('ds2')])
     service.load_common_data_for_user(@user, 'some_url')
     expect(remote_visualizations(@user).count).to eq 2
 
     Carto::ExternalSource.count.should eq 2
 
-    service.stubs(:get_datasets).returns([])
+    stub_datasets([])
     service.load_common_data_for_user(@user, 'some_url').should be_nil
 
     Carto::ExternalSource.count.should eq 2
     expect(remote_visualizations(@user).count).to eq 2
 
-    service.stubs(:get_datasets).raises("error!")
+    common_data_singleton_mock = mock
+    common_data_singleton_mock.stubs(:datasets).raises("error!")
+    CommonDataSingleton.stubs(:instance).returns(common_data_singleton_mock)
     service.load_common_data_for_user(@user, 'some_url').should be_nil
 
     Carto::ExternalSource.count.should eq 2
@@ -139,7 +147,7 @@ describe CartoDB::Visualization::CommonDataService do
   end
 
   it 'should fail when missing some fields, but still import the rest' do
-    service.stubs(:get_datasets).returns([dataset('ds1'), {}])
+    stub_datasets([dataset('ds1'), {}])
     added, updated, not_modified, deleted, failed = service.load_common_data_for_user(@user, 'some_url')
 
     expect(added).to eq 1

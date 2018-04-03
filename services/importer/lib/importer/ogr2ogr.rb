@@ -83,6 +83,7 @@ module CartoDB
       end
 
       def run(use_append_mode=false)
+        byebug
         @append_mode = use_append_mode
         stdout, stderr, status  = Open3.capture3(environment, *command)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
@@ -124,7 +125,8 @@ module CartoDB
 
       def file_too_big?
         (exit_code == 256 && command_output =~ /calloc failed/i) ||
-        (exit_code == 35072 && command_output =~ /Killed/i)
+          (exit_code == 35072 && command_output =~ /Killed/i) ||
+          (exit_code == 32512 && command_output =~ /Cannot allocate memory/i)
       end
 
       def statement_timeout?

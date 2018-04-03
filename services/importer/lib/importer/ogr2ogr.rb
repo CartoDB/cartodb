@@ -83,7 +83,6 @@ module CartoDB
       end
 
       def run(use_append_mode=false)
-        byebug
         @append_mode = use_append_mode
         stdout, stderr, status  = Open3.capture3(environment, *command)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
@@ -93,6 +92,10 @@ module CartoDB
 
       def generic_error?
         command_output =~ /ERROR 1:/i || command_output =~ /ERROR:/i
+      end
+
+      def geometry_validity_error?
+        command_output =~ /Invalid number of points in LinearRing/i
       end
 
       def encoding_error?

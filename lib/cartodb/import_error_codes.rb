@@ -229,6 +229,11 @@ module CartoDB
       what_about: "The synchronization failed because the destination table could not be overwritten. Please make sure that there are no database objects (e.g: views) that depend on it.",
       source: ERROR_SOURCE_USER
     },
+    2014 => {
+      title: 'Invalid geometries',
+      what_about: "Your file appears to contain invalid geometries. Try opening the file with another GIS tool and checking the geometry validity. If everything appears okay, <a href='mailto:support@carto.com?subject=Invalid Geometries'>contact us</a>.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",

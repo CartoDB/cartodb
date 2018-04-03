@@ -2687,7 +2687,8 @@ describe User do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = Carto::AccountType.where(account_type: 'FREE').first || FactoryGirl.create(:account_type_free)
       @account_type_pro = Carto::AccountType.where(account_type: 'PRO').first || FactoryGirl.create(:account_type_pro)
-      @account_type_org = Carto::AccountType.where(account_type: 'ORGANIZATION USER').first || FactoryGirl.create(:account_type_org)
+      @account_type_org = Carto::AccountType.where(account_type: 'ORGANIZATION USER').first ||
+                            FactoryGirl.create(:account_type_org)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)

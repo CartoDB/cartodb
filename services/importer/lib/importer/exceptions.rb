@@ -79,7 +79,7 @@ module CartoDB
     class GeometryCollectionNotSupportedError   < StandardError; end
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
-    class InvalidGeometriesError                       < StandardError; end
+    class InvalidGeometriesError                < StandardError; end
     class KmlNetworkLinkError                   < StandardError; end
     class KmlWithoutStyleIdError                < GenericImportError; end
     class IncompatibleSchemas                   < BaseImportError

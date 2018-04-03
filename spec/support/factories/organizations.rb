@@ -47,7 +47,10 @@ module CartoDB
 
     def create_organization_with_users(attributes = {})
       organization = create_organization_with_owner(attributes)
-      user1 = create_user(:organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes, :account_type => 'ORGANIZATION USER')
+      create_user(organization: organization,
+                  organization_id: organization.id,
+                  quota_in_bytes: 20.megabytes,
+                  account_type: 'ORGANIZATION USER')
       organization.reload
       organization
     end

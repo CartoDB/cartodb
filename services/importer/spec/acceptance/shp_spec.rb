@@ -62,12 +62,10 @@ describe 'SHP regression tests' do
   it 'generates proper error for invalid geometries' do
     filepath    = path_to('invalid_geom.zip')
     downloader  = Downloader.new(@user.id, filepath)
-    runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+    runner      = Runner.new(pg: @user.db_service.db_configuration_for,
+                             downloader: downloader,
+                             log: CartoDB::Importer2::Doubles::Log.new(@user),
+                             user: @user)
     runner.run
 
     expect(runner.results.first.error_code).to eq(2014)

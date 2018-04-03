@@ -1385,6 +1385,22 @@ namespace :cartodb do
       end
     end
 
+    desc 'Fix analysis table the_geom type'
+    task fix_analysis_the_geom_type: [:environment] do
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        user.in_database do |db|
+          db.fetch("SELECT table_name FROM information_schema.tables WHERE table_name LIKE 'analysis%'").map{ |r| r[:table_name] }.each do |table_name|
+            geom_types = db.fetch("SELECT DISTINCT ST_GeometryType(the_geom) AS geom_type FROM \"#{table_name}\"").map{ |r| r[:geom_type] }
+            if geom_types.size == 2 && geom_types.include?('ST_Polygon') && geom_types.include?('ST_MultiPolygon')
+              db.execute("UPDATE \"#{table_name}\" SET the_geom = ST_Multi(the_geom) where ST_GeometryType(the_geom) = 'ST_Polygon'")
+            elsif geom_types.size >= 2
+              puts "Unexpected type of geometries found for user #{user.username}. Table #{tables}: #{geom_types.join(', ')}"
+            end
+          end
+        end
+      end
+    end
+
     def update_user_metadata(user)
       begin
         user.save_metadata

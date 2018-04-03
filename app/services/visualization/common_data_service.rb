@@ -47,7 +47,12 @@ module CartoDB
       def load_common_data_for_user(user, visualizations_api_url)
         update_user_date_flag(user)
 
-        datasets = get_datasets(visualizations_api_url)
+        datasets = begin
+                     get_datasets(visualizations_api_url)
+                   rescue StandardError => e
+                     CartoDB::Logger.error(message: "Loading common data failed", exception: e, user: user)
+                     nil
+                   end
         # As deletion would delete all user syncs, if the endpoint fails or return nothing, just do nothing.
         # The user date flag is updated to avoid DDoS-ing.
         return nil unless datasets.present?
@@ -159,9 +164,6 @@ module CartoDB
 
       def get_datasets(visualizations_api_url)
         @datasets ||= CommonDataSingleton.instance.datasets(visualizations_api_url)
-      rescue StandardError => e
-        CartoDB::Logger.error(message: "Loading common data failed", exception: e)
-        nil
       end
 
       def delete_remote_visualization(visualization)

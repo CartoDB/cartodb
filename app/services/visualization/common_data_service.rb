@@ -175,7 +175,7 @@ module CartoDB
           if match.present? && match >= 0
             # After #13667 this should no longer happen: deleting remote visualizations is propagated, and external
             # sources, external data imports and syncs are deleted
-            CartoDB::Logger.warning(message: "Couldn't delete #{visualization.id} viz because it's been imported")
+            CartoDB::Logger.error(message: "Couldn't delete, already imported", visualization_id: visualization.id)
             false
           else
             CartoDB.notify_error(

@@ -97,7 +97,7 @@ namespace :cartodb do
       user = Carto::User.find_by_username(username)
       raise 'User not found' unless user
 
-      visualization = Carto::Visualization.remotes.where(user_id: user.id, name: name).first
+      visualization = user.visualizations.remotes.find_by_name(name)
       raise 'Visualization not found' unless visualization
 
       visualization.destroy

@@ -22,7 +22,7 @@ gem 'redis',                   '3.3.0'
 gem 'hiredis',                 '0.6.1'
 gem 'nokogiri',                '~> 1.6.6.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
-gem 'aws-sdk',                 '1.8.5'
+gem 'aws-sdk-s3',              '~> 1'
 gem 'ruby-prof',               '0.15.1'
 gem 'request_store',           '1.1.0'
 

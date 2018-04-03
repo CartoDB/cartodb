@@ -16,6 +16,10 @@ This upgrade changes the configuration format of basemaps. You must replace all 
 recommended that you replace the `basemaps` section completely, since this release also adds supports for high
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
 
+### NOTICE
+
+This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
+
 ### Features
 * Profile page migration (#13726)
 * Singup and confirmation pages migration (#13641)

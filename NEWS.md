@@ -170,6 +170,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Skip canonical viz with missing tables from metadata export
 * Fix dialog footer in some modals (CartoDB/onpremises/issues/507)
 * Fix alignment for formula widget edit form (CartoDB/onpremises/issues/511)
 * Fix copies order in html legends editor (CartoDB/onpremises/issues/504)

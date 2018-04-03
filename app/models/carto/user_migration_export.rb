@@ -69,9 +69,6 @@ module Carto
 
     def check_valid_user(user)
       Carto::GhostTablesManager.new(user.id).link_ghost_tables_synchronously
-
-      vs = user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).select { |v| v.table.nil? }
-      raise "Can't export. Vizs without user table: #{vs.map(&:id)}" unless vs.empty?
     end
 
     def check_valid_organization(organization)

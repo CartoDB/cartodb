@@ -279,6 +279,8 @@ module Carto::Api::AuthApiAuthentication
 
   def authenticate_user(require_master_key)
     user, token = user_and_token_from_request
+    return fail! unless user && token
+
     api_key = user.api_keys.where(token: token)
     api_key = require_master_key ? api_key.master : api_key
 
@@ -297,11 +299,12 @@ module Carto::Api::AuthApiAuthentication
     return @request_api_key if @request_api_key
 
     user, token = user_and_token_from_request
-    @request_api_key = user.api_keys.where(token: token).first
+    @request_api_key = user.api_keys.where(token: token).first if user && token
 
-    # TODO: remove this block when all api keys are in sync 'auth_api'
-    if !@request_api_key && user.api_key == token
-      @request_api_key = user.api_keys.create_in_memory_master
+    # If user is logged in though other means, assume a master key
+    # TODO: switch to real master api key when all api keys are in sync (FF 'auth_api')
+    if !@request_api_key && current_user
+      @request_api_key = current_user.api_keys.create_in_memory_master
     end
 
     @request_api_key
@@ -312,15 +315,14 @@ module Carto::Api::AuthApiAuthentication
   AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
 
   def user_and_token_from_request
+    return unless valid?
+
     if base64_auth.present?
       username, token = split_auth
-      return fail! unless username == CartoDB.extract_subdomain(request)
+      return unless username == CartoDB.extract_subdomain(request)
     elsif params[:api_key]
       token = params[:api_key]
       username = CartoDB.extract_subdomain(request)
-    elsif current_user
-      token = current_user.api_key
-      username = current_user.username
     end
     [User[username: username], token]
   end

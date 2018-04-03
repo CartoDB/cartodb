@@ -95,7 +95,10 @@ describe User do
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
       organization = create_org('testorg', 10.megabytes, 1)
-      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11', account_type: 'ORGANIZATION USER'
+      user1 = create_user email: 'user1@testorg.com',
+                          username: 'user1',
+                          password: 'user11',
+                          account_type: 'ORGANIZATION USER'
       user1.organization = organization
       user1.save
       organization.owner_id = user1.id
@@ -380,7 +383,10 @@ describe User do
     it 'should create remote user in central if needed' do
       pending "Central API credentials not provided" unless ::User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 500.megabytes, 1)
-      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11', account_type: 'ORGANIZATION USER'
+      user = create_user email: 'user1@testorg.com',
+                         username: 'user1',
+                         password: 'user11',
+                         account_type: 'ORGANIZATION USER'
       user.organization = organization
       user.save
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
@@ -2688,7 +2694,7 @@ describe User do
       @account_type = Carto::AccountType.where(account_type: 'FREE').first || FactoryGirl.create(:account_type_free)
       @account_type_pro = Carto::AccountType.where(account_type: 'PRO').first || FactoryGirl.create(:account_type_pro)
       @account_type_org = Carto::AccountType.where(account_type: 'ORGANIZATION USER').first ||
-                            FactoryGirl.create(:account_type_org)
+                          FactoryGirl.create(:account_type_org)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)

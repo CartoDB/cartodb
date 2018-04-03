@@ -110,12 +110,13 @@ describe Carto::DataLibraryService do
     it 'loads remote datasets from an API key into a Data Library' do
       client_p = { scheme: 'https', base_domain: 'wcarto.com', port: 666 }
       client = CartoAPI::JsonClient.new(**client_p)
-      source_dataset = api_keys_response[:result][0][:grants][1][:tables][0][:name]
+      api_key_at_response = api_keys_response[:result][0]
+      source_dataset = api_key_at_response[:grants][1][:tables][0][:name]
       params = {
         source_username: 'wadus-username',
         source_api_key: 'rewadus-api_key',
         target_username: @carto_user1.username,
-        granted_api_key: 'wadus-api_key'
+        granted_api_key: api_key_at_response[:token]
       }
 
       client.expects(:get_api_keys_v3)

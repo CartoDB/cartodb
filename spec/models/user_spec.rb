@@ -63,6 +63,8 @@ describe User do
     bypass_named_maps
     @user.destroy
     @user2.destroy
+    @account_type.destroy if @account_type
+    @account_type_org.destroy if @account_type_org
   end
 
   it "should only allow legal usernames" do
@@ -92,9 +94,8 @@ describe User do
 
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
-
       organization = create_org('testorg', 10.megabytes, 1)
-      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
+      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11', account_type: 'ORGANIZATION USER'
       user1.organization = organization
       user1.save
       organization.owner_id = user1.id
@@ -379,7 +380,7 @@ describe User do
     it 'should create remote user in central if needed' do
       pending "Central API credentials not provided" unless ::User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 500.megabytes, 1)
-      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
+      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11', account_type: 'ORGANIZATION USER'
       user.organization = organization
       user.save
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
@@ -485,6 +486,7 @@ describe User do
   end
 
   it "should invalidate all his vizjsons when his account type changes" do
+    @account_type = FactoryGirl.create(:account_type, account_type: 'WADUS')
     @user.account_type = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
@@ -1716,11 +1718,15 @@ describe User do
 
   # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info
   it "can notify a new user creation" do
-
     ::Resque.stubs(:enqueue).returns(nil)
-
+    @account_type_org = FactoryGirl.create(:account_type_org)
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
-    user1 = new_user(:username => 'test', :email => "client@example.com", :organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
+    user1 = new_user(username: 'test',
+                     email: "client@example.com",
+                     organization: organization,
+                     organization_id: organization.id,
+                     quota_in_bytes: 20.megabytes,
+                     account_type: 'ORGANIZATION USER')
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
@@ -2679,8 +2685,9 @@ describe User do
   describe '#rate limits' do
     before :all do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
-      @account_type = FactoryGirl.create(:account_type_free)
-      @account_type_pro = FactoryGirl.create(:account_type_pro)
+      @account_type = Carto::AccountType.where(account_type: 'FREE').first || FactoryGirl.create(:account_type_free)
+      @account_type_pro = Carto::AccountType.where(account_type: 'PRO').first || FactoryGirl.create(:account_type_pro)
+      @account_type_org = Carto::AccountType.where(account_type: 'ORGANIZATION USER').first || FactoryGirl.create(:account_type_org)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
@@ -2706,8 +2713,10 @@ describe User do
       @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
       @account_type_pro.destroy unless @account_type_pro.nil?
+      @account_type_org.destroy unless @account_type_org.nil?
       @account_type.rate_limit.destroy unless @account_type.nil?
       @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
+      @account_type_org.rate_limit.destroy unless @account_type_org.nil?
       @rate_limits.destroy unless @rate_limits.nil?
       @rate_limits_custom.destroy unless @rate_limits_custom.nil?
       @rate_limits_custom2.destroy unless @rate_limits_custom2.nil?

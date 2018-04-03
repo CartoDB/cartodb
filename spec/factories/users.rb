@@ -1,8 +1,10 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
+require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 require 'carto/user_authenticator'
 
+include AccountTypesHelper
 include UniqueNamesHelper
 include Carto::UserAuthenticator
 
@@ -58,13 +60,13 @@ FactoryGirl.define do
     factory :valid_user, traits: [:valid]
     factory :locked_user, traits: [:valid, :locked]
 
-    before(:build) do
-      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    before(:build) do |user|
+      create_account_type_fg(user.account_type)
     end
 
-    before(:create) do
+    before(:create) do |user|
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+      create_account_type_fg(user.account_type)
     end
   end
 
@@ -82,13 +84,13 @@ FactoryGirl.define do
     id { UUIDTools::UUID.timestamp_create.to_s }
     builder_enabled nil # Most tests still assume editor
 
-    before(:build) do
-      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    before(:build) do |carto_user|
+      create_account_type_fg(carto_user.account_type)
     end
 
-    before(:create) do
+    before(:create) do |carto_user|
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+      create_account_type_fg(carto_user.account_type)
     end
 
     after(:build) do |carto_user|
@@ -106,5 +108,4 @@ FactoryGirl.define do
 
     factory :carto_locked_user, traits: [:locked]
   end
-
 end

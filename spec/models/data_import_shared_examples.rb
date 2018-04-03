@@ -6,7 +6,7 @@ shared_examples_for 'DataImport model' do
     end
 
     after(:all) do
-      @user.destroy
+      @user.destroy if @user
     end
 
     it 'only allows valid collision strategies' do

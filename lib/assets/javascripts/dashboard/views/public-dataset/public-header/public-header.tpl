@@ -6,7 +6,7 @@
     <% } %>
 
     <% if (!username) { %>
-      <% if ( !cdb.config.get('cartodb_com_hosted') ) { %>
+      <% if ( !isCartoDBHosted ) { %>
         <li><a class='signup' href='https://carto.com/signup'>Sign up</a><li>
       <% } %>
       <li><a href='https://carto.com/login' class='border login'>Login</a></li>

@@ -231,7 +231,7 @@ module CartoDB
     },
     2014 => {
       title: 'Invalid geometries',
-      what_about: "Your file appears to contain invalid geometries. Try opening the file with another GIS tool and checking the geometry validity. If everything appears okay, <a href='mailto:support@carto.com?subject=Invalid Geometries'>contact us</a>.",
+      what_about: "Your file appears to contain invalid geometries. Try opening the file with another GIS tool and checking the geometry validity. If everything appears to be okay, <a href='mailto:support@carto.com?subject=Invalid Geometries'>contact us</a>.",
       source: ERROR_SOURCE_USER
     },
     3007 => {

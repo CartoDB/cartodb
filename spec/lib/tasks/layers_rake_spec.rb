@@ -74,6 +74,43 @@ describe 'layers.rake' do
       expect(mapcapped_layer).to eq('className' => class_name, 'dummy' => 'opt')
     end
 
+    describe 'for viewer users' do
+      before(:each) do
+        @user.viewer = true
+        @user.save
+      end
+
+      after(:each) do
+        @user.viewer = false
+        @user.save
+      end
+
+      it 'updates layers for viewer users' do
+        class_name = @table_visualization.user_layers.sort_by(&:order).first.options['className']
+
+        dummy_options = {
+          'className' => class_name,
+          'dummy' => 'opt',
+          'name' => 'X',
+          'labels' => {
+            'dummy' => 'label'
+          }
+        }
+
+        Cartodb.with_config(basemaps: { 'CARTO' => { class_name => dummy_options } }) do
+          Rake::Task['carto:db:sync_basemaps_from_app_config'].invoke
+        end
+
+        @table_visualization.reload
+        bottom_layer, labels_layer = @table_visualization.user_layers.sort_by(&:order)
+        expect(bottom_layer.options).to eq(dummy_options)
+        expect(labels_layer.options).to eq('dummy' => 'label', 'name' => 'X Labels', 'type' => 'Tiled')
+
+        @user.reload
+        expect(@user.viewer).to be_true
+      end
+    end
+
     it 'doesn\'t touch unknown layers' do
       base_layer = @visualization.user_layers.first
       base_layer.options['className'] = 'something_custom'

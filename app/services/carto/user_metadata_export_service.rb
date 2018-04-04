@@ -1,7 +1,6 @@
 require 'json'
 require 'carto/export/layer_exporter'
 require 'carto/export/data_import_exporter'
-require 'carto/export/rate_limit_exporter'
 
 # Version History
 # 1.0.0: export user metadata
@@ -40,7 +39,6 @@ module Carto
     include UserMetadataExportServiceConfiguration
     include LayerImporter
     include DataImportImporter
-    include RateLimitImporter
 
     def build_user_from_json_export(exported_json_string)
       build_user_from_hash_export(parse_json(exported_json_string))
@@ -89,7 +87,7 @@ module Carto
 
       user.layers = build_layers_from_hash(exported_user[:layers])
 
-      user.rate_limit_id = build_rate_limit_from_hash(exported_user[:rate_limit]).try(:id)
+      user.rate_limit = build_rate_limit_from_hash(exported_user[:rate_limit])
 
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
@@ -127,13 +125,21 @@ module Carto
         updated_at: exported_search_tweet[:updated_at]
       )
     end
+
+    def build_rate_limit_from_hash(exported_hash)
+      return unless exported_hash
+
+      rate_limit = Carto::RateLimit.from_api_attributes(exported_hash[:limits])
+      rate_limit.id = exported_hash[:id]
+
+      rate_limit
+    end
   end
 
   module UserMetadataExportServiceExporter
     include UserMetadataExportServiceConfiguration
     include LayerExporter
     include DataImportExporter
-    include RateLimitExporter
 
     def export_user_json_string(user)
       export_user_json_hash(user).to_json
@@ -199,6 +205,15 @@ module Carto
         updated_at: api_key.updated_at,
         grants: api_key.grants,
         user_id: api_key.user_id
+      }
+    end
+
+    def export_rate_limit(rate_limit)
+      return unless rate_limit
+
+      {
+        id: rate_limit.id,
+        limits: rate_limit.api_attributes
       }
     end
   end

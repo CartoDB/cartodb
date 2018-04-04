@@ -19,6 +19,7 @@ describe Carto::UserMetadataExportService do
   end
 
   def create_user_with_basemaps_assets_visualizations
+    FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
     @user = FactoryGirl.create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
 
@@ -78,19 +79,19 @@ describe Carto::UserMetadataExportService do
 
   let(:service) { Carto::UserMetadataExportService.new }
 
-  describe 'import v 1.0.2' do
+  describe 'import latest' do
     it 'imports correctly' do
       import_user_from_export(full_export)
     end
   end
 
-  describe 'import v 1.0.3' do
+  describe 'import v 1.0.2' do
     it 'imports correctly' do
-      import_user_from_export(full_export_one_zero_three)
+      import_user_from_export(full_export_one_zero_two)
     end
   end
 
-  describe '#user export' do
+  describe '#user export 1.0.2' do
     before(:all) do
       create_user_with_basemaps_assets_visualizations
     end
@@ -112,7 +113,7 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  describe '#user export with rate limits' do
+  describe '#user export latest' do
     before(:all) do
       create_user_with_rate_limits
     end
@@ -144,7 +145,7 @@ describe Carto::UserMetadataExportService do
       end
     end
 
-    it 'imports' do
+    it 'imports latest' do
       user = service.build_user_from_hash_export(full_export)
       @search_tweets = service.build_search_tweets_from_hash_export(full_export)
       @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
@@ -152,12 +153,12 @@ describe Carto::UserMetadataExportService do
       expect_export_matches_user(full_export[:user], user)
     end
 
-    it 'imports with rate limits' do
-      user = service.build_user_from_hash_export(full_export_one_zero_three)
-      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_three)
+    it 'imports 1.0.2' do
+      user = service.build_user_from_hash_export(full_export_one_zero_two)
+      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_two)
       @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
 
-      expect_export_matches_user(full_export_one_zero_three[:user], user)
+      expect_export_matches_user(full_export_one_zero_two[:user], user)
     end
   end
 
@@ -166,18 +167,18 @@ describe Carto::UserMetadataExportService do
       destroy_user
     end
 
-    it 'export + import' do
+    it 'export + import 1.0.2' do
       create_user_with_basemaps_assets_visualizations
       export_import(@user)
     end
 
-    it 'export + import with rate limits' do
+    it 'export + import latest' do
       create_user_with_rate_limits
       export_import(@user)
     end
   end
 
-  describe '#full export + import (user and visualizations)' do
+  describe '#full export + import (user and visualizations) 1.0.2' do
     after :each do
       destroy_user(@imported_user)
     end
@@ -197,7 +198,7 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  describe '#full export + import (user and visualizations) with rate limits' do
+  describe '#full export + import (user and visualizations) latest' do
     after :each do
       destroy_user(@imported_user)
     end
@@ -211,7 +212,7 @@ describe Carto::UserMetadataExportService do
       end
     end
 
-    it 'export + import user and visualizations for a viewer user with rate limit' do
+    it 'export + import user and visualizations for a viewer user' do
       Dir.mktmpdir do |path|
         create_user_with_rate_limits
         full_export_import_viewer(path)
@@ -222,7 +223,7 @@ describe Carto::UserMetadataExportService do
 
     it 'skips a canonical visualization without a user table' do
       Dir.mktmpdir do |path|
-        create_user_with_basemaps_assets_visualizations
+        create_user_with_rate_limits
         # Set up fake visualizations
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)
         canonical_without_table = source_visualizations.find { |v| v['type'] == 'table' }
@@ -242,10 +243,10 @@ describe Carto::UserMetadataExportService do
         @user.in_database.execute("CREATE TABLE #{canonical_with_table['name']} (cartodb_id int)")
 
         # We import the visualizations
-        imported_user = service.import_from_directory(path)
-        service.import_metadata_from_directory(imported_user, path)
+        @imported_user = service.import_from_directory(path)
+        service.import_metadata_from_directory(@imported_user, path)
 
-        expect(imported_user.visualizations.count).to eq source_visualizations.count - 1
+        expect(@imported_user.visualizations.count).to eq source_visualizations.count - 1
       end
     end
   end
@@ -322,6 +323,7 @@ describe Carto::UserMetadataExportService do
   def import_user_from_export(export)
     export[:user] = export[:user].reject { |entry| entry == :api_keys }
     user = service.build_user_from_hash_export(export)
+    FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
     user.save!
     user.destroy
   end
@@ -561,6 +563,32 @@ describe Carto::UserMetadataExportService do
             kind: "tiled"
           }
         ],
+        rate_limit: {
+          id: "44d9db90-e12a-4764-85a4-fee012a98333",
+          limits: {
+            maps_anonymous: [0, 1, 2],
+            maps_static: [0, 1, 2],
+            maps_static_named: [0, 1, 2],
+            maps_dataview: [0, 1, 2],
+            maps_dataview_search: [0, 1, 2],
+            maps_analysis: [0, 1, 2],
+            maps_tile: [0, 1, 2],
+            maps_attributes: [0, 1, 2],
+            maps_named_list: [0, 1, 2],
+            maps_named_create: [0, 1, 2],
+            maps_named_get: [0, 1, 2],
+            maps_named: [0, 1, 2],
+            maps_named_update: [0, 1, 2],
+            maps_named_delete: [0, 1, 2],
+            maps_named_tiles: [0, 1, 2],
+            maps_analysis_catalog: [0, 1, 2],
+            sql_query: [0, 1, 2],
+            sql_query_format: [0, 1, 2],
+            sql_job_create: [0, 1, 2],
+            sql_job_get: [0, 1, 2],
+            sql_job_delete: [0, 1, 2]
+          }
+        },
         search_tweets: [
           {
             data_import: {
@@ -618,31 +646,7 @@ describe Carto::UserMetadataExportService do
     }
   end
 
-  let(:full_export_one_zero_three) do
-    full_export_one_zero_three = full_export.merge(version: "1.0.3")
-    user_hash = full_export_one_zero_three[:user]
-    user_hash[:rate_limit] = { id: "44d9db90-e12a-4764-85a4-fee012a98333",
-                               limits: { maps_anonymous: [0, 1, 2],
-                                         maps_static: [0, 1, 2],
-                                         maps_static_named: [0, 1, 2],
-                                         maps_dataview: [0, 1, 2],
-                                         maps_dataview_search: [0, 1, 2],
-                                         maps_analysis: [0, 1, 2],
-                                         maps_tile: [0, 1, 2],
-                                         maps_attributes: [0, 1, 2],
-                                         maps_named_list: [0, 1, 2],
-                                         maps_named_create: [0, 1, 2],
-                                         maps_named_get: [0, 1, 2],
-                                         maps_named: [0, 1, 2],
-                                         maps_named_update: [0, 1, 2],
-                                         maps_named_delete: [0, 1, 2],
-                                         maps_named_tiles: [0, 1, 2],
-                                         maps_analysis_catalog: [0, 1, 2],
-                                         sql_query: [0, 1, 2],
-                                         sql_query_format: [0, 1, 2],
-                                         sql_job_create: [0, 1, 2],
-                                         sql_job_get: [0, 1, 2],
-                                         sql_job_delete: [0, 1, 2] } }
-    full_export_one_zero_three
+  let(:full_export_one_zero_two) do
+    full_export.except(:rate_limit)
   end
 end

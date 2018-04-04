@@ -539,6 +539,7 @@ ion for time-series (#12670)
 * Make all the widgets cards clickable in the Add widgets modal (#13134)
 * Always use `urlTemplate` basemap attribute (deprecate `url`) (#13748)
 * Make new widgets appear on top (#13244)
+* Better error messages for some import errors
 * Add indices to `layers` relations for performance (#13669)
 * Fix imports with local storage and special characters (#13604)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)

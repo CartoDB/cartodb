@@ -76,8 +76,8 @@ migration(
            END LOOP;
          END $$;"
     alter_table :users do
-      add_foreign_key [:account_type], :account_types, on_delete: :restrict, null: false
       add_index :account_type
+      add_foreign_key [:account_type], :account_types, on_delete: :restrict, null: false
     end
   end,
   Proc.new do

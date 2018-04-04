@@ -16,6 +16,11 @@ This upgrade changes the configuration format of basemaps. You must replace all 
 recommended that you replace the `basemaps` section completely, since this release also adds supports for high
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
 
+You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to synchronize existing layers.
+### NOTICE
+
+This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
+
 ### Features
 * Profile page migration (#13726)
 * Singup and confirmation pages migration (#13641)
@@ -154,6 +159,7 @@ ion for time-series (#12670)
   * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
   * Conventions (#13491)
   * API Keys are exported and imported (#13346)
+  * 500 error when mixing auth mechanisms (#13723)
 * Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
 * Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
 * Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
@@ -166,6 +172,8 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Skip canonical viz with missing tables from metadata export
+* Fix dialog footer in some modals (CartoDB/onpremises/issues/507)
 * Fix alignment for formula widget edit form (CartoDB/onpremises/issues/511)
 * Fix copies order in html legends editor (CartoDB/onpremises/issues/504)
 * Fix export view template showing glitch in IE and Firefox(CartoDB/onpremises/issues/484)
@@ -522,6 +530,7 @@ ion for time-series (#12670)
 * Fetch histogram and time series totals with a new `no_filters` parameter. (#13059)
 * Enable CSV exports for polygon and line datasets (#13212)
 * Enable CSV exports for polygon and line datasets (#13196)
+* Do not check Referrer for enabling CORS, whole domain must be enabled (#13783)
 * Fix wrong padding in widgets list (#13200)
 * Add fetch polyfill (#13230)
 * Ensure v3 visualizations always have analyses (#13662)

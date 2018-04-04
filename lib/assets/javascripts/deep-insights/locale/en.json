@@ -71,5 +71,14 @@
     "find-nearest": {
       "short-title": "Find nearest"
     }
+  },
+  "infowindows": {
+    "content-fields": {
+      "empty": {
+        "no-data": "No data available"
+      }
+    },
+    "loading": "loading",
+    "error": "There has been an error..."
   }
 }

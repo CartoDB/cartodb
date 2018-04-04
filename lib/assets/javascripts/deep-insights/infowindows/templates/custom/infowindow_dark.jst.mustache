@@ -1,0 +1,30 @@
+<div class="CDB-infowindow CDB-infowindow--dark js-infowindow" style="background:#2E3C43">
+  <div class="CDB-infowindow-close js-close"></div>
+  <div class="CDB-infowindow-container">
+    <div class="CDB-infowindow-bg">
+      <div class="CDB-infowindow-inner js-inner">
+        {{#loading}}
+          <div class="CDB-Loader js-loader is-visible"></div>
+        {{/loading}}
+        <ul class="CDB-infowindow-list js-content">
+          {{#content.fields}}
+          <li class="CDB-infowindow-listItem">
+            {{#title}}
+              {{#alternative_name}}
+              <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
+              {{/alternative_name}}
+              {{^alternative_name}}
+              <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
+              {{/alternative_name}}
+            {{/title}}
+            <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
+          </li>
+          {{/content.fields}}
+        </ul>
+      </div>
+    </div>
+    <div class="CDB-hook">
+      <div class="CDB-hook-inner"></div>
+    </div>
+  </div>
+</div>

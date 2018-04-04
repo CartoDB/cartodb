@@ -47,7 +47,9 @@ describe CartoDB::Visualization::CommonDataService do
     expect(failed).to eq 0
 
     expect(remote_visualizations(@user).count).to eq 1
-    expect(remote_visualizations(@user).first.name).to eq 'ds1'
+    remote_visualization = remote_visualizations(@user).first
+    expect(remote_visualization.name).to eq 'ds1'
+    expect(remote_visualization.external_source.geometry_types).to eq ["ST_MultiPolygon"]
   end
 
   it 'should import common data datasets within an ActiveRecord transaction (see #12488)' do

@@ -45,13 +45,13 @@ module Carto
     end
 
     def restore_keys(redis_db, redis_keys)
-      redis_keys.try(:each) do |key, value|
+      redis_keys.each do |key, value|
         redis_db.restore(key, value[:ttl], Base64.decode64(value[:value]))
       end
     end
 
     def remove_keys(redis_db, redis_keys)
-      redis_keys.try(:each) do |key|
+      redis_keys.each do |key|
         redis_db.del(key)
       end
     end
@@ -96,8 +96,8 @@ module Carto
       }
     end
 
-    def export_dataservices(prefix, redis_db = $users_metadata)
-      redis_db.keys("#{prefix}:*").map { |key| export_key(redis_db, key) }.reduce({}, &:merge)
+    def export_dataservices(prefix)
+      $users_metadata.keys("#{prefix}:*").map { |key| export_key($users_metadata, key) }.reduce({}, &:merge)
     end
 
     def export_key(redis_db, key)

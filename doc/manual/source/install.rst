@@ -3,7 +3,7 @@ Installation
 ============
 
 .. warning::
-  CartoDB is guaranteed to run without any issue in Ubuntu 12.04 x64. This documentation describes the process to install CartoDB in this specific OS version.
+  CartoDB works with Ubuntu 16.04 x64. This documentation describes the process to install CartoDB in this specific OS version.
 
   However this doesn't mean that it won't work with other Operating Systems or other Ubuntu. There are also many successful installations on Amazon EC2, Linode, dedicated instances and development machines running OS X and Ubuntu 12.04+.
 

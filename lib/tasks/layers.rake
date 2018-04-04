@@ -164,11 +164,13 @@ namespace :carto do
             next true unless attributes # Unknown basemap class: do nothing (e.g: custom basemap)
 
             bottom_layer.options = attributes.except('default')
+            bottom_layer.user.viewer = false # To avoid validation issues
             bottom_layer.save! if persisted
 
             if labels_layer && attributes['labels']
               default_labels_layer = Carto::LayerFactory.build_default_labels_layer(bottom_layer)
               labels_layer.options = default_labels_layer.options
+              labels_layer.user.viewer = false # To avoid validation issues
               labels_layer.save! if persisted
             elsif labels_layer
               STDERR.puts "WARN: Visualization #{vis.id} has label but basemap class #{class_name} does not"

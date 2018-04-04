@@ -13,7 +13,11 @@ The best way to get started is to navigate through the CARTO.js documentation si
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/CartoDB/cartodb.js/tags).
+We use [SemVer](http://semver.org/) for versioning.
+
+Please refer to [CHANGELOG.md](CHANGELOG.md) for a list of notables changes for each version of the library.
+
+You can also see the [tags on this repository](https://github.com/CartoDB/cartodb.js/tags).
 
 ## Submitting Contributions
 
@@ -25,7 +29,7 @@ This project is licensed under the BSD 3-clause "New" or "Revised" License - see
 
 ## Documentation
 
-### API Reference
+### API Reference
 
 Run `npm run docs` to build the API reference documentation from jsdoc annotations.
 

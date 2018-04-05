@@ -380,7 +380,7 @@ describe 'UserMigration' do
     user.destroy
   end
 
-  it 'doesn\'t export users with a canonical viz without user table if metadata export is requested (see #12588)' do
+  it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -396,14 +396,8 @@ describe 'UserMigration' do
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Can't export. Vizs without user table: [\"#{@table_visualization.id}\"]")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-    export.destroy
 
     user.destroy
   end

@@ -64,11 +64,14 @@ module CartoDB
         failed = 0
 
         carto_user = Carto::User.find(user.id)
+
+        common_data_config = Cartodb.config[:common_data]
+        common_data_username = common_data_config['username']
         common_data_remotes_by_name = Carto::Visualization.remotes
                                                           .where(user_id: user.id)
                                                           .joins(:external_source)
                                                           .readonly(false) # joins causes readonly
-                                                          .where(external_sources: { username: 'common-data' })
+                                                          .where(external_sources: { username: common_data_username })
                                                           .map { |v| [v.name, v] }.to_h
         ActiveRecord::Base.transaction do
           datasets.each do |dataset|

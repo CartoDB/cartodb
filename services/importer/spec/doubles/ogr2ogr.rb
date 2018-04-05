@@ -39,6 +39,8 @@ module CartoDB
         def kml_style_missing?; end
 
         def missing_srs?; end
+
+        def geometry_validity_error?; end
       end
     end
   end

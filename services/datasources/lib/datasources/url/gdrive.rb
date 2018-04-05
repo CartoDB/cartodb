@@ -22,7 +22,7 @@ module CartoDB
           FORMAT_EXCEL =>      %w(application/vnd.ms-excel application/vnd.google-apps.spreadsheet application/vnd.openxmlformats-officedocument.spreadsheetml.sheet),
           # FORMAT_GPX =>        %w(text/xml), # Disabled because text/xml list any XML file
           FORMAT_KML =>        %w(application/vnd.google-earth.kml+xml),
-          FORMAT_COMPRESSED => %w(application/zip), # application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
+          FORMAT_COMPRESSED => %w(application/zip application/x-zip-compressed), # application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
         }
 
         # Constructor (hidden)

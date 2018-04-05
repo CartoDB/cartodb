@@ -316,6 +316,7 @@ describe DataImport do
       updated_at: Time.now,
       from_query: "SELECT * FROM #{data_import_1.table_name} LIMIT 5").run_import!
     data_import_2.state.should be == 'complete'
+    data_import_2.data_type.should eq 'query'
 
     duplicated_table = ::UserTable.where(id: data_import_2.table_id).first
     duplicated_table.should_not be_nil

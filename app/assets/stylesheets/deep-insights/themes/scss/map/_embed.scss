@@ -89,10 +89,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   align-items: center;
   justify-content: space-between;
 
-  &.is-collapsed {
-    margin-bottom: 16px;
-  }
-
   h1 {
     margin: 0;
   }
@@ -100,7 +96,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Overlay-inner {
   display: none;
-  margin-top: 8px;
+  margin-top: 16px;
 
   &.is-active {
     display: block;
@@ -113,7 +109,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 // Override carto.js legends styles
 .CDB-Legends-canvas .CDB-Legends-canvasInner {
-  padding: 16px 16px 0;
+  padding: 10px 12px;
 }
 
 .CDB-Embed-legends {
@@ -149,10 +145,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 @media (min-width: $sMedia-xl) {
   .CDB-Overlay-title {
     display: none;
-
-    &.is-collapsed {
-      margin-bottom: 24px;
-    }
   }
 
   .CDB-Overlay-inner {
@@ -170,7 +162,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     }
 
     .CDB-Legends-canvasInner {
-      padding: 24px 24px 0;
+      padding: 12px 10px;
     }
   }
 }

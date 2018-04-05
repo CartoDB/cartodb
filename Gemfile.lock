@@ -76,7 +76,7 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
-    charlock_holmes (0.7.5)
+    charlock_holmes (0.7.6)
     childprocess (0.5.9)
       ffi (~> 1.0, >= 1.0.11)
     chronic (0.10.2)
@@ -381,7 +381,7 @@ DEPENDENCIES
   bartt-ssl_requirement (~> 1.4.0)
   byebug
   capybara (= 1.1.2)
-  charlock_holmes (= 0.7.5)
+  charlock_holmes (= 0.7.6)
   ci_reporter (= 1.8.4)
   compass (= 1.0.3)
   db-query-matchers (= 0.4.0)
@@ -451,4 +451,4 @@ DEPENDENCIES
   zeus
 
 BUNDLED WITH
-   1.15.1
+   1.16.1

@@ -383,7 +383,7 @@ class Admin::PagesController < Admin::AdminController
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
 
     ff_user = @viewed_user || @viewed_org.owner
-    @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag('dashboard_migration')
+    @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
 
     gmaps_user = @most_viewed_vis_map.try(:map).try(:user) || @viewed_user
     @gmaps_query_string = gmaps_user ? gmaps_user.google_maps_query_string : @viewed_org.google_maps_key
@@ -394,7 +394,7 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def user_maps_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, map_version: Carto::Visualization::VERSION_BUILDER)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, version: @has_new_dashboard ? Carto::Visualization::VERSION_BUILDER : nil)
   end
 
   def org_datasets_public_builder(org)
@@ -402,10 +402,10 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def org_maps_public_builder(org)
-    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id, map_version: Carto::Visualization::VERSION_BUILDER)
+    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id, version: @has_new_dashboard ? Carto::Visualization::VERSION_BUILDER : nil)
   end
 
-  def public_builder(user_id: nil, vis_type: nil, organization_id: nil, map_version: nil)
+  def public_builder(user_id: nil, vis_type: nil, organization_id: nil, version: nil)
     tags = tag_or_nil.nil? ? nil : [tag_or_nil]
 
     builder = Carto::VisualizationQueryBuilder.new
@@ -416,7 +416,7 @@ class Admin::PagesController < Admin::AdminController
                                               .with_type(vis_type)
                                               .with_tags(tags)
                                               .with_organization_id(organization_id)
-                                              .with_version(map_version)
+                                              .with_version(version)
 
     builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 

@@ -6,7 +6,7 @@ This document is intended for existing developers who have used [previous versio
 
 This guide describes how the CARTO.js library has changed to support additional functionality. It outlines the basic workflow for creating an application and includes an example of updating an old application using the new library.
 
-**Note**: A full reference library is in the process of being built. As we continue to enhance CARTO.js, supported code will be maintained in the [Reference](https://carto.com/cartojs/reference/).
+**Tip**: The authorization system behaves in a uniform way for any version of CARTO.js. You can read about the [fundamentals of authorization]({{site.fundamental_docs}}/) or know implementation details of the [Auth API]({{site.authapi_docs}}/) under the hood.
 
 At a high-level, the workflow consists of:
 

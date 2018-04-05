@@ -101,13 +101,8 @@ class Asset < Sequel::Model
 
   def save_to_s3(filename)
     obj = s3_bucket.object("#{target_asset_path}#{filename}")
-    File.open(@file.path, 'rb') do |file|
-      obj.put(
-        body: file,
-        acl: 'public-read',
-        content_type: MIME::Types.type_for(filename).first.to_s
-      )
-    end
+    obj.upload_file(@file.path, acl: 'public-read', content_type: MIME::Types.type_for(filename).first.to_s)
+
     obj.public_url.to_s
   end
 

@@ -23,13 +23,7 @@ module Carto
         identifier = File.join(namespace, filename)
 
         s3_object = bucket.object(identifier)
-        File.open(file.path, 'rb') do |f|
-          s3_object.put(
-            body: f,
-            acl: 'public-read',
-            content_type: mime_type
-          )
-        end
+        s3_object.upload_file(file.path, acl: 'public-read', content_type: mime_type)
 
         [identifier, s3_object.public_url(secure: true).to_s]
       end

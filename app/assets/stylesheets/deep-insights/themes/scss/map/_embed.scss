@@ -184,6 +184,10 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 }
 
 @media (max-width: $sMedia-min-w-vertical - 1px) {
+  .CDB-Embed-view {
+    border: 1px solid #DDD;
+  }
+
   .CDB-Embed-content {
     // 104px = header + tabs height
     flex: 1;

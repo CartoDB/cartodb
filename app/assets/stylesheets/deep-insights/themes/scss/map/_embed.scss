@@ -132,6 +132,12 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 }
 
+@media (max-width: $sMedia-l) {
+  .CDB-Map .CDB-Legends-canvas {
+    max-height: calc(100vh - 263px);
+  }
+}
+
 @media (max-width: $sMedia-xl) {
   .CDB-Embed-tab {
     .CDB-Widget {

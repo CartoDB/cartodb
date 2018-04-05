@@ -45,7 +45,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 * Embed static view (#12779)
 * Add tooltip on Builder actions (#13102)
 * Add Grunt tasks to generate static files (#13130)
-* Do not request image files in Dropbox sync (CartoDB/support#1192)
+* Do not request image files in Dropbox/Google sync (CartoDB/support#1192, CartoDB/support#1436)
 * Improve geocoding onboarding (#13046)
 * Editor static view (#13043)
 * Add trial notification in static views (#13079)

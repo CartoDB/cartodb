@@ -115,6 +115,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 .CDB-Embed-legends {
   .CDB-Legends-canvas {
     display: block !important;
+    border-radius: 0;
     position: relative;
     top: 0;
     left: 0;
@@ -125,6 +126,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 
   .CDB-Legends-canvasInner {
+    border-radius: 0;
     height: 100%;
     max-height: none;
   }

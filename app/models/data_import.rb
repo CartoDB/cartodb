@@ -125,7 +125,6 @@ class DataImport < Sequel::Model
   end
 
   def before_save
-    byebug
     unless logger.present?
       log.save
       self.logger = log.id

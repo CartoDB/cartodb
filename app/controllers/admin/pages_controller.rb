@@ -40,7 +40,18 @@ class Admin::PagesController < Admin::AdminController
 
   # Just an entrypoint to dispatch to different places according to
   def index
-    CartoDB.subdomainless_urls? ? index_subdomainless : index_subdomainfull
+    if current_user
+      # username.carto.com should redirect to the user dashboard in the maps view if the user is logged in
+      redirect_to CartoDB.url(self, 'dashboard', {}, current_user)
+    elsif CartoDB.extract_subdomain(request).present?
+      # Asummes either current_user nil or at least different from current_viewer
+      # username.carto.com should redirect to the public user feeds view if the username is not the user's username
+      # username.carto.com should redirect to the public user feeds view if the user is not logged in
+      redirect_to CartoDB.url(self, 'public_user_feed_home')
+    else
+      # We cannot get any user information from domain, path or session (avoid using CartoDB.url helper)
+      redirect_to login_url
+    end
   end
 
   def common_data
@@ -201,35 +212,6 @@ class Admin::PagesController < Admin::AdminController
   def eligible_for_redirect?(user)
     return false if CartoDB.subdomainless_urls?
     user.has_organization? && CartoDB.subdomain_from_request(request) != user.organization.name
-  end
-
-  def index_subdomainfull
-    if current_user
-      # username.carto.com should redirect to the user dashboard in the maps view if the user is logged in
-      redirect_to CartoDB.url(self, 'dashboard', {}, current_user)
-    elsif CartoDB.extract_subdomain(request).present?
-      # Asummes either current_user nil or at least different from current_viewer
-      # username.carto.com should redirect to the public user feeds view if the username is not the user's username
-      # username.carto.com should redirect to the public user feeds view if the user is not logged in
-      redirect_to CartoDB.url(self, 'public_user_feed_home')
-    else
-       # We cannot get any user information from domain, path or session (avoid using CartoDB.url helper)
-       redirect_to login_url
-    end
-  end
-
-  def index_subdomainless
-    if current_user && current_viewer && current_user.id == current_viewer.id
-      redirect_to CartoDB.url(self, 'dashboard')
-    elsif current_user.nil? && current_viewer
-      # current_viewer always returns a user with a session
-      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
-    elsif CartoDB.username_from_request(request)
-      redirect_to CartoDB.url(self, 'public_user_feed_home')
-    else
-      # We cannot get any user information from domain, path or session
-      redirect_to CartoDB.url(self, 'login')
-    end
   end
 
   def render_datasets(vis_query_builder, user = nil)

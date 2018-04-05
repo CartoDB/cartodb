@@ -94,7 +94,7 @@ describe Carto::UserMetadataExportService do
     it 'includes all user model attributes' do
       export = service.export_user_json_hash(@user)
 
-      expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys)
+      expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys - [:rate_limit_id])
     end
   end
 
@@ -202,6 +202,35 @@ describe Carto::UserMetadataExportService do
           expect(st1.retrieved_items).to eq st2['retrieved_items']
           expect(st1.state).to eq st2['state']
         end
+      end
+    end
+
+    it 'skips a canonical visualization without a user table' do
+      Dir.mktmpdir do |path|
+        create_user_with_basemaps_assets_visualizations
+        # Set up fake visualizations
+        source_visualizations = @user.visualizations.order(:id).map(&:attributes)
+        canonical_without_table = source_visualizations.find { |v| v['type'] == 'table' }
+        UserTable.where(name: canonical_without_table['name']).delete
+        @user.in_database.execute("DROP TABLE #{canonical_without_table['name']}")
+
+        # Export and destroy user before import
+        service.export_to_directory(@user, path)
+
+        destroy_user
+
+        # At this point, the user database is still there, but the tables got destroyed.
+        # We recreate a dummy one for the visualization we did export
+        canonical_with_table = source_visualizations.find do |v|
+          v['type'] == 'table' && v['name'] != canonical_without_table['name']
+        end
+        @user.in_database.execute("CREATE TABLE #{canonical_with_table['name']} (cartodb_id int)")
+
+        # We import the visualizations
+        imported_user = service.import_from_directory(path)
+        service.import_metadata_from_directory(imported_user, path)
+
+        expect(imported_user.visualizations.count).to eq source_visualizations.count - 1
       end
     end
   end

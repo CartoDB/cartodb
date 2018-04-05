@@ -7,4 +7,12 @@
       <div class="XYZPanel-error CDB-InfoTooltip CDB-InfoTooltip--left is-error CDB-Text CDB-Size-medium CDB-InfoTooltip-text js-error <%- lastErrorMsg ? 'is-visible' : '' %>"><%- lastErrorMsg %></div>
     </div>
   </div>
+  <div class="u-flex">
+    <label class="Metadata-label Metadata-label--big CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"></label>
+    <div class="Form-rowData Form-rowData--noMinHeight Form-rowData--longer">
+      <p class="CDB-Text CDB-Size-small Form-rowInfoText--block u-altTextColor">
+        Learn how to get your Mapbox Style URL <a href="https://www.mapbox.com/help/carto/" target="_blank">here</a>
+      </p>
+    </div>
+  </div>
 </div>

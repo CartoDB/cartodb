@@ -394,7 +394,7 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def user_maps_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, version: @has_new_dashboard ? Carto::Visualization::VERSION_BUILDER : nil)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, version: visualization_version)
   end
 
   def org_datasets_public_builder(org)
@@ -402,7 +402,7 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def org_maps_public_builder(org)
-    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id, version: @has_new_dashboard ? Carto::Visualization::VERSION_BUILDER : nil)
+    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id, version: visualization_version)
   end
 
   def public_builder(user_id: nil, vis_type: nil, organization_id: nil, version: nil)
@@ -421,6 +421,10 @@ class Admin::PagesController < Admin::AdminController
     builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 
     builder
+  end
+
+  def visualization_version
+    @has_new_dashboard ? Carto::Visualization::VERSION_BUILDER : nil
   end
 
   def get_organization_if_exists(name)

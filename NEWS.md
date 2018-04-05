@@ -172,6 +172,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix a case where the layer selector was displaying incorrectly (https://github.com/CartoDB/support/issues/1430)
+* Update charlock_holmes to 0.7.6 (ICU compatibility)
 * Skip canonical viz with missing tables from metadata export
 * Fix dialog footer in some modals (CartoDB/onpremises/issues/507)
 * Fix alignment for formula widget edit form (CartoDB/onpremises/issues/511)

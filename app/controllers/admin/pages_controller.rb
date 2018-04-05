@@ -41,15 +41,17 @@ class Admin::PagesController < Admin::AdminController
   # Just an entrypoint to dispatch to different places according to
   def index
     if current_user
-      # username.carto.com should redirect to the user dashboard in the maps view if the user is logged in
+      # I am logged in, visiting my subdomain -> my dashboard
       redirect_to CartoDB.url(self, 'dashboard', {}, current_user)
     elsif CartoDB.extract_subdomain(request).present?
-      # Asummes either current_user nil or at least different from current_viewer
-      # username.carto.com should redirect to the public user feeds view if the username is not the user's username
-      # username.carto.com should redirect to the public user feeds view if the user is not logged in
+      # I am visiting another user subdomain -> other user public pages
       redirect_to CartoDB.url(self, 'public_user_feed_home')
+    elsif current_viewer
+      # I am logged in but did not specify a subdomain -> my dashboard
+      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
     else
-      # We cannot get any user information from domain, path or session (avoid using CartoDB.url helper)
+      # I am not logged in and did not specify a subdomain -> login
+      # Avoid using CartoDB.url helper, since we cannot get any user information from domain, path or session
       redirect_to login_url
     end
   end

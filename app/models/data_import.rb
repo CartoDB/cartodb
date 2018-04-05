@@ -567,7 +567,6 @@ class DataImport < Sequel::Model
       })
   end
 
-
   def migrate_existing(imported_name)
     log.append 'migrate_existing()'
 

@@ -82,7 +82,7 @@ module CartoDB
       ''
     else
       host = request.host.to_s
-      host.end_with?(session_domain) ? host.gsub(self.session_domain, '') : ''
+      host.end_with?(session_domain) ? host.gsub(session_domain, '') : ''
     end
   end
 

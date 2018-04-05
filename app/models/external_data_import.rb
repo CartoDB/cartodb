@@ -25,5 +25,4 @@ class ExternalDataImport < Sequel::Model
   rescue KeyError
     nil
   end
-
 end

@@ -287,10 +287,12 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-LayerLegends {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.CDB-LayerLegends:empty {
+.CDB-LayerLegends:empty,
+.CDB-LayerLegends:last-of-type,
+.CDB-LayerLegends:last-of-type:empty {
   margin-bottom: 0;
 }
 
@@ -425,7 +427,7 @@ $maxLegendContainerHeight: 300px;
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
-  margin-bottom: 38px;
+  margin-bottom: 30px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
 }

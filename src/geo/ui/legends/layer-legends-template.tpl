@@ -1,4 +1,4 @@
-<h2 class="CDB-Text CDB-Size-medium is-semibold u-bSpace--xl u-flex u-alignCenter">
+<h2 class="CDB-Text CDB-Size-medium is-semibold u-flex u-alignCenter">
   <% if (showLayerSelector) { %>
   <span class="u-iBlock u-rSpace--m">
       <% if (isLayerVisible) { %>
@@ -13,5 +13,5 @@
 </h2>
 
 <% if (showLegends) { %>
-<div class="Legends js-legends"></div>
+<div class="Legends js-legends u-tSpace-xl"></div>
 <% } %>

@@ -204,6 +204,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_version(version)
+    @map_version = version
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -324,6 +329,10 @@ class Carto::VisualizationQueryBuilder
 
     if @organization_id
       query = query.joins(:user).where(users: { organization_id: @organization_id })
+    end
+
+    if @map_version
+      query = query.where(version: @map_version)
     end
 
     if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC

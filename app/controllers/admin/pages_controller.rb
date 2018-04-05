@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'active_support/inflector'
+require 'carto/api/vizjson3_presenter'
 
 require_relative '../../models/table'
 require_relative '../../models/visualization/member'
@@ -393,7 +394,7 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def user_maps_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, map_version: Carto::Visualization::VERSION_BUILDER)
   end
 
   def org_datasets_public_builder(org)
@@ -401,10 +402,10 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def org_maps_public_builder(org)
-    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id)
+    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id, map_version: Carto::Visualization::VERSION_BUILDER)
   end
 
-  def public_builder(user_id: nil, vis_type: nil, organization_id: nil)
+  def public_builder(user_id: nil, vis_type: nil, organization_id: nil, map_version: nil)
     tags = tag_or_nil.nil? ? nil : [tag_or_nil]
 
     builder = Carto::VisualizationQueryBuilder.new
@@ -415,6 +416,7 @@ class Admin::PagesController < Admin::AdminController
                                               .with_type(vis_type)
                                               .with_tags(tags)
                                               .with_organization_id(organization_id)
+                                              .with_version(map_version)
 
     builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 

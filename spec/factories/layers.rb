@@ -12,14 +12,15 @@ FactoryGirl.define do
     options do
       {
         "default": true,
-        "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         "subdomains": "abcd",
         "minZoom": "0",
         "maxZoom": "18",
         "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/attributions\">CARTO</a>",
-        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         "type": "Tiled",
-        "name": "Positron Labels"
+        "className": "positron_rainbow",
+        "name": "Positron (labels below)"
       }
     end
   end

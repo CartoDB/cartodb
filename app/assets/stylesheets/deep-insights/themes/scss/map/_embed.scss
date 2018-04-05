@@ -154,25 +154,13 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     &.is-collapsed {
       margin-bottom: 24px;
     }
-
-    &.is-menu {
-      display: flex;
-    }
   }
 
   .CDB-Overlay-inner {
     margin-top: 0;
 
-    &.is-menu {
-      margin-top: 8px;
-    }
-
     .CDB-Embed-description {
       display: none;
-
-      &.is-menu {
-        display: block;
-      }
     }
   }
 
@@ -204,19 +192,11 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
   .CDB-Overlay-title {
     display: none;
-
-    &.is-menu {
-      display: flex;
-    }
   }
 
   .CDB-Overlay-inner {
     .CDB-Embed-description {
       display: none;
-
-      &.is-menu {
-        display: block;
-      }
     }
   }
 

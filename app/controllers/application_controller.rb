@@ -108,7 +108,7 @@ class ApplicationController < ActionController::Base
   end
 
   def cors_preflight_check
-    if request.method == :options && check_cors_headers_for_whitelisted_referer
+    if request.method == :options && check_cors_headers_for_whitelisted_origin
       common_cors_headers
       response.headers['Access-Control-Max-Age'] = '3600'
     elsif !Rails.env.production? && !Rails.env.staging?
@@ -117,7 +117,7 @@ class ApplicationController < ActionController::Base
   end
 
   def allow_cross_domain_access
-    if !request.headers['origin'].blank? && check_cors_headers_for_whitelisted_referer
+    if !request.headers['origin'].blank? && check_cors_headers_for_whitelisted_origin
       common_cors_headers
       response.headers['Access-Control-Allow-Credentials'] = 'true'
     elsif !Rails.env.production? && !Rails.env.staging?
@@ -137,28 +137,13 @@ class ApplicationController < ActionController::Base
     response.headers['Access-Control-Allow-Headers'] = '*'
   end
 
-  def check_cors_headers_for_whitelisted_referer
-    referer = request.env["HTTP_REFERER"]
+  def check_cors_headers_for_whitelisted_origin
     origin = request.headers['origin']
 
     cors_enabled_hosts = Cartodb.get_config(:cors_enabled_hosts) || []
     allowed_hosts = ([Cartodb.config[:account_host]] + cors_enabled_hosts).compact
 
-    whitelist_referer = []
-    whitelist_origin = []
-
-    allowed_hosts.each do |allowed_host|
-      %w{http https}.each do |protocol|
-        whitelist_referer << "#{protocol}://#{allowed_host}/explore"
-        whitelist_referer << "#{protocol}://#{allowed_host}/data-library"
-        whitelist_origin << "#{protocol}://#{allowed_host}"
-      end
-    end
-
-    # It seems that Firefox and IExplore don't send the Referer header in the preflight request
-    right_referer = request.method == "OPTIONS" ? true : whitelist_referer.include?(referer)
-    right_origin = whitelist_origin.include?(origin)
-    right_referer && right_origin
+    allowed_hosts.include?(URI.parse(origin).host)
   end
 
   def check_user_state

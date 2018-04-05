@@ -10,6 +10,8 @@
 //
 // --------------------------------------------------------------------------------------------------------------------
 
+$check-icon: '\2714'; //✔
+
 .Checkbox {
   display: flex;
   align-items: center;
@@ -34,25 +36,13 @@
 }
 
 .Checkbox-input.is-checked {
-  &::before,
   &::after {
-    content: '';
+    content: $check-icon;
     position: absolute;
-    height: 2px;
-    background: #0090D7;
-  }
-
-  &::before {
-    left: 2px;
-    width: 4px;
-    transform: rotate(55deg);
-  }
-
-  &::after {
-    top: 5px;
-    left: 3px;
-    width: 8px;
-    transform: rotate(-60deg);
+    top: -3px;
+    left: 1px;
+    color: #0090D7;
+    font-size: 16px;
   }
 }
 

@@ -92,13 +92,12 @@ module Carto
 
           new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
           new_user_layers.map(&:dup).map { |l| user.layers << l }
-
           data_import = map.user_table.try(:data_import)
           if data_import
             data_import.table_id = map.user_table.id
             data_import.save!
             data_import.external_data_imports.each do |edi|
-              edi.synchronization_id = sync.id
+              edi.synchronization_id = sync.id if sync
               edi.save!
             end
           end

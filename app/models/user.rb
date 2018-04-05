@@ -1019,6 +1019,23 @@ class User < Sequel::Model
     CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)
   end
 
+  def update_rate_limits(rate_limit_attributes)
+    if rate_limit_attributes.present?
+      rate_limit = self.rate_limit || Carto::RateLimit.new
+      new_attributes = Carto::RateLimit.from_api_attributes(rate_limit_attributes).rate_limit_attributes
+
+      rate_limit.update_attributes!(new_attributes)
+      self.rate_limit_id = rate_limit.id
+    else
+      remove_rate_limit = self.rate_limit
+      self.rate_limit_id = nil
+    end
+
+    save
+
+    remove_rate_limit.destroy if remove_rate_limit.present?
+  end
+
   def effective_rate_limit
     rate_limit || effective_account_type.rate_limit
   rescue ActiveRecord::RecordNotFound => e

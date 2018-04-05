@@ -372,6 +372,7 @@ module.exports = function (grunt) {
     'exorcise',
     'uglify',
     'npm-build',
+    'build-static',
     'npm-build-dashboard'
   ]);
 

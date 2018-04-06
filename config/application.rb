@@ -134,6 +134,12 @@ module CartoDB
       public_dashboard_new_vendor.js
       data_library_new.js
       data_library_new_vendor.js
+      mobile_apps_new.js
+      mobile_apps_new_vendor.js
+      sessions_new.js
+      sessions_new_vendor.js
+      confirmation_new.js
+      confirmation_new_vendor.js
       common_dashboard.js
 
       tipsy.js

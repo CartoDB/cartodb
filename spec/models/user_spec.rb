@@ -9,11 +9,13 @@ require_relative '../../services/dataservices-metrics/lib/observatory_general_us
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
+require 'helpers/rate_limits_helper'
 require 'helpers/unique_names_helper'
 require 'factories/users_helper'
 require 'factories/database_configuration_contexts'
 
 include UniqueNamesHelper
+include RateLimitsHelper
 
 describe 'refactored behaviour' do
   it_behaves_like 'user models' do
@@ -641,6 +643,7 @@ describe User do
   describe '#get_geocoding_calls' do
     before do
       delete_user_data @user
+      @user.geocoder_provider = 'heremaps'
       @user.stubs(:last_billing_cycle).returns(Date.today)
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil, @mock_redis)
@@ -668,6 +671,7 @@ describe User do
   describe '#get_here_isolines_calls' do
     before do
       delete_user_data @user
+      @user.isolines_provider = 'heremaps'
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
       CartoDB::IsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
@@ -2669,6 +2673,148 @@ describe User do
       it 'regenerates regular key' do
         expect { @auth_api_user.regenerate_all_api_keys }.to(change { @regular_key.reload.token })
       end
+    end
+  end
+
+  describe '#rate limits' do
+    before :all do
+      @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
+      @account_type = FactoryGirl.create(:account_type_free)
+      @account_type_pro = FactoryGirl.create(:account_type_pro)
+      @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
+      @rate_limits = FactoryGirl.create(:rate_limits)
+      @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
+      @user_rt = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      @organization = FactoryGirl.create(:organization)
+
+      owner = FactoryGirl.create(:user, account_type: 'PRO')
+      uo = CartoDB::UserOrganization.new(@organization.id, owner.id)
+      uo.promote_user_to_admin
+      @organization.reload
+      @user_org = FactoryGirl.build(:user, account_type: 'FREE')
+      @user_org.organization_id = @organization.id
+      @user_org.enabled = true
+      @user_org.save
+
+      @map_prefix = "limits:rate:store:#{@user_rt.username}:maps:"
+      @sql_prefix = "limits:rate:store:#{@user_rt.username}:sql:"
+    end
+
+    after :all do
+      @user_rt.destroy unless @user_rt.nil?
+      @user_no_ff.destroy unless @user_no_ff.nil?
+      @organization.destroy unless @organization.nil?
+      @account_type.destroy unless @account_type.nil?
+      @account_type_pro.destroy unless @account_type_pro.nil?
+      @account_type.rate_limit.destroy unless @account_type.nil?
+      @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
+      @rate_limits.destroy unless @rate_limits.nil?
+      @rate_limits_custom.destroy unless @rate_limits_custom.nil?
+      @rate_limits_custom2.destroy unless @rate_limits_custom2.nil?
+      @rate_limits_pro.destroy unless @rate_limits_pro.nil?
+    end
+
+    before :each do
+      unless FeatureFlag.where(name: 'limits_v2').first.present?
+        @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
+      end
+    end
+
+    after :each do
+      @limits_feature_flag.destroy if @limits_feature_flag.exists?
+    end
+
+    it 'does not create rate limits if feature flag is not enabled' do
+      @limits_feature_flag.destroy
+      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
+      sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
+    end
+
+    it 'creates rate limits from user account type' do
+      expect_rate_limits_saved_to_redis(@user_rt.username)
+    end
+
+    it 'updates rate limits from user custom rate_limit' do
+      expect_rate_limits_saved_to_redis(@user_rt.username)
+
+      @user_rt.rate_limit_id = @rate_limits_custom.id
+      @user_rt.save
+
+      expect_rate_limits_custom_saved_to_redis(@user_rt.username)
+    end
+
+    it 'creates rate limits for a org user' do
+      expect_rate_limits_pro_saved_to_redis(@user_org.username)
+    end
+
+    it 'destroy rate limits' do
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
+
+      expect_rate_limits_pro_saved_to_redis(user2.username)
+
+      user2.destroy
+
+      expect {
+        Carto::RateLimit.find(user2.rate_limit_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+
+      expect_rate_limits_exist(user2.username)
+    end
+
+    it 'updates rate limits when user has no rate limits' do
+      user = FactoryGirl.create(:valid_user)
+      user.update_rate_limits(@rate_limits.api_attributes)
+
+      user.reload
+      user.rate_limit.should_not be_nil
+      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
+
+      user.destroy
+    end
+
+    it 'does nothing when user has no rate limits' do
+      user = FactoryGirl.create(:valid_user)
+      user.update_rate_limits(nil)
+
+      user.reload
+      user.rate_limit.should be_nil
+
+      user.destroy
+    end
+
+    it 'updates rate limits when user has rate limits' do
+      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
+      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
+      user.update_rate_limits(@rate_limits.api_attributes)
+      user.reload
+      user.rate_limit.should_not be_nil
+      user.rate_limit_id.should eq @rate_limits_custom2.id
+      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
+      @rate_limits.api_attributes.should eq @rate_limits_custom2.reload.api_attributes
+
+      user.destroy
+    end
+
+    it 'set rate limits to nil when user has rate limits' do
+      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
+      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
+
+      user.update_rate_limits(nil)
+
+      user.reload
+      user.rate_limit.should be_nil
+
+      expect {
+        Carto::RateLimit.find(@rate_limits_custom2.id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+
+      # limits reverted to the ones from the account type
+      expect_rate_limits_saved_to_redis(user.username)
+
+      user.destroy
     end
   end
 

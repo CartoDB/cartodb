@@ -46,6 +46,7 @@ class Carto::User < ActiveRecord::Base
   has_many :layers, through: :layers_user, after_add: Proc.new { |user, layer| layer.set_default_order(user) }
 
   belongs_to :organization, inverse_of: :users
+  belongs_to :rate_limit
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
   has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
 
@@ -87,6 +88,8 @@ class Carto::User < ActiveRecord::Base
 
   before_create :set_database_host
   before_create :generate_api_key
+
+  after_destroy { rate_limit.destroy_completely(self) if rate_limit }
 
   # Auto creates notifications on first access
   def static_notifications_with_creation
@@ -146,7 +149,15 @@ class Carto::User < ActiveRecord::Base
   #   +-------------------------+--------+---------+------+
   #
   def valid_privacy?(privacy)
-    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+    private_tables_enabled || privacy == Carto::UserTable::PRIVACY_PUBLIC
+  end
+
+  def default_dataset_privacy
+    Carto::UserTable::PRIVACY_VALUES_TO_TEXTS[default_table_privacy]
+  end
+
+  def default_table_privacy
+    private_tables_enabled ? Carto::UserTable::PRIVACY_PRIVATE : Carto::UserTable::PRIVACY_PUBLIC
   end
 
   # @return String public user url, which is also the base url for a given user

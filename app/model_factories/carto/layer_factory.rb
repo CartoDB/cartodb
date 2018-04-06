@@ -1,11 +1,11 @@
 module Carto
   class LayerFactory
     def self.build_default_base_layer(user)
-      basemap = user.default_basemap
+      basemap = user.default_basemap.except('default')
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else
-                  { kind: 'tiled', options: basemap.merge('urlTemplate' => basemap['url']) }
+                  { kind: 'tiled', options: basemap }
                 end
 
       Carto::Layer.new(options)
@@ -13,16 +13,13 @@ module Carto
 
     def self.build_default_labels_layer(base_layer)
       base_layer_options = base_layer.options
-      labels_layer_url = base_layer_options['labels']['url']
 
       Carto::Layer.new(
         kind: 'tiled',
-        options: base_layer_options.except('name', 'className', 'labels').merge(
-          'urlTemplate' => labels_layer_url,
-          'url' => labels_layer_url,
+        options: base_layer_options.except('className', 'labels').merge(
           'type' => 'Tiled',
           'name' => "#{base_layer_options['name']} Labels"
-        )
+        ).merge(base_layer_options['labels'])
       )
     end
 

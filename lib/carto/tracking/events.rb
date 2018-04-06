@@ -158,6 +158,7 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id
+        optional_properties :quota_overage
       end
 
       class ScoredTrendingMap < Event

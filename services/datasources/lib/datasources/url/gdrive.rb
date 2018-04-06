@@ -18,12 +18,11 @@ module CartoDB
 
         # Specific of this provider
         FORMATS_TO_MIME_TYPES = {
-            FORMAT_CSV =>         %W( text/csv ),
-            FORMAT_EXCEL =>       %W( application/vnd.ms-excel application/vnd.google-apps.spreadsheet application/vnd.openxmlformats-officedocument.spreadsheetml.sheet ),
-            FORMAT_PNG =>         %W( image/png ),
-            FORMAT_JPG =>         %W( image/jpeg ),
-            FORMAT_SVG =>         %W( image/svg+xml ),
-            FORMAT_COMPRESSED =>  %W( application/zip ), #application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
+          FORMAT_CSV =>        %w(text/csv),
+          FORMAT_EXCEL =>      %w(application/vnd.ms-excel application/vnd.google-apps.spreadsheet application/vnd.openxmlformats-officedocument.spreadsheetml.sheet),
+          # FORMAT_GPX =>        %w(text/xml), # Disabled because text/xml list any XML file
+          FORMAT_KML =>        %w(application/vnd.google-earth.kml+xml),
+          FORMAT_COMPRESSED => %w(application/zip application/x-zip-compressed), # application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
         }
 
         # Constructor (hidden)

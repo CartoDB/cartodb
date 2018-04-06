@@ -1,18 +1,26 @@
-<div class="CDB-infowindow CDB-infowindow--dark js-infowindow" style="background:#2E3C43">
+<section class="CDB-infowindow CDB-infowindow--dark js-infowindow" style="background:#2E3C43">
   <div class="CDB-infowindow-close js-close"></div>
-  <div class="CDB-infowindow-container">
+  <section class="CDB-infowindow-container">
     <div class="CDB-infowindow-bg">
       <div class="CDB-infowindow-inner">
-        <ul class="CDB-infowindow-list">
-          <li class="CDB-infowindow-listItem">
-            <h5 class="CDB-infowindow-subtitle">Title</h5>
-            <h4 class="CDB-infowindow-title">Subtitle</h4>
-          </li>
+        <ul class="CDB-infowindow-list js-content">
+          <% _.each(content.fields, function (field) { %>
+            <li class="CDB-infowindow-listItem">
+              <% if (field.title) { %>
+                <h5 class="CDB-infowindow-subtitle"><%= field.title %></h5>
+              <% } %>
+              <% if (field.value) { %>
+                <h4 class="CDB-infowindow-title"><%= field.value %></h4>
+              <% } else { %>
+                <h4 class="CDB-infowindow-title">null</h4>
+              <% } %>
+            </li>
+          <% }) %>
         </ul>
       </div>
     </div>
     <div class="CDB-hook">
       <div class="CDB-hook-inner"></div>
     </div>
-  </div>
-</div>
+  </section>
+</section>

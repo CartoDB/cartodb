@@ -1,6 +1,6 @@
-<div class="CDB-infowindow Infowindow-none js-infowindow">
+<section class="CDB-infowindow Infowindow-none js-infowindow">
   <div class="CDB-infowindow-close js-close"></div>
-  <div class="CDB-infowindow-container">
+  <section class="CDB-infowindow-container">
     <div class="CDB-infowindow-bg">
       <div class="CDB-infowindow-inner">
         <ul class="CDB-infowindow-list">
@@ -14,5 +14,5 @@
     <div class="CDB-hook">
       <div class="CDB-hook-inner"></div>
     </div>
-  </div>
-</div>
+  </section>
+</section>

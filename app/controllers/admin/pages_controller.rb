@@ -11,6 +11,7 @@ class Admin::PagesController < Admin::AdminController
   include Carto::HtmlSafe
 
   include CartoDB
+  include VisualizationsControllerHelper
 
   DATASETS_PER_PAGE = 9
   MAPS_PER_PAGE = 9
@@ -38,6 +39,7 @@ class Admin::PagesController < Admin::AdminController
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
 
+  helper_method :named_map_vizjson3
 
   # Just an entrypoint to dispatch to different places according to
   def index
@@ -385,7 +387,7 @@ class Admin::PagesController < Admin::AdminController
     ff_user = @viewed_user || @viewed_org.owner
     @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
 
-    gmaps_user = @most_viewed_vis_map.try(:map).try(:user) || @viewed_user
+    gmaps_user = @most_viewed_vis_map.try(:user) || @viewed_user
     @gmaps_query_string = gmaps_user ? gmaps_user.google_maps_query_string : @viewed_org.google_maps_key
   end
 
@@ -425,6 +427,10 @@ class Admin::PagesController < Admin::AdminController
 
   def visualization_version
     @has_new_dashboard ? Carto::Visualization::VERSION_BUILDER : nil
+  end
+
+  def named_map_vizjson3(visualization)
+    generate_named_map_vizjson3(Carto::Visualization.find(visualization.id))
   end
 
   def get_organization_if_exists(name)

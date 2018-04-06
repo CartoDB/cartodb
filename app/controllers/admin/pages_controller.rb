@@ -404,7 +404,9 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def org_maps_public_builder(org)
-    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id, version: visualization_version)
+    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED,
+                   organization_id: org.id,
+                   version: visualization_version)
   end
 
   def public_builder(user_id: nil, vis_type: nil, organization_id: nil, version: nil)

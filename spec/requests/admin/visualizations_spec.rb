@@ -683,7 +683,7 @@ describe Admin::VisualizationsController do
       last_response.status.should == 404
     end
 
-    it 'does not tries to search visualizations with invalud user/org' do
+    it 'does not try to search visualizations with invalid user/org' do
       url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@table.name}" }, @org_user)
       url = url.sub("/u/#{@org_user.username}", '/u/invalidus3r')
 

@@ -47,7 +47,7 @@ class RedisFactory
   end
 
   def self.secondary_conf
-    Cartodb.get_config(:redis, 'secondary').symbolize_keys
+    (Cartodb.get_config(:redis, 'secondary') || {}).symbolize_keys
   end
 
   private_class_method :conf

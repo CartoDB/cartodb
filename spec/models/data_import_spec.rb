@@ -298,6 +298,7 @@ describe DataImport do
       table_name: 'duplicated_table',
       updated_at: Time.now,
       table_copy: @table.name).run_import!
+    data_import.data_type.should eq 'query'
     duplicated_table = ::UserTable.where(id: data_import.table_id).first
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'duplicated_table'

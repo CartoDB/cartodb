@@ -165,6 +165,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Allows imports of synchronizations without a log
 * Skip canonical viz with missing tables from metadata export
 * Show layer selector in the legends tab on small breakpoint (https://github.com/CartoDB/support/issues/1412)
 * Allows import of an exported dataset with external data imports without a syncronization (#13766)

@@ -1387,7 +1387,7 @@ namespace :cartodb do
 
     desc 'Fix analysis table the_geom type'
     task fix_analysis_the_geom_type: [:environment] do
-      total_users = User.all.count
+      total_users = User.count
       current = 0
       User.where.use_cursor(rows_per_fetch: 100).each do |user|
         puts "User #{current += 1} / #{total_users}"
@@ -1403,7 +1403,7 @@ namespace :cartodb do
               end
             end
           rescue => e
-            puts "Error processing user #{user.username}"
+            puts "Error processing user #{user.username}: #{e.inspect}"
           end
         end
       end

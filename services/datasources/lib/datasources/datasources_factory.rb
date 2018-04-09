@@ -96,7 +96,7 @@ module CartoDB
 
         def self.customized_config?(datasource_name, user)
           config, includes_customized_config = get_config(datasource_name)
-          customized_config_key(config, datasource_name, user).present? if includes_customized_config
+          includes_customized_config && customized_config_key(config, datasource_name, user).present?
         end
 
         # Allows to set a custom config (useful for testing)

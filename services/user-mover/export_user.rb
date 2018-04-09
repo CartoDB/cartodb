@@ -62,7 +62,7 @@ module CartoDB
       private
 
       def user_pg_conn
-        @user_conn ||= PGconn.connect(host: @database_host,
+        @user_pg_conn ||= PGconn.connect(host: @database_host,
                                       user: CartoDB::DataMover::Config[:dbuser],
                                       dbname: @database_name,
                                       port: CartoDB::DataMover::Config[:user_dbport],
@@ -70,18 +70,18 @@ module CartoDB
       end
 
       def skip_orphan_overview_tables
-        orphan_overview_tables.reduce('') { |m, t| m + " -T #{t}"}
+        orphan_overview_tables.reduce('') { |m, t| m + " -T #{t}" }
       end
 
       def orphan_overview_tables
         return @orphan_overviews if @orphan_overviews
         @orphan_overviews = []
         raster_tables =
-        user_pg_conn.exec("SELECT DISTINCT r_table_name FROM raster_columns").reduce([]) { |m, r| m << r['r_table_name']}
+        user_pg_conn.exec("SELECT DISTINCT r_table_name FROM raster_columns")
+          .reduce([]) { |m, r| m << r['r_table_name'] }
         overview_re = Regexp.new('^o_\d+_(.+)$')
         raster_tables.each do |table|
           match = overview_re.match(table)
-          byebug if match
           if match && (source_table = match.captures.first) && !raster_tables.include?(source_table)
             @orphan_overviews << source_table
           end

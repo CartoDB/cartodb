@@ -24,6 +24,7 @@
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
     "carto-zera": "1.0.2",
+    "carto.js": "^4.0.0-beta.37",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "CartoDB/cartodb.js#v4.0.0-beta.38",
@@ -177,6 +178,7 @@
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "grunt watch:css & webpack --progress --watch --config webpack/builder/webpack.dev.config.js",
     "dashboard": "grunt watch:css & webpack --progress --watch --config webpack/dashboard/webpack.dev.config.js",
+    "webpack:dashboard": "webpack --progress --watch --config webpack/dashboard/webpack.dev.config.js",
     "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack/builder/webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"

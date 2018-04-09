@@ -129,11 +129,8 @@ class Admin::PagesController < Admin::AdminController
       @maps_count          = maps_builder.build.count
       @website             = website_url(@viewed_user.website)
       @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
-      @has_new_dashboard   = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
-      @gmaps_query_string  = @viewed_user.google_maps_query_string
-      @needs_gmaps_lib     = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
 
-      @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
+      set_vars_for_public_dashboard
 
       if eligible_for_redirect?(@viewed_user)
         # redirect username.host.ext => org-name.host.ext/u/username
@@ -261,6 +258,8 @@ class Admin::PagesController < Admin::AdminController
 
     @page_description = description
 
+    set_vars_for_public_dashboard
+
     respond_to do |format|
       format.html { render 'public_datasets', layout: 'public_dashboard' }
     end
@@ -310,9 +309,34 @@ class Admin::PagesController < Admin::AdminController
 
     @page_description = description
 
+    set_vars_for_public_dashboard
+
     respond_to do |format|
       format.html { render 'public_maps', layout: 'public_dashboard' }
     end
+  end
+
+  def set_vars_for_public_dashboard
+    @has_new_dashboard = if @viewed_user.nil?
+                           @org.builder_enabled \
+                           && @org.owner.has_feature_flag?('dashboard_migration')
+                         else
+                           @viewed_user.builder_enabled \
+                           && @viewed_user.has_feature_flag?('dashboard_migration')
+                         end
+
+    @needs_gmaps_lib = @most_viewed_vis_map && @most_viewed_vis_map.map.provider == 'googlemaps'
+    @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
+
+    @gmaps_query_string = if @viewed_user.nil?
+                            if @most_viewed_vis_map
+                              @most_viewed_vis_map.map.user.google_maps_query_string
+                            else
+                              @org.google_maps_key
+                            end
+                          else
+                            @viewed_user.google_maps_query_string
+                          end
   end
 
   def set_layout_vars_for_user(user, content_type)
@@ -485,6 +509,11 @@ class Admin::PagesController < Admin::AdminController
   def get_viewed_user
     username = CartoDB.extract_subdomain(request)
     @viewed_user = ::User.where(username: username).first
+
+    if @viewed_user.nil?
+      username = username.strip.downcase
+      @org = get_organization_if_exists(username)
+    end
   end
 
 

@@ -9,6 +9,16 @@ describe Carto::Api::UserCreationsController do
 
   describe 'show' do
 
+    before :all do
+      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+      FactoryGirl.create(:account_type_org) unless Carto::AccountType.exists?(account_type: 'ORGANIZATION USER')
+    end
+
+    after :all do
+      Carto::AccountType.find('FREE').try(:destroy)
+      Carto::AccountType.find('ORGANIZATION USER').try(:destroy)
+    end
+
     it 'returns 404 for unknown user creations' do
       get_json api_v1_user_creations_show_url(id: UUIDTools::UUID.timestamp_create.to_s), @headers do |response|
         response.status.should == 404

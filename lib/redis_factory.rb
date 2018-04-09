@@ -6,7 +6,7 @@ class RedisFactory
     Redis.new(configuration)
   end
 
-  def self.get_conf(secondary)
+  def self.get_conf(secondary = false)
     # TODO: because of #8439 we're testing different Redis timeouts for connection, R and W.
     # After getting a final solution timeout configuration should be read from the file again
     redis_conf = conf

@@ -77,9 +77,9 @@ module CartoDB
         # @return string
         # @throws MissingConfigurationError
         def self.config_for(datasource_name, user)
-          config, includes_customized_config = get_config(datasource_name)
+          config, datasource_supports_custom_config = get_config(datasource_name)
 
-          if includes_customized_config
+          if datasource_supports_custom_config
             key = customized_config_key(config, datasource_name, user)
 
             if key.nil?
@@ -95,8 +95,8 @@ module CartoDB
         end
 
         def self.customized_config?(datasource_name, user)
-          config, includes_customized_config = get_config(datasource_name)
-          includes_customized_config && customized_config_key(config, datasource_name, user).present?
+          config, datasource_supports_custom_config = get_config(datasource_name)
+          datasource_supports_custom_config && customized_config_key(config, datasource_name, user).present?
         end
 
         # Allows to set a custom config (useful for testing)
@@ -108,7 +108,7 @@ module CartoDB
         def self.get_config(datasource_name)
           config_source = @forced_config ? @forced_config : Cartodb.config
 
-          includes_customized_config = false
+          datasource_supports_custom_config = false
 
           case datasource_name
           when Url::Dropbox::DATASOURCE_NAME, Url::Box::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME,
@@ -118,7 +118,7 @@ module CartoDB
           when Search::Twitter::DATASOURCE_NAME
             config = (config_source[:datasource_search] rescue nil)
             config ||= (config_source[:datasource_search.to_s] rescue nil)
-            includes_customized_config = true
+            datasource_supports_custom_config = true
           else
             config = nil
           end
@@ -127,7 +127,7 @@ module CartoDB
             raise MissingConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME)
           end
 
-          [config, includes_customized_config]
+          [config, datasource_supports_custom_config]
         end
         private_class_method :get_config
 

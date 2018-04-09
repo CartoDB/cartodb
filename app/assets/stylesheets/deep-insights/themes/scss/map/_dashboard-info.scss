@@ -64,6 +64,10 @@
 
 .CDB-Dashboard-menuActionsItem {
   margin-right: 16px;
+
+  a:hover {
+    color: $cBlue;
+  }
 }
 
 .CDB-Dashboard-menuInner {

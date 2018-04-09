@@ -742,6 +742,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config
+* Add rake to fix analyses cache tables geometries
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes

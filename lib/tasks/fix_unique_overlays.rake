@@ -1,6 +1,6 @@
 namespace :cartodb do
   desc "fixes duplicated unique overlays"
-  task :fix_unique_overlays => :environment do
+  task fix_unique_overlays: :environment do
     overlays = Carto::Overlay.where(type: Carto::Overlay::UNIQUE_TYPES)
 
     overlays.each do |o|

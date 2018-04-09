@@ -19,10 +19,10 @@ describe 'cartodb:fix_unique_overlays' do
     dup_overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'logo')
     dup_overlay.save(validate: false)
 
-    @visualization.overlays.select{|o| o.type == 'logo'}.count.should eq 3
+    @visualization.overlays.select { |o| o.type == 'logo' }.count.should eq 3
 
     Rake.application['cartodb:fix_unique_overlays'].invoke
 
-    @visualization.overlays.select{|o| o.type == 'logo'}.count.should eq 1
+    @visualization.overlays.select { |o| o.type == 'logo' }.count.should eq 1
   end
 end

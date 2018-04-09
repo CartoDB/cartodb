@@ -6,25 +6,29 @@ migration(
   Proc.new do
     run "DO $$
          DECLARE
-         missing_accounts text[] := (SELECT ARRAY_AGG(DISTINCT(account_type))
-                                      FROM users
+         missing_accounts text[] := (
+                                      WITH needed_account_types AS (
+                                        SELECT DISTINCT account_type FROM users
+                                        UNION
+                                        SELECT 'FREE'
+                                        UNION
+                                        SELECT 'enterprise'
+                                        UNION
+                                        SELECT '[DEDICATED]'
+                                        UNION
+                                        SELECT 'ORGANIZATION USER'
+                                      )
+                                      SELECT ARRAY_AGG(DISTINCT(account_type))
+                                      FROM needed_account_types
                                       WHERE account_type NOT IN
-                                        (SELECT account_type FROM account_types));
-         default_accounts text[] := '{\"FREE\",
-                                      \"enterprise\",
-                                      \"[DEDICATED]\",
-                                      \"ORGANIZATION USER\"}';
-
-         accounts text[] := (SELECT ARRAY_AGG(a ORDER BY a)
-                              FROM (
-                                  SELECT DISTINCT UNNEST(missing_accounts || default_accounts) AS a
-                              ) s);
+                                        (SELECT account_type FROM account_types)
+                                    );
 
          BEGIN
-           IF accounts IS NULL THEN
+           IF missing_accounts IS NULL THEN
              RETURN;
            END IF;
-           FOR i in 1 .. array_length(accounts, 1) LOOP
+           FOR i in 1 .. array_length(missing_accounts, 1) LOOP
              WITH rate_limit AS (
                INSERT INTO rate_limits
                  (maps_anonymous,
@@ -72,7 +76,7 @@ migration(
                   '{1, 1, 1}')
                RETURNING id)
              INSERT INTO account_types (account_type, rate_limit_id)
-               VALUES (accounts[i], (select id from rate_limit));
+               VALUES (missing_accounts[i], (select id from rate_limit));
            END LOOP;
          END $$;"
     alter_table :users do

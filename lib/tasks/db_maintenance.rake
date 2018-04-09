@@ -1388,6 +1388,7 @@ namespace :cartodb do
     desc 'Fix analysis table the_geom type'
     task fix_analysis_the_geom_type: [:environment] do
       User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        next if user.organization && user.organization.owner != user # Filter out admin not owner users
         user.in_database do |db|
           db.fetch("SELECT DISTINCT f_table_name FROM geometry_columns WHERE f_table_name LIKE 'analysis%' AND type = 'GEOMETRY'").map { |r| r[:f_table_name] }.each do |table_name|
             geom_types = db.fetch("SELECT DISTINCT ST_GeometryType(the_geom) AS geom_type FROM \"#{table_name}\"").map { |r| r[:geom_type] }

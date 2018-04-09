@@ -1,9 +1,11 @@
+require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 
 module CartoDB
   @default_test_user = nil
   module Factories
     include UniqueNamesHelper
+    include AccountTypesHelper
     def default_user(attributes = {})
       user = nil
       unless @default_test_username.nil?
@@ -89,6 +91,7 @@ module CartoDB
       user = new_user(attributes)
       raise "User not valid: #{user.errors}" unless user.valid?
       # INFO: avoiding enable_remote_db_user
+      create_account_type(user.account_type)
       user.save
       load_user_functions(user)
       user
@@ -98,6 +101,7 @@ module CartoDB
     def create_validated_user(attributes = {})
       user = new_user(attributes)
       # INFO: avoiding enable_remote_db_user
+      create_account_type(user.account_type)
       user.save
       if user.valid?
         load_user_functions(user)
@@ -110,6 +114,7 @@ module CartoDB
       attributes[:email]    = 'admin@example.com'
       attributes[:admin]    = true
       user = new_user(attributes)
+      create_account_type(user.account_type)
       user.save
     end
 
@@ -130,7 +135,8 @@ module CartoDB
         password: username,
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
-        organization: organization
+        organization: organization,
+        account_type: 'ORGANIZATION USER'
       )
       user.save.reload
       organization.reload if organization

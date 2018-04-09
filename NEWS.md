@@ -141,6 +141,8 @@ ion for time-series (#12670)
   * Remove rate limits on user deletion (#13657)
   * Sync price plans and rate limits (#13660)
   * Add rate limit index to account_types (#13664)
+  * Add account_type FK in users table (#13571)
+  * Create account_types and default rate limits (#13572)
 * Auth API
   * Keys creation (#13170)
   * Create master API key on user creation (#13172)
@@ -173,6 +175,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
+* Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)
 * Fix a case where the layer selector was displaying incorrectly (https://github.com/CartoDB/support/issues/1430)
 * Update charlock_holmes to 0.7.6 (ICU compatibility)
 * Skip canonical viz with missing tables from metadata export

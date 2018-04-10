@@ -2,6 +2,7 @@ require_dependency 'helpers/avatar_helper'
 
 module FrontendConfigHelper
   include AvatarHelper
+  include FullstoryHelper
 
   UPGRADE_LINK_ACCOUNT = 'PERSONAL30'.freeze
 

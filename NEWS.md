@@ -174,6 +174,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
 * Allows imports of synchronizations without a log
 * Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)
 * Fix a case where the layer selector was displaying incorrectly (https://github.com/CartoDB/support/issues/1430)

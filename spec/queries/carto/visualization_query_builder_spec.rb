@@ -158,7 +158,7 @@ describe Carto::VisualizationQueryBuilder do
       )
       org_shared_entity.save
 
-      vqb = @vqb.with_shared_with_user_id(@org_user_2.id).build
+      vqb = Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@org_user_2.id).build
       expect(vqb.count).to eq 1
       expect(vqb.all.map(&:id)).to eq [shared_visualization.id]
     end

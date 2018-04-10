@@ -184,8 +184,16 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 }
 
 @media (max-width: $sMedia-min-w-vertical - 1px) {
-  .CDB-Embed-view {
+  .CDB-Embed-view::after {
+    content: '';
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     border: 1px solid #DDD;
+    pointer-events: none;
   }
 
   .CDB-Embed-content {

@@ -292,6 +292,12 @@
   }
 }
 
+@media (max-width: $sMedia-min-w-vertical - 1px) {
+  .CDB-Dashboard-menu {
+    border-top: 1px solid rgba(46, 60, 67, 0.16);
+  }
+}
+
 @media (max-width: $sMedia-xl) {
   .CDB-Dashboard-hideMobile {
     display: none;

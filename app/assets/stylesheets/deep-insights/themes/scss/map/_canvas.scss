@@ -99,6 +99,17 @@ $canvas-dark: #293A41;
     border-radius: 0;
   }
 
+  .CDB-Dashboard-mapWrapper--withMenu {
+    order: 1;
+    margin-left: 0;
+  }
+
+  .CDB-Dashboard-belowMap {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: $sMedia-max-w-vertical) and (min-width: $sMedia-min-w-vertical) {
   .CDB-Dashboard-canvas::after {
     content: '';
     position: absolute;
@@ -109,14 +120,5 @@ $canvas-dark: #293A41;
     left: 0;
     border: 1px solid rgba(46, 60, 67, 0.16);
     pointer-events: none;
-  }
-
-  .CDB-Dashboard-mapWrapper--withMenu {
-    order: 1;
-    margin-left: 0;
-  }
-
-  .CDB-Dashboard-belowMap {
-    margin-top: 0;
   }
 }

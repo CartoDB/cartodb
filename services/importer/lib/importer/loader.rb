@@ -335,6 +335,10 @@ module CartoDB
           raise EncodingError.new "Ogr2ogr encoding error"
         end
 
+        if ogr2ogr.geometry_validity_error?
+          raise InvalidGeometriesError.new
+        end
+
         # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
         if ogr2ogr.generic_error? || ogr2ogr.exit_code != 0
           job.logger.append "Ogr2ogr FAILED!"

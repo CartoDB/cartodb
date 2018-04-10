@@ -18,4 +18,4 @@
   <% } %>
 <% } %>
 
-<div class="Dialog-contentWrapper <% if (breadcrumbsEnabled) { %>Dialog-contentWrapper--withBreadcrumbs<% } %> js-content"></div>
+<div class="Dialog-contentWrapper Dialog-contentWrapper--withHeaderWrapper <% if (breadcrumbsEnabled) { %>Dialog-contentWrapper--withBreadcrumbs<% } %> js-content"></div>

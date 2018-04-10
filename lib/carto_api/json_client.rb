@@ -24,6 +24,10 @@ module CartoAPI
       get(url)
     end
 
+    def get_api_keys_v3(username:, params: {})
+      parse(get(carto_url(username, '/api/v3/api_keys', params: params)).body)
+    end
+
     def base_url(username)
       "#{username}.#{@base_domain}"
     end

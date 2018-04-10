@@ -52,7 +52,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 }
 
 .CDB-Embed-content {
-  flex: 1;
   height: 100%;
 }
 
@@ -154,25 +153,13 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     &.is-collapsed {
       margin-bottom: 24px;
     }
-
-    &.is-menu {
-      display: flex;
-    }
   }
 
   .CDB-Overlay-inner {
     margin-top: 0;
 
-    &.is-menu {
-      margin-top: 8px;
-    }
-
     .CDB-Embed-description {
       display: none;
-
-      &.is-menu {
-        display: block;
-      }
     }
   }
 
@@ -199,24 +186,17 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 @media (max-width: $sMedia-min-w-vertical - 1px) {
   .CDB-Embed-content {
     // 104px = header + tabs height
+    flex: 1;
     height: calc(100% - 104px);
   }
 
   .CDB-Overlay-title {
     display: none;
-
-    &.is-menu {
-      display: flex;
-    }
   }
 
   .CDB-Overlay-inner {
     .CDB-Embed-description {
       display: none;
-
-      &.is-menu {
-        display: block;
-      }
     }
   }
 

@@ -94,6 +94,10 @@ module CartoDB
         command_output =~ /ERROR 1:/i || command_output =~ /ERROR:/i
       end
 
+      def geometry_validity_error?
+        command_output =~ /Invalid number of points in LinearRing/i
+      end
+
       def encoding_error?
         command_output =~ /has no equivalent in encoding/i || command_output =~ /invalid byte sequence for encoding/i
       end
@@ -124,7 +128,8 @@ module CartoDB
 
       def file_too_big?
         (exit_code == 256 && command_output =~ /calloc failed/i) ||
-        (exit_code == 35072 && command_output =~ /Killed/i)
+          (exit_code == 35072 && command_output =~ /Killed/i) ||
+          (exit_code == 32512 && command_output =~ /Cannot allocate memory/i)
       end
 
       def statement_timeout?

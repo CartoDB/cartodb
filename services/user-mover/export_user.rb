@@ -75,11 +75,13 @@ module CartoDB
 
       def orphan_overview_tables
         return @orphan_overviews if @orphan_overviews
-        raster_tables = user_pg_conn.exec("SELECT DISTINCT r_table_name FROM raster_columns").field_values('r_table_name')
-        overview_re = Regexp.new('^o_\d+_(.+)$')
+        raster_tables = user_pg_conn.exec("SELECT DISTINCT r_table_schema, r_table_name FROM raster_columns").map {
+          |r| "#{r['r_table_schema']}.#{r['r_table_name']}"
+        }
+        overview_re = Regexp.new('([^\.]+)\.o_\d+_(.+)$')
         @orphan_overviews = raster_tables.select do |table|
           match = overview_re.match(table)
-          match && (source_table = match.captures.first) && !raster_tables.include?(source_table)
+          match && !raster_tables.include?("#{match.captures.first}.#{match.captures.last}")
         end
       end
 

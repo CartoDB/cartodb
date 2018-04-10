@@ -557,6 +557,7 @@ ion for time-series (#12670)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Use redis secondary for heavy `KEYS *` opeartion on user export (#13814)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
@@ -743,6 +744,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config
+* Add rake to fix analyses cache tables geometries
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes
@@ -903,6 +905,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
 * Set `soft_geocoding_limit` to default to false.
+* Do not export local visualizations lacking a map
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

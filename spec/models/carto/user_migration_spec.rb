@@ -411,6 +411,7 @@ describe 'UserMigration' do
     user.in_database.execute('INSERT INTO i_hate_raster VALUES(ST_MakeEmptyRaster(100, 100, 0, 0, 100, 100, 0, 0, 2274))')
     user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
     user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("SELECT AddRasterConstraints('i_hate_raster', 'rast')")
     user.in_database.execute("SELECT ST_CreateOverview('i_hate_raster'::regclass, 'rast', 2)")
     user.in_database.execute('DROP TABLE i_hate_raster')
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)

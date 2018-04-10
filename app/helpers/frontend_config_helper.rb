@@ -6,7 +6,6 @@ module FrontendConfigHelper
   UPGRADE_LINK_ACCOUNT = 'PERSONAL30'.freeze
 
   def frontend_config_hash(user = current_user)
-    byebug
     config = {
       app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,

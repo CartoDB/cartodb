@@ -55,7 +55,7 @@ class User < Sequel::Model
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
-  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 01, 01)
+  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
   FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
 
   self.strict_param_setting = false

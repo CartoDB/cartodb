@@ -175,6 +175,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Consistent margins in Auth API UI
+* Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
 * FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
 * Allows imports of synchronizations without a log
 * Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)

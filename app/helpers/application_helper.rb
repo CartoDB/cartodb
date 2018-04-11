@@ -117,13 +117,6 @@ module ApplicationHelper
     end
   end
 
-  def insert_fullstory
-    if Cartodb.get_config(:fullstory, 'org').present? && current_user &&
-       current_user.account_type.casecmp('FREE').zero? && params[:cookies] != '0'
-      render(partial: 'shared/fullstory', locals: { org: Cartodb.get_config(:fullstory, 'org') })
-    end
-  end
-
   def insert_google_maps(query_string)
     render(partial: 'shared/google_maps', locals: { query_string: query_string })
   end

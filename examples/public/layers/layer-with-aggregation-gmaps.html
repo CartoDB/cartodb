@@ -40,7 +40,7 @@
       const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 7;
-          marker-fill: ramp([population], (#ecda9a, #f7945d, #ee4d5a), jenks());
+          marker-fill: ramp([pop_max], (#ecda9a, #f7945d, #ee4d5a), jenks());
           marker-line-color: #FFFFFF;
         }
       `);

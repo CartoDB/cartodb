@@ -124,6 +124,11 @@ module CartoDB
       what_about: "You set 'skip' collision strategy and all tables already exist, so nothing was imported.",
       source: ERROR_SOURCE_USER
     },
+    1023 => {
+      title: 'ArcGIS server misconfiguration',
+      what_about: 'We could not import your data from the ArcGIS server. Please contact your ArcGIS server administrator and ensure that the server has the "execute queries capability" enabled.',
+      source: ERROR_SOURCE_USER
+    },
     1100 => {
       title: 'Download file not found',
       what_about: "Provided URL doesn't return a file (error 404). Please check that URL is still valid and that you can download the file and try again.",
@@ -222,6 +227,11 @@ module CartoDB
     2013 => {
       title: 'Cannot overwrite table',
       what_about: "The synchronization failed because the destination table could not be overwritten. Please make sure that there are no database objects (e.g: views) that depend on it.",
+      source: ERROR_SOURCE_USER
+    },
+    2014 => {
+      title: 'Invalid geometries',
+      what_about: "Your file appears to contain invalid geometries. Try opening the file with another GIS tool and checking the geometry validity. If everything appears to be okay, <a href='mailto:support@carto.com?subject=Invalid Geometries'>contact us</a>.",
       source: ERROR_SOURCE_USER
     },
     3007 => {

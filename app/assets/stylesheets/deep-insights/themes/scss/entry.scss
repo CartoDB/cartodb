@@ -5,9 +5,12 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 @import 'cdb-utilities/mixins';
+@import 'variables/sizes';
+
 // Deep-insights styles
 @import 'map/canvas';
 @import 'map/dashboard-info';
+@import 'map/embed';
 // Widgets styles
 @import 'widgets/themes/light';
 @import 'widgets/buttons';

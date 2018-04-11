@@ -286,7 +286,11 @@ Style/TrailingCommaInArguments:
   Enabled: true
   EnforcedStyleForMultiline: no_comma
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInHashLiteral:
   Enabled: true
   EnforcedStyleForMultiline: no_comma
 
@@ -395,11 +399,11 @@ Metrics/BlockLength:
 # Lint cops
 #
 
-Lint/EndAlignment:
+Layout/EndAlignment:
   Enabled: true
   EnforcedStyleAlignWith: keyword
 
-Lint/DefEndAlignment:
+Layout/DefEndAlignment:
   Enabled: true
   EnforcedStyleAlignWith: start_of_line
 
@@ -436,7 +440,7 @@ Lint/UselessElseWithoutRescue:
 Lint/UselessSetterCall:
   Enabled: true
 
-Lint/BlockAlignment:
+Layout/BlockAlignment:
   Enabled: true
 
 Lint/Debugger:
@@ -648,7 +652,7 @@ Lint/AmbiguousOperator:
   Enabled: false
 Lint/AmbiguousRegexpLiteral:
   Enabled: false
-Lint/ConditionPosition:
+Layout/ConditionPosition:
   Enabled: false
 Lint/DeprecatedClassMethods:
   Enabled: false

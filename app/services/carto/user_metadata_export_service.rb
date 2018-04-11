@@ -5,9 +5,10 @@ require 'carto/export/data_import_exporter'
 # Version History
 # 1.0.0: export user metadata
 # 1.0.1: export search tweets
+# 1.0.3: export rate limits
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.2'.freeze
+    CURRENT_VERSION = '1.0.3'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -86,6 +87,8 @@ module Carto
 
       user.layers = build_layers_from_hash(exported_user[:layers])
 
+      user.rate_limit = build_rate_limit_from_hash(exported_user[:rate_limit])
+
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
 
@@ -122,6 +125,15 @@ module Carto
         updated_at: exported_search_tweet[:updated_at]
       )
     end
+
+    def build_rate_limit_from_hash(exported_hash)
+      return unless exported_hash
+
+      rate_limit = Carto::RateLimit.from_api_attributes(exported_hash[:limits])
+      rate_limit.id = exported_hash[:id]
+
+      rate_limit
+    end
   end
 
   module UserMetadataExportServiceExporter
@@ -154,6 +166,8 @@ module Carto
       user_hash[:search_tweets] = user.search_tweets.map { |st| export_search_tweet(st) }
 
       user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
+
+      user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
 
       # TODO
       # Organization notifications
@@ -191,6 +205,15 @@ module Carto
         updated_at: api_key.updated_at,
         grants: api_key.grants,
         user_id: api_key.user_id
+      }
+    end
+
+    def export_rate_limit(rate_limit)
+      return unless rate_limit
+
+      {
+        id: rate_limit.id,
+        limits: rate_limit.api_attributes
       }
     end
   end
@@ -287,6 +310,9 @@ module Carto
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
       user.visualizations.where(type: type).each do |visualization|
+        next if visualization.canonical? && visualization.table.nil?
+        next if !visualization.remote? && visualization.map.nil?
+
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
           visualization.id, user
         )

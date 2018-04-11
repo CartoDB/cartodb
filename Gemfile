@@ -22,7 +22,7 @@ gem 'redis',                   '3.3.0'
 gem 'hiredis',                 '0.6.1'
 gem 'nokogiri',                '~> 1.6.6.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
-gem 'aws-sdk',                 '1.8.5'
+gem 'aws-sdk-s3',              '~> 1'
 gem 'ruby-prof',               '0.15.1'
 gem 'request_store',           '1.1.0'
 
@@ -50,7 +50,7 @@ end
 gem 'roo',                     '1.13.2'
 gem 'state_machine',           '1.1.2'
 gem 'typhoeus',                '0.7.2'
-gem 'charlock_holmes',         '0.7.5'
+gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'
 gem 'retriable',               '1.4.1'  # google-api-client needs this

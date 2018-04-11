@@ -83,12 +83,12 @@
 
 .CDB-Widget-body.is-collapsed {
   height: 22px;
-}
 
-.CDB-Widget-body.is-collapsed .CDB-Widget-content,
-.CDB-Widget-body.is-collapsed .CDB-Widget-info,
-.CDB-Widget-body.is-collapsed .CDB-Widget-nav {
-  display: none;
+  .CDB-Widget-content,
+  .CDB-Widget-info,
+  .CDB-Widget-nav {
+    display: none;
+  }
 }
 
 .CDB-Widget-body.is-hidden {
@@ -123,8 +123,7 @@
   overflow: hidden;
 }
 
-// Widget media query
-@media (max-width: 1300px) {
+@media (max-width: $sMedia-max-embed) {
   .CDB-Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
@@ -135,7 +134,7 @@
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: $sMedia-l) {
   .CDB-Widget {
     @include flex(0 0 auto);
     width: auto;
@@ -147,6 +146,24 @@
 
   .CDB-Widget .CDB-Loader {
     height: 2px;
+  }
+
+  .CDB-Widget-body {
+    &.is-collapsed {
+      height: 100%;
+
+      .CDB-Widget-content,
+      .CDB-Widget-info {
+        display: block;
+      }
+    }
+
+    .CDB-Dropdown-item:first-child {
+      > .CDB-Dropdown-link {
+        opacity: 0.24;
+        pointer-events: none;
+      }
+    }
   }
 
   .CDB-Widget--timeSeries {
@@ -177,8 +194,8 @@
   }
 
   .CDB-Widget-content--histogram {
-    @include display-flex();
-    @include flex-direction(column);
+    display: flex;
+    flex-direction: column;
     min-width: 232px;
   }
 
@@ -192,6 +209,7 @@
   }
 
   .CDB-Widget-canvasInner {
+    flex-direction: row;
     border-radius: 0;
   }
 

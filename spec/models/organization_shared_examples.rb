@@ -12,6 +12,7 @@ shared_examples_for "organization models" do
   describe "#get_geocoding_calls" do
 
     it "counts all geocodings within the org" do
+      get_organization.owner.geocoder_provider = 'heremaps'
       org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
         @org_user_1.username,
         @org_user_1.organization.name

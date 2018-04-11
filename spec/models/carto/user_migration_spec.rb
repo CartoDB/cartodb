@@ -355,7 +355,7 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
-  it 'doesn\'t export users with datasets without a physical table if metadata export is requested (see #12588)' do
+  it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -367,23 +367,20 @@ describe 'UserMigration' do
     user.in_database.execute("DROP TABLE #{@table.name}")
     # The table is still registered after the deletion
     carto_user.reload
+
     carto_user.tables.exists?(name: @table.name).should be
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
+    export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
     export.destroy
 
     user.destroy
   end
 
-  it 'doesn\'t export users with a canonical viz without user table if metadata export is requested (see #12588)' do
+  it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -399,16 +396,39 @@ describe 'UserMigration' do
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Can't export. Vizs without user table: [\"#{@table_visualization.id}\"]")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-    export.destroy
 
     user.destroy
+  end
+
+  it 'exports and imports a user with raster overviews because exporting skips them' do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    user = FactoryGirl.build(:valid_user).save
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+    user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
+    user.in_database.execute('INSERT INTO i_hate_raster VALUES(ST_MakeEmptyRaster(100, 100, 0, 0, 100, 100, 0, 0, 2274))')
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("SELECT AddRasterConstraints('i_hate_raster', 'rast')")
+    user.in_database.execute("SELECT ST_CreateOverview('i_hate_raster'::regclass, 'rast', 2)")
+    user.in_database.execute('DROP TABLE i_hate_raster')
+    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+    export.run_export
+    user.destroy
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: true,
+      dry: false
+    )
+    import.run_import
+
+    expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
   end
 
   describe 'with organization' do
@@ -454,7 +474,7 @@ describe 'UserMigration' do
     it_should_behave_like 'migrating metadata', true
     it_should_behave_like 'migrating metadata', false
 
-    it 'doesn\'t export orgs with datasets without physical table if metadata export is requested (see #12588)' do
+    it 'exports orgs with datasets without physical table if metadata export is requested (see #13721)' do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
 
       @carto_org_user_1.tables.exists?(name: @table.name).should be
@@ -465,12 +485,7 @@ describe 'UserMigration' do
 
       export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
       export.run_export
-      export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-      expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-      export.destroy
-
-      export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: false)
-      export.run_export
+      export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
     end
@@ -514,7 +529,7 @@ describe 'UserMigration' do
       @user = FactoryGirl.build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
-      @master_api_key = Carto::ApiKey.create_master_key!(user: @carto_user)
+      @master_api_key = @carto_user.api_keys.create_master_key!
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_user,
                                                            name: 'Some ApiKey',
@@ -591,6 +606,38 @@ describe 'UserMigration' do
       user.should be
       user.api_keys.each(&:table_permissions_from_db) # to make sure DB can be queried without exceptions
       user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
+    end
+  end
+
+  include CartoDB::DataMover::Utils
+  describe 'database version' do
+    before(:each) do
+      @conn_mock = Object.new
+      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 9.5.2 on x86_64-pc-linux-gnu...'])
+    end
+
+    it 'should get proper database version for pg_* binaries' do
+      get_database_version_for_binaries(@conn_mock).should eq '9.5'
+
+      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
+      get_database_version_for_binaries(@conn_mock).should eq '10'
+    end
+
+    it 'should get proper binary paths version for pg_dump and pg_restore' do
+      get_pg_dump_bin_path(@conn_mock).should include 'pg_dump'
+      get_pg_restore_bin_path(@conn_mock).should include 'pg_restore'
+    end
+
+    it 'raises exception if cannot get dump database version' do
+      expect { get_dump_database_version(@conn_mock, '123') }.to raise_error
+    end
+
+    it 'retrieves dump database version from stubbed dump file name' do
+      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
+      status_mock = Object.new
+      status_mock.stubs(:success?).returns(true)
+      Open3.stubs(:capture3).returns([';     Dumped by pg_dump version: 9.5.2', '', status_mock])
+      get_dump_database_version(@conn_mock, '/tmp/test.dump').should eq '9.5'
     end
   end
 

@@ -79,6 +79,7 @@ module CartoDB
     class GeometryCollectionNotSupportedError   < StandardError; end
     class InvalidGeoJSONError                   < StandardError; end
     class InvalidShpError                       < StandardError; end
+    class InvalidGeometriesError                < StandardError; end
     class KmlNetworkLinkError                   < StandardError; end
     class KmlWithoutStyleIdError                < GenericImportError; end
     class IncompatibleSchemas                   < BaseImportError
@@ -156,6 +157,7 @@ module CartoDB
       MalformedXLSException                 => 2008,
       KmlWithoutStyleIdError                => 2009,
       IncompatibleSchemas                   => 2012,
+      InvalidGeometriesError                => 2014,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,
@@ -180,6 +182,7 @@ module CartoDB
       CartoDB::Datasources::MissingConfigurationError             => 1012,
       CartoDB::Datasources::UninitializedError                    => 1012,
       CartoDB::Datasources::NoResultsError                        => 1015,
+      CartoDB::Datasources::UnsupportedOperationError             => 1023,
       CartoDB::Datasources::ParameterError                        => 99999,
       CartoDB::Datasources::ServiceDisabledError                  => 99999,
       CartoDB::Datasources::OutOfQuotaError                       => 8006,

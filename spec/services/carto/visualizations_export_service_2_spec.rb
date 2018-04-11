@@ -468,6 +468,18 @@ describe Carto::VisualizationsExportService2 do
   end
 
   describe 'importing' do
+    include Carto::Factories::Visualizations
+    it 'imports synchronization with missing log' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      FactoryGirl.create(:carto_synchronization, visualization: @visualization)
+
+      @visualization.synchronization.log.destroy
+      @visualization.synchronization.reload
+      visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, @visualization)
+
+      visualization.should be
+    end
+
     describe '#build_visualization_from_json_export' do
       include Carto::Factories::Visualizations
 
@@ -1663,6 +1675,20 @@ describe Carto::VisualizationsExportService2 do
         sync.user_id.should eq @user2.id
         sync.log.user_id.should eq @user2.id
 
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'imports an exported dataset with external data import without a synchronization' do
+        @table.data_import = FactoryGirl.create(:data_import, user: @user2, table_id: @table.id)
+        @table.save!
+        FactoryGirl.create(:external_data_import_with_external_source, data_import: @table.data_import)
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user2)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        imported_viz.should be
         destroy_visualization(imported_viz.id)
       end
     end

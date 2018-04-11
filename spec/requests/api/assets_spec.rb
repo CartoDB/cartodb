@@ -4,10 +4,6 @@ require 'spec_helper'
 
 describe "Assets API" do
 
-  before(:all) do
-    AWS.stub!
-  end
-
   before(:each) do
     @user = FactoryGirl.create(:valid_user)
 
@@ -30,17 +26,42 @@ describe "Assets API" do
 
       post_json(
         api_v1_users_assets_create_url(user_id: @user),
-        params.merge(
-          kind: 'wadus',
-          filename: uploaded_file.path)
+        params.merge(kind: 'wadus', filename: uploaded_file.path)
       ) do |response|
         response.status.should be_success
         response.body[:public_url].should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante_blue/
+        URI(response.body[:public_url]).should be_absolute
         response.body[:kind].should == 'wadus'
         @user.reload
         @user.assets.count.should == 1
         asset = @user.assets.first
         asset.public_url.should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante_blue/
+        asset.kind.should == 'wadus'
+      end
+    else
+      pending("Required spec asset '#{file_path}' not found, test can't properly execute")
+    end
+  end
+
+  it 'creates a new asset with spaces in name' do
+    Asset.any_instance.stubs('use_s3?').returns(false)
+
+    file_path = Rails.root.join('spec', 'support', 'data', 'cartofante blue.png')
+    if File.exist?(file_path) && File.file?(file_path)
+      uploaded_file = Rack::Test::UploadedFile.new(file_path, 'image/png')
+
+      post_json(
+        api_v1_users_assets_create_url(user_id: @user),
+        params.merge(kind: 'wadus', filename: uploaded_file.path)
+      ) do |response|
+        response.status.should be_success
+        response.body[:public_url].should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante%20blue/
+        URI(response.body[:public_url]).should be_absolute
+        response.body[:kind].should == 'wadus'
+        @user.reload
+        @user.assets.count.should == 1
+        asset = @user.assets.first
+        asset.public_url.should =~ /\/test\/#{@user.username}\/assets\/\d+cartofante%20blue/
         asset.kind.should == 'wadus'
       end
     else
@@ -76,9 +97,12 @@ describe "Assets API" do
   end
 
   it "deletes an asset" do
+    Asset.any_instance.stubs('use_s3?').returns(false)
+
     FactoryGirl.create(:asset, user_id: @user.id)
     @user.reload
     delete_json(api_v1_users_assets_destroy_url(user_id: @user.id, id: @user.assets.first.id), params) do |response|
+      response.body.should == {}
       response.status.should be_success
       @user.reload
       @user.assets.count.should == 0

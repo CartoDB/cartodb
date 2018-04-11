@@ -219,7 +219,7 @@ class Table
   def import_to_cartodb(uniname = nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
-      @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
+      @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE if @data_import.data_type.nil?
       @data_import.data_source = migrate_existing_table || uniname
       @data_import.save
 
@@ -256,16 +256,7 @@ class Table
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
       #  - If cartodb_id does not exist, treat this field as the auxiliary column
-      aux_cartodb_id_column = nil
-      flattened_schema = schema.present? ? schema.flatten : []
-
-      if schema.present?
-        if flattened_schema.include?(:ogc_fid)
-          aux_cartodb_id_column = 'ogc_fid'
-        elsif flattened_schema.include?(:gid)
-          aux_cartodb_id_column = 'gid'
-        end
-      end
+      aux_cartodb_id_column = [:ogc_fid, :gid].find { |col| valid_cartodb_id_candidate?(col) }
 
       # Remove primary key
       owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |user_database|
@@ -1210,6 +1201,17 @@ class Table
   end
 
   private
+
+  def valid_cartodb_id_candidate?(col_name)
+    return false unless column_names.include?(col_name)
+    owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
+      return db["SELECT 1 FROM #{qualified_table_name} WHERE #{col_name} IS NULL LIMIT 1"].first.nil?
+    end
+  end
+
+  def column_names
+    schema.map(&:first)
+  end
 
   def related_visualizations
     carto_layers = layers.map do |layer|

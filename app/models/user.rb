@@ -51,6 +51,13 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
+  # Make sure the following date is after Jan 29, 2015,
+  # which is the date where a message to accept the Terms and
+  # conditions and the Privacy policy was included in the Signup page.
+  # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
+  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+
   self.strict_param_setting = false
 
   # @param name             String
@@ -133,10 +140,11 @@ class User < Sequel::Model
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
 
-  def self.new_with_organization(organization)
+  def self.new_with_organization(organization, viewer: false)
     user = ::User.new
     user.organization = organization
-    user.quota_in_bytes = organization.default_quota_in_bytes
+    user.quota_in_bytes = viewer ? 0 : organization.default_quota_in_bytes
+    user.viewer = viewer
     user
   end
 
@@ -532,6 +540,16 @@ class User < Sequel::Model
     unless @org_id_for_org_wipe.nil?
       organization = Organization.where(id: @org_id_for_org_wipe).first
       organization.destroy
+    end
+
+    # we need to wait for the deletion to be commited because of the mix of Sequel (user)
+    # and AR (rate_limit) models and rate_limit_id being a FK in the users table
+    db.after_commit do
+      begin
+        rate_limit.try(:destroy_completely, self)
+      rescue => e
+        CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
+      end
     end
   end
 
@@ -994,6 +1012,49 @@ class User < Sequel::Model
                           'db_public',                 database_timeout,
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
+    save_rate_limits
+  end
+
+  def save_rate_limits
+    return unless has_feature_flag?('limits_v2')
+    effective_rate_limit.save_to_redis(self)
+  rescue => e
+    CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)
+  end
+
+  def update_rate_limits(rate_limit_attributes)
+    if rate_limit_attributes.present?
+      rate_limit = self.rate_limit || Carto::RateLimit.new
+      new_attributes = Carto::RateLimit.from_api_attributes(rate_limit_attributes).rate_limit_attributes
+
+      rate_limit.update_attributes!(new_attributes)
+      self.rate_limit_id = rate_limit.id
+    else
+      remove_rate_limit = self.rate_limit
+      self.rate_limit_id = nil
+    end
+
+    save
+
+    remove_rate_limit.destroy if remove_rate_limit.present?
+  end
+
+  def effective_rate_limit
+    rate_limit || effective_account_type.rate_limit
+  rescue ActiveRecord::RecordNotFound => e
+    CartoDB::Logger.error(message: 'Error retrieving user rate limits', exception: e)
+  end
+
+  def effective_account_type
+    organization_user? && organization.owner ? organization.owner.carto_account_type : carto_account_type
+  end
+
+  def rate_limit
+    Carto::RateLimit.find(rate_limit_id) if rate_limit_id
+  end
+
+  def carto_account_type
+    Carto::AccountType.find(account_type)
   end
 
   def get_auth_tokens
@@ -1723,8 +1784,12 @@ class User < Sequel::Model
   def create_api_keys
     carto_user = Carto::User.find(id)
 
-    carto_user.api_keys.create_master_key!
-    carto_user.api_keys.create_default_public_key!
+    carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
+    carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
+  end
+
+  def fullstory_enabled?
+    FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
   end
 
   private

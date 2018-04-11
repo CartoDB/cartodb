@@ -101,6 +101,21 @@ namespace :cartodb do
                             target_username: args['target_username'], granted_api_key: args['granted_api_key'])
     end
 
+    desc 'Removes a Data Library entry from a user'
+    task :remove_from_data_library, [:username, :visualization_name] => [:environment] do |_, args|
+      username = args['username']
+      name = args['visualization_name']
+      raise 'All Arguments are mandatory' unless username.present? && name.present?
+
+      user = Carto::User.find_by_username(username)
+      raise 'User not found' unless user
+
+      visualization = user.visualizations.remotes.find_by_name(name)
+      raise 'Visualization not found' unless visualization
+
+      visualization.destroy
+    end
+
     desc "Invalidate user's date flag and make them refresh data library"
     task :invalidate_common_data => [:environment] do
       require_relative '../../app/helpers/common_data_redis_cache'

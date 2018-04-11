@@ -132,13 +132,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 }
 
-@media (max-width: $sMedia-l) {
-  .CDB-Map .CDB-Legends-canvas,
-  .CDB-Map .CDB-Legends-canvasInner {
-    max-height: calc(100vh - 300px);
-  }
-}
-
 @media (max-width: $sMedia-xl) {
   .CDB-Embed-tab {
     .CDB-Widget {
@@ -184,19 +177,16 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 }
 
-@media (max-width: $sMedia-min-w-vertical - 1px) {
-  .CDB-Embed-view::after {
-    content: '';
-    position: absolute;
-    z-index: 10;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+@media (max-width: $sMedia-max-w-vertical) {
+  .CDB-Embed-view {
+    box-sizing: border-box;
     border: 1px solid #DDD;
-    pointer-events: none;
+    border-radius: 4px;
+    overflow: hidden;
   }
+}
 
+@media (max-width: $sMedia-min-w-vertical - 1px) {
   .CDB-Embed-content {
     // 104px = header + tabs height
     flex: 1;
@@ -227,5 +217,73 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+  }
+}
+
+/*
+  Legend max height depends on whether there's a time series and or the menu bar is displayed,
+  hence all the possible cases.
+*/
+@media (max-width: $sMedia-l) {
+  $offset: 257;
+  $timeSeriesHeight: 93;
+  $menuHeight: 38;
+
+  .CDB-Map .CDB-Legends-canvas,
+  .CDB-Map .CDB-Legends-canvasInner {
+    max-height: calc(100vh - #{$offset}px);
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight + $menuHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $menuHeight}px);
+    }
+  }
+}
+
+@media (min-width: $sMedia-l) {
+  $offset: 88;
+  $timeSeriesHeight: 169;
+  $menuHeight: 30;
+
+  .CDB-Map .CDB-Legends-canvas,
+  .CDB-Map .CDB-Legends-canvasInner {
+    max-height: calc(100vh - #{$offset}px);
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight + $menuHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $menuHeight}px);
+    }
   }
 }

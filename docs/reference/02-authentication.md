@@ -4,6 +4,8 @@ CARTO.js 4.0 requires using an API Key. From your CARTO dashboard, click _[Your 
 
 ![Your API Keys](../img/avatar.gif)
 
+Learn more about the [basics of authorization]({{site.fundamental_docs}}/authorization/), or dig into the details of [Auth API]({{site.authapi_docs}}/), if you want to know more about this part of CARTO platform.
+
 The examples in this documentation include a placeholder for the API Key. Ensure that you modify any placeholder parameters with your own credentials. You will have to supply your unique API Key to a [`carto.Client`](#cartoclient).
 
 ```javascript

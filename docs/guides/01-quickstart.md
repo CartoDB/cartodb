@@ -1,6 +1,6 @@
 ## Quickstart Guide
 
-Welcome to the CARTO.js internal release documentation. CARTO.js is a JavaScript library that enables you to create custom location intelligence applications that leverage the power of the **[CARTO Engine](https://carto.com/pricing/engine/)** ecosystem.
+Welcome to the CARTO.js documentation. CARTO.js is a JavaScript library that enables you to create custom location intelligence applications that leverage the power of the **[CARTO Engine](https://carto.com/pricing/engine/)** ecosystem.
 
 ### About this Guide
 
@@ -14,7 +14,9 @@ This guide describes how to create a Leaflet map and display data from CARTO ove
 
 ### Requesting an API Key
 
-CARTO.js 4.0 requires using an API Key. From your CARTO dashboard, click [_Your API keys_](https://carto.com/login) from the avatar drop-down menu to view your uniquely generated API Key for managing data with CARTO Engine.
+CARTO.js requires using an API Key. From your CARTO dashboard, click [_Your API keys_](https://carto.com/login) from the avatar drop-down menu to view your uniquely generated API Key for managing data with CARTO Engine.
+
+If you want learn more about authorization and authentication, read the [fundamentals]({{site.fundamental_docs}}/authorization/) about this topic. 
 
 ### Importing Datasets
 Before you start working on the map, you need to import a couple of datasets. For this guide, we will use CARTO's Data Library, available from *Your datasets* dashboard, to import and connect public datasets to your account.
@@ -128,7 +130,7 @@ var client = new carto.Client({
 });
 ```
 
-**Warning!** Ensure that you modify any placeholder parameters shown in curly brackets with your own credentials. For example, `apiKey: '123abc',` and `username: 'john123'`.
+**Warning:** Ensure that you modify any placeholder parameters shown in curly brackets with your own credentials. For example, `apiKey: '123abc',` and `username: 'john123'`.
 
 ### Displaying Data on the Map
 

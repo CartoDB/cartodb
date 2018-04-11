@@ -10,8 +10,6 @@ If you just want to describe an issue or share an idea, just <a class="typeform-
 
 ### Issues on Github
 
-<img class="left-content" src="/documentation/img/github-icon.png"> 
-
 If you think you may have found a bug, or if you have a feature request that you would like to share with the CARTO.js team, please [open an issue](https://github.com/cartodb/cartodb.js/issues/new). 
 
 Before opening an issue, review the [contributing guidelines](https://github.com/CartoDB/cartodb.js/blob/develop/CONTRIBUTING.md#filling-a-ticket).
@@ -19,7 +17,6 @@ Before opening an issue, review the [contributing guidelines](https://github.com
 
 ### Community support on GIS Stack Exchange
 
-<img class="right-content" src="/documentation/img/gis-stackexchange-icon.png">
 GIS Stack Exchange is the most popular community in the geospatial industry. This is a collaboratively-edited question and answer site for geospatial programmers and technicians. It is a fantastic resource for asking technical questions about developing and maintaining your application.
 
 Members of the CARTO.js team regularly monitor the `carto` tag. You can look for CARTO topics by adding `carto` or `cartodb.js` to your search query. You can also add additional tags to your question in order to attract the attention of experts in related technologies.

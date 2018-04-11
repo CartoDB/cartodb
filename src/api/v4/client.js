@@ -21,6 +21,8 @@ function getValidationError (code) {
  *
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
+ * 
+ * If you want to learn more about authorization and authentication, please read the authorization fundamentals section of our Developer Center.
  *
  * @param {object} settings
  * @param {string} settings.apiKey - API key used to authenticate against CARTO

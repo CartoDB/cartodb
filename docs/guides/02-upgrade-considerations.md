@@ -6,7 +6,7 @@ This document is intended for existing developers who have used [previous versio
 
 This guide describes how the CARTO.js library has changed to support additional functionality. It outlines the basic workflow for creating an application and includes an example of updating an old application using the new library.
 
-**Tip**: The authorization system behaves in a uniform way for any version of CARTO.js. You can read about the [fundamentals of authorization]({{site.fundamental_docs}}/) or know implementation details of the [Auth API]({{site.authapi_docs}}/) under the hood.
+**Tip**: The authorization system behaves in a uniform way for any version of CARTO.js. You can read about the [fundamentals of authorization]({{site.fundamental_docs}}/authorization/) or know implementation details of the [Auth API]({{site.authapi_docs}}/) under the hood.
 
 At a high-level, the workflow consists of:
 
@@ -27,7 +27,7 @@ You should understand the following changes in concept before you begin.
 
 #### Dataset Privacy
 
-Since we are still working on the Authentication feature, which is directly related to dataset privacy, datasets must be public when testing the Beta library. A future enhancement will include the ability to work with private data. View the [FAQs](https://carto.com//documentation/carto-js/support/faq/) for temporary limitations and known issues.
+Since we now have a new authorization system for the entire CARTO platform, directly related to dataset privacy, datasets can be public and private as well. Read the [basics of authorization]({{site.fundamental_docs}}/authorization/) to learn more about this aspect of the CARTO platform.
 
 #### Map Workflow
 
@@ -43,7 +43,7 @@ A Dataview enables you to create different views of data stored in a table. CART
 
 #### SQL API Integration
 
-CARTO.js no longer includes a client for the SQL API. Developers looking to get data from their CARTO account can query SQL API with AJAX or the new [JS Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+CARTO.js no longer includes a client for the SQL API. Developers looking to get data from their CARTO account can query SQL API with AJAX or the new [JS Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)..
 
 ## Upgrading an Existing Application
 
@@ -178,4 +178,4 @@ In order to make this example work with version 4.0 of CARTO.js, modify the code
 
 #### Conclusion
 
-For more details about how to use CARTO.js, view the Examples section for specific features of CARTO.js in action.
+For more details about how to use CARTO.js, [view the examples]({{site.cartojs_docs}}/examples/) section for specific features of CARTO.js in action.

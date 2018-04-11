@@ -1,8 +1,8 @@
 {
   "main": {
     "file": {
-      "leaflet": "public/misc/guide-leaflet.html",
-      "gmaps": "public/misc/guide-gmaps.html"
+      "leaflet": "public/layers/change-order-leaflet.html",
+      "gmaps": "public/layers/change-order-gmaps.html"
     }
   },
   "categories": [

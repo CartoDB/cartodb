@@ -300,9 +300,9 @@
   .CDB-Dashboard-menu {
     display: block;
     position: absolute;
+    right: 1px;
     bottom: 0;
     left: 1px;
-    right: 1px;
     order: 4;
     height: 39px;
   }
@@ -311,13 +311,13 @@
     @include display-flex();
     @include justify-content(space-between);
     @include flex-direction(row-reverse);
-    border-radius: 0 0 3px 3px;
     position: static;
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
     padding: 8px;
     overflow: hidden;
+    border-radius: 0 0 3px 3px;
     background: #F2F6F9;
   }
 

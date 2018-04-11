@@ -180,9 +180,9 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 @media (max-width: $sMedia-max-w-vertical) {
   .CDB-Embed-view {
     box-sizing: border-box;
+    overflow: hidden;
     border: 1px solid #DDD;
     border-radius: 4px;
-    overflow: hidden;
   }
 }
 

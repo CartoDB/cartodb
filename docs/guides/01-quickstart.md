@@ -6,7 +6,7 @@ Welcome to the CARTO.js documentation. CARTO.js is a JavaScript library that ena
 
 This guide describes how to create a Leaflet map and display data from CARTO over the map. This demonstrates how CARTO.js can be used to
 
-1. Overlay Data from your CARTO Builder account on any Map.
+1. Overlay Data from your CARTO account on any Map.
 2. Use Dataviews to Create Widgets.
 
 

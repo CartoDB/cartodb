@@ -1,6 +1,12 @@
-## Glossary
+## Glossary
 
 This glossary defines terms that appear throughout the CARTO.js documentation.
+
+### A
+
+#### Ajax
+
+Asynchronous JavaScript + XML, while not a technology in itself, is a term coined in 2005 by Jesse James Garrett, that describes a "new" approach to using a number of existing technologies together, including HTML or XHTML, Cascading Style Sheets, JavaScript, The Document Object Model, XML, XSLT, and most importantly the XMLHttpRequest object. More info about Ajax at [Ajax](https://developer.mozilla.org/en-US/docs/Web/Guide/AJAX).
 
 ### C
 
@@ -26,4 +32,4 @@ They are showed on top of a Leaflet or a Google map.
 
 #### Promise
 
-Promise objects are a standard way for handling asynchronous tasks in Javascript. More info about promises at [Using Promises - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
+Promise objects are a standard way for handling asynchronous tasks in Javascript. More info about promises at [Using Promises - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises).

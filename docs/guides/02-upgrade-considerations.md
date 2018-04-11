@@ -27,7 +27,7 @@ You should understand the following changes in concept before you begin.
 
 #### Dataset Privacy
 
-Since we are still working on the Authentication feature, which is directly related to dataset privacy, datasets must be public when testing the Beta library. A future enhancement will include the ability to work with private data. View the [FAQs](https://carto.com//documentation/carto-js/support/faq/) for temporary limitations and known issues.
+Since we now have a new authorization system for the entire CARTO platform, directly related to dataset privacy, datasets can be public and private as well. Read the [basics of authorization]({{site.fundamental_docs}}/authorization/) to learn more about this aspect of the CARTO platform.
 
 #### Map Workflow
 
@@ -43,7 +43,7 @@ A Dataview enables you to create different views of data stored in a table. CART
 
 #### SQL API Integration
 
-CARTO.js no longer includes a client for the SQL API. Developers looking to get data from their CARTO account can query SQL API with AJAX.
+CARTO.js no longer includes a client for the SQL API. Developers looking to get data from their CARTO account can query SQL API with AJAX or the new [JS Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)..
 
 ## Upgrading an Existing Application
 

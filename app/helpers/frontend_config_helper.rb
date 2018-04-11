@@ -2,6 +2,7 @@ require_dependency 'helpers/avatar_helper'
 
 module FrontendConfigHelper
   include AvatarHelper
+  include FullstoryHelper
 
   UPGRADE_LINK_ACCOUNT = 'PERSONAL30'.freeze
 
@@ -20,8 +21,7 @@ module FrontendConfigHelper
       google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
       hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,
       intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
-      fullstory_enabled:          Cartodb.get_config(:fullstory, 'org').present? && user &&
-                                  user.account_type.casecmp('FREE').zero? && params[:cookies] != '0',
+      fullstory_enabled:          fullstory_enabled?(user),
       fullstory_org:              Cartodb.get_config(:fullstory, 'org'),
       dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
       gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),

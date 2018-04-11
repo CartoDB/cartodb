@@ -16,7 +16,7 @@ This guide describes how to create a Leaflet map and display data from CARTO ove
 
 CARTO.js requires using an API Key. From your CARTO dashboard, click [_Your API keys_](https://carto.com/login) from the avatar drop-down menu to view your uniquely generated API Key for managing data with CARTO Engine.
 
-If you want learn more about authorization and authentication, read the [fundamentals]({{site.fundamental_docs}}/authorization/) about this topic. 
+If you want learn more about authorization and authentication, read the [authorization fundamentals section]({{site.fundamental_docs}}/authorization/). 
 
 ### Importing Datasets
 Before you start working on the map, you need to import a couple of datasets. For this guide, we will use CARTO's Data Library, available from *Your datasets* dashboard, to import and connect public datasets to your account.

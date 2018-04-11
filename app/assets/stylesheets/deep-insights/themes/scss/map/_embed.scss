@@ -224,8 +224,8 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   Legend max height depends on whether there's a time series and or the menu bar is displayed,
   hence all the possible cases.
 */
-@media (max-width: $sMedia-l) {
-  $offset: 257;
+@media (max-width: $sMedia-tablet - 1) {
+  $offset: 262;
   $timeSeriesHeight: 93;
   $menuHeight: 38;
 
@@ -256,7 +256,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 }
 
-@media (min-width: $sMedia-l) {
+@media (min-width: $sMedia-tablet) {
   $offset: 88;
   $timeSeriesHeight: 169;
   $menuHeight: 30;

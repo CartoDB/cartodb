@@ -9,12 +9,12 @@ describe 'cartodb:fix_unique_legends' do
     Rake.application.rake_require "tasks/fix_unique_legends"
     Rake::Task.define_task(:environment)
 
-    @user = FactoryGirl.create(:carto_user)
-    @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-    @layer = @visualization.layers.find(&:data_layer?)
+    user = FactoryGirl.create(:carto_user)
+    _, _, _, visualization = create_full_visualization(user)
+    @layer = visualization.layers.find(&:data_layer?)
     legend = Carto::Legend.create!(layer: @layer,
-                            type: 'bubble',
-                            definition: { color: '#abc' })
+                                   type: 'bubble',
+                                   definition: { color: '#abc' })
     legend2 = legend.dup
     @updated_at = legend2.updated_at = legend.updated_at - 1.minute
     legend2.save(validate: false)

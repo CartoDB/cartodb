@@ -10,7 +10,7 @@ If you just want to describe an issue or share an idea, just <a class="typeform-
 
 ### Issues on Github
 
-If you think you may have found a bug, or if you have a feature request that you would like to share with the CARTO.js team, please [open an issue](https://github.com/CartoDB/cartodb/issues/new). 
+If you think you may have found a bug, or if you have a feature request that you would like to share with the Auth API team, please [open an issue](https://github.com/CartoDB/cartodb/issues/new). 
 
 Before opening an issue, review the [contributing guidelines](https://github.com/CartoDB/cartodb/blob/master/CONTRIBUTING.md).
 

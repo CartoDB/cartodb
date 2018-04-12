@@ -186,7 +186,7 @@ class User < Sequel::Model
     end
 
     validates_includes INDUSTRIES, :industry if industry.present?
-    validates_includes JOB_ROLES, :job_role if industry.present?
+    validates_includes JOB_ROLES, :job_role if job_role.present?
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?

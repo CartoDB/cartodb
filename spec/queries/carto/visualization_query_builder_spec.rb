@@ -97,6 +97,73 @@ describe Carto::VisualizationQueryBuilder do
     vq.build.all.map(&:id).should include(shared_visualization.id)
   end
 
+  describe 'sharing with organization' do
+    include_context 'organization with users helper'
+    it 'lists all visualizations shared with the org' do
+      table = create_random_table(@org_user_1)
+      shared_visualization = table.table_visualization
+      org_shared_entity = CartoDB::SharedEntity.new(
+        recipient_id:   @organization.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
+        entity_id:      shared_visualization.id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
+      org_shared_entity.save
+
+      vqb = Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@org_user_2.id).build
+      expect(vqb.count).to eq 1
+      expect(vqb.all.map(&:id)).to eq [shared_visualization.id]
+    end
+
+    it 'lists all visualizations shared with a group' do
+      @group = FactoryGirl.create(:carto_group, organization: @carto_organization)
+      @group.add_user(@org_user_2.username)
+
+      table = create_random_table(@org_user_1)
+      shared_visualization = table.table_visualization
+      org_shared_entity = CartoDB::SharedEntity.new(
+        recipient_id:   @group.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
+        entity_id:      shared_visualization.id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
+      org_shared_entity.save
+
+      vqb = Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@org_user_2.id).build
+      expect(vqb.count).to eq 1
+      expect(vqb.all.map(&:id)).to eq [shared_visualization.id]
+
+      @group.destroy
+    end
+
+    it 'lists visualizations once when they are shared with user and org' do
+      # https://github.com/CartoDB/support/issues/1451
+      # The problem is that the JOINs can make a visualization appear multiple times, so when AR
+      # interprets the result, it gives less results than expected.
+      table = create_random_table(@org_user_1)
+      shared_visualization = table.table_visualization
+      user_shared_entity = CartoDB::SharedEntity.new(
+        recipient_id:   @org_user_2.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id:      shared_visualization.id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
+      user_shared_entity.save
+
+      org_shared_entity = CartoDB::SharedEntity.new(
+        recipient_id:   @organization.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
+        entity_id:      shared_visualization.id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
+      org_shared_entity.save
+
+      vqb = Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@org_user_2.id).build
+      expect(vqb.count).to eq 1
+      expect(vqb.all.map(&:id)).to eq [shared_visualization.id]
+    end
+  end
+
   it 'orders using different criteria' do
 
     table1 = create_random_table(@user1)

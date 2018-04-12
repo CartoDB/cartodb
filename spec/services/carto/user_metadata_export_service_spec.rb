@@ -249,6 +249,16 @@ describe Carto::UserMetadataExportService do
         expect(@imported_user.visualizations.count).to eq source_visualizations.count - 1
       end
     end
+
+    it 'skips not remote visualizations without a map' do
+      Dir.mktmpdir do |path|
+        create_user_with_rate_limits
+        @user.visualizations.find { |v| !v.remote? }.map.delete
+
+        full_export_import(path)
+
+      end
+    end
   end
 
   EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at'].freeze
@@ -350,7 +360,7 @@ describe Carto::UserMetadataExportService do
     service.export_to_directory(@user, path)
     source_user = @user.attributes
 
-    source_visualizations = @user.visualizations.order(:id).map(&:attributes)
+    source_visualizations = @user.visualizations.order(:id).reject { |v| !v.remote? && !v.map }.map(&:attributes)
     source_tweets = @user.search_tweets.map(&:attributes)
     destroy_user
 

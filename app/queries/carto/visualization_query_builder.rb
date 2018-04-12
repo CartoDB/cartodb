@@ -208,7 +208,8 @@ class Carto::VisualizationQueryBuilder
     query = Carto::Visualization.scoped
 
     if @name && !(@id || @user_id || @organization_id || @owned_by_or_shared_with_user_id || @shared_with_user_id)
-      CartoDB::Logger.debug(message: "VQB query by name without user_id nor org_id")
+      CartoDB::Logger.error(message: "VQB query by name without user_id nor org_id")
+      raise 'VQB query by name without user_id nor org_id'
     end
 
     if @id
@@ -243,8 +244,7 @@ class Carto::VisualizationQueryBuilder
 
     if @shared_with_user_id
       user = Carto::User.where(id: @shared_with_user_id).first
-      query = query.joins(:shared_entities)
-                   .where(:shared_entities => { recipient_id: recipient_ids(user) })
+      query = query.where(id: Carto::SharedEntity.select(:entity_id).where(recipient_id: recipient_ids(user)))
     end
 
     if @owned_by_or_shared_with_user_id

@@ -174,6 +174,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)
 * Consistent margins in Auth API UI
 * Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
 * FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)

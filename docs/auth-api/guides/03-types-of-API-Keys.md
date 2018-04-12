@@ -26,6 +26,9 @@ An important property to keep in mind about regular API Keys is that they are *n
 
 Another important property of Regular API keys is that they inherit all the Datasets permissions from the Default Public API Key.
 
+You can see below an example of a real API key as it is displayed in a CARTO account.
+
+![alt](../img/capture-auth-apikey.png)
 
 #### Default Public
 
@@ -58,6 +61,10 @@ Master keys are a very special kind of API Keys. As it happens with the Default 
 The special thing about Master API Keys is that they grant access to EVERYTHING: APIs and Datasets (select/insert/create/delete). Additionally, a Master API Key is required to access most of the Auth API endpoints.
 
 Your Master API key carries many privileges, so be sure to keep it secret. Do not share it in publicly accessible areas such as GitHub or client-side code. 
+
+Below you have an example of a master API key.
+
+![alt](../img/capture-auth-apikey-master.png)
 
 **Tip:** If you think is has been compromised, regenerate it immediately.
 

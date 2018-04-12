@@ -255,7 +255,6 @@ Description | A pair of length values [a,b], where (a) is the dash length and (b
 Sample CartoCSS Code | `line-dasharray: none;`
 Default Value | `none`, a solid line appears.
 Available Values | See [numbers](#numbers).
-Related Example | See [How to create dotted lines](https://carto.com/docs/faqs/maps/#how-to-create-dotted-lines-in-carto).
 
 #### line-dash-offset `numbers`
 
@@ -289,7 +288,7 @@ Sample CartoCSS Code | `line-simplify: 0;`
 Default Value | `0`, geometry is not simplified.
 Available Values | See [float](#float).
 
-**Note:** The `line-simplify-float` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/carto-engine/maps-api/) with [carto.js]({{ site.baseurl }}/carto-engine/carto-js/), not with the CARTO Editor.
+**Note:** The `line-simplify-float` CartoCSS property is only supported when using the [Maps API]({{ site.mapsapi_docs }}/) with [CARTO.js]({{ site.cartojs_docs }}//), not with the CARTO Editor.
 
 #### line-simplify-algorithm `keyword`
 
@@ -298,7 +297,7 @@ Sample CartoCSS Code | `line-simplify-algorithm: radial-distance;`
 Default Value | `radial-distance`, geometry is simplified using the radial distance algorithm.
 Available Values | `radial-distance` `zhao-saalfeld` `visvalingam-whyatt`
 
-**Note:** The `line-simplify-algorithm-keyword` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/carto-engine/maps-api/) with [Carto.js({{ site.baseurl }}/carto-engine/carto-js/), not with the CARTO Editor.
+**Note:** The `line-simplify-algorithm-keyword` CartoCSS property is only supported when using the [Maps API]({{ site.mapsapi_docs }}/) with [CARTO.js]({{ site.cartojs_docs }}/), not with the CARTO Editor.
 
 #### line-smooth `float`
 
@@ -1003,7 +1002,6 @@ Description | Assigns raster data values to colors. Stops must be listed in asce
 Sample CartoCSS Code | `raster-colorizer-stops:',`<br /><br />**Tip:** See the related example for a complete CartoCSS syntax code example.
 Default Value | `undefined`
 Available Values | See [float](#float).
-Related Example | [CARTO blocks - raster demos](http://bl.ocks.org/rochoa/d3cf809120bda97d0826)
 
 ---
 

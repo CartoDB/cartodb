@@ -7,7 +7,7 @@ migration(
     add_column :users, :company, String
     add_column :users, :phone, String
     add_column :users, :industry, String
-    add_column :users, :job_rol, String
+    add_column :users, :job_role, String
   end,
   Proc.new do
     drop_column :users, :company

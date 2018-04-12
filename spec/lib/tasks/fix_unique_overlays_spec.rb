@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'spec_helper_min'
 require 'rake'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/overlays'

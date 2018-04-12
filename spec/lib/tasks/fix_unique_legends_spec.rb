@@ -18,13 +18,13 @@ describe 'cartodb:fix_unique_legends' do
                                     post_html: "",
                                     type: "torque",
                                     definition: {
-                                      "categories"=>[
-                                        {"title"=>"Nico", "color"=>"#ff382a", "icon"=>""},
-                                        {"title"=>"Sanne", "color"=>"#0038d1", "icon"=>""},
-                                        {"title"=>"Eric", "color"=>"#d4cf34", "icon"=>""}
+                                      "categories" => [
+                                        { "title" => "Perico", "color"=>"#ff382a", "icon"=>"" },
+                                        { "title" => "Palotes", "color"=>"#0038d1", "icon"=>"" },
+                                        { "title" => "Jr", "color"=>"#d4cf34", "icon"=>"" }
                                       ]
                                     },
-                                    conf: {"columns"=>[]})
+                                    conf: { "columns" => [] })
   end
 
   it 'deletes duplicate legend of unique type' do
@@ -42,7 +42,6 @@ describe 'cartodb:fix_unique_legends' do
 
   it 'keeps layers if different type' do
     legend2 = @legend.dup
-    updated_at = legend2.updated_at = @legend.updated_at - 1.minute
     legend2.type = 'bubble'
     legend2.save(validate: false)
     @layer.reload.legends.count.should eq 2

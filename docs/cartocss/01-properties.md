@@ -2,7 +2,7 @@
 
 Each CartoCSS map category has its own configurable properties. You can apply multiple symbolizers and properties to the same map layer. Navigate to a selected symbolizer to view a description of the CartoCSS property, sample CartoCSS code, the default value, and the available values. 
 
-_**Note:** CARTO is currently maintaining this library of CartoCSS properties and values. This content was adapted from the open source material provided by [Mapbox](https://github.com/mapbox/carto/blob/master/docs/latest.md), who has ceased active development of CartoCSS documentation._
+**Warning:** CARTO is currently maintaining this library of CartoCSS properties and values. This content was adapted from the open source material provided by [Mapbox](https://github.com/mapbox/carto/blob/master/docs/latest.md), who has ceased active development of CartoCSS documentation.
 
 #### CartoCSS Symbolizer
 
@@ -21,14 +21,13 @@ _**Note:** CARTO is currently maintaining this library of CartoCSS properties an
 
 [Common Elements](#common-elements) | [Map Background and String Elements](#map-background-and-string-elements) | [Debug mode](#debug-mode-string)
 
-In addition to customizing the look of your maps using CartoCSS, CARTO provides additional CartoCSS properties that you can apply to Torque style maps. For details, see [CartoCSS Properties for Torque Style Maps]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/).
+In addition to customizing the look of your maps using CartoCSS, CARTO provides additional CartoCSS properties that you can apply to Torque style maps. For details, see [CartoCSS Properties for Torque Style Maps]({{ site.torque_docs }}/guides/cartocss/).
 
 #### Torque CartoCSS Properties
 
 [-torque-frame-count]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-frame-count-number) | [-torque-animation-duration]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-animation-duration-number) | [-torque-time-attribute]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-time-attribute-string)
 -[torque-aggregation-function]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-aggregation-function-keyword) | [-torque-resolution]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-resolution-float) | [-torque-data-aggregation]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-data-aggregation-keyword)
 
----
 
 ### Common Elements
 
@@ -61,7 +60,6 @@ Sample CartoCSS Code | `opacity: 1;`
 Default Value | `1`, no separate buffer is used and no alpha is applied to the style after rendering.
 Available Values | See [float](#float).
 
----
 
 ### Map Background and String Elements
 
@@ -105,8 +103,6 @@ Default Value | `0`, no buffer is applied by default.
 Available Values | See [float](#float).
 
 **Note:** Enter any values in pixels and do not apply this property in combination with &quot;avoid-edges&quot;.
-
----
 
 ### Polygon
 
@@ -190,8 +186,6 @@ Description | The composite operation that defines how the symbolizer behaves re
 Sample CartoCSS Code | `polygon-comp-op: src-over;`
 Default Value | `src-over`, adds the current symbolizer on top of other symbolizers.
 Available Values | `clear` `src` `dst` `src-over` `dst-over` `src-in` `dst-in` `src-out` `dst-out` `src-atop` `dst-atop` `xor` `plus` `minus` `multiply` `screen` `overlay` `darken` `lighten` `color-dodge` `color-burn` `hard-light` `soft-light` `difference` `exclusion` `contrast` `invert` `invert-rgb` `grain-merge` `grain-extract` `hue` `saturation` `color` `value`
-
----
 
 ### Line
 

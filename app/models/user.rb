@@ -51,6 +51,15 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
+  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
+                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
+                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
+                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
+                'Transportation and Logistics'].freeze
+
+  JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
+               'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
+
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.
@@ -175,6 +184,9 @@ class User < Sequel::Model
     elsif org_admin
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
+
+    validates_includes INDUSTRIES + [nil, ''], :industry
+    validates_includes JOB_ROLES + [nil, ''], :job_role
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?

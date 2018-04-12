@@ -427,12 +427,12 @@ module CartoDB
 
       def remove_line?(line)
         stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").strip
-        LEGACY_FUNCTIONS.find {|l| stripped.scan(l).any? }
+        LEGACY_FUNCTIONS.find { |l| stripped.scan(l).any? }
       end
 
       def clean_toc_file(file)
         tmp = Tempfile.new("extract_#{@target_username}.txt")
-        open(file, 'r').each do |l|
+        File.open(file, 'r').each do |l|
           tmp << l unless remove_line?(l)
         end
 

@@ -439,7 +439,7 @@ describe 'UserMigration' do
 
     it 'skips importing legacy functions' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"]
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
@@ -507,7 +507,6 @@ describe 'UserMigration' do
         records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
       end
     end
-
 
     it_should_behave_like 'migrating metadata', true
     it_should_behave_like 'migrating metadata', false

@@ -2524,7 +2524,7 @@ module CartoDB
         'VIEW geometry_columns',
         'VIEW raster_columns',
         'VIEW raster_overviews'
-      ]
+      ].freeze
     end
   end
 end

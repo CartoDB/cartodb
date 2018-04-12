@@ -87,7 +87,7 @@ module Carto
 
       import_visualizations(imported, package, service) if import_metadata?
 
-      reconfigure_dataservices
+      reconfigure_dataservices if import_metadata?
     end
 
     def do_import_metadata(package, service)

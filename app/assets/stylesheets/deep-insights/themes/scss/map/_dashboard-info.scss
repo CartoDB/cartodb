@@ -64,6 +64,10 @@
 
 .CDB-Dashboard-menuActionsItem {
   margin-right: 16px;
+
+  a:hover {
+    color: $cBlue;
+  }
 }
 
 .CDB-Dashboard-menuInner {
@@ -296,11 +300,11 @@
   .CDB-Dashboard-menu {
     display: block;
     position: absolute;
+    right: 1px;
     bottom: 0;
-    left: 0;
+    left: 1px;
     order: 4;
-    width: 100%;
-    height: 38px;
+    height: 39px;
   }
 
   .CDB-Dashboard-menuInner {
@@ -313,7 +317,8 @@
     max-width: 100%;
     padding: 8px;
     overflow: hidden;
-    background: $cThirdBackground;
+    border-radius: 0 0 3px 3px;
+    background: #F2F6F9;
   }
 
   .CDB-Dashboard-menuMedia {

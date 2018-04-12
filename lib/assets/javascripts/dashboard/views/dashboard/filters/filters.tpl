@@ -38,7 +38,7 @@
           Liked
         </a>
       </li>
-      <% if (hasCreateMapsFeature && !isMaps && cdb.config.get('data_library_enabled')) { %>
+      <% if (hasCreateMapsFeature && !isMaps && isDataLibraryEnabled) { %>
         <li class="Filters-typeItem CDB-Text CDB-Size-medium is-semibold u-upperCase">
           <a class="Filters-typeLink js-link <%- library ? 'is-selected' : '' %>" href="<%- currentDashboardUrl.dataLibrary() %>">
             Data library

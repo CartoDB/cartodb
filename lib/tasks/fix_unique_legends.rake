@@ -12,7 +12,7 @@ namespace :cartodb do
           m2
         end
       end
-      legend_per_type.each { |_, l| l.sort_by(&:updated_at).slice(1..l.count).each(&:destroy) if l.size > 1 }
+      legend_per_type.each { |_, l| l.sort_by(&:updated_at).slice(0..l.count - 2).each(&:destroy) if l.size > 1 }
     end
   end
 end

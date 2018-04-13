@@ -8,70 +8,49 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body, *{ margin: 0; padding: 0; }
-      #map {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-      }
-      #controls {
-        position: absolute;
-        padding: 20px;
-        background: white;
-        top: 12px;
-        right: 12px;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        width: 200px;
-        color: #2E3C43;
-      }
-      #controls li {
-        list-style-type: none;
-        margin: 0 0 8px 0;
-        display: flex;
-        vertical-align: middle;
-      }
-      #controls li input {
-        margin: 0 8px 0 0;
-      }
-      #controls li label {
-        font: 12px/16px 'Open Sans';
-        cursor: pointer;
-      }
-      #controls li:last-child {
-        margin-bottom: 0;
-      }
-      #controls li:hover {
-        cursor: pointer;
-      }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
     <div id="map"></div>
-    <div id="controls">
-      <ul>
-        <li onclick="setAllCities()">
-          <input type="radio" name="source" checked id="all">
-          <label for="all">All cities</label>
-        </li>
-        <li onclick="setEuropeanCities()">
-          <input type="radio" name="source" id="europe">
-          <label for="europe">European cities</label>
-        </li>
-        <li onclick="setSpanishCities()">
-          <input type="radio" name="source" id="spain">
-          <label for="spain">Spanish cities</label>
-        </li>
-      </ul>
-    </div>
+    <aside class="box">
+      <header>
+        <h1>Change the source</h1>
+        <button class="github-logo js-source-link"></button>
+      </header>
+      <section>
+        <p class="description">Update the source of your layers.</p>
+        <div class="separator"></div>
+        <section class="usage">
+          <header>USAGE</header>
+          <p>Select different sources</p>
+        </section>
+
+        <div id="controls">
+          <ul>
+            <li onclick="setAllCities()">
+              <input type="radio" name="source" checked id="all">
+              <label for="all">All cities</label>
+            </li>
+            <li onclick="setEuropeanCities()">
+              <input type="radio" name="source" id="europe">
+              <label for="europe">European cities</label>
+            </li>
+            <li onclick="setSpanishCities()">
+              <input type="radio" name="source" id="spain">
+              <label for="spain">Spanish cities</label>
+            </li>
+          </ul>
+        </div>
+
+      </section>
+      <footer class="js-footer"></footer>
+    </aside>
+
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
-        zoom: 3
+        zoom: 3,
+        fullscreenControl: false
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

@@ -301,12 +301,13 @@ describe('vis/vis', function () {
     });
 
     describe("when vis hasn't been instantiated yet", function () {
-      it('should NOT instantiate map', function () {
+      it('should NOT instantiate map', function (done) {
         spyOn(this.vis._engine, 'reload');
 
-        this.vis.reload({});
-
-        expect(this.vis._engine.reload).not.toHaveBeenCalled();
+        this.vis.reload({}).then(function () {
+          expect(this.vis._engine.reload).not.toHaveBeenCalled();
+          done();
+        });
       });
     });
 
@@ -323,7 +324,6 @@ describe('vis/vis', function () {
           sourceId: 'sourceIdMock',
           forceFetch: 'forceFetchMock'
         });
-
         expect(this.vis._engine.reload).toHaveBeenCalledWith({
           a: 1,
           b: 2,
@@ -332,7 +332,7 @@ describe('vis/vis', function () {
         });
       });
 
-      it('should execute the success callback if the reload succeeds', function () {
+      it('should execute the success callback if the reload succeeds', function (done) {
         var successSpy = jasmine.createSpy('sucessCallback');
         // Mock the server request.
         spyOn(this.vis._engine._windshaftClient, 'instantiateMap').and.callFake(function (request) {
@@ -345,12 +345,13 @@ describe('vis/vis', function () {
           sourceId: 'sourceIdMock',
           forceFetch: 'forceFetchMock',
           success: successSpy
+        }).then(function () {
+          expect(successSpy).toHaveBeenCalled();
+          done();
         });
-
-        expect(successSpy).toHaveBeenCalled();
       });
 
-      it('should execute the error callback if the reload error', function () {
+      it('should execute the error callback if the reload error', function (done) {
         var errorSpy = jasmine.createSpy('errorCallback');
         // Mock the server request.
         spyOn(this.vis._engine._windshaftClient, 'instantiateMap').and.callFake(function (request) {
@@ -363,21 +364,21 @@ describe('vis/vis', function () {
           sourceId: 'sourceIdMock',
           forceFetch: 'forceFetchMock',
           error: errorSpy
+        }).catch(function () {
+          expect(errorSpy).toHaveBeenCalled();
+          done();
         });
-
-        expect(errorSpy).toHaveBeenCalled();
       });
 
       it('should trigger a `reload` event', function () {
         var reloadCallback = jasmine.createSpy('reloadCallback');
         this.vis.on('reload', reloadCallback);
-
         this.vis.reload();
 
         expect(reloadCallback).toHaveBeenCalled();
       });
 
-      it('should trigger a `reloaded` event when reload succeeds', function () {
+      it('should trigger a `reloaded` event when reload succeeds', function (done) {
         var onReloadedSpy = jasmine.createSpy('onReloadedSpy');
         this.vis.on('reloaded', onReloadedSpy);
         // Mock the server request. // TODO: Mock $.ajax
@@ -385,9 +386,10 @@ describe('vis/vis', function () {
           request.options.success({ metadata: {} });
         });
 
-        this.vis.reload({});
-
-        expect(onReloadedSpy).toHaveBeenCalled();
+        this.vis.reload({}).then(function () {
+          expect(onReloadedSpy).toHaveBeenCalled();
+          done();
+        });
       });
     });
   });
@@ -770,9 +772,9 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(this.vizjson));
-
+      // TODO: skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._reload;
       this.vis.instantiateMap();
-
       // Polling has started
       expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
     });
@@ -870,6 +872,8 @@ describe('vis/vis', function () {
       spyOn($, 'ajax');
 
       this.vis.load(new VizJSON(this.vizjson));
+      // TODO: skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._reload;
       this.vis.instantiateMap();
     });
 
@@ -1010,6 +1014,8 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(fakeVizJSON()));
+      // TODO: skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._reload;
       this.vis.instantiateMap();
 
       expect(this.vis.setOk).toHaveBeenCalled();
@@ -1034,6 +1040,8 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(fakeVizJSON()));
+      // TODO: skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._reload;
       this.vis.instantiateMap();
 
       expect(this.vis.setOk).not.toHaveBeenCalled();

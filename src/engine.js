@@ -13,6 +13,12 @@ var WindshaftClient = require('./windshaft/client');
 var AnalysisService = require('./analysis/analysis-service');
 var WindshaftError = require('./windshaft/error');
 
+var RELOAD_DEBOUNCE_TIME_IN_MILIS = 100;
+
+// Variable to store the timeout
+// in the reload debounce
+var timeout;
+
 /**
  *
  * Creates a new Engine.
@@ -143,9 +149,24 @@ Engine.prototype.off = function (event, callback, context) {
  *
  */
 Engine.prototype.reload = function (options) {
+  var self = this;
+  // Using a debouncer to optimize consecutive calls to reload the map.
+  // This allows to change multiple map parameters reloading the map only once,
+  // and therefore avoid the "You are over platform's limits" Windshaft error.
+  return new Promise(function (resolve) {
+    var later = function () {
+      timeout = null;
+      resolve(self._reload(options));
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, RELOAD_DEBOUNCE_TIME_IN_MILIS);
+  });
+};
+
+Engine.prototype._reload = function (options) {
+  var self = this;
   return new Promise(function (resolve, reject) {
-    var self = this;
-    options = this._buildOptions(options);
+    options = self._buildOptions(options);
     var successCb = options.success;
     var errorCb = options.error;
     options.success = function (serverResponse) {
@@ -158,20 +179,20 @@ Engine.prototype.reload = function (options) {
       reject(error);
     };
     try {
-      var params = this._buildParams(options.includeFilters);
-      var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
+      var params = self._buildParams(options.includeFilters);
+      var payload = self._getSerializer().serialize(self._layersCollection, self._dataviewsCollection);
       var request = new Request(payload, params, options);
 
-      this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
-      this._windshaftClient.instantiateMap(request);
+      self._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+      self._windshaftClient.instantiateMap(request);
     } catch (error) {
       var windshaftError = new WindshaftError({
         message: error.message
       });
-      this._manageClientError(windshaftError, options);
+      self._manageClientError(windshaftError, options);
       reject(windshaftError);
     }
-  }.bind(this));
+  });
 };
 
 /**

@@ -156,7 +156,6 @@ module Carto
 
     def update_database_host
       users.each do |user|
-        Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
         user.database_host = database_host
         user.save!
         # This is because Sequel models are being cached along request. This forces reload.

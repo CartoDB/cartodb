@@ -9,11 +9,13 @@ require_relative '../../services/dataservices-metrics/lib/observatory_general_us
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
+require 'helpers/rate_limits_helper'
 require 'helpers/unique_names_helper'
 require 'factories/users_helper'
 require 'factories/database_configuration_contexts'
 
 include UniqueNamesHelper
+include RateLimitsHelper
 
 describe 'refactored behaviour' do
   it_behaves_like 'user models' do
@@ -61,6 +63,8 @@ describe User do
     bypass_named_maps
     @user.destroy
     @user2.destroy
+    @account_type.destroy if @account_type
+    @account_type_org.destroy if @account_type_org
   end
 
   it "should only allow legal usernames" do
@@ -90,9 +94,11 @@ describe User do
 
   describe 'organization checks' do
     it "should not be valid if his organization doesn't have more seats" do
-
       organization = create_org('testorg', 10.megabytes, 1)
-      user1 = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
+      user1 = create_user email: 'user1@testorg.com',
+                          username: 'user1',
+                          password: 'user11',
+                          account_type: 'ORGANIZATION USER'
       user1.organization = organization
       user1.save
       organization.owner_id = user1.id
@@ -377,7 +383,10 @@ describe User do
     it 'should create remote user in central if needed' do
       pending "Central API credentials not provided" unless ::User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 500.megabytes, 1)
-      user = create_user email: 'user1@testorg.com', username: 'user1', password: 'user11'
+      user = create_user email: 'user1@testorg.com',
+                         username: 'user1',
+                         password: 'user11',
+                         account_type: 'ORGANIZATION USER'
       user.organization = organization
       user.save
       Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
@@ -483,6 +492,7 @@ describe User do
   end
 
   it "should invalidate all his vizjsons when his account type changes" do
+    @account_type = FactoryGirl.create(:account_type, account_type: 'WADUS')
     @user.account_type = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
@@ -1714,11 +1724,15 @@ describe User do
 
   # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info
   it "can notify a new user creation" do
-
     ::Resque.stubs(:enqueue).returns(nil)
-
+    @account_type_org = FactoryGirl.create(:account_type_org)
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
-    user1 = new_user(:username => 'test', :email => "client@example.com", :organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
+    user1 = new_user(username: 'test',
+                     email: "client@example.com",
+                     organization: organization,
+                     organization_id: organization.id,
+                     quota_in_bytes: 20.megabytes,
+                     account_type: 'ORGANIZATION USER')
     user1.id = UUIDTools::UUID.timestamp_create.to_s
 
     ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, user1.id).once
@@ -2674,11 +2688,13 @@ describe User do
     end
   end
 
-  describe 'when creating rate limits' do
-    before :each do
+  describe '#rate limits' do
+    before :all do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
-      @account_type = FactoryGirl.create(:account_type_free)
-      @account_type_pro = FactoryGirl.create(:account_type_pro)
+      @account_type = Carto::AccountType.where(account_type: 'FREE').first || FactoryGirl.create(:account_type_free)
+      @account_type_pro = Carto::AccountType.where(account_type: 'PRO').first || FactoryGirl.create(:account_type_pro)
+      @account_type_org = Carto::AccountType.where(account_type: 'ORGANIZATION USER').first ||
+                          FactoryGirl.create(:account_type_org)
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
@@ -2698,17 +2714,29 @@ describe User do
       @sql_prefix = "limits:rate:store:#{@user_rt.username}:sql:"
     end
 
-    after :each do
+    after :all do
       @user_rt.destroy unless @user_rt.nil?
       @user_no_ff.destroy unless @user_no_ff.nil?
       @organization.destroy unless @organization.nil?
       @account_type.destroy unless @account_type.nil?
       @account_type_pro.destroy unless @account_type_pro.nil?
+      @account_type_org.destroy unless @account_type_org.nil?
       @account_type.rate_limit.destroy unless @account_type.nil?
       @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
+      @account_type_org.rate_limit.destroy unless @account_type_org.nil?
       @rate_limits.destroy unless @rate_limits.nil?
       @rate_limits_custom.destroy unless @rate_limits_custom.nil?
+      @rate_limits_custom2.destroy unless @rate_limits_custom2.nil?
       @rate_limits_pro.destroy unless @rate_limits_pro.nil?
+    end
+
+    before :each do
+      unless FeatureFlag.where(name: 'limits_v2').first.present?
+        @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
+      end
+    end
+
+    after :each do
       @limits_feature_flag.destroy if @limits_feature_flag.exists?
     end
 
@@ -2722,124 +2750,87 @@ describe User do
     end
 
     it 'creates rate limits from user account type' do
-      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
-      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 2).should == ["3", "4", "5"]
-      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 2).should == ["6", "7", "8"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 2).should == ["9", "10", "11"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 2).should == ["9", "10", "11"]
-      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 2).should == ["12", "13", "14"]
-      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 5).should == ["15", "16", "17", "30", "32", "34"]
-      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 2).should == ["18", "19", "20"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 2).should == ["21", "22", "23"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 2).should == ["24", "25", "26"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 2).should == ["27", "28", "29"]
-      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 2).should == ["30", "31", "32"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 2).should == ["33", "34", "35"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 2).should == ["36", "37", "38"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 2).should == ["39", "40", "41"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 2).should == ["0", "1", "2"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 2).should == ["3", "4", "5"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["6", "7", "8"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
+      expect_rate_limits_saved_to_redis(@user_rt.username)
     end
 
     it 'updates rate limits from user custom rate_limit' do
-      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
-      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 2).should == ["3", "4", "5"]
-      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 2).should == ["6", "7", "8"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 2).should == ["9", "10", "11"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 2).should == ["9", "10", "11"]
-      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 2).should == ["12", "13", "14"]
-      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 5).should == ["15", "16", "17", "30", "32", "34"]
-      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 2).should == ["18", "19", "20"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 2).should == ["21", "22", "23"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 2).should == ["24", "25", "26"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 2).should == ["27", "28", "29"]
-      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 2).should == ["30", "31", "32"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 2).should == ["33", "34", "35"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 2).should == ["36", "37", "38"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 2).should == ["39", "40", "41"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 2).should == ["0", "1", "2"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 2).should == ["3", "4", "5"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["6", "7", "8"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
+      expect_rate_limits_saved_to_redis(@user_rt.username)
 
       @user_rt.rate_limit_id = @rate_limits_custom.id
       @user_rt.save
 
-      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["10", "11", "12"]
-      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 2).should == ["13", "14", "15"]
-      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 2).should == ["16", "17", "18"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 2).should == ["19", "110", "111"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 2).should == ["19", "110", "111"]
-      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 2).should == ["112", "113", "114"]
-      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 5).should == ["115", "116", "117", "230", "232", "234"]
-      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 2).should == ["118", "119", "120"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 2).should == ["121", "122", "123"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 2).should == ["124", "125", "126"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 2).should == ["127", "128", "129"]
-      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 2).should == ["130", "131", "132"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 2).should == ["133", "134", "135"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 2).should == ["136", "137", "138"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 2).should == ["139", "140", "141"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 2).should == ["10", "11", "12"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 2).should == ["13", "14", "15"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["16", "17", "18"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["19", "110", "111"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["112", "113", "114"]
+      expect_rate_limits_custom_saved_to_redis(@user_rt.username)
     end
 
     it 'creates rate limits for a org user' do
-      @map_prefix = "limits:rate:store:#{@user_org.username}:maps:"
-      @sql_prefix = "limits:rate:store:#{@user_org.username}:sql:"
-
-      $limits_metadata.LRANGE("#{@map_prefix}anonymous", 0, 2).should == ["1", "1", "2"]
-      $limits_metadata.LRANGE("#{@map_prefix}static", 0, 2).should == ["2", "4", "5"]
-      $limits_metadata.LRANGE("#{@map_prefix}static_named", 0, 2).should == ["3", "7", "8"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview", 0, 2).should == ["4", "10", "11"]
-      $limits_metadata.LRANGE("#{@map_prefix}dataview_search", 0, 2).should == ["4", "10", "11"]
-      $limits_metadata.LRANGE("#{@map_prefix}analysis", 0, 2).should == ["5", "13", "14"]
-      $limits_metadata.LRANGE("#{@map_prefix}tile", 0, 5).should == ["6", "16", "17", "30", "32", "34"]
-      $limits_metadata.LRANGE("#{@map_prefix}attributes", 0, 2).should == ["7", "19", "20"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_list", 0, 2).should == ["8", "22", "23"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_create", 0, 2).should == ["9", "25", "26"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_get", 0, 2).should == ["10", "28", "29"]
-      $limits_metadata.LRANGE("#{@map_prefix}named", 0, 2).should == ["11", "31", "32"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_update", 0, 2).should == ["12", "34", "35"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_delete", 0, 2).should == ["13", "37", "38"]
-      $limits_metadata.LRANGE("#{@map_prefix}named_tiles", 0, 2).should == ["14", "40", "41"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query", 0, 2).should == ["1", "1", "2"]
-      $limits_metadata.LRANGE("#{@sql_prefix}query_format", 0, 2).should == ["2", "4", "5"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_create", 0, 2).should == ["3", "7", "8"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_get", 0, 2).should == ["4", "10", "11"]
-      $limits_metadata.LRANGE("#{@sql_prefix}job_delete", 0, 2).should == ["5", "13", "14"]
+      expect_rate_limits_pro_saved_to_redis(@user_org.username)
     end
 
     it 'destroy rate limits' do
       user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
+
+      expect_rate_limits_pro_saved_to_redis(user2.username)
 
       user2.destroy
 
       expect {
         Carto::RateLimit.find(user2.rate_limit_id)
       }.to raise_error(ActiveRecord::RecordNotFound)
+
+      expect_rate_limits_exist(user2.username)
     end
 
-    it 'destroys rate limits from redis' do
-      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
+    it 'updates rate limits when user has no rate limits' do
+      user = FactoryGirl.create(:valid_user)
+      user.update_rate_limits(@rate_limits.api_attributes)
 
-      map_prefix = "limits:rate:store:#{user2.username}:maps:"
-      sql_prefix = "limits:rate:store:#{user2.username}:sql:"
+      user.reload
+      user.rate_limit.should_not be_nil
+      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
 
-      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
-      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 1
+      user.destroy
+    end
 
-      user2.destroy
+    it 'does nothing when user has no rate limits' do
+      user = FactoryGirl.create(:valid_user)
+      user.update_rate_limits(nil)
 
-      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
-      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
+      user.reload
+      user.rate_limit.should be_nil
+
+      user.destroy
+    end
+
+    it 'updates rate limits when user has rate limits' do
+      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
+      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
+      user.update_rate_limits(@rate_limits.api_attributes)
+      user.reload
+      user.rate_limit.should_not be_nil
+      user.rate_limit_id.should eq @rate_limits_custom2.id
+      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
+      @rate_limits.api_attributes.should eq @rate_limits_custom2.reload.api_attributes
+
+      user.destroy
+    end
+
+    it 'set rate limits to nil when user has rate limits' do
+      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
+      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
+
+      user.update_rate_limits(nil)
+
+      user.reload
+      user.rate_limit.should be_nil
+
+      expect {
+        Carto::RateLimit.find(@rate_limits_custom2.id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+
+      # limits reverted to the ones from the account type
+      expect_rate_limits_saved_to_redis(user.username)
+
+      user.destroy
     end
   end
 

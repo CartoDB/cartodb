@@ -1,4 +1,6 @@
 require 'date'
+require_relative '../../app/services/carto/data_library_service'
+require_relative '../../lib/carto_api/json_client'
 
 namespace :cartodb do
 
@@ -65,6 +67,53 @@ namespace :cartodb do
         printf("%20s: +%03d; *%03d; =%03d; -%03d; e%03d\n", user.username, added, updated, not_modified, removed, failed)
       end
       puts DateTime.now
+    end
+
+    load_in_data_library_from_api_key_args = [:scheme, :base_domain, :port, :source_username,
+                                              :source_api_key, :target_username, :granted_api_key]
+    # Example: rake cartodb:remotes:load_in_data_library_from_api_key[https,carto.com,80,s_user,s_user_key,t_user,g_key]
+    desc 'Loads all datasets for a API key in a Data Library. `granted_api_key` will be stored for importing.'
+    task :load_in_data_library_from_api_key, load_in_data_library_from_api_key_args => [:environment] do |_, args|
+      raise "All arguments are mandatory" unless load_in_data_library_from_api_key_args.all? { |a| args[a].present? }
+
+      client = CartoAPI::JsonClient.new(
+        scheme: args['scheme'], base_domain: args['base_domain'], port: args['port'].to_i
+      )
+      service = Carto::DataLibraryService.new
+      service.load_datasets!(client,
+                             source_username: args['source_username'], source_api_key: args['source_api_key'],
+                             target_username: args['target_username'], granted_api_key: args['granted_api_key'])
+    end
+
+    load_in_data_library_args = load_in_data_library_from_api_key_args + ['source_dataset']
+    # Example: rake cartodb:remotes:load_in_data_library[https,carto.com,80,s_data,s_user,s_user_key,t_user,g_key]
+    desc 'Loads a dataset in a Data Library. `granted_api_key` is the key that will be stored for importing.'
+    task :load_in_data_library, load_in_data_library_args => [:environment] do |_, args|
+      raise "All arguments are mandatory" unless load_in_data_library_args.all? { |a| args[a].present? }
+
+      client = CartoAPI::JsonClient.new(
+        scheme: args['scheme'], base_domain: args['base_domain'], port: args['port'].to_i
+      )
+      service = Carto::DataLibraryService.new
+      service.load_dataset!(client,
+                            source_dataset: args['source_dataset'], source_username: args['source_username'],
+                            source_api_key: args['source_api_key'],
+                            target_username: args['target_username'], granted_api_key: args['granted_api_key'])
+    end
+
+    desc 'Removes a Data Library entry from a user'
+    task :remove_from_data_library, [:username, :visualization_name] => [:environment] do |_, args|
+      username = args['username']
+      name = args['visualization_name']
+      raise 'All Arguments are mandatory' unless username.present? && name.present?
+
+      user = Carto::User.find_by_username(username)
+      raise 'User not found' unless user
+
+      visualization = user.visualizations.remotes.find_by_name(name)
+      raise 'Visualization not found' unless visualization
+
+      visualization.destroy
     end
 
     desc "Invalidate user's date flag and make them refresh data library"

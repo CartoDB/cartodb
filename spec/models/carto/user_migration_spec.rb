@@ -355,7 +355,7 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
-  it 'doesn\'t export users with datasets without a physical table if metadata export is requested (see #12588)' do
+  it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -367,23 +367,20 @@ describe 'UserMigration' do
     user.in_database.execute("DROP TABLE #{@table.name}")
     # The table is still registered after the deletion
     carto_user.reload
+
     carto_user.tables.exists?(name: @table.name).should be
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
+    export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
     export.destroy
 
     user.destroy
   end
 
-  it 'doesn\'t export users with a canonical viz without user table if metadata export is requested (see #12588)' do
+  it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -399,16 +396,39 @@ describe 'UserMigration' do
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Can't export. Vizs without user table: [\"#{@table_visualization.id}\"]")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-    export.destroy
 
     user.destroy
+  end
+
+  it 'exports and imports a user with raster overviews because exporting skips them' do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    user = FactoryGirl.build(:valid_user).save
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+    user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
+    user.in_database.execute('INSERT INTO i_hate_raster VALUES(ST_MakeEmptyRaster(100, 100, 0, 0, 100, 100, 0, 0, 2274))')
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("SELECT AddRasterConstraints('i_hate_raster', 'rast')")
+    user.in_database.execute("SELECT ST_CreateOverview('i_hate_raster'::regclass, 'rast', 2)")
+    user.in_database.execute('DROP TABLE i_hate_raster')
+    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+    export.run_export
+    user.destroy
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: true,
+      dry: false
+    )
+    import.run_import
+
+    expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
   end
 
   describe 'with organization' do
@@ -454,7 +474,7 @@ describe 'UserMigration' do
     it_should_behave_like 'migrating metadata', true
     it_should_behave_like 'migrating metadata', false
 
-    it 'doesn\'t export orgs with datasets without physical table if metadata export is requested (see #12588)' do
+    it 'exports orgs with datasets without physical table if metadata export is requested (see #13721)' do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
 
       @carto_org_user_1.tables.exists?(name: @table.name).should be
@@ -465,12 +485,7 @@ describe 'UserMigration' do
 
       export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
       export.run_export
-      export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-      expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-      export.destroy
-
-      export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: false)
-      export.run_export
+      export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
     end

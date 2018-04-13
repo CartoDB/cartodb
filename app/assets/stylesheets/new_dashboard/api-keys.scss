@@ -82,7 +82,7 @@
   }
 
   .Editor-formInner {
-    margin-top: 16px;
+    margin-top: 24px;
   }
 }
 
@@ -100,8 +100,6 @@
 }
 
 .ApiKeysForm-grantsTable {
-  margin-top: 16px;
-
   &.showOnlySelect {
     [data-name='insert'],
     [data-name='update'],

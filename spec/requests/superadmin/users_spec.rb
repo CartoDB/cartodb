@@ -31,6 +31,7 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with password success" do
+    account_type = FactoryGirl.create(:account_type_free)
     @user_atts.delete(:crypted_password)
     @user_atts.delete(:salt)
     @user_atts.merge!(password: "this_is_a_password")
@@ -50,9 +51,11 @@ feature "Superadmin's users API" do
       authenticate(user.username, "this_is_a_password").should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
+    account_type.destroy
   end
 
   scenario "user create with crypted_password and salt success" do
+    account_type = FactoryGirl.create(:account_type_free)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
@@ -68,9 +71,11 @@ feature "Superadmin's users API" do
       authenticate(user.username, "this_is_a_password").should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
+    account_type.destroy
   end
 
   scenario "user create default account settings" do
+    account_type = FactoryGirl.create(:account_type_free)
     @user_atts[:private_tables_enabled] = false
     @user_atts[:sync_tables_enabled] = false
     @user_atts[:map_view_quota] = 80
@@ -96,9 +101,32 @@ feature "Superadmin's users API" do
       user.upgraded_at.should.to_s == t.to_s
     end
     ::User.where(username: @user_atts[:username]).first.destroy
+    account_type.destroy
+  end
+
+  scenario "user create with rate limits" do
+    t = Time.now
+    @user_atts[:upgraded_at] = t
+    account_type = FactoryGirl.create(:account_type_free)
+    rate_limits = FactoryGirl.create(:rate_limits)
+    @user_atts[:rate_limit] = rate_limits.api_attributes
+
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
+      response.status.should == 201
+      response.body[:rate_limit_id].should_not be_nil
+
+      # Double check that the user has been created properly
+      user = ::User.filter(email: @user_atts[:email]).first
+      user.rate_limit.api_attributes.should eq @user_atts[:rate_limit]
+    end
+    ::User.where(username: @user_atts[:username]).first.destroy
+    rate_limits.destroy
+    account_type.destroy
   end
 
   scenario "user create non-default account settings" do
+    account_type = FactoryGirl.create(:account_type, account_type: 'Juliet')
     @user_atts[:quota_in_bytes] = 2000
     @user_atts[:table_quota]    = 20
     @user_atts[:account_type]   = 'Juliet'
@@ -154,9 +182,11 @@ feature "Superadmin's users API" do
       user.notification.should == 'Test'
     end
     ::User.where(username: @user_atts[:username]).first.destroy
+    account_type.destroy
   end
 
   scenario "update user account details" do
+    account_type = FactoryGirl.create(:account_type, account_type: 'Juliet')
     user = create_user
     t = Time.now
     @update_atts = { quota_in_bytes: 2000,
@@ -232,6 +262,7 @@ feature "Superadmin's users API" do
     user.builder_enabled.should == false
 
     user.destroy
+    account_type.destroy
   end
 
   scenario "user update fail" do
@@ -476,6 +507,36 @@ feature "Superadmin's users API" do
         }.to_json, superadmin_headers
       end.to change(FeatureFlagsUser, :count).by(1)
     end
+
+    it 'should create new rate limit if user does not have' do
+      user        = FactoryGirl.create(:user)
+      rate_limit  = FactoryGirl.create(:rate_limits)
+
+      expect {
+        put superadmin_user_url(user.id), {
+          user: { rate_limit: rate_limit.api_attributes }, id: user.id
+        }.to_json, superadmin_headers
+
+        user.reload
+        user.rate_limit.api_attributes.should eq rate_limit.api_attributes
+
+      }.to change(Carto::RateLimit, :count).by(1)
+    end
+
+    it 'should update existing user rate limit' do
+      user        = FactoryGirl.create(:user)
+      rate_limit  = FactoryGirl.create(:rate_limits)
+      user.rate_limit_id = rate_limit.id
+      user.save
+      rate_limit_custom = FactoryGirl.create(:rate_limits_custom)
+
+      put superadmin_user_url(user.id), {
+        user: { rate_limit: rate_limit_custom.api_attributes }, id: user.id
+      }.to_json, superadmin_headers
+
+      user.reload
+      user.rate_limit.api_attributes.should eq rate_limit_custom.api_attributes
+    end
   end
 
   describe '#destroy' do
@@ -496,6 +557,18 @@ feature "Superadmin's users API" do
       expect do
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
       end.to change(FeatureFlagsUser, :count).by(-1)
+    end
+
+    it 'should destroy rate_limit' do
+      user       = FactoryGirl.create(:user)
+      rate_limit = FactoryGirl.create(:rate_limits)
+
+      user.rate_limit_id = rate_limit.id
+      user.save
+
+      expect {
+        delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
+      }.to change(Carto::RateLimit, :count).by(-1)
     end
   end
 

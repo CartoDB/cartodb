@@ -100,6 +100,8 @@
     min-width: 100%;
     max-width: 100%;
     margin-left: 0;
+    border-radius: 0;
+    background: #FFF;
   }
 }
 
@@ -110,7 +112,7 @@
 }
 
 @media (min-width: $sMedia-l + 1px) and (max-width: $sMedia-xl) {
-  .CDB-Widget-canvas {
-    height: calc(100% - 38px);
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+    height: calc(100% - 30px);
   }
 }

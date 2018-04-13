@@ -175,6 +175,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
+* Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)
 * Consistent margins in Auth API UI
 * Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
 * FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
@@ -561,7 +562,6 @@ ion for time-series (#12670)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
-* Fix problem with visualization search when a visualization is shared with a user from multiple entities (Support #1451)
 * Correctly log metrics events for query import type (#13652)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)

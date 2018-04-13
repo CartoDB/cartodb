@@ -16,33 +16,35 @@
     <div id="map">
     </div>
     <!-- Description -->
-    <aside class="box">
-      <header>
-        <h1>Change the feature columns</h1>
-        <button class="github-logo js-source-link"></button>
-      </header>
-      <section>
-        <p class="description">Change the columns returned in the feature event.</p>
-        <div class="separator"></div>
-        <section class="usage">
-          <header>USAGE</header>
-          <p>Click on the markers</p>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Change the feature columns</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description">Change the columns returned in the feature event.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p>Click on the markers</p>
+          </section>
+          <div id="controls">
+            <ul class="actions">
+              <li>
+                <input id="red" type="radio" name="style" onclick="setMoreData()">
+                <label for="red">More data</label>
+              </li>
+              <li>
+                <input id="green" type="radio" name="style" onclick="setLessData()" checked>
+                <label for="green">Less data</label>
+              </li>
+            </ul>
+            <div id="info"></div>
+          </div>
         </section>
-        <div id="controls">
-          <ul class="actions">
-            <li>
-              <input id="red" type="radio" name="style" onclick="setMoreData()">
-              <label for="red">More data</label>
-            </li>
-            <li>
-              <input id="green" type="radio" name="style" onclick="setLessData()" checked>
-              <label for="green">Less data</label>
-            </li>
-          </ul>
-          <div id="info"></div>
-        </div>
-      </section>
-      <footer class="js-footer"></footer>
+        <footer class="js-footer"></footer>
+      </div>
     </aside>
 
     <script>

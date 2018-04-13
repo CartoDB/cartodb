@@ -13,31 +13,34 @@
   </head>
   <body>
     <div id="map"></div>
-    <aside class="box">
-      <header>
-        <h1>Move the layers</h1>
-        <button class="github-logo js-source-link"></button>
-      </header>
-      <section>
-        <p class="description">Update the order of your layers.</p>
-        <div class="separator"></div>
-        <section class="usage">
-          <header>USAGE</header>
-          <p>Click to move countries layer to&nbsp;front/back</p>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Move the layers</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description">Update the order of your layers.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p>Click to move countries layer to&nbsp;front/back</p>
+          </section>
+          <div id="controls">
+            <ul>
+              <li onclick="bringToBack()">
+                <input type="radio" name="style" id="bringToBack">
+                <label for="bringToBack">Bring to back</label>
+              </li>
+              <li onclick="bringToFront()">
+                <input type="radio" name="style" checked id="bringToFront">
+                <label for="bringToFront">Bring to front</label>
+              </li>
+            </ul>
+          </div>
         </section>
-        <div id="controls">
-          <ul>
-            <li onclick="bringToBack()">
-              <input type="radio" name="style" id="bringToBack">
-              <label for="bringToBack">Bring to back</label>
-            </li>
-            <li onclick="bringToFront()">
-              <input type="radio" name="style" checked id="bringToFront">
-              <label for="bringToFront">Bring to front</label>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <footer class="js-footer"></footer>
+      </div>
     </aside>
     <script>
       const map = L.map('map').setView([30, 0], 3);

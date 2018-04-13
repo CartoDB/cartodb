@@ -12,38 +12,40 @@
   </head>
   <body>
     <div id="map"></div>
-    <aside class="box">
-      <header>
-        <h1>Change the source</h1>
-        <button class="github-logo js-source-link"></button>
-      </header>
-      <section>
-        <p class="description">Update the source of your layers.</p>
-        <div class="separator"></div>
-        <section class="usage">
-          <header>USAGE</header>
-          <p>Select different sources</p>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Change the source</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description">Update the source of your layers.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p>Select different sources</p>
+          </section>
+
+          <div id="controls">
+            <ul>
+              <li onclick="setAllCities()">
+                <input type="radio" name="source" checked id="all">
+                <label for="all">All cities</label>
+              </li>
+              <li onclick="setEuropeanCities()">
+                <input type="radio" name="source" id="europe">
+                <label for="europe">European cities</label>
+              </li>
+              <li onclick="setSpanishCities()">
+                <input type="radio" name="source" id="spain">
+                <label for="spain">Spanish cities</label>
+              </li>
+            </ul>
+          </div>
+
         </section>
-
-        <div id="controls">
-          <ul>
-            <li onclick="setAllCities()">
-              <input type="radio" name="source" checked id="all">
-              <label for="all">All cities</label>
-            </li>
-            <li onclick="setEuropeanCities()">
-              <input type="radio" name="source" id="europe">
-              <label for="europe">European cities</label>
-            </li>
-            <li onclick="setSpanishCities()">
-              <input type="radio" name="source" id="spain">
-              <label for="spain">Spanish cities</label>
-            </li>
-          </ul>
-        </div>
-
-      </section>
-      <footer class="js-footer"></footer>
+        <footer class="js-footer"></footer>
+      </div>
     </aside>
 
     <script>

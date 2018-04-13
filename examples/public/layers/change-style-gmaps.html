@@ -13,35 +13,39 @@
   </head>
   <body>
     <div id="map"></div>
-    <aside class="box">
-      <header>
-        <h1>Change the style</h1>
-        <button class="github-logo js-source-link"></button>
-      </header>
-      <section>
-        <p class="description">Update the style of your layers.</p>
-        <div class="separator"></div>
-        <section class="usage">
-          <header>USAGE</header>
-          <p>Select different styles</p>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Change the style</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description">Update the style of your layers.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p>Select different styles</p>
+          </section>
+          <div id="controls">
+            <ul>
+              <li onclick="setRed()">
+                <input type="radio" name="style" checked id="red">
+                <label for="red">Size 7px - Red</label>
+              </li>
+              <li onclick="setGreen()">
+                <input type="radio" name="style" id="green">
+                <label for="green">Size 9px - Green</label>
+              </li>
+              <li onclick="setBlue()">
+                <input type="radio" name="style" id="blue">
+                <label for="blue">Size 11px - Blue</label>
+              </li>
+            </ul>
+          </div>
         </section>
-        <div id="controls">
-          <ul>
-            <li onclick="setRed()">
-              <input type="radio" name="style" checked id="red">
-              <label for="red">Size 7px - Red</label>
-            </li>
-            <li onclick="setGreen()">
-              <input type="radio" name="style" id="green">
-              <label for="green">Size 9px - Green</label>
-            </li>
-            <li onclick="setBlue()">
-              <input type="radio" name="style" id="blue">
-              <label for="blue">Size 11px - Blue</label>
-            </li>
-          </ul>
-        </div>
-    </div>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},

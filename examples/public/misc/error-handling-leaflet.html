@@ -11,124 +11,45 @@
     <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        margin:0;
-        padding:0;
-        box-sizing: border-box;
-      }
-      html {
-        height: 100%;
-      }
-      body {
-        background: #F2F6F9;
-        height: 100%;
-        font-family: 'Open sans'
-      }
-      #container {
-        display: flex;
-        height: 100%;
-      }
-      #map {
-        flex: 1;
-      }
-      #controls {
-        width: 308px;
-      }
-      .control-inner {
-        background: #fff;
-        padding: 20px 24px;
-        border-bottom: 2px solid #F2F6F9;
-      }
-      .control-inner {
-        font-size: 10px;
-        line-height: 14px;
-      }
-      .control-inner p {
-        margin-bottom: 4px;
-        color: #747D82;
-      }
-      .control-inner p:last-child {
-        margin-bottom: 0;
-      }
-      .control-inner h3 {
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 22px;
-        margin-bottom: 8px;
-      }
-      .button-update {
-        border: 1px solid #1785FB;
-        color: #1785FB;
-        font-size: 12px;
-        line-height: 16px;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-family: 'Open sans';
-        cursor: pointer;
-        text-transform: uppercase;
-        font-weight: 600;
-      }
-      .button-update:hover {
-        background: rgba(23,133,251,.08);
-      }
-      .value {
-        width: 100%;
-        resize: none;
-        padding: 7px 8px 6px;
-        border: 1px solid #DDD;
-        border-radius: 4px;
-        font-size: 12px;
-        line-height: 16px;
-        font-family: 'Open Sans';
-        color: #6A6A6A;
-        margin-bottom: 8px;
-      }
-      .action-container {
-        display: flex;
-        justify-content: flex-end;
-      }
-      .panel {
-        font-size: 12px;
-      }
-      .panel--ok {
-        background: #FFFFFF;
-      }
-      .panel--error {
-        background: #EE4D5A;
-      }
-      .panel--updating {
-        background: #EF9E4E;
-      }
-    </style>
+    <link href="../style.css" rel="stylesheet">
+
   </head>
   <body>
-    <div id="container">
-      <div id="map"></div>
-      <div id="controls">
-        <div class="control-inner">
-          <h3>DATASET</h3>
-          <div id="dataset-value" class="value"></div>
-          <div class="action-container">
-            <button id="dataset-button" class="button-update" onclick="updateDataset()">
-            </button>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Error handling</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description">Handle common errors in maps.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p>In this example we handle the client error while calling the `addLayer` funciton.</p>
+            <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+          </section>
+          <div id="controls">
+            <div id="info"><p class="mt-16"></p></div>
           </div>
-        </div>
-        <div class="control-inner">
-          <h3>STYLE</h3>
-          <div id="style-value" class="value"></div>
-            <div class="action-container">
-              <button id="style-button" class="button-update" onclick="updateStyle()">
-              </button>
-            </div>
-        </div>
-        <div id="panel" class="control-inner panel"></div>
-        <div class="control-inner">
-          <p>In this example we handle the client error while calling the `addLayer` funciton.</p>
-          <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
-        </div>
+        </section>
+        <footer class="js-footer"></footer>
       </div>
-    </div>
+
+      <div class="box widget">
+        <h2>DATASET</h2>
+        <textarea id="dataset-value" rows=2></textarea>
+        <button id="dataset-button" onclick="updateDataset()">SET WRONG DATASET</button>
+      </div>
+
+      <div class="box widget">
+        <h2>STYLE</h2>
+        <textarea id="style-value" rows="3"></textarea>
+        <button id="style-button" onclick="updateStyle()">UPDATE STYLE</button>
+      </div>
+    </aside>
+
     <script>
       const map = L.map('map').setView([30, 0], 3);
 
@@ -154,14 +75,8 @@
       const wrongDataset = 'wrong_dataset';
 
       // Style
-      const validStyle = `
-        #layer {
-          marker-fill: red;
-        }`;
-      const wrongStyle = `
-        #layer {
-          marker-fill: wrong-color;
-        }`;
+      const validStyle = '#layer { marker-fill: red; }';
+      const wrongStyle = '#layer { marker-fill: wrong-color; }';
 
       let source = new carto.source.Dataset(validDataset);
       let style = new carto.style.CartoCSS(validStyle);
@@ -225,13 +140,13 @@
         const styleValueEl = document.getElementById('style-value');
         const datasetButtonEl = document.getElementById('dataset-button');
         const styleButtonEl = document.getElementById('style-button');
-        const panelEl = document.getElementById('panel');
+        const panelEl = document.querySelector('#info p');
 
-        datasetValueEl.textContent = state.isDatasetValid
+        datasetValueEl.value = state.isDatasetValid
           ? validDataset
           : wrongDataset;
 
-        styleValueEl.textContent = state.isStyleValid
+        styleValueEl.value = state.isStyleValid
           ? validStyle
           : wrongStyle;
 
@@ -250,17 +165,23 @@
             : 'Everything OK';
 
         if (state.updating) {
-          panelEl.classList.remove('panel--error');
-          panelEl.classList.remove('panel--ok');
-          panelEl.classList.add('panel--updating');
+          panelEl.classList.remove('bg-red');
+          panelEl.classList.remove('bg-white');
+          panelEl.classList.add('bg-orange');
+          panelEl.classList.add('p-8');
+          panelEl.classList.add('text-white');
         } else if (state.errorMessage) {
-          panelEl.classList.add('panel--error');
-          panelEl.classList.remove('panel--ok');
-          panelEl.classList.remove('panel--updating');
+          panelEl.classList.add('bg-red');
+          panelEl.classList.remove('bg-white');
+          panelEl.classList.remove('bg-orange');
+          panelEl.classList.add('p-8');
+          panelEl.classList.add('text-white');
         } else {
-          panelEl.classList.add('panel--ok');
-          panelEl.classList.remove('panel--error');
-          panelEl.classList.remove('panel--updating');
+          panelEl.classList.add('bg-white');
+          panelEl.classList.remove('bg-red');
+          panelEl.classList.remove('bg-orange');
+          panelEl.classList.remove('p-8');
+          panelEl.classList.remove('text-white');
         }
       }
     </script>

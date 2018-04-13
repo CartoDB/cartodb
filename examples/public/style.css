@@ -23,6 +23,26 @@ aside.toolbox {
   z-index: 2;
 }
 
+/* Utilities */
+.mt-16 {
+  margin-top: 16px !important;
+}
+.p-8 {
+  padding: 8px !important;
+}
+.bg-white {
+  background: #FFFFFF;
+}
+.bg-red {
+  background: #EE4D5A;
+}
+.bg-orange {
+  background: #EF9E4E;
+}
+.text-white {
+  color: #FFFFFF !important;
+}
+
 .github-logo {
   position: absolute;
   top: 16px;
@@ -114,6 +134,14 @@ aside.toolbox {
 #controls li:hover {
   cursor: pointer;
 }
+#controls h2 {
+  color: #2E3C43;
+  line-height: 32px;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
 #controls #info h3 {
   color: #2E3C43;
   line-height: 32px;
@@ -129,4 +157,116 @@ aside.toolbox {
   font-family: 'Open Sans', Arial, Helvetica, sans-serif;
   font-weight: 400;
   margin: 0;
+}
+
+.box.widget h2, .box.legend h2 {
+  color: #2E3C43;
+  line-height: 32px;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.box.widget p, .box.legend p {
+  color: #747D82;
+  font-size: 12px;
+  line-height: 16px;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  margin: 0;
+}
+
+.box.widget textarea {
+    width: 100%;
+    resize: none;
+    padding: 7px 8px 6px;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    font-family: 'Open Sans';
+    color: #6A6A6A;
+    margin-bottom: 8px;
+}
+
+.box.widget button {
+  border: 1px solid #1785FB;
+  color: #1785FB;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-family: 'Open sans';
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 600;
+  outline: none;
+}
+.box.widget button:hover {
+  background: rgba(23,133,251,.08);
+}
+
+.legend ul {
+  list-style-type: none;
+  margin-bottom: 24px;
+  padding: 0;
+}
+
+.legend ul:last-child {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend .circle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.legend .circle-outline {
+  background: #F9F9F9;
+  border: 1px solid rgba(0,0,0,0.10);
+}
+
+.legend .category {
+  font: 600 10px/14px 'Open Sans';
+}
+.legend .category li {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+}
+.legend .category li:last-child {
+  margin-bottom: 0;
+}
+
+.legend .size {
+  display: flex;
+  align-items: center;
+}
+.legend .size > div {
+  margin-right: 32px;
+  display: flex;
+  align-items: center;
+}
+.legend .size > div:last-child {
+  margin-right: 0;
+}
+.legend .size p {
+  font: 600 10px/14px 'Open Sans';
+  text-transform: uppercase;
+}
+
+.legend .avg{
+  margin-top: 12px;
+}
+.legend .avg p {
+  font: 400 10px/14px 'Open Sans';
+}
+.legend .avg p strong {
+  font-weight: 600;
 }

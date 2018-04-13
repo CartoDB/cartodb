@@ -1,3 +1,4 @@
+require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
@@ -30,6 +31,7 @@ FactoryGirl.define do
 
     factory :organization_with_users do
       after(:create) do |org|
+        create_account_type_fg('ORGANIZATION USER')
         owner = FactoryGirl.create(:user)
         uo = CartoDB::UserOrganization.new(org.id, owner.id)
         uo.promote_user_to_admin

@@ -4,9 +4,18 @@
     <span class="u-iBlock CDB-Checkbox-face"></span>
     <label class="u-iBlock u-lSpace"><%- _t('components.modals.add-layer.footer.guessing-desc') %></label>
   </div>
+<% } else if (isTwitterDeprecatedForUser) { %>
+  <div class="CDB-Text CDB-Size-medium">
+    <span class="Dialog-footerWarning">
+      <%- _t('components.modals.add-layer.footer.deprecated-connector') %>
+    </span>
+    <%= _t('components.modals.add-layer.footer.twitter-contact-support') %>
+  </div>
 <% } else if (!customHosted) { %>
   <span class="CDB-Text CDB-Size-medium">
-    <%- _t('components.modals.add-layer.footer.twitter-desc') %>
-    <a href="mailto:support@carto.com"><%- _t('components.modals.add-layer.footer.contact-team') %></a>
+    <%- _t('components.modals.add-layer.footer.twitter-how-to-historical') %>
+    <a href="mailto:support@carto.com">
+      <%- _t('components.modals.add-layer.footer.contact-team') %>
+    </a>
   </span>
 <% } %>

@@ -168,6 +168,8 @@ defaults: &defaults
       users_metadata:      5
       redis_migrator_logs: 6
       limits_metadata:     8
+    # secondary:
+    #   host: '127.0.0.1'
   org_metadata_api:
     host: 'localhost.lan'
     port: '3000'

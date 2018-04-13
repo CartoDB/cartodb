@@ -30,14 +30,14 @@ describe 'cartodb:fix_unique_legends' do
   it 'deletes duplicate legend of unique type' do
     legend2 = @legend.dup
     legend2.type = 'choropleth'
-    updated_at = legend2.updated_at = @legend.updated_at - 1.minute
+    legend2.updated_at = @legend.updated_at - 1.minute
     legend2.save(validate: false)
     @layer.reload.legends.count.should eq 2
 
     Rake.application['cartodb:fix_unique_legends'].invoke
 
     @layer.reload.legends.count.should eq 1
-    @layer.reload.legends.first.updated_at.to_s.should eq updated_at.to_s
+    @layer.reload.legends.first.id.should eq @legend.id
   end
 
   it 'keeps layers if different type' do

@@ -9,98 +9,46 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body, *{ margin: 0; padding: 0; }
-      #map {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        z-index: 0;
-      }
-      #controls {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 300px;
-        z-index: 2;
-      }
-      #controls h2 {
-        font: 300 12px/16px 'Open Sans';
-        background: rgba(0, 0, 0, 0.64);
-        border-radius: 4px;
-        padding: 8px 12px;
-        color: #fff;
-      }
-      .container {
-        padding: 8px 12px;
-        background: white;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        color: #2E3C43;
-        margin-top: 12px;
-      }
-      #content h3 {
-        font: 400 16px/22px 'Open Sans';
-        margin-bottom: 4px;
-        margin-top: 16px;
-      }
-      #content p {
-        font: 400 12px/16px 'Open Sans';
-        margin-bottom: 4px;
-      }
-      #content p:last-child {
-        margin-bottom: 0;
-      }
-      .actions {
-        display: flex;
-      }
-      .actions li {
-        list-style-type: none;
-        display: flex;
-        align-items: center;
-      }
-      .actions li input {
-        margin: 0 8px 0 0;
-      }
-      .actions li label {
-        font: 12px/16px 'Open Sans';
-        cursor: pointer;
-      }
-      .actions li {
-        margin-right: 12px;
-      }
-      .actions li:last-child {
-        margin-right: 0;
-      }
-      .actions li:hover {
-        cursor: pointer;
-      }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
-    <div id="map"></div>
-    <div id="controls" class="column-right">
-      <h2>Click on the markers</h2>
-      <div class="container">
-        <ul class="actions">
-          <li>
-            <input id="red" type="radio" name="style" onclick="setMoreData()">
-            <label for="red">More data</label>
-          </li>
-          <li>
-            <input id="green" type="radio" name="style" onclick="setLessData()" checked>
-            <label for="green">Less data</label>
-          </li>
-        </ul>
-      <div id="content"></div>
+    <div id="map">
     </div>
+    <!-- Description -->
+    <aside class="box">
+      <header>
+        <h1>Change the feature columns</h1>
+        <button class="github-logo js-source-link"></button>
+      </header>
+      <section>
+        <p class="description">Change the columns returned in the feature event.</p>
+        <div class="separator"></div>
+        <section class="usage">
+          <header>USAGE</header>
+          <p>Click on the markers</p>
+        </section>
+        <div id="controls">
+          <ul class="actions">
+            <li>
+              <input id="red" type="radio" name="style" onclick="setMoreData()">
+              <label for="red">More data</label>
+            </li>
+            <li>
+              <input id="green" type="radio" name="style" onclick="setLessData()" checked>
+              <label for="green">Less data</label>
+            </li>
+          </ul>
+          <div id="info"></div>
+        </div>
+      </section>
+      <footer class="js-footer"></footer>
+    </aside>
+
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
-        zoom: 3
+        zoom: 3,
+        fullscreenControl: false
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{
@@ -144,7 +92,7 @@
         if (featureEvent.data.pop_min) {
           content += `<p>${featureEvent.data.pop_min} <span>min inhabitants</span></p>`;
         }
-        document.getElementById('content').innerHTML = content;
+        document.getElementById('info').innerHTML = content;
       });
 
       function setMoreData() {

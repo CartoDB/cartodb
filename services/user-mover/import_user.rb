@@ -431,14 +431,17 @@ module CartoDB
       end
 
       def clean_toc_file(file)
-        tmp = Tempfile.new("extract_#{@target_username}.txt")
-        File.open(file, 'r').each do |l|
-          tmp << l unless remove_line?(l)
-        end
+        begin
+          tmp = Tempfile.new("extract_#{@target_username}.txt")
+          File.open(file, 'r').each do |l|
+            tmp << l unless remove_line?(l)
+          end
 
-        tmp.close
-        FileUtils.mv(tmp.path, file)
-        tmp.delete
+          tmp.close
+          FileUtils.mv(tmp.path, file)
+        ensure
+          tmp.delete
+        end
       end
 
       def toc_file(file)

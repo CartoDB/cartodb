@@ -212,6 +212,32 @@ namespace :cartodb do
       end
     end
 
+    desc "Removes duplicated table visualizations"
+    task remove_dup_table_vizs: :environment do
+      query = "select
+                v.user_id,
+                v.name
+              from
+                visualizations v
+              right join users u on
+                u.id = v.user_id
+              group by
+                v.user_id,
+                v.name,
+                v.type
+              having
+                v.type = 'table' and
+              count(*) > 1;"
+      ActiveRecord::Base.connection.execute(query).each do |row|
+        begin
+          vizs = Carto::User.find(row['user_id']).visualizations.where(name: row['name']).all
+          vizs.sort_by(&:updated_at).slice(0..vizs.size - 2).each(&:destroy)
+        rescue => e
+          puts "Unable to delete duplicated table vizs for user with id #{row['user_id']}: #{e.inspect}"
+        end
+      end
+    end
+
     private
 
     def inconsistent?(viz)

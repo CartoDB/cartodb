@@ -571,6 +571,7 @@ ion for time-series (#12670)
 * Use redis secondary for heavy `KEYS *` opeartion on user export (#13814)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
+* Add rake to remove duplicated table visualizations
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals

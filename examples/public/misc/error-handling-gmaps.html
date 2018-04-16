@@ -21,30 +21,30 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Handle common errors in maps.</p>
+          <p class="description open-sans">Handle common errors in maps.</p>
           <div class="separator"></div>
           <section class="usage">
             <header>USAGE</header>
-            <p>In this example we handle the client error while calling the `addLayer` funciton.</p>
-            <p>See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+            <p class="open-sans">In this example we handle the client error while calling the `addLayer` funciton.</p>
+            <p class="open-sans">See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
           </section>
           <div id="controls">
-            <div id="info"><p class="mt-16"></p></div>
+            <div id="info"><p class="mt-16 open-sans"></p></div>
           </div>
         </section>
         <footer class="js-footer"></footer>
       </div>
 
       <div class="box widget">
-        <h2>DATASET</h2>
+        <h2 class="h2">DATASET</h2>
         <textarea id="dataset-value" rows=2></textarea>
-        <button id="dataset-button" onclick="updateDataset()">SET WRONG DATASET</button>
+        <button id="dataset-button" class="button" onclick="updateDataset()">SET WRONG DATASET</button>
       </div>
 
       <div class="box widget">
-        <h2>STYLE</h2>
+        <h2 class="h2">STYLE</h2>
         <textarea id="style-value" rows="3"></textarea>
-        <button id="style-button" onclick="updateStyle()">UPDATE STYLE</button>
+        <button id="style-button" class="button" onclick="updateStyle()">UPDATE STYLE</button>
       </div>
     </aside>
 
@@ -52,7 +52,9 @@
       // Setting up a Google Maps Map
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 50, lng: 15},
-        zoom: 4
+        zoom: 4,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
 
       // Hide the map labels and geometry strokes

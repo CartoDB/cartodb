@@ -20,11 +20,11 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Update the style of your layers.</p>
+          <p class="description open-sans">Update the style of your layers.</p>
           <div class="separator"></div>
           <section class="usage">
             <header>USAGE</header>
-            <p>Select different styles</p>
+            <p class="open-sans">Select different styles</p>
           </section>
           <div id="controls">
             <ul>
@@ -48,6 +48,7 @@
     </aside>
     <script>
       const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18

@@ -22,11 +22,11 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Change the columns returned in the feature event.</p>
+          <p class="description open-sans">Change the columns returned in the feature event.</p>
           <div class="separator"></div>
           <section class="usage">
             <header>USAGE</header>
-            <p>Click on the markers</p>
+            <p class="open-sans">Click on the markers</p>
           </section>
           <div id="controls">
             <ul class="actions">
@@ -50,7 +50,8 @@
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
         zoom: 3,
-        fullscreenControl: false
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{
@@ -89,10 +90,10 @@
           content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
         }
         if (featureEvent.data.pop_max) {
-          content += `<p>${featureEvent.data.pop_max} <span>max inhabitants</span></p>`;
+          content += `<p class="open-sans">${featureEvent.data.pop_max} <span>max inhabitants</span></p>`;
         }
         if (featureEvent.data.pop_min) {
-          content += `<p>${featureEvent.data.pop_min} <span>min inhabitants</span></p>`;
+          content += `<p class="open-sans">${featureEvent.data.pop_min} <span>min inhabitants</span></p>`;
         }
         document.getElementById('info').innerHTML = content;
       });

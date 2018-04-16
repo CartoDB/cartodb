@@ -21,8 +21,7 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Add multiple CARTO layers to your map.</p>
-          <div class="separator"></div>
+          <p class="description open-sans">Add multiple CARTO layers to your map.</p>
         </section>
         <footer class="js-footer"></footer>
       </div>
@@ -30,6 +29,7 @@
 
     <script>
       const map = L.map('map').setView([40, 0], 5);
+      map.scrollWheelZoom.disable();
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18

@@ -20,8 +20,7 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Add one CARTO layer to your map.</p>
-          <div class="separator"></div>
+          <p class="description open-sans">Add one CARTO layer to your map.</p>
         </section>
         <footer class="js-footer"></footer>
       </div>
@@ -31,7 +30,8 @@
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
         zoom: 3,
-        fullscreenControl: false
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

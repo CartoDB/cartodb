@@ -21,11 +21,11 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Create pop-up information windows and interact with your map.</p>
+          <p class="description open-sans">Create pop-up information windows and interact with your map.</p>
           <div class="separator"></div>
           <section class="usage">
             <header>USAGE</header>
-            <p>Select your preferred kind of pop-ups</p>
+            <p class="open-sans">Select your preferred kind of pop-ups</p>
           </section>
 
           <div id="controls">
@@ -50,7 +50,8 @@
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
         zoom: 3,
-        fullscreenControl: false
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{
@@ -87,17 +88,17 @@
 
       function openPopup(featureEvent) {
         let content = '';
-        content += `<div class="popup-container">`;
+        content += `<div class="widget">`;
         if (featureEvent.data.name) {
-          content += `<h2>${featureEvent.data.name}</h2>`;
+          content += `<h2 class="h2">${featureEvent.data.name}</h2>`;
         }
         if (featureEvent.data.pop_max || featureEvent.data.pop_min) {
           content += `<ul>`;
           if (featureEvent.data.pop_max) {
-            content += `<li><h3>Max:</h3> <h4>${featureEvent.data.pop_max}</h4></li>`;
+            content += `<li><h3>Max:</h3><p class="open-sans">${featureEvent.data.pop_max}</p></li>`;
           }
           if (featureEvent.data.pop_min) {
-            content += `<li><h3>Min:</h3> <h4>${featureEvent.data.pop_min}<h4></li>`;
+            content += `<li><h3>Min:</h3><p class="open-sans">${featureEvent.data.pop_min}</p></li>`;
           }
           content += `</ul>`;
         }

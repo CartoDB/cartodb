@@ -22,8 +22,7 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">This map has smart backend aggregation applied. See source code for details.</p>
-          <div class="separator"></div>
+          <p class="description open-sans">This map has smart backend aggregation applied. See source code for details.</p>
         </section>
         <footer class="js-footer"></footer>
       </div>
@@ -31,6 +30,7 @@
 
     <script>
       const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18

@@ -20,7 +20,7 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Create dynamic legends.</p>
+          <p class="description open-sans">Create dynamic legends.</p>
           <div class="separator"></div>
           <div id="controls">
             <ul>
@@ -36,6 +36,9 @@
                 <input type="radio" name="data" id="spain">
                 <label for="spain">Spanish cities</label>
               </li>
+            </ul>
+            <div class="separator"></div>
+            <ul>
               <li onchange="invertColors()">
                 <input type="checkbox" name="data" id="invertColors">
                 <label for="invertColors">Invert colors</label>
@@ -48,18 +51,18 @@
       </div>
 
       <div class="box legend">
-        <h2>World cities</h2>
-        <ul class="category">
+        <h2 class="h2">World cities</h2>
+        <ul class="category open-sans">
           <li id="capital"></li>
           <li id="normal"></li>
         </ul>
-        <h2>Inhabitants</h2>
+        <h2 class="h2">Inhabitants</h2>
         <ul id="legend-population">
-          <li class="size">
+          <li class="size open-sans">
             <div id="min"></div>
             <div id="max"></div>
           </li>
-          <li class="avg"></li>
+          <li class="avg open-sans"></li>
         </ul>
       </div>
     </aside>
@@ -68,7 +71,8 @@
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
         zoom: 3,
-        fullscreenControl: false
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

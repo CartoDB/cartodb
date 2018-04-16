@@ -21,7 +21,7 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Filter the 20 most/less populated places in the world.</p>
+          <p class="description open-sans">Filter the 20 most/less populated places in the world.</p>
           <div class="separator"></div>
           <div id="controls">
             <ul class="actions">
@@ -46,6 +46,7 @@
 
     <script>
       const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18

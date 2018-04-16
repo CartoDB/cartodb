@@ -20,7 +20,7 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Filter the 20 most/less populated places in the world.</p>
+          <p class="description open-sans">Filter the 20 most/less populated places in the world.</p>
           <div class="separator"></div>
           <div id="controls">
             <ul class="actions">
@@ -46,7 +46,9 @@
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
-        zoom: 3
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

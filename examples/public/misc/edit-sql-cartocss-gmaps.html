@@ -21,38 +21,40 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Edit manually the SQL query and the CartoCSS style.</p>
+          <p class="description open-sans">Edit manually the SQL query and the CartoCSS style.</p>
           <div class="separator"></div>
           <section class="usage">
             <header>USAGE</header>
-            <p>This example only uses one style and one layer whose content is changed.</p>
-            <p>Since the style and source objects are the same they won't trigger events. You need to use the promise to handle errors.</p>
+            <p class="open-sans">This example only uses one style and one layer whose content is changed.</p>
+            <p class="open-sans">Since the style and source objects are the same they won't trigger events. You need to use the promise to handle errors.</p>
           </section>
         </section>
         <footer class="js-footer"></footer>
       </div>
 
       <div class="box widget">
-        <h2>SQL</h2>
+        <h2 class="h2">SQL</h2>
         <textarea id="sql" rows="3">SELECT * FROM ne_10m_populated_places_simple</textarea>
-        <button onclick="updateSource()">UPDATE SQL</button>
+        <button class="button" onclick="updateSource()">UPDATE SQL</button>
       </div>
 
       <div class="box widget">
-        <h2>CartoCSS</h2>
+        <h2 class="h2">CartoCSS</h2>
         <textarea id="cartocss" rows="3">
 #layer {
   marker-fill: red;
 }
         </textarea>
-        <button class="button-update" onclick="updateStyle()">UPDATE STYLE</button>
+        <button class="button-update button" onclick="updateStyle()">UPDATE STYLE</button>
       </div>
     </aside>
 
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
-        zoom: 3
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

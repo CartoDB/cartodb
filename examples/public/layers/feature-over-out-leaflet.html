@@ -23,11 +23,11 @@
           <button class="github-logo js-source-link"></button>
         </header>
         <section>
-          <p class="description">Interact with the features on the over/out event.</p>
+          <p class="description open-sans">Interact with the features on the over/out event.</p>
           <div class="separator"></div>
           <section class="usage">
             <header>USAGE</header>
-            <p>Move the mouse over the markers</p>
+            <p class="open-sans">Move the mouse over the markers</p>
           </section>
           <div id="controls">
             <div id="info"></div>
@@ -39,6 +39,7 @@
 
     <script>
       const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18
@@ -69,7 +70,7 @@
       layer.on('featureOver', featureEvent => {
         let content = '';
         content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
-        content += `<p>${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
+        content += `<p class="open-sans">${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
         content += `</div>`;
         document.getElementById('info').innerHTML = content;
         featureVisible = true;

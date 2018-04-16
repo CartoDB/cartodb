@@ -492,16 +492,20 @@ describe Admin::VisualizationsController do
       org.save
 
       ::User.any_instance.stubs(:remaining_quota).returns(1000)
-      user_a = create_user({username: 'user-a', quota_in_bytes: 123456789, table_quota: 400})
+      user_a = create_user(username: 'user-a', quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
       user_a.reload
 
-      user_b = create_user({username: 'user-b', quota_in_bytes: 123456789, table_quota: 400, organization: org})
+      user_b = create_user(username: 'user-b',
+                           quota_in_bytes: 123456789,
+                           table_quota: 400,
+                           organization: org,
+                           account_type: 'ORGANIZATION USER')
 
       vis_id = factory(user_a).fetch('id')
-      vis = CartoDB::Visualization::Member.new(id:vis_id).fetch
+      vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
       vis.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
       vis.store
 
@@ -678,6 +682,14 @@ describe Admin::VisualizationsController do
       url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable_name}" },
                         @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 404
+    end
+
+    it 'does not try to search visualizations with invalid user/org' do
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@table.name}" }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '/u/invalidus3r')
 
       get url
       last_response.status.should == 404

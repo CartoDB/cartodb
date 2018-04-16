@@ -6,12 +6,16 @@ require_dependency 'carto/api/paged_searcher'
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
+  include Carto::ControllerHelper
 
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index
+  before_filter :validate_order_param, only: [:synchronizations, :geocodings, :data_imports]
   before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
   before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
+
+  rescue_from Carto::LoadError, with: :rescue_from_carto_error
 
   layout 'application'
 

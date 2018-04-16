@@ -1,8 +1,12 @@
+require_relative '../helpers/params_helper'
+
 module Carto
   module Api
     module PagedSearcher
+      include Carto::ParamsHelper
 
       def page_per_page_order_params(default_per_page = 20, default_order = 'updated_at')
+        validate_order_param
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || default_per_page).to_i
         order = (params[:order] || default_order).to_sym

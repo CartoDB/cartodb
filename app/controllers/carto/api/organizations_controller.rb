@@ -7,10 +7,14 @@ module Carto
     class OrganizationsController < ::Api::ApplicationController
       include OrganizationsHelper
       include PagedSearcher
+      include Carto::ControllerHelper
 
       ssl_required :users
 
+      before_filter :validate_order_param, only: [:users]
       before_filter :load_organization, :load_group
+
+      rescue_from Carto::LoadError, with: :rescue_from_carto_error
 
       def users
         page, per_page, order = page_per_page_order_params(50, :username)

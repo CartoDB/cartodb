@@ -3,6 +3,7 @@ require_dependency 'carto/api/vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
 require_relative '../controller_helper'
+require_relative '../helpers/params_helper'
 require_dependency 'carto/uuidhelper'
 require_dependency 'static_maps_url_helper'
 require_relative 'vizjson3_presenter'
@@ -20,6 +21,7 @@ module Carto
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
       include Carto::VisualizationMigrator
+      include Carto::ParamsHelper
 
       ssl_required :index, :show, :create, :update, :destroy, :google_maps_static_image
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map,
@@ -30,6 +32,7 @@ module Carto
                                                              :remove_like, :notify_watching, :list_watching,
                                                              :static_map, :show]
 
+      before_filter :validate_order_param, only: [:index]
       # :update and :destroy are correctly handled by permission check on the model
       before_filter :ensure_user_can_create, only: [:create]
 

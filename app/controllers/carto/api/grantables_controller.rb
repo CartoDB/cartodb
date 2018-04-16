@@ -7,12 +7,16 @@ module Carto
 
     class GrantablesController < ::Api::ApplicationController
       include PagedSearcher
+      include Carto::ControllerHelper
 
       respond_to :json
 
       ssl_required :index
 
+      before_filter :validate_order_param, only: [:index]
       before_filter :load_organization
+
+      rescue_from Carto::LoadError, with: :rescue_from_carto_error
 
       def index
         page, per_page, order = page_per_page_order_params

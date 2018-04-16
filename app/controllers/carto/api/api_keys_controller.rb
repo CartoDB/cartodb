@@ -10,6 +10,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   before_filter :any_api_authorization_required, only: [:index, :show]
   skip_filter :api_authorization_required, only: [:index, :show]
+  before_filter :validate_order_param, only: [:index]
   before_filter :check_feature_flag
   before_filter :check_engine_enabled
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]

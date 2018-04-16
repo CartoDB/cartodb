@@ -90,6 +90,29 @@ describe Carto::Api::GroupsController do
         end
       end
 
+      it 'validates order param' do
+        ['id', 'name', 'display_name', 'database_role', 'organization_id', 'updated_at', 'created_at'].each do |param|
+          get_json api_v1_organization_groups_url(
+            order: param,
+            user_domain: @admin_user.username,
+            organization_id: @carto_organization.id,
+            api_key: @admin_user.api_key
+          ), {}, @headers do |response|
+            response.status.should == 200
+          end
+        end
+
+        get_json api_v1_organization_groups_url(
+          order: 'invalid',
+          user_domain: @admin_user.username,
+          organization_id: @carto_organization.id,
+          api_key: @admin_user.api_key
+        ), {}, @headers do |response|
+          response.status.should == 400
+          response.body.fetch(:errors).should_not be_nil
+        end
+      end
+
       describe "users groups" do
 
         before(:each) do

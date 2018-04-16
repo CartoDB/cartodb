@@ -60,7 +60,7 @@ FactoryGirl.define do
     factory :valid_user, traits: [:valid]
     factory :locked_user, traits: [:valid, :locked]
 
-    before(:build) do |user|
+    after(:build) do |user|
       create_account_type_fg(user.account_type)
     end
 

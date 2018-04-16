@@ -183,6 +183,7 @@ ion for time-series (#12670)
 * Allows imports of synchronizations without a log
 * Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)
 * Fix a case where the layer selector was displaying incorrectly (https://github.com/CartoDB/support/issues/1430)
+* Add auth_github_enabled ([Central#2154](https://github.com/CartoDB/cartodb-central/issues/2154))
 * Update charlock_holmes to 0.7.6 (ICU compatibility)
 * Skip canonical viz with missing tables from metadata export
 * Fix dialog footer in some modals (CartoDB/onpremises/issues/507)

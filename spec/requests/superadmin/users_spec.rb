@@ -690,7 +690,7 @@ feature "Superadmin's users API" do
     end
 
     it 'validates order param' do
-      endpoints = ['data_imports', 'geocodings', 'synchronizations'].each do |endpoint|
+      ['data_imports', 'geocodings', 'synchronizations'].each do |endpoint|
         get_json("/superadmin/users/#{@user.id}/#{endpoint}", { order: 'updated_at' }, superadmin_headers) do |response|
           response.status.should eq 200
         end

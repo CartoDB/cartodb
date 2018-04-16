@@ -1,6 +1,7 @@
 module CartoDB
   module DataMover
     module LegacyFunctions
+      # functions taken from https://github.com/postgis/postgis/blob/svn-trunk/utils/postgis_restore.pl.in#L473
       LEGACY_FUNCTIONS = [
         'AGGREGATE accum(geometry)',
         'AGGREGATE accum_old(geometry)',

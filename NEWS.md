@@ -178,6 +178,7 @@ ion for time-series (#12670)
 * Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
 * Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)
 * Consistent margins in Auth API UI
+* Skip importing legacy functions (https://github.com/CartoDB/cartodb/issues/13677)
 * Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
 * FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
 * Allows imports of synchronizations without a log

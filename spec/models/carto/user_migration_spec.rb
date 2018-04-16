@@ -431,6 +431,80 @@ describe 'UserMigration' do
     expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
   end
 
+  describe 'legacy functions' do
+
+    it 'loads legacy functions' do
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2522
+    end
+
+    it 'skips importing legacy functions' do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
+      user = FactoryGirl.build(:valid_user).save
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+      export.run_export
+      user.destroy
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+      import.run_import
+
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
+      user.destroy
+    end
+
+    it 'imports functions that are not on the legacy list' do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
+      user = FactoryGirl.build(:valid_user).save
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment2(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+      export.run_export
+      user.destroy
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+      import.run_import
+
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment2'").should eq 1
+      user.destroy
+    end
+  end
+
   describe 'with organization' do
     include_context 'organization with users helper'
 

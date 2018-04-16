@@ -426,7 +426,7 @@ module CartoDB
       end
 
       def remove_line?(line)
-        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").strip
+        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/,',').strip
         LEGACY_FUNCTIONS.find { |l| stripped.scan(l).any? }
       end
 

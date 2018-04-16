@@ -213,7 +213,7 @@ namespace :cartodb do
     end
 
     desc "Removes duplicated table visualizations"
-    task remove_dup_table_vizs_: :evironment do
+    task remove_dup_table_vizs: :environment do
       query = "select
                 v.user_id,
                 v.name
@@ -228,7 +228,7 @@ namespace :cartodb do
               having
                 v.type = 'table' and
               count(*) > 1;"
-      ActiveRecord::Base.connection.execute(query).find_each do |row|
+      ActiveRecord::Base.connection.execute(query).each do |row|
         begin
           vizs = Carto::User.find(row['user_id']).visualizations.where(name: row['name']).all
           vizs.sort_by(&:updated_at).slice(0..vizs.size - 2).each(&:destroy)

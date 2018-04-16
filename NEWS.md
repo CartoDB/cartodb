@@ -174,6 +174,11 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Includes a rake tast to destroy duplicated overlays that should be unique.
+* Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
+* Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)
+* Consistent margins in Auth API UI
+* Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
 * FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
 * Allows imports of synchronizations without a log
 * Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)
@@ -550,6 +555,7 @@ ion for time-series (#12670)
 * Add indices to `layers` relations for performance (#13669)
 * Fix imports with local storage and special characters (#13604)
 * Update S3 gem to fix upload timeout problems (#13767, #13791)
+* Stop trying to find visualizations without user/org id (#12538)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
 * Correct redirection when visiting root url without subdomain (#13768)
@@ -907,6 +913,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed incorrect analysis node being selected after deleting (#11899)
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Avoid exporting orphan raster overviews in user migrator
 * Set `soft_geocoding_limit` to default to false.
 * Do not export local visualizations lacking a map
 * Docs, fixed incorrect grammar in en.json file (customer reported).

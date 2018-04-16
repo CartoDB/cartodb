@@ -184,6 +184,10 @@ body.is-inDialog {
   justify-content: center;
 }
 
+.Dialog-footerWarning {
+  color: $cHighlight-negative;
+}
+
 .Dialog-preFooter {
   position: fixed;
   z-index: 3;

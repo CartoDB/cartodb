@@ -325,6 +325,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \
 	spec/lib/carto/google_maps_api_spec.rb \
+	spec/lib/tasks/fix_unique_overlays_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

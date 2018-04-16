@@ -468,6 +468,18 @@ describe Carto::VisualizationsExportService2 do
   end
 
   describe 'importing' do
+    include Carto::Factories::Visualizations
+    it 'imports synchronization with missing log' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      FactoryGirl.create(:carto_synchronization, visualization: @visualization)
+
+      @visualization.synchronization.log.destroy
+      @visualization.synchronization.reload
+      visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, @visualization)
+
+      visualization.should be
+    end
+
     describe '#build_visualization_from_json_export' do
       include Carto::Factories::Visualizations
 

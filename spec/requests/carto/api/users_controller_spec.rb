@@ -47,7 +47,7 @@ describe Carto::Api::UsersController do
         expect(response.body[:auth_username_password_enabled]).to eq(true)
         expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
         expect(response.body[:can_change_password]).to eq(true)
-        expect(response.body[:plan_name]).to eq('Free')
+        expect(response.body[:plan_name]).to eq('ORGANIZATION USER')
         expect(response.body[:services]).to eq(user.get_oauth_services)
         expect(response.body[:google_sign_in]).to eq(user.google_sign_in)
       end

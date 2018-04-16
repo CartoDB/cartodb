@@ -98,7 +98,7 @@ describe CartoDB::DataMover::ExportJob do
   it "should move a user from an organization to its own account" do
     org = create_user_mover_test_organization
     user = create_user(
-      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
+      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
     )
     org.reload
     create_tables(user)
@@ -123,7 +123,7 @@ describe CartoDB::DataMover::ExportJob do
     Cartodb.with_config(org_metadata_api: test_config) do
       org = create_user_mover_test_organization
       user = create_user(
-        quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
+        quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
       )
       user.save
       org.reload
@@ -166,7 +166,7 @@ describe CartoDB::DataMover::ExportJob do
 
     org = create_user_mover_test_organization
     user = create_user(
-      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
+      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
     )
     user.save
     org.reload

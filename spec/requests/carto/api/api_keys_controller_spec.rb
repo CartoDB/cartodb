@@ -566,7 +566,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'validates order param' do
-        ['type', 'name', 'updated_at', 'created_at'].each do |param|
+        ['type', 'name', 'updated_at'].each do |param|
           auth_user(@carto_user_index)
           get_json api_keys_url, auth_params.merge(per_page: 2, page: 2, order: param), auth_headers do |response|
             response.status.should eq 200

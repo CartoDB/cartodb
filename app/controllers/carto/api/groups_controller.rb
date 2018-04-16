@@ -12,7 +12,6 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users
 
-      before_filter :validate_order_param, only: [:index]
       before_filter :load_fetching_options, only: [:show, :index]
       before_filter :load_organization
       before_filter :load_user
@@ -22,10 +21,12 @@ module Carto
       before_filter :org_users_only, only: [:show, :index]
       before_filter :load_organization_users, only: [:add_users, :remove_users]
 
-      rescue_from Carto::LoadError, with: :rescue_from_carto_error
+      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+
+      VALID_ORDER_PARAMS = ['id', 'name', 'display_name', 'database_role', 'organization_id', 'updated_at'].freeze
 
       def index
-        page, per_page, order = page_per_page_order_params
+        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
 
         groups = @user ? @user.groups : @organization.groups
         groups = groups.where('name ilike ?', "%#{params[:q]}%") if params[:q]

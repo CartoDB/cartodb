@@ -2764,9 +2764,8 @@ describe Carto::Api::VisualizationsController do
 
     it 'validates order param' do
       ['derived', 'slide'].each do |type|
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: 'size'), {}, @headers
-        last_response.status.should == 400
-        JSON.parse(last_response.body).fetch('errors').should_not be_nil
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: 'mapviews'), {}, @headers
+        last_response.status.should == 200
       end
 
       ['remote', 'table'].each do |type|
@@ -2777,7 +2776,7 @@ describe Carto::Api::VisualizationsController do
       ['derived', 'remote', 'slide', 'table'].each do |type|
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: 'whatever'), {}, @headers
         last_response.status.should == 400
-        JSON.parse(last_response.body).fetch('errors').should_not be_nil
+        JSON.parse(last_response.body).fetch('error').should_not be_nil
       end
     end
   end

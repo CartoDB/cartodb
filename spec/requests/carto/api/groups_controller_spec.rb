@@ -91,7 +91,7 @@ describe Carto::Api::GroupsController do
       end
 
       it 'validates order param' do
-        ['id', 'name', 'display_name', 'database_role', 'organization_id', 'updated_at', 'created_at'].each do |param|
+        ['id', 'name', 'display_name', 'database_role', 'organization_id', 'updated_at'].each do |param|
           get_json api_v1_organization_groups_url(
             order: param,
             user_domain: @admin_user.username,

@@ -123,7 +123,7 @@ describe Carto::Api::GrantablesController do
       end
 
       it "validates order param" do
-        ['id', 'name', 'type', 'avatar_url', 'organization_id', 'updated_at', 'created_at'].each do |param|
+        ['id', 'name', 'type', 'avatar_url', 'organization_id', 'updated_at'].each do |param|
           get_json api_v1_grantables_index_url(
             order: param,
             user_domain: @org_user_owner.username,

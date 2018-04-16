@@ -3,7 +3,6 @@ require_dependency 'carto/api/vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
 require_relative '../controller_helper'
-require_relative '../helpers/params_helper'
 require_dependency 'carto/uuidhelper'
 require_dependency 'static_maps_url_helper'
 require_relative 'vizjson3_presenter'
@@ -21,7 +20,6 @@ module Carto
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
       include Carto::VisualizationMigrator
-      include Carto::ParamsHelper
 
       ssl_required :index, :show, :create, :update, :destroy, :google_maps_static_image
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map,
@@ -32,7 +30,6 @@ module Carto
                                                              :remove_like, :notify_watching, :list_watching,
                                                              :static_map, :show]
 
-      before_filter :validate_order_param, only: [:index]
       # :update and :destroy are correctly handled by permission check on the model
       before_filter :ensure_user_can_create, only: [:create]
 
@@ -53,10 +50,13 @@ module Carto
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
       before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
 
+      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
+
+      VALID_ORDER_PARAMS = ['updated_at', 'size', 'mapviews', 'likes'].freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -79,7 +79,7 @@ module Carto
       end
 
       def index
-        page, per_page, order = page_per_page_order_params
+        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 
@@ -106,6 +106,8 @@ module Carto
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
+      rescue Carto::OrderParamInvalidError => e
+        render_jsonp({ error: e.message }, e.status)
       rescue => e
         CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)

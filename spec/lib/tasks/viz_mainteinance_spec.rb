@@ -9,7 +9,7 @@ describe 'layers.rake' do
     before(:all) do
       Rake.application.rake_require "tasks/viz_maintenance"
       Rake::Task.define_task(:environment)
-      
+
       @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
     end
 

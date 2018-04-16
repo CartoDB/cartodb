@@ -8,6 +8,7 @@ describe 'cartodb:fix_unique_legends' do
   before(:each) do
     Rake.application.rake_require "tasks/fix_unique_legends"
     Rake::Task.define_task(:environment)
+    Rake.application['cartodb:fix_unique_legends'].reenable
 
     user = FactoryGirl.create(:carto_user)
     _, _, _, visualization = create_full_visualization(user)

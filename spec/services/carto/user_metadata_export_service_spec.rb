@@ -91,6 +91,12 @@ describe Carto::UserMetadataExportService do
     end
   end
 
+  describe 'import v 1.0.3' do
+    it 'imports correctly' do
+      import_user_from_export(full_export_one_zero_three)
+    end
+  end
+
   describe '#user export 1.0.2' do
     before(:all) do
       create_user_with_basemaps_assets_visualizations
@@ -151,6 +157,14 @@ describe Carto::UserMetadataExportService do
       @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
 
       expect_export_matches_user(full_export[:user], user)
+    end
+
+    it 'imports 1.0.3' do
+      user = service.build_user_from_hash_export(full_export_one_zero_three)
+      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_three)
+      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
+
+      expect_export_matches_user(full_export_one_zero_three[:user], user)
     end
 
     it 'imports 1.0.2' do
@@ -427,7 +441,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.2",
+      version: "1.0.4",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -520,6 +534,8 @@ describe Carto::UserMetadataExportService do
         org_admin: false,
         last_name: nil,
         feature_flags: [Carto::FeatureFlag.first.name],
+        company: 'CARTO',
+        phone: '1234567',
         api_keys: [
           {
             created_at: "2018-02-12T16:11:26+00:00",
@@ -654,6 +670,12 @@ describe Carto::UserMetadataExportService do
         ]
       }
     }
+  end
+
+  let(:full_export_one_zero_three) do
+    user_hash = full_export[:user].except!(:company).except!(:phone)
+    full_export[:user] = user_hash
+    full_export
   end
 
   let(:full_export_one_zero_two) do

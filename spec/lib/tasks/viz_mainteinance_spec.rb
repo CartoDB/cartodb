@@ -9,7 +9,7 @@ describe 'layers.rake' do
     before(:all) do
       Rake.application.rake_require "tasks/viz_maintenance"
       Rake::Task.define_task(:environment)
-      
+
       @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
     end
 
@@ -39,7 +39,7 @@ describe 'layers.rake' do
       Carto::Visualization.where(type: 'table').count.should eq 2
       Carto::Visualization.find(table_visualization.id)
       Carto::Visualization.find(@table_visualization2)
-      expect { Carto::Visualization.find(@table_visualization) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { Carto::Visualization.find(@table_visualization.id) }.to raise_error(ActiveRecord::RecordNotFound)
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end

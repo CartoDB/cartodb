@@ -4,7 +4,7 @@ CARTO.js is hosted in NPM as well. You can require it as a dependency in your cu
 
 ```html
 <!-- CDN: load the latest CARTO.js version -->
-<script src="https://cartodb-libs.global.ssl.fastly.net/carto.js/v4.0.0-beta/carto.min.js"></script>
+<script src="https://cartodb-libs.global.ssl.fastly.net/carto.js/v4.0.0/carto.min.js"></script>
 
 <!-- CDN: load a specific CARTO.js version-->
 <script src="https://cartodb-libs.global.ssl.fastly.net/carto.js/%VERSION%/carto.min.js"></script>
@@ -12,9 +12,9 @@ CARTO.js is hosted in NPM as well. You can require it as a dependency in your cu
 
 ```javascript
 // NPM: load the latest CARTO.js version
-npm install carto.js
+npm install @carto/carto.js
 // or
-yarn add carto.js
+yarn add @carto/carto.js
 
 var carto = require('carto.js');
 ```

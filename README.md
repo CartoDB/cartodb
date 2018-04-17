@@ -17,7 +17,7 @@ We use [SemVer](http://semver.org/) for versioning.
 
 Please refer to [CHANGELOG.md](CHANGELOG.md) for a list of notables changes for each version of the library.
 
-You can also see the [tags on this repository](https://github.com/CartoDB/cartodb.js/tags).
+You can also see the [tags on this repository](https://github.com/CartoDB/carto.js/tags).
 
 ## Submitting Contributions
 

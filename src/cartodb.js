@@ -18,9 +18,9 @@ cdb.SQL = require('./api/sql');
 
 cdb.createVis = require('./api/create-vis');
 
-// log cartodb.js version
+// log carto.js version
 var logger = require('cdb.log');
-logger.log('cartodb.js ' + cdb.VERSION);
+logger.log('carto.js ' + cdb.VERSION);
 
 cdb.helpers.GeoJSONHelper = require('./geo/geometry-models/geojson-helper');
 

@@ -47,7 +47,7 @@
       const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 7;
-          marker-fill: ramp([pop_max], (#ecda9a, #f7945d, #ee4d5a), jenks());
+          marker-fill: ramp([population], (#ecda9a, #f7945d, #ee4d5a), jenks());
           marker-line-color: #FFFFFF;
         }
       `);
@@ -56,10 +56,10 @@
       const aggregation = new carto.layer.Aggregation({
         threshold: 1,
         resolution: 4,
-        placement: 'point-sample',
+        placement: carto.layer.Aggregation.placement.SAMPLE,
         columns: {
           population: {
-            aggregateFunction: 'sum',
+            aggregateFunction: carto.layer.Aggregation.operation.SUM,
             aggregatedColumn: 'pop_max'
           }
         }

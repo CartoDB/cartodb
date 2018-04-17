@@ -60,6 +60,9 @@ class User < Sequel::Model
   JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
                'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
 
+  DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
+                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist'].freeze
+
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.
@@ -186,7 +189,7 @@ class User < Sequel::Model
     end
 
     validates_includes INDUSTRIES, :industry if industry.present?
-    validates_includes JOB_ROLES, :job_role if job_role.present?
+    validates_includes JOB_ROLES + DEPRECATED_JOB_ROLES, :job_role if job_role.present?
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?

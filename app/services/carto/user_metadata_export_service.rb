@@ -6,9 +6,10 @@ require 'carto/export/data_import_exporter'
 # 1.0.0: export user metadata
 # 1.0.1: export search tweets
 # 1.0.3: export rate limits
+# 1.0.4: company and phone in users table
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.3'.freeze
+    CURRENT_VERSION = '1.0.4'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -27,7 +28,7 @@ module Carto
       :salesforce_datasource_enabled, :builder_enabled, :geocoder_provider, :isolines_provider, :routing_provider,
       :github_user_id, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
       :no_map_logo, :org_admin, :last_name, :user_render_timeout, :database_render_timeout, :frontend_version,
-      :asset_host, :state
+      :asset_host, :state, :company, :phone, :industry, :job_role
     ].freeze
 
     def compatible_version?(version)

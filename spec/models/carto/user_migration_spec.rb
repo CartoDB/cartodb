@@ -431,6 +431,80 @@ describe 'UserMigration' do
     expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
   end
 
+  describe 'legacy functions' do
+
+    it 'loads legacy functions' do
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2522
+    end
+
+    it 'skips importing legacy functions' do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
+      user = FactoryGirl.build(:valid_user).save
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+      export.run_export
+      user.destroy
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+      import.run_import
+
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
+      user.destroy
+    end
+
+    it 'imports functions that are not on the legacy list' do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
+      user = FactoryGirl.build(:valid_user).save
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment2(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+      export.run_export
+      user.destroy
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+      import.run_import
+
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment2'").should eq 1
+      user.destroy
+    end
+  end
+
   describe 'with organization' do
     include_context 'organization with users helper'
 
@@ -638,6 +712,187 @@ describe 'UserMigration' do
       status_mock.stubs(:success?).returns(true)
       Open3.stubs(:capture3).returns([';     Dumped by pg_dump version: 9.5.2', '', status_mock])
       get_dump_database_version(@conn_mock, '/tmp/test.dump').should eq '9.5'
+    end
+  end
+
+  describe 'export_data being false' do
+    it 'exports and imports user with viz' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      source_visualizations = carto_user.visualizations.map(&:name).sort
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        export_data: false
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      remove_user(carto_user)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        import_data: false,
+        dry: false
+      )
+
+      import.run_import
+
+      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+      carto_user = Carto::User.find(user_attributes['id'])
+
+      attributes_to_test(user_attributes).each do |attribute|
+        expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
+      end
+      expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
+
+      Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?.should eq true
+
+      user.destroy_cascade
+    end
+
+    it 'does not remove database when visuaization import fails' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        export_data: false
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      remove_user(carto_user)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        import_data: false,
+        dry: false
+      )
+
+      Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+
+      import.run_import
+
+      config = CartoDB::DataMover::Config.config
+      PG.connect(host: user_attributes['database_host'],
+                 user: config[:dbuser],
+                 dbname: user_attributes['database_name'],
+                 port: config[:dbport],
+                 connect_timeout: config[:connect_timeout])
+    end
+
+    describe 'with orgs' do
+      include_context 'organization with users helper'
+      it 'exports and imports org with users with viz' do
+        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        export = Carto::UserMigrationExport.create(
+          organization: @carto_organization,
+          export_metadata: true,
+          export_data: false
+        )
+        export.run_export
+
+        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+        database_host = @carto_organization.owner.database_host
+
+        @carto_organization.users.each { |u| remove_user(u) }
+        @carto_organization.delete
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: database_host,
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          import_data: false,
+          dry: false
+        )
+
+        import.run_import
+
+        puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+        expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+        @carto_organization.users.each do |u|
+          Carto::GhostTablesManager.new(u.id).user_tables_synced_with_db?.should eq true
+        end
+      end
+
+      it 'does not drop database if visualizations import fails' do
+        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        export = Carto::UserMigrationExport.create(
+          organization: @carto_organization,
+          export_metadata: true,
+          export_data: false
+        )
+        export.run_export
+
+        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+        database_host = @carto_organization.owner.database_host
+
+        db_host = @carto_organization.owner.database_host
+        db_name = @carto_organization.database_name
+
+        @carto_organization.users.each { |u| remove_user(u) }
+        @carto_organization.delete
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: database_host,
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          import_data: false,
+          dry: false
+        )
+
+        Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+
+        import.run_import
+
+        config = CartoDB::DataMover::Config.config
+        PG.connect(host: db_host,
+                   user: config[:dbuser],
+                   dbname: db_name,
+                   port: config[:dbport],
+                   connect_timeout: config[:connect_timeout])
+      end
+    end
+
+    def remove_user(carto_user)
+      Carto::Visualization.where(user_id: carto_user.id).each do |v|
+        v.overlays.each(&:delete)
+        v.delete
+      end
+      gum = CartoDB::GeocoderUsageMetrics.new(carto_user.username)
+      $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.now))
+      carto_user.delete
     end
   end
 

@@ -1,11 +1,11 @@
 {
-  "name": "carto.js",
+  "name": "@carto/carto.js",
   "version": "",
   "description": "CARTO javascript library",
   "main": "carto.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/CartoDB/cartodb.js.git"
+    "url": "git://github.com/CartoDB/carto.js.git"
   },
   "author": {
     "name": "CARTO",

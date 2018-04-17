@@ -17,24 +17,56 @@ describe('v4/error-handling/carto-error', function () {
     }));
   });
 
-  it('should return the original values and proper friendly message if it is a windshaft error', function () {
-    var cartoError = new CartoError({
-      origin: 'windshaft',
-      type: 'layer',
-      message: 'column "jonica" does not exist'
+  describe('windshaft error', function () {
+    it('should return the original values and proper friendly message if it is a windshaft error', function () {
+      var cartoError = new CartoError({
+        origin: 'windshaft',
+        type: 'layer',
+        message: 'column "jonica" does not exist'
+      });
+
+      expect(cartoError instanceof Error).toBe(true);
+      expect(cartoError.name).toEqual('CartoError');
+      expect(cartoError.message).toEqual('Invalid column name. Column "jonica" does not exist.');
+      expect(cartoError.origin).toEqual('windshaft');
+      expect(cartoError.type).toEqual('layer');
+      expect(cartoError.errorCode).toEqual('windshaft:layer:column-does-not-exist');
+      expect(cartoError.originalError).toEqual(jasmine.objectContaining({
+        origin: 'windshaft',
+        type: 'layer',
+        message: 'column "jonica" does not exist'
+      }));
     });
 
-    expect(cartoError instanceof Error).toBe(true);
-    expect(cartoError.name).toEqual('CartoError');
-    expect(cartoError.message).toEqual('Invalid column name. Column "jonica" does not exist.');
-    expect(cartoError.origin).toEqual('windshaft');
-    expect(cartoError.type).toEqual('layer');
-    expect(cartoError.errorCode).toEqual('windshaft:layer:column-does-not-exist');
-    expect(cartoError.originalError).toEqual(jasmine.objectContaining({
-      origin: 'windshaft',
-      type: 'layer',
-      message: 'column "jonica" does not exist'
-    }));
+    it('should return the source id if it is a windshaft analysis error and analysis is provided', function () {
+      var cartoError = new CartoError({
+        origin: 'windshaft',
+        type: 'analysis',
+        message: 'column "jonica" does not exist'
+      }, {
+        analysis: {
+          aKey: 'a value',
+          getId: function () { return 'S1'; }
+        }
+      });
+
+      expect(cartoError instanceof Error).toBe(true);
+      expect(cartoError.source).toBeDefined();
+      expect(cartoError.source.aKey).toEqual('a value');
+      expect(cartoError.sourceId).toEqual('S1');
+    });
+
+    it('should return the source id if the windshaft analysis error has that value', function () {
+      var cartoError = new CartoError({
+        origin: 'windshaft',
+        type: 'analysis',
+        message: 'column "jonica" does not exist',
+        analysisId: 'A1'
+      });
+
+      expect(cartoError instanceof Error).toBe(true);
+      expect(cartoError.sourceId).toEqual('A1');
+    });
   });
 
   it('should parse ajax error if original error is an ajax response', function () {

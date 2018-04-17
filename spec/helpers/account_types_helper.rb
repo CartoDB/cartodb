@@ -31,8 +31,19 @@ module AccountTypesHelper
 
   def create_account_type_fg(account_type)
     account_type ||= 'FREE'
-    if Carto::AccountType.exists?(account_type: account_type)
-      Carto::AccountType.where(account_type: account_type).first
+    get_account_type(account_type) || new_account_type(account_type)
+  end
+
+  private
+
+  def get_account_type(account_type)
+    Carto::AccountType.find(account_type)
+  rescue ActiveRecord::RecordNotFound
+  end
+
+  def new_account_type(account_type)
+    if account_type == 'PRO'
+      FactoryGirl.create(:account_type_pro)
     else
       FactoryGirl.create(:account_type, account_type: account_type)
     end

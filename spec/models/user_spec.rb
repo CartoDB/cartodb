@@ -16,10 +16,6 @@ require 'factories/users_helper'
 require 'factories/database_configuration_contexts'
 
 describe 'refactored behaviour' do
-  include UniqueNamesHelper
-  include RateLimitsHelper
-  include AccountTypesHelper
-
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
       get_user_by_id(user_id).get_twitter_imports_count
@@ -36,6 +32,10 @@ describe 'refactored behaviour' do
 end
 
 describe User do
+  include UniqueNamesHelper
+  include AccountTypesHelper
+  include RateLimitsHelper
+
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end

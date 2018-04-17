@@ -4,9 +4,11 @@ require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'
 require 'carto/user_authenticator'
+require 'helpers/account_types_helper'
 
 feature "Superadmin's users API" do
   include Carto::UserAuthenticator
+  include AccountTypesHelper
 
   background do
     Capybara.current_driver = :rack_test
@@ -15,8 +17,8 @@ feature "Superadmin's users API" do
   end
 
   before(:all) do
-    @account_type = FactoryGirl.create(:account_type_free)
-    @account_type_juliet = FactoryGirl.create(:account_type, account_type: 'Juliet')
+    @account_type = create_account_type_fg('FREE')
+    @account_type_juliet = create_account_type_fg('Juliet')
   end
 
   after(:all) do

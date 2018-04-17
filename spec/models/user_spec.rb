@@ -11,13 +11,15 @@ require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
 require 'helpers/rate_limits_helper'
 require 'helpers/unique_names_helper'
+require 'helpers/account_types_helper'
 require 'factories/users_helper'
 require 'factories/database_configuration_contexts'
 
-include UniqueNamesHelper
-include RateLimitsHelper
-
 describe 'refactored behaviour' do
+  include UniqueNamesHelper
+  include RateLimitsHelper
+  include AccountTypesHelper
+
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
       get_user_by_id(user_id).get_twitter_imports_count
@@ -492,7 +494,7 @@ describe User do
   end
 
   it "should invalidate all his vizjsons when his account type changes" do
-    @account_type = FactoryGirl.create(:account_type, account_type: 'WADUS')
+    @account_type = create_account_type_fg('WADUS')
     @user.account_type = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
@@ -1725,7 +1727,7 @@ describe User do
   # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info
   it "can notify a new user creation" do
     ::Resque.stubs(:enqueue).returns(nil)
-    @account_type_org = FactoryGirl.create(:account_type_org)
+    @account_type_org = create_account_type_fg('ORGANIZATION USER')
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
     user1 = new_user(username: 'test',
                      email: "client@example.com",
@@ -2691,10 +2693,9 @@ describe User do
   describe '#rate limits' do
     before :all do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
-      @account_type = Carto::AccountType.where(account_type: 'FREE').first || FactoryGirl.create(:account_type_free)
-      @account_type_pro = Carto::AccountType.where(account_type: 'PRO').first || FactoryGirl.create(:account_type_pro)
-      @account_type_org = Carto::AccountType.where(account_type: 'ORGANIZATION USER').first ||
-                          FactoryGirl.create(:account_type_org)
+      @account_type = create_account_type_fg('FREE')
+      @account_type_pro = create_account_type_fg('PRO')
+      @account_type_org = create_account_type_fg('ORGANIZATION USER')
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)

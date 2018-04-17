@@ -10,124 +10,51 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        margin:0;
-        padding:0;
-        box-sizing: border-box;
-      }
-      *:focus {
-        outline: none;
-      }
-      html {
-        height: 100%;
-      }
-      body {
-        background: #F2F6F9;
-        height: 100%;
-        font-family: 'Open sans'
-      }
-      #container {
-        display: flex;
-        height: 100%;
-      }
-      #map {
-        flex: 1;
-      }
-      #controls {
-        width: 308px;
-      }
-      .control-inner {
-        background: #fff;
-        padding: 20px 24px;
-        border-bottom: 2px solid #F2F6F9;
-      }
-      .control-inner {
-        font-size: 10px;
-        line-height: 14px;
-      }
-      .control-inner p {
-        margin-bottom: 4px;
-        color: #747D82;
-      }
-      .control-inner p:last-child {
-        margin-bottom: 0;
-      }
-      .control-inner h3 {
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 22px;
-        margin-bottom: 8px;
-      }
-      .button-update {
-        border: 1px solid #1785FB;
-        color: #1785FB;
-        font-size: 12px;
-        line-height: 16px;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-family: 'Open sans';
-        cursor: pointer;
-        text-transform: uppercase;
-        font-weight: 600;
-      }
-      .button-update:hover {
-        background: rgba(23,133,251,.08);
-      }
-      textarea {
-        height: 100px; width: 100%; resize: none;
-        padding: 7px 8px 6px;
-        border: 1px solid #DDD;
-        border-radius: 4px;
-        font-size: 12px;
-        line-height: 16px;
-        font-family: 'Open Sans';
-        color: #6A6A6A;
-        margin-bottom: 8px;
-      }
-      .action-container {
-        display: flex;
-        justify-content: flex-end;
-      }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
-    <div id="container">
-      <div id="map"></div>
-      <div id="controls">
-        <div class="control-inner">
-          <h3>SQL</h3>
-          <textarea id="sql" rows="3">
-SELECT *
-FROM ne_10m_populated_places_simple
-          </textarea>
-          <div class="action-container">
-            <button class="button-update" onclick="updateSource()">UPDATE SQL</button>
-          </div>
-        </div>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Edit SQL & CartoCSS</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Edit manually the SQL query and the CartoCSS style.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">This example only uses one style and one layer whose content is changed.</p>
+            <p class="open-sans">Since the style and source objects are the same they won't trigger events. You need to use the promise to handle errors.</p>
+          </section>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
 
-        <div class="control-inner">
-          <h3>CartoCSS</h3>
-          <textarea id="cartocss" rows="3">
+      <div class="box widget">
+        <h2 class="h2">SQL</h2>
+        <textarea id="sql" rows="3">SELECT * FROM ne_10m_populated_places_simple</textarea>
+        <button class="button" onclick="updateSource()">UPDATE SQL</button>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">CartoCSS</h2>
+        <textarea id="cartocss" rows="3">
 #layer {
   marker-fill: red;
 }
-          </textarea>
-          <div class="action-container">
-            <button class="button-update" onclick="updateStyle()">UPDATE STYLE</button>
-          </div>
-        </div>
-
-        <div class="control-inner">
-          <p> This example only uses one style and one layer whose content is changed.</p>
-          <p>Since the style and source objects are the same the wont trigger events, you need to use the promise to handle errors.</p>
-        </div>
+        </textarea>
+        <button class="button-update button" onclick="updateStyle()">UPDATE STYLE</button>
       </div>
-    </div>
+    </aside>
+
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
-        zoom: 3
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

@@ -11,73 +11,45 @@
     <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        margin:0;
-        padding:0;
-        box-sizing: border-box;
-      }
-      html {
-        height: 100%;
-      }
-      body {
-        background: #F2F6F9;
-        height: 100%;
-        font-family: 'Open sans'
-      }
-      #container {
-        display: flex;
-        height: 100%;
-      }
-      #map {
-        flex: 1;
-      }
-      #widgets {
-        width: 308px;
-      }
-      .widget {
-        background: white;
-        padding: 20px 24px;
-        margin-bottom: 2px;
-      }
-      .widget h2 {
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 22px;
-        margin-bottom: 8px;
-      }
-      .widget-formula .result {
-        font-size: 26px;
-        line-height: 34px;
-        font-weight: 400;
-      }
-      .widget-formula .result small {
-        font-size: 16px;
-        line-height: 22px;
-        font-weight: 400;
-      }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
-    <div id="container">
-      <div id="map"></div>
-      <div id="widgets">
-        <div id="countriesWidget" class="widget">
-          <h2>European countries</h2>
-          <select class="js-countries">
-            <option value="">All</option>
-          </select>
-        </div>
-        <div id="avgPopulationWidget" class="widget widget-formula">
-          <h2>Average population</h2>
-          <p class="result"><span class="js-average-population ">xxx</span> <small>inhabitants</small></p>
-        </div>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Guide</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Full reference guide example.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Select a country</p>
+          </section>
+          <div id="controls">
+            <h2 class="h2">European countries</h2>
+            <select class="js-countries">
+              <option value="">All</option>
+            </select>
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
       </div>
-    </div>
+
+      <div class="box widget">
+        <h2 class="h2">Average population</h2>
+        <p class="result open-sans"><span class="js-average-population">xxx</span> <small>inhabitants</small></p>
+      </div>
+    </aside>
+
     <script>
       // 1. Setting up the Leaflet Map
       // 1.1 Creating the Leaflet Map
       const map = L.map('map').setView([50, 15], 4);
+      map.scrollWheelZoom.disable();
 
       // 1.2 Adding basemap and labels layers
       // Adding Voyager Basemap
@@ -172,7 +144,7 @@
       });
 
       function refreshAveragePopulationWidget(avgPopulation) {
-        const widgetDom = document.querySelector('#avgPopulationWidget');
+        const widgetDom = document.querySelector('.box.widget');
         const averagePopulationDom = widgetDom.querySelector('.js-average-population');
         averagePopulationDom.innerText = Math.floor(avgPopulation);
       }
@@ -193,9 +165,8 @@
       });
 
       function refreshCountriesWidget(adminNames) {
-        const widgetDom = document.querySelector('#countriesWidget');
-        const countriesDom = widgetDom.querySelector('.js-countries');
-
+        const asideElement = document.querySelector('aside.toolbox');
+        const countriesDom = asideElement.querySelector('.js-countries');
         countriesDom.onchange = event => {
           const admin = event.target.value;
           highlightCountry(admin);

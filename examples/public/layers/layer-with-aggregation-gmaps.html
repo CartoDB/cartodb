@@ -8,17 +8,31 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      body { margin: 0; padding: 0; }
-      #map { position: absolute; height: 100%; width: 100%; }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
-    <div id="map"></div>
+    <div id="map">
+    </div>
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Server tile aggregation</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">This map has smart backend aggregation applied. See source code for details.</p>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+    
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
-        zoom: 3
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

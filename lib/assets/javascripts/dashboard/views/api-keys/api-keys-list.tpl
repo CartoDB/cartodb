@@ -44,6 +44,6 @@
 <footer class="ApiKeys-footer">
   <p class="ApiKeys-footer-text">
     <i class="CDB-IconFont CDB-IconFont-info ApiKeys-footer-icon"></i>
-    <span>Learn more location app authorization and API key management <a href="https://cartodb.github.io/developers/fundamentals/authorization/" target="_blank">here</a></span>
+    <span>Learn more about location app authorization and API key management <a href="https://cartodb.github.io/developers/fundamentals/authorization/" target="_blank">here</a></span>
   </p>
 </footer>

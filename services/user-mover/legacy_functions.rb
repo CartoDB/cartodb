@@ -2459,7 +2459,6 @@ module CartoDB
         'OPERATOR &>(raster,raster)',
         'OPERATOR &&(raster,raster)',
         'PROCEDURALLANGUAGE plpgsql',
-        'SCHEMA topology',
         'SHELLTYPE box2d',
         'SHELLTYPE box2df',
         'SHELLTYPE box3d',

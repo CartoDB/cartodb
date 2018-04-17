@@ -434,7 +434,7 @@ describe 'UserMigration' do
   describe 'legacy functions' do
 
     it 'loads legacy functions' do
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2493
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2492
     end
 
     it 'skips importing legacy functions' do

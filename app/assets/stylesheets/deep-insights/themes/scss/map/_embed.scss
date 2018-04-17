@@ -89,10 +89,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   align-items: center;
   justify-content: space-between;
 
-  &.is-collapsed {
-    margin-bottom: 16px;
-  }
-
   h1 {
     margin: 0;
   }
@@ -100,7 +96,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Overlay-inner {
   display: none;
-  margin-top: 8px;
+  margin-top: 16px;
 
   &.is-active {
     display: block;
@@ -113,7 +109,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 // Override carto.js legends styles
 .CDB-Legends-canvas .CDB-Legends-canvasInner {
-  padding: 16px 16px 0;
+  padding: 10px 12px;
 }
 
 .CDB-Embed-legends {
@@ -125,12 +121,14 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     width: 100%;
     height: 100%;
     max-height: none;
+    border-radius: 0;
     box-shadow: none;
   }
 
   .CDB-Legends-canvasInner {
     height: 100%;
     max-height: none;
+    border-radius: 0;
   }
 }
 
@@ -149,10 +147,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 @media (min-width: $sMedia-xl) {
   .CDB-Overlay-title {
     display: none;
-
-    &.is-collapsed {
-      margin-bottom: 24px;
-    }
   }
 
   .CDB-Overlay-inner {
@@ -170,7 +164,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     }
 
     .CDB-Legends-canvasInner {
-      padding: 24px 24px 0;
+      padding: 12px 10px;
     }
   }
 }
@@ -180,6 +174,15 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   .CDB-Embed-tabs,
   .CDB-Embed-legends {
     display: none;
+  }
+}
+
+@media (max-width: $sMedia-max-w-vertical) {
+  .CDB-Embed-view {
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #DDD;
+    border-radius: 4px;
   }
 }
 
@@ -214,5 +217,73 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+  }
+}
+
+/*
+  Legend max height depends on whether there's a time series and or the menu bar is displayed,
+  hence all the possible cases.
+*/
+@media (max-width: $sMedia-tablet - 1) {
+  $offset: 262;
+  $timeSeriesHeight: 93;
+  $menuHeight: 38;
+
+  .CDB-Map .CDB-Legends-canvas,
+  .CDB-Map .CDB-Legends-canvasInner {
+    max-height: calc(100vh - #{$offset}px);
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight + $menuHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $menuHeight}px);
+    }
+  }
+}
+
+@media (min-width: $sMedia-tablet) {
+  $offset: 88;
+  $timeSeriesHeight: 169;
+  $menuHeight: 30;
+
+  .CDB-Map .CDB-Legends-canvas,
+  .CDB-Map .CDB-Legends-canvasInner {
+    max-height: calc(100vh - #{$offset}px);
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight + $menuHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $menuHeight}px);
+    }
   }
 }

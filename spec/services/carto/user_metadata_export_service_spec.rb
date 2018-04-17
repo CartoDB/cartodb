@@ -669,7 +669,7 @@ describe Carto::UserMetadataExportService do
           }
         ],
         notifications: {
-          builder:{
+          builder: {
             onboarding: true,
             :"layer-style-onboarding" => true,
             :"layer-analyses-onboarding" => true

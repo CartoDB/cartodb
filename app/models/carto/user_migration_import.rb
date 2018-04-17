@@ -86,6 +86,8 @@ module Carto
       end
 
       import_visualizations(imported, package, service) if import_metadata?
+
+      reconfigure_dataservices if import_metadata?
     end
 
     def do_import_metadata(package, service)
@@ -112,6 +114,14 @@ module Carto
         import_job.run!
       ensure
         import_job.terminate_connections
+      end
+    end
+
+    def reconfigure_dataservices
+      if org_import?
+        ::Organization[organization.id].owner.db_service.install_and_configure_geocoder_api_extension
+      else
+        ::User[user.id].db_service.install_and_configure_geocoder_api_extension
       end
     end
 
@@ -148,7 +158,6 @@ module Carto
 
     def update_database_host
       users.each do |user|
-        Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
         user.database_host = database_host
         user.save!
         # This is because Sequel models are being cached along request. This forces reload.

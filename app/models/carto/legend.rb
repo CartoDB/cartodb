@@ -13,7 +13,7 @@ module Carto
     VALID_LEGEND_TYPES = %w(category bubble choropleth custom custom_choropleth torque).freeze
     LEGEND_TYPES_PER_ATTRIBUTE = {
       color: %w(category choropleth custom custom_choropleth torque),
-      size: %(bubble)
+      size: %w(bubble)
     }.freeze
 
     serialize :definition, ::Carto::CartoJsonSymbolizerSerializer

@@ -3,6 +3,7 @@ require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
 require_relative '../factories/visualization_creation_helpers'
+require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 require 'helpers/storage_helper'
 require 'factories/organizations_contexts'
@@ -44,6 +45,10 @@ describe Organization do
     rescue
       # Silence error, can't do much more
     end
+  end
+
+  before(:each) do
+    create_account_type_fg('ORGANIZATION USER')
   end
 
   describe '#destroy_cascade' do

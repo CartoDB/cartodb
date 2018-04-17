@@ -114,7 +114,8 @@ describe Carto::Api::UserPresenter do
     user2 = create_user({
         email: 'example2@carto.com',
         username: 'example2',
-        password: 'example123'
+        password: 'example123',
+        account_type: 'ORGANIZATION USER'
       })
 
     user2.organization = organization

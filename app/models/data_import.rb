@@ -415,7 +415,6 @@ class DataImport < Sequel::Model
 
   def dispatch
     self.state = STATE_UPLOADING
-    return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
 
     if service_name == 'connector'
@@ -568,15 +567,12 @@ class DataImport < Sequel::Model
       })
   end
 
-
-  def migrate_existing(imported_name=migrate_table, name=nil)
-    new_name = imported_name || name
-
+  def migrate_existing(imported_name)
     log.append 'migrate_existing()'
 
     table         = ::Table.new
     table.user_id = user_id
-    table.name    = new_name
+    table.name    = imported_name
     table.migrate_existing_table = imported_name
     table.data_import_id = self.id
 
@@ -1052,7 +1048,7 @@ class DataImport < Sequel::Model
 
   def decorate_log(data_import)
     decoration = { retrieved_items: 0 }
-    if data_import.success && data_import.table_id && data_import.migrate_table.nil? && data_import.from_query.nil? &&
+    if data_import.success && data_import.table_id && data_import.from_query.nil? &&
        data_import.table_copy.nil?
       datasource = get_datasource_provider
       if datasource && datasource.persists_state_via_data_import?

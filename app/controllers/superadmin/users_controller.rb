@@ -18,7 +18,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   layout 'application'
 
-  VALID_ORDER_PARAMS = ['updated_at'].freeze
+  VALID_ORDER_PARAMS = [:updated_at].freeze
 
   def show
     respond_with(@user.data({:extended => true}))

@@ -140,7 +140,7 @@ describe Carto::Api::OrganizationsController do
 
     it 'validates order param' do
       get_json api_v1_organization_users_url(
-        order: 'username',
+        order: :username,
         id: @organization.id,
         api_key: @org_user_1.api_key
       ), @headers do |response|
@@ -148,7 +148,7 @@ describe Carto::Api::OrganizationsController do
       end
 
       get_json api_v1_organization_users_url(
-        order: 'invalidate',
+        order: :invalidate,
         id: @organization.id,
         api_key: @org_user_1.api_key
       ), @headers do |response|

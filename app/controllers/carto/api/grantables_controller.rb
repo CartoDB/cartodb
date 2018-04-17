@@ -17,7 +17,7 @@ module Carto
 
       rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
 
-      VALID_ORDER_PARAMS = ['id', 'name', 'type', 'avatar_url', 'organization_id', 'updated_at'].freeze
+      VALID_ORDER_PARAMS = [:id, :name, :type, :avatar_url, :organization_id, :updated_at].freeze
 
       def index
         page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)

@@ -15,7 +15,7 @@ module Carto
 
       rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
 
-      VALID_ORDER_PARAMS = ['username', 'updated_at'].freeze
+      VALID_ORDER_PARAMS = [:username, :updated_at].freeze
 
       def users
         page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS, 50, :username)

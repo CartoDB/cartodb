@@ -3,13 +3,14 @@ module Carto
     module PagedSearcher
 
       def page_per_page_order_params(valid_order_values, default_per_page = 20, default_order = 'updated_at')
-        if params[:order].present?
-          raise Carto::OrderParamInvalidError.new(valid_order_values) unless valid_order_values.include?(params[:order])
-        end
-
         page = (params[:page] || 1).to_i
         per_page = (params[:per_page] || default_per_page).to_i
         order = (params[:order] || default_order).to_sym
+
+        if order.present?
+          raise Carto::OrderParamInvalidError.new(valid_order_values) unless valid_order_values.include?(order)
+        end
+
         return page, per_page, order
       end
 

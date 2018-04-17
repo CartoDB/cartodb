@@ -19,7 +19,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
-  VALID_ORDER_PARAMS = ['type', 'name', 'updated_at'].freeze
+  VALID_ORDER_PARAMS = [:type, :name, :updated_at].freeze
 
   def create
     carto_viewer = Carto::User.find(current_viewer.id)

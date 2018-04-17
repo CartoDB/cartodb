@@ -2763,6 +2763,18 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'validates order param' do
+      get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
+      last_response.status.should == 200
+
+      get api_v1_visualizations_index_url(
+        api_key: @user.api_key,
+        types: 'derived',
+        order: '',
+        page: '',
+        per_page: ''
+      ), {}, @headers
+      last_response.status.should == 200
+
       ['derived', 'slide'].each do |type|
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :mapviews), {}, @headers
         last_response.status.should == 200

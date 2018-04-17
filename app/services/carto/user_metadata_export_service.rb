@@ -169,8 +169,7 @@ module Carto
 
       user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
 
-      # TODO
-      # Organization notifications
+      user_hash[:notifications] = user.static_notifications.notifications
 
       user_hash
     end

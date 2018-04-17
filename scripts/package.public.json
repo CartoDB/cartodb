@@ -10,5 +10,6 @@
   "author": {
     "name": "CARTO",
     "url": "https://carto.com/"
-  }
+  },
+  "license": "BSD-3-Clause"
 }

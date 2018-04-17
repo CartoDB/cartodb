@@ -338,3 +338,54 @@ aside.toolbox {
   font-size: 14px;
   color: #747D82;
 }
+
+/* TABS */
+.maptabs {
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.maptabs li.maptab {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+.maptabs .maptab a {
+  font: 12px 'Montserrat', 'Helvetica Neue', Helvetica, Arial,
+  sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 12px;
+  border: 1px solid rgba(22, 39, 69, 0.2);
+  color: #00B9BF;
+  transition: all .2s;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+.maptabs .maptab.is-active a {
+  background: #2E3C43;
+  color: #ffffff;
+  border: 1px solid #2E3C43;
+  border-right: 0;
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.15);
+}
+.maptabs .maptab a:hover {
+    background: #00B9BF;
+    border-color: #00B9BF;
+    color: #ffffff;
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.15);
+}
+.maptabs .maptab.is-active a:hover {
+  background: #2E3C43;
+  color: #ffffff;
+  border: 1px solid #2E3C43;
+}
+.maptabs .maptab:first-child a {
+  border-radius: 4px 0 0 4px;
+}
+.maptabs .maptab:last-child a {
+  border-radius: 0 4px 4px 0;
+  border-right: 1px solid rgba(22, 39, 69, 0.2);
+}

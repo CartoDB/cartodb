@@ -409,10 +409,11 @@ $maxLegendContainerHeight: 300px;
 .Bubble-average--custom::after {
   display: none;
 }
+
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
-  margin-bottom: 30px;
+  margin-bottom: 16px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
 }

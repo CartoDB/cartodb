@@ -688,5 +688,18 @@ feature "Superadmin's users API" do
         expect(response.body[:data_imports].size).to eq(3)
       end
     end
+
+    it 'validates order param' do
+      ['data_imports', 'geocodings', 'synchronizations'].each do |endpoint|
+        get_json("/superadmin/users/#{@user.id}/#{endpoint}", { order: :updated_at }, superadmin_headers) do |response|
+          response.status.should eq 200
+        end
+
+        get_json("/superadmin/users/#{@user.id}/#{endpoint}", { order: :invalid }, superadmin_headers) do |response|
+          response.status.should eq 400
+          response.body.fetch(:errors).should_not be_nil
+        end
+      end
+    end
   end
 end

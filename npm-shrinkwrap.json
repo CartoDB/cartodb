@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.113-13576-01",
+  "version": "4.11.113-13576-02",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -399,7 +399,7 @@
     "cartodb.js": {
       "version": "4.0.0-beta.40-13765-01",
       "from": "cartodb/cartodb.js#13765-fix-embed-legends-margin",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#066ac5dd0a471ba86052bd99d6f6632e1187763b"
+      "resolved": "git://github.com/cartodb/cartodb.js.git#71940efced370c2d0a643918e73058dabdb96aea"
     },
     "center-align": {
       "version": "0.1.3",

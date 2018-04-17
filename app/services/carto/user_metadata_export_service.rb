@@ -92,6 +92,8 @@ module Carto
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
 
+      user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user

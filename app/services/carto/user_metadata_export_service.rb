@@ -8,7 +8,7 @@ require 'carto/export/data_import_exporter'
 # 1.0.3: export rate limits
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.3'.freeze
+    CURRENT_VERSION = '1.0.4'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,

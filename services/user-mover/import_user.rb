@@ -9,11 +9,13 @@ require 'securerandom'
 
 require_relative 'config'
 require_relative 'utils'
+require_relative 'legacy_functions'
 
 module CartoDB
   module DataMover
     class ImportJob
       include CartoDB::DataMover::Utils
+      include CartoDB::DataMover::LegacyFunctions
       attr_reader :logger
 
       def initialize(options)
@@ -392,6 +394,7 @@ module CartoDB
           @config[:user_dbport],
           @target_dbname)}"
         command += " --section=#{sections}" if sections
+        command += " --use-list=\"#{@toc_file}\""
         run_command(command)
       end
 
@@ -423,6 +426,31 @@ module CartoDB
         run_file_metadata_postgres(file)
       end
 
+      def remove_line?(line)
+        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").strip
+        LEGACY_FUNCTIONS.find { |l| stripped.scan(l).any? }
+      end
+
+      def clean_toc_file(file)
+        tmp = Tempfile.new("extract_#{@target_username}.txt")
+        File.open(file, 'r').each do |l|
+          tmp << l unless remove_line?(l)
+        end
+
+        tmp.close
+        FileUtils.mv(tmp.path, file)
+      ensure
+        tmp.delete
+      end
+
+      def toc_file(file)
+        toc_file = "#{@path}user_#{@target_username}.list"
+        command = "pg_restore -l #{file} --file='#{toc_file}'"
+        run_command(command)
+        clean_toc_file(toc_file)
+        toc_file
+      end
+
       # It would be a good idea to "disable" the invalidation trigger during the load
       # This way, the restore will be much faster and won't also cause a big overhead
       # in the old database while the process is ongoing
@@ -440,6 +468,7 @@ module CartoDB
         end
 
         @logger.info("Importing dump from #{dump} using pg_restore..")
+        @toc_file = toc_file("#{@path}#{dump}")
         run_file_restore_postgres(dump, 'pre-data')
         run_file_restore_postgres(dump, 'data')
         run_file_restore_postgres(dump, 'post-data')

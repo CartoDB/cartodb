@@ -178,11 +178,13 @@ ion for time-series (#12670)
 * Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
 * Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)
 * Consistent margins in Auth API UI
+* Skip importing legacy functions (https://github.com/CartoDB/cartodb/issues/13677)
 * Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
 * FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
 * Allows imports of synchronizations without a log
 * Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)
 * Fix a case where the layer selector was displaying incorrectly (https://github.com/CartoDB/support/issues/1430)
+* Add auth_github_enabled ([Central#2154](https://github.com/CartoDB/cartodb-central/issues/2154))
 * Update charlock_holmes to 0.7.6 (ICU compatibility)
 * Skip canonical viz with missing tables from metadata export
 * Fix dialog footer in some modals (CartoDB/onpremises/issues/507)
@@ -569,6 +571,7 @@ ion for time-series (#12670)
 * Use redis secondary for heavy `KEYS *` opeartion on user export (#13814)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
+* Add rake to remove duplicate legends in layer
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals

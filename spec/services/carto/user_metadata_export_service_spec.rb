@@ -21,6 +21,7 @@ describe Carto::UserMetadataExportService do
   def create_user_with_basemaps_assets_visualizations
     FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
     @user = FactoryGirl.create(:carto_user)
+    @user.static_notifications = Carto::UserNotification.new(notifications: full_export[:user][:notifications])
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
 
     @tiled_layer = FactoryGirl.create(:carto_tiled_layer)
@@ -82,6 +83,12 @@ describe Carto::UserMetadataExportService do
   describe 'import latest' do
     it 'imports correctly' do
       import_user_from_export(full_export)
+    end
+  end
+
+  describe 'import v 1.0.3' do
+    it 'immports correctly' do
+      import_user_from_export(full_export_one_zero_three)
     end
   end
 
@@ -151,6 +158,14 @@ describe Carto::UserMetadataExportService do
       @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
 
       expect_export_matches_user(full_export[:user], user)
+    end
+
+    it 'imports 1.0.3' do
+      user = service.build_user_from_hash_export(full_export_one_zero_three)
+      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_three)
+      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
+
+      expect_export_matches_user(full_export_one_zero_three[:user], user)
     end
 
     it 'imports 1.0.2' do
@@ -390,6 +405,7 @@ describe Carto::UserMetadataExportService do
       expect(st1.retrieved_items).to eq st2['retrieved_items']
       expect(st1.state).to eq st2['state']
     end
+    @imported_user.static_notifications.notifications.should eq full_export[:user][:notifications]
   end
 
   def full_export_import_viewer(path)
@@ -427,7 +443,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.2",
+      version: "1.0.4",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -651,12 +667,23 @@ describe Carto::UserMetadataExportService do
             created_at: DateTime.now,
             updated_at: DateTime.now
           }
-        ]
+        ],
+        notifications: {
+          builder:{
+            onboarding: true,
+            :"layer-style-onboarding" => true,
+            :"layer-analyses-onboarding" => true
+          }
+        }
       }
     }
   end
 
   let(:full_export_one_zero_two) do
-    full_export.except(:rate_limit)
+    full_export_one_zero_three.except(:rate_limit)
+  end
+
+  let(:full_export_one_zero_three) do
+    full_export.except(:notifications)
   end
 end

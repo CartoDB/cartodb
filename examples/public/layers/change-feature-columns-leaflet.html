@@ -80,7 +80,7 @@
       layer.on('featureClicked', featureEvent => {
         let content = '';
         if (featureEvent.data.name) {
-          content += `<p class="category">${featureEvent.data.name.toUpperCase()}</h3>`;
+          content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
         }
         if (featureEvent.data.pop_max) {
           content += `<p class="open-sans"><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;

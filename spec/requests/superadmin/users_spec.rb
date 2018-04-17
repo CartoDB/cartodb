@@ -14,6 +14,16 @@ feature "Superadmin's users API" do
     @user_atts = @new_user.values
   end
 
+  before(:all) do
+    @account_type = FactoryGirl.create(:account_type_free)
+    @account_type_juliet = FactoryGirl.create(:account_type, account_type: 'Juliet')
+  end
+
+  after(:all) do
+    @account_type.destroy if @account_type
+    @account_type_juliet.destroy if @account_type_juliet
+  end
+
   scenario "Http auth is needed" do
     post_json superadmin_users_path, format: "json" do |response|
       response.status.should == 401
@@ -31,7 +41,6 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with password success" do
-    account_type = FactoryGirl.create(:account_type_free)
     @user_atts.delete(:crypted_password)
     @user_atts.delete(:salt)
     @user_atts.merge!(password: "this_is_a_password")
@@ -51,11 +60,9 @@ feature "Superadmin's users API" do
       authenticate(user.username, "this_is_a_password").should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
-    account_type.destroy
   end
 
   scenario "user create with crypted_password and salt success" do
-    account_type = FactoryGirl.create(:account_type_free)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
@@ -71,11 +78,9 @@ feature "Superadmin's users API" do
       authenticate(user.username, "this_is_a_password").should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
-    account_type.destroy
   end
 
   scenario "user create default account settings" do
-    account_type = FactoryGirl.create(:account_type_free)
     @user_atts[:private_tables_enabled] = false
     @user_atts[:sync_tables_enabled] = false
     @user_atts[:map_view_quota] = 80
@@ -101,13 +106,11 @@ feature "Superadmin's users API" do
       user.upgraded_at.should.to_s == t.to_s
     end
     ::User.where(username: @user_atts[:username]).first.destroy
-    account_type.destroy
   end
 
   scenario "user create with rate limits" do
     t = Time.now
     @user_atts[:upgraded_at] = t
-    account_type = FactoryGirl.create(:account_type_free)
     rate_limits = FactoryGirl.create(:rate_limits)
     @user_atts[:rate_limit] = rate_limits.api_attributes
 
@@ -122,11 +125,9 @@ feature "Superadmin's users API" do
     end
     ::User.where(username: @user_atts[:username]).first.destroy
     rate_limits.destroy
-    account_type.destroy
   end
 
   scenario "user create non-default account settings" do
-    account_type = FactoryGirl.create(:account_type, account_type: 'Juliet')
     @user_atts[:quota_in_bytes] = 2000
     @user_atts[:table_quota]    = 20
     @user_atts[:account_type]   = 'Juliet'
@@ -182,11 +183,9 @@ feature "Superadmin's users API" do
       user.notification.should == 'Test'
     end
     ::User.where(username: @user_atts[:username]).first.destroy
-    account_type.destroy
   end
 
   scenario "update user account details" do
-    account_type = FactoryGirl.create(:account_type, account_type: 'Juliet')
     user = create_user
     t = Time.now
     @update_atts = { quota_in_bytes: 2000,
@@ -262,7 +261,6 @@ feature "Superadmin's users API" do
     user.builder_enabled.should == false
 
     user.destroy
-    account_type.destroy
   end
 
   scenario "user update fail" do

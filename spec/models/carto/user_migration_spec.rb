@@ -329,16 +329,14 @@ describe 'UserMigration' do
     user_attributes = carto_user.attributes
     source_vis = carto_user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).first
     carto_user.visualizations.count.should eq 3
-    map, table, table_visualization, visualization = create_full_visualization(carto_user)
+    map, _, table_visualization, visualization = create_full_visualization(carto_user)
     table_visualization.update_column(:name, source_vis.name)
     table_visualization.update_column(:map_id, source_vis.map.id)
     table_visualization.update_column(:updated_at, source_vis.updated_at - 1.minute)
     map.destroy
     visualization.destroy
 
-
     carto_user.visualizations.count.should eq 4
-
 
     export = Carto::UserMigrationExport.create(
       user: carto_user,
@@ -368,7 +366,6 @@ describe 'UserMigration' do
     imported_user = Carto::User.find(user_attributes['id'])
     imported_user.visualizations.count.should eq 3
     expect { imported_user.visualizations.find(table_visualization.id) }.to raise_error(ActiveRecord::RecordNotFound)
-
 
     user.destroy_cascade
   end

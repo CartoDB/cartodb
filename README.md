@@ -101,4 +101,5 @@ npm run release
 ```
 
 
-## Looking for (Version 3) check it [here](https://github.com/CartoDB/carto.js/tree/develop)
+## Looking for previous version?
+Old cartodb.js v3 will be deprecated soon meanwhile its availiable [here](https://github.com/CartoDB/carto.js/tree/develop)

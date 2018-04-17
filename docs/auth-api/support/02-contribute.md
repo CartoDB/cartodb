@@ -27,7 +27,7 @@ If you want more detailed information, this [GitHub guide](https://guides.github
 
 ## Completing documentation
 
-Auth API documentation is located in ```docs/```. That folder is the content that appears in the [Developer Center](http://carto.com/developer-center/auth-api/). Just follow the instructions described in [contributing code](#contributing-code) and after accepting your pull request, we will make it appear online :).
+Auth API documentation is located in ```docs/```. That folder is the content that appears in the [Developer Center](http://carto.com/developers/auth-api/). Just follow the instructions described in [contributing code](#contributing-code) and after accepting your pull request, we will make it appear online :).
 
 **Tip:** A convenient, easy way of proposing changes in documentation is by using the GitHub editor directly on the web. You can easily create a branch with your changes and make a PR from there.
 

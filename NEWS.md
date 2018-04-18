@@ -175,6 +175,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix Heatmap legend does not update after style changes (https://github.com/CartoDB/cartodb/issues/13763)
 * Includes a rake tast to destroy duplicated overlays that should be unique.
 * Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
 * Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)

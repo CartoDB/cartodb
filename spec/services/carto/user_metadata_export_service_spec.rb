@@ -141,6 +141,17 @@ describe Carto::UserMetadataExportService do
 
       expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit])
     end
+
+    it 'does not export invalid assets' do
+      create_user_with_rate_limits
+      asset = Carto::Asset.new
+      asset.kind = 'pattern'
+      asset.user = @user
+      asset.save(validate: false)
+      export = service.export_user_json_hash(@user)
+      export[:user][:assets].count.should eq 1
+      export[:user][:assets].first[:public_url].should eq "https://manolo.es/es/co/bar.png"
+    end
   end
 
   describe '#user import' do

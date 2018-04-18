@@ -159,7 +159,7 @@ module Carto
 
       user_hash[:feature_flags] = user.feature_flags_user.map(&:feature_flag).map(&:name)
 
-      user_hash[:assets] = user.assets.map { |a| export_asset(a) }
+      user_hash[:assets] = user.assets.select(&:valid?).map { |a| export_asset(a) }
 
       user_hash[:layers] = user.layers.map { |l| export_layer(l) }
 

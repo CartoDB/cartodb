@@ -1,10 +1,12 @@
 require 'spec_helper_min'
 require 'factories/carto_visualizations'
 require 'helpers/rate_limits_helper'
+require 'helpers/account_types_helper'
 
 describe Carto::UserMetadataExportService do
   include NamedMapsHelper
   include RateLimitsHelper
+  include AccountTypesHelper
   include Carto::Factories::Visualizations
 
   before(:all) do
@@ -19,7 +21,7 @@ describe Carto::UserMetadataExportService do
   end
 
   def create_user_with_basemaps_assets_visualizations
-    FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    create_account_type_fg('FREE')
     @user = FactoryGirl.create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
 
@@ -347,7 +349,7 @@ describe Carto::UserMetadataExportService do
   def import_user_from_export(export)
     export[:user] = export[:user].reject { |entry| entry == :api_keys }
     user = service.build_user_from_hash_export(export)
-    FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    create_account_type_fg('FREE')
     user.save!
     user.destroy
   end

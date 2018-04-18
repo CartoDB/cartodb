@@ -12,7 +12,7 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * Dataviews are a way to extract data from a CARTO account in predefined ways
  * (eg: a list of categories, the result of a formula operation, etc.).
  * 
- * **This object should not be used direclty**
+ * **This object should not be used directly**
  *
  * The data used in a dataviews cames from a {@link carto.source.Base|source} that might change
  * due to different reasons (eg: SQL query changed).

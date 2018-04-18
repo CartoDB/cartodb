@@ -17,4 +17,39 @@ describe('windshaft/error', function () {
     expect(windshaftError.message).toEqual('an error happened');
     expect(windshaftError.context).toEqual('the context');
   });
+
+  describe('analysis error', function () {
+    it('should fill context property is present', function () {
+      var inputError = {
+        type: 'analysis',
+        analysis: {
+          context: 'analysis context'
+        }
+      };
+
+      var windshaftError = new WindshaftError(inputError);
+
+      expect(windshaftError.context).toEqual('analysis context');
+    });
+
+    it('should fill analysisId with analysis node_id or id', function () {
+      var inputError = {
+        type: 'analysis',
+        analysis: {
+          node_id: 'F1'
+        }
+      };
+
+      var windshaftError = new WindshaftError(inputError);
+
+      expect(windshaftError.analysisId).toEqual('F1');
+
+      delete inputError.analysis.node_id;
+      inputError.analysis.id = 'G1';
+
+      windshaftError = new WindshaftError(inputError);
+
+      expect(windshaftError.analysisId).toEqual('G1');
+    });
+  });
 });

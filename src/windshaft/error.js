@@ -14,9 +14,9 @@ var WindshaftError = function (error, type, origin) {
     this.layerId = error.layer && error.layer.id;
   }
 
-  if (this.isAnalysisError(error.type)) {
-    this.context = error.analysis && error.analysis.context;
-    this.analysisId = error.analysis && error.analysis.node_id;
+  if (this.isAnalysisError(error.type) && error.analysis) {
+    this.context = error.analysis.context;
+    this.analysisId = error.analysis.node_id || error.analysis.id;
   }
 };
 

@@ -9,59 +9,39 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      body { margin: 0; padding: 0; }
-      * {
-        box-sizing: border-box;
-      }
-      body, *{ margin: 0; padding: 0; }
-      #map {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        z-index: 0;
-      }
-      #controls {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 200px;
-        z-index: 2;
-      }
-      #controls h2 {
-        font: 300 12px/16px 'Open Sans';
-        background: rgba(0, 0, 0, 0.64);
-        border-radius: 4px;
-        padding: 8px 12px;
-        color: #fff;
-      }
-      .container {
-        padding: 8px 12px;
-        background: white;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        color: #2E3C43;
-        margin-top: 12px;
-      }
-      #content h3 {
-        font: 400 16px/22px 'Open Sans';
-        margin-bottom: 4px;
-      }
-      #content p {
-        font: 400 12px/16px 'Open Sans';
-      }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
-    <div id="map"></div>
-    <div id="controls">
-      <h2>Move the mouse over the markers</h2>
-      <div id="content"></div>
+    <div id="map">
     </div>
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Detect feature over/out</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Interact with the features on the over/out event.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Move the mouse over the markers</p>
+          </section>
+          <div id="controls">
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 30, lng: 0},
-        zoom: 3
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{
@@ -82,7 +62,7 @@
       `);
       const style = new carto.style.CartoCSS(`
         #layer {
-          marker-width: 7;
+          marker-width: 10;
           marker-fill: #EE4D5A;
           marker-line-color: #FFFFFF;
         }
@@ -96,16 +76,35 @@
 
       layer.on('featureOver', featureEvent => {
         let content = '';
-        content += `<div class="container">`;
         content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
-        content += `<p>${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
+        content += `<p class="open-sans">${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
         content += `</div>`;
-        document.getElementById('content').innerHTML = content;
+        document.getElementById('info').innerHTML = content;
+        featureVisible = true;
       });
 
       layer.on('featureOut', featureEvent => {
-        document.getElementById('content').innerHTML = '';
+        hideInfo();
       });
+
+      function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      };
+
+      const hideInfo = debounce(function () {
+        document.getElementById('info').innerHTML = '';
+      }, 500);
     </script>
   </body>
 </html>

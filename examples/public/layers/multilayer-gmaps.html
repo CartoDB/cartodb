@@ -8,17 +8,30 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      body { margin: 0; padding: 0; }
-      #map { position: absolute; height: 100%; width: 100%; }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
     <div id="map"></div>
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Add more layers</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Add multiple CARTO layers to your map.</p>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
     <script>
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 40, lng: 0},
-        zoom: 5
+        zoom: 5,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
       });
       // Hide the map labels and geometry strokes
       map.set('styles', [{

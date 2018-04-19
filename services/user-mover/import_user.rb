@@ -30,7 +30,7 @@ module CartoDB
         @start = Time.now
         @logger.debug "Starting import job with options: #{@options}"
 
-        @target_dbport = ENV['USER_DB_PORT'] || @config[:user_dbport]
+        @target_dbport = ENV['USER_DB_PORT'] || @config[:dbport]
         @target_dbhost = @options[:host] || @config[:dbhost]
 
         raise "File #{@options[:file]} does not exist!" unless File.exists?(@options[:file])
@@ -391,7 +391,7 @@ module CartoDB
         command = "#{pg_restore_bin_path(file_path)} -e --verbose -j4 --disable-triggers -Fc #{file_path} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
-          @config[:dbport],
+          @config[:user_dbport],
           @target_dbname)}"
         command += " --section=#{sections}" if sections
         command += " --use-list=\"#{@toc_file}\""

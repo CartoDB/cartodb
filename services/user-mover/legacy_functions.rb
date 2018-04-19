@@ -2380,7 +2380,6 @@ module CartoDB
         'FUNCTION updategeometrysrid(character varying,character varying,integer)',
         'FUNCTION update_geometry_stats()',
         'FUNCTION update_geometry_stats(character varying,character varying)',
-        'FUNCTION update_the_geom_webmercator()',
         'FUNCTION validatetopology(character varying)',
         'FUNCTION width(chip)',
         'FUNCTION within(geometry,geometry)',

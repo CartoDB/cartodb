@@ -2501,7 +2501,7 @@ module CartoDB
 
       LEGACY_ACLS = LEGACY_FUNCTIONS.map { |l|
         parts = l.split(' ')
-        parts[0]='ACL'
+        parts[0] = 'ACL'
         parts.join(' ')
       }.freeze
     end

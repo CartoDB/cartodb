@@ -2398,6 +2398,8 @@ module CartoDB
         'FUNCTION zmax(box3d)',
         'FUNCTION zmflag(geometry)',
         'FUNCTION zmin(box3d)',
+        'FUNCTION st_astext(bytea)',
+        'FUNCTION st_length_spheroid3d(geometry, spheroid)',
         'OPERATOR CLASS btree_geography_ops',
         'OPERATOR CLASS btree_geometry_ops',
         'OPERATOR CLASS gist_geography_ops',

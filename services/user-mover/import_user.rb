@@ -95,7 +95,7 @@ module CartoDB
         @target_username = @pack_config['user']['username']
         @target_userid = @pack_config['user']['id']
         @import_log[:id] = @pack_config['user']['username']
-        @target_port = ENV['USER_DB_PORT'] || @config[:user_dbport]
+        @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
 
         if org_import?
           @target_dbuser = database_username(@target_userid)
@@ -391,7 +391,7 @@ module CartoDB
         command = "#{pg_restore_bin_path(file_path)} -e --verbose -j4 --disable-triggers -Fc #{file_path} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
-          @config[:user_dbport],
+          @config[:dbport],
           @target_dbname)}"
         command += " --section=#{sections}" if sections
         command += " --use-list=\"#{@toc_file}\""

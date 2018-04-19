@@ -2498,6 +2498,12 @@ module CartoDB
         'TYPE valuecount',
         'TYPE wktgeomval'
       ].freeze
+
+      LEGACY_ACLS = LEGACY_FUNCTIONS.map { |l|
+        parts = l.split(' ')
+        parts[0]='ACL'
+        parts.join(' ')
+      }.freeze
     end
   end
 end

@@ -30,7 +30,7 @@ module CartoDB
         @start = Time.now
         @logger.debug "Starting import job with options: #{@options}"
 
-        @target_dbport = ENV['USER_DB_PORT'] || @config[:dbport]
+        @target_dbport = ENV['USER_DB_PORT'] || @config[:user_dbport]
         @target_dbhost = @options[:host] || @config[:dbhost]
 
         raise "File #{@options[:file]} does not exist!" unless File.exists?(@options[:file])
@@ -95,7 +95,7 @@ module CartoDB
         @target_username = @pack_config['user']['username']
         @target_userid = @pack_config['user']['id']
         @import_log[:id] = @pack_config['user']['username']
-        @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
+        @target_port = ENV['USER_DB_PORT'] || @config[:user_dbport]
 
         if org_import?
           @target_dbuser = database_username(@target_userid)
@@ -428,7 +428,7 @@ module CartoDB
 
       def remove_line?(line)
         stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/, ',').strip
-        LEGACY_FUNCTIONS.find { |l| stripped.scan(l).any? }
+        (LEGACY_FUNCTIONS + LEGACY_ACLS).find { |l| stripped.scan(l).any? }
       end
 
       def clean_toc_file(file)

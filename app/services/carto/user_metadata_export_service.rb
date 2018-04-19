@@ -324,8 +324,7 @@ module Carto
     def should_skip_canonical_viz_export(viz)
       return true if viz.table.nil?
 
-      viz.user.visualizations.where(user_id: viz.user.id,
-                                    type: viz.type,
+      viz.user.visualizations.where(type: viz.type,
                                     name: viz.name).all.sort_by(&:updated_at).last.id != viz.id
     end
 

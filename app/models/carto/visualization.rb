@@ -270,7 +270,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   # Despite storing always a named map, no need to retrieve it for "public" visualizations
   def retrieve_named_map?
-    password_protected? || has_private_tables? || builder?
+    password_protected? || has_private_tables?
   end
 
   def has_password?

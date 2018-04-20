@@ -23,6 +23,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 
 ### Features
 * Profile page migration (#13726)
+* Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
 * Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
@@ -575,6 +576,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Point to new CARTO.js v4 repo (#13860)
 * Account migration (#13501)
 * Data Library dashboard migration (#13608)
 * Improve spec bundles / process
@@ -756,6 +758,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config
+* Metadata only user migrations
 * Add rake to fix analyses cache tables geometries
 * Enable user migrations across clouds (#12795)
 
@@ -920,6 +923,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Set `soft_geocoding_limit` to default to false.
 * Do not export local visualizations lacking a map
 * Do not export duplicated canonical visualizations
+* Add notifications to user migrator (#13844)
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

@@ -27,6 +27,7 @@ namespace :cartodb do
           import_params = {
             org_import: ume.organization.present?,
             import_metadata: ume.export_metadata,
+            import_data: ume.export_data?,
             exported_file: ume.exported_file,
             json_file: ume.json_file,
             dry: false,
@@ -42,31 +43,36 @@ namespace :cartodb do
           puts "Don't forget to update the database host"
         else
           puts ume.log.entries
+          raise 'Failed Export!'
         end
       end
 
       desc 'Export an organization'
-      task :organization, [:orgname, :metadata] => :environment do |_task, args|
+      task :organization, [:orgname, :metadata, :metadata_only] => :environment do |_task, args|
         organization = Carto::Organization.find_by_name(args[:orgname])
         raise 'Organization not found' unless organization
         export_metadata = args[:metadata] == 'true'
+        metadata_only = args[:metadata_only] == 'true'
 
         ume = Carto::UserMigrationExport.new(
           organization: organization,
-          export_metadata: export_metadata
+          export_metadata: export_metadata,
+          export_data: !metadata_only
         )
         run_user_migrator_export_job(ume)
       end
 
       desc 'Export a user'
-      task :user, [:username, :metadata] => :environment do |_task, args|
+      task :user, [:username, :metadata, :metadata_only] => :environment do |_task, args|
         user = Carto::User.find_by_username(args[:username])
         raise 'User not found' unless user
         export_metadata = args[:metadata] == 'true'
+        metadata_only = args[:metadata_only] == 'true'
 
         ume = Carto::UserMigrationExport.new(
           user: user,
-          export_metadata: export_metadata
+          export_metadata: export_metadata,
+          export_data: !metadata_only
         )
         run_user_migrator_export_job(ume)
       end

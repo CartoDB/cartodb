@@ -312,7 +312,7 @@ module Carto
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
       user.visualizations.where(type: type).each do |visualization|
-        next if visualization.canonical? && visualization.table.nil?
+        next if visualization.canonical? && should_skip_canonical_viz_export(visualization)
         next if !visualization.remote? && visualization.map.nil?
 
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
@@ -321,6 +321,13 @@ module Carto
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
       end
+    end
+
+    def should_skip_canonical_viz_export(viz)
+      return true if viz.table.nil?
+
+      viz.user.visualizations.where(type: viz.type,
+                                    name: viz.name).all.sort_by(&:updated_at).last.id != viz.id
     end
 
     def with_non_viewer_user(user)

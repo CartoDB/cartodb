@@ -428,7 +428,7 @@ module CartoDB
 
       def remove_line?(line)
         stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/, ',').strip
-        LEGACY_FUNCTIONS.find { |l| stripped.scan(l).any? }
+        (LEGACY_FUNCTIONS + LEGACY_ACLS).find { |l| stripped.scan(l).any? }
       end
 
       def clean_toc_file(file)

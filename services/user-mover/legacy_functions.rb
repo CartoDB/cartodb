@@ -2380,7 +2380,6 @@ module CartoDB
         'FUNCTION updategeometrysrid(character varying,character varying,integer)',
         'FUNCTION update_geometry_stats()',
         'FUNCTION update_geometry_stats(character varying,character varying)',
-        'FUNCTION update_the_geom_webmercator()',
         'FUNCTION validatetopology(character varying)',
         'FUNCTION width(chip)',
         'FUNCTION within(geometry,geometry)',
@@ -2398,6 +2397,8 @@ module CartoDB
         'FUNCTION zmax(box3d)',
         'FUNCTION zmflag(geometry)',
         'FUNCTION zmin(box3d)',
+        'FUNCTION st_astext(bytea)',
+        'FUNCTION st_length_spheroid3d(geometry,spheroid)',
         'OPERATOR CLASS btree_geography_ops',
         'OPERATOR CLASS btree_geometry_ops',
         'OPERATOR CLASS gist_geography_ops',
@@ -2496,6 +2497,12 @@ module CartoDB
         'TYPE valuecount',
         'TYPE wktgeomval'
       ].freeze
+
+      LEGACY_ACLS = LEGACY_FUNCTIONS.map { |l|
+        parts = l.split(' ')
+        parts[0] = 'ACL'
+        parts.join(' ')
+      }.freeze
     end
   end
 end

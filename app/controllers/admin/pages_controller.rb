@@ -329,7 +329,7 @@ class Admin::PagesController < Admin::AdminController
 
   def set_layout_vars_for_organization(org, content_type)
     set_new_dashboard_flag
-    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED, 
+    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED,
                                                  1,
                                                  1,
                                                  nil,

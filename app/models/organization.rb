@@ -364,7 +364,7 @@ class Organization < Sequel::Model
         per_page: items_per_page,
         tags:     tags,
         order:    order,
-        o:        {updated_at: :desc},
+        o:        { updated_at: :desc },
         version:  version
     )
   end

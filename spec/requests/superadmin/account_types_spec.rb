@@ -1,11 +1,14 @@
 # encoding: utf-8
 
 require_relative '../../acceptance_helper'
+require 'helpers/account_types_helper'
 
 describe Superadmin::AccountTypesController do
+  include AccountTypesHelper
+
   describe '#create' do
     before(:each) do
-      @account_type = FactoryGirl.create(:account_type_pro)
+      @account_type = create_account_type_fg('PRO')
       @account_type_param = {
         account_type: "PERSONAL30",
         rate_limit: @account_type.rate_limit.api_attributes
@@ -38,7 +41,7 @@ describe Superadmin::AccountTypesController do
   describe '#update' do
     before(:each) do
       Carto::AccountType.where(account_type: "PRO").each(&:destroy)
-      @account_type = FactoryGirl.create(:account_type_pro)
+      @account_type = create_account_type_fg('PRO')
       @rate_limits = FactoryGirl.create(:rate_limits_custom)
       @account_type_param = {
         account_type: @account_type.account_type,
@@ -114,7 +117,7 @@ describe Superadmin::AccountTypesController do
   describe '#destroy' do
     before(:each) do
       Carto::AccountType.where(account_type: "PRO").each(&:destroy)
-      @account_type = FactoryGirl.create(:account_type_pro)
+      @account_type = create_account_type_fg('PRO')
     end
 
     after(:each) do

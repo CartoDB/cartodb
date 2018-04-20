@@ -8,6 +8,7 @@ module Carto
 
     class GroupsController < ::Api::ApplicationController
       include PagedSearcher
+      include Carto::ControllerHelper
 
       ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users
 
@@ -20,8 +21,12 @@ module Carto
       before_filter :org_users_only, only: [:show, :index]
       before_filter :load_organization_users, only: [:add_users, :remove_users]
 
+      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+
+      VALID_ORDER_PARAMS = [:id, :name, :display_name, :organization_id, :updated_at].freeze
+
       def index
-        page, per_page, order = page_per_page_order_params
+        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
 
         groups = @user ? @user.groups : @organization.groups
         groups = groups.where('name ilike ?', "%#{params[:q]}%") if params[:q]

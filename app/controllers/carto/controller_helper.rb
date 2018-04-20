@@ -16,6 +16,12 @@ module Carto
     end
   end
 
+  class OrderParamInvalidError < CartoError
+    def initialize(valid_values)
+      super("Wrong 'order' parameter value. Valid values are one of #{valid_values}", 400)
+    end
+  end
+
   class UUIDParameterFormatError < CartoError
     def initialize(parameter:, value:, status: 400)
       super("Parameter not UUID format. Parameter: #{parameter}. Value: #{value}", status)

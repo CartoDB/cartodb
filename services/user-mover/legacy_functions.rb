@@ -807,18 +807,9 @@ module CartoDB
         'COMMENT TYPE summarystats',
         'COMMENT TYPE topogeometry',
         'COMMENT TYPE validatetopology_returntype',
-        'CONSTRAINT geometry_columns_pk',
-        'CONSTRAINT layer_pkey',
-        'CONSTRAINT layer_schema_name_key',
-        'CONSTRAINT raster_columns_pk',
-        'CONSTRAINT raster_overviews_pk',
-        'CONSTRAINT spatial_ref_sys_pkey',
-        'CONSTRAINT topology_name_key',
-        'CONSTRAINT topology_pkey',
         'DOMAIN topoelement',
         'DOMAIN topoelementarray',
         'DOMAIN topogeomelementarray',
-        'FKCONSTRAINT layer_topology_id_fkey',
         'FUNCTION addauth(text)',
         'FUNCTION addbbox(geometry)',
         'FUNCTION addedge(character varying,public.geometry)',
@@ -2389,7 +2380,6 @@ module CartoDB
         'FUNCTION updategeometrysrid(character varying,character varying,integer)',
         'FUNCTION update_geometry_stats()',
         'FUNCTION update_geometry_stats(character varying,character varying)',
-        'FUNCTION update_the_geom_webmercator()',
         'FUNCTION validatetopology(character varying)',
         'FUNCTION width(chip)',
         'FUNCTION within(geometry,geometry)',
@@ -2407,6 +2397,8 @@ module CartoDB
         'FUNCTION zmax(box3d)',
         'FUNCTION zmflag(geometry)',
         'FUNCTION zmin(box3d)',
+        'FUNCTION st_astext(bytea)',
+        'FUNCTION st_length_spheroid3d(geometry,spheroid)',
         'OPERATOR CLASS btree_geography_ops',
         'OPERATOR CLASS btree_geometry_ops',
         'OPERATOR CLASS gist_geography_ops',
@@ -2468,11 +2460,6 @@ module CartoDB
         'OPERATOR &>(raster,raster)',
         'OPERATOR &&(raster,raster)',
         'PROCEDURALLANGUAGE plpgsql',
-        'RULE geometry_columns_delete',
-        'RULE geometry_columns_insert',
-        'RULE geometry_columns_update',
-        'SCHEMA topology',
-        'SEQUENCE topology_id_seq',
         'SHELLTYPE box2d',
         'SHELLTYPE box2df',
         'SHELLTYPE box3d',
@@ -2484,18 +2471,6 @@ module CartoDB
         'SHELLTYPE pgis_abs',
         'SHELLTYPE raster',
         'SHELLTYPE spheroid',
-        'TABLE DATA geography_columns',
-        'TABLE DATA geometry_columns',
-        'TABLE DATA raster_columns',
-        'TABLE DATA raster_overviews',
-        'TABLE geography_columns',
-        'TABLE geometry_columns',
-        'TABLE layer',
-        'TABLE raster_columns',
-        'TABLE raster_overviews',
-        'TABLE spatial_ref_sys',
-        'TABLE topology',
-        'TRIGGER layer_integrity_checks',
         'TYPE box2d',
         'TYPE box2df',
         'TYPE box3d',
@@ -2520,12 +2495,14 @@ module CartoDB
         'TYPE validatetopology_returntype',
         'TYPE valid_detail',
         'TYPE valuecount',
-        'TYPE wktgeomval',
-        'VIEW geography_columns',
-        'VIEW geometry_columns',
-        'VIEW raster_columns',
-        'VIEW raster_overviews'
+        'TYPE wktgeomval'
       ].freeze
+
+      LEGACY_ACLS = LEGACY_FUNCTIONS.map { |l|
+        parts = l.split(' ')
+        parts[0] = 'ACL'
+        parts.join(' ')
+      }.freeze
     end
   end
 end

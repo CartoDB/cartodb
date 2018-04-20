@@ -355,7 +355,7 @@ class Organization < Sequel::Model
     users.map { |u| u.tags(exclude_shared, type) }.flatten
   end
 
-  def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
+  def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at', version = nil)
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
         type:     type,
@@ -364,7 +364,8 @@ class Organization < Sequel::Model
         per_page: items_per_page,
         tags:     tags,
         order:    order,
-        o:        {updated_at: :desc}
+        o:        {updated_at: :desc},
+        version:  version
     )
   end
 

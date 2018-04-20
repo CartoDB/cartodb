@@ -300,8 +300,14 @@ class Admin::PagesController < Admin::AdminController
     end
   end
 
+  def set_new_dashboard_flag
+    ff_user = @viewed_user || @viewed_org.owner
+    @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
+  end
+
   def set_layout_vars_for_user(user, content_type)
-    builder = user_maps_public_builder(user)
+    set_new_dashboard_flag
+    builder = user_maps_public_builder(user, visualization_version)
     most_viewed = builder.with_order('mapviews', :desc).build_paged(1, 1).first
 
     set_layout_vars({
@@ -322,7 +328,13 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_organization(org, content_type)
-    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED, 1, 1, nil, 'mapviews').first
+    set_new_dashboard_flag
+    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED, 
+                                                 1,
+                                                 1,
+                                                 nil,
+                                                 'mapviews',
+                                                 visualization_version).first
     set_layout_vars(most_viewed_vis_map: most_viewed_vis_map,
                     content_type: content_type,
                     default_fallback_basemap: org.owner ? org.owner.default_basemap : nil,
@@ -371,9 +383,6 @@ class Admin::PagesController < Admin::AdminController
     @needs_gmaps_lib = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
 
-    ff_user = @viewed_user || @viewed_org.owner
-    @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
-
     gmaps_user = @most_viewed_vis_map.try(:user) || @viewed_user
     @gmaps_query_string = gmaps_user ? gmaps_user.google_maps_query_string : @viewed_org.google_maps_key
   end
@@ -382,8 +391,8 @@ class Admin::PagesController < Admin::AdminController
     public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_CANONICAL)
   end
 
-  def user_maps_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, version: visualization_version)
+  def user_maps_public_builder(user, version = nil)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, version: version)
   end
 
   def org_datasets_public_builder(org)
@@ -391,9 +400,7 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def org_maps_public_builder(org)
-    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED,
-                   organization_id: org.id,
-                   version: visualization_version)
+    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id)
   end
 
   def public_builder(user_id: nil, vis_type: nil, organization_id: nil, version: nil)

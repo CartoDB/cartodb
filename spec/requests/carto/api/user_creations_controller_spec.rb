@@ -3,15 +3,17 @@
 require 'uuidtools'
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/user_creations_controller'
+require 'helpers/account_types_helper'
 
 describe Carto::Api::UserCreationsController do
   include_context 'organization with users helper'
+  include AccountTypesHelper
 
   describe 'show' do
 
     before :all do
-      FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
-      FactoryGirl.create(:account_type_org) unless Carto::AccountType.exists?(account_type: 'ORGANIZATION USER')
+      create_account_type_fg('FREE')
+      create_account_type_fg('ORGANIZATION USER')
     end
 
     after :all do

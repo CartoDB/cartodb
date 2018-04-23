@@ -323,6 +323,53 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
+  it 'does not export duplicated vizs' do
+    user = create_user_with_visualizations
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+    source_vis = carto_user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).first
+    carto_user.visualizations.count.should eq 3
+    map, _, table_visualization, visualization = create_full_visualization(carto_user)
+    table_visualization.update_column(:name, source_vis.name)
+    table_visualization.update_column(:map_id, source_vis.map.id)
+    table_visualization.update_column(:updated_at, source_vis.updated_at - 1.minute)
+    map.destroy
+    visualization.destroy
+
+    carto_user.visualizations.count.should eq 4
+
+    export = Carto::UserMigrationExport.create(
+      user: carto_user,
+      export_metadata: true
+    )
+    export.run_export
+
+    puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+    expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+    user.destroy_cascade
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: true,
+      dry: false
+    )
+    import.stubs(:assert_organization_does_not_exist)
+    import.stubs(:assert_user_does_not_exist)
+    import.run_import
+
+    puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+    expect(export.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+    imported_user = Carto::User.find(user_attributes['id'])
+    imported_user.visualizations.count.should eq 3
+    expect { imported_user.visualizations.find(table_visualization.id) }.to raise_error(ActiveRecord::RecordNotFound)
+
+    user.destroy_cascade
+  end
+
   it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
@@ -434,18 +481,24 @@ describe 'UserMigration' do
   describe 'legacy functions' do
 
     it 'loads legacy functions' do
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2522
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2493
     end
 
     it 'skips importing legacy functions' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
       user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
       BEGIN
         RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      user.in_database.execute('CREATE OR REPLACE FUNCTION sumita(i1 INT, i2 INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i1 + i2;
       END;
       $$ LANGUAGE plpgsql;')
 
@@ -464,10 +517,11 @@ describe 'UserMigration' do
       import.run_import
 
       user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'sumita'").should eq 0
       user.destroy
     end
 
-    it 'imports functions that are not on the legacy list' do
+    it 'imports functions and tables that are not on the legacy list' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
@@ -485,6 +539,9 @@ describe 'UserMigration' do
       END;
       $$ LANGUAGE plpgsql;')
 
+      user.in_database.execute('CREATE TABLE layer_wadus(number INT)')
+      user.in_database.execute('INSERT INTO layer_wadus VALUES (\'1\')')
+
       export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
       export.run_export
       user.destroy
@@ -501,6 +558,7 @@ describe 'UserMigration' do
 
       user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
       user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment2'").should eq 1
+      user.in_database.execute('select count(*) from layer_wadus').should eq 1
       user.destroy
     end
   end

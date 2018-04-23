@@ -93,6 +93,8 @@ module Carto
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
 
+      user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user
@@ -170,8 +172,7 @@ module Carto
 
       user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
 
-      # TODO
-      # Organization notifications
+      user_hash[:notifications] = user.static_notifications.notifications
 
       user_hash
     end
@@ -311,7 +312,7 @@ module Carto
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
       user.visualizations.where(type: type).each do |visualization|
-        next if visualization.canonical? && visualization.table.nil?
+        next if visualization.canonical? && should_skip_canonical_viz_export(visualization)
         next if !visualization.remote? && visualization.map.nil?
 
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
@@ -320,6 +321,13 @@ module Carto
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
       end
+    end
+
+    def should_skip_canonical_viz_export(viz)
+      return true if viz.table.nil?
+
+      viz.user.visualizations.where(type: viz.type,
+                                    name: viz.name).all.sort_by(&:updated_at).last.id != viz.id
     end
 
     def with_non_viewer_user(user)

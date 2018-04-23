@@ -91,7 +91,7 @@ module.exports = env => {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, '../../', 'node_modules/cartodb.js')
+            resolve(__dirname, '../../', 'node_modules/carto.js')
           ],
           options: {
             shim: {
@@ -114,7 +114,7 @@ module.exports = env => {
             resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
-            resolve(__dirname, '../../', 'node_modules/cartodb.js')
+            resolve(__dirname, '../../', 'node_modules/carto.js')
           ]
         },
         {
@@ -123,7 +123,7 @@ module.exports = env => {
           include: [
             resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
-            resolve(__dirname, '../../', 'node_modules/cartodb.js')
+            resolve(__dirname, '../../', 'node_modules/carto.js')
           ]
         }
       ]

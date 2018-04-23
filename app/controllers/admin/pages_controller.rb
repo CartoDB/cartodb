@@ -35,6 +35,7 @@ class Admin::PagesController < Admin::AdminController
 
   before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
   before_filter :load_viewed_entity
+  before_filter :set_new_dashboard_flag
   before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
@@ -306,7 +307,6 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_user(user, content_type)
-    set_new_dashboard_flag
     builder = user_maps_public_builder(user, visualization_version)
     most_viewed = builder.with_order('mapviews', :desc).build_paged(1, 1).first
 
@@ -328,7 +328,6 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_organization(org, content_type)
-    set_new_dashboard_flag
     most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED,
                                                  1,
                                                  1,

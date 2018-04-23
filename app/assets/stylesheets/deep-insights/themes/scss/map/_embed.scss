@@ -92,6 +92,10 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   h1 {
     margin: 0;
   }
+
+  &.is-collapsed {
+    padding-bottom: 10px;
+  }
 }
 
 .CDB-Overlay-inner {
@@ -107,9 +111,8 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 }
 
-// Override carto.js legends styles
 .CDB-Legends-canvas .CDB-Legends-canvasInner {
-  padding: 10px 12px;
+  padding: 10px 12px 0;
 }
 
 .CDB-Embed-legends {
@@ -164,7 +167,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     }
 
     .CDB-Legends-canvasInner {
-      padding: 12px 10px;
+      padding: 10px 12px 0;
     }
   }
 }

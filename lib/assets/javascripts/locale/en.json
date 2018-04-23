@@ -851,6 +851,9 @@
           "cant-select": "You can't select a date in night mode"
         }
       },
+      "create-dialog": {
+        "creating-map": "Creating map"
+      },
       "export-data": {
         "title": "Export data",
         "desc": "Select the preferred file format",

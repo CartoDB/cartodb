@@ -312,14 +312,19 @@ var Infowindow = View.extend({
     return false;
   },
 
+  _imageOnHookNotSupported: function () {
+    var noCssClipPath = util.ie || util.browser.ie || util.browser.edge;
+    return noCssClipPath;
+  },
+
   _loadImageHook: function (imageDimensions, coverDimensions, url) {
-    var cssClipPathNotSupported = util.ie || util.browser.ie || util.browser.edge;
-    if (cssClipPathNotSupported) {
+    var $hook = this.$('.CDB-hook');
+    if (!$hook) {
       return;
     }
 
-    var $hook = this.$('.CDB-hook');
-    if (!$hook) {
+    if (this._imageOnHookNotSupported()) {
+      $hook.hide();
       return;
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.119",
+  "version": "4.11.120",
   "dependencies": {
     "accessory": {
       "version": "1.0.1",
@@ -387,9 +387,9 @@
       "resolved": "https://registry.npmjs.org/carto-zera/-/carto-zera-1.0.2.tgz"
     },
     "carto.js": {
-      "version": "4.0.0",
-      "from": "cartodb/carto.js#v4.0.0",
-      "resolved": "git://github.com/cartodb/carto.js.git#68afe497638f080f4f8755c63ebdc7c48ed25c78"
+      "version": "4.0.0-2",
+      "from": "cartodb/carto.js#v4.0.0-2",
+      "resolved": "git://github.com/cartodb/carto.js.git#21da8044c8d954449fb7be7c2b2ac05054e658b1"
     },
     "cartocolor": {
       "version": "4.0.0",

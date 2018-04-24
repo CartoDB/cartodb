@@ -1359,6 +1359,12 @@
           "cancel": "Cancel",
           "confirm": "Ok, delete it"
         }
+      },
+      "privacy-warning": {
+        "title": "You are about to publish this visualization for public view",
+        "description": "Any personal data that you have used to create it will also be publicly available",
+        "cancel": "Cancel",
+        "confirm": "Ok, publish it"
       }
     },
     "error": {

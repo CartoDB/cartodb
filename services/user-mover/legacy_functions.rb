@@ -2507,7 +2507,6 @@ module CartoDB
         return false unless legacy_functions[type]
         return false unless legacy_functions[type][name]
         legacy_functions[type][name].each { |a| return true if a == arguments }
-        return false
       end
 
       def legacy_functions
@@ -2527,7 +2526,7 @@ module CartoDB
         name = match[:name].strip
         arguments = match[:arguments]
         arguments = arguments ? arguments.split(',').map(&:strip) : nil
-        return arguments, name, type
+        [arguments, name, type]
       end
     end
   end

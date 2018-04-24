@@ -3,34 +3,34 @@
     "unknown": "Unknown",
     "source": "Source",
     "connect-with-lines": {
-      "short-title": "Connect with lines"
+      "short-title": "Create Lines"
     },
     "georeference": {
       "short-title": "Geocode"
     },
     "data-observatory-measure": {
-      "short-title": "Data observatory"
+      "short-title": "Data Observatory"
     },
     "data-observatory-multiple-measures": {
-      "short-title": "Data observatory"
+      "short-title": "Data Observatory"
     },
     "merge": {
-      "short-title": "Join columns"
+      "short-title": "Add Columns"
     },
     "filter-by-node-column": {
-      "short-title": "Filter by layer"
+      "short-title": "Link Layer"
     },
     "centroid": {
       "short-title": "Centroid"
     },
     "group-points": {
-      "short-title": "Group points"
+      "short-title": "Create Polygons"
     },
     "convex-hull": {
-      "short-title": "Convex Hull"
+      "short-title": "Create Polygons"
     },
     "concave-hull": {
-      "short-title": "Concave Hull"
+      "short-title": "Create Polygons"
     },
     "bounding-box": {
       "short-title": "Bounding Box"
@@ -39,25 +39,25 @@
       "short-title": "Bounding Circle"
     },
     "area-of-influence": {
-      "short-title": "AOI"
+      "short-title": "Buffer"
     },
     "filter-intersection": {
-      "short-title": "Filter points in polygons"
+      "short-title": "Select Points"
     },
     "aggregate-intersection": {
-      "short-title": "Aggregate intersection"
+      "short-title": "Inersect"
     },
     "filter": {
-      "short-title": "Filter"
+      "short-title": "Filter Value"
     },
     "sampling": {
-      "short-title": "Sampling"
+      "short-title": "Subsample"
     },
     "kmeans": {
       "short-title": "Clusters"
     },
     "moran-cluster": {
-      "short-title": "Outliers & clusters"
+      "short-title": "Outliers"
     },
     "spatial-markov-trend": {
       "short-title": "Trends"
@@ -69,7 +69,7 @@
       "short-title": "SQL Function"
     },
     "find-nearest": {
-      "short-title": "Find nearest"
+      "short-title": "Nearest"
     }
   }
 }

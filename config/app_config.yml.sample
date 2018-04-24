@@ -81,6 +81,8 @@ defaults: &defaults
   hubspot: ''
   segment:
     api_key:
+  passwords:
+    expiration_in_s:
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'

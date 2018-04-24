@@ -115,6 +115,7 @@ ion for time-series (#12670)
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_s`
 * New user render timeouts and propagation of timeout values to Redis (#12425)
 * New Tooling to gather Dataservices' provider metrics (#13710)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)

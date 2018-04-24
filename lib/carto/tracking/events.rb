@@ -248,7 +248,7 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :layer_id, :format,
-                            :source, :visible, :table_name
+                            :source, :visible, :table_name, :from_view
       end
 
       class StyledByValue < Event

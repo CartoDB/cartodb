@@ -51,6 +51,12 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
+  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
+                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
+                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
+                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
+                'Transportation and Logistics'].freeze
+
   JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
                'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
 

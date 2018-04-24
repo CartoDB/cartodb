@@ -14,6 +14,8 @@ class SessionsController < ApplicationController
   include LoginHelper
   include Carto::EmailCleaner
 
+  SESSION_EXPIRED = 'session_expired'.freeze
+
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
                :ldap_user_not_at_cartodb, :saml_user_not_in_carto
@@ -131,6 +133,13 @@ class SessionsController < ApplicationController
   def verify_warden_failure
     warden.custom_failure!
     warden.env['warden.options']
+  end
+
+  def password_expired
+    warden.custom_failure!
+    cdb_logout
+
+    redirect_to login_url(error: SESSION_EXPIRED)
   end
 
   def create_user(username, organization_id, email, created_via)

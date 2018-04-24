@@ -2,6 +2,11 @@
   "name": "cartodb-ui",
   "version": "4.11.120",
   "dependencies": {
+    "@carto/zera": {
+      "version": "1.0.0",
+      "from": "@carto/zera@1.0.0",
+      "resolved": "https://registry.npmjs.org/@carto/zera/-/zera-1.0.0.tgz"
+    },
     "accessory": {
       "version": "1.0.1",
       "from": "accessory@>=1.0.0 <1.1.0",

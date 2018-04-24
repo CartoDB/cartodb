@@ -23,7 +23,7 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
-    "carto-zera": "1.0.2",
+    "@carto/zera": "1.0.0",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
     "carto.js": "CartoDB/carto.js#v4.0.0-2",

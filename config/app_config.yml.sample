@@ -129,6 +129,15 @@ defaults: &defaults
     generate_every: 86400
   explore_api:
     username: ''
+  aggregation_tables:
+    host: 'localhost'
+    port: '5432'
+    dbname: 'dataservices_db'
+    username: 'geocoder_api'
+    password: ''
+    tables:
+      admin0: 'ne_admin0_v3'
+      admin1: 'global_province_polygons'
   reports:
     mail_to: ''
   mailer:

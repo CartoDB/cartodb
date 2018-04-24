@@ -188,7 +188,6 @@ class User < Sequel::Model
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
 
-    validates_includes INDUSTRIES, :industry if industry.present?
     validates_includes JOB_ROLES + DEPRECATED_JOB_ROLES, :job_role if job_role.present?
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?

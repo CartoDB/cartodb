@@ -44,6 +44,9 @@ class SessionsController < ApplicationController
     elsif central_enabled? && !@organization.try(:auth_enabled?)
       redirect_to(Cartodb::Central.new.login_url)
     else
+      if params[:error] == SESSION_EXPIRED
+        @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'
+      end
       render
     end
   end
@@ -59,7 +62,7 @@ class SessionsController < ApplicationController
     candidate_user = Carto::User.where(username: username).first
 
     if central_enabled? && @organization && candidate_user && !candidate_user.belongs_to_organization?(@organization)
-      @login_error = 'The user is not part of the organization'
+      @flash_login_error = 'The user is not part of the organization'
       @user_login_url = Cartodb::Central.new.login_url
       return render(action: 'new')
     end

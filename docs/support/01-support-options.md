@@ -3,23 +3,23 @@
 Feeling stuck? There are many ways to find help.
 
 * Ask a question on [GIS StackExchange](https://gis.stackexchange.com/questions/tagged/carto) using the `CARTO` tag.
-* [Report an issue](https://github.com/CartoDB/cartodb.js/issues) in Github.
+* [Report an issue](https://github.com/CartoDB/carto.js/issues) in Github.
 * Engine Plan customers have additional access to enterprise-level support through CARTO's support representatives.
 
 If you just want to describe an issue or share an idea, just <a class="typeform-share" href="https://cartohq.typeform.com/to/mH6RRl" data-mode="popup" target="_blank"> send your feedback</a><script>(function() { var qs,js,q,s,d=document, gi=d.getElementById, ce=d.createElement, gt=d.getElementsByTagName, id="typef_orm_share", b="https://embed.typeform.com/"; if(!gi.call(d,id)){ js=ce.call(d,"script"); js.id=id; js.src=b+"embed.js"; q=gt.call(d,"script")[0]; q.parentNode.insertBefore(js,q) } })() </script>.
 
 ### Issues on Github
 
-If you think you may have found a bug, or if you have a feature request that you would like to share with the CARTO.js team, please [open an issue](https://github.com/cartodb/cartodb.js/issues/new). 
+If you think you may have found a bug, or if you have a feature request that you would like to share with the CARTO.js team, please [open an issue](https://github.com/cartodb/carto.js/issues/new). 
 
-Before opening an issue, review the [contributing guidelines](https://github.com/CartoDB/cartodb.js/blob/develop/CONTRIBUTING.md#filling-a-ticket).
+Before opening an issue, review the [contributing guidelines](https://github.com/CartoDB/carto.js/blob/develop/CONTRIBUTING.md#filling-a-ticket).
 
 
 ### Community support on GIS Stack Exchange
 
 GIS Stack Exchange is the most popular community in the geospatial industry. This is a collaboratively-edited question and answer site for geospatial programmers and technicians. It is a fantastic resource for asking technical questions about developing and maintaining your application.
 
-Members of the CARTO.js team regularly monitor the `carto` tag. You can look for CARTO topics by adding `carto` or `cartodb.js` to your search query. You can also add additional tags to your question in order to attract the attention of experts in related technologies.
+Members of the CARTO.js team regularly monitor the `carto` tag. You can look for CARTO topics by adding `carto` or `carto.js` to your search query. You can also add additional tags to your question in order to attract the attention of experts in related technologies.
 
 
 When posting a new question, please consider the following:

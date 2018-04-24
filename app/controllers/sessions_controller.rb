@@ -42,7 +42,9 @@ class SessionsController < ApplicationController
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
       redirect_to(saml_service.authentication_request)
     elsif central_enabled? && !@organization.try(:auth_enabled?)
-      redirect_to(Cartodb::Central.new.login_url)
+      url = Cartodb::Central.new.login_url
+      url += "?error=#{params[:error]}" if params[:error].present?
+      redirect_to(url)
     else
       if params[:error] == SESSION_EXPIRED
         @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'

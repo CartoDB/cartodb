@@ -67,7 +67,7 @@ describe('core/util', function () {
       window.google = existingGMaps;
     });
 
-    it('gmaps is required as global and it must be between 3.0 and 3.31', function () {
+    it('gmaps is required as global and it must be between 3.0 and 3.32', function () {
       var checkGoogle = function () {
         util.isGoogleMapsLoaded();
       };
@@ -77,18 +77,19 @@ describe('core/util', function () {
       window.google = { something: 'something' };
       expect(checkGoogle).toThrowError('Google Maps is required');
 
+      var INVALID_VERSION_MESSAGE = 'Google Maps version should be >= 3.0 and < 3.33';
       window.google.maps = {
         version: '2.9.9'
       };
-      expect(checkGoogle).toThrowError('Google Maps version should be >= 3.0 and < 3.31');
+      expect(checkGoogle).toThrowError(INVALID_VERSION_MESSAGE);
 
       window.google.maps = {
-        version: '3.31.0'
+        version: '3.33.0'
       };
-      expect(checkGoogle).toThrowError('Google Maps version should be >= 3.0 and < 3.31');
+      expect(checkGoogle).toThrowError(INVALID_VERSION_MESSAGE);
 
       window.google.maps = {
-        version: '3.30.0'
+        version: '3.32.0'
       };
       expect(checkGoogle).not.toThrow();
     });

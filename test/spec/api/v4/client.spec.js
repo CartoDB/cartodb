@@ -325,7 +325,7 @@ describe('api/v4/client', function () {
       window.google.maps = { version: '2.4' };
       expect(function () {
         client.getGoogleMapsMapType();
-      }).toThrowError('Google Maps version should be >= 3.0 and < 3.31');
+      }).toThrowError('Google Maps version should be >= 3.0 and < 3.33');
 
       // Restore window.google
       window.google = google;

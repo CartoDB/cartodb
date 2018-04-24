@@ -2498,11 +2498,36 @@ module CartoDB
         'TYPE wktgeomval'
       ].freeze
 
-      LEGACY_ACLS = LEGACY_FUNCTIONS.map { |l|
-        parts = l.split(' ')
-        parts[0] = 'ACL'
-        parts.join(' ')
-      }.freeze
+      def remove_line?(line)
+        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/, ',').strip
+        return false unless stripped =~ SIGNATURE_RE
+        match = stripped.match(SIGNATURE_RE)
+        arguments, name, type = matches(match)
+        return false unless legacy_functions[type]
+        return false unless legacy_functions[type][name]
+        legacy_functions[type][name].each { |a| return true if a == arguments }
+        return false
+      end
+
+      def legacy_functions
+        @legacy_functions ||= LEGACY_FUNCTIONS.reduce({}) do |res, line|
+          return res unless line =~ SIGNATURE_RE
+          match = line.match(SIGNATURE_RE)
+          arguments, name, type = matches(match)
+          res[type] = {} unless res[type]
+          res[type][name] = [] unless res[type][name]
+          res[type][name] << arguments if arguments
+          res
+        end
+      end
+
+      def matches(match)
+        type = match[:type].strip.gsub(/\s+/, ' ')
+        name = match[:name].strip
+        arguments = match[:arguments]
+        arguments = arguments ? arguments.split(',').map(&:strip) : nil
+        return arguments, name, type
+      end
     end
   end
 end

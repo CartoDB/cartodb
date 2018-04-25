@@ -146,7 +146,7 @@ namespace :cartodb do
     end
 
     module RemoteTablesMaintenanceRake
-      def delete_remote_visualizations(user)
+      def self.delete_remote_visualizations(user)
         user.update_column(:last_common_data_update_date, nil)
 
         user.visualizations.where(type: 'remote').each do |v|

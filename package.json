@@ -1,10 +1,6 @@
 {
   "name": "cartodb-ui",
-<<<<<<< HEAD
-  "version": "4.11.121-13828-01",
-=======
   "version": "4.11.122",
->>>>>>> master
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

@@ -93,7 +93,8 @@ describe 'Warden' do
 
         expect(response.status).to eq 302
         follow_redirect!
-        expect(response.location).to end_with '/login?error=session_expired'
+
+        expect(request.fullpath).to end_with '/login?error=session_expired'
         Delorean.back_to_the_present
       end
     end

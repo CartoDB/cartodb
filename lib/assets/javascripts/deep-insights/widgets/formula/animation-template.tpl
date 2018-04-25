@@ -1,1 +1,1 @@
-<%- prefix %><%- value %><%- suffix %>
+<%= _.unescape(prefix) %><%= value %><%= _.unescape(suffix) %>

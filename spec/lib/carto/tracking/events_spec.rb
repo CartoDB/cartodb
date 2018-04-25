@@ -1795,18 +1795,6 @@ module Carto
                                         table_name: 'test')
             end
 
-            it 'does allow a from_view optional property' do
-              @event = @event_class.new(@user.id,
-                                        visualization_id: @visualization.id,
-                                        user_id: @user.id,
-                                        layer_id: @visualization.data_layers.first.id,
-                                        format: 'csv',
-                                        source: 'd0',
-                                        table_name: 'test',
-                                        visible: true,
-                                        from_view: 'main')
-            end
-
             it 'does not allow adding any other additional property' do
               @event = @event_class.new(@user.id,
                                         visualization_id: @visualization.id,

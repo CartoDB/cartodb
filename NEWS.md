@@ -176,6 +176,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Redirect to widgets list after deleting a widget (#13485)
+* Change analyses short names (#13828)
 * Fix popups with just images on IE and Edge (#13808)
 * Enrich downloaded layer event (#13391)
 * Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)

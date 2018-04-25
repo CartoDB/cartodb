@@ -16,6 +16,30 @@ describe 'UserMigration' do
     ]
   end
 
+  let(:agg_ds_config) do
+    {
+      aggregation_tables: {
+        'host' => 'localhost',
+        'port' => '5432',
+        'dbname' => 'test_migration',
+        'username' => 'geocoder_api',
+        'password' => '',
+        'tables' => {
+          'admin0' => 'ne_admin0_v3',
+          'admin1' => 'global_province_polygons'
+        }
+      },
+      geocoder: {
+        'api' => {
+          'host' => 'localhost',
+          'port' => '5432',
+          'dbname' => 'test_migration',
+          'user' => 'geocoder_api'
+        }
+      }
+    }
+  end
+
   shared_examples_for 'migrating metadata' do |migrate_metadata|
 
     before :each do
@@ -56,27 +80,7 @@ describe 'UserMigration' do
 
       migrate_metadata ? @user.destroy : drop_user_database(@user)
 
-      Cartodb.with_config(
-        aggregation_tables: {
-          'host' => 'localhost',
-          'port' => '5432',
-          'dbname' => 'test_migration',
-          'username' => 'geocoder_api',
-          'password' => '',
-          'tables' => {
-            'admin0' => 'ne_admin0_v3',
-            'admin1' => 'global_province_polygons'
-          }
-        },
-        geocoder: {
-          'api' => {
-            'host' => 'localhost',
-            'port' => '5432',
-            'dbname' => 'test_migration',
-            'user' => 'geocoder_api'
-          }
-        }
-      ) do
+      Cartodb.with_config(agg_ds_config) do
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
           database_host: @user_attributes['database_host'],
@@ -628,27 +632,7 @@ describe 'UserMigration' do
 
         migrate_metadata ? @organization.destroy_cascade : drop_user_database(@organization.owner)
 
-        Cartodb.with_config(
-          aggregation_tables: {
-            'host' => 'localhost',
-            'port' => '5432',
-            'dbname' => 'test_migration',
-            'username' => 'geocoder_api',
-            'password' => '',
-            'tables' => {
-              'admin0' => 'ne_admin0_v3',
-              'admin1' => 'global_province_polygons'
-            }
-          },
-          geocoder: {
-            'api' => {
-              'host' => 'localhost',
-              'port' => '5432',
-              'dbname' => 'test_migration',
-              'user' => 'geocoder_api'
-            }
-          }
-        ) do
+        Cartodb.with_config(agg_ds_config) do
           import = Carto::UserMigrationImport.create(
             exported_file: export.exported_file,
             database_host: owner_attributes['database_host'],

@@ -34,7 +34,7 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
-    "carto-zera": "1.0.2",
+    "@carto/zera": "1.0.4",
     "clip-path-polygon": "0.1.12",
     "d3-array": "1.2.1",
     "d3-format": "1.2.0",

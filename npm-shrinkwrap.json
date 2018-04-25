@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.120",
+  "version": "4.11.124",
   "dependencies": {
     "@carto/zera": {
       "version": "1.0.0",
@@ -392,9 +392,9 @@
       "resolved": "https://registry.npmjs.org/carto-zera/-/carto-zera-1.0.2.tgz"
     },
     "carto.js": {
-      "version": "4.0.0-2",
-      "from": "cartodb/carto.js#v4.0.0-2",
-      "resolved": "git://github.com/cartodb/carto.js.git#21da8044c8d954449fb7be7c2b2ac05054e658b1"
+      "version": "4.0.1-1",
+      "from": "cartodb/carto.js#v4.0.1-1",
+      "resolved": "git://github.com/cartodb/carto.js.git#506219dae1864040cb85c79ca417cfc8ac0d01bd"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -1379,9 +1379,9 @@
       "resolved": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz"
     },
     "lodash": {
-      "version": "4.17.5",
+      "version": "4.17.10",
       "from": "lodash@>=4.17.3 <5.0.0",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.5.tgz"
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.10.tgz"
     },
     "lodash.memoize": {
       "version": "3.0.4",

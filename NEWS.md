@@ -176,6 +176,10 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
+* Keep widgets list order (#13773)
+* Change analyses short names (#13828)
+* Fix popups with just images on IE and Edge (#13808)
+* Enrich downloaded layer event (#13391)
 * Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)
 * Add overlap option in animated heatmap style form (https://github.com/CartoDB/support/issues/1331)
 * Fix bottom extra space in legends (#13765)

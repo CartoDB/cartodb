@@ -220,7 +220,7 @@ module Carto
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
-      # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
+      # @see https://github.com/CartoDB/carto.js/blob/privacy-maps/doc/vizjson_format.md
       def to_vizjson
         layer_vizjson = VizJSON3LayerPresenter.new(@layer, @configuration).to_vizjson
         if @layer.user_layer?

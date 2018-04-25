@@ -27,6 +27,7 @@ module Carto
     validates :json_file, presence: true
     validate :valid_org_import
     validate :valid_dry_settings
+    validate :validate_import_data
 
     def run_import
       raise errors.full_messages.join(', ') unless valid?
@@ -70,14 +71,20 @@ module Carto
       errors.add(:dry, 'dry cannot be true while import_metadata is true') if import_metadata && dry
     end
 
+    def validate_import_data
+      errors.add(:import_metadata, 'needs to be true if export_data is set to false') if !import_data? && !import_metadata?
+    end
+
     def import(service, package)
-      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
-      raise "DB already exists at DB host" if import_job.db_exists?
+      if import_data?
+        import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+        raise "DB already exists at DB host" if import_job.db_exists?
+      end
 
       imported = do_import_metadata(package, service) if import_metadata?
 
       begin
-        do_import_data(import_job)
+        do_import_data(import_job) if import_data?
       rescue => e
         log.append('=== Error importing data. Rollback! ===')
         rollback_import_data(package)
@@ -86,6 +93,8 @@ module Carto
       end
 
       import_visualizations(imported, package, service) if import_metadata?
+
+      reconfigure_dataservices if import_metadata?
     end
 
     def do_import_metadata(package, service)
@@ -115,6 +124,14 @@ module Carto
       end
     end
 
+    def reconfigure_dataservices
+      if org_import?
+        ::Organization[organization.id].owner.db_service.install_and_configure_geocoder_api_extension
+      else
+        ::User[user.id].db_service.install_and_configure_geocoder_api_extension
+      end
+    end
+
     def import_visualizations(imported, package, service)
       log.append('=== Importing visualizations and search tweets ===')
       begin
@@ -130,6 +147,7 @@ module Carto
     end
 
     def rollback_import_data(package)
+      return unless import_data?
       org_import? ? self.organization = nil : self.user = nil
       save!
 
@@ -148,7 +166,6 @@ module Carto
 
     def update_database_host
       users.each do |user|
-        Rollbar.info("Updating database conection for user #{user.username} to #{database_host}")
         user.database_host = database_host
         user.save!
         # This is because Sequel models are being cached along request. This forces reload.

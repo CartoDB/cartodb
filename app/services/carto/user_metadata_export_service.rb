@@ -5,9 +5,11 @@ require 'carto/export/data_import_exporter'
 # Version History
 # 1.0.0: export user metadata
 # 1.0.1: export search tweets
+# 1.0.3: export rate limits
+# 1.0.4: company and phone in users table
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.2'.freeze
+    CURRENT_VERSION = '1.0.4'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -26,7 +28,7 @@ module Carto
       :salesforce_datasource_enabled, :builder_enabled, :geocoder_provider, :isolines_provider, :routing_provider,
       :github_user_id, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
       :no_map_logo, :org_admin, :last_name, :user_render_timeout, :database_render_timeout, :frontend_version,
-      :asset_host, :state
+      :asset_host, :state, :company, :phone, :industry, :job_role
     ].freeze
 
     def compatible_version?(version)
@@ -86,8 +88,12 @@ module Carto
 
       user.layers = build_layers_from_hash(exported_user[:layers])
 
+      user.rate_limit = build_rate_limit_from_hash(exported_user[:rate_limit])
+
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
+
+      user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -122,6 +128,15 @@ module Carto
         updated_at: exported_search_tweet[:updated_at]
       )
     end
+
+    def build_rate_limit_from_hash(exported_hash)
+      return unless exported_hash
+
+      rate_limit = Carto::RateLimit.from_api_attributes(exported_hash[:limits])
+      rate_limit.id = exported_hash[:id]
+
+      rate_limit
+    end
   end
 
   module UserMetadataExportServiceExporter
@@ -155,8 +170,9 @@ module Carto
 
       user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
 
-      # TODO
-      # Organization notifications
+      user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
+
+      user_hash[:notifications] = user.static_notifications.notifications
 
       user_hash
     end
@@ -191,6 +207,15 @@ module Carto
         updated_at: api_key.updated_at,
         grants: api_key.grants,
         user_id: api_key.user_id
+      }
+    end
+
+    def export_rate_limit(rate_limit)
+      return unless rate_limit
+
+      {
+        id: rate_limit.id,
+        limits: rate_limit.api_attributes
       }
     end
   end
@@ -287,12 +312,22 @@ module Carto
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
       user.visualizations.where(type: type).each do |visualization|
+        next if visualization.canonical? && should_skip_canonical_viz_export(visualization)
+        next if !visualization.remote? && visualization.map.nil?
+
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
           visualization.id, user
         )
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
       end
+    end
+
+    def should_skip_canonical_viz_export(viz)
+      return true if viz.table.nil?
+
+      viz.user.visualizations.where(type: viz.type,
+                                    name: viz.name).all.sort_by(&:updated_at).last.id != viz.id
     end
 
     def with_non_viewer_user(user)

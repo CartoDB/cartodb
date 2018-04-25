@@ -4,14 +4,26 @@ require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'
 require 'carto/user_authenticator'
+require 'helpers/account_types_helper'
 
 feature "Superadmin's users API" do
   include Carto::UserAuthenticator
+  include AccountTypesHelper
 
   background do
     Capybara.current_driver = :rack_test
     @new_user = new_user(password: "this_is_a_password")
     @user_atts = @new_user.values
+  end
+
+  before(:all) do
+    @account_type = create_account_type_fg('FREE')
+    @account_type_juliet = create_account_type_fg('Juliet')
+  end
+
+  after(:all) do
+    @account_type.destroy if @account_type
+    @account_type_juliet.destroy if @account_type_juliet
   end
 
   scenario "Http auth is needed" do
@@ -674,6 +686,19 @@ feature "Superadmin's users API" do
       get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:data_imports].size).to eq(3)
+      end
+    end
+
+    it 'validates order param' do
+      ['data_imports', 'geocodings', 'synchronizations'].each do |endpoint|
+        get_json("/superadmin/users/#{@user.id}/#{endpoint}", { order: :updated_at }, superadmin_headers) do |response|
+          response.status.should eq 200
+        end
+
+        get_json("/superadmin/users/#{@user.id}/#{endpoint}", { order: :invalid }, superadmin_headers) do |response|
+          response.status.should eq 400
+          response.body.fetch(:errors).should_not be_nil
+        end
       end
     end
   end

@@ -9,11 +9,13 @@ require 'securerandom'
 
 require_relative 'config'
 require_relative 'utils'
+require_relative 'legacy_functions'
 
 module CartoDB
   module DataMover
     class ImportJob
       include CartoDB::DataMover::Utils
+      include CartoDB::DataMover::LegacyFunctions
       attr_reader :logger
 
       def initialize(options)
@@ -237,7 +239,6 @@ module CartoDB
           grant_user_org_role(database_username(user['id']), user['database_name'])
         end
 
-
         org_user_ids = @pack_config['users'].map{|u| u['id']}
         # We set the owner to be imported first (if schemas are not split, this will also import the whole org database)
         org_user_ids = org_user_ids.insert(0, org_user_ids.delete(@owner_id))
@@ -273,7 +274,9 @@ module CartoDB
                         mode: :rollback,
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
-                        logger: @logger, metadata: @options[:metadata], data: false).run!
+                        logger: @logger,
+                        metadata: @options[:metadata],
+                        data: false).run!
         end
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
         if @options[:data]
@@ -391,6 +394,7 @@ module CartoDB
           @config[:user_dbport],
           @target_dbname)}"
         command += " --section=#{sections}" if sections
+        command += " --use-list=\"#{@toc_file}\""
         run_command(command)
       end
 
@@ -422,6 +426,31 @@ module CartoDB
         run_file_metadata_postgres(file)
       end
 
+      def remove_line?(line)
+        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/, ',').strip
+        (LEGACY_FUNCTIONS + LEGACY_ACLS).find { |l| stripped.scan(l).any? }
+      end
+
+      def clean_toc_file(file)
+        tmp = Tempfile.new("extract_#{@target_username}.txt")
+        File.open(file, 'r').each do |l|
+          tmp << l unless remove_line?(l)
+        end
+
+        tmp.close
+        FileUtils.mv(tmp.path, file)
+      ensure
+        tmp.delete
+      end
+
+      def toc_file(file)
+        toc_file = "#{@path}user_#{@target_username}.list"
+        command = "pg_restore -l #{file} --file='#{toc_file}'"
+        run_command(command)
+        clean_toc_file(toc_file)
+        toc_file
+      end
+
       # It would be a good idea to "disable" the invalidation trigger during the load
       # This way, the restore will be much faster and won't also cause a big overhead
       # in the old database while the process is ongoing
@@ -439,6 +468,7 @@ module CartoDB
         end
 
         @logger.info("Importing dump from #{dump} using pg_restore..")
+        @toc_file = toc_file("#{@path}#{dump}")
         run_file_restore_postgres(dump, 'pre-data')
         run_file_restore_postgres(dump, 'data')
         run_file_restore_postgres(dump, 'post-data')

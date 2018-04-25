@@ -24,6 +24,7 @@ module Carto
 
     validates :state, inclusion: { in: VALID_STATES }
     validate  :user_or_organization_present
+    validate  :validate_export_data
 
     def run_export
       check_valid_user(user) if user && export_metadata
@@ -38,12 +39,15 @@ module Carto
                   UserMigrationPackage.for_export(id, log)
                 end
 
-      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(package.data_dir))
+      export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(package.data_dir)) if export_data?
 
       run_metadata_export(package.meta_dir) if export_metadata?
 
-      log.append("=== Uploading #{id}/#{export_job.json_file} ===")
-      update_attributes(state: STATE_UPLOADING, json_file: "#{id}/#{export_job.json_file}")
+      log.append("=== Uploading ===")
+      update_attributes(
+        state: STATE_UPLOADING,
+        json_file: export_data? ? "#{id}/#{export_job.json_file}" : 'no_data_exported'
+      )
       uploaded_path = package.upload
 
       state = uploaded_path.present? ? STATE_COMPLETE : STATE_FAILURE
@@ -69,9 +73,6 @@ module Carto
 
     def check_valid_user(user)
       Carto::GhostTablesManager.new(user.id).link_ghost_tables_synchronously
-
-      vs = user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).select { |v| v.table.nil? }
-      raise "Can't export. Vizs without user table: #{vs.map(&:id)}" unless vs.empty?
     end
 
     def check_valid_organization(organization)
@@ -109,7 +110,8 @@ module Carto
         job_uuid: id,
         export_job_logger: log.logger,
         logger: log.logger,
-        metadata: false
+        metadata: false,
+        data: export_data?
       )
     end
 
@@ -117,6 +119,10 @@ module Carto
       unless (user.present? && organization.blank?) || (organization.present? && user.blank?)
         errors.add(:user, 'exactly one user or organization required')
       end
+    end
+
+    def validate_export_data
+      errors.add(:export_metadata, 'needs to be true if export_data is set to false') if !export_data? && !export_metadata?
     end
 
     def set_defaults

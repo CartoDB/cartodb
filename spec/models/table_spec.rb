@@ -1742,24 +1742,6 @@ describe Table do
         table.name.should == 'exttable'
         table.rows_counted.should == 2
       end
-
-      it "create and migrate a table containing a valid the_geom" do
-        delete_user_data @user
-        @user.db_service.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
-        @user.db_service.run_pg_query("SELECT public.AddGeometryColumn ('#{@user.database_schema}','exttable','the_geom',4326,'POINT',2);")
-        @user.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
-                           INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
-
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :migrate_table => 'exttable')
-        data_import.run_import!
-
-        table = Table.new(user_table: UserTable[data_import.table_id])
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-        table.name.should == 'exttable'
-        table.rows_counted.should == 2
-        check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:the_geom, "geometry", "geometry", "point"]])
-      end
     end
 
     context "imports" do

@@ -564,6 +564,21 @@ describe Carto::Api::ApiKeysController do
           response.body[:result].size.should eq 2
         end
       end
+
+      it 'validates order param' do
+        [:type, :name, :updated_at].each do |param|
+          auth_user(@carto_user_index)
+          get_json api_keys_url, auth_params.merge(per_page: 2, page: 2, order: param), auth_headers do |response|
+            response.status.should eq 200
+          end
+        end
+
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(per_page: 2, page: 2, order: :invalid), auth_headers do |response|
+          response.status.should eq 400
+          response.body.fetch(:errors).should_not be_nil
+        end
+      end
     end
   end
 
@@ -687,6 +702,21 @@ describe Carto::Api::ApiKeysController do
           response.body[:result].length.should eq 1
           response.body[:result].first['user']['username'].should eq @carto_user.username
           response.body[:result].first['token'].should eq regular_api_key.token
+        end
+      end
+
+      it 'with cookie and invalid api key shows everything' do
+        host! "#{@carto_user.username}.localhost.lan"
+        login_as(@carto_user, scope: @carto_user.username)
+        fake_regular_key = regular_api_key.dup
+        fake_regular_key.token = 'fake'
+        fake_regular_key.user.username = 'fakest'
+
+        get_json api_keys_url, nil, json_headers_for_key(fake_regular_key) do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 3
+          response.body[:count].should eq 3
+          response.body[:result].length.should eq 3
         end
       end
     end

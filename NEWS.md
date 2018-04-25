@@ -175,6 +175,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Keep widgets list order (#13773)
 * Change analyses short names (#13828)
 * Fix popups with just images on IE and Edge (#13808)
 * Enrich downloaded layer event (#13391)

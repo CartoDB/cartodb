@@ -17,18 +17,31 @@ describe 'UserMigration' do
   end
 
   shared_examples_for 'migrating metadata' do |migrate_metadata|
+
+    before :each do
+      @user = FactoryGirl.build(:valid_user).save
+      @carto_user = Carto::User.find(@user.id)
+      @user_attributes = @carto_user.attributes
+
+      @table1 = create_table(user_id: @user.id)
+      records.each { |row| @table1.insert_row!(row) }
+      create_database('test_migration', @user) if migrate_metadata
+    end
+
+    after :each do
+      if migrate_metadata
+        @user.destroy_cascade
+        drop_database('test_migration', @user)
+      else
+        @user.destroy
+      end
+    end
+
     it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
-      user = FactoryGirl.build(:valid_user).save
-      carto_user = Carto::User.find(user.id)
-      user_attributes = carto_user.attributes
-
-      table1 = create_table(user_id: user.id)
-      records.each { |row| table1.insert_row!(row) }
-
       export = Carto::UserMigrationExport.create(
-        user: carto_user,
+        user: @carto_user,
         export_metadata: migrate_metadata
       )
       export.run_export
@@ -36,17 +49,12 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-      carto_user.client_applications.each(&:destroy)
-      table1.table_visualization.layers.each(&:destroy)
-      table1.destroy
-      expect { table1.records }.to raise_error
+      @carto_user.client_applications.each(&:destroy)
+      @table1.table_visualization.layers.each(&:destroy)
+      @table1.destroy
+      expect { @table1.records }.to raise_error
 
-      if migrate_metadata
-        create_database('test_migration', user)
-        user.destroy
-      else
-        drop_user_database(user)
-      end
+      migrate_metadata ? @user.destroy : drop_user_database(@user)
 
       Cartodb.with_config(
         aggregation_tables: {
@@ -67,11 +75,11 @@ describe 'UserMigration' do
             'dbname' => 'test_migration',
             'user' => 'geocoder_api'
           }
-        },
+        }
       ) do
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
-          database_host: user_attributes['database_host'],
+          database_host: @user_attributes['database_host'],
           org_import: false,
           json_file: export.json_file,
           import_metadata: migrate_metadata
@@ -81,30 +89,24 @@ describe 'UserMigration' do
         puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
         expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
-        carto_user = Carto::User.find(user_attributes['id'])
+        @carto_user = Carto::User.find(@user_attributes['id'])
 
         if migrate_metadata
-          attributes_to_test(user_attributes).each do |attribute|
-            expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
+          attributes_to_test(@user_attributes).each do |attribute|
+            expect(@carto_user.attributes[attribute]).to eq(@user_attributes[attribute])
           end
-          user.in_database(as: :superuser) do |db|
+          @user.in_database(as: :superuser) do |db|
             ds_config = db.fetch("SELECT * from cdb_conf where key = 'geocoder_server_config'").first[:value]
             fdws_config = db.fetch("SELECT * from cdb_conf where key = 'fdws'").first[:value]
             expect(ds_config).to match /dbname=test_migration/
             expect(fdws_config).to match /\"dbname\":\"test_migration\"/
           end
         else
-          expect(carto_user.attributes).to eq(user_attributes)
+          expect(@carto_user.attributes).to eq(@user_attributes)
         end
 
-        records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
+        records.each.with_index { |row, index| @table1.record(index + 1).should include(row) }
 
-        if migrate_metadata
-          drop_database('test_migration', user)
-          user.destroy_cascade
-        else
-          user_destroy
-        end
       end
     end
   end
@@ -608,21 +610,23 @@ describe 'UserMigration' do
     let(:owner_attributes) { @carto_org_user_owner.attributes }
 
     shared_examples_for 'migrating metadata' do |migrate_metadata|
-      it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
-        table1 = create_table(user_id: @carto_org_user_1.id)
-        records.each { |row| table1.insert_row!(row) }
+      before :each do
+        @table1 = create_table(user_id: @carto_org_user_1.id)
+        records.each { |row| @table1.insert_row!(row) }
+        create_database('test_migration', @organization.owner) if migrate_metadata
+      end
 
+      after :each do
+        drop_database('test_migration', @organization.owner) if migrate_metadata
+      end
+
+      it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
         export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: migrate_metadata)
         export.run_export
 
         export.state.should eq Carto::UserMigrationExport::STATE_COMPLETE
 
-        if migrate_metadata
-          create_database('test_migration', @organization.owner)
-          @organization.destroy_cascade
-        else
-          drop_user_database(@organization.owner)
-        end
+        migrate_metadata ? @organization.destroy_cascade : drop_user_database(@organization.owner)
 
         Cartodb.with_config(
           aggregation_tables: {
@@ -643,7 +647,7 @@ describe 'UserMigration' do
               'dbname' => 'test_migration',
               'user' => 'geocoder_api'
             }
-          },
+          }
         ) do
           import = Carto::UserMigrationImport.create(
             exported_file: export.exported_file,
@@ -663,7 +667,7 @@ describe 'UserMigration' do
           attributes_to_test(new_organization.attributes).should eq attributes_to_test(org_attributes)
           new_organization.users.count.should eq 3
           attributes_to_test(new_organization.owner.attributes).should eq attributes_to_test(owner_attributes)
-          records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
+          records.each.with_index { |row, index| @table1.record(index + 1).should include(row) }
           if migrate_metadata
             new_organization.owner.in_database(as: :superuser) do |db|
               ds_config = db.exec_query("SELECT * from cdb_conf where key = 'geocoder_server_config'").first['value']
@@ -671,9 +675,6 @@ describe 'UserMigration' do
               expect(ds_config).to match /dbname=test_migration/
               expect(fdws_config).to match /\"dbname\":\"test_migration\"/
             end
-          end
-          if migrate_metadata
-            drop_database('test_migration', new_organization.owner)
           end
         end
       end

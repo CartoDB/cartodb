@@ -49,7 +49,7 @@ Rules are specified in the [scss-style.yml](scss-style.yml) file. Once a new Pul
 
 ## JS
 
-CartoDB is built on top of [CartoDB.js](https://github.com/CartoDB/cartodb.js),
+CartoDB is built on top of [CARTO.js](https://github.com/CartoDB/carto.js),
 which in turns depends on some common libraries, in particular worth mentioning:
 
  - [BackboneJS 0.9.2](https://cdn.rawgit.com/jashkenas/backbone/0.9.2/index.html).
@@ -64,7 +64,7 @@ We apply [semistandard](https://github.com/Flet/semistandard) for syntax consist
 
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
-### Update CartoDB.js
+### Update CartoDB.js v3
 
 Follow these steps to update to get latest changes:
 

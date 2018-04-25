@@ -74,7 +74,7 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled]
         when :update
           [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
            :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
@@ -86,7 +86,7 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled]
         end
       elsif is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -112,7 +112,7 @@ module Concerns
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo,
-         :user_render_timeout, :database_render_timeout, :state]
+         :user_render_timeout, :database_render_timeout, :state, :industry, :company, :phone, :job_role]
       end
     end
 
@@ -142,7 +142,8 @@ module Concerns
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
           :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled, :engine_enabled,
-          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit
+          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
+          :industry, :company, :phone, :job_role
         )
         case action
         when :create

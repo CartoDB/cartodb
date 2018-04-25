@@ -175,6 +175,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix popups with just images on IE and Edge (#13808)
 * Enrich downloaded layer event (#13391)
 * Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)
 * Add overlap option in animated heatmap style form (https://github.com/CartoDB/support/issues/1331)

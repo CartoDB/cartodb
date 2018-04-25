@@ -180,9 +180,10 @@ util.isGoogleMapsLoaded = function () {
     throw new Error('Google Maps is required');
   }
   var version = window.google.maps.version;
-  // Currently it seems that there are no problems with v3.32.12, though it is still experimental
-  if (version < '3.0.0' || version >= '3.33.0') {
-    throw new Error('Google Maps version should be >= 3.0 and < 3.33');
+  // Currently it seems that there are no problems with v3.32.12, though it is still `experimental`
+  // We are limiting upper version to 3.31 (currently 3.31.8b: `release`)
+  if (version < '3.0.0' || version >= '3.32.0') {
+    throw new Error('Google Maps version should be >= 3.0 and < 3.32');
   }
 };
 

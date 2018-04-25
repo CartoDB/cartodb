@@ -1795,7 +1795,7 @@ module Carto
                                         table_name: 'test')
             end
 
-            it 'does not allow adding any additional property' do
+            it 'does not allow adding any other additional property' do
               @event = @event_class.new(@user.id,
                                         visualization_id: @visualization.id,
                                         user_id: @user.id,

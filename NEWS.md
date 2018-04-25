@@ -175,6 +175,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
 * Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)
 * Add overlap option in animated heatmap style form (https://github.com/CartoDB/support/issues/1331)
 * Fix bottom extra space in legends (#13765)

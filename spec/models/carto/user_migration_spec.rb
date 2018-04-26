@@ -484,6 +484,14 @@ describe 'UserMigration' do
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2493
     end
 
+    it 'matches functions with attributes qualified with namespace' do
+      class DummyTester
+        include CartoDB::DataMover::LegacyFunctions
+      end
+      line = '1880; 1255 5950507 FUNCTION asbinary("geometry", "pg_catalog"."text") postgres'
+      DummyTester.new.remove_line?(line).should be true
+    end
+
     it 'skips importing legacy functions' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze

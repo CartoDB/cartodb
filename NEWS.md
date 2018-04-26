@@ -116,6 +116,7 @@ ion for time-series (#12670)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* Included aggregation tables configuration change to the user migrator (#13883)
 * New Tooling to gather Dataservices' provider metrics (#13710)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
@@ -176,6 +177,8 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
+* Escape prefixes and sufixes in formula widgets (#13895)
+* Redirect to widgets list after deleting a widget (#13485)
 * Keep widgets list order (#13773)
 * Change analyses short names (#13828)
 * Fix popups with just images on IE and Edge (#13808)

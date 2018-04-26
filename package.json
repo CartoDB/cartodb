@@ -26,7 +26,7 @@
     "@carto/zera": "1.0.4",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
-    "carto.js": "CartoDB/carto.js#v4.0.1-1",
+    "@carto/carto.js": "CartoDB/carto.js#v4.0.2-0",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "d3-interpolate": "^1.1.6",

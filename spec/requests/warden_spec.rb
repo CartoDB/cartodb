@@ -82,7 +82,7 @@ describe 'Warden' do
       end
     end
 
-    it 'redirects to login page if password is expired' do
+    it 'UI redirects to login page if password is expired' do
       login
 
       Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
@@ -95,6 +95,21 @@ describe 'Warden' do
         follow_redirect!
 
         expect(request.fullpath).to end_with '/login?error=session_expired'
+        Delorean.back_to_the_present
+      end
+    end
+
+    it 'API returns 403 with an error if password is expired' do
+      login
+
+      Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
+        Delorean.jump(30.seconds)
+
+        host! "#{@user.username}.localhost.lan"
+        get_json api_v3_users_me_url
+
+        expect(response.status).to eq 403
+        expect(JSON.parse(response.body)).to eq('error' => 'session_expired')
         Delorean.back_to_the_present
       end
     end

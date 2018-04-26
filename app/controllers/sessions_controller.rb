@@ -18,7 +18,7 @@ class SessionsController < ApplicationController
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_in_carto
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 

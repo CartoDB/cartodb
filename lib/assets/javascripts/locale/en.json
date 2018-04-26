@@ -563,7 +563,7 @@
     "deprecated-sql-function": {
       "title": "SQL Function",
       "short-title": "SQL Function"
-    },
+    }
   },
   "analysis-category": {
     "all": "All",

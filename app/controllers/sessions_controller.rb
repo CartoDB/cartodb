@@ -144,7 +144,14 @@ class SessionsController < ApplicationController
     warden.custom_failure!
     cdb_logout
 
-    redirect_to login_url(error: SESSION_EXPIRED)
+    respond_to do |format|
+      format.html do
+        redirect_to login_url(error: SESSION_EXPIRED)
+      end
+      format.json do
+        render(json: { error: 'session_expired' }, status: 403)
+      end
+    end
   end
 
   def create_user(username, organization_id, email, created_via)

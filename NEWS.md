@@ -176,6 +176,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
 * Fix short-names analyses translations (#13828)
 * Escape prefixes and sufixes in formula widgets (#13895)
 * Redirect to widgets list after deleting a widget (#13485)

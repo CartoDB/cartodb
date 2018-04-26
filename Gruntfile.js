@@ -14,7 +14,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
-  'carto.js',
+  '@carto/carto.js',
   'cartocolor',
   'd3',
   'jquery',

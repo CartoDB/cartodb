@@ -2853,6 +2853,56 @@ describe User do
     end
   end
 
+  describe '#password_expired?' do
+    before(:each) do
+      @github_user = FactoryGirl.build(:valid_user, github_user_id: 932847)
+      @google_user = FactoryGirl.build(:valid_user, google_sign_in: true)
+      @password_user = FactoryGirl.build(:valid_user)
+    end
+
+    it 'never expires without configuration' do
+      Cartodb.with_config(passwords: { 'expiration_in_s' => nil }) do
+        expect(@github_user.password_expired?).to be_false
+        expect(@google_user.password_expired?).to be_false
+        expect(@password_user.password_expired?).to be_false
+      end
+    end
+
+    it 'never expires for users without password' do
+      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
+        Delorean.jump(10.seconds)
+        expect(@github_user.password_expired?).to be_false
+        expect(@google_user.password_expired?).to be_false
+        Delorean.back_to_the_present
+      end
+    end
+
+    it 'expires for users with oauth and changed passwords' do
+      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
+        @github_user.last_password_change_date = Time.now - 10.seconds
+        expect(@github_user.password_expired?).to be_true
+        @google_user.last_password_change_date = Time.now - 10.seconds
+        expect(@google_user.password_expired?).to be_true
+      end
+    end
+
+    it 'expires for password users after a while has passed' do
+      @password_user.save
+      Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
+        expect(@password_user.password_expired?).to be_false
+        Delorean.jump(30.seconds)
+        expect(@password_user.password_expired?).to be_true
+        @password_user.password = @password_user.password_confirmation = 'waduspass'
+        @password_user.save
+        expect(@password_user.password_expired?).to be_false
+        Delorean.jump(30.seconds)
+        expect(@password_user.password_expired?).to be_true
+        Delorean.back_to_the_present
+      end
+      @password_user.destroy
+    end
+  end
+
   protected
 
   def create_org(org_name, org_quota, org_seats)

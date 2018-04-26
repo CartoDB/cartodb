@@ -241,6 +241,10 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   end
 end
 
+Warden::Manager.after_set_user do |user, auth, opts|
+  throw(:warden, action: :password_expired) if user.password_expired?
+end
+
 Warden::Strategies.add(:user_creation) do
   include LoginEventTrigger
 

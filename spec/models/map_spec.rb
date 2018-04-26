@@ -395,13 +395,13 @@ describe Map do
       map.add_layer(layer)
       map.save.reload
 
-      layer_carto_1 = Layer.new(kind: 'carto')
-      map.can_add_layer?(@user, layer_carto_1).should == true
-      map.add_layer(layer_carto_1)
+      layer_carto1 = Layer.new(kind: 'carto')
+      map.can_add_layer?(@user, layer_carto1).should == true
+      map.add_layer(layer_carto1)
       map.save.reload
 
-      layer_carto_2 = Layer.new(kind: 'carto')
-      map.can_add_layer?(@user, layer_carto_2).should == false
+      layer_carto2 = Layer.new(kind: 'carto')
+      map.can_add_layer?(@user, layer_carto2).should == false
 
       # This is now a valid scenario, for example switcing from a basemap with labels on top to another that has too
       third_layer = Layer.new(kind: 'tiled', order: 15)

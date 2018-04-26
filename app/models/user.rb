@@ -61,7 +61,7 @@ class User < Sequel::Model
                'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
 
   DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
-                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist'].freeze
+                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist', 'Government official'].freeze
 
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and

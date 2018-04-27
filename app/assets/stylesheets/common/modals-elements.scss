@@ -22,6 +22,11 @@
   line-height: 34px; /* align-items: baseline doesnt work correctly in ff */
 }
 
+.Modal-icon--svg {
+  width: 25px;
+  height: 25px;
+}
+
 .Modal-listTextItem {
   margin-top: 32px;
 }

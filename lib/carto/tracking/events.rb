@@ -249,6 +249,8 @@ module Carto
 
         required_properties :user_id, :visualization_id, :layer_id, :format,
                             :source, :visible, :table_name
+
+        optional_properties :from_view
       end
 
       class StyledByValue < Event

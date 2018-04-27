@@ -97,7 +97,7 @@ module.exports = env => {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, '../../', 'node_modules/carto.js')
+            resolve(__dirname, '../../', 'node_modules/@carto/carto.js')
           ],
           options: {
             shim: {
@@ -119,7 +119,7 @@ module.exports = env => {
           include: [
             resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard'),
-            resolve(__dirname, '../../', 'node_modules/carto.js')
+            resolve(__dirname, '../../', 'node_modules/@carto/carto.js')
           ]
         },
         {

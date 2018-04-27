@@ -437,6 +437,10 @@
     "nuku-alofa": "Nuku'alofa"
   },
   "analyses": {
+    "data-observatory-multiple-measures": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data Observatory"
+    },
     "connect-with-lines": {
       "title": "Create Lines from Points",
       "short-title": "Create Lines"
@@ -548,9 +552,17 @@
       "title": "Predict Trends and Volatility",
       "short-title": "Trends"
     },
+    "find-nearest": {
+      "title": "Find Nearest",
+      "short-title": "Nearest"
+    },
     "source": "Source",
     "routing": {
       "short-title": "Routing"
+    },
+    "deprecated-sql-function": {
+      "title": "SQL Function",
+      "short-title": "SQL Function"
     }
   },
   "analysis-category": {

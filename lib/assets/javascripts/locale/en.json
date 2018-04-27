@@ -1361,7 +1361,10 @@
         }
       },
       "privacy-warning": {
-        "title": "You are about to publish this visualization for public view",
+        "title": {
+          "visualization": "You are about to publish this visualization for public view",
+          "dataset": "You are about to make this dataset public, making it visible in your public profile"
+        },
         "description": "Any personal data that you have used to create it will also be publicly available",
         "cancel": "Cancel",
         "confirm": "Ok, publish it"

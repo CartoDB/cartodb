@@ -5,7 +5,7 @@
     </div>
     <div>
       <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--xl">
-        <%- _t('components.modals.privacy-warning.title') %>
+        <%- _t('components.modals.privacy-warning.title.' + type) %>
       </h2>
       <p class="CDB-Text CDB-Size-large u-altTextColor">
           <%- _t('components.modals.privacy-warning.description') %>

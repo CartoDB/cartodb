@@ -20,7 +20,7 @@ module Carto
         end
 
         def fetch(sql, &block)
-          if b
+          if block
             @db_connection.fetch(sql, &block)
             nil
           else

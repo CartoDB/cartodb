@@ -951,12 +951,12 @@
           },
           "link": {
             "type": "LINK",
-            "title": "Only accessible with link",
+            "title": "Public—with link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {
             "type": "PASSWORD",
-            "title": "Password",
+            "title": "Public—with password",
             "body": "Set a password and share only with specific people",
             "placeholder": "Type your password"
           },

@@ -565,7 +565,7 @@ describe Map do
       end
     end
 
-    describe 'can_add_layer' do
+    describe 'can_add_layer?' do
       it 'should return false for viewer users' do
         @map = Map.create(user_id: @user.id, table_id: @table.id)
 

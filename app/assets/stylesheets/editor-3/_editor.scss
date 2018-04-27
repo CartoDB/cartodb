@@ -223,5 +223,30 @@
     .CDB-Widget-listItemInner {
       margin: 0;
     }
+
+    .CDB-Widget-list {
+      display: flex;
+      box-sizing: border-box;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .CDB-Widget-listWrapper {
+      overflow-x: hidden;
+    }
+
+    .CDB-Widget-inlineListItem {
+      width: 47%;
+    }
+
+    .CDB-Widget-list--fake {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .CDB-Widget-content--noSidesMargin .CDB-Widget-listItem--fake {
+      margin-right: 12px;
+      margin-left: 12px;
+    }
   }
 }

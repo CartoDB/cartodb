@@ -1,6 +1,6 @@
 # Create/Drop/Rename overviews...
 
-require 'carto/db/sql_interface'
+require_dependency 'carto/db/sql_interface'
 
 module Carto
   class OverviewsService

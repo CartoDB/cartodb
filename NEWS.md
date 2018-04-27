@@ -175,6 +175,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
 * Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)
 * Add overlap option in animated heatmap style form (https://github.com/CartoDB/support/issues/1331)
 * Fix bottom extra space in legends (#13765)

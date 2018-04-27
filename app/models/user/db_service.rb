@@ -758,7 +758,7 @@ module CartoDB
             end
             tables_queries << %{
               ALTER TABLE \"#{schema}\".\"#{table_name}\" OWNER TO \"#{@user.database_username}\" }
-            end
+          end
         end
         @queries.run_in_transaction(
           tables_queries,

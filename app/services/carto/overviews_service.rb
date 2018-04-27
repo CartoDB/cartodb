@@ -36,7 +36,7 @@ module Carto
     def overview_tables(table_name)
       overviews_data = @database.fetch(%{SELECT * FROM cartodb.CDB_Overviews('#{table_name}'::REGCLASS)})
       if overviews_data
-        overviews_data.map { |row|  row[:overview_table] }
+        overviews_data.map { |row| row[:overview_table] }
       else
         []
       end

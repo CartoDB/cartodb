@@ -307,17 +307,17 @@ describe CartoDB::Importer2::Overviews do
     end
   end
 
-  def with_connection_from_user(user, &b)
+  def with_connection_from_user(user, &block)
     options = ::SequelRails.configuration.environment_for(Rails.env).merge(
       'database' => user.database_name,
       'username' => user.database_username,
       'password' => user.database_password,
       'host' => user.database_host
     )
-    with_connection options, &b
+    with_connection options, &block
   end
 
-  def with_connection_from_api_key(api_key, &b)
+  def with_connection_from_api_key(api_key, &block)
     user = api_key.user
     options = ::SequelRails.configuration.environment_for(Rails.env).merge(
       'database' => user.database_name,
@@ -325,7 +325,7 @@ describe CartoDB::Importer2::Overviews do
       'password' => api_key.db_password,
       'host' => user.database_host
     )
-    with_connection options, &b
+    with_connection options, &block
   end
 
   it 'shares overviews when the base table is shared' do
@@ -373,7 +373,7 @@ describe CartoDB::Importer2::Overviews do
 
     # Share table with user2
     p = table.table_visualization.permission
-    p.acl = [{type: 'user', entity: {id: user2.id, username: user2.username}, access: 'r'}]
+    p.acl = [{ type: 'user', entity: {id: user2.id, username: user2.username}, access: 'r' }]
     p.save
 
     # Now user2 has access to overview tables

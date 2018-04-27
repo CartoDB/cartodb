@@ -287,7 +287,7 @@ module Carto
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
+          Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
             db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
             sequences_for_table(schema, table_name).each do |seq|
               db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")

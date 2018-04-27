@@ -41,7 +41,7 @@ module Carto
         end
 
         def fetch(sql, &b)
-          rows = @db_connection.select_all(sql).map { |row| row.symbolize_keys }
+          rows = @db_connection.select_all(sql).map(&:symbolize_keys)
           if b
             rows.each &b
             nil
@@ -65,6 +65,5 @@ module Carto
         end
       end
     end
-
   end
 end

@@ -751,12 +751,14 @@ module CartoDB
       def fix_table_permissions
         tables_queries = []
         @user.tables.each do |table|
-          if table.public? || table.public_with_link_only?
+          Carto::TableAndFriends.apply(@user.in_database, @user.database_schema, table.name) do |schema, table_name|
+            if table.public? || table.public_with_link_only?
+              tables_queries << %{
+                GRANT SELECT ON \"#{schema}\".\"#{table_name}\" TO #{CartoDB::PUBLIC_DB_USER} }
+            end
             tables_queries << %{
-              GRANT SELECT ON \"#{@user.database_schema}\".\"#{table.name}\" TO #{CartoDB::PUBLIC_DB_USER} }
-          end
-          tables_queries << %{
-            ALTER TABLE \"#{@user.database_schema}\".\"#{table.name}\" OWNER TO \"#{@user.database_username}\" }
+              ALTER TABLE \"#{schema}\".\"#{table_name}\" OWNER TO \"#{@user.database_username}\" }
+            end
         end
         @queries.run_in_transaction(
           tables_queries,

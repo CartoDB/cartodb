@@ -1500,13 +1500,17 @@ class Table
     from_schema = self.owner.database_schema
     table_name = self.name
     to_role_user = organization_user.database_username
-    perform_cartodb_function(cartodb_pg_func, from_schema, table_name, to_role_user)
+    Carto::TableAndFriends.apply(self.owner.in_database, from_schema, table_name) do |schema, table_name|
+      perform_cartodb_function(cartodb_pg_func, schema, table_name, to_role_user)
+    end
   end
 
   def perform_organization_table_permission_change(cartodb_pg_func)
     from_schema = self.owner.database_schema
     table_name = self.name
-    perform_cartodb_function(cartodb_pg_func, from_schema, table_name)
+    Carto::TableAndFriends.apply(self.owner.in_database, from_schema, table_name) do |schema, table_name|
+      perform_cartodb_function(cartodb_pg_func, schema, table_name)
+    end
   end
 
   def perform_cartodb_function(cartodb_pg_func, *args)

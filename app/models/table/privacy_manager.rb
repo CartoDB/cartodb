@@ -166,7 +166,7 @@ module CartoDB
     end
 
     def fully_qualified_table_name(schema, table_name)
-      %{"#{owner.database_schema}"."#{table_name}"}
+      %{"#{schema}"."#{table_name}"}
     end
   end
 end

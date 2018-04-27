@@ -437,6 +437,10 @@
     "nuku-alofa": "Nuku'alofa"
   },
   "analyses": {
+    "data-observatory-multiple-measures": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data Observatory"
+    },
     "connect-with-lines": {
       "title": "Create Lines from Points",
       "short-title": "Create Lines"
@@ -548,9 +552,17 @@
       "title": "Predict Trends and Volatility",
       "short-title": "Trends"
     },
+    "find-nearest": {
+      "title": "Find Nearest",
+      "short-title": "Nearest"
+    },
     "source": "Source",
     "routing": {
       "short-title": "Routing"
+    },
+    "deprecated-sql-function": {
+      "title": "SQL Function",
+      "short-title": "SQL Function"
     }
   },
   "analysis-category": {
@@ -1337,7 +1349,9 @@
         },
         "footer": {
           "guessing-desc": "Let CARTO automatically guess data types and content on import.",
-          "twitter-desc": "To get access to historical data (older than 30 days) you need to",
+          "deprecated-connector": "Deprecated connector.",
+          "twitter-contact-support": "Please <a href='mailto:support@carto.com'>contact support</a> should you need Twitter data.",
+          "twitter-how-to-historical": "To get access to historical data (older than 30 days) you need to",
           "contact-team": "contact our team",
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
           "privacy-change": "Your new dataset will be %{privacy}",

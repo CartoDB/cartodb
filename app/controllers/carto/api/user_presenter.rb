@@ -164,7 +164,8 @@ module Carto
             block_price: @user.organization_user? ? @user.organization.twitter_datasource_block_price     : @user.twitter_datasource_block_price,
             block_size:  @user.organization_user? ? @user.organization.twitter_datasource_block_size      : @user.twitter_datasource_block_size,
             monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
-            hard_limit:  @user.hard_twitter_datasource_limit
+            hard_limit:  @user.hard_twitter_datasource_limit,
+            customized_config: CartoDB::Datasources::DatasourcesFactory.customized_config?(CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME, @user)
           },
           salesforce: {
             enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled

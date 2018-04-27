@@ -229,6 +229,15 @@ describe Admin::PagesController do
       anyuser.delete
     end
 
+    it 'redirects to login without login' do
+      host! 'localhost.lan'
+
+      get '', {}, JSON_HEADER
+
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == "/login"
+    end
   end
 
   describe '#explore' do

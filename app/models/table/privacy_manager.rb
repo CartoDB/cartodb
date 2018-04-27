@@ -27,14 +27,6 @@ module CartoDB
           propagate_to([@table.table_visualization])
           notify_privacy_affected_entities(metadata_table) if privacy_changed
         end
-      else
-        CartoDB::Logger.warning(
-          message: 'Trying to change privacy of table with no map associated',
-          table_id: @table.id,
-          table_name: @table.name,
-          user: Carto::User.find(@table.user_id),
-          data_import_id: @table.data_import_id
-        )
       end
     rescue NoMethodError => exception
       CartoDB::Logger.debug(

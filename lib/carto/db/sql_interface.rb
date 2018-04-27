@@ -1,6 +1,5 @@
 module Carto
   module Db
-
     # Simple database interface that can be used through Sequel or ActiveRecord connections
     # (e.g. as returned by User#in_database and Carto::User#in_database respectively)
     # It provides two operations:
@@ -20,12 +19,12 @@ module Carto
           raise Error.new(e.message)
         end
 
-        def fetch(sql, &b)
+        def fetch(sql, &block)
           if b
-            @db_connection.fetch(sql, &b)
+            @db_connection.fetch(sql, &block)
             nil
           else
-            @db_connection.fetch(sql, &b).all
+            @db_connection.fetch(sql, &block).all
           end
         rescue Sequel::DatabaseError => e
           raise Error.new(e.message)
@@ -40,10 +39,10 @@ module Carto
           raise Error.new(e.message)
         end
 
-        def fetch(sql, &b)
+        def fetch(sql, &block)
           rows = @db_connection.select_all(sql).map(&:symbolize_keys)
-          if b
-            rows.each &b
+          if block
+            rows.each &block
             nil
           else
             rows

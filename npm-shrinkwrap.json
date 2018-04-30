@@ -149,9 +149,9 @@
       "resolved": "https://registry.npmjs.org/async-each/-/async-each-1.0.1.tgz"
     },
     "atob": {
-      "version": "2.1.0",
+      "version": "2.1.1",
       "from": "atob@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/atob/-/atob-2.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/atob/-/atob-2.1.1.tgz"
     },
     "backbone": {
       "version": "1.2.3",
@@ -2508,9 +2508,9 @@
       "resolved": "https://registry.npmjs.org/to-regex-range/-/to-regex-range-2.1.1.tgz"
     },
     "toposort": {
-      "version": "1.0.6",
+      "version": "1.0.7",
       "from": "toposort@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.6.tgz"
+      "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.7.tgz"
     },
     "torque.js": {
       "version": "2.16.3",
@@ -2550,9 +2550,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.3.22",
+      "version": "3.3.23",
       "from": "uglify-js@>=3.3.0 <3.4.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.22.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.23.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",
@@ -2618,9 +2618,9 @@
       }
     },
     "upath": {
-      "version": "1.0.4",
+      "version": "1.0.5",
       "from": "upath@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/upath/-/upath-1.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/upath/-/upath-1.0.5.tgz"
     },
     "upper-case": {
       "version": "1.1.3",

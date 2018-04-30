@@ -383,6 +383,36 @@ describe Map do
     end
   end
 
+  describe '#can_add_layer?' do
+    it 'should only take into account data layers' do
+      map = Map.create(user_id: @user.id, table_id: @table.id)
+      @user.max_layers = 1
+      @user.save.reload
+
+      # First base layer is always allowed
+      layer = Layer.new(kind: 'tiled')
+      map.can_add_layer?(@user, layer).should == true
+      map.add_layer(layer)
+      map.save.reload
+
+      layer_carto1 = Layer.new(kind: 'carto')
+      map.can_add_layer?(@user, layer_carto1).should == true
+      map.add_layer(layer_carto1)
+      map.save.reload
+
+      layer_carto2 = Layer.new(kind: 'carto')
+      map.can_add_layer?(@user, layer_carto2).should == false
+
+      # This is now a valid scenario, for example switcing from a basemap with labels on top to another that has too
+      third_layer = Layer.new(kind: 'tiled', order: 15)
+      map.can_add_layer?(@user, third_layer).should == true
+      map.add_layer(third_layer)
+      map.save.reload
+
+      map.destroy
+    end
+  end
+
   describe '#admits?' do
     it 'checks base layer admission rules' do
       map   = Map.create(user_id: @user.id, table_id: @table.id)
@@ -535,14 +565,15 @@ describe Map do
       end
     end
 
-    describe 'can_add_layer' do
+    describe 'can_add_layer?' do
       it 'should return false for viewer users' do
         @map = Map.create(user_id: @user.id, table_id: @table.id)
 
         become_viewer(@user)
         @map.reload
 
-        @map.can_add_layer(@user).should eq false
+        layer = Layer.create(kind: 'carto', options: { table_name: @table.name })
+        @map.can_add_layer?(@user, layer).should eq false
       end
     end
   end

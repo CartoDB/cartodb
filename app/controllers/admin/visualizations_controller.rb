@@ -117,7 +117,7 @@ class Admin::VisualizationsController < Admin::AdminController
     get_viewed_user
     @has_new_dashboard = if @viewed_user.nil?
                            @org.builder_enabled \
-                           && @org.owner.has_feature_flag?('dashboard_migration')
+                           && @org.has_feature_flag?('dashboard_migration')
                          else
                            @viewed_user.builder_enabled \
                            && @viewed_user.has_feature_flag?('dashboard_migration')
@@ -732,8 +732,17 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def get_viewed_user
-    username = CartoDB.extract_subdomain(request).strip.downcase
+    username = CartoDB.extract_subdomain(request)
     @viewed_user = ::User.where(username: username).first
+
+    if @viewed_user.nil?
+      username = username.strip.downcase
+      @org = get_organization_if_exists(username)
+    end
+  end
+
+  def get_organization_if_exists(name)
+    Organization.where(name: name).first
   end
 
   def data_library_user?

@@ -204,7 +204,7 @@ namespace :cartodb do
     # Removes common data visualizations from a specific organization
     desc 'Remove common data visualizations from user'
     task :remove_from_organization, [:orgname] => :environment do |_t, args|
-      query = Carto::Organization.find_by_name(args[:orgname]).users
+      query = Carto::User.where(organization_id: Carto::Organization.find_by_name(args[:orgname]).id)
       user_count = query.count
       puts "#{user_count} users will be affected."
 

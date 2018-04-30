@@ -39,7 +39,7 @@ module Carto
         if sync
           sync.id = random_uuid
           sync.user = user
-          sync.log.user_id = user.id
+          sync.log.user_id = user.id if sync.log
         end
 
         user_table = visualization.map.user_table if map

@@ -23,6 +23,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 
 ### Features
 * Profile page migration (#13726)
+* Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
 * Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
@@ -114,10 +115,13 @@ ion for time-series (#12670)
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_s`
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* Included aggregation tables configuration change to the user migrator (#13883)
 * New Tooling to gather Dataservices' provider metrics (#13710)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
+* Now the max_layers property only counts data layers to avoid problems with basemaps (#13898)
 * Visualization endpoint now returns related canonical visualizations under demand (#12910)
 * Move playback on animated time series by clicking on it (#12180)
 * Move play/pause button to besides the time series (#12387)
@@ -174,7 +178,29 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
+* Fix short-names analyses translations (#13828)
+* Escape prefixes and sufixes in formula widgets (#13895)
+* Redirect to widgets list after deleting a widget (#13485)
+* Keep widgets list order (#13773)
+* Change analyses short names (#13828)
+* Fix popups with just images on IE and Edge (#13808)
+* Enrich downloaded layer event (#13391)
+* Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)
+* Add overlap option in animated heatmap style form (https://github.com/CartoDB/support/issues/1331)
+* Fix bottom extra space in legends (#13765)
+* Fix Heatmap legend does not update after style changes (https://github.com/CartoDB/cartodb/issues/13763)
+* Includes a rake tast to destroy duplicated overlays that should be unique.
+* Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
+* Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)
+* Consistent margins in Auth API UI
+* Skip importing legacy functions (https://github.com/CartoDB/cartodb/issues/13677)
+* Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
+* FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
+* Allows imports of synchronizations without a log
+* Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)
 * Fix a case where the layer selector was displaying incorrectly (https://github.com/CartoDB/support/issues/1430)
+* Add auth_github_enabled ([Central#2154](https://github.com/CartoDB/cartodb-central/issues/2154))
 * Update charlock_holmes to 0.7.6 (ICU compatibility)
 * Skip canonical viz with missing tables from metadata export
 * Fix dialog footer in some modals (CartoDB/onpremises/issues/507)
@@ -547,19 +573,25 @@ ion for time-series (#12670)
 * Add indices to `layers` relations for performance (#13669)
 * Fix imports with local storage and special characters (#13604)
 * Update S3 gem to fix upload timeout problems (#13767, #13791)
+* Stop trying to find visualizations without user/org id (#12538)
 * Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
 * Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
+* Correct redirection when visiting root url without subdomain (#13768)
 * Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
 * Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
 * Allow user exporter to be used as a db backup (#2058)
 * Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
+* Correctly log metrics events for query import type (#13652)
 * Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
 * Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Use redis secondary for heavy `KEYS *` opeartion on user export (#13814)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
+* Add rake to remove duplicate legends in layer
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Point to new CARTO.js v4 repo (#13860)
 * Account migration (#13501)
 * Data Library dashboard migration (#13608)
 * Improve spec bundles / process
@@ -741,6 +773,8 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config
+* Metadata only user migrations
+* Add rake to fix analyses cache tables geometries
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes
@@ -900,7 +934,11 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed incorrect analysis node being selected after deleting (#11899)
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Avoid exporting orphan raster overviews in user migrator
 * Set `soft_geocoding_limit` to default to false.
+* Do not export local visualizations lacking a map
+* Do not export duplicated canonical visualizations
+* Add notifications to user migrator (#13844)
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

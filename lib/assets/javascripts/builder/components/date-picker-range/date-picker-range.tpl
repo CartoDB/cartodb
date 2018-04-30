@@ -1,4 +1,4 @@
-<button class="DatePicker-dates js-dates has-icon CDB-Text CDB-Size-medium">
+<button <% if (disabled) { %>disabled="disabled"<% } %>  class="DatePicker-dates js-dates has-icon CDB-Text CDB-Size-medium <%- disabled ? 'is-disabled' : '' %>">
   <%- _t('components.datepicker.from') %> <strong><%- fromDate %> <%- pad(fromHour,2) %>:<%- pad(fromMin,2) %></strong> <%- _t('components.datepicker.to') %> <strong><%- toDate %> <%- pad(toHour,2) %>:<%- pad(toMin,2) %></strong>
   <i class="CDB-IconFont CDB-IconFont-calendar DatePicker-datesIcon"></i>
 </button>

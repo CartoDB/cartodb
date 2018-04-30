@@ -140,7 +140,7 @@ describe SignupController do
       @fake_organization.save
       owner = Carto::User.find(@fake_organization.owner.id)
       invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!', true)
-      Organization.stubs(:where).with(name: 'www.example.com').returns([@fake_organization])
+      host! "#{@fake_organization.name}.localhost.lan"
       get signup_url(invitation_token: invitation.token('wadus@wad.us'), email: 'wadus@wad.us')
       response.status.should == 200
     end

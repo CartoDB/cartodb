@@ -2545,6 +2545,7 @@
       },
       "components": {
         "fill": "Size/Color",
+        "size": "Size",
         "color": "Color",
         "stroke": {
           "label": "Stroke",

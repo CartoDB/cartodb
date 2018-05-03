@@ -27,6 +27,7 @@
     "Iago Lastra <iago@carto.com>",
     "Elena Torró <elena@carto.com>"
   ],
+  "private": true,
   "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",

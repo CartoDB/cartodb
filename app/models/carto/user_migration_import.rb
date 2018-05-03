@@ -153,7 +153,6 @@ module Carto
           service.import_metadata_from_directory(imported, package.meta_dir)
         end
       rescue => e
-        org_import? ? self.organization = nil : self.user = nil
         log.append('=== Error importing visualizations and search tweets. Rollback! ===')
         rollback_import_data(package)
         service.rollback_import_from_directory(package.meta_dir)
@@ -162,8 +161,8 @@ module Carto
     end
 
     def rollback_import_data(package)
-      return unless import_data?
       org_import? ? self.organization = nil : self.user = nil
+      return unless import_data?
       save!
 
       import_job = CartoDB::DataMover::ImportJob.new(

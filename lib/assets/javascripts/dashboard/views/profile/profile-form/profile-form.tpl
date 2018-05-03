@@ -38,7 +38,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.name') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.name') %>*</label>
     </div>
     <div class="FormAccount-rowData">
       <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--small u-rspace-s" id="user_name" name="user[name]" placeholder="<%= _t('profile.views.form.first_name') %>" size="30" type="text" value="<%= name %>">
@@ -77,7 +77,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.company_name') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="company_name" name="user[company_name]" size="30" type="text" value="<%= companyName %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_company" name="user[company]" size="30" type="text" value="<%= company %>">
     </div>
   </div>
 
@@ -86,10 +86,12 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.role') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <select class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="role" name="user[role]">
+      <select class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_job_role" name="user[job_role]">
         <option>Select one</option>
         <% jobRoles.forEach(function (role) { %>
-          <option><%= role %></option>
+          <option <%= role === job_role ? 'selected' : '' %>>
+            <%= role %> <%=job_role %> <%= role %>
+          </option>
         <% }); %>
       </select>
     </div>
@@ -100,7 +102,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.phone') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="phone" name="user[phone]" size="30" type="text" value="<%= phone %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_phone" name="user[phone]" size="30" type="text" value="<%= phone %>">
     </div>
     <div class="FormAccount-rowInfo">
       <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
@@ -109,7 +111,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.website') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.website') %>*</label>
     </div>
     <div class="FormAccount-rowData">
       <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_website" name="user[website]" size="30" type="text" value="<%= website %>">
@@ -121,7 +123,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.location') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.location') %>*</label>
     </div>
     <div class="FormAccount-rowData">
       <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_location" name="user[location]" size="30" type="text" value="<%= location %>">
@@ -133,7 +135,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.description') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.description') %>*</label>
     </div>
     <div class="FormAccount-rowData">
       <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" cols="40" id="user_description" name="user[description]" rows="20"><%= description %></textarea>
@@ -145,7 +147,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.twitter') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.twitter') %>*</label>
     </div>
     <div class="FormAccount-rowData">
       <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_twitter_username" name="user[twitter_username]" size="30" type="text" value="<%= twitter_username %>">

@@ -181,7 +181,8 @@
     </div>
     <div class="FormAccount-rowData">
       <div class="Toggler">
-        <input name="user[available_for_hire]" type="hidden" value="0"><input id="available_for_hire" name="user[available_for_hire]" type="checkbox" value="<%= available_for_hire %>" <% if (available_for_hire) { %>checked="checked"<% } %>>
+        <input name="user[available_for_hire]" type="hidden" value="0">
+        <input id="available_for_hire" name="user[available_for_hire]" type="checkbox" value="<%= available_for_hire %>" <% if (available_for_hire) { %>checked="checked"<% } %>>
         <label for="available_for_hire"></label>
       </div>
       <div class="FormAccount-rowInfo u-lSpace--xl">

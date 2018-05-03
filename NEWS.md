@@ -940,6 +940,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Do not export local visualizations lacking a map
 * Do not export duplicated canonical visualizations
 * Add notifications to user migrator (#13844)
+* Keep import even if it fails importing visualizations (#13903)
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

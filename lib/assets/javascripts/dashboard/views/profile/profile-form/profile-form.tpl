@@ -1,3 +1,16 @@
+<p class="CDB-Text CDB-Size-medium" style="margin-bottom: 20px;">
+  * Fields marked with an asterisk are visible on your public profile,
+  <% if (isInsideOrg) { %>
+    <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= username %>" target="_blank">
+      <%= organizationName %>.<%= accountHost %>/u/<%= username %>
+    </a>
+  <% } else { %>
+    <a href="//<%= username %>.carto.com/me" target="_blank">
+      <%= username %>.carto.com/me
+    </a>
+  <% } %>
+</p>
+
 <form accept-charset="UTF-8" action="<%- formAction %>" method="post">
   <div class="FormAccount-row FormAccount-rowHorizontal">
     <div class="CDB-Text js-avatarSelector FormAccount-avatarSelector"></div>
@@ -34,6 +47,63 @@
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('profile.views.form.info_public_name') %></p>
       </div>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.email') %></label>
+    </div>
+
+    <div class="FormAccount-rowData">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['email']) { %>has-error<% } %> <% if (!canChangeEmail) { %>is-disabled<% } %>" id="user_email" name="user[email]" size="30" type="text" value="<%= email %>" <% if (!canChangeEmail) { %>readonly="readonly"<% } %>>
+
+      <% if (isInsideOrg) { %>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('profile.views.form.your_url') %>: <%= organizationName %>.<%= accountHost %>/u/<%= username %></p>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="FormAccount-rowInfo">
+      <% if (errors['email']) { %>
+        <p class="CDB-Text CDB-Size-small FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= _t('account.views.form.errors.email_not_valid') %></p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.company_name') %></label>
+    </div>
+    <div class="FormAccount-rowData">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="company_name" name="user[company_name]" size="30" type="text" value="<%= companyName %>">
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.role') %></label>
+    </div>
+    <div class="FormAccount-rowData">
+      <select class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="role" name="user[role]">
+        <option>Select one</option>
+        <% jobRoles.forEach(function (role) { %>
+          <option><%= role %></option>
+        <% }); %>
+      </select>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.phone') %></label>
+    </div>
+    <div class="FormAccount-rowData">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="phone" name="user[phone]" size="30" type="text" value="<%= phone %>">
+    </div>
+    <div class="FormAccount-rowInfo">
+      <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
     </div>
   </div>
 

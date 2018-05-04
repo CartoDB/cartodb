@@ -16,8 +16,9 @@ module Carto
         it 'should raise an exception with run' do
           expect {
             db = Carto::Db::SqlInterface.new(@connection)
-            result = db.run("SELECT this_function_does_not_exist()")
-          }.to raise_error(Carto::Db::SqlInterface::Error, /ERROR:  function this_function_does_not_exist\(\) does not exist/)
+            db.run("SELECT this_function_does_not_exist()")
+          }.to raise_error(Carto::Db::SqlInterface::Error,
+                           /ERROR:  function this_function_does_not_exist\(\) does not exist/)
         end
       end
 
@@ -39,17 +40,19 @@ module Carto
         it 'should raise an exception with fetch/block' do
           db = Carto::Db::SqlInterface.new(@connection)
           expect {
-            db.fetch("SELECT this_function_does_not_exist()") do |result|
+            db.fetch("SELECT this_function_does_not_exist()") do
               nil
             end
-          }.to raise_error(Carto::Db::SqlInterface::Error, /ERROR:  function this_function_does_not_exist\(\) does not exist/)
+          }.to raise_error(Carto::Db::SqlInterface::Error,
+                           /ERROR:  function this_function_does_not_exist\(\) does not exist/)
         end
 
         it 'should raise an exception with fetch/noblock' do
           db = Carto::Db::SqlInterface.new(@connection)
           expect {
-            result = db.fetch("SELECT this_function_does_not_exist()")
-          }.to raise_error(Carto::Db::SqlInterface::Error, /ERROR:  function this_function_does_not_exist\(\) does not exist/)
+            db.fetch("SELECT this_function_does_not_exist()")
+          }.to raise_error(Carto::Db::SqlInterface::Error,
+                           /ERROR:  function this_function_does_not_exist\(\) does not exist/)
         end
       end
 

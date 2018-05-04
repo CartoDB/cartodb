@@ -1,4 +1,4 @@
-<p class="CDB-Text CDB-Size-medium" style="margin-bottom: 20px;">
+<p class="CDB-Text CDB-Size-medium u-vspace-mm">
   * Fields marked with an asterisk are visible on your public profile,
   <% if (isInsideOrg) { %>
     <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= user.username %>" target="_blank">
@@ -56,7 +56,7 @@
     </div>
 
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['email']) { %>has-error<% } %> <% if (!canChangeEmail) { %>is-disabled<% } %>" id="user_email" name="user[email]" size="30" type="text" value="<%= user.email %>" <% if (!canChangeEmail) { %>readonly="readonly"<% } %>>
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med<% if (errors['email']) { %> has-error<% } %><% if (!canChangeEmail) { %> is-disabled<% } %>" id="user_email" name="user[email]" size="30" type="text" value="<%= user.email %>" <% if (!canChangeEmail) { %>readonly="readonly"<% } %>>
 
       <% if (isInsideOrg) { %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">

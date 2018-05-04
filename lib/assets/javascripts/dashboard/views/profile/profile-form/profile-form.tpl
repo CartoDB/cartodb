@@ -87,10 +87,11 @@
     </div>
     <div class="FormAccount-rowData">
       <select class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_job_role" name="user[job_role]">
-        <option>Select one</option>
+        <option value="">Select one</option>
+
         <% jobRoles.forEach(function (role) { %>
-          <option <%= role === job_role ? 'selected' : '' %>>
-            <%= role %> <%=job_role %> <%= role %>
+          <option <% if (role === job_role) { %>selected<% } %>>
+            <%= role %>
           </option>
         <% }); %>
       </select>

@@ -1,12 +1,12 @@
 <p class="CDB-Text CDB-Size-medium" style="margin-bottom: 20px;">
   * Fields marked with an asterisk are visible on your public profile,
   <% if (isInsideOrg) { %>
-    <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= username %>" target="_blank">
-      <%= organizationName %>.<%= accountHost %>/u/<%= username %>
+    <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= user.username %>" target="_blank">
+      <%= organizationName %>.<%= accountHost %>/u/<%= user.username %>
     </a>
   <% } else { %>
-    <a href="//<%= username %>.carto.com/me" target="_blank">
-      <%= username %>.carto.com/me
+    <a href="//<%= user.username %>.carto.com/me" target="_blank">
+      <%= user.username %>.carto.com/me
     </a>
   <% } %>
 </p>
@@ -41,8 +41,8 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.name') %>*</label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--small u-rspace-s" id="user_name" name="user[name]" placeholder="<%= _t('profile.views.form.first_name') %>" size="30" type="text" value="<%= name %>">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--small" id="user_last_name" name="user[last_name]" placeholder="<%= _t('profile.views.form.last_name') %>" size="30" type="text" value="<%= last_name %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--small u-rspace-s" id="user_name" name="user[name]" placeholder="<%= _t('profile.views.form.first_name') %>" size="30" type="text" value="<%= user.name %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--small" id="user_last_name" name="user[last_name]" placeholder="<%= _t('profile.views.form.last_name') %>" size="30" type="text" value="<%= user.last_name %>">
 
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('profile.views.form.info_public_name') %></p>
@@ -56,11 +56,11 @@
     </div>
 
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['email']) { %>has-error<% } %> <% if (!canChangeEmail) { %>is-disabled<% } %>" id="user_email" name="user[email]" size="30" type="text" value="<%= email %>" <% if (!canChangeEmail) { %>readonly="readonly"<% } %>>
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['email']) { %>has-error<% } %> <% if (!canChangeEmail) { %>is-disabled<% } %>" id="user_email" name="user[email]" size="30" type="text" value="<%= user.email %>" <% if (!canChangeEmail) { %>readonly="readonly"<% } %>>
 
       <% if (isInsideOrg) { %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('profile.views.form.your_url') %>: <%= organizationName %>.<%= accountHost %>/u/<%= username %></p>
+          <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('profile.views.form.your_url') %>: <%= organizationName %>.<%= accountHost %>/u/<%= user.username %></p>
         </div>
       <% } %>
     </div>
@@ -77,7 +77,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.company_name') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_company" name="user[company]" size="30" type="text" value="<%= company %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_company" name="user[company]" size="30" type="text" value="<%= user.company %>">
     </div>
   </div>
 
@@ -90,7 +90,7 @@
         <option value="">Select one</option>
 
         <% jobRoles.forEach(function (role) { %>
-          <option <% if (role === job_role) { %>selected<% } %>>
+          <option <% if (role === user.job_role) { %>selected<% } %>>
             <%= role %>
           </option>
         <% }); %>
@@ -103,10 +103,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.phone') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_phone" name="user[phone]" size="30" type="text" value="<%= phone %>">
-    </div>
-    <div class="FormAccount-rowInfo">
-      <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_phone" name="user[phone]" size="30" type="text" value="<%= user.phone %>">
     </div>
   </div>
 
@@ -115,7 +112,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.website') %>*</label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_website" name="user[website]" size="30" type="text" value="<%= website %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_website" name="user[website]" size="30" type="text" value="<%= user.website %>">
     </div>
     <div class="FormAccount-rowInfo">
       <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
@@ -127,7 +124,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.location') %>*</label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_location" name="user[location]" size="30" type="text" value="<%= location %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_location" name="user[location]" size="30" type="text" value="<%= user.location %>">
     </div>
     <div class="FormAccount-rowInfo">
       <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
@@ -139,7 +136,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.description') %>*</label>
     </div>
     <div class="FormAccount-rowData">
-      <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" cols="40" id="user_description" name="user[description]" rows="20"><%= description %></textarea>
+      <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" cols="40" id="user_description" name="user[description]" rows="20"><%= user.description %></textarea>
     </div>
     <div class="FormAccount-rowInfo">
       <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
@@ -151,7 +148,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.twitter') %>*</label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_twitter_username" name="user[twitter_username]" size="30" type="text" value="<%= twitter_username %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_twitter_username" name="user[twitter_username]" size="30" type="text" value="<%= user.twitter_username %>">
     </div>
     <div class="FormAccount-rowInfo">
       <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
@@ -163,7 +160,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.disqus') %>*</label>
     </div>
     <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_disqus_shortname" name="user[disqus_shortname]" placeholder="<%= _t('profile.views.form.disqus_placeholder') %>" size="30" type="text" value="<%= disqus_shortname %>">
+      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_disqus_shortname" name="user[disqus_shortname]" placeholder="<%= _t('profile.views.form.disqus_placeholder') %>" size="30" type="text" value="<%= user.disqus_shortname %>">
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('profile.views.form.disqus_notified') %></p>
       </div>
@@ -183,7 +180,7 @@
     <div class="FormAccount-rowData">
       <div class="Toggler">
         <input name="user[available_for_hire]" type="hidden" value="0">
-        <input id="available_for_hire" name="user[available_for_hire]" type="checkbox" value="<%= available_for_hire %>" <% if (available_for_hire) { %>checked="checked"<% } %>>
+        <input id="available_for_hire" name="user[available_for_hire]" type="checkbox" value="<%= user.available_for_hire %>" <% if (user.available_for_hire) { %>checked="checked"<% } %>>
         <label for="available_for_hire"></label>
       </div>
       <div class="FormAccount-rowInfo u-lSpace--xl">

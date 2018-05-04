@@ -1,7 +1,7 @@
 /* global Image, google */
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
-var zera = require('carto-zera');
+var zera = require('@carto/zera');
 
 var C = require('../../constants');
 var Projector = require('./projector');

@@ -7,7 +7,7 @@ module.exports = function (MapView, PathView) {
   SharedTestsForPathViews.call(this, Polyline, MapView, PathView);
 
   describe('expandable polylines', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       this.mapView = createMapView(MapView);
       this.mapView.render();
 
@@ -25,7 +25,12 @@ module.exports = function (MapView, PathView) {
         mapView: this.mapView
       });
 
-      this.geometryView.render();
+      // Listen for the map to be ready
+      this.mapView.onReady(function () {
+        this.geometryView.render();
+
+        done();
+      }.bind(this));
     });
 
     it('should render markers for each vertex, the path, and middle points', function () {

@@ -2547,6 +2547,12 @@
         "fill": "Size/Color",
         "size": "Size",
         "color": "Color",
+        "fillColor": {
+          "label": "Color",
+          "point": "Point",
+          "line": "Line",
+          "polygon": "Polygon"
+        },
         "stroke": {
           "label": "Stroke",
           "fetching": "Loading node schema...",

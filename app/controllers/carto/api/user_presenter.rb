@@ -41,7 +41,11 @@ module Carto
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count:    @user.all_visualization_count,
           org_user:                   @user.organization_id.present?,
-          remove_logo:                @user.remove_logo?
+          remove_logo:                @user.remove_logo?,
+          industry:                   @user.industry,
+          company:                    @user.company,
+          phone:                      @user.phone,
+          job_role:                   @user.job_role
         }
 
         if fetch_groups

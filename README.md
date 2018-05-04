@@ -6,10 +6,10 @@ CARTO.js is a JavaScript library to create custom location intelligence applicat
 
 The best way to get started is to navigate through the CARTO.js documentation site:
 
-- [Guide](https://carto.com/documentation/cartojs/guides/quickstart/) will give you a good overview of the library.
-- [API Reference](https://carto.com/documentation/cartojs/docs/) will help you use a particular class or method.
-- [Examples](https://carto.com/documentation/cartojs/examples/) will demo some specific features.
-- [Support](https://carto.com/documentation/cartojs/support/) might answer some of your questions.
+- [Guide](https://carto.com/developers/cartojs/guides/quickstart/) will give you a good overview of the library.
+- [API Reference](https://carto.com/developers/cartojs/docs/) will help you use a particular class or method.
+- [Examples](https://carto.com/developers/cartojs/examples/) will demo some specific features.
+- [Support](https://carto.com/developers/cartojs/support/) might answer some of your questions.
 
 ## Versioning
 
@@ -37,9 +37,9 @@ Once the task is done, you can visit `docs/public/index.html` to check the refer
 
 ### General documentation
 
-You can read the general documentation that is published at [https://carto.com/documentation/cartojs/](https://carto.com/documentation/cartojs/) also in this repo. They are written in Markdown.
+You can read the general documentation that is published at [https://carto.com/developers/cartojs/](https://carto.com/developers/cartojs/) also in this repo. They are written in Markdown.
 
-Warning: internal links in these documents don't work. They are replaced when the documentation is published in [https://carto.com/](https://carto.com/documentation/cartojs/)
+Warning: internal links in these documents don't work. They are replaced when the documentation is published in [https://carto.com/](https://carto.com/developers/cartojs/)
 
 
 #### Guides

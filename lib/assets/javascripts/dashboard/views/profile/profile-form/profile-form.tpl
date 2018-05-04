@@ -86,7 +86,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.role') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <select class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_job_role" name="user[job_role]">
+      <select class="CDB-SelectFake CDB-Text FormAccount-input FormAccount-input--med" id="user_job_role" name="user[job_role]">
         <option value="">Select one</option>
 
         <% jobRoles.forEach(function (role) { %>
@@ -160,7 +160,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.disqus') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.disqus') %>*</label>
     </div>
     <div class="FormAccount-rowData">
       <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_disqus_shortname" name="user[disqus_shortname]" placeholder="<%= _t('profile.views.form.disqus_placeholder') %>" size="30" type="text" value="<%= disqus_shortname %>">

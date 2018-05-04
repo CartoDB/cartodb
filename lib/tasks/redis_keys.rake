@@ -4,21 +4,20 @@ namespace :cartodb do
     task :export, [:file] => :environment do |_task, args|
 
       if args[:file].nil?
-        puts "usage: bundle exec rake cartodb:redis_keys:export[filter]\n you must pass a file that contains a filter to select users such as:\n username in ['alex', 'lemmy']"
+        puts "usage: bundle exec rake cartodb:redis_keys:export[filter]\n
+        you must pass a file that contains a filter to select users such as:\n
+        username in ['alex', 'lemmy']"
         exit 1
       end
 
-      CURRENT_VERSION = '1.0.0'
-
       def export_users_json_hash(users)
         {
-          version: CURRENT_VERSION,
           redis: export_users(users)
         }
       end
 
       def export_users(users)
-        export_users_hash = { tables_metadata:{} }
+        export_users_hash = { tables_metadata: {} }
         users.each do |u|
           export_users_hash[:tables_metadata].merge!(export_dataservices($tables_metadata, "map_tpl|#{u.username}"))
         end
@@ -26,7 +25,7 @@ namespace :cartodb do
       end
 
       def export_dataservices(rdb, prefix)
-        rdb.keys("#{prefix}").map { |key|
+        rdb.keys(prefix.to_s).map { |key|
           export_key(rdb, key)
         }.reduce({}, &:merge)
       end
@@ -40,7 +39,7 @@ namespace :cartodb do
         }
       end
 
-      users = User.where("#{File.read(args[:file])}")
+      users = User.where(File.read(args[:file]).to_s)
       File.open('redis_export.json', 'w') { |file| file.write(export_users_json_hash(users).to_json) }
     end
 
@@ -48,19 +47,13 @@ namespace :cartodb do
     task :import, [:filename] => :environment do |_task, args|
 
       if args[:filename].nil?
-        puts "usage: bundle exec rake cartodb:redis_keys:import['redis_export.json']\n you must pass the name of the file with the keys you want to import"
+        puts "usage: bundle exec rake cartodb:redis_keys:import['redis_export.json']\n
+         you must pass the name of the file with the keys you want to import"
         exit 1
       end
 
-      CURRENT_VERSION = '1.0.0'
-
-      def compatible_version?(version)
-        version.to_i == CURRENT_VERSION.split('.')[0].to_i
-      end
 
       def restore_redis_from_hash_export(exported_hash)
-        raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
-
         restore_redis(exported_hash[:redis])
       end
 

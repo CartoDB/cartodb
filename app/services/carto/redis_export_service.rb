@@ -92,14 +92,16 @@ module Carto
 
     def export_user(user)
       {
-        users_metadata: export_dataservices("user:#{user.username}")
+        users_metadata: export_dataservices(["user:#{user.username}:*", "map_tpl|#{user.username}"])
       }
     end
 
-    def export_dataservices(prefix)
-      $users_metadata_secondary.keys("#{prefix}:*").map { |key|
-        export_key($users_metadata_secondary, key)
-      }.reduce({}, &:merge)
+    def export_dataservices(prefixes)
+      prefixes.each do |prefix|
+        $users_metadata_secondary.keys(prefix).map { |key|
+          export_key($users_metadata_secondary, key)
+        }.reduce({}, &:merge)
+      end
     end
 
     def export_key(redis_db, key)

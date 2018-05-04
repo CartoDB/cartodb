@@ -121,8 +121,10 @@ ion for time-series (#12670)
 * New Tooling to gather Dataservices' provider metrics (#13710)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
+* Now the max_layers property only counts data layers to avoid problems with basemaps (#13898)
 * Visualization endpoint now returns related canonical visualizations under demand (#12910)
 * Move playback on animated time series by clicking on it (#12180)
+* Fix bug in the way we calculate stats for the mapviews (#13911)
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 * Time-series: add timezone selector to timeseries histogram (#12464)
@@ -178,6 +180,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
+* Update torque to fix google maps bug (https://github.com/CartoDB/support/issues/1498)
 * Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
 * Fix short-names analyses translations (#13828)
 * Escape prefixes and sufixes in formula widgets (#13895)
@@ -939,6 +942,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Do not export local visualizations lacking a map
 * Do not export duplicated canonical visualizations
 * Add notifications to user migrator (#13844)
+* Keep import even if it fails importing visualizations (#13903)
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

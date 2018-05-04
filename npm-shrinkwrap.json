@@ -3,14 +3,14 @@
   "version": "4.11.129",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.2-0",
-      "from": "cartodb/carto.js#v4.0.2-0",
-      "resolved": "git://github.com/cartodb/carto.js.git#d412d08239897fce8094d4ae2d0b88443527d228"
+      "version": "4.0.3",
+      "from": "cartodb/carto.js#v4.0.3",
+      "resolved": "git://github.com/cartodb/carto.js.git#0b2d608e104673283c21c9e85361de5cbbb19b98"
     },
     "@carto/zera": {
-      "version": "1.0.4",
-      "from": "@carto/zera@1.0.4",
-      "resolved": "https://registry.npmjs.org/@carto/zera/-/zera-1.0.4.tgz"
+      "version": "1.0.6",
+      "from": "@carto/zera@1.0.6",
+      "resolved": "https://registry.npmjs.org/@carto/zera/-/zera-1.0.6.tgz"
     },
     "accessory": {
       "version": "1.0.1",

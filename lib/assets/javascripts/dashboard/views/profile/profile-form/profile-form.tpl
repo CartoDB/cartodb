@@ -1,4 +1,4 @@
-<p class="CDB-Text CDB-Size-medium u-vspace-mm">
+<p class="CDB-Text CDB-Size-medium u-vspace-m">
   * Fields marked with an asterisk are visible on your public profile,
   <% if (isInsideOrg) { %>
     <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= user.username %>" target="_blank">
@@ -86,7 +86,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.role') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <select class="CDB-SelectFake CDB-Text FormAccount-input FormAccount-input--med" id="user_job_role" name="user[job_role]">
+      <select class="CDB-SelectFake CDB-Text FormAccount-input FormAccount-input--med is-cursor" id="user_job_role" name="user[job_role]">
         <option value="">Select one</option>
 
         <% jobRoles.forEach(function (role) { %>

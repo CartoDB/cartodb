@@ -14,7 +14,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
-  'cartodb.js',
+  '@carto/carto.js',
   'cartocolor',
   'd3',
   'jquery',
@@ -288,7 +288,7 @@ module.exports = function (grunt) {
     grunt.task.run('browserify');
   });
 
-  grunt.registerTask('cdb', 'build Cartodb.js', function () {
+  grunt.registerTask('cdb', 'build cartodb.js', function () {
     var done = this.async();
 
     require('child_process').exec('make update_cdb', function (error, stdout, stderr) {

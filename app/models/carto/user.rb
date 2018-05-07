@@ -30,6 +30,13 @@ class Carto::User < ActiveRecord::Base
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  # Make sure the following date is after Jan 29, 2015,
+  # which is the date where a message to accept the Terms and
+  # conditions and the Privacy policy was included in the Signup page.
+  # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
+  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -641,6 +648,16 @@ class Carto::User < ActiveRecord::Base
 
   def locked?
     state == STATE_LOCKED
+  end
+
+  def fullstory_enabled?
+    FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
+  end
+
+  def password_expired?
+    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
+    return false unless password_expiration_in_s && password_set?
+    (last_password_change_date || created_at) + password_expiration_in_s < Time.now
   end
 
   private

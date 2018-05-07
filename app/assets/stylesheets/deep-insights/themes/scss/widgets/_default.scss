@@ -139,6 +139,7 @@
     @include flex(0 0 auto);
     width: auto;
     min-width: 250px; // Enough for dropdown width
+    margin: 0;
     padding: 0;
     border-left-width: 1px;
     border-left-style: solid;

@@ -8,7 +8,7 @@
 </div>
 <div class="ImportPanel-body">
   <form class="Form">
-    <div class="ImportTwitterPanel-cagetories"></div>
+    <div class="ImportTwitterPanel-categories"></div>
     <div class="ImportTwitterPanel-datePicker">
       <div class="Form-row">
         <div class="Form-rowLabel">

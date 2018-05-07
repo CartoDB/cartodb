@@ -51,6 +51,25 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
+  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
+                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
+                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
+                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
+                'Transportation and Logistics'].freeze
+
+  JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
+               'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
+
+  DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
+                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist', 'Government official'].freeze
+
+  # Make sure the following date is after Jan 29, 2015,
+  # which is the date where a message to accept the Terms and
+  # conditions and the Privacy policy was included in the Signup page.
+  # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
+  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+
   self.strict_param_setting = false
 
   # @param name             String
@@ -168,6 +187,8 @@ class User < Sequel::Model
     elsif org_admin
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
+
+    validates_includes JOB_ROLES + DEPRECATED_JOB_ROLES, :job_role if job_role.present?
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
@@ -603,6 +624,7 @@ class User < Sequel::Model
       !created_with_http_authentication? &&
       !organization.try(:auth_saml_enabled?)
   end
+  alias :password_set? :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
@@ -1779,6 +1801,16 @@ class User < Sequel::Model
 
     carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
     carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
+  end
+
+  def fullstory_enabled?
+    FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
+  end
+
+  def password_expired?
+    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
+    return false unless password_expiration_in_s && password_set?
+    (last_password_change_date || created_at) + password_expiration_in_s < Time.now
   end
 
   private

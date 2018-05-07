@@ -1,3 +1,4 @@
+# To avoid duplicated records consider using account_types_helper.rb
 FactoryGirl.define do
   factory :account_type, class: Carto::AccountType do
     account_type 'FREE'

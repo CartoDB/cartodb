@@ -137,6 +137,25 @@ describe Carto::Api::OrganizationsController do
         end
       end
     end
+
+    it 'validates order param' do
+      get_json api_v1_organization_users_url(
+        order: :username,
+        id: @organization.id,
+        api_key: @org_user_1.api_key
+      ), @headers do |response|
+        response.status.should == 200
+      end
+
+      get_json api_v1_organization_users_url(
+        order: :invalidate,
+        id: @organization.id,
+        api_key: @org_user_1.api_key
+      ), @headers do |response|
+        response.status.should == 400
+        response.body.fetch(:errors).should_not be_nil
+      end
+    end
   end
 
 end

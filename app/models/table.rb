@@ -219,7 +219,7 @@ class Table
   def import_to_cartodb(uniname = nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
-      @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
+      @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE if @data_import.data_type.nil?
       @data_import.data_source = migrate_existing_table || uniname
       @data_import.save
 
@@ -1500,13 +1500,17 @@ class Table
     from_schema = self.owner.database_schema
     table_name = self.name
     to_role_user = organization_user.database_username
-    perform_cartodb_function(cartodb_pg_func, from_schema, table_name, to_role_user)
+    Carto::TableAndFriends.apply(owner.in_database, from_schema, table_name) do |schema, name|
+      perform_cartodb_function(cartodb_pg_func, schema, name, to_role_user)
+    end
   end
 
   def perform_organization_table_permission_change(cartodb_pg_func)
     from_schema = self.owner.database_schema
     table_name = self.name
-    perform_cartodb_function(cartodb_pg_func, from_schema, table_name)
+    Carto::TableAndFriends.apply(owner.in_database, from_schema, table_name) do |schema, name|
+      perform_cartodb_function(cartodb_pg_func, schema, name)
+    end
   end
 
   def perform_cartodb_function(cartodb_pg_func, *args)

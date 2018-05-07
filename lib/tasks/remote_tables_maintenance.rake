@@ -145,6 +145,30 @@ namespace :cartodb do
       base_url + "/api/v1/viz?type=table&privacy=public"
     end
 
+    module RemoteTablesMaintenanceRake
+      def self.delete_remote_visualizations(user)
+        user.update_column(:last_common_data_update_date, nil)
+
+        user.visualizations.where(type: 'remote').each do |v|
+          begin
+            unless v.external_source
+              puts "  Remote visualization #{v.id} does not have a external source. Skipping..."
+              next
+            end
+            if v.external_source.external_data_imports.any?
+              puts "  Remote visualization #{v.id} has been previously imported. Skipping..."
+              next
+            end
+
+            v.external_source.delete
+            v.delete
+          rescue => e
+            puts "  Error deleting visualization #{v.id}: #{e.message}"
+          end
+        end
+      end
+    end
+
     # Removes common data visualizations from users which have not seen activity in some time
     # e.g: rake cartodb:remotes:remove_from_inactive_users[365,90] will affect all users
     # whose last activity was between 1 year and 3 months ago
@@ -167,25 +191,28 @@ namespace :cartodb do
       query.find_each do |user|
         processed += 1
         puts "#{user.username} (#{processed} / #{user_count})"
-        user.update_column(:last_common_data_update_date, nil)
+        RemoteTablesMaintenanceRake.delete_remote_visualizations(user)
+      end
+    end
 
-        user.visualizations.where(type: 'remote').each do |v|
-          begin
-            unless v.external_source
-              puts "  Remote visualization #{v.id} does not have a external source. Skipping..."
-              next
-            end
-            if v.external_source.external_data_imports.any?
-              puts "  Remote visualization #{v.id} has been previously imported. Skipping..."
-              next
-            end
+    # Removes common data visualizations from a specific user
+    desc 'Remove common data visualizations from user'
+    task :remove_from_user, [:username] => :environment do |_t, args|
+      RemoteTablesMaintenanceRake.delete_remote_visualizations(Carto::User.find_by_username(args[:username]))
+    end
 
-            v.external_source.delete
-            v.delete
-          rescue => e
-            puts "  Error deleting visualization #{v.id}: #{e.message}"
-          end
-        end
+    # Removes common data visualizations from a specific organization
+    desc 'Remove common data visualizations from user'
+    task :remove_from_organization, [:orgname] => :environment do |_t, args|
+      query = Carto::User.where(organization_id: Carto::Organization.find_by_name(args[:orgname]).id)
+      user_count = query.count
+      puts "#{user_count} users will be affected."
+
+      processed = 0
+      query.find_each do |user|
+        processed += 1
+        puts "#{user.username} (#{processed} / #{user_count})"
+        RemoteTablesMaintenanceRake.delete_remote_visualizations(user)
       end
     end
   end

@@ -88,7 +88,7 @@ class Admin::UsersController < Admin::AdminController
       @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 
-    @user.check_confirmation_password(attributes[:confirmation_password])
+    @user.check_confirmation_password(attributes.fetch(:confirmation_password, ''))
 
     # This fields are optional
     @user.name = attributes.fetch(:name, nil)

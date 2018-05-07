@@ -152,13 +152,7 @@ describe Admin::UsersController do
 
       it 'does not update profile if confirmation password is wrong' do
         params = {
-          name:                  'Mengano',
-          website:               'http://somesite.com',
-          description:           'I describe myself',
-          location:              'Nowhere',
-          twitter_username:      'asd',
-          disqus_shortname:      'qwe',
-          available_for_hire:    true,
+          name:                  'Fulano',
           confirmation_password: 'prapra'
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
@@ -167,19 +161,13 @@ describe Admin::UsersController do
         last_response.status.should eq 200
         last_response.body.should   include('Confirmation password sent is not correct')
         @user.reload
-        @user.name.should_not eq 'Mengano'
+        @user.name.should_not eq 'Fulano'
       end
 
-      it 'does not update profile if confirmation password is empty' do
+      it 'does not update profile if confirmation password is nil' do
         params = {
-          name:                  'Mengano',
-          website:               'http://somesite.com',
-          description:           'I describe myself',
-          location:              'Nowhere',
-          twitter_username:      'asd',
-          disqus_shortname:      'qwe',
-          available_for_hire:    true,
-          confirmation_password: ''
+          name:                  'Fulano',
+          confirmation_password: nil
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params
@@ -187,7 +175,7 @@ describe Admin::UsersController do
         last_response.status.should eq 200
         last_response.body.should   include('Confirmation password sent is not correct')
         @user.reload
-        @user.name.should_not eq 'Mengano'
+        @user.name.should_not eq 'Fulano'
       end
 
       it 'does not update profile if communication with Central fails' do

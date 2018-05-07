@@ -159,7 +159,7 @@ describe Admin::UsersController do
         put profile_update_user_url, user: params
 
         last_response.status.should eq 200
-        last_response.body.should   include('Confirmation password sent is not correct')
+        last_response.body.should   include('Error updating your profile details')
         @user.reload
         @user.name.should_not eq 'Fulano'
       end
@@ -173,7 +173,7 @@ describe Admin::UsersController do
         put profile_update_user_url, user: params
 
         last_response.status.should eq 200
-        last_response.body.should   include('Confirmation password sent is not correct')
+        last_response.body.should   include('Error updating your profile details')
         @user.reload
         @user.name.should_not eq 'Fulano'
       end

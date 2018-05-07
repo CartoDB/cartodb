@@ -1,7 +1,7 @@
 namespace :cartodb do
   namespace :redis_keys do
     desc 'export named_maps key'
-    task :export, [:file] => :environment do |_task, args|
+    task :export_named_maps, [:file] => :environment do |_task, args|
 
       if args[:file].nil?
         puts "usage: bundle exec rake cartodb:redis_keys:export[filter]\n
@@ -44,7 +44,7 @@ namespace :cartodb do
     end
 
     desc 'import named_maps key '
-    task :import, [:filename] => :environment do |_task, args|
+    task :import_named_maps, [:filename] => :environment do |_task, args|
 
       if args[:filename].nil?
         puts "usage: bundle exec rake cartodb:redis_keys:import['redis_export.json']\n

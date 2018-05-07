@@ -9,7 +9,8 @@ describe Admin::UsersController do
   include CartoDB::Factories
 
   before(:all) do
-    @user = create_user(password: 'abcdefgh')
+    @password = 'abcdefgh'
+    @user = create_user(password: @password)
   end
 
   after(:all) do
@@ -126,13 +127,14 @@ describe Admin::UsersController do
     describe '#profile' do
       it 'updates profile' do
         params = {
-          name:               'Mengano',
-          website:            'http://somesite.com',
-          description:        'I describe myself',
-          location:           'Nowhere',
-          twitter_username:   'asd',
-          disqus_shortname:   'qwe',
-          available_for_hire: true
+          name:                  'Mengano',
+          website:               'http://somesite.com',
+          description:           'I describe myself',
+          location:              'Nowhere',
+          twitter_username:      'asd',
+          disqus_shortname:      'qwe',
+          available_for_hire:    true,
+          confirmation_password: @password
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params
@@ -148,10 +150,51 @@ describe Admin::UsersController do
         @user.available_for_hire.should eq params[:available_for_hire]
       end
 
+      it 'does not update profile if confirmation password is wrong' do
+        params = {
+          name:                  'Mengano',
+          website:               'http://somesite.com',
+          description:           'I describe myself',
+          location:              'Nowhere',
+          twitter_username:      'asd',
+          disqus_shortname:      'qwe',
+          available_for_hire:    true,
+          confirmation_password: 'prapra'
+        }
+        ::User.any_instance.stubs(:update_in_central).returns(true)
+        put profile_update_user_url, user: params
+
+        last_response.status.should eq 200
+        last_response.body.should   include('Confirmation password sent is not correct')
+        @user.reload
+        @user.name.should_not eq 'Mengano'
+      end
+
+      it 'does not update profile if confirmation password is empty' do
+        params = {
+          name:                  'Mengano',
+          website:               'http://somesite.com',
+          description:           'I describe myself',
+          location:              'Nowhere',
+          twitter_username:      'asd',
+          disqus_shortname:      'qwe',
+          available_for_hire:    true,
+          confirmation_password: ''
+        }
+        ::User.any_instance.stubs(:update_in_central).returns(true)
+        put profile_update_user_url, user: params
+
+        last_response.status.should eq 200
+        last_response.body.should   include('Confirmation password sent is not correct')
+        @user.reload
+        @user.name.should_not eq 'Mengano'
+      end
+
       it 'does not update profile if communication with Central fails' do
         ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
         params = {
-          name: 'fail-' + @user.name
+          name: 'fail-' + @user.name,
+          confirmation_password: @password
         }
 
         put profile_update_user_url, user: params

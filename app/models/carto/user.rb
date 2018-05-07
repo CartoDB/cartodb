@@ -482,6 +482,10 @@ class Carto::User < ActiveRecord::Base
       !organization.try(:auth_saml_enabled?)
   end
 
+  def check_confirmation_password(password)
+    raise 'Password sent is not correct' unless validate_old_password(password)
+  end
+
   alias_method :should_display_old_password?, :needs_password_confirmation?
 
   def oauth_signin?

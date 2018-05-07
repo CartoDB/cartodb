@@ -88,6 +88,8 @@ class Admin::UsersController < Admin::AdminController
       @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 
+    @user.check_confirmation_password(attributes[:confirmation_password])
+
     # This fields are optional
     @user.name = attributes.fetch(:name, nil)
     @user.last_name = attributes.fetch(:last_name, nil)
@@ -109,6 +111,9 @@ class Admin::UsersController < Admin::AdminController
     render action: :profile
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "Error updating your profile details"
+    render action: :profile
+  rescue StandardError => e
+    flash.now[:error] = e.message
     render action: :profile
   end
 

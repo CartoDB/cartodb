@@ -613,6 +613,10 @@ class User < Sequel::Model
       (oauth_signin? && last_password_change_date.nil?)
   end
 
+  def check_confirmation_password(password)
+    raise 'Confirmation password sent is not correct' unless validate_old_password(password)
+  end
+
   def should_display_old_password?
     needs_password_confirmation?
   end

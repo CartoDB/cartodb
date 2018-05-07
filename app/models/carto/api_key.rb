@@ -287,9 +287,11 @@ module Carto
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
-          sequences_for_table(tp.schema, tp.name).each do |seq|
-            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+          Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
+            db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+            sequences_for_table(schema, table_name).each do |seq|
+              db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+            end
           end
         end
       end
@@ -307,6 +309,7 @@ module Carto
     end
 
     def affected_schemas
+      # assume table friends don't introduce new schemas
       table_permissions.map(&:schema).uniq
     end
 

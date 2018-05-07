@@ -34,7 +34,7 @@ namespace :cartodb do
         {
           key => {
             ttl: [0, redis_db.pttl(key)].max, # PTTL returns -1 if not set, clamp to 0
-            value: Base64.encode64(redis_db.dump(key))
+            value: redis_db.hgetall(key)
           }
         }
       end
@@ -63,8 +63,8 @@ namespace :cartodb do
 
       def restore_keys(redis_db, redis_keys)
         redis_keys.each do |key, value|
-          unless redis_db.exists(key)
-            redis_db.restore(key, value[:ttl], Base64.decode64(value[:value]))
+          value[:value].each do |k, v|
+            redis_db.hset(key, k, v) unless redis_db.hexists(key, k)
           end
         end
       end

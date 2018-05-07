@@ -147,6 +147,16 @@ var CartoDBLayer = LayerModelBase.extend({
   remove: function () {
     this.getSource().unmarkAsSourceOf(this);
     LayerModelBase.prototype.remove.apply(this, arguments);
+  },
+
+  $getTableName: function () {
+    if (this.attributes.source.attributes.options) {
+      return this.attributes.source.attributes.options.table_name;
+    }
+  },
+
+  $getApiKey: function () {
+    return this._engine.getApiKey();
   }
 },
   // Static methods and properties

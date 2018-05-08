@@ -52,7 +52,6 @@ namespace :cartodb do
         exit 1
       end
 
-
       def restore_redis_from_hash_export(exported_hash)
         restore_redis(exported_hash[:redis])
       end

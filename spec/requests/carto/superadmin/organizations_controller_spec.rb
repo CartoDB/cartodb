@@ -125,6 +125,15 @@ describe Carto::Superadmin::OrganizationsController do
       it_behaves_like 'dataservices usage metrics'
     end
 
+    describe 'geocoder_tomtom' do
+      before(:all) do
+        @class = CartoDB::GeocoderUsageMetrics
+        @service = :geocoder_tomtom
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
     describe 'here_isolines' do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics
@@ -147,6 +156,15 @@ describe Carto::Superadmin::OrganizationsController do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics
         @service = :mapbox_isolines
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'tomtom_isolines' do
+      before(:all) do
+        @class = CartoDB::IsolinesUsageMetrics
+        @service = :tomtom_isolines
       end
 
       it_behaves_like 'dataservices usage metrics'
@@ -183,6 +201,15 @@ describe Carto::Superadmin::OrganizationsController do
       before(:all) do
         @class = CartoDB::RoutingUsageMetrics
         @service = :routing_mapbox
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'routing_tomtom' do
+      before(:all) do
+        @class = CartoDB::RoutingUsageMetrics
+        @service = :routing_tomtom
       end
 
       it_behaves_like 'dataservices usage metrics'

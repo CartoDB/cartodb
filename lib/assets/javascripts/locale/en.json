@@ -2559,6 +2559,9 @@
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
         },
+        "point-size": {
+          "label": "Point Size"
+        },
         "blending": {
           "label": "Blending",
           "options": {

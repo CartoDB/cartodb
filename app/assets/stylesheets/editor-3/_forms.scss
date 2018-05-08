@@ -16,6 +16,11 @@
   margin-top: $baseSize * 2;
 }
 
+.Editor-formInner.Editor-formInner--Size {
+  align-items: baseline;
+  margin-top: $baseSize * 2;
+}
+
 .Options-form .Editor-formInner {
   margin-top: 0;
 }

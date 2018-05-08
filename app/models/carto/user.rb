@@ -482,8 +482,13 @@ class Carto::User < ActiveRecord::Base
       !organization.try(:auth_saml_enabled?)
   end
 
+  def validate_old_password(old_password)
+    (self.class.password_digest(old_password, salt) == crypted_password) ||
+      (oauth_signin? && last_password_change_date.nil?)
+  end
+
   def valid_password_confirmation(password)
-    valid = validate_old_password(password)
+    valid = password.present? && validate_old_password(password)
     errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
     valid
   end

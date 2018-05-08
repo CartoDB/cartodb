@@ -226,6 +226,21 @@ describe Carto::Api::UsersController do
         end
       end
 
+      it 'does not update profile data if password_confirmation is missing' do
+        payload = {
+          user: {
+            name: 'Foo2'
+          }
+        }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(403)
+
+          @user.reload
+          @user.username.should_not eq 'Foo2'
+        end
+      end
+
       it 'does not update fields not present in the user hash' do
         payload = {
           user: {

@@ -614,7 +614,7 @@ class User < Sequel::Model
   end
 
   def valid_password_confirmation(password)
-    valid = validate_old_password(password)
+    valid = password.present? && validate_old_password(password)
     errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
     valid
   end

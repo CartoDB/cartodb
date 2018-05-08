@@ -58,6 +58,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 * Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
+* Added support for TomTom as services provider (CartoDB/dataservices-api/issues/492)
 * Remove forget confirmation from onboarding tour (#13039)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
@@ -179,6 +180,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
 * Update torque to fix google maps bug (https://github.com/CartoDB/support/issues/1498)
 * Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
 * Fix short-names analyses translations (#13828)

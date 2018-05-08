@@ -17,12 +17,14 @@ module CartoDB
 
     VALID_SERVICES = [
       :routing_mapzen,
-      :routing_mapbox
+      :routing_mapbox,
+      :routing_tomtom
     ].freeze
 
     ROUTING_KEYS = {
+      "mapzen" => :routing_mapzen,
       "mapbox" => :routing_mapbox,
-      "mapzen" => :routing_mapzen
+      "tomtom" => :routing_tomtom
     }.freeze
 
     def initialize(username, orgname = nil, redis = $geocoder_metrics)

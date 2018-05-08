@@ -42,6 +42,7 @@ module CartoDB
       uo = CartoDB::UserOrganization.new(organization.id, owner.id)
       uo.promote_user_to_admin
       organization.reload
+      owner.reload
       organization
     end
 

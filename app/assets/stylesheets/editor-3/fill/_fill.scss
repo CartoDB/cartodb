@@ -33,7 +33,7 @@
 .Editor-fillImage {
   display: flex;
   height: 16px;
-  margin-right: 8px;
+  margin: 8px;
 }
 
 .Editor-fillImageAsset {
@@ -62,6 +62,14 @@
 
 .CDB-OptionInput-container {
   height: 100%;
+
+  .CDB-OptionInput-item:last-child {
+    width: auto;
+  }
+
+  .CDB-OptionInput-item:first-child {
+    width: 100%;
+  }
 }
 
 .CDB-OptionInput-container--noSlider {

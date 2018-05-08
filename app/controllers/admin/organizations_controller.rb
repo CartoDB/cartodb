@@ -11,12 +11,15 @@ class Admin::OrganizationsController < Admin::AdminController
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
   before_filter :owners_only, only: [:settings, :settings_update, :regenerate_all_api_keys, :auth, :auth_update,
                                      :destroy]
+  before_filter :valid_password_confirmation, only: [:settings_update, :auth_update, :new_notification]
   before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   before_filter :load_carto_organization, only: [:notifications, :new_notification]
   before_filter :load_notification, only: [:destroy_notification]
   before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications,
                                                          :new_notification]
   helper_method :show_billing
+
+  rescue_from Carto::PasswordConfirmationError, with: :rescue_from_password_confirmation_error
 
   layout 'application'
 
@@ -204,5 +207,16 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def load_notification
     @notification = Carto::Notification.find(params[:id])
+  end
+
+  def valid_password_confirmation
+    unless current_user.valid_password_confirmation(params[:password_confirmation])
+      raise Carto::PasswordConfirmationError.new
+    end
+  end
+
+  def rescue_from_password_confirmation_error(error)
+    flash.now[:error] = error.message
+    render action: 'settings', status: error.status
   end
 end

@@ -90,9 +90,7 @@
         <option value="">Select one</option>
 
         <% jobRoles.forEach(function (role) { %>
-          <option <% if (role === user.job_role) { %>selected<% } %>>
-            <%= role %>
-          </option>
+          <option<% if (role === user.job_role) { %> selected<% } %>><%= role %></option>
         <% }); %>
 
         <% if (!_.contains(jobRoles, user.job_role) && !_.isEmpty(user.job_role)) { %>
@@ -112,7 +110,7 @@
         <option value="">Select one</option>
 
         <% industries.forEach(function (industry) { %>
-          <option <% if (industry === user.industry) { %>selected<% } %>><%= industry %></option>
+          <option<% if (industry === user.industry) { %> selected<% } %>><%= industry %></option>
         <% }); %>
 
         <% if (!_.contains(industries, user.industry) && !_.isEmpty(user.industry)) { %>

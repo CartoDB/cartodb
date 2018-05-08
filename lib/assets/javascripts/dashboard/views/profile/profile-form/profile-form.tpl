@@ -94,6 +94,30 @@
             <%= role %>
           </option>
         <% }); %>
+
+        <% if (!_.contains(jobRoles, user.job_role) && !_.isEmpty(user.job_role)) { %>
+          <option><%= user.job_role %></option>
+        <% } %>
+      </select>
+    </div>
+  </div>
+
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.industry') %></label>
+    </div>
+    <div class="FormAccount-rowData">
+      <select class="CDB-SelectFake CDB-Text FormAccount-input FormAccount-input--med is-cursor" id="user_industry" name="user[industry]">
+        <option value="">Select one</option>
+
+        <% industries.forEach(function (industry) { %>
+          <option <% if (industry === user.industry) { %>selected<% } %>><%= industry %></option>
+        <% }); %>
+
+        <% if (!_.contains(industries, user.industry) && !_.isEmpty(user.industry)) { %>
+          <option><%= user.industry %></option>
+        <% } %>
       </select>
     </div>
   </div>

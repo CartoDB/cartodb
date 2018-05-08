@@ -149,13 +149,13 @@ var CartoDBLayer = LayerModelBase.extend({
     LayerModelBase.prototype.remove.apply(this, arguments);
   },
 
-  $getTableName: function () {
-    if (this.attributes.source.attributes.options) {
-      return this.attributes.source.attributes.options.table_name;
+  getTableName: function () {
+    if (this.get('source').has('options')) {
+      return this.get('source').get('options').table_name;
     }
   },
 
-  $getApiKey: function () {
+  getApiKey: function () {
     return this._engine.getApiKey();
   }
 },

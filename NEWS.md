@@ -58,6 +58,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 * Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
+* Added support for TomTom as services provider (CartoDB/dataservices-api/issues/492)
 * Remove forget confirmation from onboarding tour (#13039)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)

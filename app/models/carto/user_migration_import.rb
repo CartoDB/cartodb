@@ -95,6 +95,7 @@ module Carto
       import_visualizations(imported, package, service) if import_metadata?
 
       reconfigure_dataservices if import_metadata?
+      reconfigure_aggregation_tables if import_metadata?
     end
 
     def do_import_metadata(package, service)
@@ -132,6 +133,19 @@ module Carto
       end
     end
 
+    def reconfigure_aggregation_tables
+      u = org_import? ? ::Organization[organization.id].owner : ::User[user.id]
+      begin
+        u.db_service.connect_to_aggregation_tables
+      rescue => e
+        CartoDB::Logger.error(message: "Error trying to refresh aggregation tables for user",
+                              exception: e,
+                              user: u,
+                              organization: (org_import? ? organization : nil),
+                              user_migration_import_id: id)
+      end
+    end
+
     def import_visualizations(imported, package, service)
       log.append('=== Importing visualizations and search tweets ===')
       begin
@@ -147,8 +161,8 @@ module Carto
     end
 
     def rollback_import_data(package)
-      return unless import_data?
       org_import? ? self.organization = nil : self.user = nil
+      return unless import_data?
       save!
 
       import_job = CartoDB::DataMover::ImportJob.new(

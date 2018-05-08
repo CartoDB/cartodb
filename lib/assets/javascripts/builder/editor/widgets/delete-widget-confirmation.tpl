@@ -6,7 +6,7 @@
       </svg>
     </div>
     <div>
-      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--xl">
+      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--xl">
         <%- _t('editor.widgets.delete.title', { name: name }) %>
       </h2>
       <p class="CDB-Text CDB-Size-large u-altTextColor"><%- _t('editor.widgets.delete.desc') %></p>

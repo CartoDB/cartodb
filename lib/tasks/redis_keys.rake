@@ -11,7 +11,6 @@ namespace :cartodb do
       end
 
       module ExportNamedMaps
-
         def export_users_json_hash(users)
           {
             redis: export_users(users)
@@ -58,7 +57,6 @@ namespace :cartodb do
       end
 
       module ImportNamedMaps
-
         def restore_redis_from_hash_export(exported_hash)
           restore_redis(exported_hash[:redis])
         end

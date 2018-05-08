@@ -4,7 +4,7 @@ namespace :cartodb do
     task :export_named_maps, [:file] => :environment do |_task, args|
 
       if args[:file].nil?
-        puts "usage: bundle exec rake cartodb:redis_keys:export[filter]\n
+        puts "usage: bundle exec rake cartodb:redis_keys:export_named_maps[filter]\n
         you must pass a file that contains a filter to select users such as:\n
         username in ['alex', 'lemmy']"
         exit 1
@@ -51,7 +51,7 @@ namespace :cartodb do
     task :import_named_maps, [:filename] => :environment do |_task, args|
 
       if args[:filename].nil?
-        puts "usage: bundle exec rake cartodb:redis_keys:import['redis_export.json']\n
+        puts "usage: bundle exec rake cartodb:redis_keys:import_named_maps['redis_export.json']\n
          you must pass the name of the file with the keys you want to import"
         exit 1
       end

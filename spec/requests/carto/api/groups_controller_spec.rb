@@ -308,7 +308,7 @@ describe Carto::Api::GroupsController do
         password_confirmation:  'wrong'
       }, @headers do |response|
         response.status.should == 403
-        response.body[:errors].should match /Confirmation password sent does not match your current password/
+        response.body[:errors].should include "Confirmation password sent does not match your current password"
       end
     end
 
@@ -354,7 +354,7 @@ describe Carto::Api::GroupsController do
         password_confirmation: 'wrong'
       }, @headers do |response|
         response.status.should == 403
-        response.body[:errors].should match /Confirmation password sent does not match your current password/
+        response.body[:errors].should include "Confirmation password sent does not match your current password"
       end
     end
 
@@ -439,7 +439,7 @@ describe Carto::Api::GroupsController do
         password_confirmation: 'wrong'
       }, @headers do |response|
         response.status.should == 403
-        response.body[:errors].should match /Confirmation password sent does not match your current password/
+        response.body[:errors].should include "Confirmation password sent does not match your current password"
       end
     end
   end

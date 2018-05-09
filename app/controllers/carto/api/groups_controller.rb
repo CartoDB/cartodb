@@ -20,8 +20,10 @@ module Carto
       before_filter :org_admin_only, only: [:create, :update, :destroy, :add_users, :remove_users]
       before_filter :org_users_only, only: [:show, :index]
       before_filter :load_organization_users, only: [:add_users, :remove_users]
+      before_filter :valid_password_confirmation, only: [:destroy, :add_users, :remove_users]
 
       rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+      rescue_from Carto::PasswordConfirmationError, with: :rescue_from_password_confirmation_error
 
       VALID_ORDER_PARAMS = [:id, :name, :display_name, :organization_id, :updated_at].freeze
 
@@ -170,7 +172,15 @@ module Carto
         end
       end
 
-    end
+      def valid_password_confirmation
+        unless current_user.valid_password_confirmation(params[:password_confirmation])
+          raise Carto::PasswordConfirmationError.new
+        end
+      end
 
+      def rescue_from_password_confirmation_error(error)
+        render_jsonp({ message: "Error modifying groups", errors: error.message }, 403)
+      end
+    end
   end
 end

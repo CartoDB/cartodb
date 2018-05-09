@@ -3,9 +3,9 @@
   "version": "4.11.131-support-1510",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.3",
+      "version": "4.0.3-support-1510",
       "from": "cartodb/carto.js#support-1510",
-      "resolved": "git://github.com/cartodb/carto.js.git#3d078671c8ac82a2994db7c0ac7f6c9556a5468d"
+      "resolved": "git://github.com/cartodb/carto.js.git#3d2a7a6ade4f418cb73eeea17a0478487cfab048"
     },
     "@carto/zera": {
       "version": "1.0.6",

@@ -384,7 +384,8 @@ describe Admin::OrganizationsController do
         ), carto_notification: params, password_confirmation: 'prapra'
         response.status.should eq 403
         response.body.should match /Confirmation password sent does not match your current password/
-        @carto_organization.reload.notifications.first.should_not be
+        notification = @carto_organization.reload.notifications.first
+        notification.body.should_not eq params[:body]
       end
 
       it 'does not create a new notification if missing password_confirmation' do
@@ -395,7 +396,8 @@ describe Admin::OrganizationsController do
         post new_organization_notification_admin_url(user_domain: @admin_user.username), carto_notification: params
         response.status.should eq 403
         response.body.should match /Confirmation password sent does not match your current password/
-        @carto_organization.reload.notifications.first.should_not be
+        notification = @carto_organization.reload.notifications.first
+        notification.body.should_not eq params[:body]
       end
     end
 

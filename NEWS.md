@@ -22,6 +22,7 @@ You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to sy
 This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
 
 ### Features
+* Organization page migration (#13742)
 * Profile page migration (#13726)
 * Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
 * Singup and confirmation pages migration (#13641)
@@ -58,6 +59,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 * Add limits for vector tiles (#13026)
 * Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
+* Added support for TomTom as services provider (CartoDB/dataservices-api/issues/492)
 * Remove forget confirmation from onboarding tour (#13039)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
@@ -189,6 +191,7 @@ ion for time-series (#12670)
 * Change analyses short names (#13828)
 * Fix popups with just images on IE and Edge (#13808)
 * Enrich downloaded layer event (#13391)
+* Includes a rake tasks to export/import named maps for users (#13927)
 * Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)
 * Add overlap option in animated heatmap style form (https://github.com/CartoDB/support/issues/1331)
 * Fix bottom extra space in legends (#13765)

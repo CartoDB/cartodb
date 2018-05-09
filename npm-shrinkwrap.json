@@ -5,7 +5,7 @@
     "@carto/carto.js": {
       "version": "4.0.3",
       "from": "cartodb/carto.js#support-1510",
-      "resolved": "git://github.com/cartodb/carto.js.git#91e2fa79a1fc9e9e4be0c9763b681526160e9970"
+      "resolved": "git://github.com/cartodb/carto.js.git#3d078671c8ac82a2994db7c0ac7f6c9556a5468d"
     },
     "@carto/zera": {
       "version": "1.0.6",

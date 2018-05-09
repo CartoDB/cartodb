@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.131-support-1510",
+  "version": "4.11.131",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.3-support-1510",
-      "from": "cartodb/carto.js#support-1510",
-      "resolved": "git://github.com/cartodb/carto.js.git#3d2a7a6ade4f418cb73eeea17a0478487cfab048"
+      "version": "4.0.4",
+      "from": "cartodb/carto.js#v4.0.4",
+      "resolved": "git://github.com/cartodb/carto.js.git#eb85e36c2c2b8638969447c16bd09bdcfa397047"
     },
     "@carto/zera": {
       "version": "1.0.6",

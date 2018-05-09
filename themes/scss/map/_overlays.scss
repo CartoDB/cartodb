@@ -227,6 +227,10 @@ $buttonColor: #636D72;
 
 $maxLegendContainerHeight: 300px;
 
+.CDB-LayerLegends {
+  margin-bottom: 12px;
+}
+
 .CDB-Legends-canvas {
   position: absolute;
   top: 16px;
@@ -283,10 +287,6 @@ $maxLegendContainerHeight: 300px;
 }
 .CDB-Legends-canvas .ps-scrollbar-x-rail {
   z-index: 3;
-}
-
-.CDB-Legend-item {
-  padding-bottom: 16px;
 }
 
 .CDB-Legend-item div.cartodb-legend {

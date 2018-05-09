@@ -16,7 +16,7 @@
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
     "prefer-promise-reject-errors": "off",
-    "comma-dangle": [2, "always-multiline"],
+    "comma-dangle": ["error", "never"],
     "no-cond-assign": [2, "except-parens"],
     "no-console": 2,
     "no-constant-condition": 2,

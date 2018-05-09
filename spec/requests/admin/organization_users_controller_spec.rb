@@ -268,13 +268,14 @@ describe Admin::OrganizationUsersController do
         last_response.status.should == 302
       end
 
-      it 'returns 403 if wrong password_confirmation' do
+      it 'returns error if wrong password_confirmation' do
         doomed_user = FactoryGirl.create(:valid_user, organization: @organization)
         login_as(@admin, scope: @admin.username)
 
         delete delete_organization_user_url(user_domain: @admin.username, id: doomed_user.username),
                password_confirmation: 'wrong'
         last_response.status.should == 302
+        follow_redirect!
         last_response.body.should include 'Confirmation password sent does not match your current password'
       end
 

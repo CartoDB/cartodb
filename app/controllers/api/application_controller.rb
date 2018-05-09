@@ -34,6 +34,12 @@ class Api::ApplicationController < ApplicationController
     @stats_aggregator = CartoDB::Stats::EditorAPIs.instance
   end
 
+  def valid_password_confirmation
+    unless current_user.valid_password_confirmation(params[:password_confirmation])
+      raise Carto::PasswordConfirmationError.new
+    end
+  end
+
   private
 
   def callback_valid?

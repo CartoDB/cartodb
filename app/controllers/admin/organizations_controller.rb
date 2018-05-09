@@ -217,10 +217,4 @@ class Admin::OrganizationsController < Admin::AdminController
   def load_notification
     @notification = Carto::Notification.find(params[:id])
   end
-
-  def valid_password_confirmation
-    unless current_user.valid_password_confirmation(params[:password_confirmation])
-      raise Carto::PasswordConfirmationError.new
-    end
-  end
 end

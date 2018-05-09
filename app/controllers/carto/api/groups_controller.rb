@@ -172,12 +172,6 @@ module Carto
         end
       end
 
-      def valid_password_confirmation
-        unless current_user.valid_password_confirmation(params[:password_confirmation])
-          raise Carto::PasswordConfirmationError.new
-        end
-      end
-
       def rescue_from_password_confirmation_error(error)
         render_jsonp({ message: "Error modifying groups", errors: [error.message] }, 403)
       end

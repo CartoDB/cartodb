@@ -81,6 +81,8 @@ defaults: &defaults
   hubspot: ''
   segment:
     api_key:
+  passwords:
+    expiration_in_s:
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'
@@ -129,6 +131,15 @@ defaults: &defaults
     generate_every: 86400
   explore_api:
     username: ''
+  aggregation_tables:
+    host: 'localhost'
+    port: '5432'
+    dbname: 'dataservices_db'
+    username: 'geocoder_api'
+    password: ''
+    tables:
+      admin0: 'ne_admin0_v3'
+      admin1: 'global_province_polygons'
   reports:
     mail_to: ''
   mailer:
@@ -198,6 +209,11 @@ defaults: &defaults
       search_bar_api_key: ''
     mapbox:
       search_bar_api_key: ''
+    api:
+      host: 'localhost'
+      port: '5432'
+      dbname: 'dataservices_db'
+      user: 'geocoder_api'
   user_migrator:
     user_exports_folder: '/tmp/user_exports'
     user_imports_folder: '/tmp/user_imports'

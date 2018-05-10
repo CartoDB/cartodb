@@ -107,6 +107,7 @@ module.exports = function (grunt) {
     process.exit(1);
   }
 
+  var PUBLIC_DIR = './public/';
   var ROOT_ASSETS_DIR = './public/assets/';
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
@@ -135,6 +136,7 @@ module.exports = function (grunt) {
     aws: aws,
     env: env,
 
+    public_dir: PUBLIC_DIR,
     assets_dir: ASSETS_DIR,
     root_assets_dir: ROOT_ASSETS_DIR,
 
@@ -157,6 +159,9 @@ module.exports = function (grunt) {
     clean: require('./lib/build/tasks/clean').task(),
 
     jasmine: jasmineCfg,
+
+    // Create a tarball of the static pages for production release
+    compress: require('./lib/build/tasks/compress.js').task(),
 
     s3: require('./lib/build/tasks/s3.js').task(),
 
@@ -388,6 +393,7 @@ module.exports = function (grunt) {
   grunt.registerTask('release', [
     'check_release',
     'build',
+    'compress',
     's3',
     'invalidate'
   ]);

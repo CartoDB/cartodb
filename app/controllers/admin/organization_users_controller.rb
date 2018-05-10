@@ -18,7 +18,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
-  before_filter :load_has_new_dashboard, only: [:new, :edit]
+  before_filter :load_has_new_dashboard, only: [:new, :edit, :create]
 
   layout 'application'
 

@@ -243,7 +243,7 @@ class User < Sequel::Model
         errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
       end
 
-      validate_different_passwords(nil, self.class.password_digest(value, salt), key)
+      different_passwords?(nil, self.class.password_digest(value, salt), key)
     end
 
     errors[key].empty?
@@ -604,6 +604,7 @@ class User < Sequel::Model
     return unless @old_password_validated
 
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
+    return unless different_passwords?(@old_password, @new_password)
 
     # Must be set AFTER validations
     set_last_password_change_date
@@ -611,14 +612,16 @@ class User < Sequel::Model
     self.password = new_password_value
   end
 
-  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
-    return if new?
+  def different_passwords?(old_password = nil, new_password = nil, key = :new_password)
+    return if new? || (@changing_passwords && !old_password)
     old_password = carto_user.crypted_password_was unless old_password.present?
     new_password = crypted_password unless old_password.present? && new_password.present?
 
     unless old_password.present? && old_password != new_password
       errors.add(key, 'New password cannot be the same as old password')
     end
+
+    errors[key].empty?
   end
 
   def validate_old_password(old_password)

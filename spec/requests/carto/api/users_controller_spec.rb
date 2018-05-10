@@ -98,6 +98,24 @@ describe Carto::Api::UsersController do
         end
       end
 
+      it 'validates password is different than the old_password' do
+        payload = {
+          user: {
+            email: 'foo@bar.baz',
+            old_password: 'foobarbaz',
+            new_password: 'foobarbaz',
+            confirm_password: 'foobarbaz'
+          }
+        }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(400)
+
+          expect(response.body[:errors]).to have_key(:new_password)
+          expect(response.body[:errors][:new_password]).to eq ['New password cannot be the same as old password']
+        end
+      end
+
       it 'gives a status code 200 if payload is empty' do
         put_json api_v3_users_update_me_url(url_options), {}, @headers do |response|
           expect(response.status).to eq(200)

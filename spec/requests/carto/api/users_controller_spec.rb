@@ -80,25 +80,7 @@ describe Carto::Api::UsersController do
         }
       end
 
-      it 'updates account data for the given user' do
-        payload = {
-          user: {
-            email: 'foo@bar.baz',
-            old_password: 'foobarbaz',
-            new_password: 'bazbarfoo',
-            confirm_password: 'bazbarfoo'
-          }
-        }
-
-        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
-          expect(response.status).to eq(200)
-
-          @user.refresh
-          expect(@user.email).to eq('foo@bar.baz')
-        end
-      end
-
-      it 'validates password is different than the old_password' do
+      it 'gives an error if password is the same as old_password' do
         payload = {
           user: {
             email: 'foo@bar.baz',
@@ -155,6 +137,24 @@ describe Carto::Api::UsersController do
       it 'returns 401 if user is not logged in' do
         put_json api_v3_users_update_me_url(url_options.except(:api_key)), @headers do |response|
           expect(response.status).to eq(401)
+        end
+      end
+
+      it 'updates account data for the given user' do
+        payload = {
+          user: {
+            email: 'foo@bar.baz',
+            old_password: 'foobarbaz',
+            new_password: 'bazbarfoo',
+            confirm_password: 'bazbarfoo'
+          }
+        }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(200)
+
+          @user.refresh
+          expect(@user.email).to eq('foo@bar.baz')
         end
       end
     end

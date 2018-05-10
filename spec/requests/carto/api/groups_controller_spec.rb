@@ -330,7 +330,7 @@ describe Carto::Api::GroupsController do
         user_id: user.id
       ), {
         password_confirmation: '12345678'
-        }, @headers do |response|
+      }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
       end

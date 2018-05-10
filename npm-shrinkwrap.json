@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.131",
+  "version": "4.11.133",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.3",
-      "from": "cartodb/carto.js#v4.0.3",
-      "resolved": "git://github.com/cartodb/carto.js.git#0b2d608e104673283c21c9e85361de5cbbb19b98"
+      "version": "4.0.5",
+      "from": "cartodb/carto.js#v4.0.5",
+      "resolved": "git://github.com/cartodb/carto.js.git#9ad4f49f8bfed824babca24b7b811113da2c93e5"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -611,9 +611,9 @@
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
     },
     "create-ecdh": {
-      "version": "4.0.1",
+      "version": "4.0.3",
       "from": "create-ecdh@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/create-ecdh/-/create-ecdh-4.0.1.tgz"
+      "resolved": "https://registry.npmjs.org/create-ecdh/-/create-ecdh-4.0.3.tgz"
     },
     "create-hash": {
       "version": "1.2.0",
@@ -651,9 +651,9 @@
       "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-1.2.1.tgz"
     },
     "d3-color": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "from": "d3-color@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.2.0.tgz"
     },
     "d3-format": {
       "version": "1.2.0",
@@ -661,9 +661,9 @@
       "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-1.2.0.tgz"
     },
     "d3-interpolate": {
-      "version": "1.1.6",
+      "version": "1.2.0",
       "from": "d3-interpolate@>=1.1.6 <2.0.0",
-      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.6.tgz"
+      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.2.0.tgz"
     },
     "d3-queue": {
       "version": "3.0.7",
@@ -2360,9 +2360,9 @@
       }
     },
     "stream-http": {
-      "version": "2.8.1",
+      "version": "2.8.2",
       "from": "stream-http@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.8.1.tgz",
+      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.8.2.tgz",
       "dependencies": {
         "isarray": {
           "version": "1.0.0",
@@ -2371,7 +2371,7 @@
         },
         "readable-stream": {
           "version": "2.3.6",
-          "from": "readable-stream@>=2.3.3 <3.0.0",
+          "from": "readable-stream@>=2.3.6 <3.0.0",
           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.6.tgz"
         },
         "string_decoder": {
@@ -2550,9 +2550,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.3.23",
+      "version": "3.3.24",
       "from": "uglify-js@>=3.3.0 <3.4.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.23.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.24.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

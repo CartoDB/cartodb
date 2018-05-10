@@ -181,6 +181,8 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix autostyle issue (https://github.com/CartoDB/support/issues/1399)
+* Fix legend margin (https://github.com/CartoDB/support/issues/1510)
 * Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
 * Update torque to fix google maps bug (https://github.com/CartoDB/support/issues/1498)
 * Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)

@@ -415,6 +415,17 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should == 200
     end
 
+    it 'fails to update password if the same as old_password' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+      params = { password: user_to_update.username }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+    end
+
     it 'should update email' do
       login(@organization.owner)
 

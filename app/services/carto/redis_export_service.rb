@@ -115,17 +115,21 @@ module Carto
     end
 
     def export_named_maps(user)
-      re = /tpl_(?<viz_id>.+)/
       named_maps_key = "map_tpl|#{user.username}"
       named_maps_keys = $tables_metadata_secondary.hkeys(named_maps_key).reject do |named_map|
-        match = re.match(named_map)
-        match && visualization_exists?(id: match[:viz_id].tr('_', '-'), user_id: user.id)
+        matches_user_visualization?(named_map, user)
       end
       named_maps_hash = named_maps_keys.reduce({}) do |m, named_map|
         m.merge(named_map => Base64.encode64($tables_metadata_secondary.hget(named_maps_key, named_map)))
       end
       return {} unless named_maps_hash.any?
       { named_maps_key => named_maps_hash }
+    end
+
+    def matches_user_visualization?(named_map, user)
+      re = /tpl_(?<viz_id>.+)/
+      match = re.match(named_map)
+      match && visualization_exists?(id: match[:viz_id].tr('_', '-'), user_id: user.id)
     end
 
     def visualization_exists?(criteria)

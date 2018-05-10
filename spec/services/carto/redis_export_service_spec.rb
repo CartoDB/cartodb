@@ -55,7 +55,7 @@ describe Carto::RedisExportService do
 
   def check_named_maps(export, visualization)
     expect(export[:redis][:tables_metadata]["map_tpl|#{visualization.user.username}"].keys).to eq(['custom_named'])
-    expect(export[:redis][:tables_metadata]["map_tpl|#{visualization.user.username}"]['custom_named']).to eq("ezpjPT4iY3VzdG9tIn0=\n")
+    expect(export[:redis][:tables_metadata]["map_tpl|#{visualization.user.username}"]['custom_named']).to eq(Base64.encode64("{:c=>\"custom\"}"))
   end
 
   def check_redis(prefix)

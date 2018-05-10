@@ -86,13 +86,15 @@ module Carto
 
     def export_organization(organization)
       {
-        users_metadata: export_dataservices("org:#{organization.name}")
+        users_metadata: export_dataservices("org:#{organization.name}"),
+        tables_metadata: {}
       }
     end
 
     def export_user(user)
       {
-        users_metadata: export_dataservices("user:#{user.username}")
+        users_metadata: export_dataservices("user:#{user.username}"),
+        tables_metadata: export_named_maps(user)
       }
     end
 
@@ -100,6 +102,26 @@ module Carto
       $users_metadata_secondary.keys("#{prefix}:*").map { |key|
         export_key($users_metadata_secondary, key)
       }.reduce({}, &:merge)
+    end
+
+    def export_named_maps(user)
+      re = /tpl_(?<viz_id>.+)/
+      named_maps_key = "map_tpl|#{user.username}"
+      named_maps_keys = $tables_metadata_secondary.hkeys(named_maps_key).reject do |named_map|
+        match = re.match(named_map)
+        match && visualization_exists?(id: match[:viz_id].gsub(/_/, '-'), user_id: user.id)
+      end
+      named_maps_hash = named_maps_keys.reduce({}) do |m, named_map|
+        m.merge(named_map => Base64.encode64($tables_metadata_secondary.hget(named_maps_key, named_map)))
+      end
+      return {} unless named_maps_hash.any?
+      {named_maps_key => named_maps_hash}
+    end
+
+    def visualization_exists?(criteria)
+      Carto::Visualization.where(criteria).exists?
+    rescue
+      return false
     end
 
     def export_key(redis_db, key)

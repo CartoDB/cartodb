@@ -181,7 +181,6 @@ class User < Sequel::Model
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
     validate_password_change
-    validate_different_passwords unless @changing_passwords
 
     if organization.present?
       organization_validation

@@ -41,8 +41,8 @@ describe Carto::RedisExportService do
   end
 
   def with_named_maps(visualization)
-    $tables_metadata.hset("map_tpl|#{visualization.user.username}", "tpl_#{visualization.id.gsub(/-/,'_')}", {c: 'rand'})
-    $tables_metadata.hset("map_tpl|#{visualization.user.username}", "custom_named", {c: 'custom'})
+    $tables_metadata.hset("map_tpl|#{visualization.user.username}", "tpl_#{ visualization.id.tr('-','_') }", { c: 'rand' } )
+    $tables_metadata.hset("map_tpl|#{visualization.user.username}", "custom_named", { c: 'custom' } )
 
     yield
   ensure
@@ -64,8 +64,8 @@ describe Carto::RedisExportService do
     expect($users_metadata.hgetall("#{prefix}:hash")).to eq('hash_key' => 'qwerty')
   end
 
-  def check_redis_named_maps()
-    expect($tables_metadata.hgetall("map_tpl|#{@user.username}")). to eq({"custom_named"=>"{:c=>\"custom\"}"})
+  def check_redis_named_maps
+    expect($tables_metadata.hgetall("map_tpl|#{@user.username}")). to eq("custom_named" => "{:c=>\"custom\"}")
   end
 
   let(:service) { Carto::RedisExportService.new }
@@ -120,7 +120,7 @@ describe Carto::RedisExportService do
           end
         end
         service.restore_redis_from_hash_export(export)
-        check_redis (prefix)
+        check_redis(prefix)
         check_redis_named_maps
       end
     end

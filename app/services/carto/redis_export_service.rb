@@ -125,13 +125,13 @@ module Carto
         m.merge(named_map => Base64.encode64($tables_metadata_secondary.hget(named_maps_key, named_map)))
       end
       return {} unless named_maps_hash.any?
-      {named_maps_key => named_maps_hash}
+      { named_maps_key => named_maps_hash }
     end
 
     def visualization_exists?(criteria)
       Carto::Visualization.where(criteria).exists?
     rescue
-      return false
+      false
     end
 
     def export_key(redis_db, key)

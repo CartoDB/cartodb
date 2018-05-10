@@ -65,22 +65,6 @@ describe Admin::UsersController do
 
   describe '#update' do
     describe '#account' do
-      it 'updates password' do
-        params = {
-          old_password:     'abcdefgh',
-          new_password:     'zyxwvuts',
-          confirm_password: 'zyxwvuts'
-        }
-
-        ::User.any_instance.stubs(:update_in_central).returns(true)
-        put account_update_user_url, user: params
-
-        last_response.status.should eq 302
-        @user.reload
-        @user.validate_old_password('abcdefgh').should be_false
-        @user.validate_old_password('zyxwvuts').should be_true
-      end
-
       it 'updates email' do
         params = {
           email: @user.email + '.ok'
@@ -134,7 +118,7 @@ describe Admin::UsersController do
           twitter_username:      'asd',
           disqus_shortname:      'qwe',
           available_for_hire:    true,
-          confirmation_password: @password
+          password_confirmation: @password
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params
@@ -153,7 +137,7 @@ describe Admin::UsersController do
       it 'does not update profile if confirmation password is wrong' do
         params = {
           name:                  'Fulano',
-          confirmation_password: 'prapra'
+          password_confirmation: 'prapra'
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params
@@ -167,7 +151,7 @@ describe Admin::UsersController do
       it 'does not update profile if confirmation password is nil' do
         params = {
           name:                  'Fulano',
-          confirmation_password: nil
+          password_confirmation: nil
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params
@@ -181,16 +165,33 @@ describe Admin::UsersController do
       it 'does not update profile if communication with Central fails' do
         ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
         params = {
-          name: 'fail-' + @user.name,
-          confirmation_password: @password
+          name: 'fail-' + @user.username,
+          password_confirmation: @password
         }
 
         put profile_update_user_url, user: params
 
         last_response.status.should eq 200
-        last_response.body.should   include('There was a problem while updating your data')
+        last_response.body.should include('There was a problem while updating your data')
         @user.reload
-        @user.name.should_not start_with('fail-')
+        @user.username.should_not start_with('fail-')
+      end
+
+      # execute this test the last since it updates the password and could make the other tests to fail
+      it 'updates password' do
+        params = {
+          old_password:     'abcdefgh',
+          new_password:     'zyxwvuts',
+          confirm_password: 'zyxwvuts'
+        }
+
+        ::User.any_instance.stubs(:update_in_central).returns(true)
+        put account_update_user_url, user: params
+
+        last_response.status.should eq 302
+        @user.reload
+        @user.validate_old_password('abcdefgh').should be_false
+        @user.validate_old_password('zyxwvuts').should be_true
       end
     end
   end

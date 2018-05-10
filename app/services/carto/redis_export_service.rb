@@ -38,15 +38,25 @@ module Carto
 
     def restore_redis(redis_export)
       restore_keys($users_metadata, redis_export[:users_metadata])
+      restore_named_maps($tables_metadata, redis_export[:tables_metadata])
     end
 
     def remove_redis(redis_export)
       remove_keys($users_metadata, redis_export[:users_metadata])
+      remove_keys($tables_metadata, redis_export[:tables_metadata])
     end
 
     def restore_keys(redis_db, redis_keys)
       redis_keys.each do |key, value|
         redis_db.restore(key, value[:ttl], Base64.decode64(value[:value]))
+      end
+    end
+
+    def restore_named_maps(redis_db, redis_keys)
+      redis_keys.select { |k| k =~ /map_tpl\|/ }.each do |key, value|
+        value.each do |name, named_map_config|
+          redis_db.hset(key, name, Base64.decode64(named_map_config))
+        end
       end
     end
 

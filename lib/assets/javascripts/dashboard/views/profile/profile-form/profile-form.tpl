@@ -94,7 +94,7 @@
         <% }); %>
 
         <% if (!_.contains(jobRoles, user.job_role) && !_.isEmpty(user.job_role)) { %>
-          <option><%= user.job_role %></option>
+          <option selected><%= user.job_role %></option>
         <% } %>
       </select>
     </div>
@@ -114,7 +114,7 @@
         <% }); %>
 
         <% if (!_.contains(industries, user.industry) && !_.isEmpty(user.industry)) { %>
-          <option><%= user.industry %></option>
+          <option selected><%= user.industry %></option>
         <% } %>
       </select>
     </div>

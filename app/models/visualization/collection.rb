@@ -371,6 +371,7 @@ module CartoDB
         dataset = filter_by_min_date('created_at', dataset, filters.delete(:min_created_at)) if filters.has_key?(:min_created_at)
         dataset = filter_by_ids(dataset, filters.delete(:ids))
         dataset = filter_by_permission_id(dataset, filters.delete(:permission_id))
+        dataset = filter_by_version(dataset, filters.delete(:version))
         order_desc = filters.delete(:order_asc_desc)
         order(dataset, filters.delete(:order), order_desc.nil? || order_desc == :desc)
       end
@@ -479,6 +480,11 @@ module CartoDB
       def filter_by_permission_id(dataset, permission_id)
         return dataset if permission_id.nil?
         dataset.where(permission_id: permission_id)
+      end
+
+      def filter_by_version(dataset, version)
+        return dataset if version.nil?
+        dataset.where(version: version)
       end
 
       def filter_by_only_shared(dataset, filters)

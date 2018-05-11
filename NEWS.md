@@ -23,6 +23,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 
 ### Features
 * Organization page migration (#13742)
+* Public pages migration (#13742)
 * Profile page migration (#13726)
 * Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
 * Singup and confirmation pages migration (#13641)
@@ -181,6 +182,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix legend margin (https://github.com/CartoDB/support/issues/1510)
 * Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
 * Update torque to fix google maps bug (https://github.com/CartoDB/support/issues/1498)
 * Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
@@ -1212,7 +1214,8 @@ be exectuded daily
   3. Trigger existing orgs configuration: `RAILS_ENV=development bundle exec rake cartodb:db:configure_extension_org_metadata_api_endpoint`.
   4. Trigger existing org owner role assignment: `RAILS_ENV=development bundle exec rake cartodb:db:assign_org_owner_role`.
   5. Increase your database pool size to 50 (10 x # threads, see next line) at config/database.yml. Sample development configuration: config/database.yml.sample
-  6. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
+  6. Make sure that `config.threadsafe! unless $rails_rake_task` is uncommented at `development.rb`.
+  7. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
 * New visualization backups feature. Upon viz deletion a special vizjson will be stored in a new DB table. Backups live for Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP days and can be recovered with `cartodb:vizs:import_user_visualization` rake by visualization id. Needs new feature flag `visualizations_backup`. Check https://github.com/CartoDB/cartodb/issues/5710 for additional details
 * Fully removed Layer parent_id from backend and frontend as wasn't used.
 * Added new (optional) config parameters `unp_temporal_folder` & `uploads_path` under `importer` section to allow custom UNP and file upload paths.

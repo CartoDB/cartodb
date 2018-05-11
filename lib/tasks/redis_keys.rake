@@ -1,7 +1,8 @@
 namespace :cartodb do
   namespace :redis_keys do
     desc 'export named_maps key'
-    task :export_named_maps, [:file] => :environment do |_task, args|
+    task :export_named_maps, [:file, :batch_size] => :environment do |_task, args|
+      args.with_defaults(batch_size: 100)
 
       if args[:file].nil?
         puts "usage: bundle exec rake cartodb:redis_keys:export_named_maps[filter]\n
@@ -11,15 +12,16 @@ namespace :cartodb do
       end
 
       module ExportNamedMaps
-        def export_users_json_hash(users)
+        def export_users_json_hash(users, batch_size)
           {
-            redis: export_users(users)
+            redis: export_users(users, batch_size)
           }
         end
 
-        def export_users(users)
+        def export_users(users, batch_size)
           export_users_hash = { tables_metadata: {} }
-          users.each do |u|
+          users.use_cursor(rows_per_fetch: batch_size).each do |u|
+            puts("Exporting named maps for user #{u.username}")
             export_users_hash[:tables_metadata].merge!(export_dataservices($tables_metadata, "map_tpl|#{u.username}"))
           end
           export_users_hash
@@ -44,7 +46,7 @@ namespace :cartodb do
       include ExportNamedMaps
 
       users = User.where(File.read(args[:file]).to_s)
-      File.open('redis_export.json', 'w') { |file| file.write(export_users_json_hash(users).to_json) }
+      File.open('redis_export.json', 'w') { |file| file.write(export_users_json_hash(users, args[:batch_size]).to_json) }
     end
 
     desc 'import named_maps key '

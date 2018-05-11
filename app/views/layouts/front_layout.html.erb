@@ -10,8 +10,10 @@
     <title>CARTO | Login</title>
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= stylesheet_link_tag 'old_common.css', 'front.css', :media => 'all' %>
+    <%= insert_google_tag_manager() %>
   </head>
   <body class="sessions">
+    <%= insert_google_tag_manager_no_script() %>
     <%= yield %>
     <%= insert_trackjs() %>
     <%= yield :js %>

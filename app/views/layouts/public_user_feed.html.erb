@@ -20,8 +20,10 @@
     <% if @needs_gmaps_lib %>
       <%= insert_google_maps(@gmaps_query_string) %>
     <% end %>
+    <%= insert_google_tag_manager('embeds') %>
   </head>
   <body class="PublicBody PublicBody--grey">
+    <%= insert_google_tag_manager_no_script('embeds') %>
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap FavMap--tall is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner js-spinner"></div>

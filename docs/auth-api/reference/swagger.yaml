@@ -208,7 +208,7 @@ paths:
         - ApiKeyQueryParam: []
       x-code-samples:
 
-  '/api_keys/{name}/regenerate':
+  '/api_keys/{name}/token/regenerate':
     parameters:
       - $ref: '#/components/parameters/apiKeyName'
     post:

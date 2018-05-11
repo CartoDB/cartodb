@@ -2,6 +2,88 @@
 
 ## Current
 
+## 4.0.6 - 2018-05-11
+
+### Fixes
+- Fix remove layers
+
+## 4.0.5 - 2018-05-10
+
+- Add new methods to cartoDB layer
+
+## 4.0.4 - 2018-05-09
+
+
+## 4.0.3 - 2018-05-09
+
+- Fix layer legends margin
+
+## 4.0.3 - 2018-05-04
+
+- Update zera version
+
+## 4.0.2 - 2018-04-27
+
+
+## 4.0.2-2 - 2018-04-27
+
+- Add missing dependencies to release package
+
+## 4.0.2-1 - 2018-04-27
+
+
+## 4.0.2-0 - 2018-04-25
+
+### Fixes
+- Round fractional zoom levels (#4314)
+
+## 4.0.1 - 2018-04-25
+
+- Upgrading carto.js to gmaps v3.31
+
+## 4.0.1-1 - 2018-04-24
+
+- Removing suffix, preparing for a new version (with bump)
+- Better popups with just images on IE and Edge
+
+## 4.0.0-3 - 2018-04-24
+
+
+## 4.0.1-0 - 2018-04-24
+
+
+## 4.0.2-0 - 2018-04-24
+
+
+## 4.0.0 - 2018-04-24
+
+
+## 4.0.0-2 - 2018-04-24
+
+- Fix embed legends margin
+- Enable stale bot
+
+## 4.0.0-1 - 2018-04-17
+
+
+## 4.0.0 - 2018-04-17
+
+- Fix wrong examples
+
+## 4.0.0-beta.41 - 2018-04-17
+
+- Adapt to Auth API errors
+- Change API menu GIF.
+### New features
+- Add usage box to CARTO.js examples
+
+## 4.0.0-beta.40 - 2018-04-12
+
+- Minor adjustments to legends style
+- V4 docs final review
+- add tip about authorization system
+- Update README and CHANGELOG
+
 ## 4.0.0-beta.39 - 2018-03-28
 
 - Added example for the url server parameter

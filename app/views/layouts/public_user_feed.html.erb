@@ -53,7 +53,7 @@
         <% if @most_viewed_vis_map %>
           createVis: {
             <% if @has_new_dashboard %>
-              url: '<%= vis_json_v3_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+              vizJson: <%= safe_js_object named_map_vizjson3(@most_viewed_vis_map).to_json %>,
             <% else %>
               url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
             <% end %>

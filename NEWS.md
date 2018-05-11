@@ -24,6 +24,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 ### Features
 * Profile page migration (#13726)
 * Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
+* Add password expiration for orgs ([Central#2225](https://github.com/CartoDB/cartodb-central#2225))
 * Singup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)

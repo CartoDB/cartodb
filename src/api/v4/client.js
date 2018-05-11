@@ -163,7 +163,9 @@ Client.prototype.removeLayer = function (layer) {
  * @api
  */
 Client.prototype.removeLayers = function (layers) {
-  layers.forEach(this._removeLayer, this);
+  var layersToRemove = layers.slice(0);
+  layersToRemove.forEach(this._removeLayer, this);
+
   return this._reload();
 };
 

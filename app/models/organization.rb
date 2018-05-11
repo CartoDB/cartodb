@@ -60,6 +60,16 @@ class Organization < Sequel::Model
   DEFAULT_OBS_GENERAL_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
+  def initialize(h = {})
+    super
+    self.password_expiration_in_d ||= default_password_expiration_in_d
+  end
+
+  def default_password_expiration_in_d
+    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
+    (password_expiration_in_s / 1.day.seconds.to_i).ceil if password_expiration_in_s.present?
+  end
+
   def validate
     super
     validates_presence [:name, :quota_in_bytes, :seats]
@@ -70,6 +80,7 @@ class Organization < Sequel::Model
     validates_integer :here_isolines_quota, allow_nil: false, message: 'here_isolines_quota cannot be nil'
     validates_integer :obs_snapshot_quota, allow_nil: false, message: 'obs_snapshot_quota cannot be nil'
     validates_integer :obs_general_quota, allow_nil: false, message: 'obs_general_quota cannot be nil'
+    validate_password_expiration_in_d
 
     if default_quota_in_bytes
       errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
@@ -81,6 +92,11 @@ class Organization < Sequel::Model
 
     errors.add(:seats, 'cannot be less than the number of builders') if seats && remaining_seats < 0
     errors.add(:viewer_seats, 'cannot be less than the number of viewers') if viewer_seats && remaining_viewer_seats < 0
+  end
+
+  def validate_password_expiration_in_d
+    valid = password_expiration_in_d.blank? || password_expiration_in_d > 0 && password_expiration_in_d < 366
+    errors.add(:password_expiration_in_d, 'must be greater than 0 and lower than 366') unless valid
   end
 
   def validate_for_signup(errors, user)
@@ -290,6 +306,10 @@ class Organization < Sequel::Model
     quota_in_bytes - assigned_quota
   end
 
+  def password_expiration_in_s
+    password_expiration_in_d.send('days').to_i if password_expiration_in_d.present? && password_expiration_in_d > 0
+  end
+
   def to_poro
     {
       created_at:       created_at,
@@ -331,7 +351,8 @@ class Organization < Sequel::Model
       website:                   website,
       admin_email:               admin_email,
       avatar_url:                avatar_url,
-      user_count:                users.count
+      user_count:                users.count,
+      password_expiration_in_d:  password_expiration_in_d
     }
   end
 

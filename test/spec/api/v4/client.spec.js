@@ -193,6 +193,23 @@ describe('api/v4/client', function () {
     });
   });
 
+  describe('.removeLayers', function () {
+    it('must remove all layers', function () {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      var style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
+      var layerA = new carto.layer.Layer(source, style, {});
+      var layerB = new carto.layer.Layer(source, style, {});
+      var layerC = new carto.layer.Layer(source, style, {});
+      client.addLayers([layerA, layerB, layerC]);
+
+      expect(client.getLayers().length).toEqual(3);
+
+      client.removeLayers(client.getLayers());
+
+      expect(client.getLayers().length).toEqual(0);
+    });
+  });
+
   describe('.moveLayer', function () {
     it('should throw a descriptive error when the parameter is invalid', function () {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');

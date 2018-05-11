@@ -372,6 +372,7 @@ describe Admin::PagesController do
     if org_user
       org = mock
       org.stubs(name: @org_name)
+      org.stubs(password_expiration_in_s: nil)
       user.stubs(organization: org)
       Organization.stubs(:where).with(name: @org_name).returns([org])
       Organization.stubs(:where).with(name: @org_user_name).returns([org])

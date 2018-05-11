@@ -60,7 +60,7 @@ class Organization < Sequel::Model
   DEFAULT_OBS_GENERAL_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
-  def initialize(h = {})
+  def initialize(attrs = {})
     super
     self.password_expiration_in_d ||= default_password_expiration_in_d
   end

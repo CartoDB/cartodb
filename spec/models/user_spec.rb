@@ -2866,7 +2866,9 @@ describe User do
       @github_user = FactoryGirl.build(:valid_user, github_user_id: 932847)
       @google_user = FactoryGirl.build(:valid_user, google_sign_in: true)
       @password_user = FactoryGirl.build(:valid_user)
-      @org_user = FactoryGirl.create(:valid_user, account_type: 'ORGANIZATION USER', organization: @organization_password)
+      @org_user = FactoryGirl.create(:valid_user,
+                                     account_type: 'ORGANIZATION USER',
+                                     organization: @organization_password)
     end
 
     it 'never expires without configuration' do
@@ -2914,7 +2916,9 @@ describe User do
 
     it 'expires for org users with password_expiration set' do
       @organization_password.stubs(:password_expiration_in_d).returns(2)
-      org_user2 = FactoryGirl.create(:valid_user, account_type: 'ORGANIZATION USER', organization: @organization_password)
+      org_user2 = FactoryGirl.create(:valid_user,
+                                     account_type: 'ORGANIZATION USER',
+                                     organization: @organization_password)
 
       Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
         expect(org_user2.password_expired?).to be_false

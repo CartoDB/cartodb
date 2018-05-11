@@ -302,8 +302,11 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_new_dashboard_flag
-    ff_user = @viewed_user || @viewed_org.owner
-    @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
+    ff_user = @viewed_user || @viewed_org.try(:owner)
+
+    unless ff_user.nil?
+      @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
+    end
   end
 
   def set_layout_vars_for_user(user, content_type)

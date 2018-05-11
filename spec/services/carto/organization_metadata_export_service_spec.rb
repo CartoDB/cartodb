@@ -241,7 +241,7 @@ describe Carto::OrganizationMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.0",
+      version: "1.0.1",
       organization: {
         id: "189d642c-c7da-40aa-bffd-517aa0eb7999",
         seats: 100,
@@ -293,6 +293,7 @@ describe Carto::OrganizationMetadataExportService do
         builder_enabled: true,
         auth_saml_configuration: {},
         no_map_logo: false,
+        password_expiration_in_d: 365,
         assets: [{
           public_url: "http://localhost.lan:3000/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0",
           kind: "organization_asset",

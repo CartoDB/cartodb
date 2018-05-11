@@ -21,6 +21,11 @@
   margin-top: $baseSize * 2;
 }
 
+.Editor-formInner.Editor-formInner--FillColor {
+  align-items: flex-start;
+  margin-top: $baseSize * 2;
+}
+
 .Options-form .Editor-formInner {
   margin-top: 0;
 }

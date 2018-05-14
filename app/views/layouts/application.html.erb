@@ -7,7 +7,7 @@
     <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
     <%= yield :css -%>
     <%= csrf_meta_tag -%>
-    <%= insert_google_tag_manager() %>
+    <%= insert_google_tag_manager %>
   </head>
   <body>
     <%= insert_google_tag_manager_no_script() %>

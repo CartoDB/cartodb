@@ -182,6 +182,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix an error on always activated notifications at account and profile pages (#13691)
 * Fix legend margin (https://github.com/CartoDB/support/issues/1510)
 * Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
 * Update torque to fix google maps bug (https://github.com/CartoDB/support/issues/1498)

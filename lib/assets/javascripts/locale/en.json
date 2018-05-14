@@ -598,6 +598,7 @@
         },
         "input-number": {
           "fixed": "Fixed",
+          "solid": "Solid",
           "value": "By value"
         },
         "input-ramp": {

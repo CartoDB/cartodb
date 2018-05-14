@@ -6,6 +6,14 @@
   cursor: default;
 }
 
+.Form-InputFillColor {
+  width: 100%;
+
+  .Form-InputFill {
+    margin-top: $baseSize * 2;
+  }
+}
+
 .Editor-FormDialog {
   position: absolute;
   z-index: 100;

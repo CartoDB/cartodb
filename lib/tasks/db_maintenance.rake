@@ -1165,7 +1165,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.db_service.setup_owner_permissions
+          owner.db_service.grant_admin_permissions
         rescue => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end

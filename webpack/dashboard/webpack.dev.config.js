@@ -14,6 +14,7 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
+  public_dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dashboard.js'),
   user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js'),
   api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js'),
   data_library_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/data-library.js'),
@@ -21,7 +22,8 @@ const entryPoints = {
   account_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/account.js'),
   profile_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/profile.js'),
   sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
-  confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js')
+  confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
+  organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js')
 };
 
 module.exports = env => {

@@ -11,12 +11,8 @@
   margin-top: $baseSize;
 }
 
-.Editor-formInner.Editor-formInner--Slider {
-  align-items: flex-start;
-  margin-top: $baseSize * 2;
-}
-
-.Editor-formInner.Editor-formInner--Size {
+.Editor-formInner.Editor-formInner--Size,
+.Editor-formInner.Editor-formInner--FillColor {
   align-items: baseline;
 }
 

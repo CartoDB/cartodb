@@ -65,6 +65,7 @@ describe Admin::UsersController do
   describe '#update' do
     describe '#account' do
       it 'fails to update password if it does not change' do
+        last_change = @user.last_password_change_date
         params = {
           old_password:     'abcdefgh',
           new_password:     'abcdefgh',
@@ -80,9 +81,11 @@ describe Admin::UsersController do
         @user.reload
         @user.validate_old_password('abcdefgh').should be_true
         @user.validate_old_password('zyxwvuts').should be_false
+        @user.last_password_change_date.should eq last_change
       end
 
       it 'updates password' do
+        last_change = @user.last_password_change_date
         params = {
           old_password:     'abcdefgh',
           new_password:     'zyxwvuts',
@@ -96,6 +99,7 @@ describe Admin::UsersController do
         @user.reload
         @user.validate_old_password('abcdefgh').should be_false
         @user.validate_old_password('zyxwvuts').should be_true
+        @user.last_password_change_date.should_not eq last_change
       end
 
       it 'updates email' do

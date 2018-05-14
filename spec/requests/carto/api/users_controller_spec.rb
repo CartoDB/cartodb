@@ -81,6 +81,7 @@ describe Carto::Api::UsersController do
       end
 
       it 'gives an error if password is the same as old_password' do
+        last_change = @user.last_password_change_date
         payload = {
           user: {
             email: 'foo@bar.baz',
@@ -95,6 +96,8 @@ describe Carto::Api::UsersController do
 
           expect(response.body[:errors]).to have_key(:new_password)
           expect(response.body[:errors][:new_password]).to eq ['New password cannot be the same as old password']
+          @user.reload
+          expect(@user.last_password_change_date).to eq(last_change)
         end
       end
 
@@ -141,6 +144,7 @@ describe Carto::Api::UsersController do
       end
 
       it 'updates account data for the given user' do
+        last_change = @user.last_password_change_date
         payload = {
           user: {
             email: 'foo@bar.baz',
@@ -155,6 +159,7 @@ describe Carto::Api::UsersController do
 
           @user.refresh
           expect(@user.email).to eq('foo@bar.baz')
+          expect(@user.last_password_change_date).to_not eq(last_change)
         end
       end
     end

@@ -421,6 +421,7 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.non_owner_users[0]
       user_to_update.password = '12345678'
       user_to_update.password_confirmation = '12345678'
+      last_change = user_to_update.last_password_change_date
       user_to_update.save
 
       params = { password: '12345678' }
@@ -428,6 +429,8 @@ describe Carto::Api::OrganizationUsersController do
           params
 
       last_response.status.should == 410
+      user_to_update.reload
+      expect(user_to_update.last_password_change_date.utc.to_s).to eq last_change.utc.to_s
     end
 
     it 'should update email' do

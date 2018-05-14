@@ -600,6 +600,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Point docs to developer center (#13937)
 * Point to new CARTO.js v4 repo (#13860)
 * Account migration (#13501)
 * Data Library dashboard migration (#13608)

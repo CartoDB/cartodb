@@ -14,6 +14,7 @@
 .Editor-formInner.Editor-formInner--Size,
 .Editor-formInner.Editor-formInner--FillColor {
   align-items: baseline;
+  padding-bottom: $baseSize;
 }
 
 .Options-form .Editor-formInner {
@@ -187,6 +188,10 @@
 .Form-InputSize {
   margin-top: 5px;
   width: 100%;
+}
+
+.Form-StyleByValue {
+  margin-top: $baseSize;
 }
 
 .RampItem-bar {

@@ -459,7 +459,16 @@ module CartoDB
         @logger.info("Creating roles for regular API Keys")
         begin
           Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
-            k.role_creation_queries.each { |q| superuser_pg_conn.query(q) }
+            k.role_creation_queries.each do |q|
+              begin
+                superuser_pg_conn.query(q)
+              rescue => e
+                CartoDB::Logger.error(
+                  exception: e,
+                  message: "Error executing query \"#{q}\" for user #{@pack_config['user']['id']}: #{e}"
+                )
+              end
+            end
           end
         rescue ActiveRecord::RecordNotFound => e
           CartoDB::Logger.error(exception: e,

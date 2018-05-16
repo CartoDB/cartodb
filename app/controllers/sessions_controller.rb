@@ -54,7 +54,6 @@ class SessionsController < ApplicationController
   end
 
   def create
-    byebug
     strategies, username = saml_strategy_username || ldap_strategy_username ||
                            google_strategy_username || credentials_strategy_username
 

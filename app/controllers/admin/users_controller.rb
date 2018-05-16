@@ -26,25 +26,11 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
   def profile
-    if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/profile_migration/index.html", layout: false)
-    end
-
-    @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
-
-    respond_to do |format|
-      format.html { render 'profile' }
-    end
+    return render(file: "public/static/profile/index.html", layout: false)
   end
 
   def account
-    if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/account_migration/index.html", layout: false)
-    end
-
-    respond_to do |format|
-      format.html { render 'account' }
-    end
+    return render(file: "public/static/account/index.html", layout: false)
   end
 
   def account_update

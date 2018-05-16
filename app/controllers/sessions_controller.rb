@@ -54,6 +54,7 @@ class SessionsController < ApplicationController
   end
 
   def create
+    byebug
     strategies, username = saml_strategy_username || ldap_strategy_username ||
                            google_strategy_username || credentials_strategy_username
 
@@ -141,12 +142,13 @@ class SessionsController < ApplicationController
   end
 
   def password_expired
+    username = get_username
     warden.custom_failure!
     cdb_logout
 
     respond_to do |format|
       format.html do
-        redirect_to login_url(error: SESSION_EXPIRED)
+        redirect_to password_change_path(username)
       end
       format.json do
         render(json: { error: 'session_expired' }, status: 403)
@@ -186,6 +188,11 @@ class SessionsController < ApplicationController
   end
 
   protected
+
+  def get_username
+    return current_user.username unless current_user.nil?
+    extract_username(request, params)
+  end
 
   def initialize_oauth_config
     @oauth_configs = [google_plus_config, github_config].compact

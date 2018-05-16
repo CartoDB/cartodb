@@ -151,7 +151,7 @@ module.exports = Model.extend({
     this.fetch({
       success: function () {
         if (!this._hasBinds) {
-          this.hasBinds = true;
+          this._hasBinds = true;
           this._onChangeBinds();
         }
       }.bind(this)

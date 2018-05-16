@@ -595,7 +595,8 @@
           "solid": "Solid",
           "value": "By value",
           "img": "Img",
-          "select-by-column": "Select by column"
+          "select-by-column": "Select by column",
+          "select-color": "Select color"
         },
         "input-number": {
           "fixed": "Fixed",

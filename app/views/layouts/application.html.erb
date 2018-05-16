@@ -7,10 +7,10 @@
     <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
     <%= yield :css -%>
     <%= csrf_meta_tag -%>
-    <%= insert_google_tag_manager %>
+    <%= insert_google_tag_manager('primary') %>
   </head>
   <body>
-    <%= insert_google_tag_manager_no_script() %>
+    <%= insert_google_tag_manager_no_script('primary') %>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
       <% breadcrumb = local_assigns.fetch(:breadcrumb, true) %>
       <%= render 'admin/shared/private_header', :breadcrumb => breadcrumb %>

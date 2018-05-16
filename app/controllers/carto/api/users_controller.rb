@@ -81,7 +81,7 @@ module Carto
 
           user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
 
-          raise Sequel::ValidationFailed.new('Validation failed') unless user.valid?
+          raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
           user.update_in_central
           user.save(raise_on_failure: true)
         end

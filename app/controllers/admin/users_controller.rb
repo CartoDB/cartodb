@@ -26,11 +26,11 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
   def profile
-    return render(file: "public/static/profile/index.html", layout: false)
+    render(file: "public/static/profile/index.html", layout: false)
   end
 
   def account
-    return render(file: "public/static/account/index.html", layout: false)
+    render(file: "public/static/account/index.html", layout: false)
   end
 
   def account_update

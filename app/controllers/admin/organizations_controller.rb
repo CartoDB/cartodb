@@ -107,6 +107,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
     @organization.location = attributes[:location]
+    @organization.password_expiration_in_d = attributes[:password_expiration_in_d]
 
     @organization.update_in_central
     @organization.save(raise_on_failure: true)

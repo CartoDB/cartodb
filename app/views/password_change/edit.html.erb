@@ -34,24 +34,24 @@
                 <div class="Sessions-field">
                   <%= password_field_tag :old_password, "", placeholder: "Type your current password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
-                  <% if @user.errors['old_password'].present? %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['old_password'] %>">!</div>
+                  <% if @old_password_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @old_password_error %>">!</div>
                   <% end %>
                 </div>
 
                 <div class="Sessions-field">
                   <%= password_field_tag :password, "", placeholder: "Type your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
-                  <% if @user.errors['password'].present? %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password'] %>">!</div>
+                  <% if @new_password_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>
                   <% end %>
                 </div>
 
                 <div class="Sessions-field">
                   <%= password_field_tag :password_confirmation, "", placeholder: "Retype your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
-                  <% if @user.errors['password_confirmation'].present? %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password_confirmation'] %>">!</div>
+                  <% if @new_password_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>
                   <% end %>
                 </div>
 

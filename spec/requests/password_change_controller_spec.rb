@@ -43,8 +43,7 @@ describe PasswordChangeController do
 
       put password_change_url(@user.username), payload_wrong_old_password, @headers
       response.status.should == 200
-      # response.body.should include 'Please ensure you typed the password correctly'
-      response.body.should include 'has expired'
+      response.body.should include 'Please ensure you typed the password correctly'
       request.path.should eq password_change_path(@user.username)
     end
 
@@ -53,8 +52,7 @@ describe PasswordChangeController do
 
       put password_change_url(@user.username), payload_mismatch_new_password, @headers
       response.status.should == 200
-      # response.body.should include 'Please ensure your passwords match'
-      response.body.should include 'has expired'
+      response.body.should include 'Please ensure your passwords match'
       request.path.should eq password_change_path(@user.username)
     end
 

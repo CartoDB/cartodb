@@ -23,14 +23,13 @@ class PasswordChangeController < SessionsController
     pwc = params[:password_confirmation]
 
     if pw.blank? || pwc.blank? || pw != pwc
-      @user.errors.add(:password, PASSWORD_MATCH_MSG)
-      @user.errors.add(:password_confirmation, PASSWORD_MATCH_MSG)
+      @new_password_error = PASSWORD_MATCH_MSG
       render :edit
       return
     end
 
     unless @user.validate_old_password(opw)
-      @user.errors.add(:old_password, WRONG_PASSWORD_MSG)
+      @old_password_error = WRONG_PASSWORD_MSG
       render :edit
       return
     end

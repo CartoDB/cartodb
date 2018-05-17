@@ -64,6 +64,9 @@ defaults: &defaults
     primary:          ''
     embeds:           ''
     domain:           ''
+  google_tag_manager:
+    primary:          ''
+    embeds:           ''
   rollbar_api_key: ''
   tumblr:
     api_key: ''

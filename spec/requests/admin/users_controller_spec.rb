@@ -42,7 +42,9 @@ describe Admin::UsersController do
       delete account_user_url
       Carto::User.where(id: @user2.id).first.should_not be_nil
       last_response.status.should eq 200
-      last_response.body.include?('Password does not match').should be_true
+
+      @user2.reload
+      @user2.should be
     end
 
     it 'does not require password for SAML organizations' do
@@ -76,8 +78,6 @@ describe Admin::UsersController do
         put account_update_user_url, user: params
 
         last_response.status.should eq 200
-        last_response.body.should   include("Error updating your account details")
-        last_response.body.should   include("New password cannot be the same as old password")
         @user.reload
         @user.validate_old_password('abcdefgh').should be_true
         @user.validate_old_password('zyxwvuts').should be_false
@@ -124,7 +124,6 @@ describe Admin::UsersController do
         put account_update_user_url, user: params
 
         last_response.status.should eq 200
-        last_response.body.should   include('There was a problem while updating your data')
         @user.reload
         @user.email.should_not start_with('fail-')
       end
@@ -140,8 +139,8 @@ describe Admin::UsersController do
         put account_update_user_url, user: params
 
         last_response.status.should eq 200
-        last_response.body.should   include("Error updating your account details")
-        last_response.body.should   include("match confirmation")
+        @user.reload
+        @user.validate_old_password(params[:old_password]).should eq true
       end
     end
 
@@ -179,7 +178,6 @@ describe Admin::UsersController do
         put profile_update_user_url, user: params
 
         last_response.status.should eq 200
-        last_response.body.should   include('There was a problem while updating your data')
         @user.reload
         @user.name.should_not start_with('fail-')
       end

@@ -14,6 +14,8 @@
   "contributors": [],
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@carto/carto.js": "^4.0.6",
+    "@carto/zera": "1.0.6",
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.2",
@@ -23,7 +25,6 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
-    "@carto/zera": "1.0.6",
     "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
     "clipboard": "1.6.1",

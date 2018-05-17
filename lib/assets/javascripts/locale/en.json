@@ -578,6 +578,9 @@
         "false": "False",
         "null": "Null"
       },
+      "style": {
+        "select-column": "Select a column"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {
@@ -2547,7 +2550,6 @@
         }
       },
       "components": {
-        "fill": "Size/Color",
         "size": "Size",
         "color": "Color",
         "fillColor": {

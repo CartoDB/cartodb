@@ -602,6 +602,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* CARTO.js internal version is now called internal-carto.js (#13960)
 * Compress and pack static pages assets for production release (#13940)
 * Point docs to developer center (#13937)
 * Point to new CARTO.js v4 repo (#13860)

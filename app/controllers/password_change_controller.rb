@@ -8,7 +8,6 @@ class PasswordChangeController < SessionsController
 
   ssl_required :edit, :update
 
-  PASSWORD_ERROR_MSG = 'Your password has expired. Please, change your password to continue using CARTO.'.freeze
   PASSWORD_MATCH_MSG = 'Please ensure your passwords match'.freeze
   WRONG_PASSWORD_MSG = 'Please ensure you typed the password correctly'.freeze
 
@@ -52,6 +51,6 @@ class PasswordChangeController < SessionsController
   end
 
   def set_errors
-    @password_error = PASSWORD_ERROR_MSG
+    @password_error = "Out with the old, in with the new! Your password is more than #{@user.days_since_last_password_change} days old; please create a brand new one to log in."
   end
 end

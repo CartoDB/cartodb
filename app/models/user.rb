@@ -1840,6 +1840,10 @@ class User < Sequel::Model
     (last_password_change_date || created_at) + password_expiration_in_s < Time.now
   end
 
+  def days_since_last_password_change
+    (Time.now.to_date - (last_password_change_date || created_at).to_date).to_i
+  end
+
   private
 
   def common_data_outdated?

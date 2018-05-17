@@ -22,6 +22,7 @@ You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to sy
 This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
 
 ### Features
+* Improve size & color UI when styling layers
 * Profile page migration (#13726)
 * Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
 * Singup and confirmation pages migration (#13641)

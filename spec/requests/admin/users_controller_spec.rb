@@ -65,6 +65,44 @@ describe Admin::UsersController do
 
   describe '#update' do
     describe '#account' do
+      it 'fails to update password if it does not change' do
+        last_change = @user.last_password_change_date
+        params = {
+          old_password:     'abcdefgh',
+          new_password:     'abcdefgh',
+          confirm_password: 'abcdefgh'
+        }
+
+        ::User.any_instance.stubs(:update_in_central).returns(true)
+        put account_update_user_url, user: params
+
+        last_response.status.should eq 200
+        last_response.body.should   include("Error updating your account details")
+        last_response.body.should   include("New password cannot be the same as old password")
+        @user.reload
+        @user.validate_old_password('abcdefgh').should be_true
+        @user.validate_old_password('zyxwvuts').should be_false
+        @user.last_password_change_date.should eq last_change
+      end
+
+      it 'updates password' do
+        last_change = @user.last_password_change_date
+        params = {
+          old_password:     'abcdefgh',
+          new_password:     'zyxwvuts',
+          confirm_password: 'zyxwvuts'
+        }
+
+        ::User.any_instance.stubs(:update_in_central).returns(true)
+        put account_update_user_url, user: params
+
+        last_response.status.should eq 302
+        @user.reload
+        @user.validate_old_password('abcdefgh').should be_false
+        @user.validate_old_password('zyxwvuts').should be_true
+        @user.last_password_change_date.should_not eq last_change
+      end
+
       it 'updates email' do
         params = {
           email: @user.email + '.ok'

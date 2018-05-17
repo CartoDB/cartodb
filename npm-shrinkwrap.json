@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.139",
+  "version": "4.11.140",
   "dependencies": {
     "@carto/zera": {
       "version": "1.0.6",

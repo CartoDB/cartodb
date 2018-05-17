@@ -1372,10 +1372,10 @@
         }
       },
       "password-confirmation": {
-        "modal-title": "Please confirm your password",
-        "modal-description": "Hey ho, let's go",
+        "modal-title": "Please confirm your password.",
+        "modal-description": "\"Hey, ho! Let’s Go!\"",
         "form": {
-          "password-label": "Your password"
+          "password-label": "Password"
         },
         "actions": {
           "confirm": "Confirm",

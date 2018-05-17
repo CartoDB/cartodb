@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.131",
+  "version": "4.11.141",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.3",
-      "from": "cartodb/carto.js#v4.0.3",
-      "resolved": "git://github.com/cartodb/carto.js.git#0b2d608e104673283c21c9e85361de5cbbb19b98"
+      "version": "4.0.6",
+      "from": "@carto/carto.js@>=4.0.6 <5.0.0",
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.6.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -150,7 +150,7 @@
     },
     "atob": {
       "version": "2.1.1",
-      "from": "atob@>=2.0.0 <3.0.0",
+      "from": "atob@>=2.1.1 <3.0.0",
       "resolved": "https://registry.npmjs.org/atob/-/atob-2.1.1.tgz"
     },
     "backbone": {
@@ -438,9 +438,9 @@
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.34.0.tgz"
     },
     "carto": {
-      "version": "0.15.1-cdb4",
+      "version": "0.15.1",
       "from": "cartodb/carto#master",
-      "resolved": "git://github.com/cartodb/carto.git#664b45cdde978881e5464db02df5c31eb645e370"
+      "resolved": "git://github.com/cartodb/carto.git#31abb8bee02df605521247b0223d508320f7d4c8"
     },
     "cartocolor": {
       "version": "4.0.0",
@@ -611,9 +611,9 @@
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
     },
     "create-ecdh": {
-      "version": "4.0.1",
+      "version": "4.0.3",
       "from": "create-ecdh@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/create-ecdh/-/create-ecdh-4.0.1.tgz"
+      "resolved": "https://registry.npmjs.org/create-ecdh/-/create-ecdh-4.0.3.tgz"
     },
     "create-hash": {
       "version": "1.2.0",
@@ -651,9 +651,9 @@
       "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-1.2.1.tgz"
     },
     "d3-color": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "from": "d3-color@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-1.2.0.tgz"
     },
     "d3-format": {
       "version": "1.2.0",
@@ -661,9 +661,9 @@
       "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-1.2.0.tgz"
     },
     "d3-interpolate": {
-      "version": "1.1.6",
+      "version": "1.2.0",
       "from": "d3-interpolate@>=1.1.6 <2.0.0",
-      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.1.6.tgz"
+      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-1.2.0.tgz"
     },
     "d3-queue": {
       "version": "3.0.7",
@@ -1212,9 +1212,9 @@
       "resolved": "https://registry.npmjs.org/inline-source-map/-/inline-source-map-0.6.2.tgz"
     },
     "insert-module-globals": {
-      "version": "7.0.6",
+      "version": "7.1.0",
       "from": "insert-module-globals@>=7.0.0 <8.0.0",
-      "resolved": "https://registry.npmjs.org/insert-module-globals/-/insert-module-globals-7.0.6.tgz",
+      "resolved": "https://registry.npmjs.org/insert-module-globals/-/insert-module-globals-7.1.0.tgz",
       "dependencies": {
         "concat-stream": {
           "version": "1.6.2",
@@ -1242,6 +1242,11 @@
           "resolved": "https://registry.npmjs.org/through2/-/through2-2.0.3.tgz"
         }
       }
+    },
+    "internal-carto.js": {
+      "version": "4.0.7-0",
+      "from": "cartodb/carto.js#v4.0.7-0",
+      "resolved": "git://github.com/cartodb/carto.js.git#2f5d79e7e0cdd95bf673cb0553f58b9433683413"
     },
     "interpret": {
       "version": "1.1.0",
@@ -1368,9 +1373,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.4.3",
+      "version": "2.4.5",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.3.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.5.tgz"
     },
     "json-loader": {
       "version": "0.5.7",
@@ -1620,9 +1625,9 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
     },
     "moment-timezone": {
-      "version": "0.5.16",
+      "version": "0.5.17",
       "from": "moment-timezone@>=0.5.13 <0.6.0",
-      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.16.tgz"
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.17.tgz"
     },
     "mothership": {
       "version": "0.2.0",
@@ -1866,9 +1871,9 @@
       "resolved": "https://registry.npmjs.org/pbkdf2/-/pbkdf2-3.0.16.tgz"
     },
     "perfect-scrollbar": {
-      "version": "0.6.16",
+      "version": "0.6.17",
       "from": "git://github.com/CartoDB/perfect-scrollbar.git#master",
-      "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#7e39eb3d689f6849f18943cf271fd96fc59dbdc0"
+      "resolved": "git://github.com/CartoDB/perfect-scrollbar.git#f2b66c76ad3718d3c704bd7e1693ea382e44e64d"
     },
     "pify": {
       "version": "2.3.0",
@@ -2269,9 +2274,9 @@
       "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.7.tgz"
     },
     "source-map-resolve": {
-      "version": "0.5.1",
+      "version": "0.5.2",
       "from": "source-map-resolve@>=0.5.0 <0.6.0",
-      "resolved": "https://registry.npmjs.org/source-map-resolve/-/source-map-resolve-0.5.1.tgz"
+      "resolved": "https://registry.npmjs.org/source-map-resolve/-/source-map-resolve-0.5.2.tgz"
     },
     "source-map-url": {
       "version": "0.4.0",
@@ -2360,9 +2365,9 @@
       }
     },
     "stream-http": {
-      "version": "2.8.1",
+      "version": "2.8.2",
       "from": "stream-http@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.8.1.tgz",
+      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.8.2.tgz",
       "dependencies": {
         "isarray": {
           "version": "1.0.0",
@@ -2371,7 +2376,7 @@
         },
         "readable-stream": {
           "version": "2.3.6",
-          "from": "readable-stream@>=2.3.3 <3.0.0",
+          "from": "readable-stream@>=2.3.6 <3.0.0",
           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.6.tgz"
         },
         "string_decoder": {
@@ -2513,9 +2518,9 @@
       "resolved": "https://registry.npmjs.org/toposort/-/toposort-1.0.7.tgz"
     },
     "torque.js": {
-      "version": "2.16.3",
+      "version": "2.16.5",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#f4720e0736ed8eb36cbeb75d5960a1c849ade80f"
+      "resolved": "git://github.com/cartodb/torque.git#ce414701abb61847d9ddc5830d83c5a3a9d655b2"
     },
     "transformify": {
       "version": "0.1.2",
@@ -2550,9 +2555,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.3.23",
+      "version": "3.3.25",
       "from": "uglify-js@>=3.3.0 <3.4.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.23.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.25.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",
@@ -2618,9 +2623,9 @@
       }
     },
     "upath": {
-      "version": "1.0.5",
+      "version": "1.1.0",
       "from": "upath@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/upath/-/upath-1.0.5.tgz"
+      "resolved": "https://registry.npmjs.org/upath/-/upath-1.1.0.tgz"
     },
     "upper-case": {
       "version": "1.1.3",

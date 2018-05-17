@@ -130,6 +130,10 @@ module CartoDB
       user_feed_new_vendor.js
       api_keys_new.js
       api_keys_new_vendor.js
+      public_dashboard_new.js
+      public_dashboard_new_vendor.js
+      public_table_new.js
+      public_table_new_vendor.js
       data_library_new.js
       data_library_new_vendor.js
       mobile_apps_new.js

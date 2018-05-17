@@ -2,9 +2,9 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
     <i class="CDB-IconFont CDB-IconFont-defaultUser"></i>
   </div>
-  <p class="Dialog-headerTitle">
+  <h2 class="Dialog-headerTitle">
     <%= _t('components.modals.password-confirmation.modal-title') %>
-  </p>
+  </h2>
   <p class="Dialog-headerText">
     <%= _t('components.modals.password-confirmation.modal-description') %>
   </p>

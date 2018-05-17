@@ -18,6 +18,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
+  before_filter :load_has_new_dashboard, only: [:new, :edit, :create]
 
   layout 'application'
 
@@ -214,6 +215,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
     CartoDB.notify_exception(e, { user_id: @user.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API key. Please, try again and contact us if the problem persists"
     render 'edit'
+  end
+
+  def load_has_new_dashboard
+    @has_new_dashboard = current_user.engine_enabled? && current_user.has_feature_flag?('dashboard_migration')
   end
 
   private

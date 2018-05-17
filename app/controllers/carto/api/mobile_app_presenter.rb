@@ -63,7 +63,7 @@ module Carto
         if @fetch_app_types == true
           data[:app_types] = {
             "open": {
-              text: "Limits based on your CARTO plan. <a href='https://carto.com/docs/faqs/carto-engine-usage-limits/'
+              text: "Limits based on your CARTO plan. <a href='https://carto.com/developers/fundamentals/limits/'
                 target='_blank'>Learn more</a>.",
               available: app_type_available?('open', @current_user.open_apps_enabled?),
               selected: app_type_selected?('open')

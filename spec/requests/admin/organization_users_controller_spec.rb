@@ -298,7 +298,7 @@ describe Admin::OrganizationUsersController do
 
     describe 'existing user operations' do
       before(:each) do
-        @existing_user = FactoryGirl.create(:carto_user, organization: @carto_organization)
+        @existing_user = FactoryGirl.create(:carto_user, organization: @carto_organization, password: 'abcdefgh')
       end
 
       describe '#update' do
@@ -337,6 +337,21 @@ describe Admin::OrganizationUsersController do
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
               user: params
           last_response.body.should include('match confirmation')
+        end
+
+        it 'cannot update password if it does not change old_password' do
+          last_change = @existing_user.last_password_change_date
+          ::User.any_instance.stubs(:update_in_central).never
+          params = {
+            password:         'abcdefgh',
+            confirm_password: 'abcdefgh'
+          }
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: params
+          last_response.body.should include('New password cannot be the same as old password')
+          @existing_user.reload
+          @existing_user.last_password_change_date.should eq last_change
         end
       end
 

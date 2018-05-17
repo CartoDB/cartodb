@@ -80,21 +80,24 @@ describe Carto::Api::UsersController do
         }
       end
 
-      it 'updates account data for the given user' do
+      it 'gives an error if password is the same as old_password' do
+        last_change = @user.last_password_change_date
         payload = {
           user: {
             email: 'foo@bar.baz',
             old_password: 'foobarbaz',
-            new_password: 'bazbarfoo',
-            confirm_password: 'bazbarfoo'
+            new_password: 'foobarbaz',
+            confirm_password: 'foobarbaz'
           }
         }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
-          expect(response.status).to eq(200)
+          expect(response.status).to eq(400)
 
-          @user.refresh
-          expect(@user.email).to eq('foo@bar.baz')
+          expect(response.body[:errors]).to have_key(:new_password)
+          expect(response.body[:errors][:new_password]).to eq ['New password cannot be the same as old password']
+          @user.reload
+          expect(@user.last_password_change_date).to eq(last_change)
         end
       end
 
@@ -137,6 +140,26 @@ describe Carto::Api::UsersController do
       it 'returns 401 if user is not logged in' do
         put_json api_v3_users_update_me_url(url_options.except(:api_key)), @headers do |response|
           expect(response.status).to eq(401)
+        end
+      end
+
+      it 'updates account data for the given user' do
+        last_change = @user.last_password_change_date
+        payload = {
+          user: {
+            email: 'foo@bar.baz',
+            old_password: 'foobarbaz',
+            new_password: 'bazbarfoo',
+            confirm_password: 'bazbarfoo'
+          }
+        }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(200)
+
+          @user.refresh
+          expect(@user.email).to eq('foo@bar.baz')
+          expect(@user.last_password_change_date).to_not eq(last_change)
         end
       end
     end

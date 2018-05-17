@@ -17,6 +17,7 @@ describe Admin::UsersController do
   end
 
   before(:each) do
+    Admin::UsersController.any_instance.stubs(:render)
     # Reload user, cannot use reload because it does not reload password fields
     @user = ::User[@user.id]
     host! "#{@user.username}.localhost.lan"

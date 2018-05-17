@@ -26,10 +26,10 @@
 
 .Editor-FormDialog.Editor-boxModal {
   position: absolute;
+  z-index: 100;
   top: 72px;
   right: 0;
   width: 248px;
-  z-index: 100;
 }
 
 .Editor-fillContainer {

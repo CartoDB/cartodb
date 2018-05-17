@@ -183,6 +183,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Setup Google Tag Manager (https://github.com/CartoDB/cartodb/pull/13946)
 * Fix an error on always activated notifications at account and profile pages (#13691)
 * Fix legend margin (https://github.com/CartoDB/support/issues/1510)
 * Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
@@ -601,6 +602,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* CARTO.js internal version is now called internal-carto.js (#13960)
 * Compress and pack static pages assets for production release (#13940)
 * Point docs to developer center (#13937)
 * Point to new CARTO.js v4 repo (#13860)

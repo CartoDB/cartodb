@@ -1,5 +1,5 @@
 {
-  "name": "@carto/carto.js",
+  "name": "internal-carto.js",
   "version": "4.0.6",
   "description": "CARTO javascript library",
   "repository": {

@@ -5,7 +5,7 @@
 
   <div class="CDB-Text Dialog-header u-inner">
     <div class="Dialog-headerIcon Dialog-headerIcon--negative">
-    <i class="CDB-IconFont CDB-IconFont-keys"></i>
+      <i class="CDB-IconFont CDB-IconFont-keys"></i>
     </div>
     <p class="Dialog-headerTitle">You are about to delete your application</p>
     <p class="Dialog-headerText">Remember, once you delete it there is no going back</p>

@@ -14,6 +14,8 @@ const isVendor = (module, count) => {
 };
 
 const entryPoints = {
+  public_dataset_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dataset.js'),
+  public_dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dashboard.js'),
   user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js'),
   api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js'),
   data_library_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/data-library.js'),
@@ -21,7 +23,8 @@ const entryPoints = {
   profile_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/profile.js'),
   sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
   confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
-  mobile_apps_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/mobile-apps.js')
+  mobile_apps_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/mobile-apps.js'),
+  organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js')
 };
 
 module.exports = env => {
@@ -97,7 +100,7 @@ module.exports = env => {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, '../../', 'node_modules/@carto/carto.js')
+            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
           ],
           options: {
             shim: {
@@ -119,7 +122,7 @@ module.exports = env => {
           include: [
             resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard'),
-            resolve(__dirname, '../../', 'node_modules/@carto/carto.js')
+            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
           ]
         },
         {

@@ -882,6 +882,37 @@ describe 'UserMigration' do
       user.destroy_cascade
     end
 
+    it 'export and imports keeping import when import visualizations fails' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        export_data: false
+      )
+      export.run_export
+
+      import = Carto::UserMigrationImport.create!(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        import_data: false,
+        dry: false
+      )
+      Carto::UserMetadataExportService.any_instance.stubs(:import_metadata_from_directory).raises('Something went bad')
+
+      import.run_import
+
+      import.reload.persisted?.should eq true
+
+      user.destroy_cascade
+    end
+
     it 'does not remove database when visuaization import fails' do
       user = create_user_with_visualizations
 

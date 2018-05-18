@@ -94,6 +94,7 @@
         "email": "Email",
         "company_name": "Company Name",
         "role": "Your Role",
+        "industry": "Industry",
         "phone": "Phone Number",
         "user_type": "User type",
         "viewer": "VIEWER",

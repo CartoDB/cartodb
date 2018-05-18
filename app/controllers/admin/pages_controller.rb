@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'active_support/inflector'
+require 'carto/api/vizjson3_presenter'
 
 require_relative '../../models/table'
 require_relative '../../models/visualization/member'
@@ -10,6 +11,7 @@ class Admin::PagesController < Admin::AdminController
   include Carto::HtmlSafe
 
   include CartoDB
+  include VisualizationsControllerHelper
 
   DATASETS_PER_PAGE = 9
   MAPS_PER_PAGE = 9
@@ -32,11 +34,13 @@ class Admin::PagesController < Admin::AdminController
               :render_not_found
 
   before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
-  before_filter :get_viewed_user
+  before_filter :load_viewed_entity
+  before_filter :set_new_dashboard_flag
   before_filter :ensure_organization_correct
   skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
   skip_before_filter :ensure_user_organization_valid, only: [:public]
 
+  helper_method :named_map_vizjson3
 
   # Just an entrypoint to dispatch to different places according to
   def index
@@ -142,11 +146,6 @@ class Admin::PagesController < Admin::AdminController
       @maps_count          = maps_builder.build.count
       @website             = website_url(@viewed_user.website)
       @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
-      @has_new_dashboard   = @viewed_user.builder_enabled? && @viewed_user.has_feature_flag?('dashboard_migration')
-      @gmaps_query_string  = @viewed_user.google_maps_query_string
-      @needs_gmaps_lib     = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
-
-      @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
 
       if eligible_for_redirect?(@viewed_user)
         # redirect username.host.ext => org-name.host.ext/u/username
@@ -302,8 +301,16 @@ class Admin::PagesController < Admin::AdminController
     end
   end
 
+  def set_new_dashboard_flag
+    ff_user = @viewed_user || @viewed_org.try(:owner)
+
+    unless ff_user.nil?
+      @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
+    end
+  end
+
   def set_layout_vars_for_user(user, content_type)
-    builder = user_maps_public_builder(user)
+    builder = user_maps_public_builder(user, visualization_version)
     most_viewed = builder.with_order('mapviews', :desc).build_paged(1, 1).first
 
     set_layout_vars({
@@ -324,7 +331,12 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_organization(org, content_type)
-    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED, 1, 1, nil, 'mapviews').first
+    most_viewed_vis_map = org.public_vis_by_type(Carto::Visualization::TYPE_DERIVED,
+                                                 1,
+                                                 1,
+                                                 nil,
+                                                 'mapviews',
+                                                 visualization_version).first
     set_layout_vars(most_viewed_vis_map: most_viewed_vis_map,
                     content_type: content_type,
                     default_fallback_basemap: org.owner ? org.owner.default_basemap : nil,
@@ -369,14 +381,20 @@ class Admin::PagesController < Admin::AdminController
     @is_org             = model.is_a? Organization
     @tables_num = (@is_org ? org_datasets_public_builder(model) : user_datasets_public_builder(model)).build.count
     @maps_count = (@is_org ? org_maps_public_builder(model) : user_maps_public_builder(model)).build.count
+
+    @needs_gmaps_lib = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
+    @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'
+
+    gmaps_user = @most_viewed_vis_map.try(:user) || @viewed_user
+    @gmaps_query_string = gmaps_user ? gmaps_user.google_maps_query_string : @viewed_org.google_maps_key
   end
 
   def user_datasets_public_builder(user)
     public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_CANONICAL)
   end
 
-  def user_maps_public_builder(user)
-    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED)
+  def user_maps_public_builder(user, version = nil)
+    public_builder(user_id: user.id, vis_type: Carto::Visualization::TYPE_DERIVED, version: version)
   end
 
   def org_datasets_public_builder(org)
@@ -387,7 +405,7 @@ class Admin::PagesController < Admin::AdminController
     public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id)
   end
 
-  def public_builder(user_id: nil, vis_type: nil, organization_id: nil)
+  def public_builder(user_id: nil, vis_type: nil, organization_id: nil, version: nil)
     tags = tag_or_nil.nil? ? nil : [tag_or_nil]
 
     builder = Carto::VisualizationQueryBuilder.new
@@ -398,10 +416,19 @@ class Admin::PagesController < Admin::AdminController
                                               .with_type(vis_type)
                                               .with_tags(tags)
                                               .with_organization_id(organization_id)
+                                              .with_version(version)
 
     builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 
     builder
+  end
+
+  def visualization_version
+    @has_new_dashboard ? Carto::Visualization::VERSION_BUILDER : nil
+  end
+
+  def named_map_vizjson3(visualization)
+    generate_named_map_vizjson3(Carto::Visualization.find(visualization.id))
   end
 
   def get_organization_if_exists(name)
@@ -469,9 +496,14 @@ class Admin::PagesController < Admin::AdminController
     }
   end
 
-  def get_viewed_user
+  def load_viewed_entity
     username = CartoDB.extract_subdomain(request)
     @viewed_user = ::User.where(username: username).first
+
+    if @viewed_user.nil?
+      username = username.strip.downcase
+      @viewed_org = get_organization_if_exists(username)
+    end
   end
 
 

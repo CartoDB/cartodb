@@ -11,7 +11,7 @@
 </div>
 
 <div class="CDB-Text Dialog-body">
-  <form class="Form-row Form-row--centered has-label">
+  <form action="#" method="POST" class="Form-row Form-row--centered has-label">
     <div class="Form-rowLabel">
       <label class="Form-label" for="password_confirmation"><%= _t('components.modals.password-confirmation.form.password-label') %></label>
     </div>

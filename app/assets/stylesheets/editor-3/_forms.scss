@@ -14,7 +14,6 @@
 .Editor-formInner.Editor-formInner--Size,
 .Editor-formInner.Editor-formInner--FillColor {
   align-items: baseline;
-  padding-bottom: $baseSize;
 }
 
 .Options-form .Editor-formInner {
@@ -37,7 +36,6 @@
 
 .Editor-formInner--noMargin {
   margin-top: 0;
-  padding-top: $baseSize;
 }
 
 .Editor-formInner--nested {
@@ -187,7 +185,6 @@
 
 .Form-InputSize {
   width: 100%;
-  margin-top: 5px;
 }
 
 .Form-StyleByValue {

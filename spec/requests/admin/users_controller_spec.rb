@@ -17,6 +17,7 @@ describe Admin::UsersController do
   end
 
   before(:each) do
+    Admin::UsersController.any_instance.stubs(:render)
     # Reload user, cannot use reload because it does not reload password fields
     @user = ::User[@user.id]
     host! "#{@user.username}.localhost.lan"
@@ -42,7 +43,7 @@ describe Admin::UsersController do
       delete account_user_url
       Carto::User.where(id: @user2.id).first.should_not be_nil
       last_response.status.should eq 200
-      last_response.body.include?('Password does not match').should be_true
+      Carto::User.where(id: @user2.id).first.should be
     end
 
     it 'does not require password for SAML organizations' do
@@ -50,7 +51,6 @@ describe Admin::UsersController do
       login_as(@saml_user, scope: @saml_organization.name)
       delete account_user_url(scope: @saml_organization.name)
       Carto::User.where(id: @saml_user.id).first.should be_nil
-      last_response.body.include?('Password does not match').should be_false
     end
 
     it 'deletes if password match' do
@@ -58,7 +58,6 @@ describe Admin::UsersController do
       login_as(@user2, scope: @user2.username)
       delete account_user_url(deletion_password_confirmation: password)
       Carto::User.where(id: @user2.id).first.should be_nil
-      last_response.body.include?('Password does not match').should be_false
     end
   end
 
@@ -80,24 +79,6 @@ describe Admin::UsersController do
         @user.validate_old_password('abcdefgh').should be_true
         @user.validate_old_password('zyxwvuts').should be_false
         @user.last_password_change_date.should eq last_change
-      end
-
-      it 'updates password' do
-        last_change = @user.last_password_change_date
-        params = {
-          old_password:     'abcdefgh',
-          new_password:     'zyxwvuts',
-          confirm_password: 'zyxwvuts'
-        }
-
-        ::User.any_instance.stubs(:update_in_central).returns(true)
-        put account_update_user_url, user: params
-
-        last_response.status.should eq 302
-        @user.reload
-        @user.validate_old_password('abcdefgh').should be_false
-        @user.validate_old_password('zyxwvuts').should be_true
-        @user.last_password_change_date.should_not eq last_change
       end
 
       it 'updates email' do
@@ -150,7 +131,8 @@ describe Admin::UsersController do
           location:           'Nowhere',
           twitter_username:   'asd',
           disqus_shortname:   'qwe',
-          available_for_hire: true
+          available_for_hire: true,
+          password_confirmation: 'abcdefgh'
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params
@@ -177,6 +159,24 @@ describe Admin::UsersController do
         last_response.status.should eq 200
         @user.reload
         @user.name.should_not start_with('fail-')
+      end
+
+      it 'updates password' do
+        last_change = @user.last_password_change_date
+        params = {
+          old_password:     'abcdefgh',
+          new_password:     'zyxwvuts',
+          confirm_password: 'zyxwvuts'
+        }
+
+        ::User.any_instance.stubs(:update_in_central).returns(true)
+        put account_update_user_url, user: params
+
+        last_response.status.should eq 302
+        @user.reload
+        @user.validate_old_password('abcdefgh').should be_false
+        @user.validate_old_password('zyxwvuts').should be_true
+        @user.last_password_change_date.should_not eq last_change
       end
     end
   end

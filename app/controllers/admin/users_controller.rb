@@ -27,7 +27,7 @@ class Admin::UsersController < Admin::AdminController
 
   def profile
     if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/profile_migration/index.html", layout: false)
+      return render(file: "public/static/profile/index.html", layout: false)
     end
 
     @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
@@ -39,7 +39,7 @@ class Admin::UsersController < Admin::AdminController
 
   def account
     if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/account_migration/index.html", layout: false)
+      return render(file: "public/static/account/index.html", layout: false)
     end
 
     respond_to do |format|

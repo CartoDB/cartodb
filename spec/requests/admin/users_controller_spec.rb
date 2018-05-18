@@ -9,8 +9,7 @@ describe Admin::UsersController do
   include CartoDB::Factories
 
   before(:all) do
-    @password = 'abcdefgh'
-    @user = create_user(password: @password)
+    @user = create_user(password: 'abcdefgh')
   end
 
   after(:all) do
@@ -18,7 +17,6 @@ describe Admin::UsersController do
   end
 
   before(:each) do
-    Admin::UsersController.any_instance.stubs(:render)
     # Reload user, cannot use reload because it does not reload password fields
     @user = ::User[@user.id]
     host! "#{@user.username}.localhost.lan"
@@ -44,9 +42,7 @@ describe Admin::UsersController do
       delete account_user_url
       Carto::User.where(id: @user2.id).first.should_not be_nil
       last_response.status.should eq 200
-
-      @user2.reload
-      @user2.should be
+      last_response.body.include?('Password does not match').should be_true
     end
 
     it 'does not require password for SAML organizations' do
@@ -86,6 +82,24 @@ describe Admin::UsersController do
         @user.last_password_change_date.should eq last_change
       end
 
+      it 'updates password' do
+        last_change = @user.last_password_change_date
+        params = {
+          old_password:     'abcdefgh',
+          new_password:     'zyxwvuts',
+          confirm_password: 'zyxwvuts'
+        }
+
+        ::User.any_instance.stubs(:update_in_central).returns(true)
+        put account_update_user_url, user: params
+
+        last_response.status.should eq 302
+        @user.reload
+        @user.validate_old_password('abcdefgh').should be_false
+        @user.validate_old_password('zyxwvuts').should be_true
+        @user.last_password_change_date.should_not eq last_change
+      end
+
       it 'updates email' do
         params = {
           email: @user.email + '.ok'
@@ -108,6 +122,7 @@ describe Admin::UsersController do
         put account_update_user_url, user: params
 
         last_response.status.should eq 200
+
         @user.reload
         @user.email.should_not start_with('fail-')
       end
@@ -123,22 +138,19 @@ describe Admin::UsersController do
         put account_update_user_url, user: params
 
         last_response.status.should eq 200
-        @user.reload
-        @user.validate_old_password(params[:old_password]).should eq true
       end
     end
 
     describe '#profile' do
       it 'updates profile' do
         params = {
-          name:                  'Mengano',
-          website:               'http://somesite.com',
-          description:           'I describe myself',
-          location:              'Nowhere',
-          twitter_username:      'asd',
-          disqus_shortname:      'qwe',
-          available_for_hire:    true,
-          password_confirmation: @password
+          name:               'Mengano',
+          website:            'http://somesite.com',
+          description:        'I describe myself',
+          location:           'Nowhere',
+          twitter_username:   'asd',
+          disqus_shortname:   'qwe',
+          available_for_hire: true
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params
@@ -154,65 +166,17 @@ describe Admin::UsersController do
         @user.available_for_hire.should eq params[:available_for_hire]
       end
 
-      it 'does not update profile if confirmation password is wrong' do
-        params = {
-          name:                  'Fulano',
-          password_confirmation: 'prapra'
-        }
-        ::User.any_instance.stubs(:update_in_central).returns(true)
-        put profile_update_user_url, user: params
-
-        last_response.status.should eq 200
-        last_response.body.should   include('Error updating your profile details')
-        @user.reload
-        @user.name.should_not eq 'Fulano'
-      end
-
-      it 'does not update profile if confirmation password is nil' do
-        params = {
-          name:                  'Fulano',
-          password_confirmation: nil
-        }
-        ::User.any_instance.stubs(:update_in_central).returns(true)
-        put profile_update_user_url, user: params
-
-        last_response.status.should eq 200
-        last_response.body.should   include('Error updating your profile details')
-        @user.reload
-        @user.name.should_not eq 'Fulano'
-      end
-
       it 'does not update profile if communication with Central fails' do
         ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
         params = {
-          name: 'fail-' + @user.username,
-          password_confirmation: @password
+          name: 'fail-' + @user.name
         }
 
         put profile_update_user_url, user: params
 
         last_response.status.should eq 200
         @user.reload
-        @user.validate_old_password('abcdefgh').should be_false
-        @user.validate_old_password('zyxwvuts').should be_true
-      end
-
-      it 'updates password' do
-        last_change = @user.last_password_change_date
-        params = {
-          old_password:     'abcdefgh',
-          new_password:     'zyxwvuts',
-          confirm_password: 'zyxwvuts'
-        }
-
-        ::User.any_instance.stubs(:update_in_central).returns(true)
-        put account_update_user_url, user: params
-
-        last_response.status.should eq 302
-        @user.reload
-        @user.validate_old_password('abcdefgh').should be_false
-        @user.validate_old_password('zyxwvuts').should be_true
-        @user.last_password_change_date.should_not eq last_change
+        @user.name.should_not start_with('fail-')
       end
     end
   end

@@ -407,7 +407,6 @@ describe Admin::OrganizationUsersController do
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
               user: params
-          last_response.body.should include('New password cannot be the same as old password')
           @existing_user.reload
           @existing_user.last_password_change_date.should eq last_change
         end

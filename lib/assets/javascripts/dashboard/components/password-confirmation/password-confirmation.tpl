@@ -11,12 +11,12 @@
 </div>
 
 <div class="CDB-Text Dialog-body">
-  <form action="#" method="POST" class="Form-row Form-row--centered has-label">
+  <form id="password-confirmation-form" method="POST" class="Form-row Form-row--centered has-label">
     <div class="Form-rowLabel">
-      <label class="Form-label" for="password_confirmation"><%= _t('components.modals.password-confirmation.form.password-label') %></label>
+      <label class="Form-label" for="password-confirmation"><%= _t('components.modals.password-confirmation.form.password-label') %></label>
     </div>
     <div class="Form-rowData">
-      <input type="password" id="password_confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long js-password" value=""/>
+      <input type="password" id="password-confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long js-password" value=""/>
     </div>
   </form>
 </div>

@@ -1,14 +1,15 @@
 <!-- Google Tag Manager -->
 
-<script>
-  <% if current_user %>
-    dataLayer = [{
+<% if current_user %>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({
       'userId': '<%= current_user.id %>',
-      'userJobRole': '<%= current_user.account_type %>',
+      'userAccountType': '<%= current_user.account_type %>',
       'userSignUpDate': '<%= current_user.created_at.to_s %>'
-    }];
-  <% end %>
-</script>
+    });
+  </script>
+<% end %>
 
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

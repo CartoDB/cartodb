@@ -26,25 +26,11 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
   def profile
-    if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/profile_migration/index.html", layout: false)
-    end
-
-    @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
-
-    respond_to do |format|
-      format.html { render 'profile' }
-    end
+    render(file: "public/static/profile/index.html", layout: false)
   end
 
   def account
-    if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/account_migration/index.html", layout: false)
-    end
-
-    respond_to do |format|
-      format.html { render 'account' }
-    end
+    render(file: "public/static/account/index.html", layout: false)
   end
 
   def account_update
@@ -75,10 +61,10 @@ class Admin::UsersController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB::Logger.error(exception: e, user: @user, params: params)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
-    render action: :account
+    account
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "Error updating your account details"
-    render action: :account
+    account
   end
 
   def profile_update
@@ -109,10 +95,10 @@ class Admin::UsersController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB::Logger.error(exception: e, user: @user, params: params)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
-    render action: :profile
+    profile
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "Error updating your profile details"
-    render action: :profile
+    profile
   end
 
   def delete
@@ -127,11 +113,11 @@ class Admin::UsersController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB::Logger.error(exception: e, message: 'Central error deleting user at CartoDB', user: @user)
     flash.now[:error] = "Error deleting user: #{e.user_message}"
-    render 'account'
+    account
   rescue => e
     CartoDB.notify_exception(e, { user: @user.inspect }) unless e.message == PASSWORD_DOES_NOT_MATCH_MESSAGE
     flash.now[:error] = "Error deleting user: #{e.message}"
-    render 'account'
+    account
   end
 
   def lockout

@@ -184,6 +184,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix legend paddings/margins (https://github.com/CartoDB/cartodb/pull/13966)
 * GTM DataLayer Tweaks (https://github.com/CartoDB/cartodb/pull/13961)
 * Setup Google Tag Manager (https://github.com/CartoDB/cartodb/pull/13946)
 * Fix an error on always activated notifications at account and profile pages (#13691)

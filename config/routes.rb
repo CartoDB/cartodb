@@ -31,6 +31,11 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
+  # Password change
+  resources :password_change, only: [:edit, :update]
+  get '/password_change/:id' => 'password_change#edit', :as => :password_change
+  put '/password_change/:id' => 'password_change#update', :as => :password_update
+
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
   get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search

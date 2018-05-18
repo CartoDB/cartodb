@@ -9,10 +9,6 @@
 
 // Public map
 .pane_map {
-  .cartodb-map.public {
-    @include position(8px, 8px, 8px, 65%);
-  }
-
   .Checkbox {
     position: absolute;
     z-index: 30;

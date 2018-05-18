@@ -185,6 +185,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix legend paddings/margins (https://github.com/CartoDB/cartodb/pull/13966)
+* Fix how to decide which public_table version to show (#13694)
 * GTM DataLayer Tweaks (https://github.com/CartoDB/cartodb/pull/13961)
 * Setup Google Tag Manager (https://github.com/CartoDB/cartodb/pull/13946)
 * Fix an error on always activated notifications at account and profile pages (#13691)
@@ -605,6 +606,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)
 * CARTO.js internal version is now called internal-carto.js (#13960)
 * Compress and pack static pages assets for production release (#13940)
 * Point docs to developer center (#13937)

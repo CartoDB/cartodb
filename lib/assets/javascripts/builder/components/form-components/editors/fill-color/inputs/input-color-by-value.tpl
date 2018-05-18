@@ -4,6 +4,6 @@
       <li class="ColorBar ColorBar-gradient" style="background: linear-gradient(90deg,<%- value.join(',') %>)"></li>
     </ul>
   <% } else { %>
-    <%- _t('form-components.editors.fill.input-color.select-by-column') %>
+    <%- _t('form-components.editors.style.select-by-column') %>
   <% } %>
 </button>

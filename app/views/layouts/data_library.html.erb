@@ -24,9 +24,11 @@
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
     <%= stylesheet_link_tag 'cartodb', 'common', 'data_library' %>
+    <%= insert_google_tag_manager('primary') %>
   </head>
 
   <body class="PublicBody PublicBody--grey PublicBody--commercial">
+    <%= insert_google_tag_manager_no_script('primary') %>
     <%= render partial: 'admin/shared/data_library_header' %>
 
     <%= yield %>

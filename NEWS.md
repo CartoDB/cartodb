@@ -22,6 +22,7 @@ You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to sy
 This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
 
 ### Features
+* Public dataset migration (#13803)
 * Organization page migration (#13742)
 * Public pages migration (#13742)
 * Profile page migration (#13726)
@@ -184,6 +185,10 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix the name of the bundle for public_Table on production (#13965)
+* Fix how to decide which public_table version to show (#13694)
+* GTM DataLayer Tweaks (https://github.com/CartoDB/cartodb/pull/13961)
+* Setup Google Tag Manager (https://github.com/CartoDB/cartodb/pull/13946)
 * Fix an error on always activated notifications at account and profile pages (#13691)
 * Fix legend margin (https://github.com/CartoDB/support/issues/1510)
 * Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
@@ -602,6 +607,8 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)
+* CARTO.js internal version is now called internal-carto.js (#13960)
 * Compress and pack static pages assets for production release (#13940)
 * Point docs to developer center (#13937)
 * Point to new CARTO.js v4 repo (#13860)

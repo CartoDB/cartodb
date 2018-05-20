@@ -14,7 +14,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
-  '@carto/carto.js',
+  'internal-carto.js',
   'cartocolor',
   'd3',
   'jquery',
@@ -342,6 +342,7 @@ module.exports = function (grunt) {
   grunt.registerTask('dev', [
     'npm-carto-node',
     'pre',
+    'npm-build-dashboard',
     'npm-start'
   ]);
 

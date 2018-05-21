@@ -139,9 +139,9 @@
       }
     },
     "async": {
-      "version": "2.6.0",
+      "version": "2.6.1",
       "from": "async@>=2.1.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/async/-/async-2.6.0.tgz"
+      "resolved": "https://registry.npmjs.org/async/-/async-2.6.1.tgz"
     },
     "async-each": {
       "version": "1.0.1",
@@ -1155,9 +1155,9 @@
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.6.0.tgz"
     },
     "html-minifier": {
-      "version": "3.5.15",
+      "version": "3.5.16",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.15.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.16.tgz"
     },
     "html-webpack-plugin": {
       "version": "2.30.1",
@@ -1244,9 +1244,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.7-0",
-      "from": "cartodb/carto.js#v4.0.7-0",
-      "resolved": "git://github.com/cartodb/carto.js.git#2f5d79e7e0cdd95bf673cb0553f58b9433683413"
+      "version": "4.0.7-1",
+      "from": "cartodb/carto.js#v4.0.7-1",
+      "resolved": "git://github.com/cartodb/carto.js.git#4c2fa700461aa05fcbe8b8286860433aa47935e0"
     },
     "interpret": {
       "version": "1.1.0",
@@ -2555,9 +2555,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.3.25",
+      "version": "3.3.26",
       "from": "uglify-js@>=3.3.0 <3.4.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.25.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.26.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

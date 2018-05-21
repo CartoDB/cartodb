@@ -603,7 +603,7 @@
         "input-number": {
           "fixed": "Fixed",
           "solid": "Solid",
-          "value": "By value"
+          "by-value": "By value"
         },
         "input-ramp": {
           "buckets": "bucket |||| buckets"

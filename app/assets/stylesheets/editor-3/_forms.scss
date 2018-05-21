@@ -14,10 +14,12 @@
 .Editor-formInner.Editor-formInner--Size,
 .Editor-formInner.Editor-formInner--FillColor {
   align-items: baseline;
+  padding-top: 8px;
 }
 
 .Editor-formInner.Editor-formInner--Size.Editor-formInner--NoTabs {
   align-items: center;
+  padding: 0px;
 
   .js-menu {
     display: none;

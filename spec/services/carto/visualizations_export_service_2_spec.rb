@@ -1470,6 +1470,23 @@ describe Carto::VisualizationsExportService2 do
         destroy_visualization(imported_viz.id)
       end
 
+      it 'importing a password-protected visualization keeps the password' do
+        @visualization.privacy = 'password'
+        @visualization.password = 'super_secure_secret'
+        @visualization.save!
+
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
+        expect(imported_viz.password_protected?).to be_true
+        expect(imported_viz.has_password?).to be_true
+        expect(imported_viz.password_valid?(@visualization.password)).to be_true
+
+        destroy_visualization(imported_viz.id)
+      end
+
       describe 'if full_restore is' do
         before(:each) do
           @visualization.permission.acl = [{
@@ -1481,11 +1498,13 @@ describe Carto::VisualizationsExportService2 do
             access: 'r'
           }]
           @visualization.permission.save
+          @visualization.locked = true
+          @visualization.save!
           @visualization.create_mapcap!
           @visualization.reload
         end
 
-        it 'false, it should generate a random uuid and blank permission and no mapcap' do
+        it 'false, it should generate a random uuid and blank permission, no mapcap and unlocked' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
@@ -1502,7 +1521,7 @@ describe Carto::VisualizationsExportService2 do
           destroy_visualization(imported_viz.id)
         end
 
-        it 'true, it should keep the imported uuid, permission and mapcap' do
+        it 'true, it should keep the imported uuid, permission, mapcap, and locked' do
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
@@ -1515,6 +1534,7 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.shared_entities.count.should eq 1
           imported_viz.shared_entities.first.recipient_id.should eq @user2.id
           imported_viz.mapcapped?.should be_true
+          imported_viz.locked?.should be_true
           expect(imported_viz.created_at.to_s).to eq original_attributes[:created_at].to_s
           expect(imported_viz.updated_at.to_s).to eq original_attributes[:updated_at].to_s
 

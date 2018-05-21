@@ -139,6 +139,9 @@ module.exports = Model.extend({
 
   _onMapBoundsChanged: function () {
     if (this._shouldFetchOnBoundingBoxChange()) {
+      // If the widget is the first one created it changes the map bounds
+      // and cacels the first ._fetch request so we have to call ._fetch here
+      // instead of .refresh to set the binds if they're not set up yet
       this._fetch();
     }
 

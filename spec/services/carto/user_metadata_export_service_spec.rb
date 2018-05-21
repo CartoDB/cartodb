@@ -282,6 +282,24 @@ describe Carto::UserMetadataExportService do
 
       end
     end
+
+    it 'keeps visualization password' do
+      Dir.mktmpdir do |path|
+        create_user_with_rate_limits
+
+        @user.update_attributes(private_maps_enabled: true, private_tables_enabled: true)
+        v = @user.visualizations.first
+        v.password = 'dont_tell_anyone'
+        v.privacy = 'password'
+        v.save!
+
+        full_export_import(path)
+
+        v.reload
+        expect(v.password_protected?).to be_true
+        expect(v.password_valid?('dont_tell_anyone')).to be_true
+      end
+    end
   end
 
   EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at'].freeze

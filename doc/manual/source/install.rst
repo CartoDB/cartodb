@@ -63,7 +63,7 @@ PostgreSQL
 
   .. code-block:: bash
 
-    sudo add-apt-repository ppa:cartodb/postgresql-9.5 && sudo apt-get update
+    sudo add-apt-repository ppa:cartodb/postgresql-9.6 && sudo apt-get update
 
 
 * Install client packages
@@ -72,22 +72,22 @@ PostgreSQL
 
     sudo apt-get install libpq5 \
                          libpq-dev \
-                         postgresql-client-9.5 \
+                         postgresql-client-9.6 \
                          postgresql-client-common
 
 * Install server packages
 
   .. code-block:: bash
 
-    sudo apt-get install postgresql-9.5 \
-                         postgresql-contrib-9.5 \
-                         postgresql-server-dev-9.5 \
-                         postgresql-plpython-9.5
+    sudo apt-get install postgresql-9.6 \
+                         postgresql-contrib-9.6 \
+                         postgresql-server-dev-9.6 \
+                         postgresql-plpython-9.6
 
 
 
 
-PostgreSQL access authorization is managed through pg_hba.conf configuration file, which is normally in /etc/postgresql/9.5/main/pg_hba.conf. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps.
+PostgreSQL access authorization is managed through pg_hba.conf configuration file, which is normally in /etc/postgresql/9.6/main/pg_hba.conf. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps.
 
 This is the pg_hba.conf with the no password access from localhost:
 
@@ -164,7 +164,7 @@ PostGIS
   .. code-block:: bash
 
     sudo apt-get install libxml2-dev
-    sudo apt-get install liblwgeom-2.2.2 postgis postgresql-9.5-postgis-2.2 postgresql-9.5-postgis-scripts
+    sudo apt-get install liblwgeom-2.2.2 postgis postgresql-9.6-postgis-2.2 postgresql-9.6-postgis-scripts
 
 * Initialize template postgis database. We create a template database in postgresql that will contain the postgis extension. This way, every time CartoDB creates a new user database it just clones this template database
 

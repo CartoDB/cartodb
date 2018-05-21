@@ -17,8 +17,11 @@ recommended that you replace the `basemaps` section completely, since this relea
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
 
 You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to synchronize existing layers.
-### NOTICE
 
+### NOTICE
+PostgreSQL 9.6 is needed.
+
+### NOTICE
 This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
 
 ### Features

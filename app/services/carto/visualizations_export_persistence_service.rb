@@ -61,6 +61,7 @@ module Carto
           visualization.mapcaps.clear
           visualization.created_at = DateTime.now
           visualization.updated_at = DateTime.now
+          visualization.locked = false
         end
 
 
@@ -139,7 +140,7 @@ module Carto
     def apply_user_limits(user, visualization)
       visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
       # Since password is not exported we must fallback to private
-      if visualization.privacy == Carto::Visualization::PRIVACY_PROTECTED
+      if visualization.password_protected? && !visualization.has_password?
         visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
       end
 

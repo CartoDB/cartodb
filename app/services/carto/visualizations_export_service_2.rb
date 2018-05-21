@@ -18,6 +18,7 @@ require_dependency 'carto/export/data_import_exporter'
 # 2.0.9: export visualization id
 # 2.1.0: export datasets: permissions, user_tables and syncs
 # 2.1.1: export vizjson2 mark
+# 2.1.2: export locked and password
 module Carto
   module VisualizationsExportService2Configuration
     CURRENT_VERSION = '2.1.1'.freeze
@@ -91,7 +92,10 @@ module Carto
         mapcaps: [build_mapcap_from_hash(exported_visualization[:mapcap])].compact,
         external_source: build_external_source_from_hash(exported_visualization[:external_source]),
         created_at: exported_visualization[:created_at],
-        updated_at: exported_visualization[:updated_at]
+        updated_at: exported_visualization[:updated_at],
+        locked: exported_visualization[:locked],
+        encrypted_password: exported_visualization[:encrypted_password],
+        password_salt: exported_visualization[:password_salt]
       )
 
       # This is optional as it was added in version 2.0.2
@@ -299,7 +303,10 @@ module Carto
         mapcap: with_mapcaps ? export_mapcap(visualization.latest_mapcap) : nil,
         external_source: export_external_source(visualization.external_source),
         created_at: visualization.created_at,
-        updated_at: visualization.updated_at
+        updated_at: visualization.updated_at,
+        locked: visualization.locked,
+        encrypted_password: visualization.encrypted_password,
+        password_salt: visualization.password_salt
       }
     end
 

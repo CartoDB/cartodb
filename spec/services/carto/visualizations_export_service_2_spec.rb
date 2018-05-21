@@ -1482,7 +1482,7 @@ describe Carto::VisualizationsExportService2 do
         verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
         expect(imported_viz.password_protected?).to be_true
         expect(imported_viz.has_password?).to be_true
-        expect(imported_viz.password_valid?(@visualization.password)).to be_true
+        expect(imported_viz.password_valid?('super_secure_secret')).to be_true
 
         destroy_visualization(imported_viz.id)
       end

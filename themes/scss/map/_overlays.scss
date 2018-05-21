@@ -228,7 +228,11 @@ $buttonColor: #636D72;
 $maxLegendContainerHeight: 300px;
 
 .CDB-LayerLegends {
-  margin-bottom: 12px;
+  margin-top: 0;
+
+  + .CDB-LayerLegends {
+    margin-top: 12px;
+  }
 }
 
 .CDB-Legends-canvas {
@@ -412,7 +416,7 @@ $maxLegendContainerHeight: 300px;
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
 }

@@ -1,12 +1,12 @@
 <p class="CDB-Text CDB-Size-medium u-vspace-m">
   * Fields marked with an asterisk are visible on your public profile,
   <% if (isInsideOrg) { %>
-    <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= user.username %>" target="_blank">
-      <%= organizationName %>.<%= accountHost %>/u/<%= user.username %>
+    <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= user.username %>/me" target="_blank">
+      <%= organizationName %>.<%= accountHost %>/u/<%= user.username %>/me
     </a>
   <% } else { %>
-    <a href="//<%= user.username %>.carto.com/me" target="_blank">
-      <%= user.username %>.carto.com/me
+    <a href="//<%= user.username %>.<%= accountHost %>/me" target="_blank">
+      <%= user.username %>.<%= accountHost %>/me
     </a>
   <% } %>
 </p>

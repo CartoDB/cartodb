@@ -203,6 +203,18 @@
   margin-top: $baseSize;
 }
 
+.Form-StyleByValue--column {
+  display: flex;
+  justify-content: space-between;
+}
+
+.Form-StyleByValue--column-range {
+  width: 38px;
+  padding-left: 6px;
+  border-left: 1px #CCC solid;
+  text-align: right;
+}
+
 .RampItem-bar {
   width: 20px;
 }

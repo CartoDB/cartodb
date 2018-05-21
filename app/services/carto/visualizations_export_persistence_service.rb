@@ -139,7 +139,7 @@ module Carto
 
     def apply_user_limits(user, visualization)
       visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
-      # Since password is not exported we must fallback to private
+      # If password is not exported we must fallback to private
       if visualization.password_protected? && !visualization.has_password?
         visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
       end

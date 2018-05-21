@@ -250,32 +250,33 @@ module Carto
     include LayerExporter
     include DataImportExporter
 
-    def export_visualization_json_string(visualization_id, user)
-      export_visualization_json_hash(visualization_id, user).to_json
+    def export_visualization_json_string(visualization_id, user, with_password: false)
+      export_visualization_json_hash(visualization_id, user, with_password: with_password).to_json
     end
 
-    def export_visualization_json_hash(visualization_id, user, with_mapcaps: true)
+    def export_visualization_json_hash(visualization_id, user, with_mapcaps: true, with_password: false)
       {
         version: CURRENT_VERSION,
-        visualization: export(Carto::Visualization.find(visualization_id), user, with_mapcaps: with_mapcaps)
+        visualization: export(Carto::Visualization.find(visualization_id), user,
+                              with_mapcaps: with_mapcaps, with_password: with_password)
       }
     end
 
     private
 
-    def export(visualization, user, with_mapcaps: true)
+    def export(visualization, user, with_mapcaps: true, with_password: false)
       check_valid_visualization(visualization)
-      export_visualization(visualization, user, with_mapcaps: with_mapcaps)
+      export_visualization(visualization, user, with_mapcaps: with_mapcaps, with_password: with_password)
     end
 
-    def export_visualization(visualization, user, with_mapcaps: true)
+    def export_visualization(visualization, user, with_mapcaps: true, with_password: false)
       layers = visualization.layers_with_data_readable_by(user)
       active_layer_id = visualization.active_layer_id
       layer_exports = layers.map do |layer|
         export_layer(layer, active_layer: active_layer_id == layer.id)
       end
 
-      {
+      visualization = {
         id: visualization.id,
         name: visualization.name,
         description: visualization.description,
@@ -304,10 +305,15 @@ module Carto
         external_source: export_external_source(visualization.external_source),
         created_at: visualization.created_at,
         updated_at: visualization.updated_at,
-        locked: visualization.locked,
-        encrypted_password: visualization.encrypted_password,
-        password_salt: visualization.password_salt
+        locked: visualization.locked
       }
+
+      if with_password
+        visualization[:encrypted_password] = visualization.encrypted_password
+        visualization[:password_salt] = visualization.password_salt
+      end
+
+      visualization
     end
 
     def export_user(user)

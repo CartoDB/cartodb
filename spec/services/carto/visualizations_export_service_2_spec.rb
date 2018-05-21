@@ -55,8 +55,6 @@ describe Carto::VisualizationsExportService2 do
       display_name: 'the display_name',
       uses_vizjson2: true,
       locked: false,
-      encrypted_password: '1234567890',
-      password_salt: '1234567890',
       map: {
         provider: 'leaflet',
         bounding_box_sw: '[-85.0511, -179]',
@@ -682,8 +680,6 @@ describe Carto::VisualizationsExportService2 do
 
           it 'sets password protected visualizations to private' do
             export_2_1_1 = export
-            export_2_1_1[:visualization].delete(:encrypted_password)
-            export_2_1_1[:visualization].delete(:password_salt)
             export_2_1_1[:visualization][:privacy] = 'password'
 
             service = Carto::VisualizationsExportService2.new
@@ -1502,7 +1498,7 @@ describe Carto::VisualizationsExportService2 do
         @visualization.password = 'super_secure_secret'
         @visualization.save!
 
-        exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user, with_password: true)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 

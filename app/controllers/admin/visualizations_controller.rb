@@ -117,13 +117,8 @@ class Admin::VisualizationsController < Admin::AdminController
     return(render_pretty_404) if @visualization.private?
 
     get_viewed_user
-    @has_new_dashboard = if @viewed_user.nil?
-                           @org.builder_enabled \
-                           && @org.has_feature_flag?('dashboard_migration')
-                         else
-                           @viewed_user.builder_enabled \
-                           && @viewed_user.has_feature_flag?('dashboard_migration')
-                         end
+    ff_user = @viewed_user || @org.try(:owner)
+    @has_new_dashboard = ff_user.has_feature_flag?('dashboard_migration')
 
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]

@@ -20,8 +20,10 @@
     <% if @needs_gmaps_lib %>
       <%= insert_google_maps(@gmaps_query_string) %>
     <% end %>
+    <%= insert_google_tag_manager('embeds') %>
   </head>
   <body class="PublicBody PublicBody--grey">
+    <%= insert_google_tag_manager_no_script('embeds') %>
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap FavMap--tall is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner js-spinner"></div>
@@ -51,7 +53,7 @@
         <% if @most_viewed_vis_map %>
           createVis: {
             <% if @has_new_dashboard %>
-              url: '<%= vis_json_v3_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+              vizJson: <%= safe_js_object named_map_vizjson3(@most_viewed_vis_map).to_json %>,
             <% else %>
               url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
             <% end %>

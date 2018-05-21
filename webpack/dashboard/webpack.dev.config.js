@@ -24,7 +24,8 @@ const entryPoints = {
   profile_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/profile.js'),
   sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
   confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
-  dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/dashboard.js')
+  dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/dashboard.js'),
+  organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js')
 };
 
 module.exports = env => {
@@ -87,7 +88,7 @@ module.exports = env => {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, '../../', 'node_modules/@carto/carto.js')
+            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
           ],
           options: {
             shim: {
@@ -109,7 +110,7 @@ module.exports = env => {
           include: [
             resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
             resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard'),
-            resolve(__dirname, '../../', 'node_modules/@carto/carto.js')
+            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
           ]
         },
         {

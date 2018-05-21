@@ -142,6 +142,8 @@ module CartoDB
       sessions_new_vendor.js
       confirmation_new.js
       confirmation_new_vendor.js
+      organization_new.js
+      organization_new_vendor.js
       common_dashboard.js
 
       tipsy.js
@@ -190,6 +192,7 @@ module CartoDB
       api_keys.css
 
       api_keys_new.css
+      public_table_new.css
 
       plugins/tipsy.css
 

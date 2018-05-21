@@ -292,7 +292,6 @@ describe Carto::UserMetadataExportService do
         v.password = 'dont_tell_anyone'
         v.privacy = 'password'
         v.save!
-        v.update_column(:auth_token, nil) # We don't care about this for comparisons, it's regenerated on import
 
         full_export_import(path)
 
@@ -304,7 +303,7 @@ describe Carto::UserMetadataExportService do
   end
 
   EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at'].freeze
-  EXCLUDED_USER_META_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags'].freeze
+  EXCLUDED_USER_META_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags', 'auth_token'].freeze
 
   def compare_excluding_dates_and_ids(v1, v2)
     filtered1 = v1.reject { |k, _| EXCLUDED_USER_META_ID_FIELDS.include?(k) }

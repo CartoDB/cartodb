@@ -21,7 +21,7 @@ require_dependency 'carto/export/data_import_exporter'
 # 2.1.2: export locked and password
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.1.1'.freeze
+    CURRENT_VERSION = '2.1.2'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i

@@ -54,6 +54,9 @@ describe Carto::VisualizationsExportService2 do
       state: { json: { manolo: 'escobar' } },
       display_name: 'the display_name',
       uses_vizjson2: true,
+      locked: false,
+      encrypted_password: '1234567890',
+      password_salt: '1234567890',
       map: {
         provider: 'leaflet',
         bounding_box_sw: '[-85.0511, -179]',
@@ -667,6 +670,30 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        describe '2.1.1' do
+          it 'defaults to locked visualizations' do
+            export_2_1_1 = export
+            export_2_1_1[:visualization].delete(:locked)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_1_1.to_json)
+            expect(visualization.locked?).to be_false
+          end
+
+          it 'sets password protected visualizations to private' do
+            export_2_1_1 = export
+            export_2_1_1[:visualization].delete(:encrypted_password)
+            export_2_1_1[:visualization].delete(:password_salt)
+            export_2_1_1[:visualization][:privacy] = 'password'
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_1_1.to_json)
+            imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, visualization)
+
+            expect(visualization.privacy).to eq('private')
+          end
+        end
+
         describe '2.1.0' do
           it 'without mark_as_vizjson2' do
             export_2_1_0 = export

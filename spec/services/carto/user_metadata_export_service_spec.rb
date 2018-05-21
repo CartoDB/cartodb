@@ -292,6 +292,7 @@ describe Carto::UserMetadataExportService do
         v.password = 'dont_tell_anyone'
         v.privacy = 'password'
         v.save!
+        v.update_column(:auth_token, nil) # We don't care about this for comparisons, it's regenerated on import
 
         full_export_import(path)
 

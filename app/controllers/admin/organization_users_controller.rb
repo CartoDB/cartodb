@@ -25,8 +25,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
   # TODO: remove this once dashboard_migration is not used anymore and we can remove load_has_new_dashboard
   # https://github.com/CartoDB/cartodb/issues/13973
   def render(*args)
-    action = args[0][:action] || args[0]
-    load_has_new_dashboard if [:new, :edit, :create].include?(action.try(:to_sym))
+    if args && !args.empty?
+      action = args[0].is_a?(Hash) ? args[0][:action] : args[0]
+      load_has_new_dashboard if action && !action.is_a?(Hash) && [:new, :edit, :create].include?(action.try(:to_sym))
+    end
     super
   end
 

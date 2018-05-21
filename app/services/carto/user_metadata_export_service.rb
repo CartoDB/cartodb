@@ -316,7 +316,7 @@ module Carto
         next if !visualization.remote? && visualization.map.nil?
 
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
-          visualization.id, user
+          visualization.id, user, with_password: true
         )
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }

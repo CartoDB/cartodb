@@ -276,7 +276,7 @@ module Carto
         export_layer(layer, active_layer: active_layer_id == layer.id)
       end
 
-      visualization = {
+      export = {
         id: visualization.id,
         name: visualization.name,
         description: visualization.description,
@@ -309,11 +309,11 @@ module Carto
       }
 
       if with_password
-        visualization[:encrypted_password] = visualization.encrypted_password
-        visualization[:password_salt] = visualization.password_salt
+        export[:encrypted_password] = visualization.encrypted_password
+        export[:password_salt] = visualization.password_salt
       end
 
-      visualization
+      export
     end
 
     def export_user(user)

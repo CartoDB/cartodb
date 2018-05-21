@@ -132,9 +132,13 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def regenerate_all_api_keys
+    valid_password_confirmation
     @organization.users.each(&:regenerate_all_api_keys)
 
     redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Users API keys regenerated successfully" }
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'settings', status: e.status
   rescue => e
     CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"

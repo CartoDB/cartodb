@@ -93,7 +93,10 @@ describe Admin::OrganizationsController do
       @organization.save
       host! "#{@organization.name}.localhost.lan"
       login_as(@org_user_owner, scope: @org_user_owner.username)
-      post regenerate_organization_users_api_key_url(user_domain: @org_user_owner.username)
+      post regenerate_organization_users_api_key_url(
+        user_domain: @org_user_owner.username,
+        password_confirmation: @org_user_owner.password
+      )
       response.status.should eq 302
 
       @organization.users.each do |u|

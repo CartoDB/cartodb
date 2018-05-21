@@ -192,6 +192,7 @@ module CartoDB
       api_keys.css
 
       api_keys_new.css
+      public_table_new.css
 
       plugins/tipsy.css
 

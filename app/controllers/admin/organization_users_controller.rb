@@ -22,6 +22,14 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   layout 'application'
 
+  # TODO: remove this once dashboard_migration is not used anymore and we can remove load_has_new_dashboard
+  # https://github.com/CartoDB/cartodb/issues/13973
+  def render(*args)
+    action = args[0][:action] || args[0]
+    load_has_new_dashboard if [:new, :edit, :create].include?(action.try(:to_sym))
+    super
+  end
+
   def new
     @user = ::User.new
     @user.quota_in_bytes = [@organization.unassigned_quota, @organization.default_quota_in_bytes].min

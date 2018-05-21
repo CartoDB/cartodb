@@ -579,7 +579,7 @@
         "null": "Null"
       },
       "style": {
-        "select-column": "Select a column"
+        "select-by-column": "Select by column"
       },
       "fill": {
         "customize": "Custom color set",
@@ -598,7 +598,6 @@
           "solid": "Solid",
           "value": "By value",
           "img": "Img",
-          "select-by-column": "Select by column",
           "select-color": "Select color"
         },
         "input-number": {

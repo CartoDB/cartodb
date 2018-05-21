@@ -2530,6 +2530,12 @@
         }
       },
       "tooltips": {
+        "size": {
+          "point": {
+            "fixed-tab": "A fixed size for every point",
+            "by-value-tab": "Vary each point's size by a numeric attribute to create a classed bubble map"
+          }
+        },
         "blending": "Layer Color and Alpha Blending Modes",
         "line": "line",
         "polygon": "polygon",

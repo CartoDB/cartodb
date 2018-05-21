@@ -184,6 +184,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix dataset name overflow in widgets (https://github.com/CartoDB/cartodb/pull/13972)
 * Fix the public table view for non-migrated-users  (#13969)
 * Fix widgets not updating (https://github.com/CartoDB/cartodb/pull/13971)
 * Fix legend paddings/margins (https://github.com/CartoDB/cartodb/pull/13966)

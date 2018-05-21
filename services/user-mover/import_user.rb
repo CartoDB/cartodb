@@ -239,7 +239,6 @@ module CartoDB
           grant_user_org_role(database_username(user['id']), user['database_name'])
         end
 
-
         org_user_ids = @pack_config['users'].map{|u| u['id']}
         # We set the owner to be imported first (if schemas are not split, this will also import the whole org database)
         org_user_ids = org_user_ids.insert(0, org_user_ids.delete(@owner_id))
@@ -275,7 +274,9 @@ module CartoDB
                         mode: :rollback,
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
-                        logger: @logger, metadata: @options[:metadata], data: false).run!
+                        logger: @logger,
+                        metadata: @options[:metadata],
+                        data: false).run!
         end
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
         if @options[:data]
@@ -426,8 +427,8 @@ module CartoDB
       end
 
       def remove_line?(line)
-        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").strip
-        LEGACY_FUNCTIONS.find { |l| stripped.scan(l).any? }
+        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/, ',').strip
+        (LEGACY_FUNCTIONS + LEGACY_ACLS).find { |l| stripped.scan(l).any? }
       end
 
       def clean_toc_file(file)

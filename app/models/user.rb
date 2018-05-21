@@ -52,6 +52,18 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
+  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
+                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
+                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
+                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
+                'Transportation and Logistics'].freeze
+
+  JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
+               'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
+
+  DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
+                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist', 'Government official'].freeze
+
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.
@@ -177,6 +189,8 @@ class User < Sequel::Model
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
 
+    validates_includes JOB_ROLES + DEPRECATED_JOB_ROLES, :job_role if job_role.present?
+
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
@@ -229,6 +243,8 @@ class User < Sequel::Model
       if value.length >= MAX_PASSWORD_LENGTH
         errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
       end
+
+      validate_different_passwords(nil, self.class.password_digest(value, salt), key)
     end
 
     errors[key].empty?
@@ -584,6 +600,7 @@ class User < Sequel::Model
     # Mark as changing passwords
     @changing_passwords = true
 
+    @old_password = old_password
     @new_password = new_password_value
     @new_password_confirmation = new_password_confirmation_value
 
@@ -591,6 +608,7 @@ class User < Sequel::Model
     return unless @old_password_validated
 
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
+    return unless validate_different_passwords(@old_password, @new_password)
 
     # Must be set AFTER validations
     set_last_password_change_date
@@ -598,9 +616,30 @@ class User < Sequel::Model
     self.password = new_password_value
   end
 
+  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
+    unless different_passwords?(old_password, new_password)
+      errors.add(key, 'New password cannot be the same as old password')
+    end
+    errors[key].empty?
+  end
+
+  def different_passwords?(old_password = nil, new_password = nil)
+    return true if new? || (@changing_passwords && !old_password)
+    old_password = carto_user.crypted_password_was unless old_password.present?
+    new_password = crypted_password unless old_password.present? && new_password.present?
+
+    old_password.present? && old_password != new_password
+  end
+
   def validate_old_password(old_password)
     (self.class.password_digest(old_password, salt) == crypted_password) ||
       (oauth_signin? && last_password_change_date.nil?)
+  end
+
+  def valid_password_confirmation(password)
+    valid = password.present? && validate_old_password(password)
+    errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
+    valid
   end
 
   def should_display_old_password?
@@ -614,6 +653,7 @@ class User < Sequel::Model
       !created_with_http_authentication? &&
       !organization.try(:auth_saml_enabled?)
   end
+  alias :password_set? :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
@@ -1785,15 +1825,23 @@ class User < Sequel::Model
     destroy
   end
 
-  def create_api_keys
-    carto_user = Carto::User.find(id)
+  def carto_user
+    @carto_user ||= Carto::User.find(id)
+  end
 
+  def create_api_keys
     carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
     carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
   end
 
   def fullstory_enabled?
     FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
+  end
+
+  def password_expired?
+    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
+    return false unless password_expiration_in_s && password_set?
+    (last_password_change_date || created_at) + password_expiration_in_s < Time.now
   end
 
   private

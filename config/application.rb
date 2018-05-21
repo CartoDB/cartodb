@@ -129,6 +129,10 @@ module CartoDB
       user_feed_new_vendor.js
       api_keys_new.js
       api_keys_new_vendor.js
+      public_dashboard_new.js
+      public_dashboard_new_vendor.js
+      public_table_new.js
+      public_table_new_vendor.js
       data_library_new.js
       data_library_new_vendor.js
       mobile_apps_new.js
@@ -137,6 +141,8 @@ module CartoDB
       sessions_new_vendor.js
       confirmation_new.js
       confirmation_new_vendor.js
+      organization_new.js
+      organization_new_vendor.js
       common_dashboard.js
 
       tipsy.js
@@ -185,6 +191,7 @@ module CartoDB
       api_keys.css
 
       api_keys_new.css
+      public_table_new.css
 
       plugins/tipsy.css
 

@@ -11,11 +11,9 @@ require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
 require 'helpers/rate_limits_helper'
 require 'helpers/unique_names_helper'
+require 'helpers/account_types_helper'
 require 'factories/users_helper'
 require 'factories/database_configuration_contexts'
-
-include UniqueNamesHelper
-include RateLimitsHelper
 
 describe 'refactored behaviour' do
   it_behaves_like 'user models' do
@@ -34,6 +32,10 @@ describe 'refactored behaviour' do
 end
 
 describe User do
+  include UniqueNamesHelper
+  include AccountTypesHelper
+  include RateLimitsHelper
+
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
@@ -453,6 +455,24 @@ describe User do
     user.destroy
   end
 
+  it "should validate job_role and deprecated_job_roles" do
+    user = ::User.new
+    user.username = "adminipop"
+    user.email = "adminipop@example.com"
+    user.password = 'admin123'
+    user.password_confirmation = 'admin123'
+
+    user.job_role = "Developer"
+    user.valid?.should be_true
+
+    user.job_role = "Researcher"
+    user.valid?.should be_true
+
+    user.job_role = "whatever"
+    user.valid?.should be_false
+    user.errors[:job_role].should be_present
+  end
+
   it "should validate password presence and length" do
     user = ::User.new
     user.username = "adminipop"
@@ -492,7 +512,7 @@ describe User do
   end
 
   it "should invalidate all his vizjsons when his account type changes" do
-    @account_type = FactoryGirl.create(:account_type, account_type: 'WADUS')
+    @account_type = create_account_type_fg('WADUS')
     @user.account_type = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
@@ -1725,7 +1745,7 @@ describe User do
   # INFO: since user can be also created in Central, and it can fail, we need to request notification explicitly. See #3022 for more info
   it "can notify a new user creation" do
     ::Resque.stubs(:enqueue).returns(nil)
-    @account_type_org = FactoryGirl.create(:account_type_org)
+    @account_type_org = create_account_type_fg('ORGANIZATION USER')
     organization = create_organization_with_owner(quota_in_bytes: 1000.megabytes)
     user1 = new_user(username: 'test',
                      email: "client@example.com",
@@ -1828,6 +1848,11 @@ describe User do
     @user.save
 
     @user.crypted_password.should eq old_crypted_password
+
+    last_password_change_date = @user.last_password_change_date
+    @user.change_password(@user_password, @user_password, @user_password)
+    @user.save
+    @user.last_password_change_date.should eq last_password_change_date
   end
 
   describe "when user is signed up with google sign-in and don't have any password yet" do
@@ -2691,10 +2716,9 @@ describe User do
   describe '#rate limits' do
     before :all do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
-      @account_type = Carto::AccountType.where(account_type: 'FREE').first || FactoryGirl.create(:account_type_free)
-      @account_type_pro = Carto::AccountType.where(account_type: 'PRO').first || FactoryGirl.create(:account_type_pro)
-      @account_type_org = Carto::AccountType.where(account_type: 'ORGANIZATION USER').first ||
-                          FactoryGirl.create(:account_type_org)
+      @account_type = create_account_type_fg('FREE')
+      @account_type_pro = create_account_type_fg('PRO')
+      @account_type_org = create_account_type_fg('ORGANIZATION USER')
       @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
       @rate_limits = FactoryGirl.create(:rate_limits)
       @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
@@ -2831,6 +2855,56 @@ describe User do
       expect_rate_limits_saved_to_redis(user.username)
 
       user.destroy
+    end
+  end
+
+  describe '#password_expired?' do
+    before(:each) do
+      @github_user = FactoryGirl.build(:valid_user, github_user_id: 932847)
+      @google_user = FactoryGirl.build(:valid_user, google_sign_in: true)
+      @password_user = FactoryGirl.build(:valid_user)
+    end
+
+    it 'never expires without configuration' do
+      Cartodb.with_config(passwords: { 'expiration_in_s' => nil }) do
+        expect(@github_user.password_expired?).to be_false
+        expect(@google_user.password_expired?).to be_false
+        expect(@password_user.password_expired?).to be_false
+      end
+    end
+
+    it 'never expires for users without password' do
+      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
+        Delorean.jump(10.seconds)
+        expect(@github_user.password_expired?).to be_false
+        expect(@google_user.password_expired?).to be_false
+        Delorean.back_to_the_present
+      end
+    end
+
+    it 'expires for users with oauth and changed passwords' do
+      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
+        @github_user.last_password_change_date = Time.now - 10.seconds
+        expect(@github_user.password_expired?).to be_true
+        @google_user.last_password_change_date = Time.now - 10.seconds
+        expect(@google_user.password_expired?).to be_true
+      end
+    end
+
+    it 'expires for password users after a while has passed' do
+      @password_user.save
+      Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
+        expect(@password_user.password_expired?).to be_false
+        Delorean.jump(30.seconds)
+        expect(@password_user.password_expired?).to be_true
+        @password_user.password = @password_user.password_confirmation = 'waduspass'
+        @password_user.save
+        expect(@password_user.password_expired?).to be_false
+        Delorean.jump(30.seconds)
+        expect(@password_user.password_expired?).to be_true
+        Delorean.back_to_the_present
+      end
+      @password_user.destroy
     end
   end
 

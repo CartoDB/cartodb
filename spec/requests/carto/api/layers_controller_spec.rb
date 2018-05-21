@@ -106,7 +106,7 @@ describe Carto::Api::LayersController do
         @user1.max_layers = 1
         @user1.save
 
-        post_json create_map_layer_url(@map.id), layer_json.merge(kind: 'tiled', order: 10) do |response|
+        post_json create_map_layer_url(@map.id), layer_json.merge(kind: 'carto', order: 10) do |response|
           response.status.to_s.should match /4../ # 422 in new, 403 in old
         end
       end

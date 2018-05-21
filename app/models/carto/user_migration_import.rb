@@ -28,6 +28,7 @@ module Carto
     validates :json_file, presence: true
     validate :valid_org_import
     validate :valid_dry_settings
+    validate :validate_import_data
 
     def run_import
       raise errors.full_messages.join(', ') unless valid?
@@ -71,14 +72,20 @@ module Carto
       errors.add(:dry, 'dry cannot be true while import_metadata is true') if import_metadata && dry
     end
 
+    def validate_import_data
+      errors.add(:import_metadata, 'needs to be true if export_data is set to false') if !import_data? && !import_metadata?
+    end
+
     def import(service, package)
-      import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
-      raise "DB already exists at DB host" if import_job.db_exists?
+      if import_data?
+        import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
+        raise "DB already exists at DB host" if import_job.db_exists?
+      end
 
       imported = do_import_metadata(package, service) if import_metadata?
 
       begin
-        do_import_data(import_job)
+        do_import_data(import_job) if import_data?
       rescue => e
         log.append('=== Error importing data. Rollback! ===')
         rollback_import_data(package)
@@ -89,6 +96,7 @@ module Carto
       import_visualizations(imported, package, service) if import_metadata?
 
       reconfigure_dataservices if import_metadata?
+      reconfigure_aggregation_tables if import_metadata?
     end
 
     def do_import_metadata(package, service)
@@ -126,6 +134,19 @@ module Carto
       end
     end
 
+    def reconfigure_aggregation_tables
+      u = org_import? ? ::Organization[organization.id].owner : ::User[user.id]
+      begin
+        u.db_service.connect_to_aggregation_tables
+      rescue => e
+        CartoDB::Logger.error(message: "Error trying to refresh aggregation tables for user",
+                              exception: e,
+                              user: u,
+                              organization: (org_import? ? organization : nil),
+                              user_migration_import_id: id)
+      end
+    end
+
     def import_visualizations(imported, package, service)
       log.append('=== Importing visualizations and search tweets ===')
       begin
@@ -142,6 +163,7 @@ module Carto
 
     def rollback_import_data(package)
       org_import? ? self.organization = nil : self.user = nil
+      return unless import_data?
       save!
 
       import_job = CartoDB::DataMover::ImportJob.new(

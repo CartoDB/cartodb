@@ -655,6 +655,12 @@ class Carto::User < ActiveRecord::Base
     FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
   end
 
+  def password_expired?
+    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
+    return false unless password_expiration_in_s && password_set?
+    (last_password_change_date || created_at) + password_expiration_in_s < Time.now
+  end
+
   private
 
   def set_database_host

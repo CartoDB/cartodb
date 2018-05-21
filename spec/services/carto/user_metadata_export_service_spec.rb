@@ -1,10 +1,12 @@
 require 'spec_helper_min'
 require 'factories/carto_visualizations'
 require 'helpers/rate_limits_helper'
+require 'helpers/account_types_helper'
 
 describe Carto::UserMetadataExportService do
   include NamedMapsHelper
   include RateLimitsHelper
+  include AccountTypesHelper
   include Carto::Factories::Visualizations
 
   before(:all) do
@@ -19,8 +21,9 @@ describe Carto::UserMetadataExportService do
   end
 
   def create_user_with_basemaps_assets_visualizations
-    FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    create_account_type_fg('FREE')
     @user = FactoryGirl.create(:carto_user)
+    @user.static_notifications = Carto::UserNotification.new(notifications: full_export[:user][:notifications])
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
 
     @tiled_layer = FactoryGirl.create(:carto_tiled_layer)
@@ -87,9 +90,21 @@ describe Carto::UserMetadataExportService do
     end
   end
 
+  describe 'import v 1.0.3' do
+    it 'immports correctly' do
+      import_user_from_export(full_export_one_zero_three)
+    end
+  end
+
   describe 'import v 1.0.2' do
     it 'imports correctly' do
       import_user_from_export(full_export_one_zero_two)
+    end
+  end
+
+  describe 'import v 1.0.3' do
+    it 'imports correctly' do
+      import_user_from_export(full_export_one_zero_three)
     end
   end
 
@@ -153,6 +168,14 @@ describe Carto::UserMetadataExportService do
       @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
 
       expect_export_matches_user(full_export[:user], user)
+    end
+
+    it 'imports 1.0.3' do
+      user = service.build_user_from_hash_export(full_export_one_zero_three)
+      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_three)
+      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
+
+      expect_export_matches_user(full_export_one_zero_three[:user], user)
     end
 
     it 'imports 1.0.2' do
@@ -335,7 +358,7 @@ describe Carto::UserMetadataExportService do
   def import_user_from_export(export)
     export[:user] = export[:user].reject { |entry| entry == :api_keys }
     user = service.build_user_from_hash_export(export)
-    FactoryGirl.create(:account_type_free) unless Carto::AccountType.exists?(account_type: 'FREE')
+    create_account_type_fg('FREE')
     user.save!
     user.destroy
   end
@@ -392,6 +415,7 @@ describe Carto::UserMetadataExportService do
       expect(st1.retrieved_items).to eq st2['retrieved_items']
       expect(st1.state).to eq st2['state']
     end
+    @imported_user.static_notifications.notifications.should eq full_export[:user][:notifications]
   end
 
   def full_export_import_viewer(path)
@@ -429,7 +453,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.2",
+      version: "1.0.4",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -522,6 +546,8 @@ describe Carto::UserMetadataExportService do
         org_admin: false,
         last_name: nil,
         feature_flags: [Carto::FeatureFlag.first.name],
+        company: 'CARTO',
+        phone: '1234567',
         api_keys: [
           {
             created_at: "2018-02-12T16:11:26+00:00",
@@ -653,12 +679,29 @@ describe Carto::UserMetadataExportService do
             created_at: DateTime.now,
             updated_at: DateTime.now
           }
-        ]
+        ],
+        notifications: {
+          builder: {
+            onboarding: true,
+            :"layer-style-onboarding" => true,
+            :"layer-analyses-onboarding" => true
+          }
+        }
       }
     }
   end
 
+  let(:full_export_one_zero_three) do
+    user_hash = full_export[:user].except!(:company).except!(:phone)
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_two) do
-    full_export.except(:rate_limit)
+    full_export_one_zero_three.except(:rate_limit)
+  end
+
+  let(:full_export_one_zero_three) do
+    full_export.except(:notifications)
   end
 end

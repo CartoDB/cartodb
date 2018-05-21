@@ -21,14 +21,16 @@ module CartoDB
       :geocoder_google,
       :geocoder_cache,
       :geocoder_mapzen,
-      :geocoder_mapbox
+      :geocoder_mapbox,
+      :geocoder_tomtom
     ].freeze
 
     GEOCODER_KEYS = {
-      "mapbox" => :geocoder_mapbox,
       "heremaps" => :geocoder_here,
+      "google" => :geocoder_google,
       "mapzen" => :geocoder_mapzen,
-      "google" => :geocoder_google
+      "mapbox" => :geocoder_mapbox,
+      "tomtom" => :geocoder_tomtom
     }.freeze
 
 

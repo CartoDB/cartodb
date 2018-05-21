@@ -17,7 +17,7 @@ class Admin::OrganizationsController < Admin::AdminController
   before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications,
                                                          :new_notification]
   before_filter :load_has_new_dashboard, only: [:show, :auth, :auth_update, :settings, :settings_update,
-                                                :groups, :notifications, :new_notification]
+                                                :groups, :notifications, :new_notification, :regenerate_all_api_keys]
   helper_method :show_billing
 
   layout 'application'

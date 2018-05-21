@@ -16,6 +16,16 @@
   align-items: baseline;
 }
 
+.Editor-formInner.Editor-formInner--Size.Editor-formInner--NoTabs {
+  align-items: center;
+
+  div.js-menu {
+    display: none;
+  }
+  .Editor-formInner--Number {
+    margin-top: 0;
+  }
+}
 .Options-form .Editor-formInner {
   margin-top: 0;
 }
@@ -189,6 +199,18 @@
 
 .Form-StyleByValue {
   margin-top: $baseSize;
+}
+
+.Form-StyleByValue--column {
+  display: flex;
+  justify-content: space-between;
+}
+
+.Form-StyleByValue--style-option {
+  border-left: 1px #CCC solid;
+  text-align: right;
+  padding-left: 6px;
+  width: 36px;
 }
 
 .RampItem-bar {

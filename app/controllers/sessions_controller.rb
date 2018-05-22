@@ -27,7 +27,7 @@ class SessionsController < ApplicationController
   # and login won't be accepted if the ADFS server's fingerprint is wrong / missing.
   # If SAML data isn't passed at all, then authentication is manually failed.
   # In case of fallback on SAML authorization failed, it will be manually checked.
-  skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
+  skip_before_filter :verify_authenticity_token, only: [:create, :password_expired], if: :saml_authentication? || :json_formatted_request?
   skip_before_filter :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 

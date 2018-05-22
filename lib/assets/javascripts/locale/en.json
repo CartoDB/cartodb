@@ -2563,6 +2563,9 @@
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
         },
+        "stroke-color": {
+          "label": "Stroke Color"
+        },
         "point-size": {
           "label": "Point Size"
         },

@@ -40,10 +40,4 @@ class Api::ApplicationController < ApplicationController
     # While only checks basic characters, represents most common use of JS function names
     params[:callback].nil?  || !!(params[:callback] =~ /\A[$a-z_][0-9a-z_$]*\z/i)
   end
-
-  def json_formatted_request?
-    format = request.format
-
-    format.json? if format
-  end
 end

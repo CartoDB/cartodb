@@ -2138,6 +2138,20 @@ describe Table do
       end
     end
 
+    describe 'self.table_and_schema' do
+      it 'returns nil schema if schema is "public"' do
+        Table.table_and_schema("public.sm_org_line_cartotest").second.should == nil
+      end
+
+      it 'returns the schema if it is different from "public"' do
+        Table.table_and_schema("manolito.sm_org_line_cartotest").second.should_not nil
+      end
+
+      it 'returns the table name when there is no schema' do
+        Table.table_and_schema("sm_org_line_cartotest").compact.count.should == 1
+      end
+    end
+
     describe 'self.get_valid_column_name' do
       it 'returns the same candidate name if it is ok' do
         Table.expects(:get_column_names).once.returns(%w{a b c})

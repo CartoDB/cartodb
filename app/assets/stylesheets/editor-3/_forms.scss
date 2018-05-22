@@ -7,7 +7,7 @@
 .Editor-formInner {
   display: flex;
   align-items: center;
-  min-height: $baseSize * 4;
+  min-height: $baseSize * 3;
   margin-top: $baseSize;
 }
 
@@ -16,6 +16,7 @@
   padding-top: $baseSize;
 
   &.Editor-formInner--NoTabs {
+    align-items: center;
     padding: 0;
 
     .js-menu {
@@ -33,7 +34,6 @@
   padding-top: $baseSize;
 
   &.Editor-formInner--NoTabs {
-    margin-bottom: $baseSize * 3;
     padding: 0;
 
     .js-menu {
@@ -48,7 +48,6 @@
 
 .Editor-formInner.Editor-formInner--StrokeColor {
   align-items: baseline;
-  margin-bottom: $baseSize * 3;
 }
 
 .Options-form .Editor-formInner {

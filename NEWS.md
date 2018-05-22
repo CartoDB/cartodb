@@ -966,6 +966,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Add notifications to user migrator (#13844)
 * Export and import non-cartodb-managed named maps.
 * Keep import even if it fails importing visualizations (#13903)
+* Save Import when visualization import fails (#13984)
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

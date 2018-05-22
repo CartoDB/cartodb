@@ -14,17 +14,17 @@
 .Editor-formInner.Editor-formInner--Size,
 .Editor-formInner.Editor-formInner--FillColor {
   align-items: baseline;
-}
 
-.Editor-formInner.Editor-formInner--Size.Editor-formInner--NoTabs {
-  align-items: center;
+  &.Editor-formInner--NoTabs {
+    align-items: center;
 
-  .js-menu {
-    display: none;
-  }
+    .js-menu {
+      display: none;
+    }
 
-  .Editor-formInner--Number {
-    margin-top: 0;
+    .Editor-formInner--Number {
+      margin-top: 0;
+    }
   }
 }
 

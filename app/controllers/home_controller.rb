@@ -8,7 +8,7 @@ class HomeController < ApplicationController
   STATUS[false] = 'error'
 
   OS_VERSION = "Description:\tUbuntu 12.04"
-  PG_VERSION = 'PostgreSQL 9.5'.freeze
+  PG_VERSION = 'PostgreSQL 9.6'.freeze
   POSTGIS_VERSION = '2.2'.freeze
   CDB_VALID_VERSION = '0.22'.freeze
   CDB_LATEST_VERSION = '0.22.0'.freeze

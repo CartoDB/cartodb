@@ -1038,6 +1038,7 @@ describe 'UserMigration' do
     def remove_user(carto_user)
       Carto::Visualization.where(user_id: carto_user.id).each do |v|
         v.overlays.each(&:delete)
+        v.user_table.delete if v.user_table # Delete user_table since it can conflict by name
         v.delete
       end
       gum = CartoDB::GeocoderUsageMetrics.new(carto_user.username)

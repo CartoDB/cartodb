@@ -507,6 +507,7 @@ ion for time-series (#12670)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
+* Export/import visualization password and locked (Support #1544)
 * Fix dimension check and support for SVG without extension and XML header (#12374).
 * Builder embed doesn't need user DB connection anymore (#12473).
 * Visualization models no longer raise an error checking `password_valid?` (#12270).

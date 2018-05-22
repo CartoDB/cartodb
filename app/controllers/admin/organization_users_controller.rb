@@ -18,19 +18,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :initialize_google_plus_config, only: [:edit, :update]
-  before_filter :load_has_new_dashboard, only: [:new, :edit, :create]
+  before_filter :load_has_new_dashboard
 
   layout 'application'
-
-  # TODO: remove this once dashboard_migration is not used anymore and we can remove load_has_new_dashboard
-  # https://github.com/CartoDB/cartodb/issues/13973
-  def render(*args)
-    if args && !args.empty?
-      action = args[0].is_a?(Hash) ? args[0][:action] : args[0]
-      load_has_new_dashboard if action && !action.is_a?(Hash) && [:new, :edit, :create].include?(action.try(:to_sym))
-    end
-    super
-  end
 
   def new
     @user = ::User.new

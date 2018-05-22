@@ -14,9 +14,11 @@
 .Editor-formInner.Editor-formInner--Size,
 .Editor-formInner.Editor-formInner--FillColor {
   align-items: baseline;
+  padding-top: $baseSize;
 
   &.Editor-formInner--NoTabs {
     align-items: center;
+    padding: 0px;
 
     .js-menu {
       display: none;
@@ -197,10 +199,14 @@
 
 .Form-InputSize {
   width: 100%;
+
+  .Editor-formInner--Number {
+    margin-top: $baseSize * 2;
+  }
 }
 
 .Form-StyleByValue {
-  margin-top: $baseSize;
+  margin-top: $baseSize * 2;
 }
 
 .Form-StyleByValue--column {

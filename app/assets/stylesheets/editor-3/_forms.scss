@@ -18,7 +18,7 @@
 
   &.Editor-formInner--NoTabs {
     align-items: center;
-    padding: 0px;
+    padding: 0;
 
     .js-menu {
       display: none;
@@ -113,7 +113,8 @@
 }
 
 .Editor-formInner {
-  &.Editor-formSelect, .Editor-Form-InputSize {
+  &.Editor-formSelect,
+  .Editor-Form-InputSize {
     max-width: 160px;
   }
 }

@@ -2140,15 +2140,15 @@ describe Table do
 
     describe 'self.table_and_schema' do
       it 'returns nil schema if schema is "public"' do
-        Table.table_and_schema("public.sm_org_line_cartotest").second.should == nil
+        Table.table_and_schema("public.sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
       end
 
       it 'returns the schema if it is different from "public"' do
-        Table.table_and_schema("manolito.sm_org_line_cartotest").second.should_not nil
+        Table.table_and_schema("manolito.sm_org_line_cartotest").should == ["sm_org_line_cartotest", "manolito"]
       end
 
       it 'returns the table name when there is no schema' do
-        Table.table_and_schema("sm_org_line_cartotest").compact.count.should == 1
+        Table.table_and_schema("sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
       end
     end
 

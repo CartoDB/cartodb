@@ -14,6 +14,10 @@
   }
 }
 
+.Form-InputStrokeColor {
+  width: 100%;
+}
+
 .Editor-FormDialog .CustomList {
   display: block;
   position: relative;
@@ -30,6 +34,12 @@
   top: 72px;
   right: 0;
   width: 248px;
+}
+
+.Editor-formInner.Editor-formInner--StrokeColor {
+  .Editor-FormDialog.Editor-boxModal {
+    top: 54px;
+  }
 }
 
 .Editor-fillContainer {

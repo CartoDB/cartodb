@@ -7,12 +7,11 @@
 .Editor-formInner {
   display: flex;
   align-items: center;
-  min-height: $baseSize * 4;
+  min-height: $baseSize * 3;
   margin-top: $baseSize;
 }
 
-.Editor-formInner.Editor-formInner--Size,
-.Editor-formInner.Editor-formInner--FillColor {
+.Editor-formInner.Editor-formInner--Size {
   align-items: baseline;
   padding-top: $baseSize;
 
@@ -28,6 +27,27 @@
       margin-top: 0;
     }
   }
+}
+
+.Editor-formInner.Editor-formInner--FillColor {
+  align-items: baseline;
+  padding-top: $baseSize;
+
+  &.Editor-formInner--NoTabs {
+    padding: 0;
+
+    .js-menu {
+      display: none;
+    }
+
+    .Editor-formInner--Number {
+      margin-top: 0;
+    }
+  }
+}
+
+.Editor-formInner.Editor-formInner--StrokeColor {
+  align-items: baseline;
 }
 
 .Options-form .Editor-formInner {

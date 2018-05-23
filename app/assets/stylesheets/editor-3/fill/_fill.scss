@@ -8,14 +8,6 @@
 
 .Form-InputFillColor {
   width: 100%;
-
-  .Form-InputFill {
-    margin-top: $baseSize * 2;
-  }
-}
-
-.Form-InputStrokeColor {
-  width: 100%;
 }
 
 .Editor-FormDialog .CustomList {
@@ -34,12 +26,6 @@
   top: 72px;
   right: 0;
   width: 248px;
-}
-
-.Editor-formInner.Editor-formInner--StrokeColor {
-  .Editor-FormDialog.Editor-boxModal {
-    top: 54px;
-  }
 }
 
 .Editor-fillContainer {

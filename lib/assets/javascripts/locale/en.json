@@ -2573,6 +2573,9 @@
         "stroke-color": {
           "label": "Stroke Color"
         },
+        "stroke-size": {
+          "label": "Stroke Size"
+        },
         "point-size": {
           "label": "Point Size"
         },

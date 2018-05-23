@@ -2872,7 +2872,7 @@ describe User do
     end
 
     it 'never expires without configuration' do
-      Cartodb.with_config(passwords: { 'expiration_in_s' => nil }) do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
         expect(@github_user.password_expired?).to be_false
         expect(@google_user.password_expired?).to be_false
         expect(@password_user.password_expired?).to be_false
@@ -2881,8 +2881,8 @@ describe User do
     end
 
     it 'never expires for users without password' do
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
-        Delorean.jump(10.seconds)
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
+        Delorean.jump(10.days)
         expect(@github_user.password_expired?).to be_false
         expect(@google_user.password_expired?).to be_false
         Delorean.back_to_the_present
@@ -2890,24 +2890,24 @@ describe User do
     end
 
     it 'expires for users with oauth and changed passwords' do
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
-        @github_user.last_password_change_date = Time.now - 10.seconds
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
+        @github_user.last_password_change_date = Time.now - 10.days
         expect(@github_user.password_expired?).to be_true
-        @google_user.last_password_change_date = Time.now - 10.seconds
+        @google_user.last_password_change_date = Time.now - 10.days
         expect(@google_user.password_expired?).to be_true
       end
     end
 
     it 'expires for password users after a while has passed' do
       @password_user.save
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 15 }) do
         expect(@password_user.password_expired?).to be_false
-        Delorean.jump(30.seconds)
+        Delorean.jump(30.days)
         expect(@password_user.password_expired?).to be_true
         @password_user.password = @password_user.password_confirmation = 'waduspass'
         @password_user.save
         expect(@password_user.password_expired?).to be_false
-        Delorean.jump(30.seconds)
+        Delorean.jump(30.days)
         expect(@password_user.password_expired?).to be_true
         Delorean.back_to_the_present
       end
@@ -2920,17 +2920,17 @@ describe User do
                                      account_type: 'ORGANIZATION USER',
                                      organization: @organization_password)
 
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
         expect(org_user2.password_expired?).to be_false
         Delorean.jump(1.day)
         expect(org_user2.password_expired?).to be_false
-        Delorean.jump(1.day)
+        Delorean.jump(5.days)
         expect(org_user2.password_expired?).to be_true
         org_user2.password = org_user2.password_confirmation = 'waduspass'
         org_user2.save
         Delorean.jump(1.day)
         expect(org_user2.password_expired?).to be_false
-        Delorean.jump(1.day)
+        Delorean.jump(5.day)
         expect(org_user2.password_expired?).to be_true
         Delorean.back_to_the_present
       end
@@ -2940,13 +2940,13 @@ describe User do
       @organization_password.stubs(:password_expiration_in_d).returns(nil)
       org_user2 = FactoryGirl.create(:valid_user, organization: @organization_password)
 
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 5 }) do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
         expect(org_user2.password_expired?).to be_false
-        Delorean.jump(1.day)
+        Delorean.jump(10.days)
         expect(org_user2.password_expired?).to be_false
         org_user2.password = org_user2.password_confirmation = 'waduspass'
         org_user2.save
-        Delorean.jump(1.day)
+        Delorean.jump(10.days)
         expect(org_user2.password_expired?).to be_false
         Delorean.back_to_the_present
       end

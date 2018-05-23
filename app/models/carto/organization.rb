@@ -162,10 +162,6 @@ module Carto
       users.reject { |u| owner && u.id == owner.id }
     end
 
-    def password_expiration_in_s
-      password_expiration_in_d.send('days').to_i if password_expiration_in_d.present? && password_expiration_in_d > 0
-    end
-
     private
 
     def ensure_auth_saml_configuration

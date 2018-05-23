@@ -60,7 +60,7 @@
             <%= f.text_field :password_expiration_in_d,
               :type => "number",
               :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--number",
-              :placeholder => "180", :min => 1, :max => 365 %>
+              :placeholder => "#{@organization.default_password_expiration_in_d || 180}", :min => 1, :max => 365 %>
             <label class="CDB-Text CDB-Size-small u-altTextColor">days</label>
           </div>
 

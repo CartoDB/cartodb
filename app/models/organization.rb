@@ -66,8 +66,7 @@ class Organization < Sequel::Model
   end
 
   def default_password_expiration_in_d
-    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
-    (password_expiration_in_s / 1.day.seconds.to_i).ceil if password_expiration_in_s.present?
+    Cartodb.get_config(:passwords, 'expiration_in_d')
   end
 
   def validate
@@ -304,10 +303,6 @@ class Organization < Sequel::Model
 
   def unassigned_quota
     quota_in_bytes - assigned_quota
-  end
-
-  def password_expiration_in_s
-    password_expiration_in_d.send('days').to_i if password_expiration_in_d.present? && password_expiration_in_d > 0
   end
 
   def to_poro

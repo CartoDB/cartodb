@@ -185,6 +185,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)
+* Show "Select points in polygons" analysis only for polygons (https://github.com/CartoDB/cartodb/pull/13982)
 * Allow only numeric values in latitude/longitude select in georeference analysis (https://github.com/CartoDB/cartodb/pull/13974)
 * Fix dataset name overflow in widgets (https://github.com/CartoDB/cartodb/pull/13972)
 * Fix the public table view for non-migrated-users  (#13969)
@@ -967,6 +968,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Add notifications to user migrator (#13844)
 * Export and import non-cartodb-managed named maps.
 * Keep import even if it fails importing visualizations (#13903)
+* Save Import when visualization import fails (#13984)
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

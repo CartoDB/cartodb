@@ -49,6 +49,27 @@
   text-align: left;
 }
 
+.Editor-fillContainer.Editor-fillContainer--ByValue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .Editor-fillContainer--ColorBarContainer {
+    position: relative;
+    width: 32px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: $baseSize * - 0.5;
+      left: $baseSize * - 1;
+      width: 1px;
+      height: $baseSize * 2;
+      border-left: 0.5px solid #CCC;
+    }
+  }
+}
+
 .Editor-fillImage {
   display: flex;
   height: 16px;

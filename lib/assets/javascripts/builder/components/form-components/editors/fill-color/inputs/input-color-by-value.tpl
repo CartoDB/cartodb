@@ -1,9 +1,12 @@
-<button type="button" class="Editor-fillContainer u-altTextColor <% if (help) { %>js-help<% } %>" <% if (help) { %> data-tooltip="<%- help %>"<% } %>>
+<button type="button" class="Editor-fillContainer Editor-fillContainer--ByValue <% if (help) { %>js-help<% } %>" <% if (help) { %> data-tooltip="<%- help %>"<% } %>>
   <% if (_.isArray(value)) { %>
-    <ul class="ColorBarContainer">
-      <li class="ColorBar ColorBar-gradient" style="background: linear-gradient(90deg,<%- value.join(',') %>)"></li>
-    </ul>
+    <span class="Editor-fillContainer--Column u-ellipsis">
+      <%- attribute %>
+    </span>
+    <span class="Editor-fillContainer--ColorBarContainer ColorBarContainer">
+      <span class="ColorBar ColorBar-gradient" style="background: linear-gradient(90deg,<%- value.join(',') %>)"></span>
+    </span>
   <% } else { %>
-    <%- _t('form-components.editors.style.select-by-column') %>
+    <span class="u-altTextColor"><%- _t('form-components.editors.style.select-by-column') %></span>
   <% } %>
 </button>

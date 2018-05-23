@@ -2547,7 +2547,8 @@
         "heatmap": "heatmap",
         "fill": {
           "size": "Change the %{type} size",
-          "color": "Change the %{type} color"
+          "color": "Change the %{type} color",
+          "image": "Change the %{type} image"
         },
         "stroke": {
           "size": "Change the %{type} stroke size",

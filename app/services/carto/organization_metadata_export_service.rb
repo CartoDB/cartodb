@@ -3,6 +3,7 @@ require_dependency 'carto/export/layer_exporter'
 
 # Version History
 # 1.0.0: export organization metadata
+# 1.0.1: export password expiration
 module Carto
   module OrganizationMetadataExportServiceConfiguration
     CURRENT_VERSION = '1.0.1'.freeze

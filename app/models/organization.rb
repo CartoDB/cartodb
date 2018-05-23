@@ -60,11 +60,6 @@ class Organization < Sequel::Model
   DEFAULT_OBS_GENERAL_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
-  def initialize(attrs = {})
-    super
-    self.password_expiration_in_d ||= default_password_expiration_in_d
-  end
-
   def default_password_expiration_in_d
     Cartodb.get_config(:passwords, 'expiration_in_d')
   end

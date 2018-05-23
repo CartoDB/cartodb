@@ -184,6 +184,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)
 * Show "Select points in polygons" analysis only for polygons (https://github.com/CartoDB/cartodb/pull/13982)
 * Allow only numeric values in latitude/longitude select in georeference analysis (https://github.com/CartoDB/cartodb/pull/13974)
 * Fix dataset name overflow in widgets (https://github.com/CartoDB/cartodb/pull/13972)

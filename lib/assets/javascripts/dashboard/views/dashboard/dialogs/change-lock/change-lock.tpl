@@ -17,10 +17,10 @@
   </p>
 </div>
 <div class="Dialog-footer Dialog-footer--simple u-inner">
-  <button class="CDB-Button CDB-Button--secondary cancel">
+  <button class="CDB-Button CDB-Button--secondary js-cancel">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">cancel</span>
   </button>
-  <button class="js-ok CDB-Button CDB-Button--primary CDB-Button--<%- positiveOrNegativeStr %> u-lSpace--xl">
+  <button class="CDB-Button CDB-Button--primary CDB-Button--<%- positiveOrNegativeStr %> u-lSpace--xl js-ok">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Ok, <%- lockOrUnlockStr %></span>
   </button>
 </div>

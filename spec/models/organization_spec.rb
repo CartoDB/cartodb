@@ -741,33 +741,30 @@ describe Organization do
     organization.valid?.should be_true
     organization.password_expiration_in_d.should_not be
 
-    Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
-      # defaults to global config if no value
-      organization = FactoryGirl.build(:organization)
-      organization.valid?.should be_true
-      organization.save
-      organization.password_expiration_in_d.should eq 1
+    # defaults to global config if no value
+    organization = FactoryGirl.build(:organization, password_expiration_in_d: 1)
+    organization.valid?.should be_true
+    organization.save
 
-      organization = Carto::Organization.find(organization.id)
-      organization.valid?.should be_true
-      organization.password_expiration_in_d.should eq 1
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 1
 
-      organization.password_expiration_in_d = nil
-      organization.valid?.should be_true
-      organization.save
-      organization = Carto::Organization.find(organization.id)
-      organization.password_expiration_in_d.should_not be
+    organization.password_expiration_in_d = nil
+    organization.valid?.should be_true
+    organization.save
+    organization = Carto::Organization.find(organization.id)
+    organization.password_expiration_in_d.should_not be
 
-      # override default config if a value is set
-      organization = FactoryGirl.create(:organization, password_expiration_in_d: 10)
-      organization.valid?.should be_true
-      organization.password_expiration_in_d.should eq 10
+    # override default config if a value is set
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 10)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
 
-      # keep values configured
-      organization = Carto::Organization.find(organization.id)
-      organization.valid?.should be_true
-      organization.password_expiration_in_d.should eq 10
-    end
+    # keep values configured
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
   end
 
   def random_attributes(attributes = {})

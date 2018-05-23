@@ -2629,7 +2629,8 @@
         },
         "labels-font": "font",
         "labels-offset": "offset",
-        "labels-fill": "size/color",
+        "labels-fill-size": "Size",
+        "labels-fill-color": "Color",        
         "labels-overlap": {
           "label": "overlap",
           "options": {
@@ -2637,7 +2638,8 @@
             "false": "False"
           }
         },
-        "labels-halo": "halo",
+        "labels-halo-size": "Halo size",
+        "labels-halo-color": "Halo color",
         "labels-placement": {
           "label": "placement",
           "options": {

@@ -185,6 +185,7 @@ ion for time-series (#12670)
 
 ### Bug fixes / enhancements
 * Fix apply button loading state for queries that alter the data (https://github.com/CartoDB/cartodb/pull/13979)
+* Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)
 * Show "Select points in polygons" analysis only for polygons (https://github.com/CartoDB/cartodb/pull/13982)
 * Allow only numeric values in latitude/longitude select in georeference analysis (https://github.com/CartoDB/cartodb/pull/13974)
 * Fix dataset name overflow in widgets (https://github.com/CartoDB/cartodb/pull/13972)

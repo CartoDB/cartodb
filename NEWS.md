@@ -185,6 +185,13 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)
+* Show "Select points in polygons" analysis only for polygons (https://github.com/CartoDB/cartodb/pull/13982)
+* Allow only numeric values in latitude/longitude select in georeference analysis (https://github.com/CartoDB/cartodb/pull/13974)
+* Fix dataset name overflow in widgets (https://github.com/CartoDB/cartodb/pull/13972)
+* Fix the public table view for non-migrated-users  (#13969)
+* Fix widgets not updating (https://github.com/CartoDB/cartodb/pull/13971)
+* Fix legend paddings/margins (https://github.com/CartoDB/cartodb/pull/13966)
 * Fix the name of the bundle for public_Table on production (#13965)
 * Fix how to decide which public_table version to show (#13694)
 * GTM DataLayer Tweaks (https://github.com/CartoDB/cartodb/pull/13961)
@@ -503,6 +510,7 @@ ion for time-series (#12670)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
+* Export/import visualization password and locked (Support #1544)
 * Fix dimension check and support for SVG without extension and XML header (#12374).
 * Builder embed doesn't need user DB connection anymore (#12473).
 * Visualization models no longer raise an error checking `password_valid?` (#12270).
@@ -961,6 +969,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Add notifications to user migrator (#13844)
 * Export and import non-cartodb-managed named maps.
 * Keep import even if it fails importing visualizations (#13903)
+* Save Import when visualization import fails (#13984)
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

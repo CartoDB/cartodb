@@ -7,7 +7,7 @@ describe Carto::OrganizationMetadataExportService do
   include TableSharing
 
   def create_organization_with_dependencies
-    @sequel_organization = FactoryGirl.create(:organization_with_users)
+    @sequel_organization = FactoryGirl.create(:organization_with_users, password_expiration_in_d: 365)
     @organization = Carto::Organization.find(@sequel_organization.id)
     @owner = @organization.owner
     @non_owner = @organization.users.reject(&:organization_owner?).first
@@ -74,6 +74,12 @@ describe Carto::OrganizationMetadataExportService do
   end
 
   describe '#organization import' do
+    it 'imports 1.0.0' do
+      organization = service.build_organization_from_hash_export(full_export_one_zero_zero)
+
+      expect_export_matches_organization(full_export_one_zero_zero[:organization], organization)
+    end
+
     it 'imports' do
       organization = service.build_organization_from_hash_export(full_export)
 
@@ -329,5 +335,9 @@ describe Carto::OrganizationMetadataExportService do
         ]
       }
     }
+  end
+
+  let(:full_export_one_zero_zero) do
+    full_export.except!(:password_expiration_in_d)
   end
 end

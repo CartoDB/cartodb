@@ -90,7 +90,6 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def settings_update
-    byebug
     attributes = params[:organization]
 
     if attributes.include?(:avatar_url) && valid_avatar_file?(attributes[:avatar_url])

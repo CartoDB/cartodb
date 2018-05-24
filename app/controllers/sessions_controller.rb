@@ -28,7 +28,7 @@ class SessionsController < ApplicationController
   # If SAML data isn't passed at all, then authentication is manually failed.
   # In case of fallback on SAML authorization failed, it will be manually checked.
   skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
-  # We want the password_expired method to be executed regardless of CSRF token authenticity
+  # We want the password expiration related methods to be executed regardless of CSRF token authenticity
   skip_before_filter :verify_authenticity_token, only: [:password_expired, :password_change], if: :json_formatted_request?
   skip_before_filter :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]

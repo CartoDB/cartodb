@@ -3,6 +3,8 @@ require_relative '../spec_helper'
 describe PasswordChangeController do
 
   before(:each) do
+    User.any_instance.stubs(:update_in_central).returns(true)
+    PasswordChangeController.any_instance.stubs(:check_password_expired)
     @user = FactoryGirl.create(:user)
   end
 
@@ -37,6 +39,24 @@ describe PasswordChangeController do
     }
   end
 
+  let (:payload_password_not_changed) do
+    {
+      username: @user.username,
+      old_password: @user.password,
+      password: @user.password,
+      password_confirmation: @user.password
+    }
+  end
+
+  let (:payload_password_short) do
+    {
+      username: @user.username,
+      old_password: @user.password,
+      password: '123',
+      password_confirmation: '123'
+    }
+  end
+
   describe('#update') do
     it 'show errors if old_password is wrong' do
       login_as(@user, scope: @user.username)
@@ -56,6 +76,22 @@ describe PasswordChangeController do
       request.path.should eq password_change_path(@user.username)
     end
 
+    it 'show errors if password is unchanged' do
+      login_as(@user, scope: @user.username)
+
+      put password_change_url(@user.username), payload_password_not_changed, @headers
+      response.status.should == 200
+      response.body.should include 'Must be different than current password'
+    end
+
+    it 'show errors if password is too short' do
+      login_as(@user, scope: @user.username)
+
+      put password_change_url(@user.username), payload_password_short, @headers
+      response.status.should == 200
+      response.body.should include 'Must be at least'
+    end
+
     it 'changes password and authenticate session' do
       login_as(@user, scope: @user.username)
 
@@ -67,6 +103,7 @@ describe PasswordChangeController do
 
       follow_redirect!
       request.path.should eq dashboard_path
+
     end
   end
 end

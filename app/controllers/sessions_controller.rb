@@ -27,7 +27,9 @@ class SessionsController < ApplicationController
   # and login won't be accepted if the ADFS server's fingerprint is wrong / missing.
   # If SAML data isn't passed at all, then authentication is manually failed.
   # In case of fallback on SAML authorization failed, it will be manually checked.
-  skip_before_filter :verify_authenticity_token, only: [:create, :password_expired], if: :saml_authentication? || :json_formatted_request?
+  skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
+  # We want the password_expired method to be executed regardless of CSRF token authenticity
+  skip_before_filter :verify_authenticity_token, only: [:password_expired, :password_change], if: :json_formatted_request?
   skip_before_filter :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
@@ -140,14 +142,19 @@ class SessionsController < ApplicationController
     warden.env['warden.options']
   end
 
+  def password_change
+    username = warden.env['warden.options'][:username] if warden.env['warden.options']
+    redirect_to edit_password_change_url(username) if username
+  end
+
   def password_expired
-    username = get_username
     warden.custom_failure!
     cdb_logout
 
     respond_to do |format|
       format.html do
-        redirect_to password_change_path(username)
+        url = central_enabled? && !@organization.try(:auth_enabled?) ? Cartodb::Central.new.login_url : login_url
+        redirect_to(url + "?error=#{SESSION_EXPIRED}")
       end
       format.json do
         render(json: { error: 'session_expired' }, status: 403)
@@ -187,11 +194,6 @@ class SessionsController < ApplicationController
   end
 
   protected
-
-  def get_username
-    return current_user.username unless current_user.nil?
-    extract_username(request, params)
-  end
 
   def initialize_oauth_config
     @oauth_configs = [google_plus_config, github_config].compact

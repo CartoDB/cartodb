@@ -483,6 +483,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?
+  alias_method :password_set?, :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?

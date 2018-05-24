@@ -2,7 +2,7 @@
 
 require_relative '../../lib/cartodb/stats/authentication'
 
-class PasswordChangeController < SessionsController
+class PasswordChangeController < ApplicationController
 
   layout 'frontend'
 
@@ -10,9 +10,11 @@ class PasswordChangeController < SessionsController
 
   PASSWORD_MATCH_MSG = 'Please ensure your passwords match'.freeze
   WRONG_PASSWORD_MSG = 'Please ensure you typed the password correctly'.freeze
+  DIFFERENT_PASSWORD_MSG = 'Must be different than current password'.freeze
 
   before_filter :set_user
   before_filter :set_errors
+  before_filter :check_password_expired
 
   def edit; end
 
@@ -21,22 +23,37 @@ class PasswordChangeController < SessionsController
     pw  = params[:password]
     pwc = params[:password_confirmation]
 
-    if pw.blank? || pwc.blank? || pw != pwc
+    if !@user.validate_old_password(opw)
+      @old_password_error = WRONG_PASSWORD_MSG
+      render :edit
+      return
+    elsif pw.blank? || pwc.blank? || pw != pwc
       @new_password_error = PASSWORD_MATCH_MSG
       render :edit
       return
-    end
-
-    unless @user.validate_old_password(opw)
-      @old_password_error = WRONG_PASSWORD_MSG
+    elsif pw == opw
+      @new_password_error = DIFFERENT_PASSWORD_MSG
       render :edit
       return
     end
 
     @user.change_password(opw, pw, pwc)
-    if @user.save
+
+    unless @user.errors.empty?
+      @old_password_error = @user.errors[:old_password]
+      @new_password_error = @user.errors[:new_password]
+      render :edit
+      return
+    end
+
+    if @user.update_in_central && @user.save
       params[:email] = @user.username
-      create
+      params[:password] = pw
+
+      authenticate!(:password, scope: @user.username)
+      CartoDB::Stats::Authentication.instance.increment_login_counter(@user.email)
+
+      redirect_to session.delete('return_to') || (@user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
     else
       @password_error = "Could not update the password. Please, try again."
       render :edit
@@ -52,5 +69,9 @@ class PasswordChangeController < SessionsController
 
   def set_errors
     @password_error = "Out with the old, in with the new! Your password is more than #{@user.days_since_last_password_change} days old; please create a brand new one to log in."
+  end
+
+  def check_password_expired
+    render_403 unless @user.password_expired?
   end
 end

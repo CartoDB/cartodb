@@ -44,6 +44,7 @@ Warden::Strategies.add(:password) do
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
+          throw(:warden, action: :password_change, username: user.username) if user.password_expired?
           trigger_login_event(user)
 
           success!(user, :message => "Success")

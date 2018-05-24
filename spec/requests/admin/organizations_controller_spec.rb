@@ -20,15 +20,6 @@ describe Admin::OrganizationsController do
       }
     end
 
-    let(:payload_p) do
-      {
-        organization: {
-          color: '#ff0000',
-          password_expiration_in_d: 1
-        }
-      }
-    end
-
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
       Organization.any_instance.stubs(:update_in_central).returns(true)
@@ -64,15 +55,6 @@ describe Admin::OrganizationsController do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_settings_update_url(user_domain: @org_user_owner.username), payload
       response.status.should eq 302
-    end
-
-    it 'updates password_expiration_in_d' do
-      login_as(@org_user_owner, scope: @org_user_owner.username)
-      @org_user_owner.organization.password_expiration_in_d.should_not be
-      put organization_settings_update_url(user_domain: @org_user_owner.username), payload_p
-      response.status.should eq 302
-      @org_user_owner.organization.reload
-      @org_user_owner.organization.password_expiration_in_d.should eq 1
     end
   end
 
@@ -156,7 +138,8 @@ describe Admin::OrganizationsController do
           auth_username_password_enabled: true,
           auth_google_enabled: true,
           auth_github_enabled: true,
-          strong_passwords_enabled: false
+          strong_passwords_enabled: false,
+          password_expiration_in_d: 1
         }
       }
     end
@@ -197,6 +180,15 @@ describe Admin::OrganizationsController do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload
       response.status.should eq 302
+    end
+
+    it 'updates password_expiration_in_d' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      @org_user_owner.organization.password_expiration_in_d.should_not be
+      put organization_settings_update_url(user_domain: @org_user_owner.username), payload_p
+      response.status.should eq 302
+      @org_user_owner.organization.reload
+      @org_user_owner.organization.password_expiration_in_d.should eq 1
     end
 
     describe 'signup enabled' do

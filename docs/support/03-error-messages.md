@@ -66,7 +66,6 @@ If you find a validation error on Chrome JavaScript Console, Firefox Web Console
     <tr>
       <th class="error"><h5 class="title is-small is-regular">Error Code</h5></th>
       <th class="message"><h5 class="title is-small is-regular">Message</h5></th>
-      <th class="description"><h5 class="title is-small is-regular">Description</h5></th>
     </tr>
   </thead>
   <tbody>

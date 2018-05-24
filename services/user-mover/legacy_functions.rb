@@ -2501,7 +2501,7 @@ module CartoDB
 
       def remove_line?(line)
         acl, arguments, name, type = matches(line)
-        return true if acl && legacy_functions.map { |_,v| v[name] }.flatten(1).compact.include?(arguments)
+        return true if acl && legacy_functions.flat_map { |_, v| v[name] }.compact.include?(arguments)
         return false unless legacy_functions[type]
         return false unless legacy_functions[type][name]
         legacy_functions[type][name].include?(arguments)

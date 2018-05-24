@@ -153,6 +153,7 @@ describe "UserState" do
       @locked_user.save
     end
     it 'owner accessing their resources' do
+      Admin::UsersController.any_instance.stubs(:render)
       login(@locked_user)
       host! "#{@locked_user.username}.localhost.lan"
       @dashboard_endpoints.each do |endpoint|

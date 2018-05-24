@@ -1370,6 +1370,17 @@
           "cancel": "Cancel",
           "confirm": "Ok, delete it"
         }
+      },
+      "password-confirmation": {
+        "modal-title": "Please confirm your password.",
+        "modal-description": "\"Hey, ho! Let’s Go!\"",
+        "form": {
+          "password-label": "Password"
+        },
+        "actions": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
       }
     },
     "error": {

@@ -109,7 +109,6 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.discus_shortname = attributes[:discus_shortname]
     @organization.twitter_username = attributes[:twitter_username]
     @organization.location = attributes[:location]
-    @organization.password_expiration_in_d = attributes[:password_expiration_in_d]
 
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
@@ -147,6 +146,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.auth_google_enabled = attributes[:auth_google_enabled]
     @organization.auth_github_enabled = attributes[:auth_github_enabled]
     @organization.strong_passwords_enabled = attributes[:strong_passwords_enabled]
+    @organization.password_expiration_in_d = attributes[:password_expiration_in_d]
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 

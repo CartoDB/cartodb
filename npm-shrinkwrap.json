@@ -1244,9 +1244,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.7-2",
-      "from": "cartodb/carto.js#2122-fix-png-tile-urls",
-      "resolved": "git://github.com/cartodb/carto.js.git#e73da9084ff8fa8ea9a8fb0d41a0c86ef8aeb08d"
+      "version": "4.0.7-3",
+      "from": "cartodb/carto.js#v4.0.7-3",
+      "resolved": "git://github.com/cartodb/carto.js.git#8745f95151e804151889d9120476c3d7d57833b5"
     },
     "interpret": {
       "version": "1.1.0",

@@ -244,7 +244,8 @@ module Carto
         Carto::Api::UserPresenter.new(@visualization.user,
                                       current_viewer: @current_viewer,
                                       fetch_db_size: false,
-                                      fetch_basemaps: show_user_basemaps).to_poro
+                                      fetch_basemaps: show_user_basemaps,
+                                      fetch_profile: false).to_poro
       end
     end
   end

@@ -43,9 +43,7 @@ describe Admin::UsersController do
       delete account_user_url
       Carto::User.where(id: @user2.id).first.should_not be_nil
       last_response.status.should eq 200
-
-      @user2.reload
-      @user2.should be
+      Carto::User.where(id: @user2.id).first.should be
     end
 
     it 'does not require password for SAML organizations' do
@@ -53,7 +51,6 @@ describe Admin::UsersController do
       login_as(@saml_user, scope: @saml_organization.name)
       delete account_user_url(scope: @saml_organization.name)
       Carto::User.where(id: @saml_user.id).first.should be_nil
-      last_response.body.include?('Password does not match').should be_false
     end
 
     it 'deletes if password match' do
@@ -61,7 +58,6 @@ describe Admin::UsersController do
       login_as(@user2, scope: @user2.username)
       delete account_user_url(deletion_password_confirmation: password)
       Carto::User.where(id: @user2.id).first.should be_nil
-      last_response.body.include?('Password does not match').should be_false
     end
   end
 
@@ -107,6 +103,7 @@ describe Admin::UsersController do
         put account_update_user_url, user: params
 
         last_response.status.should eq 200
+
         @user.reload
         @user.email.should_not start_with('fail-')
       end
@@ -122,8 +119,6 @@ describe Admin::UsersController do
         put account_update_user_url, user: params
 
         last_response.status.should eq 200
-        @user.reload
-        @user.validate_old_password(params[:old_password]).should eq true
       end
     end
 
@@ -136,7 +131,8 @@ describe Admin::UsersController do
           location:           'Nowhere',
           twitter_username:   'asd',
           disqus_shortname:   'qwe',
-          available_for_hire: true
+          available_for_hire: true,
+          password_confirmation: 'abcdefgh'
         }
         ::User.any_instance.stubs(:update_in_central).returns(true)
         put profile_update_user_url, user: params

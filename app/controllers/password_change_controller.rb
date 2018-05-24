@@ -11,6 +11,7 @@ class PasswordChangeController < ApplicationController
   PASSWORD_MATCH_MSG = 'Please ensure your passwords match'.freeze
   WRONG_PASSWORD_MSG = 'Please ensure you typed the password correctly'.freeze
   DIFFERENT_PASSWORD_MSG = 'Must be different than current password'.freeze
+  FORM_ERROR = 'Could not update the password. Please, try again'.freeze
 
   before_filter :set_user
   before_filter :set_errors
@@ -53,9 +54,10 @@ class PasswordChangeController < ApplicationController
       authenticate!(:password, scope: @user.username)
       CartoDB::Stats::Authentication.instance.increment_login_counter(@user.email)
 
-      redirect_to session.delete('return_to') || (@user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+      redirect_to session.delete('return_to') ||
+                  (@user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
     else
-      @password_error = "Could not update the password. Please, try again."
+      @password_error = FORM_ERROR
       render :edit
     end
   end

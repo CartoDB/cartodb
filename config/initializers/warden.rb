@@ -10,12 +10,10 @@ end
 
 # All strategies should:
 # - Include this module
-# - Provide a `name`` function that returns the strategy name (as a symbol)
+# - Override the methods as needed
 module CartoStrategy
-  PASSWORD_CHANGE_STRATEGIES = [:password, :oauth, :enable_account_token, :user_creation].freeze
-
   def affected_by_password_expiration?
-    PASSWORD_CHANGE_STRATEGIES.include?(name)
+    true
   end
 
   def check_password_expired(user)
@@ -52,10 +50,6 @@ Warden::Strategies.add(:password) do
   include Carto::EmailCleaner
   include CartoStrategy
 
-  def name
-    :password
-  end
-
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
   end
@@ -85,10 +79,6 @@ end
 Warden::Strategies.add(:enable_account_token) do
   include CartoStrategy
 
-  def name
-    :enable_account_token
-  end
-
   def authenticate!
     if params[:id]
       user = ::User.where(enable_account_token: params[:id]).first
@@ -111,10 +101,6 @@ end
 Warden::Strategies.add(:oauth) do
   include CartoStrategy
 
-  def name
-    :oauth
-  end
-
   def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
   end
@@ -136,8 +122,8 @@ end
 Warden::Strategies.add(:ldap) do
   include CartoStrategy
 
-  def name
-    :ldap
+  def affected_by_password_expiration?
+    false
   end
 
   def authenticate!
@@ -162,8 +148,10 @@ Warden::Strategies.add(:ldap) do
 end
 
 Warden::Strategies.add(:api_authentication) do
-  def name
-    :api_authentication
+  include CartoStrategy
+
+  def affected_by_password_expiration?
+    false
   end
 
   def authenticate!
@@ -195,8 +183,8 @@ end
 Warden::Strategies.add(:http_header_authentication) do
   include CartoStrategy
 
-  def name
-    :http_header_authentication
+  def affected_by_password_expiration?
+    false
   end
 
   def valid?
@@ -220,8 +208,8 @@ Warden::Strategies.add(:saml) do
   include CartoStrategy
   include Carto::EmailCleaner
 
-  def name
-    :saml
+  def affected_by_password_expiration?
+    false
   end
 
   def organization_from_request
@@ -294,10 +282,6 @@ end
 Warden::Strategies.add(:user_creation) do
   include CartoStrategy
 
-  def name
-    :user_creation
-  end
-
   def authenticate!
     username = params[:username]
     user = ::User.where(username: username).first
@@ -317,8 +301,13 @@ Warden::Strategies.add(:user_creation) do
 end
 
 module Carto::Api::AuthApiAuthentication
+  include CartoStrategy
   # We don't want to store a session and send a response cookie
   def store?
+    false
+  end
+
+  def affected_by_password_expiration?
     false
   end
 
@@ -389,11 +378,6 @@ end
 
 Warden::Strategies.add(:auth_api) do
   include Carto::Api::AuthApiAuthentication
-  include CartoStrategy
-
-  def name
-    :auth_api
-  end
 
   def authenticate!
     authenticate_user(true)
@@ -402,11 +386,6 @@ end
 
 Warden::Strategies.add(:any_auth_api) do
   include Carto::Api::AuthApiAuthentication
-  include CartoStrategy
-
-  def name
-    :any_auth_api
-  end
 
   def authenticate!
     authenticate_user(false)

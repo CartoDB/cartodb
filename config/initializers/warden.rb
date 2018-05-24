@@ -8,17 +8,24 @@ Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.failure_app = SessionsController
 end
 
-module LoginEventTrigger
+# All strategies should:
+# - Include this module
+# - Provide a `name`` function that returns the strategy name (as a symbol)
+module CartoStrategy
   PASSWORD_CHANGE_STRATEGIES = [:password, :oauth, :enable_account_token, :user_creation].freeze
 
-  def check_password_expired(user, strategy)
-    if PASSWORD_CHANGE_STRATEGIES.include?(strategy) && user.password_expired?
+  def affected_by_password_expiration?
+    PASSWORD_CHANGE_STRATEGIES.include?(name)
+  end
+
+  def check_password_expired(user)
+    if affected_by_password_expiration? && user.password_expired?
       throw(:warden, action: :password_change, username: user.username)
     end
   end
 
-  def trigger_login_event(user, strategy)
-    check_password_expired(user, strategy)
+  def trigger_login_event(user)
+    check_password_expired(user)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and
@@ -43,7 +50,11 @@ end
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
   include Carto::EmailCleaner
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def name
+    :password
+  end
 
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
@@ -53,7 +64,7 @@ Warden::Strategies.add(:password) do
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
-          trigger_login_event(user, :password)
+          trigger_login_event(user)
 
           success!(user, :message => "Success")
           request.flash['logged'] = true
@@ -72,7 +83,11 @@ Warden::Strategies.add(:password) do
 end
 
 Warden::Strategies.add(:enable_account_token) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def name
+    :enable_account_token
+  end
 
   def authenticate!
     if params[:id]
@@ -81,7 +96,7 @@ Warden::Strategies.add(:enable_account_token) do
         user.enable_account_token = nil
         user.save
 
-        trigger_login_event(user, :enable_account_token)
+        trigger_login_event(user)
 
         success!(user)
       else
@@ -94,7 +109,11 @@ Warden::Strategies.add(:enable_account_token) do
 end
 
 Warden::Strategies.add(:oauth) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def name
+    :oauth
+  end
 
   def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
@@ -105,7 +124,7 @@ Warden::Strategies.add(:oauth) do
     oauth_api = params[:oauth_api]
     user = oauth_api.user
     if user && oauth_api.config.valid_method_for?(user)
-      trigger_login_event(user, :oauth)
+      trigger_login_event(user)
 
       success!(user)
     else
@@ -115,7 +134,11 @@ Warden::Strategies.add(:oauth) do
 end
 
 Warden::Strategies.add(:ldap) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def name
+    :ldap
+  end
 
   def authenticate!
     (fail! and return) unless (params[:email] && params[:password])
@@ -131,7 +154,7 @@ Warden::Strategies.add(:ldap) do
     # Fails, but do not stop processin other strategies (allows fallbacks)
     return unless user
 
-    trigger_login_event(user, :ldap)
+    trigger_login_event(user)
 
     success!(user, :message => "Success")
     request.flash['logged'] = true
@@ -139,6 +162,10 @@ Warden::Strategies.add(:ldap) do
 end
 
 Warden::Strategies.add(:api_authentication) do
+  def name
+    :api_authentication
+  end
+
   def authenticate!
     # WARNING: The following code is a modified copy of the oauth10_token method from
     # oauth-plugin-0.4.0.pre4/lib/oauth/controllers/application_controller_methods.rb
@@ -166,7 +193,11 @@ Warden::Strategies.add(:api_authentication) do
 end
 
 Warden::Strategies.add(:http_header_authentication) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def name
+    :http_header_authentication
+  end
 
   def valid?
     Carto::HttpHeaderAuthentication.new.valid?(request)
@@ -176,7 +207,7 @@ Warden::Strategies.add(:http_header_authentication) do
     user = Carto::HttpHeaderAuthentication.new.get_user(request)
     return fail! unless user.present?
 
-    trigger_login_event(user, :http_header_authentication)
+    trigger_login_event(user)
 
     success!(user)
   rescue => e
@@ -186,8 +217,12 @@ Warden::Strategies.add(:http_header_authentication) do
 end
 
 Warden::Strategies.add(:saml) do
-  include LoginEventTrigger
+  include CartoStrategy
   include Carto::EmailCleaner
+
+  def name
+    :saml
+  end
 
   def organization_from_request
     subdomain = CartoDB.extract_subdomain(request)
@@ -211,7 +246,7 @@ Warden::Strategies.add(:saml) do
 
     if user
       if user.try(:enabled?)
-        trigger_login_event(user, :saml)
+        trigger_login_event(user)
 
         success!(user, message: "Success")
         request.flash['logged'] = true
@@ -251,11 +286,17 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
 end
 
 Warden::Manager.after_set_user do |user, auth, opts|
-  throw(:warden, action: :password_expired) if user.password_expired?
+  should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
+
+  throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
 end
 
 Warden::Strategies.add(:user_creation) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def name
+    :user_creation
+  end
 
   def authenticate!
     username = params[:username]
@@ -266,7 +307,7 @@ Warden::Strategies.add(:user_creation) do
     return fail! unless user_creation
 
     if user_creation.autologin?
-      trigger_login_event(user, :user_creation)
+      trigger_login_event(user)
 
       success!(user, :message => "Success")
     else
@@ -348,6 +389,11 @@ end
 
 Warden::Strategies.add(:auth_api) do
   include Carto::Api::AuthApiAuthentication
+  include CartoStrategy
+
+  def name
+    :auth_api
+  end
 
   def authenticate!
     authenticate_user(true)
@@ -356,6 +402,11 @@ end
 
 Warden::Strategies.add(:any_auth_api) do
   include Carto::Api::AuthApiAuthentication
+  include CartoStrategy
+
+  def name
+    :any_auth_api
+  end
 
   def authenticate!
     authenticate_user(false)

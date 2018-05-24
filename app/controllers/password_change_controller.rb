@@ -62,13 +62,17 @@ class PasswordChangeController < ApplicationController
 
   private
 
+  def days_since_last_password_change
+    (Time.now.to_date - @user.password_date.to_date).to_i
+  end
+
   def set_user
     username = params[:id].strip.downcase
     @user = User.where("email = ? OR username = ?", username, username).first
   end
 
   def set_errors
-    @password_error = "Out with the old, in with the new! Your password is more than #{@user.days_since_last_password_change} days old; please create a brand new one to log in."
+    @password_error = "Out with the old, in with the new! Your password is more than #{days_since_last_password_change} days old; please create a brand new one to log in."
   end
 
   def check_password_expired

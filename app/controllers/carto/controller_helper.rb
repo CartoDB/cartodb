@@ -34,6 +34,12 @@ module Carto
     end
   end
 
+  class PasswordConfirmationError < CartoError
+    def initialize(message = "Confirmation password sent does not match your current password", status = 403)
+      super(message, status)
+    end
+  end
+
   class LoadError < CartoError
     def initialize(message, status = 404, errors_cause: nil)
       super(message, status, errors_cause: errors_cause)

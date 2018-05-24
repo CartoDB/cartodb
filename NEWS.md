@@ -23,6 +23,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 
 ### Features
 * Allow users to edit all their information in Profile (#13793)
+* Ask for password confirmation when updating organization or user settings (#13795)
 * Public dataset migration (#13803)
 * Organization page migration (#13742)
 * Public pages migration (#13742)

@@ -33,8 +33,6 @@ CartoDB::Application.routes.draw do
 
   # Password change
   resources :password_change, only: [:edit, :update]
-  get '/password_change/:id' => 'password_change#edit', :as => :password_change
-  put '/password_change/:id' => 'password_change#update', :as => :password_update
 
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index

@@ -17,7 +17,7 @@ module LoginEventTrigger
     end
   end
 
-  def trigger_login_event(user, strategy = nil)
+  def trigger_login_event(user, strategy)
     check_password_expired(user, strategy)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
@@ -131,7 +131,7 @@ Warden::Strategies.add(:ldap) do
     # Fails, but do not stop processin other strategies (allows fallbacks)
     return unless user
 
-    trigger_login_event(user)
+    trigger_login_event(user, :ldap)
 
     success!(user, :message => "Success")
     request.flash['logged'] = true
@@ -176,7 +176,7 @@ Warden::Strategies.add(:http_header_authentication) do
     user = Carto::HttpHeaderAuthentication.new.get_user(request)
     return fail! unless user.present?
 
-    trigger_login_event(user)
+    trigger_login_event(user, :http_header_authentication)
 
     success!(user)
   rescue => e
@@ -211,7 +211,7 @@ Warden::Strategies.add(:saml) do
 
     if user
       if user.try(:enabled?)
-        trigger_login_event(user)
+        trigger_login_event(user, :saml)
 
         success!(user, message: "Success")
         request.flash['logged'] = true

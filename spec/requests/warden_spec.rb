@@ -94,7 +94,7 @@ describe 'Warden' do
         expect(response.status).to eq 302
         follow_redirect!
 
-        expect(request.fullpath).to end_with "/password_change/#{@user.username}"
+        expect(request.fullpath).to end_with "/login?error=session_expired"
         Delorean.back_to_the_present
       end
     end
@@ -111,6 +111,17 @@ describe 'Warden' do
         expect(response.status).to eq 403
         expect(JSON.parse(response.body)).to eq('error' => 'session_expired')
         Delorean.back_to_the_present
+      end
+    end
+
+    it 'does not allow access password_change if password is not expired' do
+      login
+
+      Cartodb.with_config(passwords: { 'expiration_in_s' => nil }) do
+        host! "#{@user.username}.localhost.lan"
+        get edit_password_change_path(@user.username)
+
+        expect(response.status).to eq 403
       end
     end
   end

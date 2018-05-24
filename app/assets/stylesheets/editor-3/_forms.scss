@@ -8,46 +8,41 @@
   display: flex;
   align-items: center;
   min-height: $baseSize * 3;
+  margin-top: $baseSize * 2;
+}
+
+.Editor-formInner.Editor-formInner--NoTabs {
+  align-items: center;
   margin-top: $baseSize;
+  padding: 0;
+
+  .js-menu {
+    display: none;
+  }
+
+  .Editor-formInner--Number {
+    margin-top: 0;
+  }
 }
 
 .Editor-formInner.Editor-formInner--Size {
   align-items: baseline;
   padding-top: $baseSize;
-
-  &.Editor-formInner--NoTabs {
-    align-items: center;
-    padding: 0;
-
-    .js-menu {
-      display: none;
-    }
-
-    .Editor-formInner--Number {
-      margin-top: 0;
-    }
-  }
 }
 
 .Editor-formInner.Editor-formInner--FillColor {
   align-items: baseline;
-  padding-top: $baseSize;
+  margin-top: 0;
 
-  &.Editor-formInner--NoTabs {
-    padding: 0;
-
-    .js-menu {
-      display: none;
-    }
-
-    .Editor-formInner--Number {
-      margin-top: 0;
-    }
+  .Form-InputFill {
+    margin-top: $baseSize * 2;
   }
 }
 
-.Editor-formInner.Editor-formInner--StrokeColor {
-  align-items: baseline;
+.Editor-formInner.Editor-formInner--FillColor.Editor-formInner--NoTabs {
+  .Form-InputFill {
+    margin-top: $baseSize;
+  }
 }
 
 .Options-form .Editor-formInner {
@@ -214,12 +209,6 @@
   cursor: pointer;
 }
 
-.Form-InputFill.is-disabled {
-  border-color: #EEE;
-  background: #F9F9F9;
-  cursor: default;
-}
-
 .Form-InputSize {
   width: 100%;
   max-width: 160px;
@@ -227,6 +216,11 @@
   .Editor-formInner--Number {
     margin-top: $baseSize * 2;
   }
+}
+
+.Form-InputFill {
+  width: 100%;
+  max-width: 160px;
 }
 
 .Form-StyleByValue {

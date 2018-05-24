@@ -6,15 +6,7 @@
   cursor: default;
 }
 
-.Form-InputFillColor {
-  width: 100%;
-
-  .Form-InputFill {
-    margin-top: $baseSize * 2;
-  }
-}
-
-.Form-InputStrokeColor {
+.Form-InputFill {
   width: 100%;
 }
 
@@ -36,12 +28,6 @@
   width: 248px;
 }
 
-.Editor-formInner.Editor-formInner--StrokeColor {
-  .Editor-FormDialog.Editor-boxModal {
-    top: 54px;
-  }
-}
-
 .Editor-fillContainer {
   width: 100%;
   height: 100%;
@@ -58,6 +44,7 @@
     position: relative;
     width: 32px;
 
+    // Grey Left Bar separator
     &::after {
       content: "";
       position: absolute;

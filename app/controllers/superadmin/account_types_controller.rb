@@ -9,8 +9,13 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
   before_filter :get_rate_limit, only: [:create, :update]
 
   def create
-    @account_type = Carto::AccountType.new
-    @account_type.account_type = params[:account_type][:account_type]
+    if Carto::AccountType.exists?(params[:account_type][:account_type])
+      @account_type = Carto::AccountType.find(params[:account_type][:account_type])
+    else
+      @account_type = Carto::AccountType.new
+      @account_type.account_type = params[:account_type][:account_type]
+    end
+
     @account_type.rate_limit = @rate_limit
     @account_type.save!
 

@@ -2,7 +2,7 @@ module CartoDB
   module DataMover
     module LegacyFunctions
       # functions taken from https://github.com/postgis/postgis/blob/svn-trunk/utils/postgis_restore.pl.in#L473
-      SIGNATURE_RE = /[\d\s;]*(?:ACL\s+)?(?<type>(?:[^\(])+)\s+(?<name>[^\(]+)\s*(?:\((?<arguments>.*)\))?/
+      SIGNATURE_RE = /[\d\s;]*(?<acl>ACL\s+)?(?<type>(?:[^\s])+)\s+(?:[^\s]\s+)?(?<name>[^\(]+)\s*(?:\((?<arguments>.*)\))?/
       LEGACY_FUNCTIONS = [
         'AGGREGATE accum(geometry)',
         'AGGREGATE accum_old(geometry)',
@@ -2500,7 +2500,8 @@ module CartoDB
       ].freeze
 
       def remove_line?(line)
-        arguments, name, type = matches(line)
+        acl, arguments, name, type = matches(line)
+        return true if acl && legacy_functions.map { |_,v| v[name] }.flatten(1).compact.include?(arguments)
         return false unless legacy_functions[type]
         return false unless legacy_functions[type][name]
         legacy_functions[type][name].include?(arguments)
@@ -2508,7 +2509,7 @@ module CartoDB
 
       def legacy_functions
         @legacy_functions ||= LEGACY_FUNCTIONS.reduce({}) do |res, line|
-          arguments, name, type = matches(line)
+          _, arguments, name, type = matches(line)
           return res unless type && name
           res[type] = {} unless res[type]
           res[type][name] = [] unless res[type][name]
@@ -2522,10 +2523,11 @@ module CartoDB
         return false unless stripped =~ SIGNATURE_RE
         match = stripped.match(SIGNATURE_RE)
         type = match[:type].strip.gsub(/\s+/, ' ')
-        name = match[:name].strip
+        name = match[:name].split(' ').last.strip
+        acl = !!match[:acl]
         arguments = match[:arguments]
         arguments = arguments ? arguments.split(',').map { |arg| arg.split('.').last.strip } : nil
-        [arguments, name, type]
+        [acl, arguments, name, type]
       end
     end
   end

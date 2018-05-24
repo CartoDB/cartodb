@@ -10,6 +10,7 @@ end
 
 module LoginEventTrigger
   def trigger_login_event(user)
+    throw(:warden, action: :password_change, username: user.username) if user.password_expired?
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and
@@ -44,7 +45,6 @@ Warden::Strategies.add(:password) do
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
-          throw(:warden, action: :password_change, username: user.username) if user.password_expired?
           trigger_login_event(user)
 
           success!(user, :message => "Success")

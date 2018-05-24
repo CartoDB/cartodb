@@ -495,6 +495,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?
+  alias_method :password_set?, :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
@@ -668,11 +669,15 @@ class Carto::User < ActiveRecord::Base
 
   def password_expired?
     return false unless password_expiration_in_d && password_set?
-    (last_password_change_date || created_at) + password_expiration_in_d.days.to_i < Time.now
+    password_date + password_expiration_in_d.days.to_i < Time.now
   end
 
   def password_expiration_in_d
     organization_user? ? organization.password_expiration_in_d : Cartodb.get_config(:passwords, 'expiration_in_d')
+  end
+
+  def password_date
+    last_password_change_date || created_at
   end
 
   private

@@ -53,6 +53,8 @@ describe 'Warden' do
   end
 
   describe 'password expiration' do
+    include HelperMethods
+
     before(:all) do
       @user = FactoryGirl.create(:valid_user)
       @user.password = @user.password_confirmation = 'qwaszx'
@@ -94,7 +96,7 @@ describe 'Warden' do
         expect(response.status).to eq 302
         follow_redirect!
 
-        expect(request.fullpath).to end_with '/login?error=session_expired'
+        expect(request.fullpath).to end_with "/login?error=session_expired"
         Delorean.back_to_the_present
       end
     end
@@ -110,6 +112,30 @@ describe 'Warden' do
 
         expect(response.status).to eq 403
         expect(JSON.parse(response.body)).to eq('error' => 'session_expired')
+        Delorean.back_to_the_present
+      end
+    end
+
+    it 'does not allow access password_change if password is not expired' do
+      login
+
+      Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
+        host! "#{@user.username}.localhost.lan"
+        get edit_password_change_path(@user.username)
+
+        expect(response.status).to eq 403
+      end
+    end
+
+    it 'does not validate password expiration for API-key requests' do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
+        Delorean.jump(2.days)
+
+        get_json api_v3_users_me_url, user_domain: @user.username, api_key: @user.api_key do |response|
+          expect(response.status).to eq 200
+          expect(response.body[:user_data]).to be
+        end
+
         Delorean.back_to_the_present
       end
     end

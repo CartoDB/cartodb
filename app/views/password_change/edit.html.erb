@@ -1,0 +1,95 @@
+<% content_for :title do %>Reset your password<% end %>
+
+<%= javascript_include_tag 'common_dashboard', 'sessions_new_vendor', 'sessions_new' %>
+
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-left">
+          <div class="Sessions-logoContainer">
+            <picture class="Navbar-brand">
+              <% if @organization.present? && @organization.avatar_url.present? %>
+                <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
+              <% else %>
+                <% if @organization.present? %>
+                  <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                <% else %>
+                  <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                <% end %>
+              <% end %>
+            </picture>
+          </div>
+
+          <div class="Sessions-form">
+            <%= form_for @user, url: CartoDB.path(self, 'password_change'), class: "js-Loading-form" do |f| %>
+              <% if @password_error %>
+                <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-description" style="background: #f24440; border-radius: 4px; padding: 5px; color: #fff;">
+                  <%= raw @password_error %>
+                </p>
+              <% end %>
+
+              <%= f.hidden_field :username %>
+              <div class="Sessions-fieldsGorup">
+                <div class="Sessions-field">
+                  <%= password_field_tag :old_password, "", placeholder: "Type your current password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+
+                  <% if @old_password_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @old_password_error %>">!</div>
+                  <% end %>
+                </div>
+
+                <div class="Sessions-field">
+                  <%= password_field_tag :password, "", placeholder: "Type your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+
+                  <% if @new_password_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>
+                  <% end %>
+                </div>
+
+                <div class="Sessions-field">
+                  <%= password_field_tag :password_confirmation, "", placeholder: "Retype your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+
+                  <% if @new_password_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>
+                  <% end %>
+                </div>
+
+                <div class="Sessions-field">
+                  <p>
+                    <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
+                      <span class="js-Loading-text"><%= t('sessions.password.submit') %></span>
+                      <span class="js-Loading-anim" style="display: none;">
+                        <span class="Loading-item">
+                          <span class="Loading-itemInner Loading-itemInner--01"></span>
+                        </span>
+
+                        <span class="Loading-item">
+                          <span class="Loading-itemInner Loading-itemInner--02"></span>
+                        </span>
+
+                        <span class="Loading-item">
+                          <span class="Loading-itemInner Loading-itemInner--03"></span>
+                        </span>
+                      </span>
+                    </button>
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% unless cartodb_com_hosted? %>
+    <footer class="Sessions-footer">
+      <div class="u-inner">
+        <div class="Sessions-notloggedin is-active">
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', "https://carto.com/signup" %></p>
+        </div>
+      </div>
+    </footer>
+  <% end %>
+</div>

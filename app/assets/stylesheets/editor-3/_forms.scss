@@ -9,26 +9,40 @@
   align-items: center;
   min-height: $baseSize * 3;
   margin-top: $baseSize * 2;
+}
 
-  &.Editor-formInner--NoTabs {
-    align-items: center;
-    margin-top: $baseSize;
-    padding: 0;
+.Editor-formInner.Editor-formInner--NoTabs {
+  align-items: center;
+  margin-top: $baseSize;
+  padding: 0;
 
-    .js-menu {
-      display: none;
-    }
+  .js-menu {
+    display: none;
+  }
 
-    .Editor-formInner--Number {
-      margin-top: 0;
-    }
+  .Editor-formInner--Number {
+    margin-top: 0;
   }
 }
 
-.Editor-formInner.Editor-formInner--Size,
-.Editor-formInner.Editor-formInner--FillColor {
+.Editor-formInner.Editor-formInner--Size {
   align-items: baseline;
   padding-top: $baseSize;
+}
+
+.Editor-formInner.Editor-formInner--FillColor {
+  align-items: baseline;
+  margin-top: 0;
+
+  .Form-InputFill {
+    margin-top: $baseSize * 2;
+  }
+}
+
+.Editor-formInner.Editor-formInner--FillColor.Editor-formInner--NoTabs {
+  .Form-InputFill {
+    margin-top: $baseSize;
+  }
 }
 
 .Options-form .Editor-formInner {

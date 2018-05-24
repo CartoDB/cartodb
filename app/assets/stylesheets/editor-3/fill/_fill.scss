@@ -6,7 +6,7 @@
   cursor: default;
 }
 
-.Form-InputFillColor {
+.Form-InputFill {
   width: 100%;
 }
 
@@ -44,6 +44,7 @@
     position: relative;
     width: 32px;
 
+    // Grey Left Bar separator
     &::after {
       content: "";
       position: absolute;

@@ -184,11 +184,19 @@ describe Admin::OrganizationsController do
 
     it 'updates password_expiration_in_d' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
-      @org_user_owner.organization.password_expiration_in_d.should_not be
-      put organization_settings_update_url(user_domain: @org_user_owner.username), payload
+      @organization.password_expiration_in_d = nil
+      @organization.save
+
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload
       response.status.should eq 302
-      @org_user_owner.organization.reload
-      @org_user_owner.organization.password_expiration_in_d.should eq 1
+      @organization.reload
+      @organization.password_expiration_in_d.should eq 1
+
+      payload[:organization][:password_expiration_in_d] = ''
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload
+      response.status.should eq 302
+      @organization.reload
+      @organization.password_expiration_in_d.should be_nil
     end
 
     describe 'signup enabled' do

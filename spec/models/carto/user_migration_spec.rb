@@ -590,9 +590,27 @@ describe 'UserMigration' do
           RETURN 1;
         END;
         $$ LANGUAGE plpgsql;')
-        byebug
 
-        user1.in_database.execute("GRANT ALL ON FUNCTION st_text TO #{user2.service.database_public_username}")
+        user1.in_database.execute("GRANT ALL ON FUNCTION st_text TO \"#{user2.service.database_public_username}\"")
+
+        export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
+        export.run_export
+        @organization.destroy_cascade
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: owner_attributes['database_host'],
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          import_data: true,
+          dry: false
+        )
+        import.run_import
+
+        import.state.should eq 'complete'
+        Organization[@organization.id].users.first.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
+
       end
     end
   end

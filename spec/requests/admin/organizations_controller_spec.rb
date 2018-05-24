@@ -238,7 +238,7 @@ describe Admin::OrganizationsController do
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload_password
       response.status.should eq 302
     end
-    
+
     it 'cannot be updated by owner user if missing password_confirmation' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload
@@ -252,18 +252,19 @@ describe Admin::OrganizationsController do
       response.status.should eq 403
       response.body.should match /Confirmation password sent does not match your current password/
     end
-    
+
     it 'updates password_expiration_in_d' do
-      login_as(@org_user_owner, scope: @org_user_owner.username)
       @organization.password_expiration_in_d = nil
       @organization.save
 
+      login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload
       response.status.should eq 302
       @organization.reload
       @organization.password_expiration_in_d.should eq 1
 
       payload[:organization][:password_expiration_in_d] = ''
+      login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload
       response.status.should eq 302
       @organization.reload

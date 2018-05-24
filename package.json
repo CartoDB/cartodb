@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.150-49-twitter-copy-change",
+  "version": "4.11.152",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

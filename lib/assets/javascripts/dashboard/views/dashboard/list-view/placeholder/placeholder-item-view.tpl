@@ -1,7 +1,7 @@
 <div class="MapCard">
   <div class="MapCard-fake"></div>
   <div class="MapCard-header MapCard-header--fake">
-    <img src="/assets/<%- assetsVersion %>/images/layout/map_templates/<%- icon %>.svg" />
+    <img src="<%- assetsBase %>/<%- assetsVersion %>/images/layout/map_templates/<%- icon %>.svg" />
   </div>
   <div class="MapCard-content">
     <div class="MapCard-contentBody">

@@ -2,15 +2,17 @@ Development
 -----------
 
 ### Features
-* 
+* Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 
 ### Bug fixes / enhancements
-* 
+* Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+
+
 
 4.12.x (2018-05-24)
 ---
 
-### NOTICE 
+### NOTICE
 OnPremises 2.2.0 was closed in tag 4.11.113, pointing to this commit: [a236036](https://github.com/CartoDB/cartodb/commit/a2360360bdd42706e5fb57e3729811c41e292c5e)
 
 

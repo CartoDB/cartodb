@@ -124,7 +124,11 @@ module CartoDB
         twitter_username: twitter_username,
         disqus_shortname: disqus_shortname,
         available_for_hire: available_for_hire,
-        location: location
+        location: location,
+        industry: industry,
+        company: company,
+        phone: phone,
+        job_role: job_role
       }
 
       if google_maps_geocoder_enabled? && (!organization.present? || organization_owner?)

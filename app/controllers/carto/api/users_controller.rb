@@ -16,7 +16,7 @@ module Carto
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
-        :disqus_shortname, :available_for_hire
+        :disqus_shortname, :available_for_hire, :company, :industry, :phone, :job_role
       ].freeze
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze

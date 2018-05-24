@@ -131,6 +131,12 @@ describe('geo/cartodb-layer-group', function () {
         expect(this.cartoDBLayerGroup.getTileURLTemplate()).toEqual('');
       });
 
+      it('should return an empty string if there are no layer indexes', function () {
+        spyOn(this.cartoDBLayerGroup, '_getIndexesOfVisibleMapnikLayers').and.returnValue('');
+
+        expect(this.cartoDBLayerGroup.getTileURLTemplate()).toEqual('');
+      });
+
       it('should append the api_key to urls', function () {
         this.cartoDBLayerGroup.set({
           apiKey: 'THE_API_KEY'

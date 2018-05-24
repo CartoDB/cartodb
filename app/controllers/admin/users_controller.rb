@@ -21,6 +21,8 @@ class Admin::UsersController < Admin::AdminController
   before_filter :load_dashboard_notifications, only: [:account, :profile]
   before_filter :load_organization_notifications, only: [:account, :profile]
 
+  skip_before_filter :check_user_state, only: [:delete]
+
   layout 'application'
 
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze

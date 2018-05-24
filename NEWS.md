@@ -1,6 +1,15 @@
 Development
 -----------
 
+### Features
+* 
+
+### Bug fixes / enhancements
+* 
+
+4.12.x (2018-05-24)
+---
+
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.22.0`. Run the following to have it available:
 ```shell

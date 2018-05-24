@@ -9,8 +9,16 @@ Rails.configuration.middleware.use RailsWarden::Manager do |manager|
 end
 
 module LoginEventTrigger
-  def trigger_login_event(user)
-    throw(:warden, action: :password_change, username: user.username) if user.password_expired?
+  PASSWORD_CHANGE_STRATEGIES = [:password, :oauth, :enable_account_token, :user_creation].freeze
+
+  def check_password_expired(user, strategy)
+    if PASSWORD_CHANGE_STRATEGIES.include?(strategy) && user.password_expired?
+      throw(:warden, action: :password_change, username: user.username)
+    end
+  end
+
+  def trigger_login_event(user, strategy = nil)
+    check_password_expired(user, strategy)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and
@@ -45,7 +53,7 @@ Warden::Strategies.add(:password) do
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
-          trigger_login_event(user)
+          trigger_login_event(user, :password)
 
           success!(user, :message => "Success")
           request.flash['logged'] = true
@@ -73,7 +81,7 @@ Warden::Strategies.add(:enable_account_token) do
         user.enable_account_token = nil
         user.save
 
-        trigger_login_event(user)
+        trigger_login_event(user, :enable_account_token)
 
         success!(user)
       else
@@ -97,7 +105,7 @@ Warden::Strategies.add(:oauth) do
     oauth_api = params[:oauth_api]
     user = oauth_api.user
     if user && oauth_api.config.valid_method_for?(user)
-      trigger_login_event(user)
+      trigger_login_event(user, :oauth)
 
       success!(user)
     else
@@ -258,7 +266,7 @@ Warden::Strategies.add(:user_creation) do
     return fail! unless user_creation
 
     if user_creation.autologin?
-      trigger_login_event(user)
+      trigger_login_event(user, :user_creation)
 
       success!(user, :message => "Success")
     else

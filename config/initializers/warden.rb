@@ -274,6 +274,7 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
 end
 
 Warden::Manager.after_set_user do |user, auth, opts|
+  # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
   should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
 
   throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?

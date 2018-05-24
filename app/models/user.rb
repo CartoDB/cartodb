@@ -242,6 +242,8 @@ class User < Sequel::Model
       if value.length >= MAX_PASSWORD_LENGTH
         errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
       end
+
+      validate_different_passwords(nil, self.class.password_digest(value, salt), key)
     end
 
     errors[key].empty?
@@ -594,6 +596,7 @@ class User < Sequel::Model
     # Mark as changing passwords
     @changing_passwords = true
 
+    @old_password = old_password
     @new_password = new_password_value
     @new_password_confirmation = new_password_confirmation_value
 
@@ -601,6 +604,7 @@ class User < Sequel::Model
     return unless @old_password_validated
 
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
+    return unless validate_different_passwords(@old_password, @new_password)
 
     # Must be set AFTER validations
     set_last_password_change_date
@@ -608,9 +612,30 @@ class User < Sequel::Model
     self.password = new_password_value
   end
 
+  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
+    unless different_passwords?(old_password, new_password)
+      errors.add(key, 'New password cannot be the same as old password')
+    end
+    errors[key].empty?
+  end
+
+  def different_passwords?(old_password = nil, new_password = nil)
+    return true if new? || (@changing_passwords && !old_password)
+    old_password = carto_user.crypted_password_was unless old_password.present?
+    new_password = crypted_password unless old_password.present? && new_password.present?
+
+    old_password.present? && old_password != new_password
+  end
+
   def validate_old_password(old_password)
     (self.class.password_digest(old_password, salt) == crypted_password) ||
       (oauth_signin? && last_password_change_date.nil?)
+  end
+
+  def valid_password_confirmation(password)
+    valid = password.present? && validate_old_password(password)
+    errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
+    valid
   end
 
   def should_display_old_password?
@@ -1796,9 +1821,11 @@ class User < Sequel::Model
     destroy
   end
 
-  def create_api_keys
-    carto_user = Carto::User.find(id)
+  def carto_user
+    @carto_user ||= Carto::User.find(id)
+  end
 
+  def create_api_keys
     carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
     carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
   end

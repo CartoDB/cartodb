@@ -44,7 +44,8 @@ class Carto::User < ActiveRecord::Base
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
-                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host".freeze
+                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host, " \
+                   "users.industry, users.company, users.phone, users.job_role".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -480,6 +481,17 @@ class Carto::User < ActiveRecord::Base
     (!oauth_signin? || !last_password_change_date.nil?) &&
       !created_with_http_authentication? &&
       !organization.try(:auth_saml_enabled?)
+  end
+
+  def validate_old_password(old_password)
+    (self.class.password_digest(old_password, salt) == crypted_password) ||
+      (oauth_signin? && last_password_change_date.nil?)
+  end
+
+  def valid_password_confirmation(password)
+    valid = password.present? && validate_old_password(password)
+    errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
+    valid
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?

@@ -27,7 +27,7 @@ class Admin::UsersController < Admin::AdminController
 
   def profile
     if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/profile_migration/index.html", layout: false)
+      return render(file: "public/static/profile/index.html", layout: false)
     end
 
     @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
@@ -39,7 +39,7 @@ class Admin::UsersController < Admin::AdminController
 
   def account
     if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/account_migration/index.html", layout: false)
+      return render(file: "public/static/account/index.html", layout: false)
     end
 
     respond_to do |format|
@@ -65,7 +65,7 @@ class Admin::UsersController < Admin::AdminController
       @user.set_fields(attributes, [:email])
     end
 
-    raise Sequel::ValidationFailed.new('Validation failed') unless @user.valid?
+    raise Sequel::ValidationFailed.new('Validation failed') unless @user.errors.try(:empty?) && @user.valid?
     @user.update_in_central
     @user.save(raise_on_failure: true)
 
@@ -88,6 +88,8 @@ class Admin::UsersController < Admin::AdminController
       @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 
+    @user.valid_password_confirmation(attributes.fetch(:password_confirmation, ''))
+
     # This fields are optional
     @user.name = attributes.fetch(:name, nil)
     @user.last_name = attributes.fetch(:last_name, nil)
@@ -99,6 +101,7 @@ class Admin::UsersController < Admin::AdminController
 
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
 
+    raise Sequel::ValidationFailed.new(@user.errors.full_messages.join(', ')) unless @user.errors.empty?
     @user.update_in_central
     @user.save(raise_on_failure: true)
 

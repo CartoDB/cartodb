@@ -28,13 +28,14 @@ describe Superadmin::AccountTypesController do
       }.to change(Carto::AccountType, :count).by(1)
     end
 
-    it 'should raise an exception if account_type already exists' do
+    it 'should update account_type if it already exists' do
       @account_type_param[:account_type] = @account_type.account_type
 
-      post superadmin_account_types_url, { account_type: @account_type_param }.to_json, superadmin_headers
+      expect {
+        post superadmin_account_types_url, { account_type: @account_type_param }.to_json, superadmin_headers
 
-      response.status.should == 500
-      JSON.parse(response.body)['errors']['message'].should =~ /duplicate key/
+        response.status.should == 201
+      }.to change(Carto::AccountType, :count).by(0)
     end
   end
 

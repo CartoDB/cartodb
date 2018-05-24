@@ -5,7 +5,7 @@ require_dependency 'carto/export/layer_exporter'
 # 1.0.0: export organization metadata
 module Carto
   module OrganizationMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.0'.freeze
+    CURRENT_VERSION = '1.0.1'.freeze
     EXPORTED_ORGANIZATION_ATTRIBUTES = [
       :id, :seats, :quota_in_bytes, :created_at, :updated_at, :name, :avatar_url, :owner_id, :website, :description,
       :display_name, :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota, :auth_token,
@@ -16,7 +16,7 @@ module Carto
       :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota, :obs_general_block_price,
       :salesforce_datasource_enabled, :viewer_seats, :geocoder_provider, :isolines_provider, :routing_provider,
       :auth_github_enabled, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :builder_enabled,
-      :auth_saml_configuration, :no_map_logo
+      :auth_saml_configuration, :no_map_logo, :password_expiration_in_d
     ].freeze
 
     def compatible_version?(version)

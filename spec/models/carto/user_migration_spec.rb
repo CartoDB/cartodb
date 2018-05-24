@@ -299,6 +299,17 @@ describe 'UserMigration' do
       org_import.run_import.should eq true
     end
 
+    it 'import failing import visualizations with metadata_only option' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+
+      imp = org_import
+      imp.import_data = false
+      imp.save!
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      imp.reload
+    end
+
     it 'should fail if importing an already existing organization with metadata' do
       org_import.run_import.should eq true
       imp = org_import

@@ -162,8 +162,8 @@ module Carto
 
     def rollback_import_data(package)
       org_import? ? self.organization = nil : self.user = nil
-      return unless import_data?
       save!
+      return unless import_data?
 
       import_job = CartoDB::DataMover::ImportJob.new(
         import_job_arguments(package.data_dir).merge(rollback: true,

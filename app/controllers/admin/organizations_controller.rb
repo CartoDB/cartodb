@@ -16,8 +16,6 @@ class Admin::OrganizationsController < Admin::AdminController
   before_filter :load_notification, only: [:destroy_notification]
   before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications,
                                                          :new_notification]
-  before_filter :load_has_new_dashboard, only: [:show, :auth, :auth_update, :settings, :settings_update,
-                                                :groups, :notifications, :new_notification, :regenerate_all_api_keys]
   helper_method :show_billing
 
   layout 'application'
@@ -177,10 +175,6 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   private
-
-  def load_has_new_dashboard
-    @has_new_dashboard = current_user.engine_enabled? && current_user.has_feature_flag?('dashboard_migration')
-  end
 
   def load_organization_and_members
     raise RecordNotFound unless current_user.organization_admin?

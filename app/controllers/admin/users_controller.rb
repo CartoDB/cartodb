@@ -21,6 +21,8 @@ class Admin::UsersController < Admin::AdminController
   before_filter :load_dashboard_notifications, only: [:account, :profile]
   before_filter :load_organization_notifications, only: [:account, :profile]
 
+  skip_before_filter :check_user_state, only: [:delete]
+
   layout 'application'
 
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
@@ -88,6 +90,8 @@ class Admin::UsersController < Admin::AdminController
       @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 
+    @user.valid_password_confirmation(attributes.fetch(:password_confirmation, ''))
+
     # This fields are optional
     @user.name = attributes.fetch(:name, nil)
     @user.last_name = attributes.fetch(:last_name, nil)
@@ -99,6 +103,7 @@ class Admin::UsersController < Admin::AdminController
 
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
 
+    raise Sequel::ValidationFailed.new(@user.errors.full_messages.join(', ')) unless @user.errors.empty?
     @user.update_in_central
     @user.save(raise_on_failure: true)
 

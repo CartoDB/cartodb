@@ -1835,9 +1835,16 @@ class User < Sequel::Model
   end
 
   def password_expired?
-    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
-    return false unless password_expiration_in_s && password_set?
-    (last_password_change_date || created_at) + password_expiration_in_s < Time.now
+    return false unless password_expiration_in_d && password_set?
+    password_date + password_expiration_in_d.days.to_i < Time.now
+  end
+
+  def password_expiration_in_d
+    organization_user? ? organization.password_expiration_in_d : Cartodb.get_config(:passwords, 'expiration_in_d')
+  end
+
+  def password_date
+    last_password_change_date || created_at
   end
 
   private

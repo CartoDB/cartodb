@@ -179,6 +179,7 @@
     "start": "grunt watch:css & webpack --progress --watch --config webpack/builder/webpack.dev.config.js",
     "dashboard": "grunt watch:css & webpack --progress --watch --config webpack/dashboard/webpack.dev.config.js",
     "webpack:dashboard": "webpack --progress --watch --config webpack/dashboard/webpack.dev.config.js",
+    "webpack:builder": "webpack --progress --watch --config webpack/builder/webpack.dev.config.js",
     "start:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "dev": "webpack --progress --config webpack/builder/webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"

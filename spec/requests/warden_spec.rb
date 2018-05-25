@@ -74,7 +74,7 @@ describe 'Warden' do
     end
 
     it 'allows access for non-expired session' do
-      Cartodb.with_config(passwords: { 'expiration_in_s' => nil }) do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
         login
 
         host! "#{@user.username}.localhost.lan"
@@ -87,8 +87,8 @@ describe 'Warden' do
     it 'UI redirects to login page if password is expired' do
       login
 
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
-        Delorean.jump(30.seconds)
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
+        Delorean.jump(2.days)
 
         host! "#{@user.username}.localhost.lan"
         get dashboard_url
@@ -104,8 +104,8 @@ describe 'Warden' do
     it 'API returns 403 with an error if password is expired' do
       login
 
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
-        Delorean.jump(30.seconds)
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
+        Delorean.jump(2.days)
 
         host! "#{@user.username}.localhost.lan"
         get_json api_v3_users_me_url
@@ -119,7 +119,7 @@ describe 'Warden' do
     it 'does not allow access password_change if password is not expired' do
       login
 
-      Cartodb.with_config(passwords: { 'expiration_in_s' => nil }) do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
         host! "#{@user.username}.localhost.lan"
         get edit_password_change_path(@user.username)
 
@@ -128,8 +128,8 @@ describe 'Warden' do
     end
 
     it 'does not validate password expiration for API-key requests' do
-      Cartodb.with_config(passwords: { 'expiration_in_s' => 15 }) do
-        Delorean.jump(30.seconds)
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
+        Delorean.jump(2.days)
 
         get_json api_v3_users_me_url, user_domain: @user.username, api_key: @user.api_key do |response|
           expect(response.status).to eq 200

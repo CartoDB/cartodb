@@ -41,13 +41,13 @@
   justify-content: space-between;
 
   .Editor-fillContainer--Column {
-    width: 70%;
+    width: 66.67%;
     margin-left: $baseSize;
   }
 
   .Editor-fillContainer--ColorBarContainer {
     position: relative;
-    width: 30%;
+    width: 33.33%;
 
     // Grey Left Bar separator
     &::after {

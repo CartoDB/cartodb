@@ -35,6 +35,8 @@ describe Carto::UserMetadataExportService do
 
     CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 
+    @user.synchronization_oauths.create!(service: 'gdrive', token: 'wadus')
+
     # Convert @table_visualization into a common data imported table
     sync = FactoryGirl.create(:carto_synchronization, user: @user)
     @table_visualization.update_attributes!(synchronization: sync)
@@ -403,6 +405,7 @@ describe Carto::UserMetadataExportService do
 
     source_visualizations = @user.visualizations.order(:id).reject { |v| !v.remote? && !v.map }.map(&:attributes)
     source_tweets = @user.search_tweets.map(&:attributes)
+    synchronization_oauths = @user.synchronization_oauths.map(&:attributes)
     destroy_user
 
     # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
@@ -432,6 +435,12 @@ describe Carto::UserMetadataExportService do
       expect(st1.state).to eq st2['state']
     end
     @imported_user.static_notifications.notifications.should eq full_export[:user][:notifications]
+
+    @imported_user.synchronization_oauths.zip(synchronization_oauths).each do |so1, so2|
+      expect(so1.user_id).to eq @imported_user.id
+      expect(so1.service).to eq so2['service']
+      expect(so1.token).to eq so2['token']
+    end
   end
 
   def full_export_import_viewer(path)

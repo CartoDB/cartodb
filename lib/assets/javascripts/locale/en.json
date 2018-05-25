@@ -963,12 +963,12 @@
           },
           "link": {
             "type": "LINK",
-            "title": "Only accessible with link",
+            "title": "Public—with link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {
             "type": "PASSWORD",
-            "title": "Password",
+            "title": "Public—with password",
             "body": "Set a password and share only with specific people",
             "placeholder": "Type your password"
           },
@@ -1373,6 +1373,15 @@
           "cancel": "Cancel",
           "confirm": "Ok, delete it"
         }
+      },
+      "privacy-warning": {
+        "title": {
+          "visualization": "You are about to publish this visualization for public view",
+          "dataset": "You are about to make this dataset public, making it visible in your public profile"
+        },
+        "description": "Any personal data that you have used to create it will also be publicly available",
+        "cancel": "Cancel",
+        "confirm": "Ok, publish it"
       }
     },
     "error": {

@@ -90,6 +90,15 @@ describe Carto::UserMetadataExportService do
     end
   end
 
+  describe 'import v 1.0.4' do
+    it 'without synchronization oauths' do
+      full_export_1_0_4 = full_export.except(:synchronization_oauths)
+      user = import_user_from_export(full_export_1_0_4)
+
+      expect(user.synchronization_oauths).to be_empty
+    end
+  end
+
   describe 'import v 1.0.3' do
     it 'immports correctly' do
       import_user_from_export(full_export_one_zero_three)
@@ -337,6 +346,10 @@ describe Carto::UserMetadataExportService do
       expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
     end
 
+    export[:synchronization_oauths].zip(user.synchronization_oauths).each do |exported_so, so|
+      expect_export_matches_synchronization_oauth(exported_so, so)
+    end
+
     expect_export_matches_rate_limit(export[:rate_limit], user.rate_limit)
   end
 
@@ -362,6 +375,13 @@ describe Carto::UserMetadataExportService do
     expect(exported_search_tweet[:state]).to eq search_tweet.state
     expect(exported_search_tweet[:created_at]).to eq search_tweet.created_at
     expect(exported_search_tweet[:updated_at]).to eq search_tweet.updated_at
+  end
+
+  def expect_export_matches_synchronization_oauth(exported_so, so)
+    expect(exported_so[:service]).to eq so.service
+    expect(exported_so[:token]).to eq so.token
+    expect(exported_so[:created_at]).to eq so.created_at
+    expect(exported_so[:updated_at]).to eq so.updated_at
   end
 
   def expect_export_matches_rate_limit(exported_rate_limit, rate_limit)
@@ -478,7 +498,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.4",
+      version: "1.0.5",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -711,7 +731,15 @@ describe Carto::UserMetadataExportService do
             :"layer-style-onboarding" => true,
             :"layer-analyses-onboarding" => true
           }
-        }
+        },
+        synchronization_oauths: [
+          {
+            service: 'gdrive',
+            token: '1234567890',
+            created_at: DateTime.now,
+            updated_at: DateTime.now
+          }
+        ]
       }
     }
   end

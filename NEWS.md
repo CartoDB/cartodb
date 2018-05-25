@@ -1,6 +1,21 @@
 Development
 -----------
 
+### Features
+* Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
+
+### Bug fixes / enhancements
+* Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+
+
+
+4.12.x (2018-05-24)
+---
+
+### NOTICE
+OnPremises 2.2.0 was closed in tag 4.11.113, pointing to this commit: [a236036](https://github.com/CartoDB/cartodb/commit/a2360360bdd42706e5fb57e3729811c41e292c5e)
+
+
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.22.0`. Run the following to have it available:
 ```shell
@@ -187,6 +202,9 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix layers list item border color (https://github.com/CartoDB/cartodb/pull/14002)
+* Remove padding to delete button in analyses (https://github.com/CartoDB/cartodb/pull/14001)
+* Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
 * Fix copy on Twitter connector deprecation
 * Fix apply button loading state for queries that alter the data (https://github.com/CartoDB/cartodb/pull/13979)
 * Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)

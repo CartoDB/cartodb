@@ -2,6 +2,13 @@ require 'json'
 require 'carto/export/layer_exporter'
 require 'carto/export/data_import_exporter'
 
+# Not migrated
+# client_applications & friends -> deprecated?
+# likes -> difficult to do between clouds
+# snapshots -> difficult to do between clouds, not in use yet
+# tags -> regenerated from tables
+# visualization_export -> only purpose would be logging
+
 # Version History
 # 1.0.0: export user metadata
 # 1.0.1: export search tweets

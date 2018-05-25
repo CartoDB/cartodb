@@ -1,6 +1,10 @@
 require 'json'
 require_dependency 'carto/export/layer_exporter'
 
+# Not migrated
+# invitations -> temporary by nature
+# ldap_configurations -> not enabled in SaaS
+
 # Version History
 # 1.0.0: export organization metadata
 module Carto

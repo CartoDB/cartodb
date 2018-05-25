@@ -17,7 +17,7 @@ require 'carto/export/data_import_exporter'
 # 1.0.5: synchronization_oauths and connector configurations
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.4'.freeze
+    CURRENT_VERSION = '1.0.5'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -103,7 +103,7 @@ module Carto
 
       user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
 
-      user.synchronization_oauths = build_synchronization_oauths_from_hash(so)
+      user.synchronization_oauths = build_synchronization_oauths_from_hash(exported_user[:synchronization_oauths])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -151,7 +151,7 @@ module Carto
     def build_synchronization_oauths_from_hash(exported_array)
       return [] unless exported_array.present?
 
-      exported_array-map { |so| build_synchronization_oauths_from_hash(so) }
+      exported_array.map { |so| build_synchronization_oauth_from_hash(so) }
     end
 
     def build_synchronization_oauth_from_hash(exported_hash)

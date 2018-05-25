@@ -14,6 +14,7 @@ require 'carto/export/data_import_exporter'
 # 1.0.1: export search tweets
 # 1.0.3: export rate limits
 # 1.0.4: company and phone in users table
+# 1.0.5: synchronization_oauths and connector configurations
 module Carto
   module UserMetadataExportServiceConfiguration
     CURRENT_VERSION = '1.0.4'.freeze
@@ -102,6 +103,8 @@ module Carto
 
       user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
 
+      user.synchronization_oauths = build_synchronization_oauths_from_hash(so)
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user
@@ -144,6 +147,21 @@ module Carto
 
       rate_limit
     end
+
+    def build_synchronization_oauths_from_hash(exported_array)
+      return [] unless exported_array.present?
+
+      exported_array-map { |so| build_synchronization_oauths_from_hash(so) }
+    end
+
+    def build_synchronization_oauth_from_hash(exported_hash)
+      SynchronizationOauth.new(
+        service: exported_hash[:service],
+        token: exported_hash[:token],
+        created_at: exported_hash[:created_at],
+        updated_at: exported_hash[:updated_at]
+      )
+    end
   end
 
   module UserMetadataExportServiceExporter
@@ -180,6 +198,8 @@ module Carto
       user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
 
       user_hash[:notifications] = user.static_notifications.notifications
+
+      user_hash[:synchronization_oauths] = user.synchronization_oauths.map { |so| export_synchronization_oauth(so) }
 
       user_hash
     end
@@ -223,6 +243,15 @@ module Carto
       {
         id: rate_limit.id,
         limits: rate_limit.api_attributes
+      }
+    end
+
+    def export_synchronization_oauth(sync_oauth)
+      {
+        service: sync_oauth.service,
+        token: sync_oauth.token,
+        created_at: sync_oauth.created_at,
+        updated_at: sync_oauth.updated_at
       }
     end
   end

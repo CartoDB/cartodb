@@ -42,7 +42,8 @@
 
   .Editor-fillContainer--Column {
     width: 66.67%;
-    margin-left: $baseSize;
+    margin-right: $baseSize;
+    padding: $baseSize $baseSize $baseSize 0;
   }
 
   .Editor-fillContainer--ColorBarContainer {

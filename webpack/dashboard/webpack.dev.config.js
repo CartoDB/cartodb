@@ -24,6 +24,7 @@ const entryPoints = {
   profile_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/profile.js'),
   sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
   confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
+  dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/dashboard.js'),
   organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js')
 };
 

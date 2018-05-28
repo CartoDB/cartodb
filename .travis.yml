@@ -3,9 +3,15 @@ node_js:
   - "6.9.2"
 dist: trusty
 before_install:
+
+  - python --version
   - git submodule update --init --recursive
   - git fetch origin master:refs/remotes/origin/master --depth=1
+  - sudo apt-get install --reinstall python-setuptools
   - sudo apt-get install python-pip
+  - sudo apt-get install libffi-dev libssl-dev
+  - pip install requests[security]
+  - pip install --upgrade pip
   - pip install ansible==1.9.6
   - pip --version
   - ansible --version

@@ -1,4 +1,5 @@
 module Carto
+  # Note: Connector provider IDs are not kept between clouds, so we look them up by name
   module ConnectorConfigurationImporter
     private
 

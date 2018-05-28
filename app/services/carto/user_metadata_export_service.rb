@@ -31,6 +31,8 @@ module Carto
       :asset_host, :state, :company, :phone, :industry, :job_role
     ].freeze
 
+    BLANK_UUID = '00000000-0000-0000-0000-000000000000'.freeze
+
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
     end
@@ -65,9 +67,17 @@ module Carto
     end
 
     def save_imported_search_tweet(search_tweet, user)
-      persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
-      search_tweet.data_import = persisted_import if persisted_import
-      search_tweet.table_id = search_tweet.data_import.table_id
+      if search_tweet.data_import
+        persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
+        search_tweet.data_import = persisted_import if persisted_import
+        search_tweet.table_id = search_tweet.data_import.table_id
+      else
+        # Some search tweets can be exported without data import if the FK point to a non-existent data import.
+        # However, this field is NOT NULL, so we cannot leave it empty.
+        # We could skip the import of the tweet, but instead, we keep it with an invalid ID (like in the source), so
+        # we can still correctly compute quota usage.
+        search_tweet.data_import_id = BLANK_UUID
+      end
       search_tweet.user = user
       search_tweet.save!
     end

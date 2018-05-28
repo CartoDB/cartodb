@@ -155,9 +155,9 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'imports 1.0.1 (without static notifications)' do
-      user = test_import_user_from_export(full_export_one_zero_one)
+      user =  test_import_user_from_export(full_export_one_zero_one)
 
-      expect(user.static_notifications).to be_nil
+      expect(user.static_notifications.notifications).to be_empty
     end
   end
 

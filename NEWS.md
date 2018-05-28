@@ -6,6 +6,7 @@ Development
 
 ### Bug fixes / enhancements
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+* Import / export synchronization oauths and connector configurations (#14003)
 
 
 

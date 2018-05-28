@@ -13,11 +13,13 @@ describe Carto::UserMetadataExportService do
     bypass_named_maps
     @feature_flag = FactoryGirl.create(:carto_feature_flag)
     @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
+    @connector_provider = FactoryGirl.create(:connector_provider)
   end
 
   after(:all) do
     @feature_flag.destroy
     @limits_feature_flag.destroy
+    @connector_provider.destroy
   end
 
   def create_user_with_basemaps_assets_visualizations
@@ -36,6 +38,7 @@ describe Carto::UserMetadataExportService do
     CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 
     @user.synchronization_oauths.create!(service: 'gdrive', token: 'wadus')
+    FactoryGirl.create(:connector_configuration, connector_provider: @connector_provider, user: @user)
 
     # Convert @table_visualization into a common data imported table
     sync = FactoryGirl.create(:carto_synchronization, user: @user)
@@ -350,6 +353,10 @@ describe Carto::UserMetadataExportService do
       expect_export_matches_synchronization_oauth(exported_so, so)
     end
 
+    export[:connector_configurations].zip(user.connector_configurations).each do |exported_cc, cc|
+      expect_export_matches_connector_configuration(exported_cc, cc)
+    end
+
     expect_export_matches_rate_limit(export[:rate_limit], user.rate_limit)
   end
 
@@ -382,6 +389,14 @@ describe Carto::UserMetadataExportService do
     expect(exported_so[:token]).to eq so.token
     expect(exported_so[:created_at]).to eq so.created_at
     expect(exported_so[:updated_at]).to eq so.updated_at
+  end
+
+  def expect_export_matches_connector_configuration(exported_cc, cc)
+    expect(exported_cc[:enabled]).to eq cc.enabled
+    expect(exported_cc[:max_rows]).to eq cc.max_rows
+    expect(exported_cc[:created_at]).to eq cc.created_at
+    expect(exported_cc[:updated_at]).to eq cc.updated_at
+    expect(exported_cc[:provider_name]).to eq cc.connector_provider.name
   end
 
   def expect_export_matches_rate_limit(exported_rate_limit, rate_limit)

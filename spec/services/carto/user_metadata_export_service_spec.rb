@@ -100,6 +100,13 @@ describe Carto::UserMetadataExportService do
 
       expect(user.synchronization_oauths).to be_empty
     end
+
+    it 'without connector configurations' do
+      full_export_1_0_4 = full_export.except(:connector_configurations)
+      user = import_user_from_export(full_export_1_0_4)
+
+      expect(user.connector_configurations).to be_empty
+    end
   end
 
   describe 'import v 1.0.3' do
@@ -753,6 +760,15 @@ describe Carto::UserMetadataExportService do
             token: '1234567890',
             created_at: DateTime.now,
             updated_at: DateTime.now
+          }
+        ],
+        connector_configurations: [
+          {
+            created_at: DateTime.now,
+            updated_at: DateTime.now,
+            enabled: true,
+            max_rows: 100000,
+            provider_name: @connector_provider.name
           }
         ]
       }

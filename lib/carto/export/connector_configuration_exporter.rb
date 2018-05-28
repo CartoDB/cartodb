@@ -4,9 +4,9 @@ module Carto
     private
 
     def build_connector_configurations_from_hash(exported_ccs)
-      return [] unless ccs
+      return [] unless exported_ccs
 
-      ccs.map.map { |cc| build_connector_configuration_from_hash(cc) }.compact
+      exported_ccs.map.map { |cc| build_connector_configuration_from_hash(cc) }.compact
     end
 
     def build_connector_configuration_from_hash(exported_cc)
@@ -15,7 +15,7 @@ module Carto
 
       unless provider
         CartoDB::Logger.error(message: 'Missing connector provider during migration', provider_name: provider_name)
-        return
+        raise 'Missing connector provider'
       end
 
       Carto::ConnectorConfiguration.new(
@@ -37,7 +37,7 @@ module Carto
         updated_at: connector_configuration.updated_at,
         enabled: connector_configuration.enabled,
         max_rows: connector_configuration.max_rows,
-        provider_name: connector_provider.name
+        provider_name: connector_configuration.connector_provider.name
       }
     end
   end

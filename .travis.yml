@@ -6,7 +6,7 @@ before_install:
   - git submodule update --init --recursive
   - git fetch origin master:refs/remotes/origin/master --depth=1
   - sudo apt-get install python-pip
-  - install ansible==1.9.6
+  - pip install ansible==1.9.6
   - pip --version
   - ansible --version
 addons:

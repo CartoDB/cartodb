@@ -22,6 +22,12 @@ install:
 script:
   - npm run ci
 
+deploy:
+  provider: script
+  script: bash deploy/deploy.sh
+  on:
+    branch: deploy
+
 notifications:
   email:
     on_success: never

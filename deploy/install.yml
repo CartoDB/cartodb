@@ -1,0 +1,5 @@
+---
+- hosts: 186.10.95.243
+  tasks:
+    - include_vars: ./vars/romeo.yml
+    - include: install-tasks.yml

@@ -1,0 +1,12 @@
+#===================================
+#Manual TO-DO
+# Currently Ansible 2.x is bugged and we can't connect via SSH so that we're using ansible 1.9.x
+#
+#1. run in shell sudo su
+#2. run in shell chmod u=+w /etc/sudoers
+#3. Manually remove from /etc/sudoers Defaults requiretty
+#3.1  mkdir /var/www; mkdir /var/www/html
+#4. Run CircleCI and Ansible in the new machine for the very first time
+#===================================
+
+# Add a line to a file if it does not exist, without passing regexp

@@ -33,6 +33,8 @@ describe Carto::OrganizationMetadataExportService do
 
     CartoDB::GeocoderUsageMetrics.new(@owner.username, @organization.name).incr(:geocoder_here, :success_responses)
 
+    FactoryGirl.create(:connector_configuration, connector_provider: @connector_provider, organization: @organization)
+
     @organization.reload
   end
 

@@ -5,7 +5,7 @@ dist: trusty
 before_install:
   - git submodule update --init --recursive
   - git fetch origin master:refs/remotes/origin/master --depth=1
-  - wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py
+  - sudo apt-get install python-pip
   - install ansible==1.9.6
   - pip --version
   - ansible --version

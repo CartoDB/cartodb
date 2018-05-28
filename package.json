@@ -39,6 +39,7 @@
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
     "node-polyglot": "1.0.0",
+    "parse-domains": "^1.0.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
     "postcss-scss": "0.4.0",

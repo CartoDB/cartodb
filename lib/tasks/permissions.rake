@@ -65,8 +65,8 @@ namespace :cartodb do
       i = 0
       permission_query.find_each do |p|
         new_acl = p.acl.reject do |acl|
-            acl[:type] == 'user' && !uids.include?(acl[:id]) ||
-              acl[:type] == 'group' && !gids.include?(acl[:id])
+          acl[:type] == 'user' && !uids.include?(acl[:id]) ||
+            acl[:type] == 'group' && !gids.include?(acl[:id])
         end
 
         if new_acl != p.acl
@@ -76,7 +76,7 @@ namespace :cartodb do
         end
 
         i += 1
-        puts "#{i} / #{total}" if i % 100 == 0
+        puts "#{i} / #{total}" if (i % 100).zero?
       end
     end
   end

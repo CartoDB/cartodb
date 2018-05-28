@@ -159,6 +159,12 @@ describe Carto::UserMetadataExportService do
 
       expect(user.static_notifications.notifications).to be_empty
     end
+
+    it 'imports 1.0.0 (without search tweets)' do
+      user =  test_import_user_from_export(full_export_one_zero_zero)
+
+      expect(user.search_tweets).to be_empty
+    end
   end
 
   describe '#user export + import' do
@@ -281,12 +287,17 @@ describe Carto::UserMetadataExportService do
 
     expect(export[:feature_flags]).to eq user.feature_flags_user.map(&:feature_flag).map(&:name)
 
-    expect(export[:search_tweets].count).to eq user.search_tweets.size
-    export[:search_tweets].zip(user.search_tweets).each do |exported_search_tweet, search_tweet|
-      expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
+    if export[:search_tweets]
+      expect(export[:search_tweets].count).to eq user.search_tweets.size
+      export[:search_tweets].zip(user.search_tweets).each do |exported_search_tweet, search_tweet|
+        expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
+      end
+    else
+      expect(user.search_tweets).to be_empty
     end
 
     if export[:synchronization_oauths]
+      expect(export[:synchronization_oauths].count).to eq user.synchronization_oauths.size
       export[:synchronization_oauths].zip(user.synchronization_oauths).each do |exported_so, so|
         expect_export_matches_synchronization_oauth(exported_so, so)
       end
@@ -295,6 +306,7 @@ describe Carto::UserMetadataExportService do
     end
 
     if export[:connector_configurations]
+      expect(export[:connector_configurations].count).to eq user.connector_configurations.size
       export[:connector_configurations].zip(user.connector_configurations).each do |exported_cc, cc|
         expect_export_matches_connector_configuration(exported_cc, cc)
       end
@@ -725,6 +737,12 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export_one_zero_one) do
     user_hash = full_export_one_zero_two[:user].except!(:notifications)
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_zero) do
+    user_hash = full_export_one_zero_one[:user].except!(:search_tweets)
     full_export[:user] = user_hash
     full_export
   end

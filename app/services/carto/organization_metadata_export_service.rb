@@ -37,7 +37,7 @@ module Carto
     include ConnectorConfigurationImporter
 
     def build_organization_from_json_export(exported_json_string)
-      build_organization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_organization_from_hash_export(JSON.parse(exported_json_string, symbolize_names: true))
     end
 
     def build_organization_from_hash_export(exported_hash)

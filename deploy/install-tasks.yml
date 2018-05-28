@@ -8,5 +8,22 @@
 #3.1  mkdir /var/www; mkdir /var/www/html
 #4. Run CircleCI and Ansible in the new machine for the very first time
 #===================================
-
 # Add a line to a file if it does not exist, without passing regexp
+#
+- name: Create new SSH Key
+  hosts: 127.0.0.1
+  connection: local
+  command: ssh-keygen -f ../files/workstation -N ""
+
+- name: Add SSH public key to user remote
+  authorized_key:
+      user=root
+      pass= "{{ lookup('env','HOST_PASS') }}"
+      key= "{{ lookup('file', '../files/workstation.pub') }}"
+
+- name: Test connection
+  ping:
+        data: "{{item}}"
+  with_list:
+          - "hola"
+          - "chao"

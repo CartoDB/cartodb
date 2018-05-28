@@ -114,7 +114,7 @@ module Carto
   module OrganizationMetadataExportServiceExporter
     include OrganizationMetadataExportServiceConfiguration
     include LayerExporter
-    include ConnectorConfigurationExported
+    include ConnectorConfigurationExporter
 
     def export_organization_json_string(organization)
       export_organization_json_hash(organization).to_json

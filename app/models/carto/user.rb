@@ -68,6 +68,7 @@ class Carto::User < ActiveRecord::Base
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
   has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
+  has_many :connector_configurations, inverse_of: :user, dependent: :destroy
 
   has_many :client_applications, class_name: Carto::ClientApplication
   has_many :oauth_tokens, class_name: Carto::OauthToken

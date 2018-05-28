@@ -1,6 +1,7 @@
 require 'json'
 require 'carto/export/layer_exporter'
 require 'carto/export/data_import_exporter'
+require_dependency 'carto/export/connector_configuration_exporter'
 
 # Not migrated
 # client_applications & friends -> deprecated?
@@ -48,6 +49,7 @@ module Carto
     include UserMetadataExportServiceConfiguration
     include LayerImporter
     include DataImportImporter
+    include ConnectorConfigurationImporter
 
     def build_user_from_json_export(exported_json_string)
       build_user_from_hash_export(parse_json(exported_json_string))
@@ -104,6 +106,8 @@ module Carto
       user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
 
       user.synchronization_oauths = build_synchronization_oauths_from_hash(exported_user[:synchronization_oauths])
+
+      user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -168,6 +172,7 @@ module Carto
     include UserMetadataExportServiceConfiguration
     include LayerExporter
     include DataImportExporter
+    include ConnectorConfigurationExporter
 
     def export_user_json_string(user)
       export_user_json_hash(user).to_json
@@ -200,6 +205,10 @@ module Carto
       user_hash[:notifications] = user.static_notifications.notifications
 
       user_hash[:synchronization_oauths] = user.synchronization_oauths.map { |so| export_synchronization_oauth(so) }
+
+      user_hash[:connector_configurations] = user.connector_configurations.map do |cc|
+        export_connector_configuration(cc)
+      end
 
       user_hash
     end

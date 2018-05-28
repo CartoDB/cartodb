@@ -1,5 +1,6 @@
 require 'json'
 require_dependency 'carto/export/layer_exporter'
+require_dependency 'carto/export/connector_configuration_exporter'
 
 # Not migrated
 # invitations -> temporary by nature
@@ -31,6 +32,7 @@ module Carto
   module OrganizationMetadataExportServiceImporter
     include OrganizationMetadataExportServiceConfiguration
     include LayerImporter
+    include ConnectorConfigurationImporter
 
     def build_organization_from_json_export(exported_json_string)
       build_organization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
@@ -57,6 +59,10 @@ module Carto
       organization.notifications = exported_organization[:notifications].map do |notification|
         build_notification_from_hash(notification.symbolize_keys)
       end
+
+      organization.connector_configurations = build_connector_configurations_from_hash(
+        exported_organization[:connector_configurations]
+      )
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       organization.id = exported_organization[:id]
@@ -108,6 +114,7 @@ module Carto
   module OrganizationMetadataExportServiceExporter
     include OrganizationMetadataExportServiceConfiguration
     include LayerExporter
+    include ConnectorConfigurationExported
 
     def export_organization_json_string(organization)
       export_organization_json_hash(organization).to_json
@@ -128,6 +135,9 @@ module Carto
       organization_hash[:assets] = organization.assets.map { |a| export_asset(a) }
       organization_hash[:groups] = organization.groups.map { |g| export_group(g) }
       organization_hash[:notifications] = organization.notifications.map { |n| export_notification(n) }
+      organization_hash[:connector_configurations] = organization.connector_configurations.map do |cc|
+        export_connector_configuration(cc)
+      end
 
       organization_hash
     end

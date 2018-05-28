@@ -57,14 +57,12 @@ describe Carto::UserMetadataExportService do
     @st1 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
     @st2 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id)
 
+    # Rate limits
+    sequel_user = ::User[@user.id]
+    sequel_user.rate_limit_id = FactoryGirl.create(:rate_limits).id
+    sequel_user.save
     @user.reload
-  end
 
-  def create_user_with_rate_limits
-    create_user_with_basemaps_assets_visualizations
-    user = ::User[@user.id]
-    user.rate_limit_id = FactoryGirl.create(:rate_limits).id
-    user.save
     @user.reload
   end
 
@@ -87,73 +85,9 @@ describe Carto::UserMetadataExportService do
 
   let(:service) { Carto::UserMetadataExportService.new }
 
-  describe '#import from fixture' do
-    describe 'import latest' do
-      it 'imports correctly' do
-        test_import_user_from_export(full_export)
-      end
-    end
-
-    describe 'import v 1.0.4' do
-      it 'without synchronization oauths' do
-        full_export_1_0_4 = full_export.except(:synchronization_oauths)
-        user = test_import_user_from_export(full_export_1_0_4)
-
-        expect(user.synchronization_oauths).to be_empty
-      end
-
-      it 'without connector configurations' do
-        full_export_1_0_4 = full_export.except(:connector_configurations)
-        user = test_import_user_from_export(full_export_1_0_4)
-
-        expect(user.connector_configurations).to be_empty
-      end
-    end
-
-    describe 'import v 1.0.3' do
-      it 'immports correctly' do
-        test_import_user_from_export(full_export_one_zero_three)
-      end
-    end
-
-    describe 'import v 1.0.2' do
-      it 'imports correctly' do
-        test_import_user_from_export(full_export_one_zero_two)
-      end
-    end
-
-    describe 'import v 1.0.1' do
-      it 'imports correctly' do
-        test_import_user_from_export(full_export_one_zero_one)
-      end
-    end
-  end
-
-  describe '#user export 1.0.2' do
+  describe '#export' do
     before(:all) do
       create_user_with_basemaps_assets_visualizations
-    end
-
-    after(:all) do
-      destroy_user
-    end
-
-    it 'exports' do
-      export = service.export_user_json_hash(@user)
-
-      expect_export_matches_user(export[:user], @user)
-    end
-
-    it 'includes all user model attributes' do
-      export = service.export_user_json_hash(@user)
-
-      expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit])
-    end
-  end
-
-  describe '#user export latest' do
-    before(:all) do
-      create_user_with_rate_limits
     end
 
     after(:all) do
@@ -181,30 +115,49 @@ describe Carto::UserMetadataExportService do
           st.destroy
         end
       end
+
+      @user.destroy if @user
+    end
+
+    def test_import_user_from_export(export)
+      @user = service.build_user_from_hash_export(export)
+      create_account_type_fg('FREE')
+      @search_tweets = service.build_search_tweets_from_hash_export(export)
+      @search_tweets.each { |st| service.save_imported_search_tweet(st, @user) }
+      @user.save!
+
+      expect_export_matches_user(export[:user], @user)
+      @user
     end
 
     it 'imports latest' do
-      user = service.build_user_from_hash_export(full_export)
-      @search_tweets = service.build_search_tweets_from_hash_export(full_export)
-      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
-
-      expect_export_matches_user(full_export[:user], user)
+      test_import_user_from_export(full_export)
     end
 
-    it 'imports 1.0.3' do
-      user = service.build_user_from_hash_export(full_export_one_zero_three)
-      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_three)
-      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
+    it 'imports 1.0.4 (without synchornization oauths nor connector configurations)' do
+      user = test_import_user_from_export(full_export_one_zero_four)
 
-      expect_export_matches_user(full_export_one_zero_three[:user], user)
+      expect(user.synchronization_oauths).to be_empty
+      expect(user.connector_configurations).to be_empty
     end
 
-    it 'imports 1.0.2' do
-      user = service.build_user_from_hash_export(full_export_one_zero_two)
-      @search_tweets = service.build_search_tweets_from_hash_export(full_export_one_zero_two)
-      @search_tweets.each { |st| service.save_imported_search_tweet(st, user) }
+    it 'imports 1.0.3 (without company nor phone)' do
+      user = test_import_user_from_export(full_export_one_zero_three)
 
-      expect_export_matches_user(full_export_one_zero_two[:user], user)
+      expect(user.company).to be_nil
+      expect(user.phone).to be_nil
+    end
+
+    it 'imports 1.0.2 (without rate limits)' do
+      user = test_import_user_from_export(full_export_one_zero_two)
+
+      expect(user.rate_limit).to be_nil
+    end
+
+    it 'imports 1.0.1 (without static notifications)' do
+      user = test_import_user_from_export(full_export_one_zero_one)
+
+      expect(user.static_notifications).to be_nil
     end
   end
 
@@ -213,45 +166,20 @@ describe Carto::UserMetadataExportService do
       destroy_user
     end
 
-    it 'export + import 1.0.2' do
+    it 'export + import latest' do
       create_user_with_basemaps_assets_visualizations
       export_import(@user)
     end
-
-    it 'export + import latest' do
-      create_user_with_rate_limits
-      export_import(@user)
-    end
   end
 
-  describe '#full export + import (user and visualizations) 1.0.2' do
-    after :each do
-      destroy_user(@imported_user)
-    end
-
-    it 'export + import user and visualizations' do
-      Dir.mktmpdir do |path|
-        create_user_with_basemaps_assets_visualizations
-        full_export_import(path)
-      end
-    end
-
-    it 'export + import user and visualizations for a viewer user' do
-      Dir.mktmpdir do |path|
-        create_user_with_basemaps_assets_visualizations
-        full_export_import_viewer(path)
-      end
-    end
-  end
-
-  describe '#full export + import (user and visualizations) latest' do
+  describe '#full export + import (user and visualizations)' do
     after :each do
       destroy_user(@imported_user)
     end
 
     it 'export + import user with rate limit and visualizations' do
       Dir.mktmpdir do |path|
-        create_user_with_rate_limits
+        create_user_with_basemaps_assets_visualizations
         full_export_import(path)
 
         expect_rate_limits_saved_to_redis(@user.username)
@@ -260,7 +188,7 @@ describe Carto::UserMetadataExportService do
 
     it 'export + import user and visualizations for a viewer user' do
       Dir.mktmpdir do |path|
-        create_user_with_rate_limits
+        create_user_with_basemaps_assets_visualizations
         full_export_import_viewer(path)
 
         expect_rate_limits_saved_to_redis(@user.username)
@@ -269,7 +197,7 @@ describe Carto::UserMetadataExportService do
 
     it 'skips a canonical visualization without a user table' do
       Dir.mktmpdir do |path|
-        create_user_with_rate_limits
+        create_user_with_basemaps_assets_visualizations
         # Set up fake visualizations
         source_visualizations = @user.visualizations.order(:id).map(&:attributes)
         canonical_without_table = source_visualizations.find { |v| v['type'] == 'table' }
@@ -298,7 +226,7 @@ describe Carto::UserMetadataExportService do
 
     it 'skips not remote visualizations without a map' do
       Dir.mktmpdir do |path|
-        create_user_with_rate_limits
+        create_user_with_basemaps_assets_visualizations
         @user.visualizations.find { |v| !v.remote? }.map.delete
 
         full_export_import(path)
@@ -308,7 +236,7 @@ describe Carto::UserMetadataExportService do
 
     it 'keeps visualization password' do
       Dir.mktmpdir do |path|
-        create_user_with_rate_limits
+        create_user_with_basemaps_assets_visualizations
 
         @user.update_attributes(private_maps_enabled: true, private_tables_enabled: true)
         v = @user.visualizations.first
@@ -358,12 +286,20 @@ describe Carto::UserMetadataExportService do
       expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
     end
 
-    export[:synchronization_oauths].zip(user.synchronization_oauths).each do |exported_so, so|
-      expect_export_matches_synchronization_oauth(exported_so, so)
+    if export[:synchronization_oauths]
+      export[:synchronization_oauths].zip(user.synchronization_oauths).each do |exported_so, so|
+        expect_export_matches_synchronization_oauth(exported_so, so)
+      end
+    else
+      expect(user.synchronization_oauths).to be_empty
     end
 
-    export[:connector_configurations].zip(user.connector_configurations).each do |exported_cc, cc|
-      expect_export_matches_connector_configuration(exported_cc, cc)
+    if export[:connector_configurations]
+      export[:connector_configurations].zip(user.connector_configurations).each do |exported_cc, cc|
+        expect_export_matches_connector_configuration(exported_cc, cc)
+      end
+    else
+      expect(user.connector_configurations).to be_empty
     end
 
     expect_export_matches_rate_limit(export[:rate_limit], user.rate_limit)
@@ -415,19 +351,6 @@ describe Carto::UserMetadataExportService do
     rate_limit.api_attributes.each do |k, v|
       expect(exported_rate_limit[:limits][k]).to eq v
     end
-  end
-
-  def test_import_user_from_export(export)
-    # Skip search tweets since they are imported by a different method
-    export[:user][:search_tweets] = []
-
-    user = service.build_user_from_hash_export(export)
-    create_account_type_fg('FREE')
-    user.save!
-
-    expect_export_matches_user(export[:user], user)
-
-    user.destroy
   end
 
   def export_import(user)
@@ -782,17 +705,27 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_four) do
+    user_hash = full_export[:user].except!(:synchronization_oauths).except!(:connector_configurations)
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_three) do
-    user_hash = full_export[:user].except!(:company).except!(:phone)
+    user_hash = full_export_one_zero_four[:user].except!(:company).except!(:phone)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_two) do
-    full_export_one_zero_three.except(:rate_limit)
+    user_hash = full_export_one_zero_three[:user].except!(:rate_limit)
+    full_export[:user] = user_hash
+    full_export
   end
 
   let(:full_export_one_zero_one) do
-    full_export.except(:notifications)
+    user_hash = full_export_one_zero_two[:user].except!(:notifications)
+    full_export[:user] = user_hash
+    full_export
   end
 end

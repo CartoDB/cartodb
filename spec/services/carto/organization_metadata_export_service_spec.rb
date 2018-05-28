@@ -7,7 +7,7 @@ describe Carto::OrganizationMetadataExportService do
   include TableSharing
 
   def create_organization_with_dependencies
-    @sequel_organization = FactoryGirl.create(:organization_with_users)
+    @sequel_organization = FactoryGirl.create(:organization_with_users, password_expiration_in_d: 365)
     @organization = Carto::Organization.find(@sequel_organization.id)
     @owner = @organization.owner
     @non_owner = @organization.users.reject(&:organization_owner?).first
@@ -74,6 +74,12 @@ describe Carto::OrganizationMetadataExportService do
   end
 
   describe '#organization import' do
+    it 'imports 1.0.0' do
+      organization = service.build_organization_from_hash_export(full_export_one_zero_zero)
+
+      expect_export_matches_organization(full_export_one_zero_zero[:organization], organization)
+    end
+
     it 'imports' do
       organization = service.build_organization_from_hash_export(full_export)
 
@@ -241,7 +247,7 @@ describe Carto::OrganizationMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.0",
+      version: "1.0.1",
       organization: {
         id: "189d642c-c7da-40aa-bffd-517aa0eb7999",
         seats: 100,
@@ -293,6 +299,7 @@ describe Carto::OrganizationMetadataExportService do
         builder_enabled: true,
         auth_saml_configuration: {},
         no_map_logo: false,
+        password_expiration_in_d: 365,
         assets: [{
           public_url: "http://localhost.lan:3000/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0",
           kind: "organization_asset",
@@ -328,5 +335,9 @@ describe Carto::OrganizationMetadataExportService do
         ]
       }
     }
+  end
+
+  let(:full_export_one_zero_zero) do
+    full_export.except!(:password_expiration_in_d)
   end
 end

@@ -44,6 +44,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 * Public pages migration (#13742)
 * Profile page migration (#13726)
 * Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
+* Add password expiration for orgs ([Central#2225](https://github.com/CartoDB/cartodb-central#2225))
 * Signup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
@@ -136,6 +137,7 @@ ion for time-series (#12670)
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_d`
 * Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_s`
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New user render timeouts and propagation of timeout values to Redis (#12425)

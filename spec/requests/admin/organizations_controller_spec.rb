@@ -169,7 +169,8 @@ describe Admin::OrganizationsController do
           auth_username_password_enabled: true,
           auth_google_enabled: true,
           auth_github_enabled: true,
-          strong_passwords_enabled: false
+          strong_passwords_enabled: false,
+          password_expiration_in_d: 1
         }
       }
     end
@@ -181,7 +182,8 @@ describe Admin::OrganizationsController do
           auth_username_password_enabled: true,
           auth_google_enabled: true,
           auth_github_enabled: true,
-          strong_passwords_enabled: false
+          strong_passwords_enabled: false,
+          password_expiration_in_d: 1
         },
         password_confirmation: @org_user_owner.password
       }
@@ -250,6 +252,25 @@ describe Admin::OrganizationsController do
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload_wrong_password
       response.status.should eq 403
       response.body.should match /Confirmation password sent does not match your current password/
+    end
+
+    it 'updates password_expiration_in_d' do
+      @organization.password_expiration_in_d = nil
+      @organization.save
+
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload_password
+      response.status.should eq 302
+      @organization.reload
+      @organization.password_expiration_in_d.should eq 1
+
+      payload_password[:organization][:password_expiration_in_d] = ''
+      host! "#{@organization.name}.localhost.lan"
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload_password
+      response.status.should eq 302
+      @organization.reload
+      @organization.password_expiration_in_d.should be_nil
     end
 
     describe 'signup enabled' do

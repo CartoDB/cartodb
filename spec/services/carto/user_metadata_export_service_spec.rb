@@ -87,43 +87,45 @@ describe Carto::UserMetadataExportService do
 
   let(:service) { Carto::UserMetadataExportService.new }
 
-  describe 'import latest' do
-    it 'imports correctly' do
-      import_user_from_export(full_export)
-    end
-  end
-
-  describe 'import v 1.0.4' do
-    it 'without synchronization oauths' do
-      full_export_1_0_4 = full_export.except(:synchronization_oauths)
-      user = import_user_from_export(full_export_1_0_4)
-
-      expect(user.synchronization_oauths).to be_empty
+  describe '#import from fixture' do
+    describe 'import latest' do
+      it 'imports correctly' do
+        test_import_user_from_export(full_export)
+      end
     end
 
-    it 'without connector configurations' do
-      full_export_1_0_4 = full_export.except(:connector_configurations)
-      user = import_user_from_export(full_export_1_0_4)
+    describe 'import v 1.0.4' do
+      it 'without synchronization oauths' do
+        full_export_1_0_4 = full_export.except(:synchronization_oauths)
+        user = test_import_user_from_export(full_export_1_0_4)
 
-      expect(user.connector_configurations).to be_empty
+        expect(user.synchronization_oauths).to be_empty
+      end
+
+      it 'without connector configurations' do
+        full_export_1_0_4 = full_export.except(:connector_configurations)
+        user = test_import_user_from_export(full_export_1_0_4)
+
+        expect(user.connector_configurations).to be_empty
+      end
     end
-  end
 
-  describe 'import v 1.0.3' do
-    it 'immports correctly' do
-      import_user_from_export(full_export_one_zero_three)
+    describe 'import v 1.0.3' do
+      it 'immports correctly' do
+        test_import_user_from_export(full_export_one_zero_three)
+      end
     end
-  end
 
-  describe 'import v 1.0.2' do
-    it 'imports correctly' do
-      import_user_from_export(full_export_one_zero_two)
+    describe 'import v 1.0.2' do
+      it 'imports correctly' do
+        test_import_user_from_export(full_export_one_zero_two)
+      end
     end
-  end
 
-  describe 'import v 1.0.3' do
-    it 'imports correctly' do
-      import_user_from_export(full_export_one_zero_three)
+    describe 'import v 1.0.1' do
+      it 'imports correctly' do
+        test_import_user_from_export(full_export_one_zero_one)
+      end
     end
   end
 
@@ -415,11 +417,16 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  def import_user_from_export(export)
-    export[:user] = export[:user].reject { |entry| entry == :api_keys }
+  def test_import_user_from_export(export)
+    # Skip search tweets since they are imported by a different method
+    export[:user][:search_tweets] = []
+
     user = service.build_user_from_hash_export(export)
     create_account_type_fg('FREE')
     user.save!
+
+    expect_export_matches_user(export[:user], user)
+
     user.destroy
   end
 
@@ -621,7 +628,7 @@ describe Carto::UserMetadataExportService do
             db_password: "kkkkkkkkktest_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
             db_role: "test_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
             name: "Master",
-            token: "Sy4uMloXYVo3bA-bmBi_xw",
+            token: "21ee521b8a107ea55d61fd7b485dd93d54c0b9d2",
             type: "master",
             updated_at: "2018-02-12T16:11:26+00:00",
             grants: [{
@@ -785,7 +792,7 @@ describe Carto::UserMetadataExportService do
     full_export_one_zero_three.except(:rate_limit)
   end
 
-  let(:full_export_one_zero_three) do
+  let(:full_export_one_zero_one) do
     full_export.except(:notifications)
   end
 end

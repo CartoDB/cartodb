@@ -13,6 +13,7 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # Version History
 # 1.0.0: export user metadata
 # 1.0.1: export search tweets
+# 1.0.2: export user notifications
 # 1.0.3: export rate limits
 # 1.0.4: company and phone in users table
 # 1.0.5: synchronization_oauths and connector configurations

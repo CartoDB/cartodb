@@ -694,6 +694,14 @@ describe Carto::UserMetadataExportService do
             state: 'complete',
             created_at: DateTime.now,
             updated_at: DateTime.now
+          },
+          {
+            data_import: nil,
+            service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
+            retrieved_items: 123,
+            state: 'complete',
+            created_at: DateTime.now,
+            updated_at: DateTime.now
           }
         ],
         notifications: {

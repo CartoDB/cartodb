@@ -82,6 +82,18 @@
 - apt_repository:
     repo: ppa:cartodb/postgresql-9.5
 
+- apt_repository:
+    repo: ppa:cartodb/gis
+
+- apt_repository:
+    repo: ppa:ubuntugis/ppa
+
+- apt_repository:
+    repo: ppa:cartodb/redis
+
+- apt_repository:
+    repo: ppa:cartodb/nodejs
+
 - name: Mixing the ingredients
   apt:
     update_cache: yes

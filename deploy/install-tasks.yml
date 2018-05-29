@@ -10,3 +10,120 @@
 #===================================
 
 # Add a line to a file if it does not exist, without passing regexp
+
+- name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Cooking the system
+  become: yes
+  apt:
+    name: "*"
+    state: latest
+
+- name: Cooking system encoding
+  become: yes
+  commad: sudo locale-gen en_US.UTF-8
+
+- name: Cooking system locale
+  become: yes
+  command: sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
+- name: Cooking Python
+  become: yes
+  apt:
+    name: python-software-properties
+    state: latest
+
+- name: Cooking autoconf >> latest
+  become: yes
+  apt:
+    name: autoconf
+    state: latest
+
+- name: Cooking binutils-doc >> latest
+  become: yes
+  apt:
+    name: binutils-doc
+    state: latest
+
+- name: Cooking bison >> latest
+  become: yes
+  apt:
+    name: bison
+    state: latest
+
+- name: Cooking build-essential >> latest
+  become: yes
+  apt:
+    name: build-essential
+    state: latest
+
+- name: Cooking flex >> latest
+  become: yes
+  apt:
+    name: flex
+    state: latest
+
+- name: Cooking git >> latest
+  become: yes
+  apt:
+    name: git
+    state: latest
+
+- apt_repository:
+    repo: ppa:cartodb/postgresql-9.5
+
+- name: Mixing the ingredients
+  apt:
+    update_cache: yes
+
+- name: Cooking libpq5 client >> latest
+  become: yes
+  apt:
+    name: libpq5
+    state: latest
+
+- name: Cooking libpq-dev client >> latest
+  become: yes
+  apt:
+    name: libpq-dev
+    state: latest
+
+- name: Cooking postgresql-client-9.5 client >> present
+  become: yes
+  apt:
+    name: postgresql-client-9.5
+    state: present
+
+
+- name: Cooking postgresql-client-common client >> present
+  become: yes
+  apt:
+    name: postgresql-client-common
+    state: present
+
+- name: Cooking postgresql-9.5 server >> present
+  become: yes
+  apt:
+    name: postgresql-9.5
+    state: present
+
+- name: Cooking postgresql-contrib-9.5 server >> present
+  become: yes
+  apt:
+    name: postgresql-contrib-9.5
+    state: present
+
+- name: Cooking postgresql-server-dev-9.5 server >> present
+  become: yes
+  apt:
+    name: postgresql-server-dev-9.5
+    state: present
+
+- name: Cooking postgresql-plpython-9.5 server >> present
+  become: yes
+  apt:
+    name: postgresql-plpython-9.5
+    state: present

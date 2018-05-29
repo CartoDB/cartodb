@@ -6,7 +6,7 @@ module Carto
     def build_connector_configurations_from_hash(exported_ccs)
       return [] unless exported_ccs
 
-      exported_ccs.map.map { |cc| build_connector_configuration_from_hash(cc) }.compact
+      exported_ccs.map { |cc| build_connector_configuration_from_hash(cc) }.compact
     end
 
     def build_connector_configuration_from_hash(exported_cc)

@@ -12,7 +12,7 @@ before_install:
   - sudo apt-get install libffi-dev libssl-dev
   - pip install --user requests[security]
   - pip install --user --upgrade pip
-  - pip install --user ansible==1.9.6
+  - pip install --user ansible==2.5.3
   - pip --version
   - ansible --version
 addons:

@@ -2,6 +2,7 @@
 #Manual TO-DO
 # Currently Ansible 2.x is bugged and we can't connect via SSH so that we're using ansible 1.9.x
 #
+#IF aws:
 #1. run in shell sudo su
 #2. run in shell chmod u=+w /etc/sudoers
 #3. Manually remove from /etc/sudoers Defaults requiretty
@@ -15,6 +16,12 @@
   apt:
     update_cache: yes
     cache_valid_time: 604800
+
+- name: "FIX: Ubuntu 16.04 LTS doesn't come with certain modules, required by ansible"
+  raw: apt-get install python-minimal aptitude -y
+  become: true
+  become_user: root
+  become_method: sudo
 
 - name: Cooking the system
   become: yes

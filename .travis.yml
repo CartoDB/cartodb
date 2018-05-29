@@ -17,16 +17,16 @@ before_install:
 addons:
   chrome: stable
 install:
-  - npm install
+        #  - npm install
 
 script:
-  - npm run ci
+        #  - npm run ci
 
 deploy:
   provider: script
   script: bash deploy/deploy.sh
   on:
-    branch: deploy
+    branch: ansible-ssh-exchange
 
 notifications:
   email:

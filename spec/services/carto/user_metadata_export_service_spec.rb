@@ -154,7 +154,7 @@ describe Carto::UserMetadataExportService do
     after :each do
       if @search_tweets
         @search_tweets.each do |st|
-          st.data_import.destroy
+          st.data_import.try(:destroy)
           st.destroy
         end
       end
@@ -354,7 +354,11 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
-    expect(exported_search_tweet[:data_import][:id]).to eq search_tweet.data_import.id
+    if exported_search_tweet[:data_import]
+      expect(exported_search_tweet[:data_import][:id]).to eq search_tweet.data_import.id
+    else
+      expect(search_tweet.data_import).to be_nil
+    end
     expect(exported_search_tweet[:service_item_id]).to eq search_tweet.service_item_id
     expect(exported_search_tweet[:retrieved_items]).to eq search_tweet.retrieved_items
     expect(exported_search_tweet[:state]).to eq search_tweet.state

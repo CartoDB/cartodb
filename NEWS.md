@@ -7,7 +7,7 @@ Development
 ### Bug fixes / enhancements
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
-
+* Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 
 4.12.x (2018-05-24)

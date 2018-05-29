@@ -10,6 +10,7 @@ require_dependency 'visualization/name_generator'
 require_dependency 'visualization/table_blender'
 require_dependency 'carto/visualization_migrator'
 require_dependency 'carto/google_maps_api'
+require_dependency 'carto/ghost_tables_manager'
 
 module Carto
   module Api
@@ -49,6 +50,8 @@ module Carto
 
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
       before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
+      before_filter :link_ghost_tables, only: [:index]
+      before_filter :load_common_data, only: [:index]
 
       rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -483,6 +486,26 @@ module Carto
                                                 privacy: blender.blended_privacy,
                                                 user_id: current_user.id,
                                                 overlays: Carto::OverlayFactory.build_default_overlays(current_user)))
+      end
+
+      def link_ghost_tables
+        return unless current_user.has_feature_flag?('ghost_tables')
+
+        # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
+        # or asynchronously otherwise.
+        Carto::GhostTablesManager.new(current_user.id).link_ghost_tables
+      end
+
+      def load_common_data
+        return true unless current_user.present?
+        begin
+          visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
+          ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+        rescue Exception => e
+          # We don't block the load of the dashboard because we aren't able to load common dat
+          CartoDB.notify_exception(e, {user:current_user})
+          return true
+        end
       end
     end
   end

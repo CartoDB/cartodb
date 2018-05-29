@@ -24,11 +24,11 @@
 
 - name: Cooking system encoding
   become: yes
-  commad: sudo locale-gen en_US.UTF-8
+  shell: sudo locale-gen en_US.UTF-8
 
 - name: Cooking system locale
   become: yes
-  command: sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+  shell: sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 - name: Cooking Python
   become: yes

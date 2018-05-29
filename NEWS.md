@@ -6,6 +6,7 @@ Development
 
 ### Bug fixes / enhancements
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+* Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 
 
 

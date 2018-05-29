@@ -9,18 +9,19 @@ before_install:
   - sudo apt-get install --reinstall python-setuptools
   - sudo apt-get install python-pip
   - sudo apt-get install libffi-dev libssl-dev
+  - sudo apt-get install sshpass
   - pip install --user requests[security]
   - pip install --user --upgrade pip
   - pip install --user ansible==1.9.6
-  - pip --version
+      - pip --version
   - ansible --version
 addons:
   chrome: stable
 install:
-        #  - npm install
+  - npm install
 
 script:
-        #  - npm run ci
+  - npm run ci
 
 deploy:
   provider: script

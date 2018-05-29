@@ -3,6 +3,7 @@ node_js:
   - "6.9.2"
 dist: trusty
 before_install:
+  - sudo apt-get install python3
   - python --version
   - git submodule update --init --recursive
   - git fetch origin master:refs/remotes/origin/master --depth=1

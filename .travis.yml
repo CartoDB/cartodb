@@ -13,7 +13,7 @@ before_install:
   - pip install --user requests[security]
   - pip install --user --upgrade pip
   - pip install --user ansible==1.9.6
-      - pip --version
+  - pip --version
   - ansible --version
 addons:
   chrome: stable

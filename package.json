@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.11",
+  "version": "4.12.11-2",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -39,7 +39,6 @@
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
     "node-polyglot": "1.0.0",
-    "parse-domains": "^1.0.2",
     "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
     "postcss-scss": "0.4.0",
@@ -51,6 +50,7 @@
     "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
     "urijs": "^1.19.0",
+    "url-parse": "^1.4.0",
     "webpack": "2.3.2",
     "whatwg-fetch": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz"
   },

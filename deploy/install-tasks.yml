@@ -354,14 +354,54 @@
 
 #SQL API
 
-- name: Cooking SQL API
-  become: yes
-  ignore_errors: yes
-  shell: git clone git://github.com/CartoDB/CartoDB-SQL-API.git; cd CartoDB-SQL-API && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development
+#- name: Cooking SQL API
+#  become: yes
+#  ignore_errors: yes
+#  shell: git clone git://github.com/CartoDB/CartoDB-SQL-API.git; cd CartoDB-SQL-API && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development
 
 #MAPS API
 
-- name: Cooking Maps API
+#- name: Cooking Maps API
+#  become: yes
+#  ignore_errors: yes
+#  shell: git clone git://github.com/CartoDB/Windshaft-cartodb.git; cd Windshaft-cartodb && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development
+
+#RUBY
+
+- name: Cooking Ruby
   become: yes
-  ignore_errors: yes
-  shell: git clone git://github.com/CartoDB/Windshaft-cartodb.git; cd Windshaft-cartodb && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development
+  shell: wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz; tar -xzvf ruby-install-0.5.0.tar.gz; cd ruby-install-0.5.0/; sudo make install
+
+- name: Cooking libreadline6-dev >> present
+  become: yes
+  apt:
+    name: libreadline6-dev
+    state: present
+
+- name: Cooking openssl >> latest
+  become: yes
+  apt:
+    name: openssl
+    state: latest
+
+- name: Cooking Ruby 2.2.3
+  become: yes
+  shell: ruby-install ruby 2.2.3
+
+- name: Cooking Ruby path
+  become: yes
+  shell: export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
+
+- name: Cooking bundler
+  become: yes
+  shell: gem install bundler
+#  gem:
+#    name: bundler
+#    state: present
+
+- name: Cooking compass
+  become: yes
+  shell: gem install compass
+#  gem:
+#    name: compass
+#    state: present

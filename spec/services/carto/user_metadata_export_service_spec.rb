@@ -111,7 +111,7 @@ describe Carto::UserMetadataExportService do
     after :each do
       if @search_tweets
         @search_tweets.each do |st|
-          st.data_import.destroy
+          st.data_import.try(:destroy)
           st.destroy
         end
       end
@@ -333,7 +333,11 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
-    expect(exported_search_tweet[:data_import][:id]).to eq search_tweet.data_import.id
+    if exported_search_tweet[:data_import]
+      expect(exported_search_tweet[:data_import][:id]).to eq search_tweet.data_import.id
+    else
+      expect(search_tweet.data_import).to be_nil
+    end
     expect(exported_search_tweet[:service_item_id]).to eq search_tweet.service_item_id
     expect(exported_search_tweet[:retrieved_items]).to eq search_tweet.retrieved_items
     expect(exported_search_tweet[:state]).to eq search_tweet.state
@@ -682,6 +686,14 @@ describe Carto::UserMetadataExportService do
               collision_strategy: nil,
               external_data_imports: []
             },
+            service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
+            retrieved_items: 123,
+            state: 'complete',
+            created_at: DateTime.now,
+            updated_at: DateTime.now
+          },
+          {
+            data_import: nil,
             service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
             retrieved_items: 123,
             state: 'complete',

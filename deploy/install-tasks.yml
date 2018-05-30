@@ -12,12 +12,13 @@
 
 # Add a line to a file if it does not exist, without passing regexp
 
-- name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
+- name: Only run "update_cache=yes" once a week
   apt:
     update_cache: yes
-    cache_valid_time: 604800
+    cache_valid_time: 20 #604800
 
-- name: "FIX: Ubuntu 16.04 LTS doesn't come with certain modules, required by ansible"
+#FIX: Ubuntu 16.04 LTS doesn't come with certain modules, required by ansible
+- name: Preparing the table
   raw: apt-get install python-minimal aptitude -y
   become: true
   become_user: root
@@ -146,3 +147,225 @@
   apt:
     name: postgresql-plpython-9.5
     state: present
+
+- name: Serving PostgreSQL >> allow localhost connections with no pwd
+  become: yes
+  copy: src=./files/pg_hba.conf dest=/etc/postgresql/9.5/main
+
+- name: postgresql >> service >> restart
+  become: yes
+  shell: service postgresql restart
+
+- name: Create some users in PostgreSQL. These users are used by some CartoDB apps internally
+  become: yes
+  ignore_errors: yes
+  shell: createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres; createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres
+
+- name: Install CartoDB postgresql extension
+  become: yes
+  ignore_errors: yes
+  shell: git clone https://github.com/CartoDB/cartodb-postgresql.git && cd cartodb-postgresql && git checkout 0.22.1 && sudo make all install
+
+#GIS DEPENDENCIES
+#PROJ
+
+#- name: Cooking proj >> present
+#  become: yes
+#  apt:
+#    name: proj
+#    state: present
+
+- name: Cooking proj-bin >> present
+  become: yes
+  apt:
+    name: proj-bin
+    state: present
+
+- name: Cooking proj-data >> present
+  become: yes
+  apt:
+    name: proj-data
+    state: present
+
+- name: Cooking libproj-dev >> present
+  become: yes
+  apt:
+    name: libproj-dev
+    state: present
+
+#JSON
+
+- name: Cooking libjson0 >> present
+  become: yes
+  apt:
+    name: libjson0
+    state: present
+
+- name: Cooking libjson0-dev >> present
+  become: yes
+  apt:
+    name: libjson0-dev
+    state: present
+
+- name: Cooking python-simplejson >> present
+  become: yes
+  apt:
+    name: python-simplejson
+    state: present
+
+#GEOS
+
+- name: Cooking libgeos-c1v5 >> present
+  become: yes
+  apt:
+    name: libgeos-c1v5
+    state: present
+
+- name: Cooking libgeos-dev >> present
+  become: yes
+  apt:
+    name: libgeos-dev
+    state: present
+
+#GDAL
+
+- name: Cooking gdal-bin >> present
+  become: yes
+  apt:
+    name: gdal-bin
+    state: present
+
+- name: Cooking libgdal1-dev >> present
+  become: yes
+  apt:
+    name: libgdal1-dev
+    state: present
+
+- name: Cooking libgdal-dev >> present
+  become: yes
+  apt:
+    name: libgdal-dev
+    state: present
+
+#- name: Cooking gdal2.1-static-bin >> present
+#  become: yes
+#  apt:
+#    name: gdal2.1-static-bin
+#    state: present
+
+#POSTGIS
+
+- name: Cooking libxml2-dev >> present
+  become: yes
+  apt:
+    name: libxml2-dev
+    state: present
+
+#- name: Cooking liblwgeom-2.2.2 >> present
+#  become: yes
+#  apt:
+#    name: liblwgeom-2.2.2
+#    state: present
+
+- name: Cooking postgis >> present
+  become: yes
+  apt:
+    name: postgis
+    state: present
+
+- name: Cooking postgresql-9.5-postgis-2.2 >> present
+  become: yes
+  apt:
+    name: postgresql-9.5-postgis-2.2
+    state: present
+
+- name: Cooking postgresql-9.5-postgis-scripts >> present
+  become: yes
+  apt:
+    name: postgresql-9.5-postgis-scripts
+    state: present
+
+#Initialize template postgis database. We create a template database in postgresql that will contain the postgis extension. This way, every time CartoDB creates a new user database it just clones this template database
+- name: Cooking template postgis database.
+  become: yes
+  ignore_errors: yes
+  shell: createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis && createlang plpgsql -U postgres -d template_postgis && -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;' && ldconfig
+
+#Run an installcheck to verify the database has been installed properly
+#- name: Tasting the plates
+#  become: yes
+#  shell: PGUSER=postgres make installcheck
+
+- name: postgresql >> service >> restart
+  become: yes
+  shell: service postgresql restart
+
+#REDIS
+- name: Cooking redis-server >> present
+  become: yes
+  apt:
+    name: redis-server
+    state: present
+
+- name: Serving Redis >> persistence
+  become: yes
+  copy: src=./files/redis.conf dest=/etc/redis
+
+#NODEJS
+
+- name: Cooking NodeJS >> present
+  become: yes
+  apt:
+    name: nodejs
+    state: present
+
+#NODE DEPENDENCIES
+- name: Cooking libpixman-1-0 >> present
+  become: yes
+  apt:
+    name: libpixman-1-0
+    state: present
+
+- name: Cooking libpixman-1-dev >> present
+  become: yes
+  apt:
+    name: libpixman-1-dev
+    state: present
+
+- name: Cooking libcairo2-dev >> present
+  become: yes
+  apt:
+    name: libcairo2-dev
+    state: present
+
+- name: Cooking libjpeg-dev >> present
+  become: yes
+  apt:
+    name: libjpeg-dev
+    state: present
+
+- name: Cooking libgif-dev >> present
+  become: yes
+  apt:
+    name: libgif-dev
+    state: present
+
+- name: Cooking libpango1.0-dev >> present
+  become: yes
+  apt:
+    name: libpango1.0-dev
+    state: present
+
+#SQL API
+
+- name: Cooking SQL API
+  become: yes
+  ignore_errors: yes
+  shell: git clone git://github.com/CartoDB/CartoDB-SQL-API.git; cd CartoDB-SQL-API && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development
+
+#MAPS API
+
+- name: Cooking Maps API
+  become: yes
+  ignore_errors: yes
+  shell: git clone git://github.com/CartoDB/Windshaft-cartodb.git; cd Windshaft-cartodb && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development

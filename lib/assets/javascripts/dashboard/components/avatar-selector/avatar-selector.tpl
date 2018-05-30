@@ -2,7 +2,7 @@
   <div class="FormAccount-rowLabel">
     <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
       <% if (inputName == "user[avatar_url]") { %>
-        Avatar
+        Avatar*
       <% } else if (inputName == "organization[avatar_url]") { %>
         Organization logo
       <% } %>

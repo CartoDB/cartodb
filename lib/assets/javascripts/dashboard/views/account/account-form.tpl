@@ -12,28 +12,6 @@
     </div>
   </div>
 
-  <div class="FormAccount-row">
-    <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.email') %></label>
-    </div>
-
-    <div class="FormAccount-rowData">
-      <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['email']) { %>has-error<% } %> <% if (!canChangeEmail) { %>is-disabled<% } %>" id="user_email" name="user[email]" size="30" type="text" value="<%= email %>" <% if (!canChangeEmail) { %>readonly="readonly"<% } %>>
-
-      <% if (isInsideOrg) { %>
-        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.your_url') %>: <%= organizationName %>.<%= accountHost %>/u/<%= username %></p>
-        </div>
-      <% } %>
-    </div>
-
-    <div class="FormAccount-rowInfo">
-      <% if (errors['email']) { %>
-        <p class="CDB-Text CDB-Size-small FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= _t('account.views.form.errors.email_not_valid') %></p>
-      <% } %>
-    </div>
-  </div>
-
   <% if (!hidePasswordFields) { %>
     <% if (shouldDisplayOldPassword) { %>
       <div class="FormAccount-row">

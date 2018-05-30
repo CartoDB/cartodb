@@ -93,7 +93,7 @@ module Carto
         external_source: build_external_source_from_hash(exported_visualization[:external_source]),
         created_at: exported_visualization[:created_at],
         updated_at: exported_visualization[:updated_at],
-        locked: exported_visualization[:locked],
+        locked: exported_visualization[:locked] || false,
         encrypted_password: exported_visualization[:encrypted_password],
         password_salt: exported_visualization[:password_salt]
       )

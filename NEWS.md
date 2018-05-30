@@ -17,7 +17,7 @@ sudo make install
 * Import / export synchronization oauths and connector configurations (#14003)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
-
+* Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 
 4.12.x (2018-05-24)

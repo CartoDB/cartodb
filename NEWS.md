@@ -13,6 +13,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+* Import / export synchronization oauths and connector configurations (#14003)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 

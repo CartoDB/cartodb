@@ -12,6 +12,21 @@
 
 # Add a line to a file if it does not exist, without passing regexp
 
+- apt_repository:
+    repo: ppa:cartodb/postgresql-9.5
+
+- apt_repository:
+    repo: ppa:cartodb/gis
+
+- apt_repository:
+    repo: ppa:ubuntugis/ppa
+
+- apt_repository:
+    repo: ppa:cartodb/redis
+
+- apt_repository:
+    repo: ppa:cartodb/nodejs
+
 - name: Only run "update_cache=yes" once a week
   apt:
     update_cache: yes
@@ -79,25 +94,6 @@
   apt:
     name: git
     state: latest
-
-- apt_repository:
-    repo: ppa:cartodb/postgresql-9.5
-
-- apt_repository:
-    repo: ppa:cartodb/gis
-
-- apt_repository:
-    repo: ppa:ubuntugis/ppa
-
-- apt_repository:
-    repo: ppa:cartodb/redis
-
-- apt_repository:
-    repo: ppa:cartodb/nodejs
-
-- name: Mixing the ingredients
-  apt:
-    update_cache: yes
 
 - name: Cooking libpq5 client >> latest
   become: yes

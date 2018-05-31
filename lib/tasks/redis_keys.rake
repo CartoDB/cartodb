@@ -59,7 +59,7 @@ namespace :cartodb do
         exit 1
       end
       args.with_defaults(overwrite: 'false')
-      overwrite = args[:overwrite] != 'false'
+      overwrite = args[:overwrite] == 'true'
 
       redis_hash = JSON.parse(File.read(args[:filename])).deep_symbolize_keys
 

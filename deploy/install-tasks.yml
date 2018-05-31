@@ -25,4 +25,4 @@
   #vars:
     #ansible_ssh_private_key_file: deploy/files/workstation.pem
   ping:
-        data: "adios"
+        data: "Hola a todos"

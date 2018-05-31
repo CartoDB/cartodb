@@ -5,7 +5,7 @@
 @import 'cdb-variables/colors';
 
 @mixin regularBorder() {
-  border: 1px solid $cSecondaryLine;
+  border: 1px solid $cMainLine;
 }
 
 .Editor-ListLayer-item {

@@ -8,8 +8,22 @@ Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.failure_app = SessionsController
 end
 
-module LoginEventTrigger
+# All strategies should:
+# - Include this module
+# - Override the methods as needed
+module CartoStrategy
+  def affected_by_password_expiration?
+    true
+  end
+
+  def check_password_expired(user)
+    if affected_by_password_expiration? && user.password_expired?
+      throw(:warden, action: :password_change, username: user.username)
+    end
+  end
+
   def trigger_login_event(user)
+    check_password_expired(user)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and
@@ -34,7 +48,7 @@ end
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
   include Carto::EmailCleaner
-  include LoginEventTrigger
+  include CartoStrategy
 
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
@@ -63,7 +77,7 @@ Warden::Strategies.add(:password) do
 end
 
 Warden::Strategies.add(:enable_account_token) do
-  include LoginEventTrigger
+  include CartoStrategy
 
   def authenticate!
     if params[:id]
@@ -85,7 +99,7 @@ Warden::Strategies.add(:enable_account_token) do
 end
 
 Warden::Strategies.add(:oauth) do
-  include LoginEventTrigger
+  include CartoStrategy
 
   def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
@@ -106,7 +120,11 @@ Warden::Strategies.add(:oauth) do
 end
 
 Warden::Strategies.add(:ldap) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def affected_by_password_expiration?
+    false
+  end
 
   def authenticate!
     (fail! and return) unless (params[:email] && params[:password])
@@ -130,6 +148,12 @@ Warden::Strategies.add(:ldap) do
 end
 
 Warden::Strategies.add(:api_authentication) do
+  include CartoStrategy
+
+  def affected_by_password_expiration?
+    false
+  end
+
   def authenticate!
     # WARNING: The following code is a modified copy of the oauth10_token method from
     # oauth-plugin-0.4.0.pre4/lib/oauth/controllers/application_controller_methods.rb
@@ -157,7 +181,11 @@ Warden::Strategies.add(:api_authentication) do
 end
 
 Warden::Strategies.add(:http_header_authentication) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def affected_by_password_expiration?
+    false
+  end
 
   def valid?
     Carto::HttpHeaderAuthentication.new.valid?(request)
@@ -177,8 +205,12 @@ Warden::Strategies.add(:http_header_authentication) do
 end
 
 Warden::Strategies.add(:saml) do
-  include LoginEventTrigger
+  include CartoStrategy
   include Carto::EmailCleaner
+
+  def affected_by_password_expiration?
+    false
+  end
 
   def organization_from_request
     subdomain = CartoDB.extract_subdomain(request)
@@ -242,11 +274,14 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
 end
 
 Warden::Manager.after_set_user do |user, auth, opts|
-  throw(:warden, action: :password_expired) if user.password_expired?
+  # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
+  should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
+
+  throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
 end
 
 Warden::Strategies.add(:user_creation) do
-  include LoginEventTrigger
+  include CartoStrategy
 
   def authenticate!
     username = params[:username]
@@ -267,8 +302,13 @@ Warden::Strategies.add(:user_creation) do
 end
 
 module Carto::Api::AuthApiAuthentication
+  include CartoStrategy
   # We don't want to store a session and send a response cookie
   def store?
+    false
+  end
+
+  def affected_by_password_expiration?
     false
   end
 

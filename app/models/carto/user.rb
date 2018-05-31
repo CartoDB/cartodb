@@ -44,7 +44,8 @@ class Carto::User < ActiveRecord::Base
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
-                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host".freeze
+                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host, " \
+                   "users.industry, users.company, users.phone, users.job_role".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -67,6 +68,7 @@ class Carto::User < ActiveRecord::Base
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
   has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
+  has_many :connector_configurations, inverse_of: :user, dependent: :destroy
 
   has_many :client_applications, class_name: Carto::ClientApplication
   has_many :oauth_tokens, class_name: Carto::OauthToken
@@ -482,7 +484,19 @@ class Carto::User < ActiveRecord::Base
       !organization.try(:auth_saml_enabled?)
   end
 
+  def validate_old_password(old_password)
+    (self.class.password_digest(old_password, salt) == crypted_password) ||
+      (oauth_signin? && last_password_change_date.nil?)
+  end
+
+  def valid_password_confirmation(password)
+    valid = password.present? && validate_old_password(password)
+    errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
+    valid
+  end
+
   alias_method :should_display_old_password?, :needs_password_confirmation?
+  alias_method :password_set?, :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
@@ -655,9 +669,16 @@ class Carto::User < ActiveRecord::Base
   end
 
   def password_expired?
-    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
-    return false unless password_expiration_in_s && password_set?
-    (last_password_change_date || created_at) + password_expiration_in_s < Time.now
+    return false unless password_expiration_in_d && password_set?
+    password_date + password_expiration_in_d.days.to_i < Time.now
+  end
+
+  def password_expiration_in_d
+    organization_user? ? organization.password_expiration_in_d : Cartodb.get_config(:passwords, 'expiration_in_d')
+  end
+
+  def password_date
+    last_password_change_date || created_at
   end
 
   private

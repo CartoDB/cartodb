@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.11.151",
+  "version": "4.12.13",
   "dependencies": {
     "@carto/carto.js": {
       "version": "4.0.6",
@@ -1244,9 +1244,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.7-2",
-      "from": "cartodb/carto.js#v4.0.7-2",
-      "resolved": "git://github.com/cartodb/carto.js.git#8c16538e756a3251eeb98a087401126ca4893886"
+      "version": "4.0.7-3",
+      "from": "cartodb/carto.js#v4.0.7-3",
+      "resolved": "git://github.com/cartodb/carto.js.git#8745f95151e804151889d9120476c3d7d57833b5"
     },
     "interpret": {
       "version": "1.1.0",
@@ -1403,9 +1403,9 @@
       "resolved": "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.1.tgz"
     },
     "JSONStream": {
-      "version": "1.3.2",
+      "version": "1.3.3",
       "from": "JSONStream@>=1.0.3 <2.0.0",
-      "resolved": "https://registry.npmjs.org/JSONStream/-/JSONStream-1.3.2.tgz"
+      "resolved": "https://registry.npmjs.org/JSONStream/-/JSONStream-1.3.3.tgz"
     },
     "kind-of": {
       "version": "3.2.2",
@@ -2555,9 +2555,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.3.26",
+      "version": "3.3.27",
       "from": "uglify-js@>=3.3.0 <3.4.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.26.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.3.27.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

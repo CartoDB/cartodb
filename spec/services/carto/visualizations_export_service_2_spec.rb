@@ -675,7 +675,7 @@ describe Carto::VisualizationsExportService2 do
 
             service = Carto::VisualizationsExportService2.new
             visualization = service.build_visualization_from_json_export(export_2_1_1.to_json)
-            expect(visualization.locked?).to be_false
+            expect(visualization.locked).to eq(false)
           end
 
           it 'sets password protected visualizations to private' do

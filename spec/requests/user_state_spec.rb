@@ -97,6 +97,19 @@ describe "UserState" do
         response.status.should == 404
       end
     end
+
+    it 'locked user can delete their own account' do
+      to_be_deleted_user = FactoryGirl.create(:locked_user)
+      to_be_deleted_user.password = 'pwd123'
+      to_be_deleted_user.password_confirmation = 'pwd123'
+      to_be_deleted_user.save
+
+      login(to_be_deleted_user)
+      delete account_delete_user_url, deletion_password_confirmation: 'pwd123'
+
+      expect(User.find(id: to_be_deleted_user.id)).to be_nil
+    end
+
     it 'user accessing a locked user resources' do
       login(@non_locked_user)
       host! "#{@locked_user.username}.localhost.lan"

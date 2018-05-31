@@ -187,9 +187,9 @@ module CartoDB
               grant_org_api_key_roles(@target_org_id)
             elsif File.exists? "#{@path}user_#{@target_userid}.dump"
               create_db(@target_dbname, true)
-              create_org_api_key_roles(@target_userid)
+              create_user_api_key_roles(@target_userid)
               import_pgdump("user_#{@target_userid}.dump")
-              grant_org_api_key_roles(@target_userid)
+              grant_user_api_key_roles(@target_userid)
             elsif File.exists? "#{@path}#{@target_username}.schema.sql"
               create_db(@target_dbname, false)
               run_file_restore_schema("#{@target_username}.schema.sql")

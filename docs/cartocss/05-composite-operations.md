@@ -4,11 +4,11 @@ Composite operations style the way colors of overlapping geometries interact wit
 
 - There is a shortcut for selecting the _BLENDING_ composite operation value, directly from the STYLE options of a selected map layer
 
-	**Tip:** <a href="/docs/img/layout/cartocss/select_BLENDING_option.gif" target="_blank">See how to select a BLENDING `comp-op` value through the STYLE options</a>.
+	**Tip:** <a href="../img/cartocss/select_BLENDING_option.gif" target="_blank">See how to select a BLENDING `comp-op` value through the STYLE options</a>.
 
 - You can also enter CartoCSS syntax to apply the `comp-op` property with additional values
 
-	**Tip:** <a href="/docs/img/layout/cartocss/cartocss_comp_op.gif" target="_blank">See how to apply a `comp-op` value with CartoCSS</a>.
+	**Tip:** <a href="../img/cartocss/cartocss_comp_op.gif" target="_blank">See how to apply a `comp-op` value with CartoCSS</a>.
 
 ### Effects of Composite Operations
 
@@ -63,7 +63,7 @@ Overlay is a color blend mode that combines [multiply](#multiply) and [screen](#
 marker-comp-op: overlay;
 {% endhighlight %}
 
-![overlay](/docs/img/layout/cartocss//overlay.jpg)
+![overlay](../img/cartocss//overlay.jpg)
 
 #### Multiply
 
@@ -73,7 +73,7 @@ A layers color is made of a mix of red, green and blue color channels. Each chan
 
 Imagine it like layering colored sheets of cellophane over one another; white disappears, black stays black. Use this when you want to darken overlapping areas in your map.
 
-![multiply](/docs/img/layout/cartocss/multiply.jpg)
+![multiply](../img/cartocss/multiply.jpg)
 
 Choosing multiply as the Blending option adds the following CartoCSS code:
 
@@ -89,11 +89,11 @@ The color-dodge color blend mode is similar to screen but the overall effect is 
 marker-comp-op: color-dodge;
 {% endhighlight %}
 
-![color-dodge](/docs/img/layout/cartocss/color_dodge.jpg)
+![color-dodge](../img/cartocss/color_dodge.jpg)
 
 A good reason to lighten a map element is to reduce how much it visually competes with more important map features. For example, see what graticules look like over polygons in [this map,](http://bit.ly/1Y75upF) when _Screen_ is applied:
 
-![screen-use-case](/docs/img/layout/cartocss/screen-use-case.png)
+![screen-use-case](../img/cartocss/screen-use-case.png)
 
 #### Plus
 
@@ -103,7 +103,7 @@ The plus composite operation adds the color channel values of the source with th
 marker-comp-op: plus;
 {% endhighlight %}
 
-![plus](/docs/img/layout/cartocss/plus.jpg)
+![plus](../img/cartocss/plus.jpg)
 
 #### Minus
 
@@ -113,7 +113,7 @@ Minus works the same way as plus, but instead of adding the color channel values
 marker-comp-op: minus;
 {% endhighlight %}
 
-![minus](/docs/img/layout/cartocss/minus.jpg)
+![minus](../img/cartocss/minus.jpg)
 
 #### Screen
 
@@ -123,7 +123,7 @@ Similar to [Multiply](#multiply), screen multiplies the overlapping areas. Unlik
 marker-comp-op: screen;
 {% endhighlight %}
 
-![screen](/docs/img/layout/cartocss/screen.jpg)
+![screen](../img/cartocss/screen.jpg)
 
 #### Darken
 
@@ -133,7 +133,7 @@ Darken has a similar effect to multiply, but is more extreme. As it applies the 
 marker-comp-op: darken;
 {% endhighlight %}
 
-![darken](/docs/img/layout/cartocss/darken.jpg)
+![darken](../img/cartocss/darken.jpg)
 
 #### Lighten
 
@@ -143,7 +143,7 @@ Lighten works the same way as darken, but inversely. The lightest-colored pixels
 marker-comp-op: lighten;
 {% endhighlight %}
 
-![lighten](/docs/img/layout/cartocss/lighten.jpg)
+![lighten](../img/cartocss/lighten.jpg)
 
 #### Hard Light
 
@@ -155,7 +155,7 @@ marker-comp-op: hard-light;
 
 It works similarly to soft light, but is more extreme. Instead of using screen and multiply it uses color-dodge and color-burn, although not applied as strongly as with those comp-ops.
 
-![hard-light](/docs/img/layout/cartocss/hard-light.jpg)
+![hard-light](../img/cartocss/hard-light.jpg)
 
 #### Soft Light
 
@@ -165,7 +165,7 @@ Soft Light will either screen or multiply the destination layer colors, dependin
 marker-comp-op: soft-light;
 {% endhighlight %}
 
-![soft-light](/docs/img/layout/cartocss/soft-light.jpg)
+![soft-light](../img/cartocss/soft-light.jpg)
 
 #### Grain-Merge
 
@@ -175,7 +175,7 @@ Grain-merge is the opposite of grain-extract. It adds the source and destination
 marker-comp-op: grain-merge;
 {% endhighlight %}
 
-![grain-merge](/docs/img/layout/cartocss/grain-merge.jpg)
+![grain-merge](../img/cartocss/grain-merge.jpg)
 
 #### Grain-Extract
 
@@ -185,7 +185,7 @@ Grain-extract subtracts destination layer color channel values from the source l
 marker-comp-op: grain-extract;
 {% endhighlight %}
 
-![grain-extract](/docs/img/layout/cartocss/grain-extract.jpg)
+![grain-extract](../img/cartocss/grain-extract.jpg)
 
 #### Hue
 
@@ -195,7 +195,7 @@ Hue keeps the color brightness and saturation levels of the destination layers, 
 marker-comp-op: hue;
 {% endhighlight %}
 
-![hue](/docs/img/layout/cartocss/hue.jpg)
+![hue](../img/cartocss/hue.jpg)
 
 #### Saturation
 
@@ -205,7 +205,7 @@ Saturation keeps the hue and brightness levels of the destination layers, but re
 marker-comp-op: saturation;
 {% endhighlight %}
 
-![saturation](/docs/img/layout/cartocss/saturation.jpg)
+![saturation](../img/cartocss/saturation.jpg)
 
 #### Color
 
@@ -215,7 +215,7 @@ Color keeps the source layer's hue and saturation levels, but renders a result w
 marker-comp-op: color;
 {% endhighlight %}
 
-![color](/docs/img/layout/cartocss/color.jpg)
+![color](../img/cartocss/color.jpg)
 
 #### Value
 
@@ -225,7 +225,7 @@ Value keeps the brightness levels of the source, but renders a result with the h
 marker-comp-op: value;
 {% endhighlight %}
 
-![value](/docs/img/layout/cartocss/value.jpg)
+![value](../img/cartocss/value.jpg)
 
 #### Color-Burn
 
@@ -235,11 +235,11 @@ Color-burn works similarly to color-dodge, but has a darkening effect. It increa
 marker-comp-op: color-burn;
 {% endhighlight %}
 
-![color-burn](/docs/img/layout/cartocss/color-burn.jpg)
+![color-burn](../img/cartocss/color-burn.jpg)
 
 For a good example of using darkening effects, view [this election map](https://team.carto.com/u/stuartlynn/viz/ab4541a4-767b-11e5-b637-0ea31932ec1d/public_map). Its lower layer shows population density with gray scale colors, and its upper layer shows U.S. political parties in red and blue. When you use a darkening composite operation, the polygons show voting results by political party, modulated by the population density.
 
-![darken-use-case](/docs/img/layout/cartocss/darken-use-case.png)
+![darken-use-case](../img/cartocss/darken-use-case.png)
 
 #### Difference
 
@@ -249,7 +249,7 @@ The difference blending mode compares the source to the destination layers and f
 marker-comp-op: difference;
 {% endhighlight %}
 
-![difference](/docs/img/layout/cartocss/difference.jpg)
+![difference](../img/cartocss/difference.jpg)
 
 #### Exclusion
 
@@ -259,7 +259,7 @@ Exclusion is similar to difference, but less extreme. In areas where the colors 
 marker-comp-op: exclusion;
 {% endhighlight %}
 
-![exclusion](/docs/img/layout/cartocss/exclusion.jpg)
+![exclusion](../img/cartocss/exclusion.jpg)
 
 #### Contrast
 
@@ -269,15 +269,15 @@ Contrast magnifies the difference between the dark and light areas of your overl
 marker-comp-op: contrast;
 {% endhighlight %}
 
-![contrast](/docs/img/layout/cartocss/contrast.jpg)
+![contrast](../img/cartocss/contrast.jpg)
 
 Use contrast effects when you are trying to control how both dark and light elements in your map stand out from the other elements, or blend in with them better. For example, compare the dark red and blue areas to the lighter colored areas in the [the map](http://bit.ly/1M4v9tW) below. Notice how the gray county outlines do not stand out as well against the darker red and blue backgrounds.  
 
-![overlay-use-case-1](/docs/img/layout/cartocss/overlay-use-case-1.png)
+![overlay-use-case-1](../img/cartocss/overlay-use-case-1.png)
 
 Now, look how much more evenly the county lines blend with background colors in [this map](http://bit.ly/1M4v9tW). We have also kept the white state outlines.
 
-![overlay-use-case-2](/docs/img/layout/cartocss/overlay-use-case-2.png)
+![overlay-use-case-2](../img/cartocss/overlay-use-case-2.png)
 
 #### Invert
 
@@ -287,7 +287,7 @@ Invert turns each RGB channel color into its opposite. Areas that look black ori
 marker-comp-op: invert;
 {% endhighlight %}
 
-![invert](/docs/img/layout/cartocss/invert.jpg)
+![invert](../img/cartocss/invert.jpg)
 
 #### Invert-RGB
 
@@ -297,7 +297,7 @@ Invert-rgb also inverts color channel colors, but then tints them towards the so
 marker-comp-op: invert-rgb;
 {% endhighlight %}
 
-![invert-rgb](/docs/img/layout/cartocss/invert-rgb.jpg)
+![invert-rgb](../img/cartocss/invert-rgb.jpg)
 
 ### Alpha Blending Values
 
@@ -318,7 +318,7 @@ Src is an alpha composite operation that keeps the full transparency of the sour
 marker-comp-op: src;
 {% endhighlight %}
 
-![src](/docs/img/layout/cartocss/src.jpg)
+![src](../img/cartocss/src.jpg)
 
 #### Dst
 
@@ -328,7 +328,7 @@ Dst is an alpha composite operation that keeps the full transparency of the dest
 marker-comp-op: dst;
 {% endhighlight %}
 
-![dst](/docs/img/layout/cartocss/dst.jpg)
+![dst](../img/cartocss/dst.jpg)
 
 #### Src-over
 
@@ -338,7 +338,7 @@ Src-over keeps the full transparency of both the source and destination layers. 
 marker-comp-op: src-over;
 {% endhighlight %}
 
-![src-over](/docs/img/layout/cartocss/src-over.jpg)
+![src-over](../img/cartocss/src-over.jpg)
 
 #### Src-in
 
@@ -348,7 +348,7 @@ Src-in only shows the part of the source layer that intersects with the destinat
 marker-comp-op: src-in;
 {% endhighlight %}
 
-![src-in](/docs/img/layout/cartocss/src-in.jpg)
+![src-in](../img/cartocss/src-in.jpg)
 
 #### Src-out
 
@@ -358,7 +358,7 @@ Src-out only shows the part of the source layer that does not intersect with the
 marker-comp-op: src-out;
 {% endhighlight %}
 
-![src-out](/docs/img/layout/cartocss/src-out.jpg)
+![src-out](../img/cartocss/src-out.jpg)
 
 #### Src-atop
 
@@ -368,7 +368,7 @@ Src-atop makes sure that the source layer is shown at the top of all layers invo
 marker-comp-op: src-atop;
 {% endhighlight %}
 
-![src-atop](/docs/img/layout/cartocss/src-atop.jpg)
+![src-atop](../img/cartocss/src-atop.jpg)
 
 #### Dst-over
 
@@ -378,7 +378,7 @@ Dst-over also keeps the full transparency of the source and destination layers, 
 marker-comp-op: dst-over;
 {% endhighlight %}
 
-![dst-over](/docs/img/layout/cartocss/dst-over.jpg)
+![dst-over](../img/cartocss/dst-over.jpg)
 
 #### Dst-in
 
@@ -388,7 +388,7 @@ Inside the overlap area, dst-in only shows the destination layer.
 marker-comp-op: dst-in;
 {% endhighlight %}
 
-![dst-in](/docs/img/layout/cartocss/dst-in.jpg)
+![dst-in](../img/cartocss/dst-in.jpg)
 
 #### Dst-out
 
@@ -398,7 +398,7 @@ Dst-out only shows the part of the destination layer that does not overlap with 
 marker-comp-op: dst-out;
 {% endhighlight %}
 
-![dst-out](/docs/img/layout/cartocss/dst-out.jpg)
+![dst-out](../img/cartocss/dst-out.jpg)
 
 #### Dst-atop
 
@@ -408,7 +408,7 @@ Dst-atop shows the destination layers on top of the source layer, in the places 
 marker-comp-op: dst-atop;
 {% endhighlight %}
 
-![dst-atop](/docs/img/layout/cartocss/dst-atop.jpg)
+![dst-atop](../img/cartocss/dst-atop.jpg)
 
 #### Xor
 
@@ -418,7 +418,7 @@ Xor shows both the source and destination layers, but only the parts that do not
 marker-comp-op: xor;
 {% endhighlight %}
 
-![xor](/docs/img/layout/cartocss/xor.jpg)
+![xor](../img/cartocss/xor.jpg)
 
 #### Clear
 
@@ -428,7 +428,7 @@ The clear composite operation acts as an eraser. It makes all pixels transparent
 marker-comp-op: clear;
 {% endhighlight %}
 
-![clear](/docs/img/layout/cartocss/clear.jpg)
+![clear](../img/cartocss/clear.jpg)
 
 *[Contains public sector information licensed under the Open Government Licence v3.0.](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/)
 * Null Island topography taken from USGS National Map. [Map services and data available from U.S. Geological Survey, National Geospatial Program.](http://viewer.nationalmap.gov/basic/?basemap=b1&category=ned,nedsrc&title=3DEP%20View)

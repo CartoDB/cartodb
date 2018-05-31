@@ -7,7 +7,7 @@ before_install:
   - python --version
   - git submodule update --init --recursive
   - git fetch origin master:refs/remotes/origin/master --depth=1
-  #- sudo apt-get install --reinstall python-setuptools
+  - sudo apt-get install --reinstall python-setuptools
   - sudo apt-get install -qq python-pip
   - sudo apt-get install -qq libffi-dev libssl-dev
   - sudo apt-get install -qq sshpass
@@ -28,7 +28,7 @@ deploy:
   provider: script  
   script: bash deploy/deploy.sh
   on:
-    branch: ansible-ssh-exchange
+    branch: deploy
 
 notifications:
   email:

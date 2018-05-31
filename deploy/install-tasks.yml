@@ -26,10 +26,13 @@
 - apt_repository:
     repo: ppa:cartodb/nodejs
 
+- apt_repository:
+    repo: ppa:brightbox/ruby-ng
+
 - name: Only run "update_cache=yes" once a week
   apt:
     update_cache: yes
-    cache_valid_time: 20 #604800
+    cache_valid_time: 80 #604800
 
 #FIX: Ubuntu 16.04 LTS doesn't come with certain modules, required by ansible
 - name: Preparing the table
@@ -46,16 +49,22 @@
 
 - name: Cooking system encoding
   become: yes
-  shell: sudo locale-gen en_US.UTF-8
+  shell: locale-gen en_US.UTF-8
 
 - name: Cooking system locale
   become: yes
-  shell: sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+  shell: update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 - name: Cooking Python
   become: yes
   apt:
     name: python-software-properties
+    state: latest
+
+- name: Cooking Python dev
+  become: yes
+  apt:
+    name: python-all-dev
     state: latest
 
 - name: Cooking autoconf >> latest
@@ -356,20 +365,40 @@
 #- name: Cooking SQL API
 #  become: yes
 #  ignore_errors: yes
-#  shell: git clone git://github.com/CartoDB/CartoDB-SQL-API.git; cd CartoDB-SQL-API && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development
+#  shell: git clone git://github.com/CartoDB/CartoDB-SQL-API.git; cd CartoDB-SQL-API && git checkout master; cp config/environments/development.js.example config/environments/development.js; node app.js development
+
+- name: Install packages based on package.json for CartoDB-SQL-API.
+  npm:
+    path: /root/CartoDB-SQL-API
 
 #MAPS API
 
 #- name: Cooking Maps API
 #  become: yes
 #  ignore_errors: yes
-#  shell: git clone git://github.com/CartoDB/Windshaft-cartodb.git; cd Windshaft-cartodb && git checkout master && npm install; cp config/environments/development.js.example config/environments/development.js; node app.js development
+#  shell: git clone git://github.com/CartoDB/Windshaft-cartodb.git; cd Windshaft-cartodb && git checkout master; cp config/environments/development.js.example config/environments/development.js; node app.js development
+
+#- name: Install packages based on package.json for Windshaft-cartodb.
+#  npm:
+#    path: /root/Windshaft-cartodb
 
 #RUBY
 
-- name: Cooking Ruby
+#- name: Cooking Ruby
+#  become: yes
+#  shell: wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz; tar -xzvf ruby-install-0.5.0.tar.gz; cd ruby-install-0.5.0/; sudo make install
+
+- name: Cooking ruby >> 2.2
   become: yes
-  shell: wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz; tar -xzvf ruby-install-0.5.0.tar.gz; cd ruby-install-0.5.0/; sudo make install
+  apt:
+    name: ruby2.2
+    state: latest
+
+- name: Cooking ruby-dev >> 2.2
+  become: yes
+  apt:
+    name: ruby2.2-dev
+    state: latest
 
 - name: Cooking libreadline6-dev >> present
   become: yes
@@ -383,24 +412,84 @@
     name: openssl
     state: latest
 
-- name: Cooking Ruby 2.2.3
-  become: yes
-  shell: ruby-install ruby 2.2.3
-
-- name: Cooking Ruby path
-  become: yes
-  shell: export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
+#- name: Cooking Ruby path
+#  become: yes
+#  raw: export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
 
 - name: Cooking bundler
   become: yes
-  shell: gem install bundler
-#  gem:
-#    name: bundler
-#    state: present
+  gem:
+    name: bundler
+    state: latest
 
 - name: Cooking compass
   become: yes
-  shell: gem install compass
-#  gem:
-#    name: compass
-#    state: present
+  gem:
+    name: compass
+    state: present
+
+- name: Check for carto installation
+  stat:
+    path: /root/cartodb
+  register: files_to_delete
+
+- name: Shipping Carto
+  become: yes
+  shell: git clone --recursive https://github.com/CartoDB/cartodb.git
+  when: not files_to_delete.stat.exists and files_to_delete.stat.isdir
+
+- name: Shipping Carto Update
+  become: yes
+  shell: cd cartodb && git pull origin master
+  when: files_to_delete.stat.exists and files_to_delete.stat.isdir
+
+- name: Shipping Carto Modules Update
+  become: yes
+  shell: cd cartodb && git submodule update --recursive
+
+- name: Cooking pip
+  become: yes
+  apt:
+      name: python-pip
+      state: latest
+
+- name: Cooking image magick
+  become: yes
+  apt:
+      name: imagemagick
+      state: latest
+
+- name: Cooking unp
+  become: yes
+  apt:
+      name: unp
+      state: latest
+
+- name: Cooking zip
+  become: yes
+  apt:
+      name: zip
+      state: latest
+
+#- name: Set RAILS ENV
+#  become: yes
+#  shell: cd cartodb && RAILS_ENV=development bundle install
+
+- name: Install packages based on package.json.
+  npm:
+    path: /root/cartodb
+
+- name: Install pip cartodb
+  ignore_errors: yes
+  pip:
+    requirements: /root/cartodb/python_requirements.txt
+    extra_args: --no-use-wheel -r
+
+- name: Add the grunt command to the PATH
+  become: yes
+  raw: cd cartodb && export PATH=$PATH:$PWD/node_modules/grunt-cli/bin
+
+- name: Crafting Gems
+  bundler:
+    state: present
+    gemfile: /root/cartodb/Gemfile

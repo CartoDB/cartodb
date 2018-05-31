@@ -2,6 +2,33 @@ Development
 -----------
 
 ### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.22.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+### Features
+* Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
+* New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
+
+### Bug fixes / enhancements
+* Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+* Fix migration of users with invalid search_tweets.data_import_id (#13904)
+* Import / export synchronization oauths and connector configurations (#14003)
+* Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
+* Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
+* Triggering ghost tables and common data when visiting the dashboard (#14010)
+
+
+4.12.x (2018-05-24)
+---
+
+### NOTICE
+OnPremises 2.2.0 was closed in tag 4.11.113, pointing to this commit: [a236036](https://github.com/CartoDB/cartodb/commit/a2360360bdd42706e5fb57e3729811c41e292c5e)
+
+
+### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.22.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
@@ -29,6 +56,7 @@ This upgrade changes AWS gem version. Now you must specify `region` within your 
 * Public pages migration (#13742)
 * Profile page migration (#13726)
 * Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
+* Add password expiration for orgs ([Central#2225](https://github.com/CartoDB/cartodb-central#2225))
 * Signup and confirmation pages migration (#13641)
 * Improve API keys view for the new Auth API (#13477)
 * Add search to widgets in mobile views (#13658)
@@ -121,6 +149,7 @@ ion for time-series (#12670)
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_d`
 * Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_s`
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New user render timeouts and propagation of timeout values to Redis (#12425)
@@ -187,6 +216,8 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix layers list item border color (https://github.com/CartoDB/cartodb/pull/14002)
+* Remove padding to delete button in analyses (https://github.com/CartoDB/cartodb/pull/14001)
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
 * Fix copy on Twitter connector deprecation
 * Fix apply button loading state for queries that alter the data (https://github.com/CartoDB/cartodb/pull/13979)

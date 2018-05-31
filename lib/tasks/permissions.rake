@@ -52,5 +52,32 @@ namespace :cartodb do
         end
       end
     end
+
+    desc 'fix permission pointing to non-existing entities'
+    task :fix_permission_acl, :environment do
+      permission_query = Carto::Permission.where("access_control_list != '[]'")
+
+      # Load the full list of user and group ids into memory for performance
+      uids = Set.new(Carto::User.select(:id).map(&:id))
+      gids = Set.new(Carto::Group.select(:id).map(&:id))
+
+      total = permission_query.count
+      i = 0
+      permission_query.find_each do |p|
+        new_acl = p.acl.reject do |acl|
+          acl[:type] == 'user' && !uids.include?(acl[:id]) ||
+            acl[:type] == 'group' && !gids.include?(acl[:id])
+        end
+
+        if new_acl != p.acl
+          puts "Fixing #{p.id}. From #{p.acl} to #{new_acl}"
+          p.update_column(:access_control_list, JSON.dump(new_acl))
+          p.save!
+        end
+
+        i += 1
+        puts "#{i} / #{total}" if (i % 100).zero?
+      end
+    end
   end
 end

@@ -1,16 +1,5 @@
 ---
 
-- name: Local machine actions
-  hosts: 127.0.0.1
-  connection: local
-  tasks:
-    - name: Disable host key checking
-    - command: export ANSIBLE_HOST_KEY_CHECKING=False
-#     - name: Generate SSH key for connections to remote machine
-#       command: ssh-keygen -f ./files/workstation -N ""
-#     - name: Convert key to PEM
-#       command: mv ./files/workstation ./files/workstation.pem
-
 - name: Remote first connection
   hosts: 186.10.95.243
   gather_facts: False

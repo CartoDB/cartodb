@@ -3,6 +3,7 @@ node_js:
   - "6.9.2"
 dist: trusty
 before_install:
+  - bash deploy/deploy.sh
   - sudo apt-get install python3
   - python --version
   - git submodule update --init --recursive

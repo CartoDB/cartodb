@@ -2,8 +2,7 @@ language: node_js
 node_js:
   - "6.9.2"
 dist: trusty
-before_install:
-  - bash deploy/deploy.sh
+before_install:  
   - sudo apt-get install python3
   - python --version
   - git submodule update --init --recursive
@@ -14,9 +13,10 @@ before_install:
   - sudo apt-get install -qq sshpass
   - pip install --user requests[security]
   - pip install --user --upgrade pip
-  - pip install --user ansible==2.5.3
+  - pip install --user -qq ansible==2.5.3
   - pip --version
   - ansible --version
+  - bash deploy/deploy.sh
 addons:
   chrome: stable
 install:

@@ -4,9 +4,8 @@
 // more control of the output bundle in order to fix unexpected behavior in old browsers.
 
 const webpack = require('webpack');
-const {resolve} = require('path');
-const PACKAGE = require('../../package.json');
-const version = PACKAGE.version;
+const { resolve } = require('path');
+const { version } = require('../../package.json');
 
 const isVendor = (module, count) => {
   const userRequest = module.userRequest;

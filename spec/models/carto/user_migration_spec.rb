@@ -625,7 +625,7 @@ describe 'UserMigration' do
     let(:owner_attributes) { @carto_org_user_owner.attributes }
 
     shared_examples_for 'migrating metadata' do |migrate_metadata|
-      before :each do
+      before(:each) do
         @table1 = create_table(user_id: @carto_org_user_1.id)
         records.each { |row| @table1.insert_row!(row) }
         create_database('test_migration', @organization.owner) if migrate_metadata
@@ -633,9 +633,10 @@ describe 'UserMigration' do
                                                            grants: [{ type: "apis", apis: ["maps", "sql"] }])
         @user1_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_1, name: unique_name('api_key'),
                                                            grants: [{ type: "apis", apis: ["maps", "sql"] }])
+        @carto_organization.reload
       end
 
-      after :each do
+      after(:each) do
         drop_database('test_migration', @organization.owner) if migrate_metadata
         @owner_api_key.destroy
         @user1_api_key.destroy

@@ -484,7 +484,7 @@ module CartoDB
       end
 
       def create_user_api_key_roles(user_id)
-        Carto::User.find(user_id).api_keys.select(&:regular?).each do |k|
+        Carto::User.find(user_id).api_keys.regular.each do |k|
           begin
             k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
           rescue PG::Error => e

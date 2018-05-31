@@ -182,15 +182,18 @@ module CartoDB
           begin
             if @target_org_id && @target_is_owner && File.exists?("#{@path}org_#{@target_org_id}.dump")
               create_db(@target_dbname, true)
+              create_org_api_key_roles(@target_org_id)
               import_pgdump("org_#{@target_org_id}.dump")
+              grant_org_api_key_roles(@target_org_id)
             elsif File.exists? "#{@path}user_#{@target_userid}.dump"
               create_db(@target_dbname, true)
+              create_org_api_key_roles(@target_userid)
               import_pgdump("user_#{@target_userid}.dump")
+              grant_org_api_key_roles(@target_userid)
             elsif File.exists? "#{@path}#{@target_username}.schema.sql"
               create_db(@target_dbname, false)
               run_file_restore_schema("#{@target_username}.schema.sql")
             end
-
           rescue => e
             begin
               remove_user_mover_banner(@pack_config['user']['id'])
@@ -459,11 +462,9 @@ module CartoDB
         @logger.info("Importing dump from #{dump} using pg_restore..")
         @toc_file = toc_file("#{@path}#{dump}")
 
-        create_api_key_roles(@pack_config['user']['id'])
         run_file_restore_postgres(dump, 'pre-data')
         run_file_restore_postgres(dump, 'data')
         run_file_restore_postgres(dump, 'post-data')
-        grant_api_key_roles(@pack_config['user']['id'])
       end
 
       def create_user(username, password = nil)
@@ -478,20 +479,29 @@ module CartoDB
         end
       end
 
-      def create_api_key_roles(user_id)
-        Carto::User.find(user_id).api_keys.select(&:regular?).each do |k|
-          k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
-      rescue ActiveRecord::RecordNotFound => e
-        CartoDB::Logger.error(exception: e, message: 'Restored user not found', user_id: user_id)
-        @logger.error("Unable to create roles for user's api keys, User id: #{user_id}")
+      def create_org_api_key_roles(org_id)
+        Carto::Organization.find(org_id).users.each { |u| create_user_api_key_roles(u.id) }
       end
 
-      def grant_api_key_roles(user_id)
+      def create_user_api_key_roles(user_id)
+        Carto::User.find(user_id).api_keys.select(&:regular?).each do |k|
+          begin
+            k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
+          rescue PG::Error => e
+            # Ignore role already exists errors
+            throw e unless e.message =~ /already exists/
+          end
+        end
+      end
+
+      def grant_org_api_key_roles(org_id)
+        Carto::Organization.find(org_id).users.each { |u|grant_user_api_key_roles(u.id) }
+      end
+
+      def grant_user_api_key_roles(user_id)
         Carto::User.find(user_id).api_keys.select(&:regular?).each do |k|
           k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
-      rescue ActiveRecord::RecordNotFound => e
-        CartoDB::Logger.error(exception: e, message: 'Restored user not found', user_id: user_id)
-        @logger.error("Unable to create roles for user's api keys, User id: #{user_id}")
+        end
       end
 
       def org_role_name(database_name)

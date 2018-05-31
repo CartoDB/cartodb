@@ -629,7 +629,7 @@ describe 'UserMigration' do
         @table1 = create_table(user_id: @carto_org_user_1.id)
         records.each { |row| @table1.insert_row!(row) }
         create_database('test_migration', @organization.owner) if migrate_metadata
-        @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_owner, name: 'Some ApiKey',
+        @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_owner, name: unique_name('api_key'),
                                                              grants: [{type: "apis", apis: ["maps", "sql"]}])
       end
 

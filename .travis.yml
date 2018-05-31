@@ -9,7 +9,7 @@ before_install:
   #- sudo apt-get install --reinstall python-setuptools
   - sudo apt-get install python-pip
   - sudo apt-get install libffi-dev libssl-dev
-  - sudo apt-get install sshpass
+  - sudo apt-get install -qq sshpass
   - pip install --user requests[security]
   - pip install --user --upgrade pip
   - pip install --user ansible==1.9.6
@@ -24,7 +24,7 @@ script:
   - npm run ci
 
 deploy:
-  provider: script
+  provider: script  
   script: bash deploy/deploy.sh
   on:
     branch: ansible-ssh-exchange

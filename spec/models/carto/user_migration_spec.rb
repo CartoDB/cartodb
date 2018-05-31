@@ -629,12 +629,16 @@ describe 'UserMigration' do
         @table1 = create_table(user_id: @carto_org_user_1.id)
         records.each { |row| @table1.insert_row!(row) }
         create_database('test_migration', @organization.owner) if migrate_metadata
-        @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_owner, name: unique_name('api_key'),
-                                                             grants: [{type: "apis", apis: ["maps", "sql"]}])
+        @owner_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_owner, name: unique_name('api_key'),
+                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
+        @user1_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_1, name: unique_name('api_key'),
+                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
       end
 
       after :each do
         drop_database('test_migration', @organization.owner) if migrate_metadata
+        @owner_api_key.destroy
+        @user1_api_key.destroy
       end
 
       it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do

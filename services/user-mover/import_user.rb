@@ -459,7 +459,7 @@ module CartoDB
         @logger.info("Creating roles for regular API Keys")
         begin
           Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
-            k.role_creation_queries.each { |q| superuser_pg_conn.query(q) }
+            k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
           end
         rescue ActiveRecord::RecordNotFound => e
           CartoDB::Logger.error(exception: e,
@@ -469,9 +469,20 @@ module CartoDB
 
         @logger.info("Importing dump from #{dump} using pg_restore..")
         @toc_file = toc_file("#{@path}#{dump}")
+
         run_file_restore_postgres(dump, 'pre-data')
         run_file_restore_postgres(dump, 'data')
         run_file_restore_postgres(dump, 'post-data')
+
+        begin
+          Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
+            k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
+          end
+        rescue ActiveRecord::RecordNotFound => e
+          CartoDB::Logger.error(exception: e,
+                                message: 'This should not be happening. Trying import a dump for a non-existing DB')
+          @logger.error("Unable to create roles for user's api keys, User id: #{@pack_config['user']['id']}")
+        end
       end
 
       def create_user(username, password = nil)

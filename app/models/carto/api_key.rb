@@ -209,8 +209,11 @@ module Carto
     end
 
     def role_creation_queries
+      ["CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'"]
+    end
+
+    def role_permission_queries
       queries = [
-        "CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'",
         "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
         "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
       ]
@@ -300,7 +303,7 @@ module Carto
     end
 
     def create_role
-      role_creation_queries.each { |q| db_run(q) }
+      (role_creation_queries + role_permission_queries).each { |q| db_run(q) }
     end
 
     def drop_db_role

@@ -456,33 +456,14 @@ module CartoDB
       # in the old database while the process is ongoing
       # Disabling it may be hard. Maybe it's easier to just exclude it in the export.
       def import_pgdump(dump)
-        @logger.info("Creating roles for regular API Keys")
-        begin
-          Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
-            k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
-          end
-        rescue ActiveRecord::RecordNotFound => e
-          CartoDB::Logger.error(exception: e,
-                                message: 'This should not be happening. Trying import a dump for a non-existing DB')
-          @logger.error("Unable to create roles for user's api keys, User id: #{@pack_config['user']['id']}")
-        end
-
         @logger.info("Importing dump from #{dump} using pg_restore..")
         @toc_file = toc_file("#{@path}#{dump}")
 
+        create_api_key_roles(@pack_config['user']['id'])
         run_file_restore_postgres(dump, 'pre-data')
         run_file_restore_postgres(dump, 'data')
         run_file_restore_postgres(dump, 'post-data')
-
-        begin
-          Carto::User.find(@pack_config['user']['id']).api_keys.select(&:regular?).each do |k|
-            k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
-          end
-        rescue ActiveRecord::RecordNotFound => e
-          CartoDB::Logger.error(exception: e,
-                                message: 'This should not be happening. Trying import a dump for a non-existing DB')
-          @logger.error("Unable to create roles for user's api keys, User id: #{@pack_config['user']['id']}")
-        end
+        grant_api_key_roles(@pack_config['user']['id'])
       end
 
       def create_user(username, password = nil)
@@ -495,6 +476,22 @@ module CartoDB
         rescue PG::Error => e
           @logger.info "Target Postgres role already exists: #{e.inspect}"
         end
+      end
+
+      def create_api_key_roles(user_id)
+        Carto::User.find(user_id).api_keys.select(&:regular?).each do |k|
+          k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
+      rescue ActiveRecord::RecordNotFound => e
+        CartoDB::Logger.error(exception: e, message: 'Restored user not found', user_id: user_id)
+        @logger.error("Unable to create roles for user's api keys, User id: #{user_id}")
+      end
+
+      def grant_api_key_roles(user_id)
+        Carto::User.find(user_id).api_keys.select(&:regular?).each do |k|
+          k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
+      rescue ActiveRecord::RecordNotFound => e
+        CartoDB::Logger.error(exception: e, message: 'Restored user not found', user_id: user_id)
+        @logger.error("Unable to create roles for user's api keys, User id: #{user_id}")
       end
 
       def org_role_name(database_name)

@@ -3,7 +3,6 @@
 
 [production]
 186.10.95.243 ansible_ssh_user=root ansible_ssh_pass="{{ lookup('env','HOST_PASS') }}"
-#ansible_ssh_private_key_file=./deploy/files/workstation
 
 [Circle]
 localhost

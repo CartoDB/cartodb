@@ -8,15 +8,14 @@ before_install:
   - git submodule update --init --recursive
   - git fetch origin master:refs/remotes/origin/master --depth=1
   #- sudo apt-get install --reinstall python-setuptools
-  - sudo apt-get install python-pip
-  - sudo apt-get install libffi-dev libssl-dev
+  - sudo apt-get install -qq python-pip
+  - sudo apt-get install -qq libffi-dev libssl-dev
   - sudo apt-get install -qq sshpass
   - pip install --user requests[security]
   - pip install --user --upgrade pip
-  - pip install --user -qq ansible==2.5.3
+  - pip install --user ansible==2.5.3
   - pip --version
   - ansible --version
-  - bash deploy/deploy.sh
 addons:
   chrome: stable
 install:

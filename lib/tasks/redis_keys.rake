@@ -7,9 +7,9 @@ namespace :cartodb do
 
       def db_numbers
         @db_numbers || {
-          '0' => $tables_metadata_secondary,
+          '0' => $tables_metadata,
           '3' => $api_credentials,
-          '5' => $users_metadata_secondary,
+          '5' => $users_metadata,
           '6' => $redis_migrator_logs,
           '8' => $limits_metadata
         }.freeze

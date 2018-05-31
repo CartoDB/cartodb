@@ -1,5 +1,5 @@
 [staging]
-xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=./deploy/julieta.pem
+186.10.95.243 ansible_ssh_user=root ansible_ssh_private_key_file=./deploy/julieta.pem
 
 [production]
 186.10.95.243 ansible_ssh_user=root ansible_ssh_pass="{{ lookup('env','HOST_PASS') }}"

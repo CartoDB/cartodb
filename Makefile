@@ -223,6 +223,7 @@ WORKING_SPECS_9 = \
 	spec/models/carto/shared_entity_spec.rb \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \
+	spec/requests/password_change_controller_spec.rb \
 	spec/requests/superadmin/users_spec.rb \
 	spec/requests/superadmin/organizations_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \

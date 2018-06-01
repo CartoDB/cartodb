@@ -20,6 +20,20 @@ describe Admin::OrganizationsController do
       }
     end
 
+    let(:payload_password) do
+      {
+        organization: { color: '#ff0000' },
+        password_confirmation: @org_user_owner.password
+      }
+    end
+
+    let(:payload_wrong_password) do
+      {
+        organization: { color: '#ff0000' },
+        password_confirmation: 'prapra'
+      }
+    end
+
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
       Organization.any_instance.stubs(:update_in_central).returns(true)
@@ -53,8 +67,22 @@ describe Admin::OrganizationsController do
 
     it 'can be updated by owner user' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
-      put organization_settings_update_url(user_domain: @org_user_owner.username), payload
+      put organization_settings_update_url(user_domain: @org_user_owner.username), payload_password
       response.status.should eq 302
+    end
+
+    it 'fails to update if no password_confirmation' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_settings_update_url(user_domain: @org_user_owner.username), payload
+      response.status.should eq 403
+      response.body.should match /Confirmation password sent does not match your current password/
+    end
+
+    it 'fails to update if wrong password_confirmation' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_settings_update_url(user_domain: @org_user_owner.username), payload_wrong_password
+      response.status.should eq 403
+      response.body.should match /Confirmation password sent does not match your current password/
     end
   end
 
@@ -65,7 +93,10 @@ describe Admin::OrganizationsController do
       @organization.save
       host! "#{@organization.name}.localhost.lan"
       login_as(@org_user_owner, scope: @org_user_owner.username)
-      post regenerate_organization_users_api_key_url(user_domain: @org_user_owner.username)
+      post regenerate_organization_users_api_key_url(
+        user_domain: @org_user_owner.username,
+        password_confirmation: @org_user_owner.password
+      )
       response.status.should eq 302
 
       @organization.users.each do |u|
@@ -138,8 +169,36 @@ describe Admin::OrganizationsController do
           auth_username_password_enabled: true,
           auth_google_enabled: true,
           auth_github_enabled: true,
-          strong_passwords_enabled: false
+          strong_passwords_enabled: false,
+          password_expiration_in_d: 1
         }
+      }
+    end
+
+    let(:payload_password) do
+      {
+        organization: {
+          whitelisted_email_domains: '',
+          auth_username_password_enabled: true,
+          auth_google_enabled: true,
+          auth_github_enabled: true,
+          strong_passwords_enabled: false,
+          password_expiration_in_d: 1
+        },
+        password_confirmation: @org_user_owner.password
+      }
+    end
+
+    let(:payload_wrong_password) do
+      {
+        organization: {
+          whitelisted_email_domains: '',
+          auth_username_password_enabled: true,
+          auth_google_enabled: true,
+          auth_github_enabled: true,
+          strong_passwords_enabled: false
+        },
+        password_confirmation: 'prapra'
       }
     end
 
@@ -177,8 +236,41 @@ describe Admin::OrganizationsController do
 
     it 'can be updated by owner user' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
-      put organization_auth_update_url(user_domain: @org_user_owner.username), payload
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload_password
       response.status.should eq 302
+    end
+
+    it 'cannot be updated by owner user if missing password_confirmation' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload
+      response.status.should eq 403
+      response.body.should match /Confirmation password sent does not match your current password/
+    end
+
+    it 'cannot be updated by owner user if wrong password_confirmation' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload_wrong_password
+      response.status.should eq 403
+      response.body.should match /Confirmation password sent does not match your current password/
+    end
+
+    it 'updates password_expiration_in_d' do
+      @organization.password_expiration_in_d = nil
+      @organization.save
+
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload_password
+      response.status.should eq 302
+      @organization.reload
+      @organization.password_expiration_in_d.should eq 1
+
+      payload_password[:organization][:password_expiration_in_d] = ''
+      host! "#{@organization.name}.localhost.lan"
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_auth_update_url(user_domain: @org_user_owner.username), payload_password
+      response.status.should eq 302
+      @organization.reload
+      @organization.password_expiration_in_d.should be_nil
     end
 
     describe 'signup enabled' do
@@ -295,13 +387,41 @@ describe Admin::OrganizationsController do
           body: 'the body',
           recipients: Carto::Notification::RECIPIENT_ALL
         }
-        post new_organization_notification_admin_url(user_domain: @admin_user.username), carto_notification: params
+        post new_organization_notification_admin_url(
+          user_domain: @admin_user.username
+        ), carto_notification: params, password_confirmation: @admin_user.password
         response.status.should eq 302
         flash[:success].should eq 'Notification sent!'
         notification = @carto_organization.reload.notifications.first
         notification.body.should eq params[:body]
         notification.recipients.should eq params[:recipients]
         notification.icon.should eq Carto::Notification::ICON_ALERT
+      end
+
+      it 'does not create a new notification if wrong password_confirmation' do
+        params = {
+          body: 'the body wrong',
+          recipients: Carto::Notification::RECIPIENT_ALL
+        }
+        post new_organization_notification_admin_url(
+          user_domain: @admin_user.username
+        ), carto_notification: params, password_confirmation: 'prapra'
+        response.status.should eq 403
+        response.body.should match /Confirmation password sent does not match your current password/
+        notification = @carto_organization.reload.notifications.first
+        notification.body.should_not eq params[:body]
+      end
+
+      it 'does not create a new notification if missing password_confirmation' do
+        params = {
+          body: 'the body missing',
+          recipients: Carto::Notification::RECIPIENT_ALL
+        }
+        post new_organization_notification_admin_url(user_domain: @admin_user.username), carto_notification: params
+        response.status.should eq 403
+        response.body.should match /Confirmation password sent does not match your current password/
+        notification = @carto_organization.reload.notifications.first
+        notification.body.should_not eq params[:body]
       end
     end
 

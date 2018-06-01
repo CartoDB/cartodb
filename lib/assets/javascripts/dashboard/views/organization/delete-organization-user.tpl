@@ -11,8 +11,24 @@
     <p class="Dialog-headerText">
       By deleting this account all <%- username %>'s maps and datasets will be lost,
       but extra credits will be reassigned to your user.
+      <% if (passwordNeeded) { %>
+        Type your password, please.
+      <% } %>
     </p>
   </div>
+
+  <% if (passwordNeeded) { %>
+    <div class="CDB-Text Dialog-body">
+      <div class="Form-row Form-row--centered has-label">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Your password</label>
+        </div>
+        <div class="Form-rowData">
+          <input type="password" id="deletion_password_confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
+        </div>
+      </div>
+    </div>
+  <% } %>
 
   <div class="CDB-Text Dialog-footer u-inner">
     <button class="CDB-Button CDB-Button--secondary Dialog-footerBtn js-cancel" type="button">

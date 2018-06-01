@@ -56,7 +56,8 @@ module CartoDB
         location:          location,
         updated_at:        updated_at,
         website:           website,
-        avatar_url:        avatar_url
+        avatar_url:        avatar_url,
+        password_expiration_in_d: password_expiration_in_d
       }
 
       if options[:extended]

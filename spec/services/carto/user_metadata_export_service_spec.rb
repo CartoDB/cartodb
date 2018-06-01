@@ -261,7 +261,7 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at'].freeze
+  EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
   EXCLUDED_USER_META_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags', 'auth_token'].freeze
 
   def compare_excluding_dates_and_ids(v1, v2)
@@ -274,6 +274,7 @@ describe Carto::UserMetadataExportService do
     filtered1 = u1.reject { |k, _| EXCLUDED_USER_META_DATE_FIELDS.include?(k) }
     filtered2 = u2.reject { |k, _| EXCLUDED_USER_META_DATE_FIELDS.include?(k) }
     expect(filtered1).to eq filtered2
+    expect(u1['period_end_date'].try(:round)).to eq(u2['period_end_date'].try(:round)) # Ignore microseconds
   end
 
   def expect_export_matches_user(export, user)

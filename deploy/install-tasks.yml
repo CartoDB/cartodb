@@ -156,7 +156,7 @@
   become: yes
   become_user: root
   become_method: sudo
-  copy: src=./files/pg_hba.conf dest=/etc/postgresql/9.5/main
+  copy: src=files/pg_hba.conf dest=/etc/postgresql/9.5/main
 
 - name: postgresql >> service >> restart
   become: yes
@@ -315,7 +315,7 @@
 
 - name: Serving Redis >> persistence
   become: yes
-  copy: src=./files/redis.conf dest=/etc/redis
+  copy: src=files/redis.conf dest=/etc/redis
 
 #NODEJS
 

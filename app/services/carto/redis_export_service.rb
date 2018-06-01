@@ -92,18 +92,30 @@ module Carto
       }
     end
 
+    def self.organization_keys_prefix(organization)
+      "org:#{organization.name}"
+    end
+
+    def self.user_keys_prefix(user)
+      "user:#{user.username}"
+    end
+
+    def self.named_maps_key(user)
+      "map_tpl|#{user.username}"
+    end
+
     private
 
     def export_organization(organization)
       {
-        users_metadata: export_dataservices("org:#{organization.name}"),
+        users_metadata: export_dataservices(organization_keys_prefix(organization)),
         tables_metadata: {}
       }
     end
 
     def export_user(user)
       {
-        users_metadata: export_dataservices("user:#{user.username}"),
+        users_metadata: export_dataservices(user_keys_prefix(use)),
         tables_metadata: export_named_maps(user)
       }
     end
@@ -115,8 +127,7 @@ module Carto
     end
 
     def export_named_maps(user)
-      named_maps_key = "map_tpl|#{user.username}"
-      named_maps_keys = $tables_metadata_secondary.hkeys(named_maps_key).reject do |named_map|
+      named_maps_keys = $tables_metadata_secondary.hkeys(named_maps_key(user)).reject do |named_map|
         matches_user_visualization?(named_map, user)
       end
       named_maps_hash = named_maps_keys.reduce({}) do |m, named_map|

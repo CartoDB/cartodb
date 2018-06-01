@@ -495,7 +495,7 @@ module CartoDB
       end
 
       def grant_org_api_key_roles(org_id)
-        Carto::Organization.find(org_id).users.each { |u|grant_user_api_key_roles(u.id) }
+        Carto::Organization.find(org_id).users.each { |u| grant_user_api_key_roles(u.id) }
       end
 
       def grant_user_api_key_roles(user_id)

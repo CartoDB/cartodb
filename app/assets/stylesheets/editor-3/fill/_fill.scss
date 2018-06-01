@@ -42,13 +42,13 @@
 
   .Editor-fillContainer--Column {
     width: auto;
-    margin-right: $baseSize;
-    padding: $baseSize $baseSize $baseSize 0;
+    margin-right: 10px;
   }
 
   .Editor-fillContainer--ColorBarContainer {
     position: relative;
-    width: 40px;
+    width: 100%;
+    max-width: 40px;
 
     // Grey Left Bar separator
     &::after {

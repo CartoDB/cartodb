@@ -1,49 +1,19 @@
 const webpack = require('webpack');
-const glob = require('glob');
 const { resolve } = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 const { version } = require('../../package.json');
+const entryPoints = require('./entryPoints');
 
-const PATHS_TO_CLEAN = [
-  'common.js'
-];
-
-const stats = (env) => {
-  return env && env.stats;
-};
+const stats = (env) => (env && env.stats);
 
 const rootDir = file => resolve(__dirname, '../../', file);
 
 const isVendor = (module, count) => {
   const userRequest = module.userRequest;
   return userRequest && userRequest.indexOf('node_modules') >= 0;
-};
-
-const entryPoints = {
-  common: [
-    rootDir('app/assets/stylesheets/old_common/video_player.scss'),
-    rootDir('app/assets/stylesheets/cartoassets/entry.scss'),
-    ...glob.sync(rootDir('app/assets/stylesheets/common/**/*.scss')),
-    ...glob.sync(rootDir('app/assets/stylesheets/client/**/*.scss'))
-  ],
-  public_table_new: rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
-  public_dashboard_new: rootDir('lib/assets/javascripts/dashboard/public-dashboard.js'),
-  user_feed_new: rootDir('lib/assets/javascripts/dashboard/user-feed.js'),
-  api_keys_new: [
-    rootDir('lib/assets/javascripts/dashboard/api-keys.js'),
-    rootDir('app/assets/stylesheets/new_dashboard/api-keys.scss'),
-    rootDir('app/assets/stylesheets/plugins/tipsy.scss')
-  ],
-  data_library_new: rootDir('lib/assets/javascripts/dashboard/data-library.js'),
-  mobile_apps_new: rootDir('lib/assets/javascripts/dashboard/mobile-apps.js'),
-  account_new: rootDir('lib/assets/javascripts/dashboard/account.js'),
-  profile_new: rootDir('lib/assets/javascripts/dashboard/profile.js'),
-  sessions_new: rootDir('lib/assets/javascripts/dashboard/sessions.js'),
-  confirmation_new: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
-  dashboard_new: rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
-  organization_new: rootDir('lib/assets/javascripts/dashboard/organization.js')
 };
 
 module.exports = env => {
@@ -73,7 +43,7 @@ module.exports = env => {
         }))
     )
       .concat([
-      // Extract common chuncks from the 3 vendor files
+        // Extract common chuncks from the 3 vendor files
         new webpack.optimize.CommonsChunkPlugin({
           name: 'common_dashboard',
           chunks: Object.keys(entryPoints).map(n => `${n}_vendor`),
@@ -103,9 +73,26 @@ module.exports = env => {
           filename: `./${version}/stylesheets/[name].css`
         }),
 
-        new CleanWebpackPlugin(PATHS_TO_CLEAN, {
-          root: rootDir(`public/assets/${version}/javascripts`),
-          verbose: true
+        new CopyWebpackPlugin([
+          {
+            from: rootDir('app/assets/fonts'),
+            to: `./${version}/fonts/`,
+            toType: 'dir'
+          },
+          {
+            from: rootDir('app/assets/images'),
+            to: `./${version}/images/`,
+            toType: 'dir'
+          }
+        ]),
+
+        new WebpackDeleteAfterEmit({
+          globs: [
+            `${version}/javascripts/common.js`,
+            `${version}/javascripts/common.js.map`,
+            `${version}/javascripts/dashboard.js`,
+            `${version}/javascripts/dashboard.js.map`
+          ]
         })
       ])
       .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
@@ -115,7 +102,7 @@ module.exports = env => {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
+            rootDir('node_modules/internal-carto.js')
           ],
           options: {
             shim: {
@@ -135,19 +122,19 @@ module.exports = env => {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [
-            resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
-            resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard'),
-            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
+            rootDir('lib/assets/javascripts/builder'),
+            rootDir('lib/assets/javascripts/dashboard'),
+            rootDir('node_modules/internal-carto.js')
           ]
         },
         {
           test: /\.js$/,
           loader: 'babel-loader',
           include: [
-            resolve(__dirname, '../../', 'node_modules/tangram-cartocss'),
-            resolve(__dirname, '../../', 'node_modules/tangram.cartodb'),
-            resolve(__dirname, '../../', 'lib/assets/javascripts/carto-node'),
-            resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard')
+            rootDir('node_modules/tangram-cartocss'),
+            rootDir('node_modules/tangram.cartodb'),
+            rootDir('lib/assets/javascripts/carto-node'),
+            rootDir('lib/assets/javascripts/dashboard')
           ],
           options: {
             presets: ['env'],
@@ -155,10 +142,35 @@ module.exports = env => {
           }
         },
         {
-          test: /\.scss$/,
+          test: /\.s?css$/,
           use: ExtractTextPlugin.extract({
-            use: ['css-loader', 'sass-loader']
+            use: [
+              {
+                loader: 'css-loader',
+                options: {
+                  sourceMap: false
+                }
+              },
+              {
+                loader: 'sass-loader',
+                options: {
+                  data: `$assetsDir: "/assets/${version}";`,
+                  sourceMap: false
+                }
+              }
+            ]
           })
+        },
+        {
+          test: /\.(ttf|eot|woff|woff2|svg)(.+#.+)?$/,
+          use: {
+            loader: 'file-loader',
+            options: {
+              name: `[name].[ext]`,
+              outputPath: `${version}/fonts/`,
+              publicPath: `/assets/${version}/fonts/`
+            }
+          }
         }
       ]
     },
@@ -167,6 +179,6 @@ module.exports = env => {
       fs: 'empty' // This fixes the error Module not found: Error: Can't resolve 'fs'
     },
 
-    stats: 'normal'
+    stats: 'errors-only'
   };
 };

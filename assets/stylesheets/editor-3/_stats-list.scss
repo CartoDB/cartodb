@@ -1,0 +1,35 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.StatsList-item.is-hidden {
+  display: none;
+}
+
+.StatsList-item {
+  display: flex;
+  box-sizing: border-box;
+  margin: 0 0 $baseSize * 3;
+}
+
+.StatsList-header {
+  margin-top: 1px;
+}
+
+.StatsList-arrow {
+  transform: rotate(90deg);
+}
+
+.StatsList-tag {
+  margin-top: 1px;
+}
+
+.StatsList-style.is-hidden {
+  display: none;
+}
+
+.Data-loaderContainer {
+  position: relative;
+  margin-top: -18px;
+  margin-bottom: 18px;
+}
+

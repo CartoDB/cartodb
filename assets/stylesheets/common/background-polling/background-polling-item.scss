@@ -1,0 +1,96 @@
+@import '../../variables/colors';
+@import '../../variables/sizes';
+@import '../../variables/progress-bar';
+
+// Background importer item styles
+
+.ImportItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  margin: 0 20px;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+
+.ImportItem--sticky {
+  margin: 0;
+  padding: 0 20px;
+  background: $cCard-hoverFill;
+}
+
+.ImportItem:last-child {
+  border: none;
+}
+
+.ImportItem-text {
+  display: block;
+  width: 207px;
+  overflow: hidden;
+  color: $cTypography-paragraphs;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ImportItem-text.is-long {
+  width: 380px;
+}
+
+.ImportItem-textState {
+  text-transform: capitalize;
+}
+
+.ImportItem-text.is-completed {
+  width: 280px;
+  max-width: 280px;
+  color: $cHighlight-positive;
+}
+
+.ImportItem-text.is-alerted {
+  width: 280px;
+  max-width: 280px;
+  color: $cHighlight-alert;
+}
+
+.ImportItem-text.is-failed {
+  width: 280px;
+  max-width: 280px;
+  color: $cHighlight-negative;
+}
+
+.ImportItem-text.has-warnings {
+  width: 280px;
+  max-width: 280px;
+  color: $cHighlight-alert2;
+}
+
+.ImportItem-progress {
+  width: 124px;
+
+  @include progress-animated-bar(6px, 6px, false, 3px);
+}
+
+.ImportItem-closeButton {
+  width: 24px;
+  height: 24px;
+  margin-left: 5px;
+  border: 1px solid $cNavButton-default;
+  border-radius: 22px;
+  outline: none;
+  background: transparent;
+  line-height: 26px;
+  text-align: center;
+}
+
+.ImportItem-closeButtonIcon {
+  color: $cTypography-help;
+  font-size: $sFontSize-normal;
+}
+
+.ImportItem-closeButton:hover {
+  border-color: $cNavButton-active;
+
+  .ImportItem-closeButtonIcon {
+    color: $cNavButton-active;
+  }
+}

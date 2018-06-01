@@ -1,0 +1,44 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.NavButton {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cNavButton-default;
+  border-radius: 30px;
+  outline: none;
+  background: transparent;
+  color: $cNavButton-default;
+  font-size: 18px;
+  font-weight: $sFontWeight-lighter;
+  line-height: 42px;
+
+  &:hover {
+    border-color: $cNavButton-active;
+    color: $cNavButton-active;
+    text-decoration: none;
+  }
+
+  // For safari 8 the element node inside the NavButton is not centered horizontally with the flex layout, this uses the
+  // margin auto-trick to center it as expected.
+  & > * {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.NavButton--withText {
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
+}
+
+.NavButton--back {
+  line-height: 40px;
+}

@@ -1,0 +1,318 @@
+
+@import '../variables/colors';
+@import '../variables/sizes';
+
+// Navmenu
+// --------------------------------------------------
+
+.Navmenu {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+
+.Navmenu.Navmenu--white {
+  background: $cStructure-mainBkg;
+}
+
+.Navmenu.Navmenu--top {
+  position: absolute;
+  width: 100%;
+}
+
+.Navmenu.is-fixed {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  width: 100%;
+}
+
+.Navmenu.Navmenu--borderless {
+  border-bottom: none;
+}
+
+.Navmenu.Navmenu--borderless .Navmenu-item {
+  position: relative;
+}
+
+.Navmenu.Navmenu--borderless .Navmenu-link {
+  display: inline-block;
+  line-height: 80px;
+}
+
+.Navmenu-link.is-selected {
+  color: $cTypography-linkSelected;
+  font-weight: bold;
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: #1181FB;
+  }
+
+  &:hover {
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.Navmenu-list {
+  display: inline-block;
+  height: 81px;
+}
+
+.Navmenu-list::before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.Navmenu-list.Navmenu-list--owner {
+  float: left;
+}
+
+.Navmenu-list.Navmenu-list--avatar {
+  margin-right: $sMargin-section;
+}
+
+.Navmenu-item {
+  margin-right: $sMargin-section;
+}
+
+.Navmenu-subItem {
+  margin-left: $sMargin-group;
+}
+
+.Navmenu-item.Navmenu-item:last-child {
+  margin-right: 0;
+}
+
+.Navmenu-item.Navmenu-item--buttons {
+  position: relative;
+  top: 3px;
+}
+
+.Navmenu-item.Navmenu-item--like {
+  position: relative;
+  top: 2px;
+}
+
+.Navmenu-item.Navmenu-item--withsep {
+  position: relative;
+}
+
+.Navmenu-subItem.Navmenu-subItem:first-child {
+  margin-left: 0;
+}
+
+.Navmenu-item,
+.Navmenu-subItem {
+  display: inline-block;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.Navmenu-rarrow {
+  position: relative;
+  top: -1px;
+  width: 3px;
+  height: 9px;
+  margin-right: 20px;
+  margin-left: -20px;
+  color: $cNavmenu-arrow;
+  font-size: 6px;
+}
+
+.Navmenu-separator {
+  position: absolute;
+  z-index: 0;
+  top: 80px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: $cStructure-softLine;
+}
+
+.Navmenu-sep {
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 20px;
+  margin-right: 20px;
+  margin-left: -20px;
+  background-color: $cNavmenu-sep;
+}
+
+.Navmenu-link {
+  transition: all 0.3s;
+  color: $cTypography-linkSecondary;
+}
+
+.Navmenu-link:hover {
+  color: $cTypography-linkSecondaryHover;
+  text-decoration: none;
+}
+
+.Navmenu-link.Navmenu-link--owner {
+  display: inline-block;
+  max-width: 150px;
+  float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Navmenu-link--action,
+.Navmenu-item--action {
+  color: #0090D7;
+
+  &:hover {
+    color: #007FBD;
+  }
+}
+
+.Navmenu-icon {
+  transition: all 0.2s;
+  color: #BEC5C9;
+  font-size: $sFontSize-largest;
+}
+
+.Navmenu-icon:hover {
+  color: #AAA;
+}
+
+.Navmenu-icon.Navmenu-icon--twitter {
+  position: relative;
+  top: -2px;
+  font-size: 22px;
+}
+
+.Navmenu-hireLink:hover {
+  color: #FFF;
+}
+
+.Navmenu-editLink {
+  display: none;
+  width: auto;
+  height: 36px;
+  border: 1px solid $cNavButton-default;
+  color: $cNavButton-default;
+  font-size: 12px;
+  font-weight: $sFontWeight-normal;
+  line-height: 36px;
+  text-align: center;
+  text-transform: uppercase;
+  vertical-align: middle;
+
+  &.Navmenu-editLink--create,
+  &.Navmenu-editLink--edit {
+    border-color: #0090D7;
+    color: #FFF;
+  }
+}
+
+.Navmenu-editLink.Navmenu-editLink--edit {
+  margin-left: $sMargin-section;
+  border-color: #0090D7;
+  color: #FFF;
+}
+
+.Navmenu-editLink.Navmenu-editLink--oneclick {
+  margin-left: 0;
+}
+
+.Navmenu-editLink.Navmenu-editLink--more {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 20px;
+  padding: 0 16px;
+  border-radius: 28px;
+}
+
+.Navmenu-editLink.Navmenu-editLink--more:hover {
+  border-color: $cNavButton-active;
+  color: $cNavButton-active;
+}
+
+.Navmenu-editLink:hover {
+  text-decoration: none;
+}
+
+.Navmenu-editLink.is-active {
+  display: inline-block;
+}
+
+.Navmenu-share {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.Navmenu-shareLink {
+  display: none;
+  position: relative;
+  top: 2px;
+  margin-right: $sMargin-elementInline;
+}
+
+.Navmenu-shareList {
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.Navmenu-closeLink {
+  position: relative;
+  top: -2px;
+}
+
+.Navmenu-actionIcon {
+  margin-right: 5px;
+  font-size: 10px;
+}
+
+.Navmenu-tableIcon {
+  position: relative;
+  top: -2px;
+}
+
+div.cartodb-timeslider {
+  margin-bottom: 0;
+}
+
+@media (max-width: $sMedia-desktop) {
+  .Navmenu-shareLink {
+    display: inline-block;
+  }
+
+  .Navmenu-shareList {
+    display: block;
+    position: absolute;
+    right: 10px;
+    height: 81px;
+    margin-top: 0;
+    background: #FFF;
+  }
+
+  .Navmenu-shareList.is-active {
+    width: 200%;
+    margin-top: -81px;
+  }
+
+  .Navmenu-sep {
+    top: 0;
+  }
+
+  .Navmenu-item.Navmenu-item.last-child {
+    margin-right: 0;
+  }
+
+  .Navmenu-editLink {
+    display: block;
+  }
+}

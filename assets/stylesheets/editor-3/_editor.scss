@@ -1,0 +1,252 @@
+// Styles for Editor window
+// --------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import 'vars';
+
+.Editor {
+  display: flex;
+  position: relative;
+  width: 100vw;
+  min-width: 1024px;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+
+  .CDB-Dashboard-canvas {
+    padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
+    background: #F2F6F9; // Canvas is out of widget themes
+  }
+
+  .CDB-Dashboard-belowMap {
+    margin-top: 8px;
+  }
+
+  .CDB-Widget-canvasInner {
+    position: relative;
+    margin-left: 0;
+  }
+}
+
+.Editor--topBar {
+  height: calc(100vh - 40px);
+}
+
+.Editor-wrapper {
+  display: flex;
+  position: relative;
+  height: 100%;
+  min-height: 450px;
+}
+
+.Editor-panel {
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  padding: 19px 24px 0;
+  transition: width 300ms ease-in-out;
+}
+
+.Editor-panel.is-dark {
+  background: $cMainBg;
+}
+
+.Editor-content {
+  display: flex;
+  position: relative;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.Editor-content.is-disabled {
+  opacity: 0.24;
+  pointer-events: none;
+}
+
+.Editor-panelWrapper {
+  position: relative;
+  width: 344px;
+}
+
+.Editor-panelWrapper.is-larger {
+  width: 488px;
+}
+
+.Editor-panel .ps-scrollbar-y-rail {
+  z-index: 3;
+}
+
+.Editor-panel .ps-scrollbar-x-rail {
+  z-index: 3;
+}
+
+.Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
+  pointer-events: all;
+}
+
+.Editor .CDB-Zoom-info {
+  display: block;
+}
+
+/* Responsive views */
+@media (max-width: $sMedia-xxl) {
+  .Editor {
+    .CDB-Widget-canvas,
+    .CDB-Widget {
+      width: $mobileLayout;
+    }
+
+    .CDB-Widget.CDB-Widget--timeSeries {
+      min-height: auto;
+      padding: 18px 0 16px;
+    }
+
+    .CDB-Widget--timeSeries {
+      width: 100%;
+    }
+
+    .CDB-Widget-canvas {
+      min-width: $mobileLayout;
+      max-width: $mobileLayout;
+    }
+
+    .CDB-Widget-listItem {
+      width: $mobileLayout - 6px;
+    }
+  }
+}
+
+@media (max-width: $sMedia-xl) {
+  .Editor {
+    .CDB-Widget.CDB-Widget--timeSeries {
+      min-height: auto;
+      padding: 18px 0 16px;
+    }
+
+    .CDB-Widget-options,
+    .CDB-Widget-actions {
+      display: flex;
+    }
+
+    .CDB-Widget-body {
+      .CDB-Dropdown {
+        min-width: 150px;
+      }
+
+      .CDB-Dropdown-link {
+        padding: 8px 12px;
+        font-size: 11px;
+      }
+
+      .CDB-Dropdown-item:first-child {
+        > .CDB-Dropdown-link {
+          opacity: 0.24;
+          pointer-events: none;
+        }
+      }
+    }
+
+    .CDB-Widget-body.is-collapsed {
+      height: 100%;
+
+      .CDB-Widget-content,
+      .CDB-Widget-info {
+        display: block;
+      }
+    }
+
+    .CDB-Dashboard-canvas {
+      flex-direction: column;
+      max-width: calc(100% - 392px);
+    }
+
+    .CDB-Widget-canvas {
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      min-height: 180px;
+      margin: 8px 0 0;
+    }
+
+    .CDB-Widget {
+      flex: 1;
+      width: auto;
+      min-height: 180px;
+      margin-bottom: 0;
+      padding: 0;
+      border-right: 2px solid $cSecondaryBackground;
+    }
+
+    .CDB-Widget-canvasInner {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .CDB-Widget-header,
+    .CDB-Widget-footer,
+    .CDB-Widget-content {
+      margin-right: 16px;
+      margin-left: 16px;
+    }
+
+    .CDB-Widget-listButton {
+      padding: 4px 0;
+    }
+
+    /* one or two items */
+    .CDB-Widget-listItem:nth-child(1):nth-last-child(1),
+    .CDB-Widget-listItem:nth-child(1):nth-last-child(2),
+    .CDB-Widget-listItem:nth-child(2):nth-last-child(1) {
+      width: 100%;
+    }
+
+    .CDB-Widget-listItem {
+      box-sizing: border-box;
+      width: 33%;
+      padding: 0 8px;
+    }
+
+    .CDB-Widget-listWrapper .CDB-Widget-contentSpaced--sideMargins {
+      margin-right: 0;
+      margin-left: 0;
+    }
+
+    .CDB-Widget-listItemInner {
+      margin: 0;
+    }
+
+    .CDB-Widget-list {
+      display: flex;
+      box-sizing: border-box;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .CDB-Widget-listWrapper {
+      overflow-x: hidden;
+    }
+
+    .CDB-Widget-inlineListItem {
+      width: 47%;
+    }
+
+    .CDB-Widget-list--fake {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .CDB-Widget-content--noSidesMargin .CDB-Widget-listItem--fake {
+      margin-right: 12px;
+      margin-left: 12px;
+    }
+  }
+}

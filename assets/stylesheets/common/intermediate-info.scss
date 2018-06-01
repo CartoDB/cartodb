@@ -1,0 +1,38 @@
+/* stylelint-disable */
+@import '../variables/colors';
+@import '../variables/sizes';
+
+// Intermediate info for a view with minimal information on intermediate states.
+// E.g. loading view, error screen, empty results etc.
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+.IntermediateInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 360px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+_:-ms-lang(x),
+.IntermediateInfo {
+  padding-top: 100px;
+}
+
+// Let a flex layout position it rather than enforcing a min-height
+.IntermediateInfo--flex {
+  min-height: 0;
+}
+
+.IntermediateInfo-title--error {
+  color: $cHighlight-negative;
+}
+
+.IntermediateInfo.IntermediateInfo--pullUp {
+  margin-top: -50px;
+  padding: 0 0 50px;
+}

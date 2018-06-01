@@ -1,0 +1,82 @@
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.ContentFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0 auto;
+  padding: $sMargin-group 0;
+}
+
+/* REVIEW IF THIS CLASS IS NECESSARY */
+.ContentFooter-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ContentFooter-inner--paginationOnly {
+  justify-content: center;
+}
+
+.ContentFooter-lockedIcon {
+  margin-right: $sMargin-min;
+  color: $cTypography-help;
+  font-size: $sFontSize-small;
+}
+
+@media only screen and (max-width: 984px) {
+  .ContentFooter {
+    display: block;
+  }
+
+  .ContentFooter-inner--paginationOnly {
+    justify-content: flex-end;
+  }
+}
+
+@media only screen and (max-width: 600px) and (min-width: $sMedia-mobile) {
+  .ContentFooter {
+    display: block;
+  }
+
+  .ContentFooter-inner--paginationOnly {
+    justify-content: flex-end;
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .ContentFooter {
+    display: block;
+  }
+
+  .ContentFooter-inner--paginationOnly {
+    justify-content: flex-end;
+  }
+}
+
+@media only screen and (min-width: $sMedia-tablet) {
+  .ContentFooter-inner--paginationOnly {
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: $sMedia-desktop) {
+  .ContentFooter {
+    display: flex;
+    width: $sLayout-width;
+  }
+}
+
+@media (min-width: $sMedia-tablet) {
+  .ContentFooter-inner {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .ContentFooter-inner--paginationOnly {
+    justify-content: flex-end;
+  }
+}

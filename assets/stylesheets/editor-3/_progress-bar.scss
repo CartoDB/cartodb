@@ -1,0 +1,32 @@
+// Progress bar styles
+// --------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+$border-radius: $baseSize / 2;
+$height: $baseSize / 2;
+
+.Progress {
+  width: 100%;
+  height: $height;
+  overflow: hidden;
+  border-radius: $border-radius;
+  background: rgba($cMainLine, 0.5);
+}
+
+.Progress-bar {
+  min-width: 3px;
+  max-width: 100%;
+  height: $height;
+  border-radius: $border-radius;
+  background: $cHighlight;
+}
+
+.Progress-bar--caution {
+  background: $cError;
+}
+
+.Progress-bar--alert {
+  background: $cAlert;
+}

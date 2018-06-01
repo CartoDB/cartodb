@@ -1,0 +1,58 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.Infowindow-listFields {
+  position: relative;
+}
+
+.Infowindow-listFieldsOrder {
+  position: absolute;
+  opacity: 0;
+}
+
+.Infowindow-listFieldItem {
+  position: relative;
+  cursor: move;
+}
+
+.Infowindow-listFieldItem.ui-sortable-helper {
+  height: auto !important; /* rewrite height added by sortable plugin */
+  padding: 0 $baseSize - 2 $baseSize + 4;
+  border: 1px solid rgba($cMainBg, 0.12);
+  border-radius: $baseSize / 2;
+  background: rgba($cWhite, 0.64);
+  box-shadow: 0 7px 10px 2px rgba($cBlack, 0.24);
+}
+
+.Infowindow-listFieldItem.ui-sortable-helper .Infowindow-listFieldsOrder,
+.Infowindow-listFieldItem:hover .Infowindow-listFieldsOrder {
+  opacity: 1;
+}
+
+.Infowindow-listFieldItem:hover .Infowindow-listFieldsOrder {
+  top: 9px;
+  left: -19px;
+}
+
+.Infowindow-listFieldItem.ui-sortable-helper .Infowindow-listFieldsOrder {
+  top: 22px;
+  left: -20px;
+}
+
+.CDB-infowindow.Infowindow-none {
+  background: $cHighlightYellow;
+}
+
+.Infowindow-none .CDB-hook::before {
+  border-top: 16px solid $cHighlightYellow;
+}
+
+.Infowindow-none .CDB-infowindow-subtitle {
+  margin-bottom: 8px;
+  color: $cMainBg;
+  font-weight: 600;
+}
+
+.Infowindow-none .CDB-infowindow-title {
+  font-weight: 400;
+}

@@ -154,6 +154,8 @@
 
 - name: Serving PostgreSQL >> allow localhost connections with no pwd
   become: yes
+  become_user: root
+  become_method: sudo
   copy: src=./files/pg_hba.conf dest=/etc/postgresql/9.5/main
 
 - name: postgresql >> service >> restart

@@ -26,8 +26,7 @@ do
   first=0
 done
 
-cat Makefile | grep -v 'spec/lib/varnish_spec.rb' | \
-grep -v $DISABLED_TEST_REGEX | \
+cat Makefile | grep -v $DISABLED_TEST_REGEX | \
 grep -v 'require ./spec/rspec_configuration.rb'| \
 grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > parallel_tests/specfull.txt
 

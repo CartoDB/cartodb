@@ -35,5 +35,5 @@ notifications:
     on_success: never
     on_failure: change
   slack:
-    on_success: always
-    on_failure: always
+    rooms:
+      - ocean-io:iZCO05QEaRxnLp34GOKJFzGO#devops

@@ -45,7 +45,7 @@ module.exports = {
 
   mobile_apps_new: rootDir('lib/assets/javascripts/dashboard/mobile-apps.js'),
 
-  account_new: rootDir('lib/assets/javascripts/dashboard/account.js'),
+  account: rootDir('lib/assets/javascripts/dashboard/account.js'),
 
   profile_new: rootDir('lib/assets/javascripts/dashboard/profile.js'),
 

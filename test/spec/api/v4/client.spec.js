@@ -37,13 +37,13 @@ describe('api/v4/client', function () {
       describe('apiKey', function () {
         it('should throw a descriptive error when apikey is not given', function () {
           expect(function () {
-            new carto.Client({ username: 'cartojs-test' }); // eslint-disable-line
+            new carto.Client({ username: "cartojs-test" }); // eslint-disable-line
           }).toThrowError('apiKey property is required.');
         });
 
         it('should throw a descriptive error when apikey is not a string', function () {
           expect(function () {
-            new carto.Client({ apiKey: 1234, username: 'cartojs-test' }); // eslint-disable-line
+            new carto.Client({ apiKey: 1234, username: "cartojs-test" }); // eslint-disable-line
           }).toThrowError('apiKey property must be a string.');
         });
 
@@ -74,7 +74,7 @@ describe('api/v4/client', function () {
           }).toThrowError('serverUrl is not a valid URL.');
         });
 
-        it('should throw a descriptive error when serverUrl doesn\'t match the username', function () {
+        it("should throw a descriptive error when serverUrl doesn't match the username", function () {
           expect(function () {
             // eslint-disable-next-line
             new carto.Client({
@@ -82,7 +82,7 @@ describe('api/v4/client', function () {
               username: 'cartojs-test',
               serverUrl: 'https://invald-username.carto.com'
             });
-          }).toThrowError('serverUrl doesn\'t match the username.');
+          }).toThrowError("serverUrl doesn't match the username.");
         });
       });
     });
@@ -94,7 +94,9 @@ describe('api/v4/client', function () {
     var layer;
 
     beforeEach(function () {
-      source = new carto.source.Dataset('ne_10m_populated_places_simple', { id: 'a0' });
+      source = new carto.source.Dataset('ne_10m_populated_places_simple', {
+        id: 'a0'
+      });
       style = new carto.style.CartoCSS('#layer {  marker-fill: red; }');
       layer = new carto.layer.Layer(source, style, {});
     });
@@ -117,7 +119,9 @@ describe('api/v4/client', function () {
 
     it('should return a rejected promise when some error happened', function (done) {
       var errorMock = new Error('Error-Mock');
-      spyOn(client._engine, 'reload').and.returnValue(Promise.reject(errorMock));
+      spyOn(client._engine, 'reload').and.returnValue(
+        Promise.reject(errorMock)
+      );
 
       client.addLayer(layer).catch(function (error) {
         expect(error.message).toEqual(errorMock.message);
@@ -134,7 +138,9 @@ describe('api/v4/client', function () {
     it('should throw a descriptive error when two layers with the same id are added', function () {
       expect(function () {
         client.addLayer(layer);
-        client.addLayer(new carto.layer.Layer(source, style, { id: layer.getId() }));
+        client.addLayer(
+          new carto.layer.Layer(source, style, { id: layer.getId() })
+        );
       }).toThrowError('A layer with the same ID already exists in the client.');
     });
   });
@@ -265,7 +271,9 @@ describe('api/v4/client', function () {
     });
 
     it('should have the OpenStreetMap / Carto attribution', function () {
-      expect(leafletLayer.getAttribution()).toBe('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>');
+      expect(leafletLayer.getAttribution()).toBe(
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+      );
     });
 
     it('should throw an error if Leaflet is not loaded', function () {
@@ -336,13 +344,13 @@ describe('api/v4/client', function () {
       window.google = google;
     });
 
-    it('should throw an error if Google Maps version is <3.0', function () {
+    it('should throw an error if Google Maps version is < 3.31', function () {
       var google = _.clone(window.google);
 
       window.google.maps = { version: '2.4' };
       expect(function () {
         client.getGoogleMapsMapType();
-      }).toThrowError('Google Maps version should be >= 3.0 and < 3.32');
+      }).toThrowError('Google Maps version should be >= 3.31');
 
       // Restore window.google
       window.google = google;

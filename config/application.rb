@@ -126,12 +126,12 @@ module CartoDB
       user_feed_deps.js
       user_feed.js
 
-      user_feed_new.js
-      user_feed_new_vendor.js
+      user_feed.js
+      user_feed_vendor.js
       api_keys_new.js
       api_keys_new_vendor.js
-      public_dashboard_new.js
-      public_dashboard_new_vendor.js
+      public_dashboard.js
+      public_dashboard_vendor.js
       public_table_new.js
       public_table_new_vendor.js
       data_library_new.js
@@ -159,6 +159,7 @@ module CartoDB
       common.js
 
       deep_insights.css
+      deep_insights_vendor.css
       cdb.css
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css

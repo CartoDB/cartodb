@@ -86,7 +86,10 @@ module.exports = env => {
             `${version}/javascripts/common.js`,
             `${version}/javascripts/common.js.map`,
             `${version}/javascripts/dashboard.js`,
-            `${version}/javascripts/dashboard.js.map`
+            `${version}/javascripts/dashboard.js.map`,
+            `${version}/javascripts/common.js.map`,
+            `${version}/javascripts/deep-insights.js`,
+            `${version}/javascripts/deep-insights.js.map`
           ]
         })
       ])
@@ -143,6 +146,9 @@ module.exports = env => {
               {
                 loader: 'css-loader',
                 options: {
+                  alias: {
+                    '../../img': '../img'
+                  },
                   sourceMap: false
                 }
               },
@@ -150,7 +156,10 @@ module.exports = env => {
                 loader: 'sass-loader',
                 options: {
                   data: `$assetsDir: "/assets/${version}";`,
-                  sourceMap: false
+                  sourceMap: false,
+                  includePaths: [
+                    rootDir('node_modules/cartoassets/src/scss')
+                  ]
                 }
               }
             ]
@@ -164,6 +173,17 @@ module.exports = env => {
               name: `[name].[ext]`,
               outputPath: `${version}/fonts/`,
               publicPath: `/assets/${version}/fonts/`
+            }
+          }
+        },
+        {
+          test: /\.(png|gif)$/,
+          use: {
+            loader: 'file-loader',
+            options: {
+              name: `[name].[ext]`,
+              outputPath: `${version}/images/`,
+              publicPath: `/assets/${version}/images/`
             }
           }
         }

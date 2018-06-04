@@ -69,11 +69,8 @@
     <% if @needs_gmaps_lib %>
       <%= insert_google_maps(@gmaps_query_string) %>
     <% end %>
-    <% if @has_new_dashboard %>
-      <%= javascript_include_tag 'common_dashboard.js', 'public_dashboard_new_vendor', 'public_dashboard_new' %>
-    <% else %>
-      <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
-    <% end %>
+
+    <%= javascript_include_tag 'common_dashboard', 'public_dashboard_vendor', 'public_dashboard' %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>
     <%= insert_hubspot() %>

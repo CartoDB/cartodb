@@ -75,11 +75,6 @@ module.exports = env => {
 
         new CopyWebpackPlugin([
           {
-            from: rootDir('app/assets/fonts'),
-            to: `./${version}/fonts/`,
-            toType: 'dir'
-          },
-          {
             from: rootDir('app/assets/images'),
             to: `./${version}/images/`,
             toType: 'dir'

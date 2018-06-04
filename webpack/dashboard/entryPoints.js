@@ -60,7 +60,7 @@ module.exports = {
     ...glob.sync(rootDir('assets/stylesheets/sessions/*.scss'))
   ],
 
-  confirmation_new: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
+  confirmation: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
 
   organization_new: rootDir('lib/assets/javascripts/dashboard/organization.js')
 };

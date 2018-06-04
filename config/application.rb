@@ -140,8 +140,8 @@ module CartoDB
       mobile_apps_new_vendor.js
       sessions.js
       sessions_vendor.js
-      confirmation_new.js
-      confirmation_new_vendor.js
+      confirmation.js
+      confirmation_vendor.js
       organization_new.js
       organization_new_vendor.js
       common_dashboard.js

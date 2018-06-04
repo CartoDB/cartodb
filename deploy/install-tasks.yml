@@ -531,7 +531,13 @@
 - name: Configuring hosts for carto development
   become: yes
   become_user: root
-  lineinfile: dest=/etc/hosts state=present line="127.0.0.1 development.localhost.lan"" backup=yes owner=root mode='u+rw'
+  lineinfile:
+    dest: /etc/hosts
+    state: present
+    line: '127.0.0.1 development.localhost.lan'
+    backup: yes
+    owner: root
+    mode: 'u+rw'
 
 - name: Copying carto service
   become: yes

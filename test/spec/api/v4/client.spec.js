@@ -344,13 +344,13 @@ describe('api/v4/client', function () {
       window.google = google;
     });
 
-    it('should throw an error if Google Maps version is <3.0', function () {
+    it('should throw an error if Google Maps version is < 3.31', function () {
       var google = _.clone(window.google);
 
       window.google.maps = { version: '2.4' };
       expect(function () {
         client.getGoogleMapsMapType();
-      }).toThrowError('Google Maps version should be >= 3.0 and < 3.33');
+      }).toThrowError('Google Maps version should be >= 3.31');
 
       // Restore window.google
       window.google = google;

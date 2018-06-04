@@ -163,6 +163,7 @@ module CartoDB
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css
       common.css
+      common_vendor.css
       old_common.css
       dashboard.css
       cartodb.css

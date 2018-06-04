@@ -4,7 +4,7 @@
     <meta charset='utf-8' />
     <title><%= yield :page_title -%>CARTO</title>
     <%= favicon_link_tag "/favicons/favicon.ico" -%>
-    <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
+    <%= stylesheet_link_tag 'common.css', 'common_vendor.css', :media => 'all' %>
     <%= yield :css -%>
     <%= csrf_meta_tag -%>
     <%= insert_google_tag_manager('primary') %>

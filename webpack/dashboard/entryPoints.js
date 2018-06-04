@@ -14,8 +14,7 @@ module.exports = {
 
   dashboard: [
     ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
-    rootDir('assets/stylesheets/editor-3/_scroll-view.scss'),
-    cartoAssets
+    rootDir('assets/stylesheets/editor-3/_scroll-view.scss')
   ],
 
   public_table_new: rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),

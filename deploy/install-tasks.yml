@@ -528,3 +528,18 @@
   become: yes
   shell: cd cartodb; RAILS_ENV=development bundle exec ./script/resque
 
+- name: Configuring hosts for carto development
+  become: yes
+  become_user: root
+  lineinfile: dest=/etc/hosts state=present line="127.0.0.1 development.localhost.lan"" backup=yes owner=root mode='u+rw'
+
+- name: Copying carto service
+  become: yes
+  copy: src=files/carto.service dest=/etc/systemd/system/carto.service mode=755
+
+- name: Serving carto >> Start service and run on boot
+  become: yes
+  service:
+    name: carto
+    state: restarted
+    enabled: yes

@@ -487,10 +487,6 @@
     requirements: /root/cartodb/python_requirements.txt
     extra_args: --no-use-wheel -r
 
-- name: Add the grunt command to the PATH
-  become: yes
-  raw: cd cartodb && export PATH=$PATH:$PWD/node_modules/grunt-cli/bin
-
 - name: Crafting Gems
   bundler:
     state: present
@@ -498,7 +494,7 @@
 
 - name: Compile via grunt
   become: yes
-  shell: cd cartodb; bundle exec grunt --environment=development
+  shell: cd cartodb; export PATH=$PATH:$PWD/node_modules/grunt-cli/bin && bundle exec grunt --environment=development
 
 - name: Create configuration files
   become: yes

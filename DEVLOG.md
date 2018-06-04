@@ -1,6 +1,10 @@
 # Changelog
 
 ## Current
+- Fix iOS examples
+
+## 4.0.7 - 2018-06-04
+
 ### Fixes
 - Update gmaps to v3.32 in v4
 

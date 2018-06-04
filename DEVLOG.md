@@ -1,6 +1,25 @@
 # Changelog
 
 ## Current
+### Fixes
+- Update gmaps to v3.32 in v4
+
+## 4.0.7-3 - 2018-05-24
+
+- Send empty string when url can not be build
+- Small typo fixes for dev center docs
+
+## 4.0.7-2 - 2018-05-21
+
+- Avoid problems with cancelled requests in dataviews
+
+## 4.0.7-1 - 2018-05-21
+
+- Fix legends paddings / margins
+
+## 4.0.7-0 - 2018-05-17
+
+- Rename package to internal-carto.js
 
 ## 4.0.6 - 2018-05-11
 

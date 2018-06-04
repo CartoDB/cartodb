@@ -27,3 +27,4 @@ cd dist/public
 npm publish
 
 echo "All done."
+echo "CDN at https://cartodb-libs.global.ssl.fastly.net and https://libs.cartocdn.com/"

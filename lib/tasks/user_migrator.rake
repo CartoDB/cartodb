@@ -147,10 +147,31 @@ namespace :cartodb do
           clean_organization_metadata(organization)
         end
       end
+
+      desc 'Cleans all organizations data and metadata matching filter in config file'
       task :organizations_from_file, [:config_file] => :environment do |_,args|
+        include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
-        Organization.where(File.read(args[:config_file]).to_s).each { |org| clean_data(org) }
+        Organization.where(File.read(args[:config_file]).to_s).each { |org| clean_organization(org) }
+      end
+
+      desc 'Cleans all redis keys for given username'
+      task :clean_redis_for_username, [:username] => :environment do |_,args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        user = User.where("username = '#{args[:username]}'").first || User.new(username: args[:username])
+        clean_redis_user(user)
+      end
+
+      desc 'Cleans redis keys for org with given name'
+      task :clean_redis_for_orgrname, [:orgname] => :environment do |_,args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        organization = Organization.where("name = #{args[:orgname]}").first || Organization.new(name: args[:orgname])
+        clean_redis_organization(organization)
       end
     end
   end

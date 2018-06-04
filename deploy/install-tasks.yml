@@ -428,7 +428,7 @@
   become: yes
   gem:
     name: compass
-    state: present
+    state: latest
 
 - name: Check for carto installation
   stat:
@@ -495,3 +495,36 @@
   bundler:
     state: present
     gemfile: /root/cartodb/Gemfile
+
+- name: Compile via grunt
+  become: yes
+  shell: cd cartodb; bundle exec grunt --environment=development
+
+- name: Create configuration files
+  become: yes
+  shell: cd cartodb; cp config/app_config.yml.sample config/app_config.yml && cp config/database.yml.sample config/database.yml
+
+- name: Initialize metadata database
+  become: yes
+  shell: cd cartodb; RAILS_ENV=development bundle exec rake db:create && RAILS_ENV=development bundle exec rake db:migrate
+
+- name: Serving Redis >> Service
+  service:
+    name: redis-server
+    state: started
+    enabled: yes
+
+- name: Serving PostgreSQL >> Service
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Start the editor HTTP server
+  become: yes
+  shell: cd cartodb; RAILS_ENV=development bundle exec rails server
+
+- name: In a different process/console start the resque process
+  become: yes
+  shell: cd cartodb; RAILS_ENV=development bundle exec ./script/resque
+

@@ -49,7 +49,10 @@ module.exports = {
 
   data_library_new: rootDir('lib/assets/javascripts/dashboard/data-library.js'),
 
-  mobile_apps_new: rootDir('lib/assets/javascripts/dashboard/mobile-apps.js'),
+  mobile_apps: [
+    rootDir('lib/assets/javascripts/dashboard/mobile-apps.js'),
+    ...glob.sync(rootDir('assets/stylesheets/mobile_apps/*.css'))
+  ],
 
   account: rootDir('lib/assets/javascripts/dashboard/account.js'),
 

@@ -138,8 +138,8 @@ module CartoDB
       data_library_new_vendor.js
       mobile_apps_new.js
       mobile_apps_new_vendor.js
-      sessions_new.js
-      sessions_new_vendor.js
+      sessions.js
+      sessions_vendor.js
       confirmation_new.js
       confirmation_new_vendor.js
       organization_new.js

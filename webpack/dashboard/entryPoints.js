@@ -49,7 +49,14 @@ module.exports = {
 
   profile: rootDir('lib/assets/javascripts/dashboard/profile.js'),
 
-  sessions_new: rootDir('lib/assets/javascripts/dashboard/sessions.js'),
+  sessions: [
+    rootDir('lib/assets/javascripts/dashboard/sessions.js'),
+    rootDir('assets/stylesheets/common/flash-message.scss'),
+    rootDir('assets/stylesheets/common/tooltip.scss'),
+    rootDir('assets/stylesheets/common/logo.scss'),
+    rootDir('node_modules/cartoassets/src/scss/entry.scss'),
+    ...glob.sync(rootDir('assets/stylesheets/sessions/*.scss'))
+  ],
 
   confirmation_new: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
 

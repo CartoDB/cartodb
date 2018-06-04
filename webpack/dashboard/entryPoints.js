@@ -2,12 +2,15 @@ const glob = require('glob');
 const { resolve } = require('path');
 
 const rootDir = file => resolve(__dirname, '../../', file);
+const removeDuplicated = array => Array.from(new Set(array));
 
 module.exports = {
-  common: [
+  common: removeDuplicated([
+    rootDir('assets/stylesheets/common/utilities.scss'),
+    rootDir('assets/stylesheets/common/icon-font-specials.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/**/*.scss')),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
-  ],
+  ]),
 
   deep_insights: [
     rootDir('assets/stylesheets/deep-insights/entry.scss'),
@@ -40,7 +43,8 @@ module.exports = {
   api_keys_new: [
     rootDir('lib/assets/javascripts/dashboard/api-keys.js'),
     rootDir('assets/stylesheets/dashboard/api-keys.scss'),
-    rootDir('vendor/assets/stylesheets/tipsy.css')
+    rootDir('vendor/assets/stylesheets/tipsy.css'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
   data_library_new: rootDir('lib/assets/javascripts/dashboard/data-library.js'),

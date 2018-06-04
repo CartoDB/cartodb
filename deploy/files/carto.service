@@ -1,0 +1,9 @@
+[Unit]
+Description=CartoDB
+
+[Service]
+Type=simple
+ExecStart=/root/cartodb/init.sh
+
+[Install]
+WantedBy=multi-user.target

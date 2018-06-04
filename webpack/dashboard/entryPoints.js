@@ -47,7 +47,7 @@ module.exports = {
 
   account: rootDir('lib/assets/javascripts/dashboard/account.js'),
 
-  profile_new: rootDir('lib/assets/javascripts/dashboard/profile.js'),
+  profile: rootDir('lib/assets/javascripts/dashboard/profile.js'),
 
   sessions_new: rootDir('lib/assets/javascripts/dashboard/sessions.js'),
 

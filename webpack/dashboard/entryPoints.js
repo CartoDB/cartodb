@@ -14,6 +14,8 @@ module.exports = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
+  public_map: glob.sync(rootDir('assets/stylesheets/public_map/**/*.scss')),
+
   dashboard: [
     rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
 

@@ -84,7 +84,10 @@ module.exports = env => {
             `${version}/javascripts/common.js`,
             `${version}/javascripts/common.js.map`,
             `${version}/javascripts/deep-insights.js`,
-            `${version}/javascripts/deep-insights.js.map`
+            `${version}/javascripts/deep-insights.js.map`,
+            `${version}/javascripts/common.js.map`,
+            `${version}/javascripts/public-map.js`,
+            `${version}/javascripts/public-map.js.map`
           ]
         })
       ])

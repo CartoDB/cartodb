@@ -420,8 +420,8 @@
 
 - name: Cooking bundler
   become: yes
-  gem:
-    name: bundler
+  apt:
+    name: ruby-bundler
     state: latest
 
 - name: Cooking compass

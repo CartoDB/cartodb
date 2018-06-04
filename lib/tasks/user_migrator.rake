@@ -101,40 +101,50 @@ namespace :cartodb do
                      port: CartoDB::DataMover::Config.config[:dbport],
                      connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
           conn.query("DROP DATABASE IF EXISTS \"#{organization.owner.database_name}\"")
-          query("DROP ROLE IF EXISTS \"#{database_username(organization.owner.id)}\"")
+          conn.query("DROP ROLE IF EXISTS \"#{database_username(organization.owner.id)}\"")
         end
 
-        def publicuser(user_id)
-          "cartodb_publicuser_#{user_id}"
+        def clean_user_metadata(user)
+          carto_user = Carto::User.find(user.id)
+          carto_user.assets.each(&:delete)
+          carto_user.destroy
+          user.before_destroy(skip_table_drop: true)
         end
 
-        def database_username(user_id)
-          "#{db_username_prefix}#{user_id}"
+        def clean_organization_metadata(organization)
+          organization.users.each { |u| clean_user_metadata (u) }
+          organization.groups.delete
+          organization.notifications.delete
+          organization.assets.map(&:delete)
+          organization.users.delete
+          organization.delete
         end
 
         def clean_redis_user(user)
           remove_keys(
             $users_metadata,
-            $users_metadata.keys(RedisExportServiceExporter.user_keys_prefix(user))
+            $users_metadata.keys("#{Carto::RedisExportServiceExporter.user_keys_prefix(user)}*")
           )
           remove_keys(
             $users_metadata,
-            $users_metadata.keys(RedisExportServiceExporter.named_maps_key(user))
+            $users_metadata.keys("#{Carto::RedisExportServiceExporter.named_maps_key(user)}*")
           )
         end
 
         def clean_redis_organization(organization)
           remove_keys(
             $users_metadata,
-            $users_metadata.keys(RedisExportServiceExporter.organization_keys_prefix(organization))
+            $users_metadata.keys("#{Carto::RedisExportServiceExporter.organization_keys_prefix(organization)}*")
           )
+          organization.users.each { |u| clean_redis_user(u) }
         end
 
-        def clean_data(organization)
+        def clean_organization(organization)
           puts "Cleaning metadata for organization #{organization.name}"
+          byebug
           clean_organization_data(organization)
           clean_redis_organization(organization)
-          organization.users.each { |u| clean_redis_user(u) }
+          clean_organization_metadata(organization)
         end
       end
       task :organizations_from_file, [:config_file] => :environment do |_,args|

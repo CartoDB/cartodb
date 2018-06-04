@@ -9,14 +9,16 @@ module.exports = {
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 
-  dashboard: [
-    ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
-    rootDir('assets/stylesheets/editor-3/_scroll-view.scss')
-  ],
-
   deep_insights: [
     rootDir('assets/stylesheets/deep-insights/entry.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
+  ],
+
+  dashboard: [
+    rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
+
+    ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
+    rootDir('assets/stylesheets/editor-3/_scroll-view.scss')
   ],
 
   public_table_new: rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
@@ -50,8 +52,6 @@ module.exports = {
   sessions_new: rootDir('lib/assets/javascripts/dashboard/sessions.js'),
 
   confirmation_new: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
-
-  dashboard_new: rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
 
   organization_new: rootDir('lib/assets/javascripts/dashboard/organization.js')
 };

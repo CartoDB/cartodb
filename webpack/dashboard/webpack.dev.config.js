@@ -8,9 +8,7 @@ const { version } = require('../../package.json');
 const entryPoints = require('./entryPoints');
 
 const stats = (env) => (env && env.stats);
-
 const rootDir = file => resolve(__dirname, '../../', file);
-
 const isVendor = (module, count) => {
   const userRequest = module.userRequest;
   return userRequest && userRequest.indexOf('node_modules') >= 0;
@@ -85,9 +83,6 @@ module.exports = env => {
           globs: [
             `${version}/javascripts/common.js`,
             `${version}/javascripts/common.js.map`,
-            `${version}/javascripts/dashboard.js`,
-            `${version}/javascripts/dashboard.js.map`,
-            `${version}/javascripts/common.js.map`,
             `${version}/javascripts/deep-insights.js`,
             `${version}/javascripts/deep-insights.js.map`
           ]
@@ -147,6 +142,7 @@ module.exports = env => {
                 loader: 'css-loader',
                 options: {
                   alias: {
+                    // This is because of Carto.js _leaflet partial
                     '../../img': '../img'
                   },
                   sourceMap: false

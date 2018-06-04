@@ -69,5 +69,14 @@ module.exports = {
 
   confirmation: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
 
-  organization_new: rootDir('lib/assets/javascripts/dashboard/organization.js')
+  organization: [
+    rootDir('lib/assets/javascripts/dashboard/organization.js'),
+    rootDir('assets/stylesheets/plugins/tagit.scss'),
+    ...glob.sync(rootDir('assets/stylesheets/organization/*.scss')),
+    rootDir('assets/stylesheets/editor-3/_assets.scss'),
+    rootDir('assets/stylesheets/editor-3/_modals-layout.scss'),
+    rootDir('assets/stylesheets/editor-3/_tab-pane.scss'),
+    rootDir('assets/stylesheets/editor-3/_modals-elements.scss'),
+    rootDir('assets/stylesheets/editor-3/_scroll-view.scss')
+  ]
 };

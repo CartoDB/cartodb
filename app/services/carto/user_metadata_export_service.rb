@@ -261,7 +261,9 @@ module Carto
       user = ::User[user.id]
       return unless user
 
-      Carto::User.find(user.id).destroy
+      carto_user = Carto::User.find(user.id)
+      carto_user.assets.each(&:delete)
+      carto_user.destroy
       user.before_destroy(skip_table_drop: true)
 
       Carto::RedisExportService.new.remove_redis_from_json_export(redis_user_file(path))

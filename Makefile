@@ -7,10 +7,6 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-PENDING_SPECS = \
-	spec/lib/varnish_spec.rb (#321) \
-	$(NULL)
-
 WORKING_SPECS_INTEGRATIONS = \
 	$(NULL)
 

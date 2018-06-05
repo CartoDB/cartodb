@@ -56,7 +56,12 @@ module.exports = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
-  builder_embed: ['whatwg-fetch', resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js')],
+  builder_embed: [
+    'whatwg-fetch',
+    resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
+    rootDir('assets/stylesheets/plugins/tipsy.scss'),
+    rootDir('node_modules/cartoassets/src/scss/entry.scss')
+  ],
   dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/dataset.js'),
   builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js')
 };

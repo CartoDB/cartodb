@@ -176,7 +176,7 @@ module CartoDB
       common_editor3.css
       editor3.css
       editor3_vendor.css
-      public_editor3.css
+      builder_embed.css
 
       table.css
       leaflet.css

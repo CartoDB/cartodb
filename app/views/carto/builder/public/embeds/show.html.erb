@@ -9,7 +9,7 @@
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'public_editor3', 'deep_insights', media: 'all' %>
+  <%= stylesheet_link_tag 'builder_embed', 'builder_embed_vendor', 'deep_insights_new', 'deep_insights_new_vendor', media: 'all' %>
   <style type="text/css">
     html, body {
       height: 100%;

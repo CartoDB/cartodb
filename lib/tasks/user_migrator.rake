@@ -141,7 +141,6 @@ namespace :cartodb do
 
         def clean_organization(organization)
           puts "Cleaning metadata for organization #{organization.name}"
-          byebug
           clean_organization_data(organization)
           clean_redis_organization(organization)
           clean_organization_metadata(organization)

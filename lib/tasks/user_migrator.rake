@@ -100,19 +100,19 @@ namespace :cartodb do
                             dbname: 'postgres',
                             port: CartoDB::DataMover::Config.config[:dbport],
                             connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
-          conn.query("DROP DATABASE IF EXISTS \"#{organization.owner.database_name}\"")
-          conn.query("DROP ROLE IF EXISTS \"#{database_username(organization.owner.id)}\"")
+          drop_db_and_role(conn, organization.owner.database_name, database_username(organization.owner.id))
         end
 
         def clean_user_data(user)
-          conn = PG.connect(host: organization.owner.database_host,
+          conn = PG.connect(host: user.database_host,
                             user: CartoDB::DataMover::Config.config[:dbuser],
                             dbname: 'postgres',
                             port: CartoDB::DataMover::Config.config[:dbport],
                             connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
-          conn.query("DROP DATABASE IF EXISTS \"#{user.database_name}\"")
-          conn.query("DROP ROLE IF EXISTS \"#{database_username(user.id)}\"")
+          drop_db_and_role(conn, user.database_name, database_username(user.id))
         end
+
+
 
         def clean_user_metadata(user)
           carto_user = Carto::User.find(user.id)
@@ -154,6 +154,12 @@ namespace :cartodb do
           clean_organization_data(organization)
           clean_redis_organization(organization)
           clean_organization_metadata(organization)
+        end
+
+        private
+        def drop_db_and_role(connection, db, role)
+          connection.query("DROP DATABASE IF EXISTS \"#{db}\"")
+          connection.query("DROP ROLE IF EXISTS \"#{role}\"")
         end
       end
 

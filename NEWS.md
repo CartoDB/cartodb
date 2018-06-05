@@ -1009,7 +1009,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Export and import non-cartodb-managed named maps.
 * Keep import even if it fails importing visualizations (#13903)
 * Save Import when visualization import fails (#13984)
-* Addrake to remove org metadata .
+* Add rake to remove org metadata .
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE

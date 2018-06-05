@@ -81,13 +81,12 @@ module.exports = env => {
 
         new WebpackDeleteAfterEmit({
           globs: [
-            `${version}/javascripts/common.js`,
-            `${version}/javascripts/common.js.map`,
-            `${version}/javascripts/deep-insights.js`,
-            `${version}/javascripts/deep-insights.js.map`,
-            `${version}/javascripts/common.js.map`,
-            `${version}/javascripts/public-map.js`,
-            `${version}/javascripts/public-map.js.map`
+            `${version}/javascripts/common_new.js`,
+            `${version}/javascripts/common_new.js.map`,
+            `${version}/javascripts/deep_insights_new.js`,
+            `${version}/javascripts/deep_insights_new.js.map`,
+            `${version}/javascripts/public_map_new.js`,
+            `${version}/javascripts/public_map_new.js.map`
           ]
         })
       ])

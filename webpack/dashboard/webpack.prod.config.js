@@ -5,26 +5,16 @@
 
 const webpack = require('webpack');
 const { resolve } = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 const { version } = require('../../package.json');
+const entryPoints = require('./entryPoints');
 
+const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = (module, count) => {
   const userRequest = module.userRequest;
   return userRequest && userRequest.indexOf('node_modules') >= 0;
-};
-
-const entryPoints = {
-  public_table_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dataset.js'),
-  public_dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/public-dashboard.js'),
-  user_feed_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/user-feed.js'),
-  api_keys_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/api-keys.js'),
-  data_library_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/data-library.js'),
-  account_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/account.js'),
-  profile_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/profile.js'),
-  sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
-  confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
-  mobile_apps_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/mobile-apps.js'),
-  dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/dashboard.js'),
-  organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js')
 };
 
 module.exports = env => {
@@ -32,7 +22,7 @@ module.exports = env => {
     entry: entryPoints,
     output: {
       filename: `${version}/javascripts/[name].js`,
-      path: resolve(__dirname, '../../', 'public/assets')
+      path: rootDir('public/assets')
     },
     resolve: {
       symlinks: false,
@@ -75,6 +65,29 @@ module.exports = env => {
         new webpack.DefinePlugin({
           __IN_DEV__: JSON.stringify(false),
           __ENV__: JSON.stringify('prod')
+        }),
+
+        new ExtractTextPlugin({
+          filename: `./${version}/stylesheets/[name].css`
+        }),
+
+        new CopyWebpackPlugin([
+          {
+            from: rootDir('app/assets/images'),
+            to: `./${version}/images/`,
+            toType: 'dir'
+          }
+        ]),
+
+        new WebpackDeleteAfterEmit({
+          globs: [
+            `${version}/javascripts/common_new.js`,
+            `${version}/javascripts/common_new.js.map`,
+            `${version}/javascripts/deep_insights_new.js`,
+            `${version}/javascripts/deep_insights_new.js.map`,
+            `${version}/javascripts/public_map_new.js`,
+            `${version}/javascripts/public_map_new.js.map`
+          ]
         }),
 
         // Minify
@@ -137,6 +150,55 @@ module.exports = env => {
           options: {
             presets: ['env'],
             plugins: ['transform-object-rest-spread']
+          }
+        },
+        {
+          test: /\.s?css$/,
+          use: ExtractTextPlugin.extract({
+            use: [
+              {
+                loader: 'css-loader',
+                options: {
+                  alias: {
+                    // This is because of Carto.js _leaflet partial
+                    '../../img': '../img'
+                  },
+                  sourceMap: false
+                }
+              },
+              {
+                loader: 'sass-loader',
+                options: {
+                  data: `$assetsDir: "/assets/${version}";`,
+                  sourceMap: false,
+                  includePaths: [
+                    rootDir('node_modules/cartoassets/src/scss')
+                  ]
+                }
+              }
+            ]
+          })
+        },
+        {
+          test: /\.(ttf|eot|woff|woff2|svg)(.+#.+)?$/,
+          use: {
+            loader: 'file-loader',
+            options: {
+              name: `[name].[ext]`,
+              outputPath: `${version}/fonts/`,
+              publicPath: `/assets/${version}/fonts/`
+            }
+          }
+        },
+        {
+          test: /\.(png|gif)$/,
+          use: {
+            loader: 'file-loader',
+            options: {
+              name: `[name].[ext]`,
+              outputPath: `${version}/images/`,
+              publicPath: `/assets/${version}/images/`
+            }
           }
         }
       ]

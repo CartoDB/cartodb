@@ -123,18 +123,18 @@ namespace :cartodb do
         def clean_redis_user(user)
           remove_keys(
             $users_metadata,
-            $users_metadata.keys("#{Carto::RedisExportServiceExporter.user_keys_prefix(user)}*")
+            $users_metadata.keys("user:#{user.username}*")
           )
           remove_keys(
             $users_metadata,
-            $users_metadata.keys("#{Carto::RedisExportServiceExporter.named_maps_key(user)}*")
+            $users_metadata.keys("map_tpl|#{user.username}*")
           )
         end
 
         def clean_redis_organization(organization)
           remove_keys(
             $users_metadata,
-            $users_metadata.keys("#{Carto::RedisExportServiceExporter.organization_keys_prefix(organization)}*")
+            $users_metadata.keys("org:#{organization.name}")
           )
           organization.users.each { |u| clean_redis_user(u) }
         end

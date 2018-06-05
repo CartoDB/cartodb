@@ -134,7 +134,7 @@ namespace :cartodb do
         def clean_redis_organization(organization)
           remove_keys(
             $users_metadata,
-            $users_metadata.keys("org:#{organization.name}")
+            $users_metadata.keys("org:#{organization.name}*")
           )
           organization.users.each { |u| clean_redis_user(u) }
         end

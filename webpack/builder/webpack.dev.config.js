@@ -1,22 +1,17 @@
 const webpack = require('webpack');
-const {resolve} = require('path');
+const { resolve } = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const PACKAGE = require('../../package.json');
-const version = PACKAGE.version;
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
+const { version } = require('../../package.json');
+const entryPoints = require('./entryPoints');
 
-const stats = (env) => {
-  return env && env.stats;
-};
-
+const stats = (env) => (env && env.stats);
+const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = (module, count) => {
   const userRequest = module.userRequest;
   return userRequest && userRequest.indexOf('node_modules') >= 0;
-};
-
-const entryPoints = {
-  builder_embed: ['whatwg-fetch', resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js')],
-  dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/dataset.js'),
-  builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js')
 };
 
 module.exports = env => {
@@ -24,7 +19,7 @@ module.exports = env => {
     entry: entryPoints,
     output: {
       filename: `${version}/javascripts/[name].js`,
-      path: resolve(__dirname, '../../', 'public/assets')
+      path: rootDir('public/assets')
     },
     resolve: {
       symlinks: false,
@@ -70,6 +65,27 @@ module.exports = env => {
         new webpack.DefinePlugin({
           __IN_DEV__: JSON.stringify(true),
           __ENV__: JSON.stringify('dev')
+        }),
+
+        new ExtractTextPlugin({
+          filename: `./${version}/stylesheets/[name].css`
+        }),
+
+        new CopyWebpackPlugin([
+          {
+            from: rootDir('app/assets/images'),
+            to: `./${version}/images/`,
+            toType: 'dir'
+          }
+        ]),
+
+        new WebpackDeleteAfterEmit({
+          globs: [
+            `${version}/javascripts/common_editor3.js`,
+            `${version}/javascripts/common_editor3.js.map`,
+            `${version}/javascripts/editor3.js`,
+            `${version}/javascripts/editor3.js.map`
+          ]
         })
       ])
       .filter(p => !!p), // undefined is not a valid plugin, so filter undefined values here
@@ -79,7 +95,7 @@ module.exports = env => {
           test: /\.js$/,
           loader: 'shim-loader',
           include: [
-            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
+            rootDir('node_modules/internal-carto.js')
           ],
           options: {
             shim: {
@@ -99,19 +115,68 @@ module.exports = env => {
           test: /\.tpl$/,
           use: 'tpl-loader',
           include: [
-            resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
-            resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
-            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
+            rootDir('lib/assets/javascripts/builder'),
+            rootDir('lib/assets/javascripts/deep-insights'),
+            rootDir('node_modules/internal-carto.js')
           ]
         },
         {
           test: /\.mustache$/,
           use: 'raw-loader',
           include: [
-            resolve(__dirname, '../../', 'lib/assets/javascripts/builder'),
-            resolve(__dirname, '../../', 'lib/assets/javascripts/deep-insights'),
-            resolve(__dirname, '../../', 'node_modules/internal-carto.js')
+            rootDir('lib/assets/javascripts/builder'),
+            rootDir('lib/assets/javascripts/deep-insights'),
+            rootDir('node_modules/internal-carto.js')
           ]
+        },
+        {
+          test: /\.s?css$/,
+          use: ExtractTextPlugin.extract({
+            use: [
+              {
+                loader: 'css-loader',
+                options: {
+                  alias: {
+                    // This is because of Carto.js _leaflet partial
+                    '../../img': '../img'
+                  },
+                  sourceMap: false
+                }
+              },
+              {
+                loader: 'sass-loader',
+                options: {
+                  data: `$assetsDir: "/assets/${version}";`,
+                  sourceMap: false,
+                  includePaths: [
+                    rootDir('node_modules/cartoassets/src/scss')
+                  ]
+                }
+              }
+            ]
+          })
+        },
+        {
+          test: /\.(ttf|eot|woff|woff2|svg)(.+#.+)?$/,
+          use: {
+            loader: 'file-loader',
+            options: {
+              name: `[name].[ext]`,
+              outputPath: `${version}/fonts/`,
+              publicPath: `/assets/${version}/fonts/`
+            }
+          }
+        },
+        {
+          test: /\.(png|gif)$/,
+          use: {
+            loader: 'file-loader',
+            options: {
+              name: `[name].[ext]`,
+              outputPath: `${version}/images/`,
+              publicPath: `/assets/${version}/images/`
+            }
+          }
         }
       ]
     },

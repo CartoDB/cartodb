@@ -176,12 +176,12 @@
   flex: 0 0 27px;
   height: 13px;
   opacity: 0;
-  background-image: url('../images/layout/colorpicker/invert.svg');
+  background-image: url($assetsDir + '/images/layout/colorpicker/invert.svg');
   background-repeat: no-repeat;
 }
 
 .is-inverted .ColorBar-invertLink {
-  background-image: url('../images/layout/colorpicker/invert_inverted.svg');
+  background-image: url($assetsDir + '/images/layout/colorpicker/invert_inverted.svg');
 }
 
 .is-selected .ColorBar-invertLink {

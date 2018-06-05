@@ -57,7 +57,7 @@
   width: 216px;
   height: 105px;
   border-radius: $halfBaseSize;
-  background-image: url('../images/layout/colorpicker/saturation.png');
+  background-image: url($assetsDir + '/images/layout/colorpicker/saturation.png');
   background-size: cover;
 }
 
@@ -82,7 +82,7 @@
   height: $baseSize;
   margin-bottom: $baseSize;
   border-radius: 2px;
-  background-image: url('../images/layout/colorpicker/hue-horizontal.png');
+  background-image: url($assetsDir + '/images/layout/colorpicker/hue-horizontal.png');
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-hue::before {
@@ -102,7 +102,7 @@
   height: $baseSize;
   margin-bottom: $baseSize;
   border-radius: 2px;
-  background-image: url('../images/layout/colorpicker/alpha-horizontal.png');
+  background-image: url($assetsDir + '/images/layout/colorpicker/alpha-horizontal.png');
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha.is-hidden {
@@ -130,7 +130,7 @@
   overflow: hidden;
   border: 1px solid rgba(#000, 0.24);
   border-radius: 2px;
-  background-image: url('../images/layout/colorpicker/alpha.png');
+  background-image: url($assetsDir + '/images/layout/colorpicker/alpha.png');
   background-position: 100%;
   pointer-events: none;
 
@@ -193,7 +193,7 @@
   height: $baseSize;
   margin-top: $baseSize;
   border-radius: $baseSize - 2;
-  background-image: url('../images/layout/colorpicker/alpha-horizontal.png');
+  background-image: url($assetsDir + '/images/layout/colorpicker/alpha-horizontal.png');
   background-size: contain;
   cursor: col-resize;
 }

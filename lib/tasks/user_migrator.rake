@@ -96,10 +96,10 @@ namespace :cartodb do
       module OrganizationMigrationCleanup
         def clean_organization_data(organization)
           conn = PG.connect(host: organization.owner.database_host,
-                     user: CartoDB::DataMover::Config.config[:dbuser],
-                     dbname: 'postgres',
-                     port: CartoDB::DataMover::Config.config[:dbport],
-                     connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
+                            user: CartoDB::DataMover::Config.config[:dbuser],
+                            dbname: 'postgres',
+                            port: CartoDB::DataMover::Config.config[:dbport],
+                            connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
           conn.query("DROP DATABASE IF EXISTS \"#{organization.owner.database_name}\"")
           conn.query("DROP ROLE IF EXISTS \"#{database_username(organization.owner.id)}\"")
         end
@@ -112,7 +112,7 @@ namespace :cartodb do
         end
 
         def clean_organization_metadata(organization)
-          organization.users.each { |u| clean_user_metadata (u) }
+          organization.users.each { |u| clean_user_metadata(u) }
           organization.groups.delete
           organization.notifications.delete
           organization.assets.map(&:delete)
@@ -148,7 +148,7 @@ namespace :cartodb do
       end
 
       desc 'Cleans all organizations data and metadata matching filter in config file'
-      task :organizations_from_file, [:config_file] => :environment do |_,args|
+      task :organizations_from_file, [:config_file] => :environment do |_, args|
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
@@ -156,7 +156,7 @@ namespace :cartodb do
       end
 
       desc 'Cleans all redis keys for given username'
-      task :clean_redis_for_username, [:username] => :environment do |_,args|
+      task :clean_redis_for_username, [:username] => :environment do |_, args|
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
@@ -165,7 +165,7 @@ namespace :cartodb do
       end
 
       desc 'Cleans redis keys for org with given name'
-      task :clean_redis_for_orgrname, [:orgname] => :environment do |_,args|
+      task :clean_redis_for_orgrname, [:orgname] => :environment do |_, args|
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter

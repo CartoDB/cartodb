@@ -47,7 +47,12 @@ module.exports = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
-  data_library_new: rootDir('lib/assets/javascripts/dashboard/data-library.js'),
+  data_library: [
+    rootDir('lib/assets/javascripts/dashboard/data-library.js'),
+    ...glob.sync(rootDir('assets/stylesheets/data_library/**/*.scss')),
+    rootDir('assets/stylesheets/public_map/public_map_buttons.scss'),
+    rootDir('assets/stylesheets/public_map/public_map_footer.scss')
+  ],
 
   mobile_apps: [
     rootDir('lib/assets/javascripts/dashboard/mobile-apps.js'),

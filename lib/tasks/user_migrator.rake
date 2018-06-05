@@ -126,8 +126,8 @@ namespace :cartodb do
             $users_metadata.keys("user:#{user.username}*")
           )
           remove_keys(
-            $users_metadata,
-            $users_metadata.keys("map_tpl|#{user.username}*")
+            $tables_metadata,
+            $tables_metadata.keys("map_tpl|#{user.username}*")
           )
         end
 

@@ -5,19 +5,19 @@ const rootDir = file => resolve(__dirname, '../../', file);
 const removeDuplicated = array => Array.from(new Set(array));
 
 module.exports = {
-  common: removeDuplicated([
+  common_new: removeDuplicated([
     rootDir('assets/stylesheets/common/utilities.scss'),
     rootDir('assets/stylesheets/common/icon-font-specials.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/**/*.scss')),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ]),
 
-  deep_insights: [
+  deep_insights_new: [
     rootDir('assets/stylesheets/deep-insights/entry.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
-  public_map: glob.sync(rootDir('assets/stylesheets/public_map/**/*.scss')),
+  public_map_new: glob.sync(rootDir('assets/stylesheets/public_map/**/*.scss')),
 
   dashboard: [
     rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
@@ -28,14 +28,14 @@ module.exports = {
 
   public_table_new: rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
 
-  public_dashboard: [
+  public_dashboard_new: [
     rootDir('lib/assets/javascripts/dashboard/public-dashboard.js'),
     ...glob.sync(rootDir('assets/stylesheets/public_dashboard/**/*.scss')),
     rootDir('assets/stylesheets/public_map/public_map_buttons.scss'),
     rootDir('assets/stylesheets/public_map/public_map_footer.scss')
   ],
 
-  user_feed: [
+  user_feed_new: [
     rootDir('lib/assets/javascripts/dashboard/user-feed.js'),
     ...glob.sync(rootDir('assets/stylesheets/user_feed/**/*.scss'))
   ],

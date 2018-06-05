@@ -15,7 +15,11 @@
     <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= @avatar_url %>" />
 
-    <%= stylesheet_link_tag 'deep_insights', 'deep_insights_vendor','common', 'common_vendor', 'public_dashboard', 'user_feed' %>
+    <% if @has_new_dashboard %>
+      <%= stylesheet_link_tag 'deep_insights_new', 'deep_insights_new_vendor','common_new', 'common_new_vendor', 'public_dashboard_new', 'user_feed_new' %>
+    <% else %>
+      <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard' %>
+    <% end %>
 
     <% if @needs_gmaps_lib %>
       <%= insert_google_maps(@gmaps_query_string) %>
@@ -65,7 +69,11 @@
       };
       </script>
 
-    <%= javascript_include_tag 'common_dashboard', 'user_feed_vendor', 'user_feed' %>
+    <% if @has_new_dashboard %>
+      <%= javascript_include_tag 'common_dashboard', 'user_feed_new_vendor', 'user_feed_new' %>
+    <% else %>
+      <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
+    <% end %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>
     <%= insert_hubspot() %>

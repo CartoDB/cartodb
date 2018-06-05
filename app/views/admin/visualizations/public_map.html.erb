@@ -10,7 +10,11 @@
 <%= content_for(:body_class) do %> PublicMap <% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'common', 'common_vendor', 'public_map' %>
+  <% if @has_new_dashboard %>
+    <%= stylesheet_link_tag 'common', 'common_vendor', 'public_map' %>
+  <% else %>
+    <%= stylesheet_link_tag 'cartodb', 'common', 'public_map' %>
+  <% end %>
 <% end %>
 
 <%= content_for(:content) do %>

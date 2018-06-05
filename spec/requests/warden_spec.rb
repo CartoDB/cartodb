@@ -11,14 +11,12 @@ describe 'Warden' do
     end
 
     before :all do
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user_api_keys = FactoryGirl.create(:valid_user)
       @master_api_key = Carto::ApiKey.where(user_id: @user_api_keys.id).master.first
     end
 
     after :all do
       @user_api_keys.destroy
-      @auth_api_feature_flag.destroy
     end
 
     it 'authenticates with header' do

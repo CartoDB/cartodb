@@ -68,7 +68,6 @@ describe Carto::Api::ApiKeysController do
   end
 
   before(:all) do
-    @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
     @user = FactoryGirl.create(:valid_user)
     @carto_user = Carto::User.find(@user.id)
     @other_user = FactoryGirl.create(:valid_user)
@@ -80,7 +79,6 @@ describe Carto::Api::ApiKeysController do
     @table2.destroy
     @table1.destroy
     @user.destroy
-    @auth_api_feature_flag.destroy
   end
 
   after(:each) do
@@ -135,22 +133,6 @@ describe Carto::Api::ApiKeysController do
           expect(response.status).to eq 404
         end
       end
-    end
-
-    describe 'without feature flag' do
-      before(:all) do
-        @unauthorized_user = Carto::User.find(FactoryGirl.create(:valid_user).id)
-      end
-
-      before(:each) do
-        User.any_instance.stubs(:has_feature_flag?).with('auth_api').returns(false)
-      end
-
-      after(:all) do
-        ::User[@unauthorized_user.id].destroy
-      end
-
-      it_behaves_like 'unauthorized'
     end
 
     describe 'without engine_enabled' do

@@ -117,7 +117,13 @@ namespace :cartodb do
         def clean_user_metadata(user)
           carto_user = Carto::User.find(user.id)
           carto_user.assets.each(&:delete)
-          carto_user.visualizatons.each(&:destroy)
+          carto_user.visualizations.each do |v|
+            begin
+              destroy_visualization(v)
+            rescue => e
+              puts "  Error deleting visualization: #{e}"
+            end
+          end
           carto_user.destroy
           user.before_destroy(skip_table_drop: true)
         end
@@ -161,6 +167,21 @@ namespace :cartodb do
         def drop_db_and_role(connection, db, role)
           connection.query("DROP DATABASE IF EXISTS \"#{db}\"")
           connection.query("DROP ROLE IF EXISTS \"#{role}\"")
+        end
+
+        MAX_RETRIES = 4
+
+        def destroy_visualization(viz)
+          i = 0;
+          while true do
+            begin
+              viz.destroy
+            rescue => e
+              raise e if i == (MAX_RETRIES - 1)
+            ensure
+              i += 1
+            end
+          end
         end
       end
 

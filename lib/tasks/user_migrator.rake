@@ -94,48 +94,18 @@ namespace :cartodb do
 
     namespace :cleanup do
       module OrganizationMigrationCleanup
-        def clean_organization_data(organization)
-          conn = PG.connect(host: organization.owner.database_host,
-                            user: CartoDB::DataMover::Config.config[:dbuser],
-                            dbname: 'postgres',
-                            port: CartoDB::DataMover::Config.config[:dbport],
-                            connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
-          drop_db_and_role(conn, organization.owner.database_name, database_username(organization.owner.id))
-        end
-
-        def clean_user_data(user)
-          conn = PG.connect(host: user.database_host,
-                            user: CartoDB::DataMover::Config.config[:dbuser],
-                            dbname: 'postgres',
-                            port: CartoDB::DataMover::Config.config[:dbport],
-                            connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
-          drop_db_and_role(conn, user.database_name, database_username(user.id))
-        end
-
-
-
         def clean_user_metadata(user)
-          return unless user.persisted?
+          return unless user.present? && user.persisted?
           carto_user = Carto::User.find(user.id)
           carto_user.assets.each(&:delete)
-          carto_user.visualizations.each do |v|
-            begin
-              destroy_visualization(v)
-            rescue => e
-              puts "  Error deleting visualization: #{e}"
-            end
-          end
-          carto_user.destroy
-          user.before_destroy(skip_table_drop: true)
+          user.destroy
         end
 
         def clean_organization_metadata(organization)
-          organization.users.each { |u| clean_user_metadata(u) }
-          organization.groups.delete
-          organization.notifications.delete
-          organization.assets.map(&:delete)
-          organization.users.delete
-          organization.delete
+          return unless organization.persisted?
+          organization.assets.each(&:delete)
+          organization.users.each { |u| u.assets.each(&:delete) }
+          organization.destroy_cascade
         end
 
         def clean_redis_user(user)
@@ -145,7 +115,7 @@ namespace :cartodb do
           )
           remove_keys(
             $tables_metadata,
-            $tables_metadata.keys("map_tpl|#{user.username}*")
+            ["map_tpl|#{user.username}"]
           )
         end
 
@@ -159,30 +129,14 @@ namespace :cartodb do
 
         def clean_organization(organization)
           puts "Cleaning organization #{organization.name}"
-          clean_organization_data(organization)
           clean_redis_organization(organization)
           clean_organization_metadata(organization)
         end
 
-        private
-        def drop_db_and_role(connection, db, role)
-          connection.query("DROP DATABASE IF EXISTS \"#{db}\"") unless db.nil? || db.empty?
-          connection.query("DROP ROLE IF EXISTS \"#{role}\"") unless role.nil? || role.empty?
-        end
-
-        MAX_RETRIES = 4
-
-        def destroy_visualization(viz)
-          i = 0;
-          while true do
-            begin
-              viz.destroy
-            rescue => e
-              raise e if i == (MAX_RETRIES - 1)
-            ensure
-              i += 1
-            end
-          end
+        def clean_user(user)
+          puts "Cleaning user #{user.username}"
+          clean_redis_user(user)
+          clean_user_metadata(user)
         end
       end
 
@@ -194,13 +148,21 @@ namespace :cartodb do
         Organization.where(File.read(args[:config_file]).to_s).each { |org| clean_organization(org) }
       end
 
-      desc 'Cleans all redis keys for given username'
-      task :redis_for_username, [:username] => :environment do |_, args|
+      desc 'Cleans all user data and metadata matching filter in config file'
+      task :users_from_file, [:config_file] => :environment do |_, args|
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
-        user = User.where("username = '#{args[:username]}'").first || User.new(username: args[:username])
-        clean_redis_user(user)
+        User.where(File.read(args[:config_file]).to_s).each { |u| clean_user(u) }
+      end
+
+      desc 'Cleans all data for organization with given name'
+      task :organization, [:name] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        organization = Organization.where("name = '#{args[:name]}'").first || Organization.new(name: args[:orgname])
+        clean_organization(organization)
       end
 
       desc 'Cleans all data for user with given username'
@@ -209,11 +171,9 @@ namespace :cartodb do
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
         user = User.where("username = '#{args[:username]}'").first || User.new(username: args[:username])
-        puts "Cleaning user #{user.username}"
-        clean_user_data(user)
-        clean_redis_user(user)
-        clean_user_metadata(user)
+        clean_user(user)
       end
+
 
       desc 'Cleans redis keys for org with given name'
       task :redis_for_orgrname, [:orgname] => :environment do |_, args|
@@ -222,6 +182,15 @@ namespace :cartodb do
         include ::Carto::RedisExportServiceImporter
         organization = Organization.where("name = #{args[:orgname]}").first || Organization.new(name: args[:orgname])
         clean_redis_organization(organization)
+      end
+
+      desc 'Cleans all redis keys for given username'
+      task :redis_for_username, [:username] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        user = User.where("username = '#{args[:username]}'").first || User.new(username: args[:username])
+        clean_redis_user(user)
       end
     end
   end

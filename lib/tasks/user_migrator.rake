@@ -117,6 +117,7 @@ namespace :cartodb do
         def clean_user_metadata(user)
           carto_user = Carto::User.find(user.id)
           carto_user.assets.each(&:delete)
+          carto_user.visualizatons.each(&:destroy)
           carto_user.destroy
           user.before_destroy(skip_table_drop: true)
         end

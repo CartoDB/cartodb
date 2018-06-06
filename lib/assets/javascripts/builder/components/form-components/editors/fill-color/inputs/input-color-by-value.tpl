@@ -4,7 +4,7 @@
       <%- attribute %>
     </span>
     <span class="Editor-fillContainer--ColorBarContainer ColorBarContainer">
-      <span class="ColorBar ColorBar-gradient" style="background: linear-gradient(90deg,<%- value.join(',') %>)"></span>
+      <span class="ColorBar ColorBar-gradient" style="<%- colorBar %>"></span>
     </span>
   <% } else { %>
     <span class="u-altTextColor"><%- _t('form-components.editors.style.select-by-column') %></span>

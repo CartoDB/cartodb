@@ -31,7 +31,7 @@
 .Editor-fillContainer {
   width: 100%;
   height: 100%;
-  padding: 0 8px;
+  padding: 0 $baseSize;
   text-align: left;
 }
 
@@ -40,9 +40,16 @@
   align-items: center;
   justify-content: space-between;
 
+  .Editor-fillContainer--Column {
+    width: auto;
+    margin-right: 10px;
+    line-height: 30px;
+  }
+
   .Editor-fillContainer--ColorBarContainer {
     position: relative;
-    width: 32px;
+    width: 100%;
+    max-width: 40px;
 
     // Grey Left Bar separator
     &::after {

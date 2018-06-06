@@ -115,6 +115,7 @@ namespace :cartodb do
 
 
         def clean_user_metadata(user)
+          return unless user.persisted?
           carto_user = Carto::User.find(user.id)
           carto_user.assets.each(&:delete)
           carto_user.visualizations.each do |v|
@@ -165,8 +166,8 @@ namespace :cartodb do
 
         private
         def drop_db_and_role(connection, db, role)
-          connection.query("DROP DATABASE IF EXISTS \"#{db}\"")
-          connection.query("DROP ROLE IF EXISTS \"#{role}\"")
+          connection.query("DROP DATABASE IF EXISTS \"#{db}\"") unless db.nil? || db.empty?
+          connection.query("DROP ROLE IF EXISTS \"#{role}\"") unless role.nil? || role.empty?
         end
 
         MAX_RETRIES = 4

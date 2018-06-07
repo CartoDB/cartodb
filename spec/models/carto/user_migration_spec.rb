@@ -219,6 +219,7 @@ describe 'UserMigration' do
 
     it 'import failing importing visualizations does not remove assets' do
       Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+      Asset.any_instance.stubs(:use_s3?).returns(false)
       asset = Asset.create(asset_file: Rails.root + 'spec/support/data/cartofante_blue.png', user: @user)
       local_url = CGI.unescape(asset.public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
       imp = import

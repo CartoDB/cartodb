@@ -26,7 +26,19 @@ module.exports = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
-  public_table_new: rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
+  public_table_new: [
+    rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
+    rootDir('assets/stylesheets/table/table.scss'),
+    rootDir('assets/stylesheets/public/public_map_wrapper_new.scss'),
+    rootDir('assets/stylesheets/public/public_table_wrapper_new.scss'),
+    rootDir('assets/stylesheets/public/public_map_data.scss'),
+    rootDir('assets/stylesheets/public/public_map_body.scss'),
+    rootDir('assets/stylesheets/public/public_export.scss'),
+    ...glob.sync(rootDir('assets/stylesheets/public_table/**/*.scss')),
+    rootDir('assets/stylesheets/public/public_map_fullscreen.scss'),
+    rootDir('assets/stylesheets/map/map.scss'),
+    rootDir('node_modules/leaflet/dist/leaflet.css')
+  ],
 
   public_dashboard_new: [
     rootDir('lib/assets/javascripts/dashboard/public-dashboard.js'),

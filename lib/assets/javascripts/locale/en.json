@@ -2572,12 +2572,12 @@
           "size": "Change the %{type} size",
           "color": "Change the %{type} color",
           "image": "Change the %{type} image",
-          "fixed-tab": "A fixed color for every symbol",
-          "by-value-tab": "Vary each symbol's color by an attribute to create a category or classed map"
+          "fixed-tab": "A fixed color for every %{type}",
+          "by-value-tab": "Vary each %{type}'s color by an attribute to create a category or classed %{type} map"
         },
         "size": {
-          "fixed-tab": "A fixed size for every symbol",
-          "by-value-tab": "Vary each symbol's size by a numeric attribute to create a classed bubble map"
+          "fixed-tab": "A fixed size for every %{type}",
+          "by-value-tab": "Vary each %{type}'s size by a numeric attribute to create a classed %{type} map"
         },
         "stroke": {
           "size": "Change the %{type} stroke size",

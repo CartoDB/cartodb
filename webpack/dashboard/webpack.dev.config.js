@@ -76,6 +76,11 @@ module.exports = env => {
             from: rootDir('app/assets/images'),
             to: `./${version}/images/`,
             toType: 'dir'
+          },
+          {
+            from: rootDir('public/favicons'),
+            to: `./${version}/favicons/`,
+            toType: 'dir'
           }
         ]),
 

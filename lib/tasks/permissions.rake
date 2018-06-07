@@ -1,7 +1,7 @@
 namespace :cartodb do
   namespace :permissions do
     desc 'setup default permissions for visualizations without them'
-    task :fill_missing_permissions, [:auto_fix] => [:environment] do |_, args|
+    task :fill_missing_permissions, [:auto_fix] => :environment do |_, args|
       File.open('log/fill_missing_permissions.log', 'a') do |log_file|
         auto_fix = args[:auto_fix].present?
 
@@ -54,7 +54,7 @@ namespace :cartodb do
     end
 
     desc 'fix permission pointing to non-existing entities'
-    task :fix_permission_acl, :environment do
+    task :fix_permission_acl => :environment do
       permission_query = Carto::Permission.where("access_control_list != '[]'")
 
       # Load the full list of user and group ids into memory for performance
@@ -64,19 +64,23 @@ namespace :cartodb do
       total = permission_query.count
       i = 0
       permission_query.find_each do |p|
-        new_acl = p.acl.reject do |acl|
-          acl[:type] == 'user' && !uids.include?(acl[:id]) ||
-            acl[:type] == 'group' && !gids.include?(acl[:id])
-        end
+        begin
+          new_acl = p.acl.reject do |acl|
+            acl[:type] == 'user' && !uids.include?(acl[:id]) ||
+              acl[:type] == 'group' && !gids.include?(acl[:id])
+          end
 
-        if new_acl != p.acl
-          puts "Fixing #{p.id}. From #{p.acl} to #{new_acl}"
-          p.update_column(:access_control_list, JSON.dump(new_acl))
-          p.save!
-        end
+          if new_acl != p.acl
+            puts "Fixing #{p.id}. From #{p.acl} to #{new_acl}"
+            p.update_column(:access_control_list, JSON.dump(new_acl))
+            p.save!
+          end
 
-        i += 1
-        puts "#{i} / #{total}" if (i % 100).zero?
+          i += 1
+          puts "#{i} / #{total}" if (i % 100).zero?
+        rescue => e
+          puts "Unable to update Permission: #{e}"
+        end
       end
     end
   end

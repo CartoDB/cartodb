@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 const { version } = require('../../package.json');
 const entryPoints = require('./entryPoints');
+const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
 
 const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = (module, count) => {
@@ -169,7 +170,7 @@ module.exports = env => {
               {
                 loader: 'sass-loader',
                 options: {
-                  data: `$assetsDir: "/assets/${version}";`,
+                  data: `$assetsDir: "${http_path_prefix}/assets/${version}";`,
                   sourceMap: false,
                   includePaths: [
                     rootDir('node_modules/cartoassets/src/scss')
@@ -186,7 +187,7 @@ module.exports = env => {
             options: {
               name: `[name].[ext]`,
               outputPath: `${version}/fonts/`,
-              publicPath: `/assets/${version}/fonts/`
+              publicPath: `${http_path_prefix}/assets/${version}/fonts/`
             }
           }
         },
@@ -197,7 +198,7 @@ module.exports = env => {
             options: {
               name: `[name].[ext]`,
               outputPath: `${version}/images/`,
-              publicPath: `/assets/${version}/images/`
+              publicPath: `${http_path_prefix}/assets/${version}/fonts/`
             }
           }
         }

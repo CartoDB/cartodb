@@ -176,11 +176,11 @@ namespace :cartodb do
 
 
       desc 'Cleans redis keys for org with given name'
-      task :redis_for_orgrname, [:orgname] => :environment do |_, args|
+      task :redis_for_orgname, [:orgname] => :environment do |_, args|
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
-        organization = Organization.where("name = #{args[:orgname]}").first || Organization.new(name: args[:orgname])
+        organization = Organization.where("name = '#{args[:orgname]}'").first || Organization.new(name: args[:orgname])
         clean_redis_organization(organization)
       end
 

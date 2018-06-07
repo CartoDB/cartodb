@@ -13,9 +13,10 @@ describe 'user_migrator.rake' do
   describe '#cartodb:user_migrator:cleanup:organization' do
     it 'does not remove organization assets from storage' do
       org = FactoryGirl.create(:organization_with_users)
-      Asset.create(asset_file: (Rails.root + 'spec/support/data/cartofante_blue.png'),
-                           user: org.owner,
-                           organization_id: org.id
+      Asset.create(
+        asset_file: (Rails.root + 'spec/support/data/cartofante_blue.png'),
+        user: org.owner,
+        organization_id: org.id
       )
       Asset.any_instance.stubs(:remove).raises("NOOOO!")
       Rake::Task['cartodb:user_migrator:cleanup:organization'].invoke(org.name)
@@ -23,8 +24,9 @@ describe 'user_migrator.rake' do
 
     it 'does not remove user assets from storage' do
       user = FactoryGirl.create(:valid_user)
-      Asset.create(asset_file: (Rails.root + 'spec/support/data/cartofante_blue.png'),
-                           user: user
+      Asset.create(
+        asset_file: Rails.root + 'spec/support/data/cartofante_blue.png',
+        user: user
       )
       Asset.any_instance.stubs(:remove).raises("NOOOO!")
       Rake::Task['cartodb:user_migrator:cleanup:user'].invoke(user.username)

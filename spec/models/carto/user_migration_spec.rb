@@ -216,6 +216,18 @@ describe 'UserMigration' do
 
       Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
     end
+
+    it 'import failing importing visualizations does not remove assets' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+      Asset.any_instance.stubs(:use_s3?).returns(false)
+      asset = Asset.create(asset_file: Rails.root + 'spec/support/data/cartofante_blue.png', user: @user)
+      local_url = CGI.unescape(asset.public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
+      imp = import
+
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      File.exists?((asset.public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/')).should eq true
+    end
   end
 
   describe 'failing organization organizations should rollback' do
@@ -328,6 +340,20 @@ describe 'UserMigration' do
       Carto::Organization.where(id: @carto_organization.id).should be_empty
 
       Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
+    end
+
+    it 'import failing importing visualizations does not remove assets' do
+      Carto::StorageOptions::S3.stubs(:enabled?).returns(false)
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+      asset = Carto::Asset.for_organization(
+        organization: @carto_organization,
+        resource: File.open(Rails.root + 'spec/support/data/cartofante_blue.png')
+      )
+      imp = org_import
+
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      File.exists?(asset.storage_info[:identifier]).should eq true
     end
   end
 

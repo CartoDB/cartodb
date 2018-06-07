@@ -13,6 +13,7 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
 
 ### Bug fixes / enhancements
+* Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
 * Fix `Create map` from data library https://github.com/CartoDB/cartodb/issues/14020#event-1655755501
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
 * Fix migration of users with invalid search_tweets.data_import_id (#13904)

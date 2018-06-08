@@ -429,11 +429,6 @@ module CartoDB
         run_file_metadata_postgres(file)
       end
 
-      def remove_line?(line)
-        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/, ',').strip
-        (LEGACY_FUNCTIONS + LEGACY_ACLS).find { |l| stripped.scan(l).any? }
-      end
-
       def clean_toc_file(file)
         tmp = Tempfile.new("extract_#{@target_username}.txt")
         File.open(file, 'r').each do |l|

@@ -13,6 +13,7 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
 
 ### Bug fixes / enhancements
+* Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
 * Fix `Create map` from data library https://github.com/CartoDB/cartodb/issues/14020#event-1655755501
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
 * Fix migration of users with invalid search_tweets.data_import_id (#13904)
@@ -50,7 +51,6 @@ You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to sy
 This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
 
 ### Features
-* Improve size & color UI when styling layers
 * Show migrated public pages (/me, /maps, /datasets) for all builder users (#14039)
 * Allow users to edit all their information in Profile (#13793)
 * Ask for password confirmation when updating organization or user settings (#13795)

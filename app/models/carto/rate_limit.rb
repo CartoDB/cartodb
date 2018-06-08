@@ -23,7 +23,9 @@ module Carto
                              :sql_query_format,
                              :sql_job_create,
                              :sql_job_get,
-                             :sql_job_delete].freeze
+                             :sql_job_delete,
+                             :sql_copy_from,
+                             :sql_copy_to].freeze
 
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
     RATE_LIMIT_ATTRIBUTES.each { |attr| validates attr, presence: true }

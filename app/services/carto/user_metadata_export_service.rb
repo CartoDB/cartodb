@@ -123,7 +123,7 @@ module Carto
 
       user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
 
-      user.client_applications = exported_user[:client_applications].map { |cah| build_client_application_from_hash(cah) }
+      user.client_applications =  build_client_applications_from_hash(exported_user[:client_application])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -183,10 +183,11 @@ module Carto
       )
     end
 
-    def build_client_application_from_hash(client_application_hash)
-      client_applications_hash[:oauth_tokens] = client_applications_hash[:oauth_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
-      client_applications_hash[:access_tokens] = client_applications_hash[:access_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
-
+    def build_client_applications_from_hash(client_application_hash)
+      return [] unless client_application_hash
+      client_application_hash[:oauth_tokens] = client_application_hash[:oauth_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
+      client_application_hash[:access_tokens] = client_application_hash[:access_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
+      [Carto::ClientApplication.new(client_application_hash)]
     end
   end
 
@@ -232,12 +233,13 @@ module Carto
         export_connector_configuration(cc)
       end
 
-      user_hash[:client_applications] = user.client_application.map { |ca| export_client_application(ca) }
+      user_hash[:client_application] = export_client_application(user.client_applications.first)
 
       user_hash
     end
 
     def export_client_application(ca)
+      return nil unless ca
       {
         name: ca.name,
         url: ca.url,
@@ -256,7 +258,7 @@ module Carto
       {
         token: ot.token,
         secret: ot.secret,
-        otllback_url: ot.callback_url,
+        callback_url: ot.callback_url,
         verifier: ot.verifier,
         scope: ot.scope,
         authorized_at: ot.authorized_at,
@@ -347,7 +349,6 @@ module Carto
 
       raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
-      user.client_applications.each { |app| app.access_tokens.each { |t| AccessToken[t.id].store_api_credentials } }
 
       Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))
 

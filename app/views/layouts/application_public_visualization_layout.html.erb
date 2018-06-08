@@ -32,8 +32,10 @@
     <meta name="twitter:image" content="<%= yield :twitter_card %>">
 
     <%= yield :css %>
+    <%= insert_google_tag_manager('embeds') %>
   </head>
   <body class="<%= yield :body_class %>">
+    <%= insert_google_tag_manager_no_script('embeds') %>
     <%= yield :content %>
     <%= yield :js %>
   </body>

@@ -390,6 +390,12 @@ class ApplicationController < ActionController::Base
 
   protected :current_user
 
+  def json_formatted_request?
+    format = request.format
+
+    format.json? if format
+  end
+
   private
 
   def http_header_authentication?

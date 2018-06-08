@@ -1848,6 +1848,11 @@ describe User do
     @user.save
 
     @user.crypted_password.should eq old_crypted_password
+
+    last_password_change_date = @user.last_password_change_date
+    @user.change_password(@user_password, @user_password, @user_password)
+    @user.save
+    @user.last_password_change_date.should eq last_password_change_date
   end
 
   describe "when user is signed up with google sign-in and don't have any password yet" do
@@ -2850,6 +2855,106 @@ describe User do
       expect_rate_limits_saved_to_redis(user.username)
 
       user.destroy
+    end
+  end
+
+  describe '#password_expired?' do
+    before(:all) do
+      @organization_password = create_organization_with_owner
+    end
+
+    after(:all) do
+      @organization_password.destroy
+    end
+
+    before(:each) do
+      @github_user = FactoryGirl.build(:valid_user, github_user_id: 932847)
+      @google_user = FactoryGirl.build(:valid_user, google_sign_in: true)
+      @password_user = FactoryGirl.build(:valid_user)
+      @org_user = FactoryGirl.create(:valid_user,
+                                     account_type: 'ORGANIZATION USER',
+                                     organization: @organization_password)
+    end
+
+    it 'never expires without configuration' do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
+        expect(@github_user.password_expired?).to be_false
+        expect(@google_user.password_expired?).to be_false
+        expect(@password_user.password_expired?).to be_false
+        expect(@org_user.password_expired?).to be_false
+      end
+    end
+
+    it 'never expires for users without password' do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
+        Delorean.jump(10.days)
+        expect(@github_user.password_expired?).to be_false
+        expect(@google_user.password_expired?).to be_false
+        Delorean.back_to_the_present
+      end
+    end
+
+    it 'expires for users with oauth and changed passwords' do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
+        @github_user.last_password_change_date = Time.now - 10.days
+        expect(@github_user.password_expired?).to be_true
+        @google_user.last_password_change_date = Time.now - 10.days
+        expect(@google_user.password_expired?).to be_true
+      end
+    end
+
+    it 'expires for password users after a while has passed' do
+      @password_user.save
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 15 }) do
+        expect(@password_user.password_expired?).to be_false
+        Delorean.jump(30.days)
+        expect(@password_user.password_expired?).to be_true
+        @password_user.password = @password_user.password_confirmation = 'waduspass'
+        @password_user.save
+        expect(@password_user.password_expired?).to be_false
+        Delorean.jump(30.days)
+        expect(@password_user.password_expired?).to be_true
+        Delorean.back_to_the_present
+      end
+      @password_user.destroy
+    end
+
+    it 'expires for org users with password_expiration set' do
+      @organization_password.stubs(:password_expiration_in_d).returns(2)
+      org_user2 = FactoryGirl.create(:valid_user,
+                                     account_type: 'ORGANIZATION USER',
+                                     organization: @organization_password)
+
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
+        expect(org_user2.password_expired?).to be_false
+        Delorean.jump(1.day)
+        expect(org_user2.password_expired?).to be_false
+        Delorean.jump(5.days)
+        expect(org_user2.password_expired?).to be_true
+        org_user2.password = org_user2.password_confirmation = 'waduspass'
+        org_user2.save
+        Delorean.jump(1.day)
+        expect(org_user2.password_expired?).to be_false
+        Delorean.jump(5.day)
+        expect(org_user2.password_expired?).to be_true
+        Delorean.back_to_the_present
+      end
+    end
+
+    it 'never expires for org users with no password_expiration set' do
+      @organization_password.stubs(:password_expiration_in_d).returns(nil)
+      org_user2 = FactoryGirl.create(:valid_user, organization: @organization_password)
+
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do
+        expect(org_user2.password_expired?).to be_false
+        Delorean.jump(10.days)
+        expect(org_user2.password_expired?).to be_false
+        org_user2.password = org_user2.password_confirmation = 'waduspass'
+        org_user2.save
+        Delorean.jump(10.days)
+        expect(org_user2.password_expired?).to be_false
+        Delorean.back_to_the_present
+      end
     end
   end
 

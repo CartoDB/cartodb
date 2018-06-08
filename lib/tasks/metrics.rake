@@ -1,7 +1,7 @@
 namespace :cartodb do
   namespace :metrics do
     # service provider names
-    PROVIDERS = ['heremaps', 'google', 'mapzen', 'mapbox'].freeze
+    PROVIDERS = ['heremaps', 'google', 'mapzen', 'mapbox', 'tomtom'].freeze
     SERVICES = {
       geocoder: { method: :get_geocoding_calls, column: 'geocoder_provider' },
       isolines: { method: :get_here_isolines_calls, column: 'isolines_provider' },

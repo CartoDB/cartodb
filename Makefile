@@ -7,10 +7,6 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-PENDING_SPECS = \
-	spec/lib/varnish_spec.rb (#321) \
-	$(NULL)
-
 WORKING_SPECS_INTEGRATIONS = \
 	$(NULL)
 
@@ -186,6 +182,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/valid_table_name_proposer_spec.rb \
 	spec/lib/carto/db/sanitize_spec.rb \
 	spec/lib/carto/db/user_schema_spec.rb \
+	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
 	$(NULL)
 
@@ -222,6 +219,7 @@ WORKING_SPECS_9 = \
 	spec/models/carto/shared_entity_spec.rb \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \
+	spec/requests/password_change_controller_spec.rb \
 	spec/requests/superadmin/users_spec.rb \
 	spec/requests/superadmin/organizations_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \

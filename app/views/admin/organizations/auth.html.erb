@@ -86,9 +86,40 @@
           </div>
         </div>
 
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Password Expiration</label>
+          </div>
+
+          <div class="FormAccount-rowData">
+            <div class="FormAccount-inputSuffix">
+              <%= f.text_field :password_expiration_in_d,
+                :type => "number",
+                :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--number",
+                :placeholder => "#{@organization.default_password_expiration_in_d || 180}", :min => 1, :max => 365,
+                :value => "#{@organization.password_expiration_in_d}",
+                :disabled => @organization.password_expiration_in_d ? false : true %>
+              <label class="CDB-Text CDB-Size-small u-altTextColor">days</label>
+            </div>
+
+            <div class="CDB-Legend u-upperCase CDB-Text is-semibold CDB-Size-small u-lSpace--xxl">
+              <div class="u-flex u-alignCenter">
+                <div class="u-iBlock u-rSpace--m">
+                  <input class="CDB-Checkbox js-input"
+                        type="checkbox"
+                        id="unlimited_password_expiration"
+                        <%= !@organization.password_expiration_in_d ? 'checked' : '' %> />
+                  <span class="u-iBlock CDB-Checkbox-face"></span>
+                </div>
+                <label for="unlimited_password_expiration">Unlimited</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="FormAccount-footer">
           <p class="FormAccount-footerText"></p>
-          <button type="submit" class="CDB-Button CDB-Button--primary">
+          <button type="submit" class="CDB-Button CDB-Button--primary js-save">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
           </button>
         </div>

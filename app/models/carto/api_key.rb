@@ -209,8 +209,11 @@ module Carto
     end
 
     def role_creation_queries
+      ["CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'"]
+    end
+
+    def role_permission_queries
       queries = [
-        "CREATE ROLE \"#{db_role}\" NOSUPERUSER NOCREATEDB LOGIN ENCRYPTED PASSWORD '#{db_password}'",
         "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
         "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
       ]
@@ -287,9 +290,11 @@ module Carto
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{tp.schema}\".\"#{tp.name}\" TO \"#{db_role}\"")
-          sequences_for_table(tp.schema, tp.name).each do |seq|
-            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+          Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
+            db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+            sequences_for_table(schema, table_name).each do |seq|
+              db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+            end
           end
         end
       end
@@ -298,7 +303,7 @@ module Carto
     end
 
     def create_role
-      role_creation_queries.each { |q| db_run(q) }
+      (role_creation_queries + role_permission_queries).each { |q| db_run(q) }
     end
 
     def drop_db_role
@@ -307,6 +312,7 @@ module Carto
     end
 
     def affected_schemas
+      # assume table friends don't introduce new schemas
       table_permissions.map(&:schema).uniq
     end
 

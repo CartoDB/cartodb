@@ -103,9 +103,12 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def destroy
+    valid_password_confirmation
     @cartodb_central_client.delete_mobile_app(current_user.username, @app_id)
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been deleted succesfully!' }
-
+  rescue Carto::PasswordConfirmationError => e
+    flash[:error] = e.message
+    redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id))
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)

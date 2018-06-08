@@ -80,21 +80,24 @@ describe Carto::Api::UsersController do
         }
       end
 
-      it 'updates account data for the given user' do
+      it 'gives an error if password is the same as old_password' do
+        last_change = @user.last_password_change_date
         payload = {
           user: {
             email: 'foo@bar.baz',
             old_password: 'foobarbaz',
-            new_password: 'bazbarfoo',
-            confirm_password: 'bazbarfoo'
+            new_password: 'foobarbaz',
+            confirm_password: 'foobarbaz'
           }
         }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
-          expect(response.status).to eq(200)
+          expect(response.status).to eq(400)
 
-          @user.refresh
-          expect(@user.email).to eq('foo@bar.baz')
+          expect(response.body[:errors]).to have_key(:new_password)
+          expect(response.body[:errors][:new_password]).to eq ['New password cannot be the same as old password']
+          @user.reload
+          expect(@user.last_password_change_date).to eq(last_change)
         end
       end
 
@@ -104,8 +107,31 @@ describe Carto::Api::UsersController do
         end
       end
 
+      it 'gives an error if no password_confirmation' do
+        payload = { user: { email: 'foo1@bar.baz' } }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(403)
+          expect(response.body[:message]).to eq("Error updating your account details")
+          expect(response.body[:errors]).to have_key(:password)
+        end
+      end
+
+      it 'updates account if password_confirmation' do
+        payload = { user: { email: 'foo1@bar.baz',
+                            password_confirmation: 'foobarbaz' } }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(200)
+
+          @user.refresh
+          expect(@user.email).to eq('foo1@bar.baz')
+        end
+      end
+
       it 'gives an error if email is invalid' do
-        payload = { user: { email: 'foo@' } }
+        payload = { user: { email: 'foo@',
+                            password_confirmation: 'foobarbaz' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(400)
@@ -139,11 +165,31 @@ describe Carto::Api::UsersController do
           expect(response.status).to eq(401)
         end
       end
+
+      it 'updates account data for the given user' do
+        last_change = @user.last_password_change_date
+        payload = {
+          user: {
+            email: 'foo@bar.baz',
+            old_password: 'foobarbaz',
+            new_password: 'bazbarfoo',
+            confirm_password: 'bazbarfoo'
+          }
+        }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(200)
+
+          @user.refresh
+          expect(@user.email).to eq('foo@bar.baz')
+          expect(@user.last_password_change_date).to_not eq(last_change)
+        end
+      end
     end
 
     context 'profile updates' do
       before(:each) do
-        @user = FactoryGirl.create(:user)
+        @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
       end
 
       after(:each) do
@@ -168,7 +214,8 @@ describe Carto::Api::UsersController do
             location: 'Anywhere',
             twitter_username: 'carto',
             disqus_shortname: 'carto',
-            avatar_url: 'http://carto.rocks/avatar.jpg'
+            avatar_url: 'http://carto.rocks/avatar.jpg',
+            password_confirmation: 'foobarbaz'
           }
         }
 
@@ -186,12 +233,44 @@ describe Carto::Api::UsersController do
         end
       end
 
+      it 'does not update profile data if password_confirmation is wrong' do
+        payload = {
+          user: {
+            name: 'Foo2',
+            password_confirmation: 'prapra'
+          }
+        }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(403)
+
+          @user.reload
+          @user.username.should_not eq 'Foo2'
+        end
+      end
+
+      it 'does not update profile data if password_confirmation is missing' do
+        payload = {
+          user: {
+            name: 'Foo2'
+          }
+        }
+
+        put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
+          expect(response.status).to eq(403)
+
+          @user.reload
+          @user.username.should_not eq 'Foo2'
+        end
+      end
+
       it 'does not update fields not present in the user hash' do
         payload = {
           user: {
             name: 'Foo',
             last_name: 'Bar',
-            website: 'https://carto.rocks'
+            website: 'https://carto.rocks',
+            password_confirmation: 'foobarbaz'
           }
         }
         old_description = @user.description
@@ -217,7 +296,9 @@ describe Carto::Api::UsersController do
         ]
 
         fields_to_check.each do |field|
-          payload = { user: { field => nil } }
+          payload = { user: { field => nil,
+                              password_confirmation: 'foobarbaz' } }
+
           put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
             expect(response.status).to eq(200)
             @user.refresh
@@ -227,7 +308,8 @@ describe Carto::Api::UsersController do
       end
 
       it 'returns 401 if user is not logged in' do
-        payload = { user: { name: 'Foo' } }
+        payload = { user: { name: 'Foo',
+                            password_confirmation: 'foobarbaz' } }
 
         put_json api_v3_users_update_me_url(url_options.except(:api_key)), payload, @headers do |response|
           expect(response.status).to eq(401)

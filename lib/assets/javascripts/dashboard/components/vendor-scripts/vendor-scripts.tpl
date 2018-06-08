@@ -1,5 +1,8 @@
 <% if (googleTagManagerId) { %>
   <!-- Google Tag Manager -->
+  <% // Tags for GTM are being included in _google_tag_manager.html.erb for Rails templates.
+    // So if you change anything here, please make sure that you change it there too. %>
+
   <script>
     dataLayer = [{
       'userId': '<%= userId %>',

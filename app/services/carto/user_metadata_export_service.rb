@@ -346,6 +346,7 @@ module Carto
 
       raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
+      user.client_applications.each { |app| app.access_tokens.each { |t| AccessToken[t.id].store_api_credentials } }
 
       Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))
 

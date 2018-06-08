@@ -223,7 +223,39 @@ module Carto
         export_connector_configuration(cc)
       end
 
+      user_hash[:client_applications] = user.client_application.map { |ca| export_client_application(ca) }
+
       user_hash
+    end
+
+    def export_client_application(ca)
+      {
+        name: ca.name,
+        url: ca.url,
+        support_url: ca.support_url,
+        callback_url: ca.callback_url,
+        key: ca.key,
+        secret: ca.secret,
+        created_at: ca.created_at,
+        updated_at: ca.updated_at,
+        oauth_tokens: ca.oauth_tokens.map { |ot| export_oauth_token(ot) },
+        access_tokens: ca.access_tokens.map { |ot| export_oauth_token(ot) }
+      }
+    end
+
+    def export_oauth_token(ot)
+      {
+        token: ot.token,
+        secret: ot.secret,
+        otllback_url: ot.callback_url,
+        verifier: ot.verifier,
+        scope: ot.scope,
+        authorized_at: ot.authorized_at,
+        invalidated_at: ot.invalidated_at,
+        valid_to: ot.valid_to,
+        created_at: ot.created_at,
+        updated_at: ot.updated_at,
+      }
     end
 
     def export_asset(asset)

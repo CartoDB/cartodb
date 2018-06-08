@@ -657,7 +657,7 @@ describe 'UserMigration' do
       user.destroy
     end
 
-    describe 'with organzization' do
+    describe 'with organization' do
       include_context 'organization with users helper'
 
       let(:org_attributes) { @carto_organization.attributes }

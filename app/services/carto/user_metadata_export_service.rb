@@ -4,7 +4,6 @@ require 'carto/export/data_import_exporter'
 require_dependency 'carto/export/connector_configuration_exporter'
 
 # Not migrated
-# client_applications & friends -> deprecated?
 # likes -> difficult to do between clouds
 # snapshots -> difficult to do between clouds, not in use yet
 # tags -> regenerated from tables
@@ -17,6 +16,7 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.3: export rate limits
 # 1.0.4: company and phone in users table
 # 1.0.5: synchronization_oauths and connector configurations
+# 1.0.6: client_applications & friends
 module Carto
   module UserMetadataExportServiceConfiguration
     CURRENT_VERSION = '1.0.6'.freeze

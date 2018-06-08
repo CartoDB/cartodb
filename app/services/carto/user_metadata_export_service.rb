@@ -75,6 +75,7 @@ module Carto
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
+      user.client_applications.each { |app| app.access_tokens.each { |t| AccessToken[t.id].after_save } }
     end
 
     def save_imported_search_tweet(search_tweet, user)

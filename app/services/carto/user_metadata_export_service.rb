@@ -122,6 +122,8 @@ module Carto
 
       user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
 
+      user.client_applications = exported_user[:client_applications].map { |cah| build_client_application_from_hash(cah) }
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user
@@ -178,6 +180,12 @@ module Carto
         created_at: exported_hash[:created_at],
         updated_at: exported_hash[:updated_at]
       )
+    end
+
+    def build_client_application_from_hash(client_application_hash)
+      client_applications_hash[:oauth_tokens] = client_applications_hash[:oauth_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
+      client_applications_hash[:access_tokens] = client_applications_hash[:access_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
+
     end
   end
 

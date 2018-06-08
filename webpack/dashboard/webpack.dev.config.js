@@ -76,10 +76,25 @@ module.exports = env => {
             from: rootDir('app/assets/images'),
             to: `./${version}/images/`,
             toType: 'dir'
-          },
-          {
+          }, {
             from: rootDir('public/favicons'),
             to: `./${version}/favicons/`,
+            toType: 'dir'
+          }, {
+            from: rootDir('app/assets/images/avatars'),
+            to: `./unversioned/images/avatars/`,
+            toType: 'dir'
+          }, {
+            from: rootDir('app/assets/images/alphamarker.png'),
+            to: `./unversioned/images/alphamarker.png`,
+            toType: 'file'
+          }, {
+            from: rootDir('app/assets/images/carto.png'),
+            to: `./unversioned/images/carto.png`,
+            toType: 'file'
+          }, {
+            from: rootDir('app/assets/images/google-maps-basemap-icons'),
+            to: `./unversioned/images/google-maps-basemap-icon`,
             toType: 'dir'
           }
         ]),

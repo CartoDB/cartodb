@@ -28,7 +28,7 @@ deploy:
   provider: script  
   script: bash deploy/deploy.sh
   on:
-    branch: deploy
+    branch: docker-deploy
 
 notifications:
   email:

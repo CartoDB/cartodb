@@ -55,493 +55,495 @@
   become: yes
   shell: update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-- name: Cooking Python
-  become: yes
-  apt:
-    name: python-software-properties
-    state: latest
-
-- name: Cooking Python dev
-  become: yes
-  apt:
-    name: python-all-dev
-    state: latest
-
-- name: Cooking autoconf >> latest
-  become: yes
-  apt:
-    name: autoconf
-    state: latest
-
-- name: Cooking binutils-doc >> latest
-  become: yes
-  apt:
-    name: binutils-doc
-    state: latest
-
-- name: Cooking bison >> latest
-  become: yes
-  apt:
-    name: bison
-    state: latest
-
-- name: Cooking build-essential >> latest
-  become: yes
-  apt:
-    name: build-essential
-    state: latest
-
-- name: Cooking flex >> latest
-  become: yes
-  apt:
-    name: flex
-    state: latest
-
-- name: Cooking git >> latest
-  become: yes
-  apt:
-    name: git
-    state: latest
-
-- name: Cooking libpq5 client >> latest
-  become: yes
-  apt:
-    name: libpq5
-    state: latest
-
-- name: Cooking libpq-dev client >> latest
-  become: yes
-  apt:
-    name: libpq-dev
-    state: latest
-
-- name: Cooking postgresql-client-9.5 client >> present
-  become: yes
-  apt:
-    name: postgresql-client-9.5
-    state: present
 
 
-- name: Cooking postgresql-client-common client >> present
-  become: yes
-  apt:
-    name: postgresql-client-common
-    state: present
-
-- name: Cooking postgresql-9.5 server >> present
-  become: yes
-  apt:
-    name: postgresql-9.5
-    state: present
-
-- name: Cooking postgresql-contrib-9.5 server >> present
-  become: yes
-  apt:
-    name: postgresql-contrib-9.5
-    state: present
-
-- name: Cooking postgresql-server-dev-9.5 server >> present
-  become: yes
-  apt:
-    name: postgresql-server-dev-9.5
-    state: present
-
-- name: Cooking postgresql-plpython-9.5 server >> present
-  become: yes
-  apt:
-    name: postgresql-plpython-9.5
-    state: present
-
-- name: Serving PostgreSQL >> allow localhost connections with no pwd
-  become: yes
-  become_user: root
-  become_method: sudo
-  copy: src=files/pg_hba.conf dest=/etc/postgresql/9.5/main
-
-- name: postgresql >> service >> restart
-  become: yes
-  shell: service postgresql restart
-
-- name: Create some users in PostgreSQL. These users are used by some CartoDB apps internally
-  become: yes
-  ignore_errors: yes
-  shell: createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres; createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres
-
-- name: Install CartoDB postgresql extension
-  become: yes
-  ignore_errors: yes
-  shell: git clone https://github.com/CartoDB/cartodb-postgresql.git && cd cartodb-postgresql && git checkout 0.22.1 && sudo make all install
-
-#GIS DEPENDENCIES
-#PROJ
-
-#- name: Cooking proj >> present
+#- name: Cooking Python
 #  become: yes
 #  apt:
-#    name: proj
-#    state: present
-
-- name: Cooking proj-bin >> present
-  become: yes
-  apt:
-    name: proj-bin
-    state: present
-
-- name: Cooking proj-data >> present
-  become: yes
-  apt:
-    name: proj-data
-    state: present
-
-- name: Cooking libproj-dev >> present
-  become: yes
-  apt:
-    name: libproj-dev
-    state: present
-
-#JSON
-
-- name: Cooking libjson0 >> present
-  become: yes
-  apt:
-    name: libjson0
-    state: present
-
-- name: Cooking libjson0-dev >> present
-  become: yes
-  apt:
-    name: libjson0-dev
-    state: present
-
-- name: Cooking python-simplejson >> present
-  become: yes
-  apt:
-    name: python-simplejson
-    state: present
-
-#GEOS
-
-- name: Cooking libgeos-c1v5 >> present
-  become: yes
-  apt:
-    name: libgeos-c1v5
-    state: present
-
-- name: Cooking libgeos-dev >> present
-  become: yes
-  apt:
-    name: libgeos-dev
-    state: present
-
-#GDAL
-
-- name: Cooking gdal-bin >> present
-  become: yes
-  apt:
-    name: gdal-bin
-    state: present
-
-- name: Cooking libgdal1-dev >> present
-  become: yes
-  apt:
-    name: libgdal1-dev
-    state: present
-
-- name: Cooking libgdal-dev >> present
-  become: yes
-  apt:
-    name: libgdal-dev
-    state: present
-
-#- name: Cooking gdal2.1-static-bin >> present
+#    name: python-software-properties
+#    state: latest
+#
+#- name: Cooking Python dev
 #  become: yes
 #  apt:
-#    name: gdal2.1-static-bin
-#    state: present
-
-#POSTGIS
-
-- name: Cooking libxml2-dev >> present
-  become: yes
-  apt:
-    name: libxml2-dev
-    state: present
-
-#- name: Cooking liblwgeom-2.2.2 >> present
+#    name: python-all-dev
+#    state: latest
+#
+#- name: Cooking autoconf >> latest
 #  become: yes
 #  apt:
-#    name: liblwgeom-2.2.2
-#    state: present
-
-- name: Cooking postgis >> present
-  become: yes
-  apt:
-    name: postgis
-    state: present
-
-- name: Cooking postgresql-9.5-postgis-2.2 >> present
-  become: yes
-  apt:
-    name: postgresql-9.5-postgis-2.2
-    state: present
-
-- name: Cooking postgresql-9.5-postgis-scripts >> present
-  become: yes
-  apt:
-    name: postgresql-9.5-postgis-scripts
-    state: present
-
-#Initialize template postgis database. We create a template database in postgresql that will contain the postgis extension. This way, every time CartoDB creates a new user database it just clones this template database
-- name: Cooking template postgis database.
-  become: yes
-  ignore_errors: yes
-  shell: createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis && createlang plpgsql -U postgres -d template_postgis && -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;' && ldconfig
-
-#Run an installcheck to verify the database has been installed properly
-#- name: Tasting the plates
+#    name: autoconf
+#    state: latest
+#
+#- name: Cooking binutils-doc >> latest
 #  become: yes
-#  shell: PGUSER=postgres make installcheck
-
-- name: postgresql >> service >> restart
-  become: yes
-  shell: service postgresql restart
-
-#REDIS
-- name: Cooking redis-server >> present
-  become: yes
-  apt:
-    name: redis-server
-    state: present
-
-- name: Serving Redis >> persistence
-  become: yes
-  copy: src=files/redis.conf dest=/etc/redis
-
-#NODEJS
-
-- name: Cooking NodeJS >> present
-  become: yes
-  apt:
-    name: nodejs
-    state: present
-
-#NODE DEPENDENCIES
-- name: Cooking libpixman-1-0 >> present
-  become: yes
-  apt:
-    name: libpixman-1-0
-    state: present
-
-- name: Cooking libpixman-1-dev >> present
-  become: yes
-  apt:
-    name: libpixman-1-dev
-    state: present
-
-- name: Cooking libcairo2-dev >> present
-  become: yes
-  apt:
-    name: libcairo2-dev
-    state: present
-
-- name: Cooking libjpeg-dev >> present
-  become: yes
-  apt:
-    name: libjpeg-dev
-    state: present
-
-- name: Cooking libgif-dev >> present
-  become: yes
-  apt:
-    name: libgif-dev
-    state: present
-
-- name: Cooking libpango1.0-dev >> present
-  become: yes
-  apt:
-    name: libpango1.0-dev
-    state: present
-
-#SQL API
-
-#- name: Cooking SQL API
+#  apt:
+#    name: binutils-doc
+#    state: latest
+#
+#- name: Cooking bison >> latest
+#  become: yes
+#  apt:
+#    name: bison
+#    state: latest
+#
+#- name: Cooking build-essential >> latest
+#  become: yes
+#  apt:
+#    name: build-essential
+#    state: latest
+#
+#- name: Cooking flex >> latest
+#  become: yes
+#  apt:
+#    name: flex
+#    state: latest
+#
+#- name: Cooking git >> latest
+#  become: yes
+#  apt:
+#    name: git
+#    state: latest
+#
+#- name: Cooking libpq5 client >> latest
+#  become: yes
+#  apt:
+#    name: libpq5
+#    state: latest
+#
+#- name: Cooking libpq-dev client >> latest
+#  become: yes
+#  apt:
+#    name: libpq-dev
+#    state: latest
+#
+#- name: Cooking postgresql-client-9.5 client >> present
+#  become: yes
+#  apt:
+#    name: postgresql-client-9.5
+#    state: present
+#
+#
+#- name: Cooking postgresql-client-common client >> present
+#  become: yes
+#  apt:
+#    name: postgresql-client-common
+#    state: present
+#
+#- name: Cooking postgresql-9.5 server >> present
+#  become: yes
+#  apt:
+#    name: postgresql-9.5
+#    state: present
+#
+#- name: Cooking postgresql-contrib-9.5 server >> present
+#  become: yes
+#  apt:
+#    name: postgresql-contrib-9.5
+#    state: present
+#
+#- name: Cooking postgresql-server-dev-9.5 server >> present
+#  become: yes
+#  apt:
+#    name: postgresql-server-dev-9.5
+#    state: present
+#
+#- name: Cooking postgresql-plpython-9.5 server >> present
+#  become: yes
+#  apt:
+#    name: postgresql-plpython-9.5
+#    state: present
+#
+#- name: Serving PostgreSQL >> allow localhost connections with no pwd
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+#  copy: src=files/pg_hba.conf dest=/etc/postgresql/9.5/main
+#
+#- name: postgresql >> service >> restart
+#  become: yes
+#  shell: service postgresql restart
+#
+#- name: Create some users in PostgreSQL. These users are used by some CartoDB apps internally
 #  become: yes
 #  ignore_errors: yes
-#  shell: git clone git://github.com/CartoDB/CartoDB-SQL-API.git; cd CartoDB-SQL-API && git checkout master; cp config/environments/development.js.example config/environments/development.js; node app.js development
-
-- name: Install packages based on package.json for CartoDB-SQL-API.
-  npm:
-    path: /root/CartoDB-SQL-API
-
-#MAPS API
-
-#- name: Cooking Maps API
+#  shell: createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres; createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres
+#
+#- name: Install CartoDB postgresql extension
 #  become: yes
 #  ignore_errors: yes
-#  shell: git clone git://github.com/CartoDB/Windshaft-cartodb.git; cd Windshaft-cartodb && git checkout master; cp config/environments/development.js.example config/environments/development.js; node app.js development
-
-#- name: Install packages based on package.json for Windshaft-cartodb.
+#  shell: git clone https://github.com/CartoDB/cartodb-postgresql.git && cd cartodb-postgresql && git checkout 0.22.1 && sudo make all install
+#
+##GIS DEPENDENCIES
+##PROJ
+#
+##- name: Cooking proj >> present
+##  become: yes
+##  apt:
+##    name: proj
+##    state: present
+#
+#- name: Cooking proj-bin >> present
+#  become: yes
+#  apt:
+#    name: proj-bin
+#    state: present
+#
+#- name: Cooking proj-data >> present
+#  become: yes
+#  apt:
+#    name: proj-data
+#    state: present
+#
+#- name: Cooking libproj-dev >> present
+#  become: yes
+#  apt:
+#    name: libproj-dev
+#    state: present
+#
+##JSON
+#
+#- name: Cooking libjson0 >> present
+#  become: yes
+#  apt:
+#    name: libjson0
+#    state: present
+#
+#- name: Cooking libjson0-dev >> present
+#  become: yes
+#  apt:
+#    name: libjson0-dev
+#    state: present
+#
+#- name: Cooking python-simplejson >> present
+#  become: yes
+#  apt:
+#    name: python-simplejson
+#    state: present
+#
+##GEOS
+#
+#- name: Cooking libgeos-c1v5 >> present
+#  become: yes
+#  apt:
+#    name: libgeos-c1v5
+#    state: present
+#
+#- name: Cooking libgeos-dev >> present
+#  become: yes
+#  apt:
+#    name: libgeos-dev
+#    state: present
+#
+##GDAL
+#
+#- name: Cooking gdal-bin >> present
+#  become: yes
+#  apt:
+#    name: gdal-bin
+#    state: present
+#
+#- name: Cooking libgdal1-dev >> present
+#  become: yes
+#  apt:
+#    name: libgdal1-dev
+#    state: present
+#
+#- name: Cooking libgdal-dev >> present
+#  become: yes
+#  apt:
+#    name: libgdal-dev
+#    state: present
+#
+##- name: Cooking gdal2.1-static-bin >> present
+##  become: yes
+##  apt:
+##    name: gdal2.1-static-bin
+##    state: present
+#
+##POSTGIS
+#
+#- name: Cooking libxml2-dev >> present
+#  become: yes
+#  apt:
+#    name: libxml2-dev
+#    state: present
+#
+##- name: Cooking liblwgeom-2.2.2 >> present
+##  become: yes
+##  apt:
+##    name: liblwgeom-2.2.2
+##    state: present
+#
+#- name: Cooking postgis >> present
+#  become: yes
+#  apt:
+#    name: postgis
+#    state: present
+#
+#- name: Cooking postgresql-9.5-postgis-2.2 >> present
+#  become: yes
+#  apt:
+#    name: postgresql-9.5-postgis-2.2
+#    state: present
+#
+#- name: Cooking postgresql-9.5-postgis-scripts >> present
+#  become: yes
+#  apt:
+#    name: postgresql-9.5-postgis-scripts
+#    state: present
+#
+##Initialize template postgis database. We create a template database in postgresql that will contain the postgis extension. This way, every time CartoDB creates a new user database it just clones this template database
+#- name: Cooking template postgis database.
+#  become: yes
+#  ignore_errors: yes
+#  shell: createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis && createlang plpgsql -U postgres -d template_postgis && -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;' && ldconfig
+#
+##Run an installcheck to verify the database has been installed properly
+##- name: Tasting the plates
+##  become: yes
+##  shell: PGUSER=postgres make installcheck
+#
+#- name: postgresql >> service >> restart
+#  become: yes
+#  shell: service postgresql restart
+#
+##REDIS
+#- name: Cooking redis-server >> present
+#  become: yes
+#  apt:
+#    name: redis-server
+#    state: present
+#
+#- name: Serving Redis >> persistence
+#  become: yes
+#  copy: src=files/redis.conf dest=/etc/redis
+#
+##NODEJS
+#
+#- name: Cooking NodeJS >> present
+#  become: yes
+#  apt:
+#    name: nodejs
+#    state: present
+#
+##NODE DEPENDENCIES
+#- name: Cooking libpixman-1-0 >> present
+#  become: yes
+#  apt:
+#    name: libpixman-1-0
+#    state: present
+#
+#- name: Cooking libpixman-1-dev >> present
+#  become: yes
+#  apt:
+#    name: libpixman-1-dev
+#    state: present
+#
+#- name: Cooking libcairo2-dev >> present
+#  become: yes
+#  apt:
+#    name: libcairo2-dev
+#    state: present
+#
+#- name: Cooking libjpeg-dev >> present
+#  become: yes
+#  apt:
+#    name: libjpeg-dev
+#    state: present
+#
+#- name: Cooking libgif-dev >> present
+#  become: yes
+#  apt:
+#    name: libgif-dev
+#    state: present
+#
+#- name: Cooking libpango1.0-dev >> present
+#  become: yes
+#  apt:
+#    name: libpango1.0-dev
+#    state: present
+#
+##SQL API
+#
+##- name: Cooking SQL API
+##  become: yes
+##  ignore_errors: yes
+##  shell: git clone git://github.com/CartoDB/CartoDB-SQL-API.git; cd CartoDB-SQL-API && git checkout master; cp config/environments/development.js.example config/environments/development.js; node app.js development
+#
+#- name: Install packages based on package.json for CartoDB-SQL-API.
 #  npm:
-#    path: /root/Windshaft-cartodb
-
-#RUBY
-
-#- name: Cooking Ruby
+#    path: /root/CartoDB-SQL-API
+#
+##MAPS API
+#
+##- name: Cooking Maps API
+##  become: yes
+##  ignore_errors: yes
+##  shell: git clone git://github.com/CartoDB/Windshaft-cartodb.git; cd Windshaft-cartodb && git checkout master; cp config/environments/development.js.example config/environments/development.js; node app.js development
+#
+##- name: Install packages based on package.json for Windshaft-cartodb.
+##  npm:
+##    path: /root/Windshaft-cartodb
+#
+##RUBY
+#
+##- name: Cooking Ruby
+##  become: yes
+##  shell: wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz; tar -xzvf ruby-install-0.5.0.tar.gz; cd ruby-install-0.5.0/; sudo make install
+#
+#- name: Cooking ruby >> 2.2
 #  become: yes
-#  shell: wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz; tar -xzvf ruby-install-0.5.0.tar.gz; cd ruby-install-0.5.0/; sudo make install
-
-- name: Cooking ruby >> 2.2
-  become: yes
-  apt:
-    name: ruby2.2
-    state: latest
-
-- name: Cooking ruby-dev >> 2.2
-  become: yes
-  apt:
-    name: ruby2.2-dev
-    state: latest
-
-- name: Cooking libreadline6-dev >> present
-  become: yes
-  apt:
-    name: libreadline6-dev
-    state: present
-
-- name: Cooking openssl >> latest
-  become: yes
-  apt:
-    name: openssl
-    state: latest
-
-#- name: Cooking Ruby path
+#  apt:
+#    name: ruby2.2
+#    state: latest
+#
+#- name: Cooking ruby-dev >> 2.2
 #  become: yes
-#  raw: export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
-
-- name: Cooking bundler
-  become: yes
-  apt:
-    name: ruby-bundler
-    state: latest
-
-- name: Cooking compass
-  become: yes
-  gem:
-    name: compass
-    state: latest
-
-- name: Check for carto installation
-  stat:
-    path: /root/cartodb
-  register: files_to_delete
-
-- name: Shipping Carto
-  become: yes
-  shell: git clone --recursive https://github.com/CartoDB/cartodb.git
-  when: not files_to_delete.stat.exists and files_to_delete.stat.isdir
-
-- name: Shipping Carto Update
-  become: yes
-  shell: cd cartodb && git pull origin master
-  when: files_to_delete.stat.exists and files_to_delete.stat.isdir
-
-- name: Shipping Carto Modules Update
-  become: yes
-  shell: cd cartodb && git submodule update --recursive
-
-- name: Cooking pip
-  become: yes
-  apt:
-      name: python-pip
-      state: latest
-
-- name: Cooking image magick
-  become: yes
-  apt:
-      name: imagemagick
-      state: latest
-
-- name: Cooking unp
-  become: yes
-  apt:
-      name: unp
-      state: latest
-
-- name: Cooking zip
-  become: yes
-  apt:
-      name: zip
-      state: latest
-
-#- name: Set RAILS ENV
+#  apt:
+#    name: ruby2.2-dev
+#    state: latest
+#
+#- name: Cooking libreadline6-dev >> present
 #  become: yes
-#  shell: cd cartodb && RAILS_ENV=development bundle install
-
-- name: Install packages based on package.json.
-  npm:
-    path: /root/cartodb
-
-- name: Install pip cartodb
-  ignore_errors: yes
-  pip:
-    requirements: /root/cartodb/python_requirements.txt
-    extra_args: --no-use-wheel -r
-
-- name: Crafting Gems
-  bundler:
-    state: present
-    gemfile: /root/cartodb/Gemfile
-
-- name: Compile via grunt
-  become: yes
-  shell: cd cartodb; export PATH=$PATH:$PWD/node_modules/grunt-cli/bin && bundle exec grunt --environment=development
-
-- name: Create configuration files
-  become: yes
-  shell: cd cartodb; cp config/app_config.yml.sample config/app_config.yml && cp config/database.yml.sample config/database.yml
-
-- name: Initialize metadata database
-  become: yes
-  shell: cd cartodb; RAILS_ENV=development bundle exec rake db:create && RAILS_ENV=development bundle exec rake db:migrate
-
-- name: Serving Redis >> Service
-  service:
-    name: redis-server
-    state: started
-    enabled: yes
-
-- name: Serving PostgreSQL >> Service
-  service:
-    name: postgresql
-    state: started
-    enabled: yes
-
-- name: Start the editor HTTP server
-  become: yes
-  shell: cd cartodb; RAILS_ENV=development bundle exec rails server
-
-- name: In a different process/console start the resque process
-  become: yes
-  shell: cd cartodb; RAILS_ENV=development bundle exec ./script/resque
-
-- name: Configuring hosts for carto development
-  become: yes
-  become_user: root
-  lineinfile:
-    dest: /etc/hosts
-    state: present
-    line: '127.0.0.1 development.localhost.lan'
-    backup: yes
-    owner: root
-    mode: 'u+rw'
-
-- name: Copying carto service
-  become: yes
-  copy: src=files/carto.service dest=/etc/systemd/system/carto.service mode=755
-
-- name: Serving carto >> Start service and run on boot
-  become: yes
-  service:
-    name: carto
-    state: restarted
-    enabled: yes
+#  apt:
+#    name: libreadline6-dev
+#    state: present
+#
+#- name: Cooking openssl >> latest
+#  become: yes
+#  apt:
+#    name: openssl
+#    state: latest
+#
+##- name: Cooking Ruby path
+##  become: yes
+##  raw: export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
+#
+#- name: Cooking bundler
+#  become: yes
+#  apt:
+#    name: ruby-bundler
+#    state: latest
+#
+#- name: Cooking compass
+#  become: yes
+#  gem:
+#    name: compass
+#    state: latest
+#
+#- name: Check for carto installation
+#  stat:
+#    path: /root/cartodb
+#  register: files_to_delete
+#
+#- name: Shipping Carto
+#  become: yes
+#  shell: git clone --recursive https://github.com/CartoDB/cartodb.git
+#  when: not files_to_delete.stat.exists and files_to_delete.stat.isdir
+#
+#- name: Shipping Carto Update
+#  become: yes
+#  shell: cd cartodb && git pull origin master
+#  when: files_to_delete.stat.exists and files_to_delete.stat.isdir
+#
+#- name: Shipping Carto Modules Update
+#  become: yes
+#  shell: cd cartodb && git submodule update --recursive
+#
+#- name: Cooking pip
+#  become: yes
+#  apt:
+#      name: python-pip
+#      state: latest
+#
+#- name: Cooking image magick
+#  become: yes
+#  apt:
+#      name: imagemagick
+#      state: latest
+#
+#- name: Cooking unp
+#  become: yes
+#  apt:
+#      name: unp
+#      state: latest
+#
+#- name: Cooking zip
+#  become: yes
+#  apt:
+#      name: zip
+#      state: latest
+#
+##- name: Set RAILS ENV
+##  become: yes
+##  shell: cd cartodb && RAILS_ENV=development bundle install
+#
+#- name: Install packages based on package.json.
+#  npm:
+#    path: /root/cartodb
+#
+#- name: Install pip cartodb
+#  ignore_errors: yes
+#  pip:
+#    requirements: /root/cartodb/python_requirements.txt
+#    extra_args: --no-use-wheel -r
+#
+#- name: Crafting Gems
+#  bundler:
+#    state: present
+#    gemfile: /root/cartodb/Gemfile
+#
+#- name: Compile via grunt
+#  become: yes
+#  shell: cd cartodb; export PATH=$PATH:$PWD/node_modules/grunt-cli/bin && bundle exec grunt --environment=development
+#
+#- name: Create configuration files
+#  become: yes
+#  shell: cd cartodb; cp config/app_config.yml.sample config/app_config.yml && cp config/database.yml.sample config/database.yml
+#
+#- name: Initialize metadata database
+#  become: yes
+#  shell: cd cartodb; RAILS_ENV=development bundle exec rake db:create && RAILS_ENV=development bundle exec rake db:migrate
+#
+#- name: Serving Redis >> Service
+#  service:
+#    name: redis-server
+#    state: started
+#    enabled: yes
+#
+#- name: Serving PostgreSQL >> Service
+#  service:
+#    name: postgresql
+#    state: started
+#    enabled: yes
+#
+#- name: Start the editor HTTP server
+#  become: yes
+#  shell: cd cartodb; RAILS_ENV=development bundle exec rails server
+#
+#- name: In a different process/console start the resque process
+#  become: yes
+#  shell: cd cartodb; RAILS_ENV=development bundle exec ./script/resque
+#
+#- name: Configuring hosts for carto development
+#  become: yes
+#  become_user: root
+#  lineinfile:
+#    dest: /etc/hosts
+#    state: present
+#    line: '127.0.0.1 development.localhost.lan'
+#    backup: yes
+#    owner: root
+#    mode: 'u+rw'
+#
+#- name: Copying carto service
+#  become: yes
+#  copy: src=files/carto.service dest=/etc/systemd/system/carto.service mode=755
+#
+#- name: Serving carto >> Start service and run on boot
+#  become: yes
+#  service:
+#    name: carto
+#    state: restarted
+#    enabled: yes

@@ -81,7 +81,19 @@
 - name: Restart service docker
   service:
     name: docker
-    state: restarted
+    state: started
+    enabled: yes
+
+- name: Container present
+  docker_container:
+    name: cartodb
+    state: started
+    image: giuliano150/docker-cartodb
+    pull: yes
+    restart_policy: always
+    hostname: "186.10.95.243"
+    ports:
+      - "80:80"
 
 #- name: Cooking Python
 #  become: yes

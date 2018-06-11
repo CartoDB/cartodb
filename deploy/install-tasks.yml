@@ -84,6 +84,30 @@
     state: started
     enabled: yes
 
+- name: Cooking Python
+  become: yes
+  apt:
+    name: python-software-properties
+    state: latest
+
+- name: Cooking Python dev
+  become: yes
+  apt:
+    name: python-all-dev
+    state: latest
+
+- name: Cooking pip
+  become: yes
+  apt:
+      name: python-pip
+      state: latest
+
+- name: Cooking docker-py
+  become: yes
+  pip:
+    name: docker-py
+    state: latest
+
 - name: Container present
   docker_container:
     name: cartodb
@@ -95,18 +119,6 @@
     ports:
       - "80:80"
 
-#- name: Cooking Python
-#  become: yes
-#  apt:
-#    name: python-software-properties
-#    state: latest
-#
-#- name: Cooking Python dev
-#  become: yes
-#  apt:
-#    name: python-all-dev
-#    state: latest
-#
 #- name: Cooking autoconf >> latest
 #  become: yes
 #  apt:
@@ -489,11 +501,6 @@
 #  become: yes
 #  shell: cd cartodb && git submodule update --recursive
 #
-#- name: Cooking pip
-#  become: yes
-#  apt:
-#      name: python-pip
-#      state: latest
 #
 #- name: Cooking image magick
 #  become: yes

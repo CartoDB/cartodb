@@ -30,6 +30,13 @@ module Carto
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
     RATE_LIMIT_ATTRIBUTES.each { |attr| validates attr, presence: true }
 
+    # FIXME remove this after syncing rate_limits
+    RATE_LIMIT_DEFAULTS = {
+      sql_copy_from: [1, 1, 60],
+      sql_copy_to: [1, 1, 60]
+    }.freeze
+    ###
+
     def self.from_api_attributes(attributes)
       rate_limit = RateLimit.new
       rate_limit.rate_limit_attributes(attributes).each { |k, v| rate_limit[k] = RateLimitValues.new(v) }
@@ -69,6 +76,7 @@ module Carto
 
     def rate_limit_attributes(attrs = attributes)
       attrs.with_indifferent_access.slice(*Carto::RateLimit::RATE_LIMIT_ATTRIBUTES)
+           .reverse_merge!(RATE_LIMIT_DEFAULTS) # FIXME remove this after syncing rate_limits
     end
 
     def ==(rate_limit)

@@ -55,7 +55,11 @@
   become: yes
   shell: update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-
+- name: Cooking docker
+  become: yes
+  apt:
+    name: docker
+    state: latest
 
 #- name: Cooking Python
 #  become: yes

@@ -61,6 +61,27 @@
     name: docker
     state: latest
 
+- group:
+    name: docker
+    state: present
+
+- user:
+    name: root
+    shell: /bin/bash
+    groups: docker
+    append: yes
+
+- file:
+    path: /home/root/.docker
+    owner: root
+    group: root
+    mode: "g+rwx"
+
+- name: Restart service docker
+  service:
+    name: docker
+    state: restarted
+
 #- name: Cooking Python
 #  become: yes
 #  apt:

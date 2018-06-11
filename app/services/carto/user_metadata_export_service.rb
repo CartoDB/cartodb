@@ -75,7 +75,11 @@ module Carto
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
-      user.client_applications.each { |app| app.access_tokens.each { |t| AccessToken[t.id].after_save } }
+      user.client_applications.first.access_tokens.each do |t|
+        # AR does not know about this, so it needs to be fixed
+        t.update_column(:type, 'AccessToken')
+        AccessToken[t.id].after_save
+      end
     end
 
     def save_imported_search_tweet(search_tweet, user)
@@ -183,11 +187,16 @@ module Carto
       )
     end
 
-    def build_client_applications_from_hash(client_application_hash)
-      return [] unless client_application_hash
-      client_application_hash[:oauth_tokens] = client_application_hash[:oauth_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
-      client_application_hash[:access_tokens] = client_application_hash[:access_tokens].map { |token_hash| Carto::OauthToken.new(token_hash) }
-      [Carto::ClientApplication.new(client_application_hash)]
+    def build_client_applications_from_hash(client_app_hash)
+      return [] unless client_app_hash
+
+      # AR does not make differences between regular oauth tokens and access ones, so we need to clean to avoid dups
+      access_token_tokens = client_app_hash[:access_tokens].map { |t| t[:token] }
+      clean_oauth_tokens = client_app_hash[:oauth_tokens].reject { |t| access_token_tokens.include?(t[:token]) }
+
+      client_app_hash[:oauth_tokens] = clean_oauth_tokens.map { |token_hash| Carto::OauthToken.new(token_hash) }
+      client_app_hash[:access_tokens] = client_app_hash[:access_tokens].map { |t| Carto::OauthToken.new(t) }
+      [Carto::ClientApplication.new(client_app_hash)]
     end
   end
 

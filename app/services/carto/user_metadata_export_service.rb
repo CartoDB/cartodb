@@ -233,7 +233,7 @@ module Carto
         export_connector_configuration(cc)
       end
 
-      user_hash[:client_application] = export_client_application(user.client_applications.first)
+      user_hash[:client_application] = export_client_application(::User[user.id].client_application)
 
       user_hash
     end

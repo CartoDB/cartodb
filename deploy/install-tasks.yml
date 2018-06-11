@@ -72,9 +72,10 @@
     append: yes
 
 - file:
-    path: /home/root/.docker
+    path: ~/.docker
     owner: root
     group: root
+    state: directory
     mode: "g+rwx"
 
 - name: Restart service docker

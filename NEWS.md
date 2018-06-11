@@ -13,6 +13,7 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
 
 ### Bug fixes / enhancements
+* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583#event-1673573190)
 * Send `Visited Private Page` event from Dashboard (#14041)
 * Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)
 * Fix Broken CTA in the 'Connect Dataset' modal (https://github.com/CartoDB/cartodb/issues/14036)

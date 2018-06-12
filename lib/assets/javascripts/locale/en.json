@@ -2515,9 +2515,9 @@
           }
         },
         "properties": {
-          "title-label-point": "Style",
-          "title-label-line": "Lines style",
-          "title-label-polygon": "Polygons style",
+          "title-label-point": "Point Style",
+          "title-label-line": "Lines Style",
+          "title-label-polygon": "Polygons Style",
           "georeference": "Geocode",
           "desc": "Change the visualization"
         },

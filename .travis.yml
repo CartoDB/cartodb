@@ -2,9 +2,20 @@ language: node_js
 node_js:
   - "6.9.2"
 dist: trusty
-before_install:
+before_install:  
+  - sudo apt-get install python3
+  - python --version
   - git submodule update --init --recursive
   - git fetch origin master:refs/remotes/origin/master --depth=1
+  - sudo apt-get install --reinstall python-setuptools
+  - sudo apt-get install -qq python-pip
+  - sudo apt-get install -qq libffi-dev libssl-dev
+  - sudo apt-get install -qq sshpass
+  - pip install --user requests[security]
+  - pip install --user --upgrade pip
+  - pip install --user ansible==2.5.3
+  - pip --version
+  - ansible --version
 addons:
   chrome: stable
 install:
@@ -13,7 +24,16 @@ install:
 script:
   - npm run ci
 
+deploy:
+  provider: script  
+  script: bash deploy/deploy.sh
+  on:
+    branch: master
+
 notifications:
   email:
     on_success: never
     on_failure: change
+  slack:
+    rooms:
+      - ocean-io:iZCO05QEaRxnLp34GOKJFzGO#devops

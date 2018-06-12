@@ -127,7 +127,7 @@ module Carto
 
       user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
 
-      user.client_applications =  build_client_applications_from_hash(exported_user[:client_application])
+      user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -245,35 +245,35 @@ module Carto
       user_hash
     end
 
-    def export_client_application(ca)
-      return nil unless ca
-      a_t_tokens = ca.access_tokens.map(&:token)
+    def export_client_application(app)
+      return nil unless app
+      a_t_tokens = app.access_tokens.map(&:token)
       {
-        name: ca.name,
-        url: ca.url,
-        support_url: ca.support_url,
-        callback_url: ca.callback_url,
-        key: ca.key,
-        secret: ca.secret,
-        created_at: ca.created_at,
-        updated_at: ca.updated_at,
-        oauth_tokens: ca.oauth_tokens.reject {|t| a_t_tokens.include?(t.token) }.map { |ot| export_oauth_token(ot) },
-        access_tokens: ca.access_tokens.map { |ot| export_oauth_token(ot) }
+        name: app.name,
+        url: app.url,
+        support_url: app.support_url,
+        callback_url: app.callback_url,
+        key: app.key,
+        secret: app.secret,
+        created_at: app.created_at,
+        updated_at: app.updated_at,
+        oauth_tokens: app.oauth_tokens.reject { |t| a_t_tokens.include?(t.token) }.map { |ot| export_oauth_token(ot) },
+        access_tokens: app.access_tokens.map { |ot| export_oauth_token(ot) }
       }
     end
 
-    def export_oauth_token(ot)
+    def export_oauth_token(oauth_token)
       {
-        token: ot.token,
-        secret: ot.secret,
-        callback_url: ot.callback_url,
-        verifier: ot.verifier,
-        scope: ot.scope,
-        authorized_at: ot.authorized_at,
-        invalidated_at: ot.invalidated_at,
-        valid_to: ot.valid_to,
-        created_at: ot.created_at,
-        updated_at: ot.updated_at,
+        token: oauth_token.token,
+        secret: oauth_token.secret,
+        callback_url: oauth_token.callback_url,
+        verifier: oauth_token.verifier,
+        scope: oauth_token.scope,
+        authorized_at: oauth_token.authorized_at,
+        invalidated_at: oauth_token.invalidated_at,
+        valid_to: oauth_token.valid_to,
+        created_at: oauth_token.created_at,
+        updated_at: oauth_token.updated_at
       }
     end
 

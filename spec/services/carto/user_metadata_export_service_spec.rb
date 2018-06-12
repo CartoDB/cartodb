@@ -64,18 +64,22 @@ describe Carto::UserMetadataExportService do
     @user.reload
 
     # Client Application tokens
-    sequel_user.client_application.access_tokens << ::AccessToken.new(token: "access_token",
-                                                                      secret: "access_secret",
-                                                                      callback_url: "http://callback2",
-                                                                      verifier: "v2",
-                                                                      scope: nil,
-                                                                      client_application_id: sequel_user.client_application.id).save
-    sequel_user.client_application.oauth_tokens << ::OauthToken.new(token: "oauth_token",
-                                                                   secret: "oauth_secret",
-                                                                   callback_url: "http//callback.com",
-                                                                   verifier: "v1",
-                                                                   scope: nil,
-                                                                   client_application_id: sequel_user.client_application.id).save
+    sequel_user.client_application.access_tokens << ::AccessToken.new(
+      token: "access_token",
+      secret: "access_secret",
+      callback_url: "http://callback2",
+      verifier: "v2",
+      scope: nil,
+      client_application_id: sequel_user.client_application.id
+    ).save
+    sequel_user.client_application.oauth_tokens << ::OauthToken.new(
+      token: "oauth_token",
+      secret: "oauth_secret",
+      callback_url: "http//callback.com",
+      verifier: "v1",
+      scope: nil,
+      client_application_id: sequel_user.client_application.id
+    ).save
 
     @user.reload
   end
@@ -391,38 +395,38 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  def expect_export_matches_client_application(exported_ca, ca)
-    expect(exported_ca).to be_nil && return unless ca
+  def expect_export_matches_client_application(exported_app, app)
+    expect(exported_app).to be_nil && return unless app
 
-    expect(exported_ca[:name]).to eq ca.name
-    expect(exported_ca[:url]).to eq ca.url
-    expect(exported_ca[:support_url]).to eq ca.support_url
-    expect(exported_ca[:callback_url]).to eq ca.callback_url
-    expect(exported_ca[:key]).to eq ca.key
-    expect(exported_ca[:secret]).to eq ca.secret
-    expect(exported_ca[:created_at]).to eq ca.created_at
-    expect(exported_ca[:updated_at]).to eq ca.updated_at
-    expect(exported_ca[:oauth_tokens].size + exported_ca[:access_tokens].size).to eq ca.oauth_tokens.size
-    exported_ca[:oauth_tokens].each do |ex_t|
-      expect_exported_token_matches_token(ex_t, ca.oauth_tokens.find { |t| t.token == ex_t[:token] } )
+    expect(exported_app[:name]).to eq app.name
+    expect(exported_app[:url]).to eq app.url
+    expect(exported_app[:support_url]).to eq app.support_url
+    expect(exported_app[:callback_url]).to eq app.callback_url
+    expect(exported_app[:key]).to eq app.key
+    expect(exported_app[:secret]).to eq app.secret
+    expect(exported_app[:created_at]).to eq app.created_at
+    expect(exported_app[:updated_at]).to eq app.updated_at
+    expect(exported_app[:oauth_tokens].size + exported_app[:access_tokens].size).to eq app.oauth_tokens.size
+    exported_app[:oauth_tokens].each do |ex_t|
+      expect_exported_token_matches_token(ex_t, app.oauth_tokens.find { |t| t.token == ex_t[:token] })
     end
-    expect(exported_ca[:access_tokens].size).to eq ca.access_tokens.size
-    exported_ca[:access_tokens].each do |ex_t|
-      expect_exported_token_matches_token(ex_t, ca.access_tokens.find { |t| t.token == ex_t[:token] } )
+    expect(exported_app[:access_tokens].size).to eq app.access_tokens.size
+    exported_app[:access_tokens].each do |ex_t|
+      expect_exported_token_matches_token(ex_t, app.access_tokens.find { |t| t.token == ex_t[:token] })
     end
   end
 
-  def expect_exported_token_matches_token(exported_t, t)
-    expect(exported_t[:token]).to eq t.token
-    expect(exported_t[:secret]).to eq t.secret
-    expect(exported_t[:callback_url]).to eq t.callback_url
-    expect(exported_t[:verifier]).to eq t.verifier
-    expect(exported_t[:scope]).to eq t.scope
-    expect(exported_t[:authorized_at]).to eq t.authorized_at
-    expect(exported_t[:invalidated_at]).to eq t.invalidated_at
-    expect(exported_t[:valid_to]).to eq t.valid_to
-    expect(exported_t[:created_at]).to eq t.created_at
-    expect(exported_t[:updated_at]).to eq t.updated_at
+  def expect_exported_token_matches_token(exported_t, token)
+    expect(exported_t[:token]).to eq token.token
+    expect(exported_t[:secret]).to eq token.secret
+    expect(exported_t[:callback_url]).to eq token.callback_url
+    expect(exported_t[:verifier]).to eq token.verifier
+    expect(exported_t[:scope]).to eq token.scope
+    expect(exported_t[:authorized_at]).to eq token.authorized_at
+    expect(exported_t[:invalidated_at]).to eq token.invalidated_at
+    expect(exported_t[:valid_to]).to eq token.valid_to
+    expect(exported_t[:created_at]).to eq token.created_at
+    expect(exported_t[:updated_at]).to eq token.updated_at
   end
 
   def export_import(user)

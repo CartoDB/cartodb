@@ -79,6 +79,7 @@
     mode: "g+rwx"
 
 - name: Restart service docker
+  become: true
   service:
     name: docker
     state: started
@@ -115,7 +116,7 @@
     image: giuliano150/docker-cartodb
     pull: yes
     restart_policy: always
-    #hostname: "186.10.95.243"
+    hostname: "186.10.95.243"
     ports:
       - "80:80"
 

@@ -61,22 +61,22 @@
     name: docker.io
     state: latest
 
-- group:
-    name: docker
-    state: present
+#- group:
+#    name: docker
+#    state: present
 
-- user:
-    name: root
-    shell: /bin/bash
-    groups: docker
-    append: yes
+#- user:
+#    name: root
+#    shell: /bin/bash
+#    groups: docker
+#    append: yes
 
-- file:
-    path: ~/.docker
-    owner: root
-    group: root
-    state: directory
-    mode: "g+rwx"
+#- file:
+#    path: ~/.docker
+#    owner: root
+#    group: root
+#    state: directory
+#    mode: "g+rwx"
 
 - name: Restart service docker
   become: true

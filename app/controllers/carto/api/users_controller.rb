@@ -26,6 +26,7 @@ module Carto
       before_filter :initialize_google_plus_config, only: [:me]
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
+      skip_before_filter :check_user_state, only: [:me]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data

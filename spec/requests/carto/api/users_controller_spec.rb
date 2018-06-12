@@ -32,6 +32,17 @@ describe Carto::Api::UsersController do
       CartoDB::Hubspot.any_instance.unstub(:token)
     end
 
+    it 'returns the user info even when locked' do
+      user = @organization.owner
+      user.update(state: 'locked')
+
+      get_json api_v3_users_me_url(user_domain: user.username, api_key: user.api_key), @headers do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:user_data][:username]).to eq(user.username)
+      end
+    end
+
     it 'returns a hash with current user info' do
       user = @organization.owner
       carto_user = Carto::User.where(id: user.id).first

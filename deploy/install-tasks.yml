@@ -32,7 +32,7 @@
 - name: Only run "update_cache=yes" once a week
   apt:
     update_cache: yes
-    cache_valid_time: 80 #604800
+    cache_valid_time: 604800
 
 #FIX: Ubuntu 16.04 LTS doesn't come with certain modules, required by ansible
 - name: Preparing the table

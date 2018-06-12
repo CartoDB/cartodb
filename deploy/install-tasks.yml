@@ -58,7 +58,7 @@
 - name: Cooking docker
   become: yes
   apt:
-    name: docker
+    name: docker.io
     state: latest
 
 - group:

@@ -80,10 +80,7 @@
 
 - name: Restart service docker
   become: true
-  service:
-    name: docker
-    state: started
-    enabled: yes
+  shell: service docker restart
 
 - name: Cooking Python
   become: yes

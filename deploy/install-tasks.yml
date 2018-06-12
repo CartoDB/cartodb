@@ -115,6 +115,7 @@
     state: started
     image: giuliano150/docker-cartodb
     pull: yes
+    recreate: yes
     restart_policy: always
     hostname: "186.10.95.243"
     ports:

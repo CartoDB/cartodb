@@ -25,8 +25,6 @@ module CartoDB
         @logger = @options[:logger] || default_logger
         @@importjob_logger = @options[:import_job_logger]
 
-        @user_import_jobs = Array.new
-
         @start = Time.now
         @logger.debug "Starting import job with options: #{@options}"
 
@@ -255,7 +253,6 @@ module CartoDB
                             logger: @logger, data: @options[:data], metadata: @options[:metadata],
                             update_metadata: @options[:update_metadata])
           i.run!
-          @user_import_jobs << i
         end
       rescue => e
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
@@ -668,20 +665,6 @@ module CartoDB
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
           throw e
-        end
-      end
-
-      def update_metadata_org(target_dbhost)
-        @user_import_jobs.each do |instance|
-          instance.update_metadata_user(target_dbhost)
-        end
-      end
-
-      def update_metadata(target_dbhost = @target_dbhost)
-        if organization_import?
-          update_metadata_org(target_dbhost)
-        else
-          update_metadata_user(target_dbhost)
         end
       end
 

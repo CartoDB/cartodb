@@ -1,6 +1,8 @@
 ## Quickstart Guide
 
-Welcome to the CARTO.js documentation. CARTO.js is a JavaScript library that enables you to create custom location intelligence applications that leverage the power of the **[CARTO Engine](https://carto.com/pricing/engine/)** ecosystem.
+CARTO.js lets you create custom location intelligence applications that leverage the power of the **[CARTO Engine](https://carto.com/pricing/engine/)** ecosystem.
+
+This document details the CARTO.js v4. To update your v3 apps, please consult the [Upgrade Considerations]({{site.cartojs_docs}}/guides/upgrade-considerations/).
 
 ### About this Guide
 
@@ -11,6 +13,10 @@ This guide describes how to create a Leaflet map and display data from CARTO ove
 
 
 **Tip:** For more advanced documentation, view the [Full Reference API]({{site.cartojs_docs}}/reference/) or browse through some [examples]({{site.cartojs_docs}}/examples/). You can also read the [FAQs]({{site.cartojs_docs}}/support/faq/).
+
+### Audience
+
+This document is intended for website or mobile developers who want to include CARTO.js library within a webpage or mobile application. It provides an introduction to using the library and reference material on the available parameters.
 
 ### Requesting an API Key
 
@@ -392,5 +398,11 @@ client.addDataview(countriesDataview);
     Click to open map full size
   </a>
 </div>
+
+### Troubleshooting and support
+
+For more information on using the CARTO.js library, take a look at the [support page]({{site.cartojs_docs}}/support/).
+
+The CARTO.js library may issue an error or warning when something goes wrong. You should check for warnings in particular if you notice that something is missing. It's also a good idea to check for warnings before launching a new application. Note that the warnings may not be immediately apparent because they appear in the HTTP header. For more information, see the guide to [errors messages]({{site.cartojs_docs}}/support/error-messages/).
 
 This guide is just an overview of how to use CARTO.js to overlay data and create widgets. View the [Examples]({{ site.cartojs_docs }}/examples/) section for specific features of CARTO.js in action.

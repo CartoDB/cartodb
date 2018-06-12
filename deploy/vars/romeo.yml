@@ -1,0 +1,5 @@
+---
+root_install_dir: /root
+app_name: carto
+
+production: true

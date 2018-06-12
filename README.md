@@ -1,7 +1,7 @@
 # What is CARTO?
 
 [![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
-[![Build Status](http://travis-ci.org/CartoDB/cartodb.png?branch=master)](http://travis-ci.org/CartoDB/cartodb)
+[![Build Status](https://travis-ci.org/entel-garage/cartodb.svg?branch=master)](https://travis-ci.org/entel-garage/cartodb)
 
 CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.
 

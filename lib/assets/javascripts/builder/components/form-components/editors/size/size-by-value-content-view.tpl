@@ -5,14 +5,14 @@
         <button class="u-rSpace u-actionTextColor js-back">
           <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
         </button>
-        <div class="u-ellipsis">
+        <div class="u-ellipsis test-attribute">
           <%- attribute %>
         </div>
       </div>
     </li>
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="u-flex u-justifySpace">
-        <li class="u-flex">
+        <li class="u-flex test-bins">
           <%- bins %> <%- _t('form-components.editors.fill.input-ramp.buckets', { smart_count: bins }) %>
           <button class="CDB-Shape u-lSpace js-bins">
             <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
@@ -22,7 +22,7 @@
             </div>
           </button>
         </li>
-        <li class="u-flex">
+        <li class="u-flex test-quantification">
           <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>
           <button class="CDB-Shape u-lSpace js-quantification">
             <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">

@@ -342,7 +342,7 @@ module.exports = function (grunt) {
   grunt.registerTask('dev', [
     'npm-carto-node',
     'pre',
-    'npm-build-dashboard',
+    // 'npm-build-dashboard',
     'npm-start'
   ]);
 

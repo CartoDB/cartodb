@@ -675,7 +675,7 @@ describe Carto::VisualizationsExportService2 do
 
             service = Carto::VisualizationsExportService2.new
             visualization = service.build_visualization_from_json_export(export_2_1_1.to_json)
-            expect(visualization.locked?).to be_false
+            expect(visualization.locked).to eq(false)
           end
 
           it 'sets password protected visualizations to private' do
@@ -1256,12 +1256,13 @@ describe Carto::VisualizationsExportService2 do
     def verify_visualizations_match(imported_visualization,
                                     original_visualization,
                                     importing_user: nil,
-                                    imported_name: original_visualization.name)
+                                    imported_name: original_visualization.name,
+                                    imported_privacy: original_visualization.privacy)
       imported_visualization.name.should eq imported_name
       imported_visualization.description.should eq original_visualization.description
       imported_visualization.type.should eq original_visualization.type
       imported_visualization.tags.should eq original_visualization.tags
-      imported_visualization.privacy.should eq original_visualization.privacy
+      imported_visualization.privacy.should eq imported_privacy
       imported_visualization.source.should eq original_visualization.source
       imported_visualization.license.should eq original_visualization.license
       imported_visualization.title.should eq original_visualization.title
@@ -1645,11 +1646,14 @@ describe Carto::VisualizationsExportService2 do
 
     describe 'datasets' do
       before(:all) do
-        @sequel_user = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
+        @sequel_user = FactoryGirl.create(:valid_user, :private_tables, private_maps_enabled: true, table_quota: nil)
         @user = Carto::User.find(@sequel_user.id)
 
-        @sequel_user2 = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
+        @sequel_user2 = FactoryGirl.create(:valid_user, :private_tables, private_maps_enabled: true, table_quota: nil)
         @user2 = Carto::User.find(@sequel_user2.id)
+
+        @sequel_user_no_private_tables = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
+        @user_no_private_tables = Carto::User.find(@sequel_user_no_private_tables.id)
       end
 
       after(:all) do
@@ -1732,6 +1736,38 @@ describe Carto::VisualizationsExportService2 do
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 
         imported_viz.should be
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'keeps private privacy is private tables enabled' do
+        @table_visualization.update_attributes(privacy: 'private')
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Create user db table (destroyed above)
+        @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2,
+                                                                        imported_privacy: 'private')
+
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'converts to privacy public if private tables disabled' do
+        @table_visualization.update_attributes(privacy: 'private')
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Create user db table (destroyed above)
+        @user_no_private_tables.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user_no_private_tables, built_viz)
+
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user_no_private_tables,
+                                                                        imported_privacy: 'public')
+
         destroy_visualization(imported_viz.id)
       end
     end

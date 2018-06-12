@@ -1,12 +1,18 @@
 require 'json'
 require_dependency 'carto/export/layer_exporter'
+require_dependency 'carto/export/connector_configuration_exporter'
+
+# Not migrated
+# invitations -> temporary by nature
+# ldap_configurations -> not enabled in SaaS
 
 # Version History
 # 1.0.0: export organization metadata
 # 1.0.1: export password expiration
+# 1.0.2: export connector configurations
 module Carto
   module OrganizationMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.1'.freeze
+    CURRENT_VERSION = '1.0.2'.freeze
     EXPORTED_ORGANIZATION_ATTRIBUTES = [
       :id, :seats, :quota_in_bytes, :created_at, :updated_at, :name, :avatar_url, :owner_id, :website, :description,
       :display_name, :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota, :auth_token,
@@ -28,9 +34,10 @@ module Carto
   module OrganizationMetadataExportServiceImporter
     include OrganizationMetadataExportServiceConfiguration
     include LayerImporter
+    include ConnectorConfigurationImporter
 
     def build_organization_from_json_export(exported_json_string)
-      build_organization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_organization_from_hash_export(JSON.parse(exported_json_string, symbolize_names: true))
     end
 
     def build_organization_from_hash_export(exported_hash)
@@ -54,6 +61,10 @@ module Carto
       organization.notifications = exported_organization[:notifications].map do |notification|
         build_notification_from_hash(notification.symbolize_keys)
       end
+
+      organization.connector_configurations = build_connector_configurations_from_hash(
+        exported_organization[:connector_configurations]
+      )
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       organization.id = exported_organization[:id]
@@ -105,6 +116,7 @@ module Carto
   module OrganizationMetadataExportServiceExporter
     include OrganizationMetadataExportServiceConfiguration
     include LayerExporter
+    include ConnectorConfigurationExporter
 
     def export_organization_json_string(organization)
       export_organization_json_hash(organization).to_json
@@ -125,6 +137,9 @@ module Carto
       organization_hash[:assets] = organization.assets.map { |a| export_asset(a) }
       organization_hash[:groups] = organization.groups.map { |g| export_group(g) }
       organization_hash[:notifications] = organization.notifications.map { |n| export_notification(n) }
+      organization_hash[:connector_configurations] = organization.connector_configurations.map do |cc|
+        export_connector_configuration(cc)
+      end
 
       organization_hash
     end

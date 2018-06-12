@@ -190,6 +190,7 @@ module Carto
     def build_client_applications_from_hash(client_app_hash)
       return [] unless client_app_hash
 
+      # Restore tokens using AR so Sequel callbacks are not run
       client_app_hash[:oauth_tokens] = client_app_hash[:oauth_tokens].map { |t| Carto::OauthToken.new(t) }
       client_app_hash[:access_tokens] = client_app_hash[:access_tokens].map { |t| Carto::OauthToken.new(t) }
       [Carto::ClientApplication.new(client_app_hash)]
@@ -238,6 +239,7 @@ module Carto
         export_connector_configuration(cc)
       end
 
+      # Use Sequel models to export. Single table inheritance causes AR to try and create Sequel models -> fail.
       user_hash[:client_application] = export_client_application(::User[user.id].client_application)
 
       user_hash

@@ -190,11 +190,7 @@ module Carto
     def build_client_applications_from_hash(client_app_hash)
       return [] unless client_app_hash
 
-      # AR does not make differences between regular oauth tokens and access ones, so we need to clean to avoid dups
-      access_token_tokens = client_app_hash[:access_tokens].map { |t| t[:token] }
-      clean_oauth_tokens = client_app_hash[:oauth_tokens].reject { |t| access_token_tokens.include?(t[:token]) }
-
-      client_app_hash[:oauth_tokens] = clean_oauth_tokens.map { |token_hash| Carto::OauthToken.new(token_hash) }
+      client_app_hash[:oauth_tokens] = client_app_hash[:oauth_tokens].map { |t| Carto::OauthToken.new(t) }
       client_app_hash[:access_tokens] = client_app_hash[:access_tokens].map { |t| Carto::OauthToken.new(t) }
       [Carto::ClientApplication.new(client_app_hash)]
     end
@@ -249,6 +245,7 @@ module Carto
 
     def export_client_application(ca)
       return nil unless ca
+      a_t_tokens = ca.access_tokens.map(&:token)
       {
         name: ca.name,
         url: ca.url,
@@ -258,7 +255,7 @@ module Carto
         secret: ca.secret,
         created_at: ca.created_at,
         updated_at: ca.updated_at,
-        oauth_tokens: ca.oauth_tokens.map { |ot| export_oauth_token(ot) },
+        oauth_tokens: ca.oauth_tokens.reject {|t| a_t_tokens.include?(t.token) }.map { |ot| export_oauth_token(ot) },
         access_tokens: ca.access_tokens.map { |ot| export_oauth_token(ot) }
       }
     end

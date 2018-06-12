@@ -350,6 +350,17 @@ describe Carto::Api::UsersController do
       end
     end
 
+    it 'deletes the authenticated user even when locked' do
+      @user.update(state: 'locked')
+
+      payload = { deletion_password_confirmation: 'foobarbaz' }
+
+      delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
+        expect(response.status).to eq(200)
+        expect(Carto::User.exists?(@user.id)).to be_false
+      end
+    end
+
     context 'failures in deletion' do
       after(:each) do
         @user.destroy

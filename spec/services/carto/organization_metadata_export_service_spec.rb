@@ -129,7 +129,12 @@ describe Carto::OrganizationMetadataExportService do
         @organization.assets.each(&:delete)
         @organization.assets.clear
         @organization.users.flat_map(&:visualizations).each(&:destroy)
-        @organization.users.each(&:destroy)
+        @organization.users.each do |u|
+          sequel_user = ::User[u.id]
+          sequel_user.client_application.access_tokens.each(&:destroy)
+          sequel_user.client_application.destroy
+          u.destroy
+        end
         @organization.groups.each(&:destroy)
         @organization.groups.clear
         @organization.destroy

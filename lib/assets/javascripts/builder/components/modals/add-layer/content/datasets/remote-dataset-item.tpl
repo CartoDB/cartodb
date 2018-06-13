@@ -1,5 +1,4 @@
-<!-- is--<%- isRaster ? 'raster' : geometryType %>Dataset -->
-<div class="DatasetsList-itemCategory">
+<div class="DatasetsList-itemCategory is--<%- isRaster ? 'raster' : geometryType %>Dataset">
   <i data-title="Public dataset" class="CDB-IconFont CDB-IconFont-book DatasetsList-itemStatus <%- canImportDataset ? 'is-public' : 'is-banned' %>"></i>
 </div>
 <div class="ModalDataset-itemInfo">

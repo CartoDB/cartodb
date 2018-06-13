@@ -3,6 +3,7 @@
 module LoginHelper
 
   DEFAULT_BACKGROUND_COLOR = "#F9F9F9".freeze
+  ME_ENDPOINT_COOKIE = :_cartodb_base_url
 
   def background
     base_color = (@organization.present? && @organization.color.present?) ? @organization.color : DEFAULT_BACKGROUND_COLOR
@@ -57,9 +58,18 @@ module LoginHelper
     end
   end
 
+  def cdb_cookie(user)
+    cookies.permanent[ME_ENDPOINT_COOKIE] = {
+      value: CartoDB.base_url(user.username),
+      domain: Cartodb.config[:session_domain]
+    }
+  end
+
   def cdb_logout
     logout(CartoDB.extract_subdomain(request))
     logout
+
+    cookies.delete(ME_ENDPOINT_COOKIE)
 
     if env['warden']
       env['warden'].logout

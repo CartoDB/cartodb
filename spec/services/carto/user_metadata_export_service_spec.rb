@@ -830,7 +830,7 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_four) do
-    user_hash = full_export_one_zero_five[:user].except!(:synchronization_oauths).except!(:connector_configurations)
+    user_hash = full_export_one_zero_five[:user].except!(:synchronization_oauths, :connector_configurations)
     full_export[:user] = user_hash
     full_export
   end

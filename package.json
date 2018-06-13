@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.14-54-split-size-color",
+  "version": "4.12.21-54-split-size-color",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

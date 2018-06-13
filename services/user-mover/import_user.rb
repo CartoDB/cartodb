@@ -25,8 +25,6 @@ module CartoDB
         @logger = @options[:logger] || default_logger
         @@importjob_logger = @options[:import_job_logger]
 
-        @user_import_jobs = Array.new
-
         @start = Time.now
         @logger.debug "Starting import job with options: #{@options}"
 
@@ -255,7 +253,6 @@ module CartoDB
                             logger: @logger, data: @options[:data], metadata: @options[:metadata],
                             update_metadata: @options[:update_metadata])
           i.run!
-          @user_import_jobs << i
         end
       rescue => e
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
@@ -427,11 +424,6 @@ module CartoDB
       def rollback_metadata(file)
         @logger.info("Rolling back PostgreSQL metadata from #{file}..")
         run_file_metadata_postgres(file)
-      end
-
-      def remove_line?(line)
-        stripped = line.gsub(/(public|postgres|\"|\*)/, "").gsub(/\s{2,}/, "\s").gsub(/\,\s+/, ',').strip
-        (LEGACY_FUNCTIONS + LEGACY_ACLS).find { |l| stripped.scan(l).any? }
       end
 
       def clean_toc_file(file)
@@ -673,20 +665,6 @@ module CartoDB
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
           throw e
-        end
-      end
-
-      def update_metadata_org(target_dbhost)
-        @user_import_jobs.each do |instance|
-          instance.update_metadata_user(target_dbhost)
-        end
-      end
-
-      def update_metadata(target_dbhost = @target_dbhost)
-        if organization_import?
-          update_metadata_org(target_dbhost)
-        else
-          update_metadata_user(target_dbhost)
         end
       end
 

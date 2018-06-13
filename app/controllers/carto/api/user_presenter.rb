@@ -115,6 +115,7 @@ module Carto
           email: @user.email,
           name: @user.name,
           last_name: @user.last_name,
+          created_at: @user.created_at,
           username: @user.username,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),

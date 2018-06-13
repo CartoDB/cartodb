@@ -6,7 +6,7 @@
   <script>
     dataLayer = [{
       'userId': '<%= userId %>',
-      'userJobRole': '<%= userAccountType %>',
+      'userAccountType': '<%= userAccountType %>',
       'userSignUpDate': '<%= userCreatedAtInSeconds %>'
     }];
   </script>

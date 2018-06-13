@@ -14,13 +14,10 @@ module.exports = {
   },
   devtool: 'source-map',
   plugins: Object.keys(webpackFiles).map((entryName) => {
-    const staticConfig = webpackFiles[entryName];
-    staticConfig.page = entryName;
-
     return new HtmlWebpackPlugin({
       filename: path.resolve(__dirname, `../public/static/${entryName}/index.html`),
       template: path.resolve(__dirname, '../lib/assets/javascripts/dashboard/statics/index.jst.ejs'),
-      config: staticConfig
+      config: webpackFiles[entryName]
     });
   })
 };

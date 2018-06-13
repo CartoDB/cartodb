@@ -844,6 +844,57 @@ describe 'UserMigration' do
       user.api_keys.each(&:table_permissions_from_db) # to make sure DB can be queried without exceptions
       user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
     end
+
+    it 'changes privacy correctly while importing if user has private_tables_enabled = false' do
+      user_attributes = @carto_user.attributes
+      export = Carto::UserMigrationExport.create(
+        user: @carto_user,
+        export_metadata: true
+      )
+      @carto_user.private_tables_enabled = true
+      @carto_user.save!
+      table_vis = @carto_user.visualizations.find(&:canonical?)
+      table_vis.privacy = Carto::Visualization::PRIVACY_PRIVATE
+      table_vis.table.privacy = Carto::UserTable::PRIVACY_PRIVATE
+      table_vis.save!
+      table_vis.table.save
+      @carto_user.private_tables_enabled = false
+      @carto_user.save!
+      export.run_export
+
+      @carto_user.client_applications.each(&:destroy)
+      @master_api_key.destroy
+      @table.destroy
+      @map.destroy
+      @table_visualization.destroy
+      @visualization.destroy
+      @carto_user.destroy
+      @regular_api_key.destroy
+      drop_user_database(@user)
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+
+      import.stubs(:assert_organization_does_not_exist)
+      import.stubs(:assert_user_does_not_exist)
+      import.run_import
+
+      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+      user = Carto::User.find_by_username(user_attributes['username'])
+      vis = user.visualizations.find(&:canonical?)
+      vis.privacy.should eq 'public'
+      vis.table.privacy.should eq 1
+    end
   end
 
   include CartoDB::DataMover::Utils

@@ -526,12 +526,9 @@ describe SessionsController do
 
       it 'creates _cartodb_base_url cookie' do
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
-        response.status.should == 302
         response.cookies['_cartodb_base_url'].should eq CartoDB.base_url(@user.username)
       end
     end
-
-
 
     describe 'events' do
       # include HttpAuthenticationHelper

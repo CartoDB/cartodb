@@ -15,10 +15,6 @@ const entryPoints = require('./entryPoints');
 const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
 
 const rootDir = file => resolve(__dirname, '../../', file);
-const isVendor = (module, count) => {
-  const userRequest = module.userRequest;
-  return userRequest && userRequest.indexOf('node_modules') >= 0;
-};
 
 module.exports = env => {
   return {
@@ -35,32 +31,6 @@ module.exports = env => {
     },
     devtool: 'source-map',
     plugins: [
-      // Object.keys(entryPoints)
-      // .map(entry => new webpack.optimize.CommonsChunkPlugin({
-      //   name: `${entry}_vendor`,
-      //   chunks: [entry],
-      //   minChunks: isVendor
-      // }))
-      // .concat()
-      // new webpack.LoaderOptionsPlugin({
-      //   minimize: true
-      // }),
-
-      // Extract common chuncks from the 3 vendor files
-      // new webpack.optimize.CommonsChunkPlugin({
-      //   name: 'common_dashboard',
-      //   chunks: Object.keys(entryPoints).map(n => `${n}_vendor`),
-      //   minChunks: (module, count) => {
-      //     return count >= Object.keys(entryPoints).length && isVendor(module);
-      //   }
-      // }),
-
-      // Extract common chuncks from the 3 entry points
-      // new webpack.optimize.CommonsChunkPlugin({
-      //   children: true,
-      //   minChunks: Object.keys(entryPoints).length
-      // }),
-
       new webpack.ProvidePlugin({
         $: 'jquery',
         jQuery: 'jquery',
@@ -133,11 +103,19 @@ module.exports = env => {
       ],
       splitChunks: {
         cacheGroups: {
-          commons: {
-            name: 'commons',
+          common: {
             chunks: 'initial',
+            name: 'common',
             minChunks: 2,
-            minSize: 0
+            maxInitialRequests: 5, // The default limit is too small to showcase the effect
+            minSize: 0 // This is example is too small to create commons chunks
+          },
+          common_vendor: {
+            test: /node_modules/,
+            chunks: 'initial',
+            name: 'common_vendor',
+            priority: 10,
+            enforce: true
           }
         }
       }

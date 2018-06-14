@@ -2655,7 +2655,8 @@
           "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
-          "error": "There was an error fetching node schema..."
+          "error": "There was an error fetching node schema...",
+          "help": "The column from your dataset to be used for labels"          
         },
         "labels-font": "font",
         "labels-offset": "offset",

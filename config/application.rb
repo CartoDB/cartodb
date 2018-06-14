@@ -125,25 +125,15 @@ module CartoDB
 
       user_feed_deps.js
       user_feed.js
-      user_feed_vendor.js
       user_feed_new.css
-      user_feed_new_vendor.css
       api_keys_new.js
-      api_keys_new_vendor.js
       public_dashboard.js
-      public_dashboard_vendor.js
       public_table_new.js
-      public_table_new_vendor.js
       data_library_new.js
-      data_library_new_vendor.js
       mobile_apps.js
-      mobile_apps_vendor.js
       sessions.js
-      sessions_vendor.js
       confirmation.js
-      confirmation_vendor.js
       organization.js
-      organization_vendor.js
       common_dashboard.js
 
       tipsy.js
@@ -151,22 +141,18 @@ module CartoDB
       statsc.js
 
       builder.js
-      builder_vendor.js
       builder_embed.js
-      builder_embed_vendor.js
       dataset.js
-      dataset_vendor.js
       common.js
+      common_vendor.js
 
       deep_insights.css
       deep_insights_new.css
-      deep_insights_new_vendor.css
       cdb.css
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css
       common.css
       common_new.css
-      common_new_vendor.css
       old_common.css
       dashboard.css
       cartodb.css
@@ -175,7 +161,6 @@ module CartoDB
 
       common_editor3.css
       editor3.css
-      editor3_vendor.css
       builder_embed.css
 
       table.css
@@ -187,7 +172,6 @@ module CartoDB
       password_protected.css
       public_dashboard.css
       public_dashboard_new.css
-      public_dashboard_new_vendor.css
       public_map.css
       public_map_new.css
       embed_map.css

@@ -4,7 +4,7 @@ CARTO.js lets you create custom location intelligence applications that leverage
 
 ### Audience
 
-This documentation is designed for people familiar with JavaScript programming and object-oriented programming concepts. You should also be familiar with Leaflet from a user's point of view.
+This documentation is designed for people familiar with JavaScript programming and object-oriented programming concepts. You should also be familiar with [Leaflet](https://leafletjs.com/) from a developer's point of view.
 
 This conceptual documentation is designed to let you quickly start exploring and developing applications with the CARTO.js library. We also publish the [CARTO.js API Reference]({{site.cartojs_docs}}/reference/).
 
@@ -82,9 +82,9 @@ The easiest way to start learning about the CARTO.js library is to see a simple 
 Even in this simple example, there are a few things to note:
 
   - We declare the application as HTML5 using the `<!DOCTYPE html>` declaration.
-  - We create a `div` element named "map" to hold the map.
-  - We define a JavaScript function that creates a map in the `div`.
   - We load the CARTO.js library using a `script` tag.
+  - We create a `div` element named "map" to hold the map.
+  - We define the JavaScript that creates a map in the `div`.
 
 These steps are explained below.
 
@@ -153,7 +153,7 @@ In this example, we are using Leaflet to render the map:
 const map = L.map('map').setView([30, 0], 3);
 ```
 
-The common options for every map are: `center` and `zoom`.
+The common options for every map are: `center` and `zoom`. In this case, we are setting these with [Leaflet's setView method](https://leafletjs.com/reference-1.3.0.html#map-setview).
 
 #### Zoom Levels
 
@@ -170,4 +170,4 @@ If your code isn't working:
     - Ensure that the div element for the map has a height.
     - Refer to our [examples]({{site.cartojs_docs}}/examples/) for a reference implementation.
   - Use a JavaScript debugger to help identify problems. Chrome Developer Tools is a good one.
-  - Post questions to Stack Overflow. Guidelines on how to post great questions are available on the [support page]({{site.cartojs_docs}}/support/).
+  - Post questions to the [GIS Stack Exchange using the `CARTO` tag](https://gis.stackexchange.com/questions/tagged/carto). Guidelines on how to post great questions are available on the [support page]({{site.cartojs_docs}}/support/).

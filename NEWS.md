@@ -224,6 +224,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix create map / add layer button being disabled (#14061)
 * Fix layers list item border color (https://github.com/CartoDB/cartodb/pull/14002)
 * Remove padding to delete button in analyses (https://github.com/CartoDB/cartodb/pull/14001)
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)

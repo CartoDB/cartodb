@@ -132,7 +132,7 @@ module.exports = env => {
           common_vendor: {
             test: module => {
               const name = module.nameForCondition && module.nameForCondition();
-              if (isVendor(name) && isJavascript(name)) {
+              if (name && isVendor(name) && isJavascript(name)) {
                 return true;
               }
               for (const chunk of module.chunksIterable) {

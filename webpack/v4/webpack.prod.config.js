@@ -15,6 +15,8 @@ const entryPoints = require('./entryPoints');
 const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
 
 const rootDir = file => resolve(__dirname, '../../', file);
+const isVendor = name => name.indexOf('node_modules') >= 0;
+const isJavascript = name => name.endsWith('.js');
 
 module.exports = env => {
   return {
@@ -74,6 +76,8 @@ module.exports = env => {
         }
       ]),
 
+      // CSS-only entry points which generate an useless
+      // javascript file so we remove it after emitting the files
       new WebpackDeleteAfterEmit({
         globs: [
           `${version}/javascripts/common_new.js`,
@@ -81,7 +85,11 @@ module.exports = env => {
           `${version}/javascripts/deep_insights_new.js`,
           `${version}/javascripts/deep_insights_new.js.map`,
           `${version}/javascripts/public_map_new.js`,
-          `${version}/javascripts/public_map_new.js.map`
+          `${version}/javascripts/public_map_new.js.map`,
+          `${version}/javascripts/common_editor3.js`,
+          `${version}/javascripts/common_editor3.js.map`,
+          `${version}/javascripts/editor3.js`,
+          `${version}/javascripts/editor3.js.map`
         ]
       })
     ],
@@ -104,14 +112,36 @@ module.exports = env => {
       splitChunks: {
         cacheGroups: {
           common: {
+            test: module => {
+              if (module.nameForCondition && isJavascript(module.nameForCondition())) {
+                return true;
+              }
+              for (const chunk of module.chunksIterable) {
+                if (chunk.name && isJavascript(chunk.name)) {
+                  return true;
+                }
+              }
+              return false;
+            },
             chunks: 'initial',
             name: 'common',
             minChunks: 2,
-            maxInitialRequests: 5, // The default limit is too small to showcase the effect
-            minSize: 0 // This is example is too small to create commons chunks
+            maxInitialRequests: 5,
+            minSize: 0
           },
           common_vendor: {
-            test: /node_modules/,
+            test: module => {
+              const name = module.nameForCondition && module.nameForCondition();
+              if (isVendor(name) && isJavascript(name)) {
+                return true;
+              }
+              for (const chunk of module.chunksIterable) {
+                if (chunk.name && isVendor(chunk.name) && isJavascript(chunk.name)) {
+                  return true;
+                }
+              }
+              return false;
+            },
             chunks: 'initial',
             name: 'common_vendor',
             priority: 10,

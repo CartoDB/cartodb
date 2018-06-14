@@ -13,12 +13,18 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
 
 ### Bug fixes / enhancements
+* Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
+* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583#event-1673573190)
+* Send `Visited Private Page` event from Dashboard (#14041)
+* Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)
+* Fix Broken CTA in the 'Connect Dataset' modal (https://github.com/CartoDB/cartodb/issues/14036)
 * Fix `Create map` from data library https://github.com/CartoDB/cartodb/issues/14020#event-1655755501
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
 * Fix migration of users with invalid search_tweets.data_import_id (#13904)
 * Import / export synchronization oauths and connector configurations (#14003)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
+* User mover does not export user metadata if org metadata is not exported
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 
@@ -180,6 +186,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Force use a different password when password change ([Central#2223](https://github.com/CartoDB/cartodb-central#2223))
 * Limits V2
+  * Add rate limits for sql_copy ([CartoDB-platform#4394](https://github.com/CartoDB/cartodb-platform/issues/4394))
   * Add rate limits persistence (#13626)
   * Include rate limits in user migration (#13712)
   * Remove rate limits on user deletion (#13657)
@@ -655,6 +662,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Added specs for the migrated dashboard (#14037)
 * Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)
 * CARTO.js internal version is now called internal-carto.js (#13960)
 * Compress and pack static pages assets for production release (#13940)
@@ -1007,6 +1015,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Do not export local visualizations lacking a map
 * Do not export duplicated canonical visualizations
 * Add notifications to user migrator (#13844)
+* Better postgres functions deprecation matching
 * Export and import non-cartodb-managed named maps.
 * Keep import even if it fails importing visualizations (#13903)
 * Save Import when visualization import fails (#13984)

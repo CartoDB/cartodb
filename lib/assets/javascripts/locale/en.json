@@ -2571,6 +2571,7 @@
         "fill": {
           "size": "Change the %{type} size",
           "color": "Change the %{type} color",
+          "color-heatmap": "Change the heatmap's color scheme",
           "image": "Change the %{type} image",
           "fixed-tab": "A fixed color for every %{type}",
           "by-value-tab": "Vary each %{type}'s color by an attribute to create a category or classed %{type} map"

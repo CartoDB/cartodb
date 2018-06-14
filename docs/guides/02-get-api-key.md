@@ -1,6 +1,6 @@
 ## Get API Key
 
-To use the CARTO.js library, you must register your app project on the CARTO account and get an API key which you can add to your app or website.
+To use the CARTO.js library, you must register your project in your CARTO account and get an API key which you can add to your app or website.
 
 ### Quick guide to getting a key
 
@@ -55,6 +55,6 @@ For more information on using the CARTO Platform, see our [fundamentals]({{site.
 
 #### Troubleshooting authorization issues
 
-If your API key is malformed or supplies an invalid username, the CARTO.js library returns an HTTP 403 (Forbidden) error.
+If your API key is malformed or you supply an invalid username, the CARTO.js library returns an HTTP 403 (Forbidden) error.
 
 Alternatively, CARTO Enterprise customers have access to enterprise-level support through CARTO’s support representatives available at enterprise-support@carto.com.

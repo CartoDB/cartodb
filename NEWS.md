@@ -13,8 +13,9 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
 
 ### Bug fixes / enhancements
+* Redirect to login or fix URL if trying to access another user private pages (https://github.com/CartoDB/cartodb/pull/14013)
 * Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
-* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583#event-1673573190)
+* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583)
 * Send `Visited Private Page` event from Dashboard (#14041)
 * Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)
 * Fix Broken CTA in the 'Connect Dataset' modal (https://github.com/CartoDB/cartodb/issues/14036)
@@ -186,6 +187,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Force use a different password when password change ([Central#2223](https://github.com/CartoDB/cartodb-central#2223))
 * Limits V2
+  * Add rate limits for sql_copy ([CartoDB-platform#4394](https://github.com/CartoDB/cartodb-platform/issues/4394))
   * Add rate limits persistence (#13626)
   * Include rate limits in user migration (#13712)
   * Remove rate limits on user deletion (#13657)

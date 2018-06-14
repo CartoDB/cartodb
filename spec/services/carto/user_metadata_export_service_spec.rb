@@ -388,9 +388,10 @@ describe Carto::UserMetadataExportService do
 
   def expect_export_matches_rate_limit(exported_rate_limit, rate_limit)
     expect(exported_rate_limit).to be_nil && return unless rate_limit
-
     expect(exported_rate_limit[:id]).to eq rate_limit.id
     rate_limit.api_attributes.each do |k, v|
+      # versions older than 1.0.6 don't include sql_copy rate limits so avoid checking them
+      next if [:sql_copy_from, :sql_copy_to].include?(k) && !exported_rate_limit[:limits].key?(k)
       expect(exported_rate_limit[:limits][k]).to eq v
     end
   end
@@ -526,7 +527,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.5",
+      version: "1.0.6",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -697,7 +698,9 @@ describe Carto::UserMetadataExportService do
             sql_query_format: [0, 1, 2],
             sql_job_create: [0, 1, 2],
             sql_job_get: [0, 1, 2],
-            sql_job_delete: [0, 1, 2]
+            sql_job_delete: [0, 1, 2],
+            sql_copy_from: [0, 1, 2],
+            sql_copy_to: [0, 1, 2]
           }
         },
         search_tweets: [
@@ -825,7 +828,9 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export_one_zero_five) do
     user_hash = full_export[:user].except!(:client_application)
+    limits_hash = full_export[:user][:rate_limit][:limits]
     full_export[:user] = user_hash
+    full_export[:user][:rate_limit][:limits] = limits_hash.except!(:sql_copy_from).except!(:sql_copy_to)
     full_export
   end
 

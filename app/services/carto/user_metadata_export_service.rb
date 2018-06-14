@@ -17,9 +17,10 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.3: export rate limits
 # 1.0.4: company and phone in users table
 # 1.0.5: synchronization_oauths and connector configurations
+# 1.0.6: sql_copy rate_limits
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.5'.freeze
+    CURRENT_VERSION = '1.0.6'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,

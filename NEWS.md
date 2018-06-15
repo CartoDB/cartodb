@@ -14,8 +14,10 @@ sudo make install
 
 ### Bug fixes / enhancements
 * Show errors coming from QueryRowsCollection in Dataset/Builder (https://github.com/CartoDB/cartodb/issues/14066)
+* Export JPG image as JPEG format instead of PNG (https://github.com/CartoDB/cartodb/issues/14042)
+* Redirect to login or fix URL if trying to access another user private pages (https://github.com/CartoDB/cartodb/pull/14013)
 * Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
-* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583#event-1673573190)
+* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583)
 * Send `Visited Private Page` event from Dashboard (#14041)
 * Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)
 * Fix Broken CTA in the 'Connect Dataset' modal (https://github.com/CartoDB/cartodb/issues/14036)
@@ -27,6 +29,9 @@ sudo make install
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 * User mover does not export user metadata if org metadata is not exported
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
+
+### Internals
+* Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
 
 
 4.12.x (2018-05-24)

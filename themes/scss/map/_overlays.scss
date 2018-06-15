@@ -230,7 +230,7 @@ $maxLegendContainerHeight: 300px;
 .CDB-LayerLegends {
   margin-top: 0;
 
-  + .CDB-LayerLegends {
+  &:not(:empty) + &:not(:empty) {
     margin-top: 12px;
   }
 }

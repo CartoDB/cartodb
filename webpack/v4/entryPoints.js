@@ -86,6 +86,8 @@ module.exports = {
 
   confirmation: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
 
+  lockout: rootDir('lib/assets/javascripts/dashboard/lockout.js'),
+
   organization: [
     rootDir('lib/assets/javascripts/dashboard/organization.js'),
     rootDir('assets/stylesheets/plugins/tagit.scss'),

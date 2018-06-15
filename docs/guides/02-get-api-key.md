@@ -57,4 +57,4 @@ For more information on using the CARTO Platform, see our [fundamentals]({{site.
 
 If your API key is malformed or you supply an invalid username, the CARTO.js library returns an HTTP 403 (Forbidden) error.
 
-Alternatively, CARTO Enterprise customers have access to enterprise-level support through CARTO’s support representatives available at enterprise-support@carto.com.
+CARTO Enterprise customers have access to enterprise-level support through CARTO’s support representatives available at enterprise-support@carto.com.

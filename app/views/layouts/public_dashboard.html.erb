@@ -24,7 +24,7 @@
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
     <% if @has_new_dashboard %>
-      <%= stylesheet_link_tag 'deep_insights_new', 'deep_insights_new_vendor', 'common_new', 'common_new_vendor', 'public_dashboard_new' %>
+      <%= stylesheet_link_tag 'deep_insights_new', 'common_new', 'public_dashboard_new' %>
     <% else %>
       <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard' %>
     <% end %>
@@ -76,7 +76,7 @@
     <% end %>
 
     <% if @has_new_dashboard %>
-      <%= javascript_include_tag 'common_dashboard.js', 'public_dashboard_new_vendor', 'public_dashboard_new' %>
+      <%= javascript_include_tag 'common', 'common_vendor', 'public_dashboard_new' %>
     <% else %>
       <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <% end %>

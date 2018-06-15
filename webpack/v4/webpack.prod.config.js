@@ -107,7 +107,11 @@ module.exports = env => {
             }
           }
         }),
-        new OptimizeCSSAssetsPlugin({})
+        new OptimizeCSSAssetsPlugin({
+          cssProcessorOptions: {
+            zindex: false
+          }
+        })
       ],
       splitChunks: {
         cacheGroups: {

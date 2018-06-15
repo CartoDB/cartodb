@@ -96,7 +96,7 @@ module.exports = env => {
     optimization: {
       minimizer: [
         new UglifyJsPlugin({
-          cache: false,
+          cache: true,
           parallel: true,
           uglifyOptions: {
             sourceMap: true,

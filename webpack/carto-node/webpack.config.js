@@ -53,7 +53,7 @@ const config = {
             beautify: false
           }
         }
-      }),
+      })
     ]
   }
 };

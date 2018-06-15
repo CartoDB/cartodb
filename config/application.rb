@@ -129,8 +129,6 @@ module CartoDB
       api_keys_new.js
       public_dashboard.js
       public_table_new.js
-      data_library_new.js
-      mobile_apps.js
       sessions.js
       confirmation.js
       organization.js

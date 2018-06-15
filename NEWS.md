@@ -353,6 +353,7 @@ ion for time-series (#12670)
 * Submit form with Enter key in the Add layer modal > Connect dataset tab (#13441)
 * Add routing to analyses nodes (#13364)
 * Fix organization signup page not working on subdomainless #13012
+* Deletes redis metadata after org destruction (#13687)
 * Fix publish modal in settings view (#13418)
 * Improve onboarding for when user adds an empty layer (#11876)
 * Don't show the publish modal when the user clicks on the privacy button (#13366)

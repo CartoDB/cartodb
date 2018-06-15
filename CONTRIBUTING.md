@@ -2,7 +2,7 @@ The development tracker for CartoDB is on GitHub:
 http://github.com/cartodb/cartodb
 
 Bug fixes are best reported as pull requests over there.
-Features are best discussed on the mailing list:  
+Features are best discussed on the mailing list:
 https://groups.google.com/d/forum/cartodb
 
 ---
@@ -39,22 +39,19 @@ The frontend is really standalone code, but is integrated with/served by the Rai
 
 ## CSS
 
-We use [SASS](http://sass-lang.com/), with [.scss](http://www.thesassway.com/editorial/sass-vs-scss-which-syntax-is-better) format, which are located at ```app/assets/stylesheets```. [Grunt](http://gruntjs.com/) is used to compile the files into ```.css``` files, instead of the default Sprockets pipeline that Rails provide.
+We use [SASS](http://sass-lang.com/), with [.scss](http://www.thesassway.com/editorial/sass-vs-scss-which-syntax-is-better) format, which are located at ```assets/stylesheets```. [Webpack](https://webpack.js.org/) is used to compile the files into ```.css``` files.
 
 See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 
-Also CartoDB makes use of a linter machine for checking possible errors in those stylesheets.
-Rules are specified in the [scss-style.yml](scss-style.yml) file. Once a new Pull Request is started,
-[Hound](https://houndci.com/) application will check those SCSS changes for warnings.
+Also CARTO makes use of a linter machine for checking possible errors in those stylesheets. Rules are specified in the [scss-style.yml](.stylelintrc) file.
 
 ## JS
 
-CartoDB is built on top of [CARTO.js](https://github.com/CartoDB/carto.js),
-which in turns depends on some common libraries, in particular worth mentioning:
+CARTO is built on top of [CARTO.js](https://github.com/CartoDB/carto.js), which in turns depends on some common libraries, in particular worth mentioning:
 
- - [BackboneJS 0.9.2](https://cdn.rawgit.com/jashkenas/backbone/0.9.2/index.html).
- - [jQuery 1.7.2](http://api.jquery.com/category/version/1.7/)
- - [underscore.js 1.4.4](https://cdn.rawgit.com/jashkenas/underscore/1.4.4/index.html)
+ - [BackboneJS 1.2.3](https://cdn.rawgit.com/jashkenas/backbone/1.2.3/index.html).
+ - [jQuery 2.1.4](https://api.jquery.com/category/version/1.12-2.2/)
+ - [Underscore.js 1.8.3](https://cdn.rawgit.com/jashkenas/underscore/1.8.3/index.html)
 
 Source code is located at `lib/assets/javascripts`, dependencies at `vendor/assets/javascripts`.
 
@@ -76,8 +73,7 @@ Follow these steps to update to get latest changes:
 ### Writing & running tests
 
 We use
- - [Jasmine 2.1](jasmine.github.io/2.1/introduction.html) as test framework
- - [SinonJS 1.3.4](sinonjs.org) for test spies/stubs/mocks when Jasmine spies isn't good enough
+ - [Jasmine 2.5.2](jasmine.github.io/2.5/introduction.html) as test framework
 
 There are two test suites: one for the old Editor and one for Builder.
 
@@ -153,24 +149,21 @@ If you want to run simultaneously the application and the specs generation follo
 
 If you only want to run a subset of tests the easiest and fastest way is to use [focused specs](jasmine.github.io/2.1/focused_specs.html), but you can also append  `?spec=str-matching-a-describe` to test URL, or use [--filter flag](https://github.com/gruntjs/grunt-contrib-jasmine#filtering-specs) if running tests in a terminal.
 
-## Grunt
+## Running the project
 
-We use [Grunt](http://gruntjs.com/) to automate build tasks related to both CSS and JS.
+We use [Webpack](https://webpack.js.org/) to automate build tasks related to both CSS and JS.
 
 We use v6.9.2 of [node](http://nodejs.org/) (we recommend to use [NVM](https://github.com/creationix/nvm)).
 
 Install dependencies using a normal npm install as such:
 ```bash
 npm install
-npm install -g grunt-cli
 ```
 
-Run `grunt availabletasks` to see available tasks.
-
-First time starting to work you need to run `grunt dev`, to build all necessary frontend assets (will be written to `public/assets/:version`).
+Then you can run the project with:
 
 ```bash
-grunt dev
+npm start
 ```
 
 That enables CSS and JS watchers for rebuilding bundles automatically upon changes.
@@ -184,6 +177,8 @@ That enables CSS and JS watchers for rebuilding bundles automatically upon chang
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
+
+See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 
 ## Building static pages
 

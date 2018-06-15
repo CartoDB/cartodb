@@ -265,15 +265,11 @@ module.exports = function (grunt) {
     }
   });
 
-  // TODO: migrate mixins to postcss
   grunt.registerTask('css', [
     'copy:vendor',
     'copy:app',
     'copy:css_cartodb',
     'compass',
-    'copy:css_vendor_builder',
-    'copy:css_builder',
-    'copy:css_dashboard',
     'sass',
     'concat:css'
   ]);
@@ -320,42 +316,30 @@ module.exports = function (grunt) {
     'config'
   ]);
 
-  grunt.registerTask('pre', [
+  grunt.registerTask('dev-editor', [
     'beforeDefault',
     'js_editor',
     'css',
     'manifest'
   ]);
 
-  registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
-  registerCmdTask('npm-build-dashboard', {cmd: 'npm', args: ['run', 'build:dashboard']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
-  registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
 
   /**
    * `grunt dev`
    */
 
-  grunt.registerTask('dev', [
-    'npm-carto-node',
-    'pre',
-    'npm-build-dashboard',
+  grunt.registerTask('editor', [
+    'dev-editor',
     'npm-start'
   ]);
 
-  grunt.registerTask('dashboard', [
-    'beforeDefault',
-    'css',
-    'manifest',
-    'npm-dashboard'
-  ]);
-
   grunt.registerTask('default', [
-    'pre',
-    'npm-dev'
+    'dev-editor',
+    'npm-start'
   ]);
 
   grunt.registerTask('lint', [
@@ -371,15 +355,18 @@ module.exports = function (grunt) {
     'uglify'
   ]);
 
-  grunt.registerTask('build', [
-    'npm-carto-node',
-    // 'pre',
-    // 'copy:js',
-    // 'exorcise',
-    // 'uglify',
-    'npm-build',
+  // -- BUILD TASKS
+
+  grunt.registerTask('build', 'build editor, builder, dashboard and static pages', [
+    'build-editor',
     'build-static',
-    'npm-build-dashboard'
+    'npm-build'
+  ]);
+
+  grunt.registerTask('build-editor', 'generate editor css and javasript files', [
+    'dev-editor',
+    'exorcise',
+    'uglify'
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [

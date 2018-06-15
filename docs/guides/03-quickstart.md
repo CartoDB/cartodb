@@ -2,7 +2,7 @@
 
 CARTO.js lets you create custom location intelligence applications that leverage the power of the **[CARTO Engine](https://carto.com/pricing/engine/)** ecosystem.
 
-This document details the CARTO.js v4. To update your v3 apps, please consult the [Upgrade Considerations]({{site.cartojs_docs}}/guides/upgrade-considerations/).
+This document details ARTO.js v4. To update your v3 apps, please consult the [Upgrade Considerations]({{site.cartojs_docs}}/guides/upgrade-considerations/).
 
 ### About this Guide
 

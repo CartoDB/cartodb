@@ -13,6 +13,7 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
 
 ### Bug fixes / enhancements
+* Show errors coming from QueryRowsCollection in Dataset/Builder (https://github.com/CartoDB/cartodb/issues/14066)
 * Export JPG image as JPEG format instead of PNG (https://github.com/CartoDB/cartodb/issues/14042)
 * Redirect to login or fix URL if trying to access another user private pages (https://github.com/CartoDB/cartodb/pull/14013)
 * Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)

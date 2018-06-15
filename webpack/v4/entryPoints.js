@@ -149,6 +149,13 @@ module.exports = {
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
+
+  password_protected: [
+    rootDir('assets/stylesheets/public/password_protected.scss'),
+    rootDir('node_modules/cartoassets/src/scss/entry.scss')
+  ],
+
   dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/dataset.js'),
+
   builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js')
 };

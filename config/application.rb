@@ -132,7 +132,6 @@ module CartoDB
       sessions.js
       confirmation.js
       organization.js
-      common_dashboard.js
 
       tipsy.js
       modernizr.js

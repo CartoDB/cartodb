@@ -124,16 +124,12 @@ To load the Maps JavaScript API, use a script tag like the one in the following 
 <script src="https://libs.cartocdn.com/carto.js/v4.0.8/carto.min.js"></script>
 ```
 
-The URL contained in the script tag is the location of a JavaScript file that loads all of the symbols and definitions you need for using the CARTO.js library. This script tag is required. We are using the minified version of the library.
+The URL contained in the script tag is the location of a JavaScript file that loads all of the code you need for using the CARTO.js library. This script tag is required. We are using the minified version of the library.
 
 #### HTTPS or HTTP
 We think security on the web is pretty important, and recommend using HTTPS whenever possible. As part of our efforts to make the web more secure, we've made all of the CARTO components available over HTTPS. Using HTTPS encryption makes your site more secure, and more resistant to snooping or tampering.
 
 We recommend loading the CARTO.js library over HTTPS using the <script> tag provided above.
-
-#### Libraries
-
-When loading the CARTO.js library via the URL you may optionally load additional libraries through use of the libraries URL parameter. Libraries are modules of code that provide additional functionality to the main Maps JavaScript API but are not loaded unless you specifically request them.
 
 ### Map DOM Elements
 

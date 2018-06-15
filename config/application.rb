@@ -132,6 +132,7 @@ module CartoDB
       sessions.js
       confirmation.js
       organization.js
+      lockout.js
 
       tipsy.js
       modernizr.js

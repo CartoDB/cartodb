@@ -9,7 +9,7 @@
 
 <%= content_for(:css) do %>
   <% if @has_new_dashboard %>
-    <%= stylesheet_link_tag 'common_new', 'common_new_vendor', 'public_table_new', 'public_table_new_vendor', 'public_map_new' %>
+    <%= stylesheet_link_tag 'common_new', 'public_table_new', 'public_map_new' %>
   <% else %>
     <%= stylesheet_link_tag 'cartodb', 'common', 'public_table', 'public_map' %>
   <% end %>
@@ -21,7 +21,7 @@
   <% end %>
 
   <% if @has_new_dashboard %>
-    <%= javascript_include_tag 'common_dashboard.js', 'public_table_new_vendor.js', 'public_table_new.js' %>
+    <%= javascript_include_tag 'common', 'common_vendor', 'public_table_new' %>
   <% else %>
     <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
   <% end %>

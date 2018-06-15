@@ -1,7 +1,7 @@
 <% content_for :title do %><%= @organization.name %> sign up<% end %>
 
 <% content_for :js do %>
-  <%= javascript_include_tag 'common_dashboard', 'sessions_vendor', 'sessions' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message', locals: { error_message: @organization.auth_username_password_enabled ? nil : model_errors(@user) } %>

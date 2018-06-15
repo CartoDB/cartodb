@@ -13,5 +13,5 @@
 </h2>
 
 <% if (showLegends) { %>
-<div class="Legends js-legends u-tSpace-xl"></div>
+<div class="Legends js-legends"></div>
 <% } %>

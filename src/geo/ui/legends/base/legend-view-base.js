@@ -6,7 +6,7 @@ var ImageLoaderView = require('./img-loader-view');
 
 var LegendViewBase = Backbone.View.extend({
 
-  className: 'CDB-Legend-item',
+  className: 'CDB-Legend-item u-tSpace-xl u-clearfix',
 
   initialize: function (opts) {
     this._placeholderTemplate = opts.placeholderTemplate;

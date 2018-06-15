@@ -365,6 +365,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build-editor', 'generate editor css and javasript files', [
     'dev-editor',
+    'copy:js',
     'exorcise',
     'uglify'
   ]);

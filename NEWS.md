@@ -29,6 +29,9 @@ sudo make install
 * User mover does not export user metadata if org metadata is not exported
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
+### Internals
+* Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
+
 
 4.12.x (2018-05-24)
 ---

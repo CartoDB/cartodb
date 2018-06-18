@@ -40,7 +40,8 @@ module CartoDB
           index_statements = @table_setup.generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
-          import_cleanup(user.database_schema, result.table_name)
+          # import_cleanup(user.database_schema, result.table_name)
+          enforce_valid_cartodb_id(table_name)
           @table_setup.cartodbfy(result.table_name)
           @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result)
@@ -93,6 +94,11 @@ module CartoDB
                               result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
         raise exception
+      end
+
+      def enforce_valid_cartodb_id(table_name)
+        table = Carto::UserTable.find(user.tables.where(name: table_name).first.id).service
+        table.import_cleanup
       end
 
       def setup_table(table_name, geo_type)

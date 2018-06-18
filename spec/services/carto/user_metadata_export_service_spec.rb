@@ -134,6 +134,7 @@ describe Carto::UserMetadataExportService do
           st.destroy
         end
       end
+      ClientApplication.where(user_id: @user.id).each(&:destroy)
 
       @user.destroy if @user
     end
@@ -340,7 +341,7 @@ describe Carto::UserMetadataExportService do
     end
 
     expect_export_matches_rate_limit(export[:rate_limit], user.rate_limit)
-    expect_export_matches_client_application(export[:client_application], ::User[user.id].client_application)
+    expect_export_matches_client_application(export[:client_application], ::User.find(id: user.id).client_application)
   end
 
   def expect_export_matches_layer(exported_layer, layer)

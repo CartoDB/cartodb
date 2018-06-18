@@ -171,6 +171,9 @@
   "scripts": {
     "ci": "npm run lint:css && grunt test",
     "test": "grunt test",
+    "test:builder": "grunt test:browser:builder",
+    "test:dashboard": "grunt test:browser:dashboard",
+    "test:editor": "grunt affected_editor_specs",
     "lint": "eslint .",
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
@@ -187,6 +190,7 @@
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "npm run carto-node && npm run build:static && npm run dev",
     "dev": "webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
+    "dev:editor": "grunt editor",
     "dev:static": "webpack --progress --watch --config webpack/webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
   }

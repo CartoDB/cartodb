@@ -13,17 +13,27 @@
     </p>
   </div>
 
-  <% if (passwordNeeded && !isLoading) { %>
+  <% if (passwordNeeded) { %>
     <div class="CDB-Text Dialog-body">
       <div class="Form-row Form-row--centered has-label">
         <div class="Form-rowLabel">
           <label class="Form-label">Your password</label>
         </div>
         <div class="Form-rowData">
-          <input type="password" id="deletion_password_confirmation" name="deletion_password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
+          <input
+            type="password"
+            id="deletion_password_confirmation"
+            name="deletion_password_confirmation"
+            class="CDB-InputText CDB-Text Form-input Form-input--long <%- isLoading ? 'is-disabled' : '' %>"
+            value=""
+          />
         </div>
       </div>
     </div>
+  <% } %>
+
+  <% if (error) { %>
+    <p class="CDB-Text CDB-Size-medium u-errorTextColor u-flex u-justifyCenter"><%- error %></p>
   <% } %>
 
   <div class="Dialog-footer u-inner">

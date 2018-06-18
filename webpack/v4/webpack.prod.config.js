@@ -96,7 +96,7 @@ module.exports = env => {
     optimization: {
       minimizer: [
         new UglifyJsPlugin({
-          cache: true,
+          cache: false,
           parallel: true,
           uglifyOptions: {
             sourceMap: true,
@@ -205,6 +205,7 @@ module.exports = env => {
             rootDir('node_modules/tangram-cartocss'),
             rootDir('node_modules/tangram.cartodb'),
             rootDir('lib/assets/javascripts/carto-node'),
+            rootDir('lib/assets/javascripts/builder'),
             rootDir('lib/assets/javascripts/dashboard')
           ],
           options: {

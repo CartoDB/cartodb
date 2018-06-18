@@ -76,10 +76,14 @@ module Carto
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
-      user.client_applications.first.access_tokens.each do |t|
-        # AR does not know about this, so it needs to be fixed
-        t.update_column(:type, 'AccessToken')
-        AccessToken[t.id].after_save
+
+      client_application = user.client_applications.first
+      if client_application
+        client_application.access_tokens.each do |t|
+          # AR does not know about this, so it needs to be fixed
+          t.update_column(:type, 'AccessToken')
+          AccessToken[t.id].after_save
+        end
       end
     end
 

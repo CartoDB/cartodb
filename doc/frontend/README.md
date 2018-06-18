@@ -25,12 +25,12 @@ npm start
 
 That enables CSS and JS watchers for rebuilding bundles automatically upon changes.
 
-**Note!** Make sure `config/app_config.yml` don't contain the `app_assets` configuration, i.e.:
+**Note!** Make sure `config/app_config.yml` doesn't contain the `app_assets` configuration, i.e.:
 
 ```ruby
 # Make sure the following lines are removed, or commented like this:
-#app_assets: 
-#  asset_host: '//cartodb-libs.global.ssl.fastly.net/cartodbui'
+# app_assets: 
+#   asset_host: '//cartodb-libs.global.ssl.fastly.net/cartodbui'
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
@@ -41,15 +41,15 @@ This is a list of available tasks to run:
 
 | Task                           | Description
 | ---------                      | ---
-| `npm start`                    | Compiles `carto-node`, the static pages and watchs Builder and Dashboard
+| `npm start`                    | Compiles `carto-node`, the static pages and watches Builder and Dashboard
 | `npm dev`                      | Runs webpack for Builder and Dashboard
 | `npm dev:static`               | Runs webpack for static pages
 | `npm build`                    | Create production builds for Builder and Dashboard
 | `npm build:static`             | Create production builds for static pages
 | `npm carto-node`               | Create production builds for `carto-node`
-| `npm test`                     | Run all test suits
-| `npm test:builder`             | Run and watch builder test suits
-| `npm test:dashboard`           | Run and watch dashboard test suits
+| `npm test`                     | Run all test suites
+| `npm test:builder`             | Run and watch builder test suites
+| `npm test:dashboard`           | Run and watch dashboard test suites
 | `npm lint`                     | Runs the Javascript linter
 | `npm lint:fix`                 | Runs the Javascript linter with the `--fix` flag
 | `npm lint:css`                 | Runs the CSS linter
@@ -93,8 +93,9 @@ We use dangling underscores to mark a method as "private", so we know it's only 
 
 ### Backbone events
 
-To keep the code organised we initialise all events in the `_initBinds` function, which is usually called in the render.
-When using on or bind methods, we have to use `add_related_model` so when the view is removed, the binding is removed too. We won't need to do it if we're using `listenTo`.
+To keep the code organised we initialise all events in the `_initBinds` function, which is usually called in the `constructor`.
+
+When using `on` or `bind` methods, we have to use `add_related_model` so when the view is removed, the binding is removed too. We won't need to do it if we're using `listenTo` or the model is `this.model`.
 
 ```js
 // Example with listenTo
@@ -233,9 +234,7 @@ npm run test:builder --match=dropdown
 
 After building the whole suite for the first time, a web server will be started on port 8088 and the spec runner webpage will show up. If you need to use a different port, change the port & URL values on the [connect task](lib/build/tasks/connect.js)
 
-The process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass again the tests.
-
-By default we check the current branch changes against master branch and only build the specs affected by those changes.
+The process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass the tests again.
 
 If you only want to run a subset of tests the easiest and fastest way is to use [focused specs](jasmine.github.io/2.1/focused_specs.html), but you can also append  `?spec=str-matching-a-describe` to test URL, or use [--filter flag](https://github.com/gruntjs/grunt-contrib-jasmine#filtering-specs) if running tests in a terminal.
 
@@ -246,8 +245,6 @@ There are some views that can be served from a static file in `public/static/` d
 ```bash
 npm run build:static
 ```
-
-Don't forget to check-in the resulting static files.
 
 # Carto v3
 
@@ -275,14 +272,14 @@ grunt editor_specs
 
 After the building process finish, a webpage will show up with a link to the Jasmine page with all the specs. The URL of this page is `http://localhost:8089/_SpecRunner.html`
 
-Then, the process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass again the tests.
+Then, the process will watch changes in the codebase and will regenerate the specs as needed. Just refresh the Jasmine page to pass the tests again.
 
 **Run specs and regular codebase simultaneously**
 
 If you want to run simultaneously the application and the specs generation follow these steps:
 
-1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt dev`. This will build the application assets and will watch for changes.
+1. Open a terminal with Node v6.9.2 (use nvm) and run `grunt editor`. This will build the application assets and will watch for changes.
 
 2. Open a second terminal and run `grunt affected_editor_specs`.
 
-3. That's it. When you change any Builder Javascript file `grunt dev` will build the application bundle and `grunt affected_editor_specs` will build the specs.
+3. That's it. When you change any Builder Javascript file `grunt editor` will build the application bundle and `grunt affected_editor_specs` will build the specs.

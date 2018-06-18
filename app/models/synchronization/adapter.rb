@@ -9,6 +9,7 @@ module CartoDB
       DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze
       OVERWRITE_ERROR = 2013
+      THE_GEOM_WEBMERCATOR = :the_geom_webmercator
 
       attr_accessor :table
 
@@ -40,8 +41,8 @@ module CartoDB
           index_statements = @table_setup.generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
-          # import_cleanup(user.database_schema, result.table_name)
           enforce_valid_cartodb_id(table_name)
+          import_cleanup(user.database_schema, result.table_name)
           @table_setup.cartodbfy(result.table_name)
           @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result)
@@ -197,16 +198,17 @@ module CartoDB
           # In that case:
           #  - If cartodb_id already exists, remove ogc_fid
           #  - If cartodb_id does not exist, treat this field as the auxiliary column
-          aux_cartodb_id_column = user_database[%Q{
-            SELECT a.attname, t.typname
-            FROM pg_attribute a, pg_type t
-            WHERE attrelid = '#{qualified_table_name}'::regclass
-            AND (a.attname = 'ogc_fid' OR a.attname = 'gid')
-            AND a.atttypid = t.oid
-            AND a.attstattarget < 0
-            LIMIT 1
-          }].first
-          aux_cartodb_id_column = aux_cartodb_id_column[:attname] unless aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = [:ogc_fid, :gid].find { |col| valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col) }
+          # aux_cartodb_id_column = user_database[%Q{
+          #   SELECT a.attname, t.typname
+          #   FROM pg_attribute a, pg_type t
+          #   WHERE attrelid = '#{qualified_table_name}'::regclass
+          #   AND (a.attname = 'ogc_fid' OR a.attname = 'gid')
+          #   AND a.atttypid = t.oid
+          #   AND a.attstattarget < 0
+          #   LIMIT 1
+          # }].first
+          # aux_cartodb_id_column = aux_cartodb_id_column[:attname] unless aux_cartodb_id_column.nil?
 
           # Remove primary key
           existing_pk = user_database[%Q{
@@ -319,6 +321,53 @@ module CartoDB
       end
 
       private
+
+      def valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col_name)
+        return false unless column_names(user, table_name).include?(col_name)
+        user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
+          return db["SELECT 1 FROM #{qualified_table_name} WHERE #{col_name} IS NULL LIMIT 1"].first.nil?
+        end
+      end
+
+      def column_names(user, table_name)
+        schema(user, table_name).map(&:first)
+      end
+
+      def schema(user, table_name, options = {})
+        first_columns     = []
+        middle_columns    = []
+        last_columns      = []
+        user.in_database.schema(table_name, options.slice(:reload).merge(schema: user.database_schema)).each do |column|
+          next if column[0] == THE_GEOM_WEBMERCATOR
+
+          col_db_type = column[1][:db_type].starts_with?('geometry') ? 'geometry' : column[1][:db_type]
+          col = [
+            column[0],
+            # Default/unset or set to true means we want cartodb types
+            (options.include?(:cartodb_types) && options[:cartodb_types] == false ? col_db_type : col_db_type.convert_to_cartodb_type),
+            col_db_type == 'geometry' ? 'geometry' : nil,
+            col_db_type == 'geometry' ? 'geometry' : nil
+          ].compact
+
+          # Make sensible sorting for UI
+          case column[0]
+            when :cartodb_id
+              first_columns.insert(0,col)
+            when :the_geom
+              first_columns.insert(1,col)
+            when :created_at, :updated_at
+              last_columns.insert(-1,col)
+            else
+              middle_columns << col
+          end
+        end
+
+        # sort middle columns alphabetically
+        middle_columns.sort! {|x,y| x[0].to_s <=> y[0].to_s}
+
+        # group columns together and return
+        (first_columns + middle_columns + last_columns).compact
+      end
 
       attr_reader :table_name, :runner, :database, :user
     end

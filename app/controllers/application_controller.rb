@@ -40,6 +40,17 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  Warden::Manager.after_authentication do |user,auth,opts|
+    auth.cookies.permanent[:_cartodb_base_url] = {
+      value: CartoDB.base_url(user.username),
+      domain: Cartodb.config[:session_domain]
+    }
+  end
+
+  Warden::Manager.before_logout do |user,auth,opts|
+    auth.cookies.delete(:_cartodb_base_url)
+  end
+
   def handle_unverified_request
     render_403
   end

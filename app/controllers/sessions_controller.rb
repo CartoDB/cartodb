@@ -74,7 +74,6 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    cdb_cookie(user)
     redirect_to session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
   end
 

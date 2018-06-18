@@ -171,6 +171,8 @@
   "scripts": {
     "ci": "npm run lint:css && grunt test",
     "test": "grunt test",
+    "test:builder": "grunt test:browser:builder",
+    "test:dashboard": "grunt test:browser:dashboard",
     "lint": "eslint .",
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",

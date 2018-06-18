@@ -787,41 +787,41 @@ describe Carto::UserMetadataExportService do
             max_rows: 100000,
             provider_name: @connector_provider.name
           }
-        ]
-      },
-      client_application: {
-        name: 'Dummy Application',
-        url: 'http://somewhere.es',
-        support_url: 'http://somewhere.es/support',
-        callback_url: nil,
-        key: "crjNXIU3p8xKcoFMuX5eb10xDwK71BP446ToBRnP",
-        secret: "CH3M9gcd9BhLu4ukAg8TPruN0W5zsP4OJ0BQOdtv",
-        created_at: "2018-06-08T15:00:45+00:00",
-        updated_at: "2018-06-08T15:00:45+00:00",
-        oauth_tokens: [{
-          token: "oauth_token",
-          secret: "oauth_secret",
-          callback_url: "http//callback.com",
-          verifier: "v1",
-          scope: nil,
-          authorized_at: "2018-06-11T14:31:46+00:00",
-          invalidated_at: "2018-06-11T14:31:46+00:00",
-          valid_to: "2018-06-11T14:31:46+00:00",
-          created_at: "2018-06-11T14:31:46+00:00",
-          updated_at: "2018-06-11T14:31:46+00:00"
-        }],
-        access_tokens: [{
-          token: "access_token",
-          secret: "access_secret",
-          callback_url: "http://callback2",
-          verifier: "v2",
-          scope: nil,
-          authorized_at: "2018-06-11T14:31:46+00:00",
-          invalidated_at: "2018-06-11T14:31:46+00:00",
-          valid_to: "2018-06-11T14:31:46+00:00",
-          created_at: "2018-06-11T14:31:46+00:00",
-          updated_at: "2018-06-11T14:31:46+00:00"
-        }]
+        ],
+        client_application: {
+          name: 'Dummy Application',
+          url: 'http://somewhere.es',
+          support_url: 'http://somewhere.es/support',
+          callback_url: nil,
+          key: "crjNXIU3p8xKcoFMuX5eb10xDwK71BP446ToBRnP",
+          secret: "CH3M9gcd9BhLu4ukAg8TPruN0W5zsP4OJ0BQOdtv",
+          created_at: "2018-06-08T15:00:45+00:00",
+          updated_at: "2018-06-08T15:00:45+00:00",
+          oauth_tokens: [{
+            token: "oauth_token",
+            secret: "oauth_secret",
+            callback_url: "http//callback.com",
+            verifier: "v1",
+            scope: nil,
+            authorized_at: "2018-06-11T14:31:46+00:00",
+            invalidated_at: "2018-06-11T14:31:46+00:00",
+            valid_to: "2018-06-11T14:31:46+00:00",
+            created_at: "2018-06-11T14:31:46+00:00",
+            updated_at: "2018-06-11T14:31:46+00:00"
+          }],
+          access_tokens: [{
+            token: "access_token",
+            secret: "access_secret",
+            callback_url: "http://callback2",
+            verifier: "v2",
+            scope: nil,
+            authorized_at: "2018-06-11T14:31:46+00:00",
+            invalidated_at: "2018-06-11T14:31:46+00:00",
+            valid_to: "2018-06-11T14:31:46+00:00",
+            created_at: "2018-06-11T14:31:46+00:00",
+            updated_at: "2018-06-11T14:31:46+00:00"
+          }]
+        }
       }
     }
   end

@@ -3,7 +3,6 @@
 module LoginHelper
 
   DEFAULT_BACKGROUND_COLOR = "#F9F9F9".freeze
-  ME_ENDPOINT_COOKIE = :_cartodb_base_url
 
   def background
     base_color = (@organization.present? && @organization.color.present?) ? @organization.color : DEFAULT_BACKGROUND_COLOR

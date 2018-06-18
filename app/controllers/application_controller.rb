@@ -28,6 +28,8 @@ class ApplicationController < ActionController::Base
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
 
+  ME_ENDPOINT_COOKIE = :_cartodb_base_url
+
   # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
   unless Rails.env.production? || Rails.env.staging?
     def self.ssl_required(*splat)
@@ -40,15 +42,15 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  Warden::Manager.after_authentication do |user,auth,opts|
-    auth.cookies.permanent[:_cartodb_base_url] = {
+  Warden::Manager.after_authentication do |user, auth, _opts|
+    auth.cookies.permanent[ME_ENDPOINT_COOKIE] = {
       value: CartoDB.base_url(user.username),
       domain: Cartodb.config[:session_domain]
     }
   end
 
-  Warden::Manager.before_logout do |user,auth,opts|
-    auth.cookies.delete(:_cartodb_base_url)
+  Warden::Manager.before_logout do |_user, auth, _opts|
+    auth.cookies.delete(ME_ENDPOINT_COOKIE)
   end
 
   def handle_unverified_request

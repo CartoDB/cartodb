@@ -4,6 +4,7 @@ var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
 var webpackTask = null;
+var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
 
 var REQUIRED_NODE_VERSION = '6.9.2';
 var REQUIRED_NPM_VERSION = '3.10.9';
@@ -110,6 +111,7 @@ module.exports = function (grunt) {
   var PUBLIC_DIR = './public/';
   var ROOT_ASSETS_DIR = './public/assets/';
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';
+  var EDITOR_ASSETS_DIR = `./public/assets/editor/${EDITOR_ASSETS_VERSION}`;
 
   /**
    * this is being used by `grunt --environment=production release`
@@ -138,6 +140,8 @@ module.exports = function (grunt) {
 
     public_dir: PUBLIC_DIR,
     assets_dir: ASSETS_DIR,
+    editor_assets_dir: EDITOR_ASSETS_DIR,
+    editor_assets_version: EDITOR_ASSETS_VERSION,
     root_assets_dir: ROOT_ASSETS_DIR,
 
     // Concat task
@@ -385,6 +389,10 @@ module.exports = function (grunt) {
     'compress',
     's3',
     'invalidate'
+  ]);
+
+  grunt.registerTask('release_editor_assets', 'builds & uploads editor assets', [
+    'build-editor'
   ]);
 
   grunt.registerTask('generate_builder_specs', 'Generate only builder specs', function (option) {

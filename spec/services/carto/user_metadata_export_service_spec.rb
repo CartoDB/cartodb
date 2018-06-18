@@ -143,7 +143,7 @@ describe Carto::UserMetadataExportService do
       create_account_type_fg('FREE')
       @search_tweets = service.build_search_tweets_from_hash_export(export)
       @search_tweets.each { |st| service.save_imported_search_tweet(st, @user) }
-      @user.save!
+      service.save_imported_user(@user)
 
       expect_export_matches_user(export[:user], @user)
       @user

@@ -25,6 +25,7 @@ sudo make install
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
 * Fix migration of users with invalid search_tweets.data_import_id (#13904)
 * Import / export synchronization oauths and connector configurations (#14003)
+* Retain backwards compatibility with exports without client applications(#14083)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 * User mover does not export user metadata if org metadata is not exported

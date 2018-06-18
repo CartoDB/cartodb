@@ -501,6 +501,8 @@ class User < Sequel::Model
       destroy_shared_with
 
       assign_search_tweets_to_organization_owner
+
+      ClientApplication.where(user_id: id).each(&:destroy)
     rescue StandardError => exception
       error_happened = true
       CartoDB::StdoutLogger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"

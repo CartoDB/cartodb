@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.24-disabled-create-button",
+  "version": "4.12.26-disabled-create-button",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

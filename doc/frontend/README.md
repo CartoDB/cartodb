@@ -44,12 +44,14 @@ This is a list of available tasks to run:
 | `npm start`                    | Compiles `carto-node`, the static pages and watches Builder and Dashboard
 | `npm dev`                      | Runs webpack for Builder and Dashboard
 | `npm dev:static`               | Runs webpack for static pages
+| `npm dev:editor`               | Runs Editor for development
 | `npm build`                    | Create production builds for Builder and Dashboard
 | `npm build:static`             | Create production builds for static pages
 | `npm carto-node`               | Create production builds for `carto-node`
 | `npm test`                     | Run all test suites
-| `npm test:builder`             | Run and watch builder test suites
-| `npm test:dashboard`           | Run and watch dashboard test suites
+| `npm test:builder`             | Run and watches builder test suites
+| `npm test:dashboard`           | Run and watches dashboard test suites
+| `npm test:editor`              | Run and watches editor test suites
 | `npm lint`                     | Runs the Javascript linter
 | `npm lint:fix`                 | Runs the Javascript linter with the `--fix` flag
 | `npm lint:css`                 | Runs the CSS linter
@@ -58,7 +60,6 @@ This is a list of available tasks to run:
 | `npm bump:minor`               | Creates a minor version
 | `npm update-internal-deps`     | Update the `npm-shrinkwrap` file
 | `npm ci`                       | Runs the CSS lint and tests
-| `grunt editor`                 | Runs Editor for development
 
 ## Pull Request rules
 
@@ -121,9 +122,9 @@ this.listenTo(this.model, 'sendMessage', message => console.log(message));
 ### Backbone views
 The render method should be the first in the view after the initialize.
 
-The test should always have the toHaveNoLeaks test.
+The test should always have the `toHaveNoLeaks` test.
 
-You can add a label in order to know where the view belongs in the code. That attribute is module, and it can be used in any view ([more info](https://github.com/CartoDB/cartodb/pull/12341#pullrequestreview-44787657)). It will add that label in the DOM attribute data-module.
+You can add a label to help you relate where the view belongs in the code. Use the attribute `module` in any view and you'll see a data attribute in the HTML element when in development node. [more info](https://github.com/CartoDB/cartodb/pull/12341)
 
 If we have to initialise multiple views inside another view, we use the `_initViews` function as same as we do with events, to keep the code organised.
 
@@ -267,7 +268,7 @@ Follow these steps to update to get latest changes:
 In order to develop tests for the codebase outside Builder (that is, old Editor and dashboard pages) we advise to run:
 
 ```bash
-grunt editor_specs
+npm run test:editor
 ```
 
 After the building process finish, a webpage will show up with a link to the Jasmine page with all the specs. The URL of this page is `http://localhost:8089/_SpecRunner.html`

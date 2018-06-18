@@ -405,8 +405,15 @@ describe Carto::UserMetadataExportService do
     expect(exported_app[:callback_url]).to eq app.callback_url
     expect(exported_app[:key]).to eq app.key
     expect(exported_app[:secret]).to eq app.secret
-    expect(exported_app[:created_at]).to eq app.created_at
-    expect(exported_app[:updated_at]).to eq app.updated_at
+
+    # Compare dates using AR conversions
+    fake_app = Carto::ClientApplication.new(
+      created_at: exported_app[:created_at],
+      updated_at: exported_app[:updated_at]
+    )
+    expect(fake_app.created_at).to eq app.created_at
+    expect(fake_app.updated_at).to eq app.updated_at
+
     expect(exported_app[:oauth_tokens].size + exported_app[:access_tokens].size).to eq app.oauth_tokens.size
     exported_app[:oauth_tokens].each do |ex_t|
       expect_exported_token_matches_token(ex_t, app.oauth_tokens.find { |t| t.token == ex_t[:token] })
@@ -423,11 +430,21 @@ describe Carto::UserMetadataExportService do
     expect(exported_t[:callback_url]).to eq token.callback_url
     expect(exported_t[:verifier]).to eq token.verifier
     expect(exported_t[:scope]).to eq token.scope
-    expect(exported_t[:authorized_at]).to eq token.authorized_at
-    expect(exported_t[:invalidated_at]).to eq token.invalidated_at
-    expect(exported_t[:valid_to]).to eq token.valid_to
-    expect(exported_t[:created_at]).to eq token.created_at
-    expect(exported_t[:updated_at]).to eq token.updated_at
+
+    # Compare dates using AR conversions
+    fake_app = Carto::OauthToken.new(
+      authorized_at: exported_t[:authorized_at],
+      invalidated_at: exported_t[:invalidated_at],
+      valid_to: exported_t[:valid_to],
+      created_at: exported_t[:created_at],
+      updated_at: exported_t[:updated_at]
+    )
+
+    expect(fake_app.authorized_at).to eq token.authorized_at
+    expect(fake_app.invalidated_at).to eq token.invalidated_at
+    expect(fake_app.valid_to).to eq token.valid_to
+    expect(fake_app.created_at).to eq token.created_at
+    expect(fake_app.updated_at).to eq token.updated_at
   end
 
   def export_import(user)

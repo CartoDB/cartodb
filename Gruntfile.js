@@ -387,12 +387,21 @@ module.exports = function (grunt) {
     'check_release',
     'build',
     'compress',
-    's3',
+    's3:js',
+    's3:css',
+    's3:images',
+    's3:fonts',
+    's3:flash',
+    's3:favicons',
+    's3:unversioned',
+    's3:static_pages',
     'invalidate'
   ]);
 
   grunt.registerTask('release_editor_assets', 'builds & uploads editor assets', [
-    'build-editor'
+    'build-editor',
+    's3:frozen',
+    'invalidate'
   ]);
 
   grunt.registerTask('generate_builder_specs', 'Generate only builder specs', function (option) {

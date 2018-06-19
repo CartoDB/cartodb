@@ -1,7 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const webpackFiles = require('../lib/build/files/webpack_files');
-const Package = require('./../package.json');
+const webpackFiles = require('../../lib/build/files/webpack_files');
+const Package = require('./../../package.json');
 
 const VERSION = Package.version;
 

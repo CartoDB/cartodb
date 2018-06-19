@@ -137,14 +137,13 @@ module ApplicationHelper
     super *sources
   end
 
-
   def editor_assets_path
     file = File.read("./config/editor_assets_version.json")
     version = JSON.parse(file)["version"]
     "/assets/editor/#{version}"
   end
 
-  def editor_stylesheet_link_tag *sources
+  def editor_stylesheet_link_tag(*sources)
     raise_on_asset_absence sources
 
     options = sources.extract_options!.stringify_keys

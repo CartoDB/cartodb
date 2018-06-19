@@ -25,7 +25,8 @@ const entryPoints = {
   sessions_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/sessions.js'),
   confirmation_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/confirmation.js'),
   dashboard_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/dashboard.js'),
-  organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js')
+  organization_new: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/organization.js'),
+  lockout: resolve(__dirname, '../../', 'lib/assets/javascripts/dashboard/lockout.js')
 };
 
 module.exports = env => {

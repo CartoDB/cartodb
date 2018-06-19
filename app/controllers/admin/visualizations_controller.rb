@@ -58,7 +58,7 @@ class Admin::VisualizationsController < Admin::AdminController
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
-    if current_user.has_feature_flag?('dashboard_migration')
+    if !Cartodb.config[:bypass_static_pages].present?
       return render(file: "public/static/dashboard/index.html", layout: false)
     end
 

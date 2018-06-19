@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 const { version } = require('../../package.json');
+const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
 const entryPoints = require('./entryPoints');
 
 const rootDir = file => resolve(__dirname, '../../', file);
@@ -200,7 +201,7 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              data: `$assetsDir: "/assets/${version}";`,
+              data: `$assetsDir: "${http_path_prefix}/assets/${version}";`,
               sourceMap: false,
               includePaths: [
                 rootDir('node_modules/cartoassets/src/scss')
@@ -216,7 +217,7 @@ module.exports = {
           options: {
             name: `[name].[ext]`,
             outputPath: `${version}/fonts/`,
-            publicPath: `/assets/${version}/fonts/`
+            publicPath: `${http_path_prefix}/assets/${version}/fonts/`
           }
         }
       },
@@ -227,7 +228,7 @@ module.exports = {
           options: {
             name: `[name].[ext]`,
             outputPath: `${version}/images/`,
-            publicPath: `/assets/${version}/fonts/`
+            publicPath: `${http_path_prefix}/assets/${version}/fonts/`
           }
         }
       }

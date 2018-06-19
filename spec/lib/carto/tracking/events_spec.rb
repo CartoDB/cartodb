@@ -1121,12 +1121,12 @@ module Carto
 
           it 'updates dashboard_viewed_at for dashboard visits' do
             event = @event_class.new(@user.id, user_id: @user.id, page: 'dashboard')
-            expect { event.report! }.to change { @user.reload.dashboard_viewed_at }
+            expect { event.report! }.to(change { @user.reload.dashboard_viewed_at })
           end
 
           it 'does not update dashboard_viewed_at for other visits' do
             event = @event_class.new(@user.id, user_id: @user.id, page: 'dataset')
-            expect { event.report! }.to_not change { @user.reload.dashboard_viewed_at }
+            expect { event.report! }.to_not(change { @user.reload.dashboard_viewed_at })
           end
         end
 

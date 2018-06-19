@@ -230,7 +230,7 @@ $maxLegendContainerHeight: 300px;
 .CDB-LayerLegends {
   margin-top: 0;
 
-  + .CDB-LayerLegends {
+  &:not(:empty) + &:not(:empty) {
     margin-top: 12px;
   }
 }
@@ -318,11 +318,11 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-container {
   position: relative;
-  top: 7px;
+  top: 0;
   right: 0;
   width: 100%;
   height: 100px;
-  margin: 10px 0;
+  margin: 16px 0 10px;
 }
 
 .Bubble-circle {

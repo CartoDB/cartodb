@@ -5,6 +5,8 @@ var formatter = require('../../../../util/formatter');
 
 var BubbleLegendView = LegendViewBase.extend({
 
+  className: 'CDB-Legend-item u-tSpace-xl u-clearfix',
+
   _getCompiledTemplate: function () {
     return template({
       hasCustomLabels: this._hasCustomLabels(),

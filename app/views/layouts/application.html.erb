@@ -4,10 +4,13 @@
     <meta charset='utf-8' />
     <title><%= yield :page_title -%>CARTO</title>
     <%= favicon_link_tag "/favicons/favicon.ico" -%>
+    <link href="/assets/editor/elsa/favicons/favicon.ico?1494943965" rel="shortcut icon" type="image/vnd.microsoft.icon" />
     <% if current_user.builder_enabled? %>
       <%= stylesheet_link_tag 'common_new.css', :media => 'all' %>
     <% else %>
       <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
+      <link href="/assets/editor/elsa/stylesheets/cartodb.css" media="all" rel="stylesheet" type="text/css" />
+      <link href="/assets/editor/elsa/stylesheets/common.css" media="all" rel="stylesheet" type="text/css" />
     <% end %>
     <%= yield :css -%>
     <%= csrf_meta_tag -%>

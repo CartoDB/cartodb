@@ -3,13 +3,7 @@
   <% end %>
 
   <% content_for(:css) do %>
-    <%= stylesheet_link_tag  'old_common_without_core.css', 'common.css', 'cdb.css', 'table.css', 'editor.css', 'map.css', :media => 'all' %>
-    <link href="/assets/editor/elsa/stylesheets/old_common_without_core.css" media="all" rel="stylesheet" type="text/css" />
-    <link href="/assets/editor/elsa/stylesheets/common.css" media="all" rel="stylesheet" type="text/css" />
-    <link href="/assets/editor/elsa/stylesheets/cdb.css" media="all" rel="stylesheet" type="text/css" />
-    <link href="/assets/editor/elsa/stylesheets/table.css" media="all" rel="stylesheet" type="text/css" />
-    <link href="/assets/editor/elsa/stylesheets/editor.css" media="all" rel="stylesheet" type="text/css" />
-    <link href="/assets/editor/elsa/stylesheets/map.css" media="all" rel="stylesheet" type="text/css" />
+    <%= editor_stylesheet_link_tag  'old_common_without_core.css', 'common.css', 'cdb.css', 'table.css', 'editor.css', 'map.css', :media => 'all' %>
   <% end %>
 
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>
@@ -26,13 +20,7 @@
     <% if !@google_maps_query_string.blank? %>
       <%= insert_google_maps(@google_maps_query_string) %>
     <% end %>
-    <%= javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'table.js', 'editor.js' %>
-    <script src="/assets/editor/elsa/javascripts/cdb.js"></script>
-    <script src="/assets/editor/elsa/javascripts/models.js"></script>
-    <script src="/assets/editor/elsa/javascripts/templates.js"></script>
-    <script src="/assets/editor/elsa/javascripts/templates_mustache.js"></script>
-    <script src="/assets/editor/elsa/javascripts/table.js"></script>
-    <script src="/assets/editor/elsa/javascripts/editor.js"></script>
+    <%= editor_javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'table.js', 'editor.js' %>
   <% end %>
 
   <div class="panes"></div>

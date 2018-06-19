@@ -127,12 +127,66 @@ module ApplicationHelper
   # Note: You will need to move config.assets.precompile to application.rb from production.rb
   def javascript_include_tag *sources
     raise_on_asset_absence sources
+
     super *sources
   end
 
   def stylesheet_link_tag *sources
     raise_on_asset_absence sources
+
     super *sources
+  end
+
+
+  def editor_assets_path
+    file = File.read("./config/editor_assets_version.json")
+    version = JSON.parse(file)["version"]
+    "/assets/editor/#{version}"
+  end
+
+  def editor_stylesheet_link_tag *sources
+    raise_on_asset_absence sources
+
+    options = sources.extract_options!.stringify_keys
+    path = editor_assets_path
+
+    sources_tags = sources.uniq.map { |source|
+      href = "#{path}/stylesheets/#{source}"
+      tag_options = {
+        "rel" => "stylesheet",
+        "media" => "screen",
+        "href" => href
+      }.merge!(options)
+      tag(:link, tag_options)
+    }.join("\n").html_safe
+
+    sources_tags
+  end
+
+  def editor_javascript_include_tag(*sources)
+    raise_on_asset_absence sources
+
+    options = sources.extract_options!.stringify_keys
+    path = editor_assets_path
+
+    sources_tags = sources.uniq.map { |source|
+      href = "#{path}/javascripts/#{source}"
+      tag_options = {
+        "src" => href
+      }.merge!(options)
+      content_tag("script".freeze, "", tag_options)
+    }.join("\n").html_safe
+
+    sources_tags
+  end
+
+  def editor_favicon_link_tag(source = "favicon.ico", options = {})
+    path = editor_assets_path
+    tag("link", {
+      rel: "shortcut icon",
+      type: "image/x-icon",
+      href: "#{path}/favicons/#{source}"
+    }.merge!(options.symbolize_keys))
   end
 
   def raise_on_asset_absence *sources

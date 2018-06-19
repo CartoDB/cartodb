@@ -35,6 +35,6 @@ module.exports = merge(baseConfig, {
           zindex: false
         }
       })
-    ],
+    ]
   }
 });

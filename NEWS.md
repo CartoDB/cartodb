@@ -14,8 +14,12 @@ sudo make install
 
 ### Bug fixes / enhancements
 * Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
+* Fix error when styling points by value in animated aggregation style (https://github.com/CartoDB/cartodb/issues/14085)
+* Show errors coming from QueryRowsCollection in Dataset/Builder (https://github.com/CartoDB/cartodb/issues/14066)
+* Export JPG image as JPEG format instead of PNG (https://github.com/CartoDB/cartodb/issues/14042)
+* Redirect to login or fix URL if trying to access another user private pages (https://github.com/CartoDB/cartodb/pull/14013)
 * Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
-* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583#event-1673573190)
+* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583)
 * Send `Visited Private Page` event from Dashboard (#14041)
 * Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)
 * Fix Broken CTA in the 'Connect Dataset' modal (https://github.com/CartoDB/cartodb/issues/14036)
@@ -27,6 +31,9 @@ sudo make install
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 * User mover does not export user metadata if org metadata is not exported
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
+
+### Internals
+* Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
 
 
 4.12.x (2018-05-24)
@@ -187,6 +194,7 @@ ion for time-series (#12670)
 * User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
 * Force use a different password when password change ([Central#2223](https://github.com/CartoDB/cartodb-central#2223))
 * Limits V2
+  * Add rate limits for sql_copy ([CartoDB-platform#4394](https://github.com/CartoDB/cartodb-platform/issues/4394))
   * Add rate limits persistence (#13626)
   * Include rate limits in user migration (#13712)
   * Remove rate limits on user deletion (#13657)
@@ -225,6 +233,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix create map / add layer button being disabled (#14061)
 * Fix layers list item border color (https://github.com/CartoDB/cartodb/pull/14002)
 * Remove padding to delete button in analyses (https://github.com/CartoDB/cartodb/pull/14001)
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
@@ -658,6 +667,7 @@ ion for time-series (#12670)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
 * Add rake to remove duplicate legends in layer
+* Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals

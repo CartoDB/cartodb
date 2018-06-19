@@ -190,7 +190,7 @@
     "carto-node": "NODE_ENV=production webpack --progress --config webpack/carto-node/webpack.config.js",
     "build:stats": "webpack --env.stats --progress --config webpack.dev.config.js",
     "start": "npm run carto-node && npm run build:static && npm run dev",
-    "dev": "webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
+    "dev": "NODE_ENV='development' webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
     "dev:editor": "grunt editor",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"

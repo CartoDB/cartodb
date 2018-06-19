@@ -43,6 +43,7 @@ module Carto
           default_fallback_basemap: carto_viewer.try(:default_basemap),
           config: frontend_config_hash(current_viewer),
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
+          organization_notifications: carto_viewer ? carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {},
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
           can_change_email: carto_viewer.try(:can_change_email?),

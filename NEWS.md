@@ -14,6 +14,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 * Fix wrong margins in the layer selector when the top layer has a bubble legend (https://github.com/CartoDB/support/issues/1566)
+* Fix error when styling points by value in animated aggregation style (https://github.com/CartoDB/cartodb/issues/14085)
 * Show errors coming from QueryRowsCollection in Dataset/Builder (https://github.com/CartoDB/cartodb/issues/14066)
 * Export JPG image as JPEG format instead of PNG (https://github.com/CartoDB/cartodb/issues/14042)
 * Redirect to login or fix URL if trying to access another user private pages (https://github.com/CartoDB/cartodb/pull/14013)
@@ -232,6 +233,7 @@ ion for time-series (#12670)
 * Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix create map / add layer button being disabled (#14061)
 * Fix layers list item border color (https://github.com/CartoDB/cartodb/pull/14002)
 * Remove padding to delete button in analyses (https://github.com/CartoDB/cartodb/pull/14001)
 * Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
@@ -354,6 +356,7 @@ ion for time-series (#12670)
 * Submit form with Enter key in the Add layer modal > Connect dataset tab (#13441)
 * Add routing to analyses nodes (#13364)
 * Fix organization signup page not working on subdomainless #13012
+* Deletes redis metadata after org destruction (#13687)
 * Fix publish modal in settings view (#13418)
 * Improve onboarding for when user adds an empty layer (#11876)
 * Don't show the publish modal when the user clicks on the privacy button (#13366)

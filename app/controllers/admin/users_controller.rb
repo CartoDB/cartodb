@@ -28,7 +28,7 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
   def profile
-    if !Cartodb.config[:bypass_static_pages].present?
+    if current_user.has_feature_flag?('dashboard_migration')
       return render(file: "public/static/profile/index.html", layout: false)
     end
 
@@ -40,7 +40,7 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    if !Cartodb.config[:bypass_static_pages].present?
+    if current_user.has_feature_flag?('dashboard_migration')
       return render(file: "public/static/account/index.html", layout: false)
     end
 

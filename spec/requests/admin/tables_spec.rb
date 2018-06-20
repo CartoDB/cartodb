@@ -44,12 +44,10 @@ describe Admin::TablesController do
 
   describe 'GET /dashboard' do
     it 'returns a list of tables' do
-      Cartodb.with_config(bypass_static_pages: true) do
-        login_as(@user, scope: @user.username)
+      login_as(@user, scope: @user.username)
 
-        get "/dashboard", {}, @headers
-        last_response.status.should == 200
-      end
+      get "/dashboard", {}, @headers
+      last_response.status.should == 200
     end
   end # GET /tables
 

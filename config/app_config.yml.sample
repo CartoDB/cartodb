@@ -732,7 +732,6 @@ defaults: &defaults
         isolines: false
         routing: false
         data_observatory: false
-  # bypass_static_pages: true
 
 
 development:

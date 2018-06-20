@@ -181,13 +181,11 @@ describe "UserState" do
       Admin::UsersController.any_instance.stubs(:render)
       login(@locked_user)
       host! "#{@locked_user.username}.localhost.lan"
-      Cartodb.with_config(bypass_static_pages: true) do
-        @dashboard_endpoints.each do |endpoint|
-          get endpoint, {}, @headers
-          follow_redirects
-          request.path.should_not == '/lockout'
-          response.status.should == 200
-        end
+      @dashboard_endpoints.each do |endpoint|
+        get endpoint, {}, @headers
+        follow_redirects
+        request.path.should_not == '/lockout'
+        response.status.should == 200
       end
       @user_endpoints.each do |endpoint|
         get endpoint, {}, @headers
@@ -225,20 +223,18 @@ describe "UserState" do
       end
     end
     it 'non locked user accessing a locked user resources' do
-      Cartodb.with_config(bypass_static_pages: true) do
-        login(@non_locked_user)
-        @user_endpoints.each do |endpoint|
-          host! "#{@locked_user.username}.localhost.lan"
-          get endpoint, {}, @headers
-          follow_redirects
-          response.status.should == 200
-        end
-        @public_user_endpoints.each do |endpoint|
-          host! "#{@locked_user.username}.localhost.lan"
-          get endpoint, {}, @headers
-          follow_redirects
-          response.status.should == 200
-        end
+      login(@non_locked_user)
+      @user_endpoints.each do |endpoint|
+        host! "#{@locked_user.username}.localhost.lan"
+        get endpoint, {}, @headers
+        follow_redirects
+        response.status.should == 200
+      end
+      @public_user_endpoints.each do |endpoint|
+        host! "#{@locked_user.username}.localhost.lan"
+        get endpoint, {}, @headers
+        follow_redirects
+        response.status.should == 200
       end
       @tables_endpoints.each do |endpoint|
         host! "#{@locked_user.username}.localhost.lan"

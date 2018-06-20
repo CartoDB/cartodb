@@ -1382,8 +1382,15 @@
       },
       "privacy-warning": {
         "title": {
-          "visualization": "You are about to publish this visualization for public view",
-          "dataset": "You are about to make this dataset public, making it visible in your public profile"
+          "visualization": {
+            "PUBLIC": "You are about to publish this visualization for public view",
+            "LINK": "You are about to make this visualization available to anyone with the link",
+            "PASSWORD": "You are about to make this visualization available to anyone with the password"
+          },
+          "dataset": {
+            "PUBLIC": "You are about to make this dataset public, making it visible in your public profile",
+            "LINK": "You are about to make this dataset available to anyone with the link"
+          }
         },
         "description": "Any personal data that you have used to create it will also be publicly available",
         "cancel": "Cancel",

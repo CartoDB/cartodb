@@ -25,5 +25,5 @@
 }
 
 .Input.is-loading {
-  background: image-url("layout/loader_transparent.gif") no-repeat 10px 50%;
+  background: url($assetsDir + "/images/layout/loader_transparent.gif") no-repeat 10px 50%;
 }

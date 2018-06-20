@@ -386,13 +386,10 @@ module.exports = function (grunt) {
     'npm-build-static'
   ]);
 
-  /**
-   * `grunt release`
-   * `grunt release --environment=production`
-   */
-  grunt.registerTask('release', [
+  var releaseTasks = [
     'check_release',
-    'build',
+    'build-static',
+    'npm-build',
     'compress',
     's3:js',
     's3:css',
@@ -403,7 +400,19 @@ module.exports = function (grunt) {
     's3:unversioned',
     's3:static_pages',
     'invalidate'
-  ]);
+  ];
+
+  // If the editor assets changed since the last tag we have to build & upload them
+  if (EDITOR_ASSETS_CHANGED) {
+    releaseTasks.splice(releaseTasks.indexOf('build-static'), 0, 'build-editor');
+    releaseTasks.splice(releaseTasks.indexOf('s3:js'), 0, 's3:frozen');
+  }
+
+  /**
+   * `grunt release`
+   * `grunt release --environment=production`
+   */
+  grunt.registerTask('release', releaseTasks);
 
   grunt.registerTask('release_editor_assets', 'builds & uploads editor assets', [
     'build-editor',
@@ -451,7 +460,7 @@ module.exports = function (grunt) {
 
   // If the editor assets version has changed, add the editor tests
   if (EDITOR_ASSETS_CHANGED) {
-    testTasks.splice(2, 0, 'js_editor', 'jasmine:cartodbui');
+    testTasks.splice(testTasks.indexOf('generate_builder_specs'), 0, 'js_editor', 'jasmine:cartodbui');
   }
 
   /**

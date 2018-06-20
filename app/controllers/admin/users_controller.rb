@@ -21,12 +21,16 @@ class Admin::UsersController < Admin::AdminController
   before_filter :load_dashboard_notifications, only: [:account, :profile]
   before_filter :load_organization_notifications, only: [:account, :profile]
 
+  skip_before_filter :check_user_state, only: [:delete]
+
   layout 'application'
 
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
   def profile
-    return render(file: "public/static/profile/index.html", layout: false) if current_user.has_feature_flag?('static_profile')
+    if !Cartodb.config[:bypass_static_pages].present?
+      return render(file: "public/static/profile/index.html", layout: false)
+    end
 
     @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
 
@@ -36,7 +40,9 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    return render(file: "public/static/account/index.html", layout: false) if current_user.has_feature_flag?('static_account')
+    if !Cartodb.config[:bypass_static_pages].present?
+      return render(file: "public/static/account/index.html", layout: false)
+    end
 
     respond_to do |format|
       format.html { render 'account' }
@@ -61,7 +67,7 @@ class Admin::UsersController < Admin::AdminController
       @user.set_fields(attributes, [:email])
     end
 
-    raise Sequel::ValidationFailed.new('Validation failed') unless @user.valid?
+    raise Sequel::ValidationFailed.new('Validation failed') unless @user.errors.try(:empty?) && @user.valid?
     @user.update_in_central
     @user.save(raise_on_failure: true)
 
@@ -84,6 +90,8 @@ class Admin::UsersController < Admin::AdminController
       @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 
+    @user.valid_password_confirmation(attributes.fetch(:password_confirmation, ''))
+
     # This fields are optional
     @user.name = attributes.fetch(:name, nil)
     @user.last_name = attributes.fetch(:last_name, nil)
@@ -95,6 +103,7 @@ class Admin::UsersController < Admin::AdminController
 
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
 
+    raise Sequel::ValidationFailed.new(@user.errors.full_messages.join(', ')) unless @user.errors.empty?
     @user.update_in_central
     @user.save(raise_on_failure: true)
 

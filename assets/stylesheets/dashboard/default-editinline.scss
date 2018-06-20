@@ -1,0 +1,51 @@
+// Default tags for datasets and maps
+// --------------------------------------------------
+
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/mixins";
+
+.DefaultEditInline-input {
+  border: none;
+  outline: none;
+  background: none;
+}
+// It is not possible to be grouped :(
+.DefaultEditInline-input::-webkit-input-placeholder {
+  color: $cTypography-link;
+  font-style: italic;
+}
+
+.DefaultEditInline-input:hover::-webkit-input-placeholder {
+  color: $cTypography-linkHover;
+}
+
+.DefaultEditInline-input:focus::-webkit-input-placeholder {
+  color: transparent;
+}
+
+.DefaultEditInline-input::-moz-placeholder {
+  color: $cTypography-link;
+  font-style: italic;
+}
+
+.DefaultEditInline-input:hover::-moz-placeholder {
+  color: $cTypography-linkHover;
+}
+
+.DefaultEditInline-input:focus::-moz-placeholder {
+  color: transparent;
+}
+
+.DefaultEditInline-input:-ms-input-placeholder {
+  color: $cTypography-link;
+  font-style: italic;
+}
+
+.DefaultEditInline-input:hover:-ms-input-placeholder {
+  color: $cTypography-linkHover;
+}
+
+.DefaultEditInline-input:focus:-ms-input-placeholder {
+  color: transparent;
+}

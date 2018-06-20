@@ -15,13 +15,19 @@
     <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= @avatar_url %>" />
 
-    <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard', 'user_feed' %>
+    <% if @has_new_dashboard %>
+      <%= stylesheet_link_tag 'deep_insights_new', 'common_new', 'public_dashboard_new', 'user_feed_new' %>
+    <% else %>
+      <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard', 'user_feed' %>
+    <% end %>
 
     <% if @needs_gmaps_lib %>
       <%= insert_google_maps(@gmaps_query_string) %>
     <% end %>
+    <%= insert_google_tag_manager('embeds') %>
   </head>
   <body class="PublicBody PublicBody--grey">
+    <%= insert_google_tag_manager_no_script('embeds') %>
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap FavMap--tall is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner js-spinner"></div>
@@ -51,7 +57,7 @@
         <% if @most_viewed_vis_map %>
           createVis: {
             <% if @has_new_dashboard %>
-              url: '<%= vis_json_v3_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+              vizJson: <%= safe_js_object named_map_vizjson3(@most_viewed_vis_map).to_json %>,
             <% else %>
               url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
             <% end %>
@@ -64,7 +70,7 @@
       </script>
 
     <% if @has_new_dashboard %>
-      <%= javascript_include_tag 'common_dashboard', 'user_feed_new_vendor', 'user_feed_new' %>
+      <%= javascript_include_tag 'common', 'common_vendor', 'user_feed_new' %>
     <% else %>
       <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
     <% end %>

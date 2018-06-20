@@ -132,6 +132,18 @@ describe SignupController do
       response.status.should == 200
       response.body.should include("quota_in_bytes not enough disk quota")
     end
+
+    it 'signs user up as viewer even if all non-viewer seats are taken' do
+      @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
+      @fake_organization.seats = @fake_organization.builder_users.count(&:builder?)
+      @fake_organization.viewer_seats = 10
+      @fake_organization.save
+      owner = Carto::User.find(@fake_organization.owner.id)
+      invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!', true)
+      host! "#{@fake_organization.name}.localhost.lan"
+      get signup_url(invitation_token: invitation.token('wadus@wad.us'), email: 'wadus@wad.us')
+      response.status.should == 200
+    end
   end
 
   describe 'user creation' do

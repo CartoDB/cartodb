@@ -1,6 +1,21 @@
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'dashboard' %>
 <% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var authenticity_token = "<%= form_authenticity_token %>";
+    var user_data = <%= safe_js_object @user.data.to_json %>;
+    var can_change_email = <%= @user.can_change_email? %>;
+
+    // Necessary for Google + actions
+    var access_token = '';
+    <% if (@google_plus_config.present?) %>
+      document.domain = '<%= @google_plus_config.domain %>';
+      var iframe_src = '<%= @google_plus_config.iframe_src %>';
+    <% end %>
+  </script>
+  <%= javascript_include_tag 'common', 'common_vendor', 'lockout' -%>
+<% end %>
 <div class="DummyDashboard"></div>
 <div class='Lockout OnBoarding-welcome'>
   <div class="OnBoarding-welcomeContent">
@@ -18,6 +33,9 @@
       </a>
       <a class="CDB-Button CDB-Button--primary u-bSpace u-iBlock u-lSpace" href="<%= @payments_url %>">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">ADD PAYMENT METHOD</span>
+      </a>
+      <a class="CDB-Button CDB-Button--primary CDB-Button--error u-bSpace u-iBlock u-lSpace js-deleteAccount" href="javascript:void(0)">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">DELETE ACCOUNT</span>
       </a>
     </div>
   </div>

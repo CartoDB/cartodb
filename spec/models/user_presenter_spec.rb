@@ -50,7 +50,11 @@ describe Carto::Api::UserPresenter do
         twitter_datasource_quota: 70000,
         soft_twitter_datasource_limit: true,
         public_visualization_count: 1,
-        all_visualization_count: 2
+        all_visualization_count: 2,
+        job_role: "Developer",
+        company: "test",
+        phone: "123",
+        industry: "Academic and Education"
       })
 
     # Some sample data
@@ -102,7 +106,11 @@ describe Carto::Api::UserPresenter do
         twitter_datasource_quota: 70000,
         soft_twitter_datasource_limit: true,
         public_visualization_count: 1,
-        all_visualization_count: 2
+        all_visualization_count: 2,
+        job_role: "Developer",
+        company: "test",
+        phone: "123",
+        industry: "Academic and Education"
       })
 
     organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save
@@ -114,7 +122,8 @@ describe Carto::Api::UserPresenter do
     user2 = create_user({
         email: 'example2@carto.com',
         username: 'example2',
-        password: 'example123'
+        password: 'example123',
+        account_type: 'ORGANIZATION USER'
       })
 
     user2.organization = organization

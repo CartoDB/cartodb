@@ -1,0 +1,104 @@
+// Mosaic styles
+// ----------------------------------------------
+
+/* SG
+# Mosaic
+```
+<ul class="Mosaic">
+  <li class="Mosaic-item"></li>
+  <li class="Mosaic-item"></li>
+  <li class="Mosaic-item"></li>
+</ul>
+```
+*/
+
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.Mosaic-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Mosaic-item {
+  position: relative;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: $halfBaseSize;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba(#000, 0.08);
+    border-radius: $halfBaseSize;
+    pointer-events: none;
+  }
+
+  &:hover {
+    &::before {
+      transition: all 300ms;
+      border: 2px solid $cBlueHover;
+    }
+
+    .Mosaic-remove {
+      opacity: 1;
+    }
+  }
+
+  &.is-selected::before {
+    top: -1px;
+    right: -1px;
+    bottom: -1px;
+    left: -1px;
+    border: 2px solid $cBlackHover;
+  }
+}
+
+.Mosaic-item--dashed::before {
+  border: 1px dashed rgba(#000, 0.08);
+}
+
+.Mosaic-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.Mosaic-inner {
+  overflow: hidden;
+  border-radius: $halfBaseSize;
+  pointer-events: none;
+}
+
+.Mosaic-button {
+  width: 40px;
+  color: #1785FB;
+  line-height: 40px;
+}
+
+.Mosaic-remove {
+  position: absolute;
+  z-index: 2;
+  right: 4px;
+  bottom: 4px;
+  width: 0;
+  height: 12px;
+  padding-right: 6px;
+  padding-bottom: 3px;
+  padding-left: 4px;
+  transition: opacity 100ms;
+  border-top-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  opacity: 0;
+  background: rgba(#000, 0.5);
+  text-indent: 0;
+  pointer-events: auto;
+}

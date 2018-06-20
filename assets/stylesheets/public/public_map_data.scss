@@ -1,0 +1,26 @@
+
+/**
+ *  Styles for map data (no map)
+ *
+ */
+
+.cartodb-map-data {
+  position: relative;
+  width: 100%;
+  background: #FFF;
+}
+
+.cartodb-map-data .inner {
+  max-width: 1024px;
+  margin: auto;
+  padding: 0 20px;
+  clear: both;
+  overflow: hidden;
+}
+
+.cartodb-map-data .no_script,
+.cartodb-map-data .dsq-brlink {
+  color: #397DB8;
+  font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 15px;
+}

@@ -229,6 +229,15 @@ describe Admin::PagesController do
       anyuser.delete
     end
 
+    it 'redirects to login without login' do
+      host! 'localhost.lan'
+
+      get '', {}, JSON_HEADER
+
+      uri = URI.parse(last_response.location)
+      uri.host.should == 'localhost.lan'
+      uri.path.should == "/login"
+    end
   end
 
   describe '#explore' do
@@ -363,6 +372,7 @@ describe Admin::PagesController do
     if org_user
       org = mock
       org.stubs(name: @org_name)
+      org.stubs(password_expiration_in_d: nil)
       user.stubs(organization: org)
       Organization.stubs(:where).with(name: @org_name).returns([org])
       Organization.stubs(:where).with(name: @org_user_name).returns([org])

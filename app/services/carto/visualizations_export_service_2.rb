@@ -18,9 +18,10 @@ require_dependency 'carto/export/data_import_exporter'
 # 2.0.9: export visualization id
 # 2.1.0: export datasets: permissions, user_tables and syncs
 # 2.1.1: export vizjson2 mark
+# 2.1.2: export locked and password
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.1.1'.freeze
+    CURRENT_VERSION = '2.1.2'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -91,7 +92,10 @@ module Carto
         mapcaps: [build_mapcap_from_hash(exported_visualization[:mapcap])].compact,
         external_source: build_external_source_from_hash(exported_visualization[:external_source]),
         created_at: exported_visualization[:created_at],
-        updated_at: exported_visualization[:updated_at]
+        updated_at: exported_visualization[:updated_at],
+        locked: exported_visualization[:locked] || false,
+        encrypted_password: exported_visualization[:encrypted_password],
+        password_salt: exported_visualization[:password_salt]
       )
 
       # This is optional as it was added in version 2.0.2
@@ -246,32 +250,33 @@ module Carto
     include LayerExporter
     include DataImportExporter
 
-    def export_visualization_json_string(visualization_id, user)
-      export_visualization_json_hash(visualization_id, user).to_json
+    def export_visualization_json_string(visualization_id, user, with_password: false)
+      export_visualization_json_hash(visualization_id, user, with_password: with_password).to_json
     end
 
-    def export_visualization_json_hash(visualization_id, user, with_mapcaps: true)
+    def export_visualization_json_hash(visualization_id, user, with_mapcaps: true, with_password: false)
       {
         version: CURRENT_VERSION,
-        visualization: export(Carto::Visualization.find(visualization_id), user, with_mapcaps: with_mapcaps)
+        visualization: export(Carto::Visualization.find(visualization_id), user,
+                              with_mapcaps: with_mapcaps, with_password: with_password)
       }
     end
 
     private
 
-    def export(visualization, user, with_mapcaps: true)
+    def export(visualization, user, with_mapcaps: true, with_password: false)
       check_valid_visualization(visualization)
-      export_visualization(visualization, user, with_mapcaps: with_mapcaps)
+      export_visualization(visualization, user, with_mapcaps: with_mapcaps, with_password: with_password)
     end
 
-    def export_visualization(visualization, user, with_mapcaps: true)
+    def export_visualization(visualization, user, with_mapcaps: true, with_password: false)
       layers = visualization.layers_with_data_readable_by(user)
       active_layer_id = visualization.active_layer_id
       layer_exports = layers.map do |layer|
         export_layer(layer, active_layer: active_layer_id == layer.id)
       end
 
-      {
+      export = {
         id: visualization.id,
         name: visualization.name,
         description: visualization.description,
@@ -299,8 +304,16 @@ module Carto
         mapcap: with_mapcaps ? export_mapcap(visualization.latest_mapcap) : nil,
         external_source: export_external_source(visualization.external_source),
         created_at: visualization.created_at,
-        updated_at: visualization.updated_at
+        updated_at: visualization.updated_at,
+        locked: visualization.locked
       }
+
+      if with_password
+        export[:encrypted_password] = visualization.encrypted_password
+        export[:password_salt] = visualization.password_salt
+      end
+
+      export
     end
 
     def export_user(user)

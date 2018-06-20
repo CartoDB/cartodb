@@ -31,6 +31,9 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
+  # Password change
+  resources :password_change, only: [:edit, :update]
+
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
   get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
@@ -535,6 +538,7 @@ CartoDB::Application.routes.draw do
     resources :organizations
     resources :synchronizations
     resources :feature_flags
+    resources :account_types, only: [:create, :update, :destroy]
   end
 
   scope module: 'carto' do

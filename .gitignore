@@ -74,3 +74,5 @@ doc/manual/build
 /private_gears
 /dist
 yarn.lock
+public/static.tar.gz
+compilation-stats.json

@@ -1,6 +1,6 @@
 <div class="CDB-Widget-header js-header">
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
-    <h3 class="CDB-Text CDB-Size-large u-ellipsis <%- isCollapsed ? 'js-value is-collapsed' : 'js-title' %>"><% if (isCollapsed) { %><%- formatedValue %><% } else { %> <%- title %><% } %></h3>
+    <h3 class="CDB-Text CDB-Size-large u-ellipsis js-title <%- isCollapsed ? 'is-collapsed' : '' %>"><%- title %></h3>
     <div class="CDB-Widget-options">
       <button class="CDB-Shape CDB-Widget-actions js-actions" data-tooltip="More options">
         <div class="CDB-Shape-threePoints is-blue is-small">
@@ -13,7 +13,7 @@
   </div>
   <% if (showSource) { %>
     <dl class="CDB-Widget-info u-tSpace">
-      <div class="u-flex u-alignCenter">
+      <div class="u-flex u-alignCenter u-ellipsis">
         <span class="CDB-Text CDB-Size-small is-semibold u-upperCase" style="color: <%- sourceColor %>;">
           <%- sourceId %>
         </span>
@@ -43,7 +43,7 @@
 <div class="CDB-Widget-content CDB-Widget-content--formula">
   <% if (_.isNumber(value)) { %>
     <h4 class="CDB-Text CDB-Size-huge <%- !isCollapsed ? 'js-value' : '' %>" title="<%- value %>">
-      <%- prefix %><%- value %><%- suffix %>
+      <%= prefix %><%- value %><%= suffix %>
     </h4>
     <% if (description) { %>
       <p class="CDB-Text CDB-Size-small u-tSpace js-description"><%- description %></p>

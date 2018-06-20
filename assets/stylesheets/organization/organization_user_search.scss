@@ -1,0 +1,101 @@
+// Organization users search
+// --------------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.OrganizationSearch {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: -16px;
+  padding: 16px 0;
+  border-bottom: 1px solid $cStructure-darkGrey;
+}
+
+.OrganizationSearch-Form {
+  position: relative;
+}
+
+.OrganizationSearch-Item {
+  line-height: 30px;
+
+  &.RoleCount {
+    color: #979EA1;
+    white-space: nowrap;
+  }
+}
+
+.OrganizationSearch-FormButton {
+  padding-right: 2px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: $cTypography-headers;
+  font-size: 14px;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    position: relative;
+    top: 3px;
+    left: 20px;
+    width: 1px;
+    height: 20px;
+    background: $cStructure-softLine;
+    vertical-align: text-bottom;
+  }
+
+  > i {
+    display: inline;
+    margin-right: 10px;
+    margin-left: 1px;
+    font-weight: bold;
+    vertical-align: middle;
+  }
+}
+
+.OrganizationSearch-FormButton--clean {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -12px;
+  border-radius: 100%;
+  outline: none;
+  background: transparent;
+  color: $cNavButton-default;
+  text-align: center;
+
+  &:hover {
+    color: $cNavButton-active;
+  }
+}
+
+.OrganizationSearch-FormInput {
+  width: 220px;
+  padding-left: 5px;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 15px;
+  font-weight: 300;
+
+  &::-webkit-input-placeholder {
+    color: #DDD;
+    font-style: italic;
+    font-weight: $sFontWeight-normal;
+  }
+
+  &::-moz-placeholder {
+    color: #DDD;
+    font-style: italic;
+    font-weight: $sFontWeight-normal;
+  }
+
+  &:-ms-placeholder {
+    color: #DDD;
+    font-style: italic;
+    font-weight: $sFontWeight-normal;
+  }
+}

@@ -12,11 +12,13 @@ MESSAGE
 end
 
 $tables_metadata     = RedisFactory.new_connection(db_id: :tables_metadata)
+$tables_metadata_secondary = RedisFactory.new_connection(db_id: :tables_metadata, secondary: true)
 $api_credentials     = RedisFactory.new_connection(db_id: :api_credentials)
 $users_metadata      = RedisFactory.new_connection(db_id: :users_metadata)
 $redis_migrator_logs = RedisFactory.new_connection(db_id: :redis_migrator_logs)
 $geocoder_metrics    = RedisFactory.new_connection(db_id: :users_metadata)
 $limits_metadata     = RedisFactory.new_connection(db_id: :limits_metadata)
+$users_metadata_secondary = RedisFactory.new_connection(db_id: :users_metadata, secondary: true)
 
 # When in the "test" environment we don't expect a Redis
 # server to be up and running at this point. Later code

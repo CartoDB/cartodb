@@ -204,11 +204,17 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_version(version)
+    @version = version
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
     if @name && !(@id || @user_id || @organization_id || @owned_by_or_shared_with_user_id || @shared_with_user_id)
-      CartoDB::Logger.debug(message: "VQB query by name without user_id nor org_id")
+      CartoDB::Logger.error(message: "VQB query by name without user_id nor org_id")
+      raise 'VQB query by name without user_id nor org_id'
     end
 
     if @id
@@ -324,6 +330,10 @@ class Carto::VisualizationQueryBuilder
 
     if @organization_id
       query = query.joins(:user).where(users: { organization_id: @organization_id })
+    end
+
+    if @version
+      query = query.where(version: @version)
     end
 
     if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC

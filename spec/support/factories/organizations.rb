@@ -26,6 +26,7 @@ module CartoDB
       organization.google_maps_key = attributes[:google_maps_key] || nil
       organization.google_maps_private_key = attributes[:google_maps_private_key] || nil
       organization.builder_enabled = attributes[:builder_enabled] || false
+      organization.password_expiration_in_d = attributes[:password_expiration_in_d]
 
       organization
     end
@@ -42,12 +43,16 @@ module CartoDB
       uo = CartoDB::UserOrganization.new(organization.id, owner.id)
       uo.promote_user_to_admin
       organization.reload
+      owner.reload
       organization
     end
 
     def create_organization_with_users(attributes = {})
       organization = create_organization_with_owner(attributes)
-      user1 = create_user(:organization => organization, :organization_id => organization.id, :quota_in_bytes => 20.megabytes)
+      create_user(organization: organization,
+                  organization_id: organization.id,
+                  quota_in_bytes: 20.megabytes,
+                  account_type: 'ORGANIZATION USER')
       organization.reload
       organization
     end

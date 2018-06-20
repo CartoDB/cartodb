@@ -31,7 +31,7 @@ module CartoDB
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
-        )} -Z0 -Fc -f #{@filename} --serializable-deferrable -v --quote-all-identifiers")
+        )} #{skip_orphan_overview_tables} -Z0 -Fc -f #{@filename} --serializable-deferrable -v --quote-all-identifiers")
       end
 
       def initialize(conn, database_host, database_name, path, filename, database_schema = nil, logger = default_logger)
@@ -56,10 +56,34 @@ module CartoDB
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
-        )} -f #{@path}/#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces --quote-all-identifiers -Z 0")
+        )} #{skip_orphan_overview_tables} -f #{@path}/#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces --quote-all-identifiers -Z 0")
       end
 
       private
+
+      def user_pg_conn
+        @user_pg_conn ||= PGconn.connect(host: @database_host,
+                                         user: CartoDB::DataMover::Config[:dbuser],
+                                         dbname: @database_name,
+                                         port: CartoDB::DataMover::Config[:user_dbport],
+                                         password: CartoDB::DataMover::Config[:dbpass])
+      end
+
+      def skip_orphan_overview_tables
+        orphan_overview_tables.reduce('') { |m, t| m + " -T #{t}" }
+      end
+
+      def orphan_overview_tables
+        return @orphan_overviews if @orphan_overviews
+        raster_tables = user_pg_conn.exec("SELECT DISTINCT r_table_schema, r_table_name FROM raster_columns").map {
+          |r| "#{r['r_table_schema']}.#{r['r_table_name']}"
+        }
+        overview_re = Regexp.new('([^\.]+)\.o_\d+_(.+)$')
+        @orphan_overviews = raster_tables.select do |table|
+          match = overview_re.match(table)
+          match && !raster_tables.include?("#{match.captures.first}.#{match.captures.last}")
+        end
+      end
 
       def pg_dump_bin_path
         get_pg_dump_bin_path(@conn)
@@ -478,7 +502,6 @@ module CartoDB
                        status:       nil,
                        trace:        nil
                      }
-
         begin
           if @options[:id]
             @user_data = get_user_metadata(options[:id])
@@ -547,6 +570,7 @@ module CartoDB
             @org_users.each do |org_user|
               CartoDB::DataMover::ExportJob.new(id: org_user['username'],
                                                 data: @options[:data] && @options[:split_user_schemas],
+                                                metadata: @options[:metadata],
                                                 path: @options[:path],
                                                 job_uuid: job_uuid,
                                                 from_org: true,

@@ -65,7 +65,6 @@
       "form": {
         "username": "Username",
         "subdomain_info": "Subdomain cannot be changed",
-        "email": "Email",
         "old_password": "Old password",
         "new_password": "New password",
         "confirm_password": "Confirm password",
@@ -77,10 +76,8 @@
         "delete_account": "Delete account",
         "confirm": "Are you sure?",
         "delete_all": "Delete my account and all my data",
-        "your_url": "Your URL",
         "email_google": "Your account is linked to your Google account.",
         "errors": {
-          "email_not_valid": "Email not valid",
           "change_email": "You can change the email if you set a password."
         }
       }
@@ -94,6 +91,11 @@
       "form": {
         "first_name": "First name",
         "last_name": "Last name",
+        "email": "Email",
+        "company_name": "Company Name",
+        "role": "Your Role",
+        "industry": "Industry",
+        "phone": "Phone Number",
         "user_type": "User type",
         "viewer": "VIEWER",
         "read_only": "Read-only access for datasets and maps",
@@ -112,7 +114,11 @@
         "jobs": "Jobs profile",
         "available_for_hire": "Available for hire",
         "show_banner": "Show a banner in your public profile linked to your email",
-        "save": "Save changes"
+        "your_url": "Your URL",
+        "save": "Save changes",
+        "errors": {
+          "email_not_valid": "Email not valid"
+        }
       }
     }
   },
@@ -262,79 +268,80 @@
     "new-columns-included": "New columns has been included with your original data.",
     "new-columns-included-based-on-input": "New columns have been included with your original data based on the columns chosen for the input.",
     "sampling": {
-      "title": "Subsample of rows",
-      "description": "A sample of your original table was randomly selected to give approximately a percentage of the rows from your input dataset."
+      "title": "Subsample Percent of Rows",
+      "description": "A sample of your original table was randomly selected to give approximately a percentage of the rows from your base dataset."
     },
     "merge": {
-      "title": "Join columns from 2nd layer",
+      "title": "Add Columns from Second Dataset",
       "description": "This analysis performed a columnar JOIN in order to get columns from two different tables."
     },
     "intersection": {
-      "title": "Filter points in polygons",
-      "description": "This analysis performs a spatial intersection, returning only the rows from the target layer which intersect with geometries in the source layer.",
-      "source-cartodb-id": "This number represents the cartodb_id of the source geometry"
+      "title": "Select Points in Polygons",
+      "description": "This analysis performs a spatial intersection, returning only the rows from the target layer which intersect with geometries in the base layer.",
+      "source-cartodb-id": "This number represents the cartodb_id of the base geometry."
     },
     "area-of-influence": {
-      "title": "Create areas of influence",
-      "description": "Area of influence creates polygons according to the parameters set by the user.",
-      "the-geom": "This column was updated to show the area of influence requested."
+      "title": "Create Travel or Distance Buffers",
+      "description": "Create Travel or Distance Buffers creates polygons according to the parameters set by the user.",
+      "the-geom": "This column was updated to show the travel or distance buffers requested."
     },
     "aggregate-intersection": {
-      "title": "Intersect second layer",
-      "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the source layer.",
-      "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation",
-      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}"
+      "title": "Intersect and Aggregate",
+      "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the base layer.",
+      "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation.",
+      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}."
     },
     "filter": {
-      "title": "Row filtering",
-      "description": "Row filtering allows you to quickly narrow down the total data you display on a map or input into an analysis node."
+      "title": "Filter by Column Value",
+      "description": "Filter by Column Value allows you to quickly narrow down the total data you display on a map or input into an analysis node."
     },
     "filter-by-node-column": {
-      "title": "Filter by layer",
-      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the attached layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
+      "title": "Link Second Layer",
+      "description": "Link Second Layer allows you to filter the data in your layer by propagating the filters in the target layer. Now if you filter on widgets added to the first node, the results in the second node would be also filtered."
     },
     "spatial-markov-trend": {
-      "trend": "The normalized trend for each geometry",
-      "trend_up": "The probability that a geometry's value will move to a higher class",
-      "trend_down": "The probability that a geometry's value will move to a lower class",
-      "volatility": "A measure of the potential for a geometry to possess values in other classes",
+      "title": "Predict Trends and Volatility",
+      "trend": "The normalized trend for each geometry.",
+      "trend_up": "The probability that a geometry's value will move to a higher class.",
+      "trend_down": "The probability that a geometry's value will move to a lower class.",
+      "volatility": "A measure of the potential for a geometry to possess values in other classes.",
       "description": "Trends and volatility are calculated based on the time series data input. Trends calculated from inputs with a longer history are more precise. Inputs for the time column should equally spaced (e.g., all one week/month/year apart)."
     },
     "moran": {
-      "title": "Detect outliers and clusters",
-      "description": "Detect outliers and clusters finds areas in your data where clusters of high values or low values exist, as well as areas which are dissimilar from their neighbors.",
-      "quads": "Classification of the geometry from the analysis",
+      "title": "Detect Outliers and Clusters",
+      "description": "Detect Outliers and Clusters finds areas in your data where clusters of high values or low values exist, as well as areas which are dissimilar from their neighbors.",
+      "quads": "Classification of the geometry from the analysis.",
       "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
       "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
       "vals": "Value used in analysis. If a denominator is entered, this is the 'standardized' rate (centered on mean, normalized by standard deviation)."
     },
     "kmeans": {
-      "title": "Calculating point clusters",
+      "title": "Calculate Clusters of Points",
       "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the %{clusters} clusters you requested (or max rows if less).",
-      "description": "Point clustering is uses k-means to calculate a predefined number of clusters from your data."
+      "description": "Point clustering uses k-means to calculate a predefined number of clusters from your data."
     },
     "data-observatory-measure": {
-      "title": "Enrich from the Data Observatory",
-      "custom-column": "This column contains the data requested from the Data Observatory",
+      "title": "Enrich from Data Observatory",
+      "custom-column": "This column contains the data requested from the Data Observatory.",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
     },
     "data-observatory-multiple-measures": {
       "title": "Enrich from the Data Observatory",
-      "custom-columns": "These columns contain the data requested from the Data Observatory",
+      "custom-columns": "These columns contain the data requested from the Data Observatory.",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measures requested."
     },
     "connect-with-lines": {
-      "title": "Connect with lines",
-      "description": "Create lines from point datasets using a variety of methods",
+      "title": "Create Lines from Points",
+      "description": "Create Lines from Points using a single point, column values, or a second layer.",
       "the-geom": "This column was updated to be lines according to the method chosen.",
-      "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order",
-      "line-source-to-target": "Link a source point to a target point based on a shared attribute",
+      "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order.",
+      "line-source-to-target": "Link a source point to a target point based on a shared attribute.",
       "line-to-single-point": "Connect the coordinate from latitude and longitude columns to the point geometry (`the_geom`) in your dataset."
     },
     "group-points": {
-      "title": "Group points into polygons",
-      "the-geom": "This column was updated to polygons encompassing the input points.",
-      "category": "This will be the category over which the polygons were calculated",
+      "title": "Create Polygons from Points",
+      "the-geom": "This column was updated to polygons encompassing the base points.",
+      "category": "This will be the category over which the polygons were calculated.",
       "description": "Group points into polygons to create new polygons."
     },
     "georeference": {
@@ -343,18 +350,18 @@
       "description": "Geocoding data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
     },
     "centroid": {
-      "title": "Calculating centroids from geometries",
-      "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain. ",
-      "the-geom": "Point geometries representing the centroid(s) of your input data.",
+      "title": "Create Centroids of Geometries",
+      "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Categorize, Weight, and Operation, you can change how they are calculated and what information the result will contain.",
+      "the-geom": "Point geometries representing the centroid(s) of your base layer.",
       "aggregated-value": "Stores the aggregate value for each centroid.",
-      "non-aggregated-value": "Contains the count of features considered for each centroid",
-      "category": "Stores the category value for each centroid from the source dataset"
+      "non-aggregated-value": "Contains the count of features considered for each centroid.",
+      "category": "Stores the category value for each centroid from the base layer."
     },
     "closest": {
-      "description": "Find nearest analysis locates the closest points between two tables.",
-      "source_cdb_id": "This column has been created with the related points id from the source table.",
-      "the-geom": "This column has been updated with the target table geometries.",
-      "title": "Find nearest"
+      "title": "Find Nearest",
+      "description": "Select points from second dataset nearest to the geometries in current layer.",
+      "source_cdb_id": "This column has been created with the related points id from the base layer.",
+      "the-geom": "This column has been updated with the target table geometries."
     }
   },
   "timezones": {
@@ -436,9 +443,13 @@
     "nuku-alofa": "Nuku'alofa"
   },
   "analyses": {
+    "data-observatory-multiple-measures": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data Observatory"
+    },
     "connect-with-lines": {
-      "title": "Connect with lines",
-      "short-title": "Connect with lines"
+      "title": "Create Lines from Points",
+      "short-title": "Create Lines"
     },
     "georeference": {
       "title": "Geocode",
@@ -446,7 +457,7 @@
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
-      "short-title": "Data observatory",
+      "short-title": "Data Observatory",
       "age-and-gender": "Age and Gender",
       "boundaries": "Boundaries",
       "education": "Education",
@@ -484,28 +495,28 @@
       }
     },
     "merge": {
-      "title": "Join columns from 2nd layer",
-      "short-title": "Join columns"
+      "title": "Add Columns from Second Dataset",
+      "short-title": "Add Columns"
     },
     "filter-by-node-column": {
-      "title": "Filter by layer",
-      "short-title": "Filter by layer"
+      "title": "Link Second Layer",
+      "short-title": "Link Layer"
     },
     "centroid": {
-      "title": "Centroid from geometries",
+      "title": "Create Centroids of Geometries",
       "short-title": "Centroid"
     },
     "group-points": {
-      "title": "Group points into polygons",
-      "short-title": "Group points"
+      "title": "Create Polygons from Points",
+      "short-title": "Create Polygons"
     },
     "convex-hull": {
-      "title": "Convex Hull",
-      "short-title": "Convex Hull"
+      "title": "Create Polygons from Points",
+      "short-title": "Create Polygons"
     },
     "concave-hull": {
       "title": "Concave Hull",
-      "short-title": "Concave Hull"
+      "short-title": "Create Polygons"
     },
     "bounding-box": {
       "title": "Bounding Box",
@@ -516,40 +527,48 @@
       "short-title": "Bounding Circle"
     },
     "area-of-influence": {
-      "title": "Create areas of influence",
-      "short-title": "AOI"
+      "title": "Create Travel or Distance Buffers",
+      "short-title": "Buffer"
     },
     "filter-intersection": {
-      "title": "Filter points in polygons",
-      "short-title": "Filter points in polygons"
+      "title": "Select Points in Polygons",
+      "short-title": "Select Points"
     },
     "aggregate-intersection": {
-      "title": "Aggregate intersection",
-      "short-title": "Aggregate intersection"
+      "title": "Intersect and Aggregate",
+      "short-title": "Intersect"
     },
     "filter": {
-      "title": "Filter by column value",
-      "short-title": "Filter"
+      "title": "Filter by Column Value",
+      "short-title": "Filter Value"
     },
     "sampling": {
-      "title": "Subsample percent of rows",
-      "short-title": "Sampling"
+      "title": "Subsample Percent of Rows",
+      "short-title": "Subsample"
     },
     "kmeans": {
-      "title": "Calculate clusters of points",
+      "title": "Calculate Clusters of Points",
       "short-title": "Clusters"
     },
     "moran-cluster": {
-      "title": "Detect outliers and clusters",
-      "short-title": "Outliers & clusters"
+      "title": "Detect Outliers and Clusters",
+      "short-title": "Outliers"
     },
     "spatial-markov-trend": {
-      "title": "Predict trends and volatility",
+      "title": "Predict Trends and Volatility",
       "short-title": "Trends"
+    },
+    "find-nearest": {
+      "title": "Find Nearest",
+      "short-title": "Nearest"
     },
     "source": "Source",
     "routing": {
       "short-title": "Routing"
+    },
+    "deprecated-sql-function": {
+      "title": "SQL Function",
+      "short-title": "SQL Function"
     }
   },
   "analysis-category": {
@@ -825,8 +844,8 @@
           "couldnt-validate": "We couldn't validate this. If you're sure it contains data click \"add basemap\""
         },
         "mapbox": {
-          "insert": "Insert your Mapbox URL",
-          "enter": "Enter a URL",
+          "insert": "Add Mapbox Style basemap",
+          "enter": "Mapbox Style URL",
           "error": "Error retrieving your basemap. Please check your Mapbox URL.",
           "invalid": "This URL is not valid."
         },
@@ -849,6 +868,9 @@
           "night": "Night",
           "cant-select": "You can't select a date in night mode"
         }
+      },
+      "create-dialog": {
+        "creating-map": "Creating map"
       },
       "export-data": {
         "title": "Export data",
@@ -947,12 +969,12 @@
           },
           "link": {
             "type": "LINK",
-            "title": "Only accessible with link",
+            "title": "Public—with link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {
             "type": "PASSWORD",
-            "title": "Password",
+            "title": "Public—with password",
             "body": "Set a password and share only with specific people",
             "placeholder": "Type your password"
           },
@@ -1083,68 +1105,68 @@
         "more-info": "More info",
         "option-types": {
           "connect-with-lines": {
-            "title": "Connect with lines",
-            "desc": "Create lines from point datasets using a variety of methods"
+            "title": "Create Lines from Points",
+            "desc": "Create lines from points using a single point, column values, or a second layer."
           },
           "group-points": {
-            "title": "Group points into polygons",
-            "desc": "Aggregate points into polygons such as convex hulls or bounding boxes."
+            "title": "Create Polygons from Points",
+            "desc": "Create polygons from points using convex hulls, concave hulls, bounding circles or bounding boxes."
           },
           "aggregate-intersection": {
-            "title": "Intersect second layer",
-            "desc": "Intersect with a second layer and calculate aggregations on the fly."
+            "title": "Intersect and Aggregate",
+            "desc": "Find overlapping geometries from a second layer and aggregate its values in the current layer."
           },
           "area-of-influence": {
-            "title": "Create areas of influence",
-            "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
+            "title": "Create Travel/Distance Buffers",
+            "desc": "Use travel time or distance to create buffers around a point or polygon."
           },
           "georeference": {
             "title": "Geocode",
-            "desc": "Use street addresses, city names, or other location text to generate point geometries."
+            "desc": "Use street addresses, city names, or other location text to create point geometries."
           },
           "filter-intersection": {
-            "title": "Filter points in polygons",
-            "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
+            "title": "Select Points in Polygons",
+            "desc": "Select points from a second dataset that intersect the current polygon layer."
           },
           "filter": {
-            "title": "Filter by column value",
-            "desc": "Keep or discard rows according to a custom criteria."
+            "title": "Filter by Column Value",
+            "desc": "Keep or discard rows with a selected column value."
           },
           "merge": {
-            "title": "Join columns from 2nd layer",
-            "desc": "Join columns from a second layer by linking a shared value found in both datasets."
+            "title": "Add Columns from 2nd Dataset",
+            "desc": "Join a second dataset to current layer using a shared column value."
           },
           "moran-cluster": {
-            "title": "Detect outliers and clusters",
-            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters.",
+            "title": "Detect Outliers and Clusters",
+            "desc": "Use Moran's I to select geometries where values are spatially clustered and adjacent outliers.",
             "high-low": "High-Low (HL)",
             "high-high": "High-High (HH)",
             "low-high": "Low-High (LH)",
             "low-low": "Low-Low (LL)"
           },
           "kmeans": {
-            "title": "Calculate clusters of points",
-            "desc": "Spatially separate a layer of points into a specified number (N) of groups."
+            "title": "Calculate Clusters of Points",
+            "desc": "Augment with cluster_no column to spatially separate points into a specified number of groups."
           },
           "centroid": {
-            "title": "Find centroid of geometries",
-            "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
+            "title": "Create Centroids of Geometries",
+            "desc": "Create a direct or weighted centroid grouped by all rows or by categories from current layer."
           },
           "filter-by-node-column": {
-            "title": "Filter by layer",
-            "desc": "Filter your layer depending on a second layer such that widgets will affect both."
+            "title": "Link Second Layer",
+            "desc": "Use a shared column to link layers so second layer's widgets filter both."
           },
           "sampling": {
-            "title": "Subsample percent of rows",
+            "title": "Subsample Percent of Rows",
             "desc": "Subsample the rows in a dataset based on a specified percent."
           },
           "spatial-markov-trend": {
-            "title": "Predict trends and volatility",
-            "desc": "Predict probability of upward and downward trends using spatial Markov chains."
+            "title": "Predict Trends and Volatility",
+            "desc": "Predict probability of trends from a sequence of data across columns, using spatial Markov chains."
           },
           "data-observatory-measure": {
             "title": "Enrich from Data Observatory",
-            "desc": "Add a new column with contextual demographic and economic measures."
+            "desc": "Add new columns with contextual data such as demographic and economic measures."
           },
           "deprecated-sql-function": {
             "title": "SQL Function",
@@ -1333,7 +1355,9 @@
         },
         "footer": {
           "guessing-desc": "Let CARTO automatically guess data types and content on import.",
-          "twitter-desc": "To get access to historical data (older than 30 days) you need to",
+          "deprecated-connector": "Deprecated connector.",
+          "twitter-contact-support": "Please <a href='mailto:support@carto.com'>contact support</a> for more information.",
+          "twitter-how-to-historical": "To get access to historical data (older than 30 days) you need to",
           "contact-team": "contact our team",
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
           "privacy-change": "Your new dataset will be %{privacy}",
@@ -1354,6 +1378,26 @@
           "desc": "Are you sure you want to delete it?",
           "cancel": "Cancel",
           "confirm": "Ok, delete it"
+        }
+      },
+      "privacy-warning": {
+        "title": {
+          "visualization": "You are about to publish this visualization for public view",
+          "dataset": "You are about to make this dataset public, making it visible in your public profile"
+        },
+        "description": "Any personal data that you have used to create it will also be publicly available",
+        "cancel": "Cancel",
+        "confirm": "Ok, publish it"
+      },
+      "password-confirmation": {
+        "modal-title": "Please confirm your password.",
+        "modal-description": "\"Hey, ho! Let’s Go!\"",
+        "form": {
+          "password-label": "Password"
+        },
+        "actions": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
         }
       }
     },
@@ -1760,6 +1804,16 @@
         "layer-options": "Layer options",
         "basemap-options": "Basemap options"
       },
+      "warnings": {
+        "no-data": {
+          "message": "No data available.",
+          "action-message": "There are no results for the combination of analyses applied to your data. Try tweaking them."
+        },
+        "geocode": {
+          "message": "There is no geometry in your data.",
+          "action-message": "Apply a Geocode analysis or manually add geometry data to visualize on the map."
+        }
+      },
       "errors": {
         "broken-node": "Broken node",
         "non-existent-node": "Layer is pointing to a non existent node %{nodeId}"
@@ -1863,7 +1917,6 @@
       "analysis-form": {
         "admin-region": "Administrative Regions",
         "aggregate": "Aggregate",
-        "aggregate-by": "Aggregate by",
         "aggregate-by-help": "Will calculate aggregate values for each centroid",
         "aggregate-column": "Aggregate column",
         "all-to-all": "All to all",
@@ -1872,6 +1925,7 @@
         "append-help": "Keep your source data and append matching rows from your target. (Left Join).",
         "apply-btn": "Apply",
         "asc": "ASC",
+        "base-data": "Base data",
         "bicycle": "Bicycle",
         "boundaries": "Boundaries",
         "bounding-box": "Bounding Box",
@@ -1882,12 +1936,14 @@
         "by-walk": "walk",
         "cancel-btn": "Cancel",
         "car": "Car",
-        "categorize-by": "Categorize by",
+        "categorize-by": "Categorize",
         "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
         "choose-similar-columns": "Choose similar columns to relate them",
+        "centroid-desc": "Group or weight your centroids",
         "city": "City",
-        "clusters-num": "# of clusters",
+        "clusters-num": "Clusters",
+        "closeness": "Closeness",
         "column": "Column",
         "concave-hull": "Concave Hull",
         "confirm-analysis": "Confirm",
@@ -1905,15 +1961,15 @@
             "add": "Add new measurement"
           },
           "header": {
-            "title": "Select region",
-            "description": "For augmenting your layer"
+            "title": "Select a region",
+            "description": "Region must match your geometry location"
           },
           "parameters": {
             "title": "Select measurements",
-            "description": "Pick up to 10 measurements"
+            "description": "Contextual data to augment your layer"
           },
           "source": {
-            "label": "Source"
+            "label": "Base layer"
           },
           "region": {
             "label": "Region",
@@ -1938,12 +1994,11 @@
             "label": "Boundaries"
           }
         },
+        "data-type": "Data type",
         "define-columns": "Define column to find similarities with",
-        "define-reference-and-target": "Define reference and target layers",
+        "define-how-connect-points": "Define how to connect your points",
         "define-two-layers": "Define two layers",
         "delete-btn": "Delete",
-        "denominator": "Denominator",
-        "denominator-help": "A column to normalize the target column",
         "deprecated-sql-function": {
           "choose-function": "Choose the function to run on this node",
           "choose-function-small": "Choose function",
@@ -1962,11 +2017,13 @@
         "distance": "Distance",
         "enter-latitude": "Enter latitude",
         "enter-longitude": "Enter longitude",
+        "enable-normalize": "Enable Normalize",
         "filter": "Filter",
         "filter-aggregate": "Aggregate your results",
-        "filter-column": "Filter column",
+        "filter-column": "Target column",
         "geometry-from": "Geometry from",
         "georeference": {
+          "description": "Geocode to get location coordinates",
           "postal-code-help": "Select a column with postal codes",
           "admin-region-help": "Select a column with region names",
           "admin-region-extended-help": "Specify an administrative region or select a column with region names",
@@ -2006,52 +2063,53 @@
         },
         "group-by": "Group by",
         "hide": "Hide",
-        "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
         "intact-help": "Keep all polygon tracts as individual polygons",
         "intersect": "Intersect",
+        "select-your-points": "Select your points",
         "intersect-help": "Only keep the rows matching your target data (Inner Join).",
+        "intersect-step-one-desc": "To find overlapping geometries",
         "join-type": "Join Type",
-        "keep-data": "Select the data you want to keep",
-        "key-columns": "Key columns",
-        "key-columns-desc": "Choose similar columns to relate them",
+        "keep-data": "Select the data you want to keep from each",
+        "key-columns": "Choose a shared column",
+        "key-columns-desc": "Columns must have the same type of data",
         "kilometers": "km",
         "latitude": "Latitude",
         "line-sequential": "Sequential",
         "line-source-to-target": "To Source",
         "line-to-single-point": "To Single Point",
         "link-layer": "Link to col.",
-        "link-layer-desc": "Specify a second layer to filter by",
-        "linked-layer": "Filter by layer",
+        "link-layer-desc": "This layer's widgets will link both",
+        "linked-layer": "Target layer",
         "loading": "loading…",
         "longitude": "Longitude",
+        "markov-desc": "One for each time period",
         "max-or-equal": "Max or equal",
         "max": "Max",
         "measure-by": "Measure by",
+        "merge-step-one-title": "Select a target to join",
         "meters": "m",
         "method": "Method",
         "miles": "mi",
         "min-or-equal": "Min or equal",
         "min": "Min",
         "mode": "Mode",
-        "more-info": "More info",
+        "moran-desc": "Find spatially clustered values and outliers",
+        "more-info": "Info",
         "find-nearest": {
           "categorized": "Per group",
           "categorized-help": "Calculate results per each category of the chosen column",
-          "criteria": "Select the target point layer",
-          "define-params": "Define your parameters",
-          "define-params-desc": "Define and categorize the number of results",
-          "input": "input",
           "max-results": "max results",
-          "modal-desc": "Find nearest analysis locates the closest points between two tables.",
-          "modal-title": "Find nearest",
-          "target": "target",
-          "title": "Find nearest"
+          "modal-desc": "Select points from second dataset nearest to the geometries in current layer.",
+          "modal-title": "Find Nearest",
+          "workflow-title": "Find Nearest"
         },
         "neighbors": "Neighbors",
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",
+        "normalize": "Normalize",
+        "normalize-help": "A column to normalize the target column",
         "should-match": "Column types should match",
         "numerator": "Target column",
         "numerator-help": "Measure spatial autocorrelation of this column",
@@ -2059,8 +2117,8 @@
         "order": "Order",
         "order-by": "Order by",
         "order-results": "Order your results",
-        "output-data": "Output data",
-        "parameters": "Parameters",
+        "output-data": "Define output data",
+        "parameters": "Define your parameters",
         "parameters-description": "Tune your analysis",
         "permutations": "Permutations",
         "placeholder-text": "Analysis allow you to build reproducible workflows for analyzing and explaining your data.",
@@ -2107,22 +2165,24 @@
             "trade-area": "Trade area",
             "georeference-street-address": "Geocode street address",
             "georeference-cities": "Geocode cities",
-            "data-observatory-measure": "Data Observatory"
+            "data-observatory-measure": "Enrich from Data Observatory"
           }
         },
         "public_transport": "Public transport",
         "radius": "Distance",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
-        "result": "Result",
+        "results": "Results",
         "right": "Right",
         "sampling": "Sampling",
         "sampling-desc": "Select a sample of the data",
-        "sampling-rate": "% of data ",
+        "sampling-rate": "Percent of data ",
         "search-by-column-name": "Search by column name",
         "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",
         "select-type-placeholder": "Select a type",
+        "select-columns": "Select columns",
         "select-data-source": "Select a data source",
+        "select-layer": "Select a layer",
         "select-second-source": "Select a second data source to join",
         "select-type": "Select data type",
         "select-value": "Select a value",
@@ -2130,12 +2190,10 @@
         "show": "Show",
         "significance": "Significance",
         "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
-        "source": "Source",
-        "source-col": "Source col.",
-        "source-column": "Source column",
-        "source-data": "Source data",
-        "spatial-markov-trend-desc": "select a column for each time period",
-        "spatial-markov-trend-time-columns": "Input columns",
+        "source-col": "Base col.",
+        "source-column": "Base column",
+        "spatial-markov-trend-desc": "One for each time period",
+        "spatial-markov-trend-time-columns": "Base columns",
         "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
         "sampling-form-model": {
           "help": "% of data to show"
@@ -2143,19 +2201,19 @@
         "state": "State",
         "target": "Target",
         "target-layer": "Target layer",
-        "intersection-layer": "Intersect layer",
-        "filtering-layer": "Filtering layer",
         "base-layer": "Base layer",
         "target-col": "Target col.",
         "target-column": "Target column",
         "target-data": "Target data",
         "target-percent": "Target percent",
         "target-percent-help": "Convex hull lookalike",
+        "target-layer-dataset": "Target can be a layer or a dataset",
         "time": "Time",
         "time-seconds": "Time (Seconds)",
         "to-closest": "To closest",
         "top-range": "Top range",
-        "tracts": "Tracts",
+        "to-filter-by": "To filter by",
+        "tracts": "Tracks",
         "tracts-help": "Number of AOIs evenly spaced between 0 and RADIUS",
         "tune-analysis": "Tune your analysis",
         "tune-centroid": "Tune your centroid",
@@ -2358,8 +2416,8 @@
         "errors": {
           "empty": "Template can't be empty."
         },
-        "pre-html": "<!-- insert your custom html code above this line -->",
-        "post-html": "<!-- insert your custom html code below this line -->"
+        "pre-html": "<!-- insert your custom html code below this line -->",
+        "post-html": "<!-- insert your custom html code above this line -->"
       },
       "menu-tab-pane-labels": {
         "color": "color",
@@ -2772,15 +2830,18 @@
       }
     },
     "widgets": {
-      "add": "Widget successfully added",
+      "add_pluralize": "Widget successfully added |||| Widgets successfully added",
       "replace": "Widget successfully replaced",
-      "delete": "Widget deleted correctly",
+      "replace_pluralize": "Widget successfully replaced |||| Widgets successfully replaced",
+      "delete_pluralize": "Widget deleted correctly |||| Widgets deleted correctly",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"
       },
       "loading": "Adding widget…",
+      "loading_pluralize": "Adding widget… |||| Adding widgets...",
       "updating": "Updating widget…",
+      "updating_pluralize": "Updating widget… |||| Updating widgets...",
       "restoring": "Restoring widgets…",
       "restored": "Widgets restored"
     },

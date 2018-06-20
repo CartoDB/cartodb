@@ -1165,7 +1165,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.db_service.setup_owner_permissions
+          owner.db_service.grant_admin_permissions
         rescue => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
@@ -1381,6 +1381,30 @@ namespace :cartodb do
           end
         rescue => e
           puts "Error trying to give DO quota to #{u.username}: #{e.message}"
+        end
+      end
+    end
+
+    desc 'Fix analysis table the_geom type'
+    task fix_analysis_the_geom_type: [:environment] do
+      total_users = User.count
+      current = 0
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        puts "User #{current += 1} / #{total_users}"
+        next if user.organization && user.organization.owner != user # Filter out admin not owner users
+        begin
+          user.in_database do |db|
+            db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns WHERE f_table_name LIKE 'analysis%' AND type = 'MULTIPOLYGON'").map { |r| { schema: r[:f_table_schema], table: r[:f_table_name] } }.each do |entry|
+              geom_types = db.fetch("SELECT DISTINCT ST_GeometryType(the_geom) AS geom_type FROM \"#{entry[:schema]}\".\"#{entry[:table]}\"").map { |r| r[:geom_type] }
+              if geom_types.size == 2 && geom_types.include?('ST_Polygon') && geom_types.include?('ST_MultiPolygon')
+                db.execute("UPDATE \"#{entry[:schema]}\".\"#{entry[:table]}\" SET the_geom = ST_Multi(the_geom) where ST_GeometryType(the_geom) = 'ST_Polygon'")
+              elsif geom_types.size >= 2
+                puts "Unexpected type of geometries found for user #{user.username}. Table \"#{entry[:schema]}\".\"#{entry[:table]}\": #{geom_types.join(', ')}"
+              end
+            end
+          end
+        rescue => e
+          puts "Error processing user #{user.username}: #{e.inspect}"
         end
       end
     end

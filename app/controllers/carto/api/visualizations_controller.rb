@@ -10,6 +10,7 @@ require_dependency 'visualization/name_generator'
 require_dependency 'visualization/table_blender'
 require_dependency 'carto/visualization_migrator'
 require_dependency 'carto/google_maps_api'
+require_dependency 'carto/ghost_tables_manager'
 
 module Carto
   module Api
@@ -49,11 +50,16 @@ module Carto
 
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
       before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
+      before_filter :link_ghost_tables, only: [:index]
+      before_filter :load_common_data, only: [:index]
 
+      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
+
+      VALID_ORDER_PARAMS = [:updated_at, :size, :mapviews, :likes].freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -76,7 +82,7 @@ module Carto
       end
 
       def index
-        page, per_page, order = page_per_page_order_params
+        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 
@@ -103,6 +109,8 @@ module Carto
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
+      rescue Carto::OrderParamInvalidError => e
+        render_jsonp({ error: e.message }, e.status)
       rescue => e
         CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)
@@ -358,10 +366,10 @@ module Carto
       #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
       #   :active_child, :permission
       VALID_UPDATE_ATTRIBUTES = [:name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at,
-                                 :locked, :source, :title, :license, :attributions, :kind, :password].freeze
+                                 :locked, :source, :title, :license, :attributions, :kind, :password, :version].freeze
       # TODO: This lets more things through than it should. This is due to tests using this endpoint to create
       #       test visualizations.
-      VALID_CREATE_ATTRIBUTES = (VALID_UPDATE_ATTRIBUTES + [:type, :map_id]).freeze
+      VALID_CREATE_ATTRIBUTES = (VALID_UPDATE_ATTRIBUTES + [:type, :map_id] - [:version]).freeze
 
       def generate_vizjson2
         Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
@@ -478,6 +486,27 @@ module Carto
                                                 privacy: blender.blended_privacy,
                                                 user_id: current_user.id,
                                                 overlays: Carto::OverlayFactory.build_default_overlays(current_user)))
+      end
+
+      def link_ghost_tables
+        return unless current_user.present?
+        return unless current_user.has_feature_flag?('ghost_tables')
+
+        # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
+        # or asynchronously otherwise.
+        Carto::GhostTablesManager.new(current_user.id).link_ghost_tables
+      end
+
+      def load_common_data
+        return true unless current_user.present?
+        begin
+          visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
+          ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+        rescue Exception => e
+          # We don't block the load of the dashboard because we aren't able to load common dat
+          CartoDB.notify_exception(e, {user:current_user})
+          return true
+        end
       end
     end
   end

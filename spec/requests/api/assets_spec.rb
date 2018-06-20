@@ -4,10 +4,6 @@ require 'spec_helper'
 
 describe "Assets API" do
 
-  before(:all) do
-    AWS.stub!
-  end
-
   before(:each) do
     @user = FactoryGirl.create(:valid_user)
 
@@ -101,9 +97,12 @@ describe "Assets API" do
   end
 
   it "deletes an asset" do
+    Asset.any_instance.stubs('use_s3?').returns(false)
+
     FactoryGirl.create(:asset, user_id: @user.id)
     @user.reload
     delete_json(api_v1_users_assets_destroy_url(user_id: @user.id, id: @user.assets.first.id), params) do |response|
+      response.body.should == {}
       response.status.should be_success
       @user.reload
       @user.assets.count.should == 0

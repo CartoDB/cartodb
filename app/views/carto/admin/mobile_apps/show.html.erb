@@ -10,7 +10,8 @@
     var authenticity_token = "<%= form_authenticity_token %>";
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'account_deps.js', 'mobile_apps.js' -%>
+
+  <%= javascript_include_tag 'common', 'common_vendor', 'mobile_apps' %>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'mobile_apps.css', :media => 'all' %>

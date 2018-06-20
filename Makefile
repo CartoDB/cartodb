@@ -7,10 +7,6 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-PENDING_SPECS = \
-	spec/lib/varnish_spec.rb (#321) \
-	$(NULL)
-
 WORKING_SPECS_INTEGRATIONS = \
 	$(NULL)
 
@@ -84,6 +80,7 @@ WORKING_SPECS_1 = \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/widget_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
+	spec/services/carto/data_library_service_spec.rb \
 	spec/services/carto/user_authenticator_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_spec.rb \
@@ -185,6 +182,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/valid_table_name_proposer_spec.rb \
 	spec/lib/carto/db/sanitize_spec.rb \
 	spec/lib/carto/db/user_schema_spec.rb \
+	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
 	$(NULL)
 
@@ -221,10 +219,12 @@ WORKING_SPECS_9 = \
 	spec/models/carto/shared_entity_spec.rb \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \
+	spec/requests/password_change_controller_spec.rb \
 	spec/requests/superadmin/users_spec.rb \
 	spec/requests/superadmin/organizations_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/requests/superadmin/platform_controller_spec.rb \
+	spec/requests/superadmin/account_types_spec.rb \
 	spec/requests/api/visualizations_spec.rb \
 	spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
@@ -247,6 +247,7 @@ WORKING_SPECS_9 = \
 
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
+	spec/models/carto/account_type_spec.rb \
 	spec/models/carto/analysis_spec.rb \
 	spec/models/carto/analysis_node_spec.rb \
 	spec/models/carto/api_key_spec.rb \
@@ -317,10 +318,13 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/organization_assets_service_spec.rb \
 	spec/lib/carto/storage_options/local_spec.rb \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
+	spec/lib/tasks/layers_rake_spec.rb \
+	spec/lib/tasks/fix_unique_legends_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \
 	spec/lib/carto/google_maps_api_spec.rb \
+	spec/lib/tasks/fix_unique_overlays_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

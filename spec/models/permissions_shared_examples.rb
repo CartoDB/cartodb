@@ -386,7 +386,7 @@ shared_examples_for 'permission models' do
 
     it 'checks organizations vs users permissions precedence' do
       organization = create_organization_with_owner
-      org_user = create_user(organization: organization)
+      org_user = create_user(organization: organization, account_type: 'ORGANIZATION USER')
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user)
       permission = permission_from_visualization_id(table_visualization.id)

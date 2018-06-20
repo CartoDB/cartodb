@@ -1,12 +1,13 @@
 <% content_for :title do %><%= @organization ? @organization.name : 'User' %> sign up<% end %>
 
 <% content_for :js do %>
-  <%= javascript_include_tag 'cdb.js', 'confirmation_templates.js', 'confirmation.js' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'confirmation' %>
+
   <script>
-    var user_creation_id = "<%= @user_creation_id %>";
-    var user_name = "<%= @user_name %>";
-    var is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
-    var user_url = "<%= @redirect_url %>";
+    var userCreationId = "<%= @user_creation_id %>";
+    var username = "<%= @user_name %>";
+    var customHosted = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+    var userURL = "<%= @redirect_url %>";
   </script>
 <% end %>
 

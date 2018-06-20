@@ -6,6 +6,7 @@ require_dependency 'carto/api/paged_searcher'
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
+  include Carto::ControllerHelper
 
   respond_to :json
 
@@ -13,7 +14,11 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
   before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
 
+  rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+
   layout 'application'
+
+  VALID_ORDER_PARAMS = [:updated_at].freeze
 
   def show
     respond_with(@user.data({:extended => true}))
@@ -39,13 +44,15 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def create
     @user = ::User.new
 
-    @user.set_fields_from_central(params[:user], :create)
+    user_param = params[:user]
+    @user.set_fields_from_central(user_param, :create)
     @user.enabled = true
 
+    @user.rate_limit_id = create_rate_limits(user_param[:rate_limit]).id if user_param[:rate_limit].present?
     if @user.save
       @user.reload
       CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
-      @user.set_relationships_from_central(params[:user])
+      @user.set_relationships_from_central(user_param)
     end
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(
@@ -61,6 +68,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.set_relationships_from_central(user_param)
     @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
 
+    @user.update_rate_limits(user_param[:rate_limit])
     @user.save
     respond_with(:superadmin, @user)
   end
@@ -111,7 +119,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def data_imports
-    page, per_page, order = page_per_page_order_params
+    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
     dataset = @user.data_imports_dataset.order(order.desc).paginate(page, per_page)
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
@@ -139,7 +147,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def geocodings
-    page, per_page, order = page_per_page_order_params
+    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
     dataset = @user.geocodings.order("#{order} desc")
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
@@ -161,7 +169,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def synchronizations
-    page, per_page, order = page_per_page_order_params
+    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
     dataset = @user.synchronizations.order("#{order} desc")
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
@@ -204,6 +212,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def get_carto_user
     @user = Carto::User.where(id: params[:id]).first
     render json: { error: 'User not found' }, status: 404 unless @user
+  end
+
+  def create_rate_limits(rate_limit_attributes)
+    rate_limit = Carto::RateLimit.from_api_attributes(rate_limit_attributes)
+    rate_limit.save!
+    rate_limit
   end
 
 end # Superadmin::UsersController

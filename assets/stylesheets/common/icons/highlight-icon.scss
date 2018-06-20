@@ -1,0 +1,26 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// The little icon, typically used to highlight some text paragraph that goes with it
+//
+// Example usage:
+//   <i class="HighlightIcon HighlightIcon--warning"></i>
+//   <p>Do not look at the pink elephant!</p>
+// --------------------------------------------------
+.HighlightIcon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  color: white;
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal !important;
+  text-align: center;
+  vertical-align: top;
+}
+
+.HighlightIcon.HighlightIcon--warning {
+  border: 1px solid #F2C000;
+  background: #F6D35C;
+}

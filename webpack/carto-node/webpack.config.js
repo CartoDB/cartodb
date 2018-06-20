@@ -3,40 +3,16 @@
 // an explicit call is made in this file to these plugins with customized options that enables
 // more control of the output bundle in order to fix unexpected behavior in old browsers.
 
-const webpack = require('webpack');
-const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 const env = require('yargs').argv.env;
 
 const libraryName = 'CartoNode';
 const fileName = 'carto-node';
 
-const uglifySettings = {
-  test: /\.js$/,
-  sourceMap: true,
-  beautify: false,
-  mangle: {
-    screw_ie8: true,
-    keep_fnames: true
-  },
-  compress: {
-    screw_ie8: true
-  },
-  comments: false,
-  output: {
-    ascii_only: true
-  },
-  uglifyOptions: {
-    compress: true
-  }
-};
-
-let plugins = [];
-
 const outputFile = env !== 'build'
   ? fileName + '.js'
-  : (plugins.push(new UglifyJsPlugin(uglifySettings)),
-    fileName + '.min.js');
+  : fileName + '.min.js';
 
 const config = {
   entry: './lib/assets/javascripts/carto-node/index',
@@ -64,7 +40,22 @@ const config = {
     }]
   },
 
-  plugins: plugins
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        cache: false,
+        parallel: true,
+        uglifyOptions: {
+          sourceMap: true,
+          keep_fnames: true,
+          output: {
+            ascii_only: true,
+            beautify: false
+          }
+        }
+      })
+    ]
+  }
 };
 
 module.exports = config;

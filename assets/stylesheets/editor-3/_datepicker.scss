@@ -1,0 +1,28 @@
+// Date picker (calendar) styles
+// --------------------------------------------------
+
+.DatePicker-timers {
+  display: flex;
+  margin: 0 14px;
+}
+
+.DatePicker-timersField {
+  display: flex;
+  align-items: center;
+}
+
+.DatePicker-timersField--spaced {
+  margin: 0 12px 0 34px;
+}
+
+.DatePicker-timersInput {
+  width: 85px;
+}
+
+.DatePicker-timersInput .CDB-InputText {
+  width: 45px;
+}
+// Hide sliders for number type, not needed for the calendar
+.DatePicker-timersInput .CDB-OptionInput-item:first-child {
+  display: none;
+}

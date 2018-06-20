@@ -16,19 +16,56 @@ describe 'UserMigration' do
     ]
   end
 
+  let(:agg_ds_config) do
+    {
+      aggregation_tables: {
+        'host' => 'localhost',
+        'port' => '5432',
+        'dbname' => 'test_migration',
+        'username' => 'geocoder_api',
+        'password' => '',
+        'tables' => {
+          'admin0' => 'ne_admin0_v3',
+          'admin1' => 'global_province_polygons'
+        }
+      },
+      geocoder: {
+        'api' => {
+          'host' => 'localhost',
+          'port' => '5432',
+          'dbname' => 'test_migration',
+          'user' => 'geocoder_api'
+        }
+      }
+    }
+  end
+
   shared_examples_for 'migrating metadata' do |migrate_metadata|
+
+    before :each do
+      @user = FactoryGirl.build(:valid_user).save
+      @carto_user = Carto::User.find(@user.id)
+      @user_attributes = @carto_user.attributes
+
+      @table1 = create_table(user_id: @user.id)
+      records.each { |row| @table1.insert_row!(row) }
+      create_database('test_migration', @user) if migrate_metadata
+    end
+
+    after :each do
+      if migrate_metadata
+        @user.destroy_cascade
+        drop_database('test_migration', @user)
+      else
+        @user.destroy
+      end
+    end
+
     it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
-      user = FactoryGirl.build(:valid_user).save
-      carto_user = Carto::User.find(user.id)
-      user_attributes = carto_user.attributes
-
-      table1 = create_table(user_id: user.id)
-      records.each { |row| table1.insert_row!(row) }
-
       export = Carto::UserMigrationExport.create(
-        user: carto_user,
+        user: @carto_user,
         export_metadata: migrate_metadata
       )
       export.run_export
@@ -36,38 +73,45 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-      carto_user.client_applications.each(&:destroy)
-      table1.table_visualization.layers.each(&:destroy)
-      table1.destroy
-      expect { table1.records }.to raise_error
+      @carto_user.client_applications.each(&:destroy)
+      @table1.table_visualization.layers.each(&:destroy)
+      @table1.destroy
+      expect { @table1.records }.to raise_error
 
-      migrate_metadata ? user.destroy : drop_database(user)
+      migrate_metadata ? @user.destroy : drop_user_database(@user)
 
-      import = Carto::UserMigrationImport.create(
-        exported_file: export.exported_file,
-        database_host: user_attributes['database_host'],
-        org_import: false,
-        json_file: export.json_file,
-        import_metadata: migrate_metadata
-      )
-      import.run_import
+      Cartodb.with_config(agg_ds_config) do
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: @user_attributes['database_host'],
+          org_import: false,
+          json_file: export.json_file,
+          import_metadata: migrate_metadata
+        )
+        import.run_import
 
-      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
-      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+        puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+        expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
-      carto_user = Carto::User.find(user_attributes['id'])
+        @carto_user = Carto::User.find(@user_attributes['id'])
 
-      if migrate_metadata
-        attributes_to_test(user_attributes).each do |attribute|
-          expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
+        if migrate_metadata
+          attributes_to_test(@user_attributes).each do |attribute|
+            expect(@carto_user.attributes[attribute]).to eq(@user_attributes[attribute])
+          end
+          @user.in_database(as: :superuser) do |db|
+            ds_config = db.fetch("SELECT * from cdb_conf where key = 'geocoder_server_config'").first[:value]
+            fdws_config = db.fetch("SELECT * from cdb_conf where key = 'fdws'").first[:value]
+            expect(ds_config).to match /dbname=test_migration/
+            expect(fdws_config).to match /\"dbname\":\"test_migration\"/
+          end
+        else
+          expect(@carto_user.attributes).to eq(@user_attributes)
         end
-      else
-        expect(carto_user.attributes).to eq(user_attributes)
+
+        records.each.with_index { |row, index| @table1.record(index + 1).should include(row) }
+
       end
-
-      records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
-
-      migrate_metadata ? user.destroy_cascade : user.destroy
     end
   end
 
@@ -172,6 +216,18 @@ describe 'UserMigration' do
 
       Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
     end
+
+    it 'import failing importing visualizations does not remove assets' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+      Asset.any_instance.stubs(:use_s3?).returns(false)
+      asset = Asset.create(asset_file: Rails.root + 'spec/support/data/cartofante_blue.png', user: @user)
+      local_url = CGI.unescape(asset.public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
+      imp = import
+
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      File.exists?((asset.public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/')).should eq true
+    end
   end
 
   describe 'failing organization organizations should rollback' do
@@ -255,6 +311,17 @@ describe 'UserMigration' do
       org_import.run_import.should eq true
     end
 
+    it 'import failing import visualizations with metadata_only option' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+
+      imp = org_import
+      imp.import_data = false
+      imp.save!
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      imp.reload
+    end
+
     it 'should fail if importing an already existing organization with metadata' do
       org_import.run_import.should eq true
       imp = org_import
@@ -273,6 +340,20 @@ describe 'UserMigration' do
       Carto::Organization.where(id: @carto_organization.id).should be_empty
 
       Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
+    end
+
+    it 'import failing importing visualizations does not remove assets' do
+      Carto::StorageOptions::S3.stubs(:enabled?).returns(false)
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+      asset = Carto::Asset.for_organization(
+        organization: @carto_organization,
+        resource: File.open(Rails.root + 'spec/support/data/cartofante_blue.png')
+      )
+      imp = org_import
+
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      File.exists?(asset.storage_info[:identifier]).should eq true
     end
   end
 
@@ -323,6 +404,53 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
+  it 'does not export duplicated vizs' do
+    user = create_user_with_visualizations
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+    source_vis = carto_user.visualizations.where(type: Carto::Visualization::TYPE_CANONICAL).first
+    carto_user.visualizations.count.should eq 3
+    map, _, table_visualization, visualization = create_full_visualization(carto_user)
+    table_visualization.update_column(:name, source_vis.name)
+    table_visualization.update_column(:map_id, source_vis.map.id)
+    table_visualization.update_column(:updated_at, source_vis.updated_at - 1.minute)
+    map.destroy
+    visualization.destroy
+
+    carto_user.visualizations.count.should eq 4
+
+    export = Carto::UserMigrationExport.create(
+      user: carto_user,
+      export_metadata: true
+    )
+    export.run_export
+
+    puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+    expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+    user.destroy_cascade
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: true,
+      dry: false
+    )
+    import.stubs(:assert_organization_does_not_exist)
+    import.stubs(:assert_user_does_not_exist)
+    import.run_import
+
+    puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+    expect(export.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+    imported_user = Carto::User.find(user_attributes['id'])
+    imported_user.visualizations.count.should eq 3
+    expect { imported_user.visualizations.find(table_visualization.id) }.to raise_error(ActiveRecord::RecordNotFound)
+
+    user.destroy_cascade
+  end
+
   it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
@@ -355,7 +483,7 @@ describe 'UserMigration' do
     user.destroy_cascade
   end
 
-  it 'doesn\'t export users with datasets without a physical table if metadata export is requested (see #12588)' do
+  it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -367,23 +495,20 @@ describe 'UserMigration' do
     user.in_database.execute("DROP TABLE #{@table.name}")
     # The table is still registered after the deletion
     carto_user.reload
+
     carto_user.tables.exists?(name: @table.name).should be
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
+    export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
     export.destroy
 
     user.destroy
   end
 
-  it 'doesn\'t export users with a canonical viz without user table if metadata export is requested (see #12588)' do
+  it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
@@ -399,16 +524,176 @@ describe 'UserMigration' do
 
     export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
     export.run_export
-    export.log.entries.should include("Can't export. Vizs without user table: [\"#{@table_visualization.id}\"]")
-    expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-    export.destroy
 
-    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
-    export.run_export
     expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-    export.destroy
 
     user.destroy
+  end
+
+  it 'exports and imports a user with raster overviews because exporting skips them' do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    user = FactoryGirl.build(:valid_user).save
+    carto_user = Carto::User.find(user.id)
+    user_attributes = carto_user.attributes
+    user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
+    user.in_database.execute('INSERT INTO i_hate_raster VALUES(ST_MakeEmptyRaster(100, 100, 0, 0, 100, 100, 0, 0, 2274))')
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("SELECT AddRasterConstraints('i_hate_raster', 'rast')")
+    user.in_database.execute("SELECT ST_CreateOverview('i_hate_raster'::regclass, 'rast', 2)")
+    user.in_database.execute('DROP TABLE i_hate_raster')
+    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+    export.run_export
+    user.destroy
+
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: true,
+      dry: false
+    )
+    import.run_import
+
+    expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+  end
+
+  describe 'legacy functions' do
+    before :each do
+      @legacy_functions = CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS
+    end
+
+    after :each do
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = @legacy_functions
+    end
+
+    it 'loads legacy functions' do
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2493
+    end
+
+    it 'matches functions with attributes qualified with namespace' do
+      class DummyTester
+        include CartoDB::DataMover::LegacyFunctions
+      end
+      line = '1880; 1255 5950507 FUNCTION asbinary("geometry", "pg_catalog"."text") postgres'
+      DummyTester.new.remove_line?(line).should be true
+    end
+
+    it 'skips importing legacy functions using fixture' do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
+      user = FactoryGirl.build(:valid_user).save
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      user.in_database.execute('CREATE OR REPLACE FUNCTION sumita(i1 INT, i2 INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i1 + i2;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+      export.run_export
+      user.destroy
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+      import.run_import
+
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'sumita'").should eq 0
+      user.destroy
+    end
+
+    it 'imports functions and tables that are not on the legacy list using fixture' do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      user = FactoryGirl.build(:valid_user).save
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+      user.in_database.execute('CREATE OR REPLACE FUNCTION st_text(b boolean) RETURNS INT AS $$
+      BEGIN
+        RETURN 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+      BEGIN
+        RETURN i + 1;
+      END;
+      $$ LANGUAGE plpgsql;')
+
+      user.in_database.execute('CREATE TABLE layer_wadus(number INT)')
+      user.in_database.execute('INSERT INTO layer_wadus VALUES (\'1\')')
+
+      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+      export.run_export
+      user.destroy
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+      import.run_import
+
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 1
+      user.in_database.execute('select count(*) from layer_wadus').should eq 1
+      user.destroy
+    end
+
+    describe 'with organization' do
+      include_context 'organization with users helper'
+
+      let(:org_attributes) { @carto_organization.attributes }
+      let(:owner_attributes) { @carto_org_user_owner.attributes }
+
+      it 'should not import acl over deprecated functions' do
+        user1 = @carto_organization.users.first
+        user2 = @carto_organization.users.last
+        user1.in_database.execute('CREATE OR REPLACE FUNCTION st_text(b boolean) RETURNS INT AS $$
+        BEGIN
+          RETURN 1;
+        END;
+        $$ LANGUAGE plpgsql;')
+
+        user1.in_database.execute("GRANT ALL ON FUNCTION st_text TO \"#{user2.service.database_public_username}\"")
+
+        export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
+        export.run_export
+        @organization.destroy_cascade
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: owner_attributes['database_host'],
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          import_data: true,
+          dry: false
+        )
+        import.run_import
+
+        import.state.should eq 'complete'
+        Organization[@organization.id].users.first.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
+
+      end
+    end
   end
 
   describe 'with organization' do
@@ -418,43 +703,67 @@ describe 'UserMigration' do
     let(:owner_attributes) { @carto_org_user_owner.attributes }
 
     shared_examples_for 'migrating metadata' do |migrate_metadata|
-      it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
-        table1 = create_table(user_id: @carto_org_user_1.id)
-        records.each { |row| table1.insert_row!(row) }
+      before(:each) do
+        @table1 = create_table(user_id: @carto_org_user_1.id)
+        records.each { |row| @table1.insert_row!(row) }
+        create_database('test_migration', @organization.owner) if migrate_metadata
+        @owner_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_owner, name: unique_name('api_key'),
+                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
+        @user1_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_1, name: unique_name('api_key'),
+                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
+        @carto_organization.reload
+      end
 
+      after(:each) do
+        drop_database('test_migration', @organization.owner) if migrate_metadata
+        @owner_api_key.destroy
+        @user1_api_key.destroy
+      end
+
+      it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
         export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: migrate_metadata)
         export.run_export
 
         export.state.should eq Carto::UserMigrationExport::STATE_COMPLETE
 
-        migrate_metadata ? @organization.destroy_cascade : drop_database(@organization.owner)
+        migrate_metadata ? @organization.destroy_cascade : drop_user_database(@organization.owner)
 
-        import = Carto::UserMigrationImport.create(
-          exported_file: export.exported_file,
-          database_host: owner_attributes['database_host'],
-          org_import: true,
-          json_file: export.json_file,
-          import_metadata: migrate_metadata
-        )
-        import.stubs(:assert_organization_does_not_exist)
-        import.stubs(:assert_user_does_not_exist)
-        import.run_import
+        Cartodb.with_config(agg_ds_config) do
+          import = Carto::UserMigrationImport.create(
+            exported_file: export.exported_file,
+            database_host: owner_attributes['database_host'],
+            org_import: true,
+            json_file: export.json_file,
+            import_metadata: migrate_metadata
+          )
+          import.stubs(:assert_organization_does_not_exist)
+          import.stubs(:assert_user_does_not_exist)
+          import.run_import
 
-        puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
-        import.state.should eq Carto::UserMigrationImport::STATE_COMPLETE
+          puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+          import.state.should eq Carto::UserMigrationImport::STATE_COMPLETE
 
-        new_organization = Carto::Organization.find(org_attributes['id'])
-        attributes_to_test(new_organization.attributes).should eq attributes_to_test(org_attributes)
-        new_organization.users.count.should eq 3
-        attributes_to_test(new_organization.owner.attributes).should eq attributes_to_test(owner_attributes)
-        records.each.with_index { |row, index| table1.record(index + 1).should include(row) }
+          new_organization = Carto::Organization.find(org_attributes['id'])
+          attributes_to_test(new_organization.attributes).should eq attributes_to_test(org_attributes)
+          new_organization.users.count.should eq 3
+          attributes_to_test(new_organization.owner.attributes).should eq attributes_to_test(owner_attributes)
+          records.each.with_index { |row, index| @table1.record(index + 1).should include(row) }
+          if migrate_metadata
+            new_organization.owner.in_database(as: :superuser) do |db|
+              ds_config = db.exec_query("SELECT * from cdb_conf where key = 'geocoder_server_config'").first['value']
+              fdws_config = db.exec_query("SELECT * from cdb_conf where key = 'fdws'").first['value']
+              expect(ds_config).to match /dbname=test_migration/
+              expect(fdws_config).to match /\"dbname\":\"test_migration\"/
+            end
+          end
+        end
       end
     end
 
     it_should_behave_like 'migrating metadata', true
     it_should_behave_like 'migrating metadata', false
 
-    it 'doesn\'t export orgs with datasets without physical table if metadata export is requested (see #12588)' do
+    it 'exports orgs with datasets without physical table if metadata export is requested (see #13721)' do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
 
       @carto_org_user_1.tables.exists?(name: @table.name).should be
@@ -465,12 +774,7 @@ describe 'UserMigration' do
 
       export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
       export.run_export
-      export.log.entries.should include("Cannot export if tables aren't synched with db. Please run ghost tables.")
-      expect(export.state).to eq(Carto::UserMigrationExport::STATE_FAILURE)
-      export.destroy
-
-      export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: false)
-      export.run_export
+      export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
     end
@@ -488,7 +792,7 @@ describe 'UserMigration' do
 
     export.run_export
 
-    drop_database(user)
+    drop_user_database(user)
 
     # Let's fake the column to check that dry doesn't fix it
     carto_user.update_column(:database_host, 'wadus')
@@ -563,7 +867,7 @@ describe 'UserMigration' do
       @visualization.destroy
       @carto_user.destroy
       @regular_api_key.destroy
-      drop_database(@user)
+      drop_user_database(@user)
 
       $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should be nil
       $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should be nil
@@ -626,10 +930,237 @@ describe 'UserMigration' do
     end
   end
 
-  def drop_database(user)
+  describe 'export_data being false' do
+    it 'exports and imports user with viz' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      source_visualizations = carto_user.visualizations.map(&:name).sort
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        export_data: false
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      remove_user(carto_user)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        import_data: false,
+        dry: false
+      )
+
+      import.run_import
+
+      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+      carto_user = Carto::User.find(user_attributes['id'])
+
+      attributes_to_test(user_attributes).each do |attribute|
+        expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
+      end
+      expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
+
+      Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?.should eq true
+
+      user.destroy_cascade
+    end
+
+    it 'export and imports keeping import when import visualizations fails' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        export_data: false
+      )
+      export.run_export
+
+      import = Carto::UserMigrationImport.create!(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        import_data: false,
+        dry: false
+      )
+      Carto::UserMetadataExportService.any_instance.stubs(:import_metadata_from_directory).raises('Something went bad')
+
+      import.run_import
+
+      import.reload.persisted?.should eq true
+
+      user.destroy_cascade
+    end
+
+    it 'does not remove database when visuaization import fails' do
+      user = create_user_with_visualizations
+
+      carto_user = Carto::User.find(user.id)
+      user_attributes = carto_user.attributes
+
+      export = Carto::UserMigrationExport.create(
+        user: carto_user,
+        export_metadata: true,
+        export_data: false
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      remove_user(carto_user)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        import_data: false,
+        dry: false
+      )
+
+      Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+
+      import.run_import
+
+      config = CartoDB::DataMover::Config.config
+      PG.connect(host: user_attributes['database_host'],
+                 user: config[:dbuser],
+                 dbname: user_attributes['database_name'],
+                 port: config[:dbport],
+                 connect_timeout: config[:connect_timeout])
+    end
+
+    describe 'with orgs' do
+      include_context 'organization with users helper'
+      it 'exports and imports org with users with viz' do
+        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        export = Carto::UserMigrationExport.create(
+          organization: @carto_organization,
+          export_metadata: true,
+          export_data: false
+        )
+        export.run_export
+
+        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+        database_host = @carto_organization.owner.database_host
+
+        @carto_organization.users.each { |u| remove_user(u) }
+        @carto_organization.delete
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: database_host,
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          import_data: false,
+          dry: false
+        )
+
+        import.run_import
+
+        puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+        expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+        @carto_organization.users.each do |u|
+          Carto::GhostTablesManager.new(u.id).user_tables_synced_with_db?.should eq true
+        end
+      end
+
+      it 'does not drop database if visualizations import fails' do
+        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        export = Carto::UserMigrationExport.create(
+          organization: @carto_organization,
+          export_metadata: true,
+          export_data: false
+        )
+        export.run_export
+
+        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+        database_host = @carto_organization.owner.database_host
+
+        db_host = @carto_organization.owner.database_host
+        db_name = @carto_organization.database_name
+
+        @carto_organization.users.each { |u| remove_user(u) }
+        @carto_organization.delete
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: database_host,
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          import_data: false,
+          dry: false
+        )
+
+        Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+
+        import.run_import
+
+        config = CartoDB::DataMover::Config.config
+        PG.connect(host: db_host,
+                   user: config[:dbuser],
+                   dbname: db_name,
+                   port: config[:dbport],
+                   connect_timeout: config[:connect_timeout])
+      end
+    end
+
+    def remove_user(carto_user)
+      Carto::Visualization.where(user_id: carto_user.id).each do |v|
+        v.overlays.each(&:delete)
+        v.delete
+      end
+      gum = CartoDB::GeocoderUsageMetrics.new(carto_user.username)
+      $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.now))
+      carto_user.delete
+    end
+  end
+
+  def drop_user_database(user)
     conn = user.in_database(as: :cluster_admin)
     user.db_service.drop_database_and_user(conn)
     user.db_service.drop_user(conn)
+  end
+
+  def create_database(name, user)
+    conn = user.in_database(as: :cluster_admin)
+    sql = "CREATE DATABASE \"#{name}\"
+    WITH TEMPLATE = template_postgis
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT=-1"
+    conn.run(sql) rescue conn.exec_query(sql)
+  end
+
+  def drop_database(name, user)
+    conn = user.in_database(as: :cluster_admin)
+    sql = "DROP DATABASE \"#{name}\""
+    conn.run(sql) rescue conn.exec_query(sql)
   end
 
   def attributes_to_test(user_attributes)

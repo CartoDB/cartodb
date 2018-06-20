@@ -8,6 +8,7 @@ module ApplicationHelper
   include SafeJsObject
   include TrackjsHelper
   include GoogleAnalyticsHelper
+  include GoogleTagManagerHelper
   include HubspotHelper
   include FrontendConfigHelper
   include AppAssetsHelper
@@ -114,13 +115,6 @@ module ApplicationHelper
       token = CartoDB::Hubspot::instance.token
 
       render(:partial => 'shared/hubspot_form', :locals => { token: token, form_id: CartoDB::Hubspot::instance.form_ids[form] })
-    end
-  end
-
-  def insert_fullstory
-    if Cartodb.get_config(:fullstory, 'org').present? && current_user &&
-       current_user.account_type.casecmp('FREE').zero? && params[:cookies] != '0'
-      render(partial: 'shared/fullstory', locals: { org: Cartodb.get_config(:fullstory, 'org') })
     end
   end
 

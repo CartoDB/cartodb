@@ -14,7 +14,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
-  'cartodb.js',
+  'internal-carto.js',
   'cartocolor',
   'd3',
   'jquery',
@@ -107,6 +107,7 @@ module.exports = function (grunt) {
     process.exit(1);
   }
 
+  var PUBLIC_DIR = './public/';
   var ROOT_ASSETS_DIR = './public/assets/';
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';
 
@@ -135,6 +136,7 @@ module.exports = function (grunt) {
     aws: aws,
     env: env,
 
+    public_dir: PUBLIC_DIR,
     assets_dir: ASSETS_DIR,
     root_assets_dir: ROOT_ASSETS_DIR,
 
@@ -157,6 +159,9 @@ module.exports = function (grunt) {
     clean: require('./lib/build/tasks/clean').task(),
 
     jasmine: jasmineCfg,
+
+    // Create a tarball of the static pages for production release
+    compress: require('./lib/build/tasks/compress.js').task(),
 
     s3: require('./lib/build/tasks/s3.js').task(),
 
@@ -260,15 +265,11 @@ module.exports = function (grunt) {
     }
   });
 
-  // TODO: migrate mixins to postcss
   grunt.registerTask('css', [
     'copy:vendor',
     'copy:app',
     'copy:css_cartodb',
     'compass',
-    'copy:css_vendor_builder',
-    'copy:css_builder',
-    'copy:css_dashboard',
     'sass',
     'concat:css'
   ]);
@@ -288,7 +289,7 @@ module.exports = function (grunt) {
     grunt.task.run('browserify');
   });
 
-  grunt.registerTask('cdb', 'build Cartodb.js', function () {
+  grunt.registerTask('cdb', 'build cartodb.js', function () {
     var done = this.async();
 
     require('child_process').exec('make update_cdb', function (error, stdout, stderr) {
@@ -315,43 +316,30 @@ module.exports = function (grunt) {
     'config'
   ]);
 
-  grunt.registerTask('pre', [
+  grunt.registerTask('dev-editor', [
     'beforeDefault',
     'js_editor',
     'css',
     'manifest'
   ]);
 
-  registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
-  registerCmdTask('npm-build-dashboard', {cmd: 'npm', args: ['run', 'build:dashboard']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
-  registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
-  registerCmdTask('npm-test:dashboard', {cmd: 'npm', args: ['run', 'test:dashboard']});
-  registerCmdTask('npm-test:browser:dashboard', {cmd: 'npm', args: ['run', 'test:browser:dashboard']});
 
   /**
    * `grunt dev`
    */
 
-  grunt.registerTask('dev', [
-    'npm-carto-node',
-    'pre',
-    'npm-start'
-  ]);
-
-  grunt.registerTask('dashboard', [
-    'beforeDefault',
-    'css',
-    'manifest',
-    'npm-dashboard'
+  grunt.registerTask('editor', [
+    'dev-editor',
+    'watch:css'
   ]);
 
   grunt.registerTask('default', [
-    'pre',
-    'npm-dev'
+    'dev-editor',
+    'npm-start'
   ]);
 
   grunt.registerTask('lint', [
@@ -367,14 +355,19 @@ module.exports = function (grunt) {
     'uglify'
   ]);
 
-  grunt.registerTask('build', [
-    'npm-carto-node',
-    'pre',
+  // -- BUILD TASKS
+
+  grunt.registerTask('build', 'build editor, builder, dashboard and static pages', [
+    'build-editor',
+    'build-static',
+    'npm-build'
+  ]);
+
+  grunt.registerTask('build-editor', 'generate editor css and javasript files', [
+    'dev-editor',
     'copy:js',
     'exorcise',
-    'uglify',
-    'npm-build',
-    'npm-build-dashboard'
+    'uglify'
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [
@@ -389,6 +382,7 @@ module.exports = function (grunt) {
   grunt.registerTask('release', [
     'check_release',
     'build',
+    'compress',
     's3',
     'invalidate'
   ]);
@@ -397,24 +391,12 @@ module.exports = function (grunt) {
     requireWebpackTask().affected.call(this, option, grunt);
   });
 
-  grunt.registerTask('generate_dashboard_specs', 'Generate only dashboard specs', function (option) {
-    requireWebpackTask().dashboard.call(this, option, grunt);
-  });
-
   grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
     requireWebpackTask().bootstrap.call(this, 'builder_specs', grunt);
   });
 
-  grunt.registerTask('bootstrap_webpack_dashboard_specs', 'Create the webpack compiler', function () {
-    requireWebpackTask().bootstrap.call(this, 'dashboard_specs', grunt);
-  });
-
   grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {
     requireWebpackTask().compile.call(this, 'builder_specs');
-  });
-
-  grunt.registerTask('webpack:dashboard_specs', 'Webpack compilation task for dashboard specs', function () {
-    requireWebpackTask().compile.call(this, 'dashboard_specs');
   });
 
   /**
@@ -429,7 +411,6 @@ module.exports = function (grunt) {
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
     'jasmine:builder',
-    'npm-test:dashboard',
     'lint'
   ]);
 
@@ -448,9 +429,6 @@ module.exports = function (grunt) {
   /**
    * `grunt dashboard_specs` compile dashboard specs
    */
-  grunt.registerTask('test:browser:dashboard', 'Build only dashboard specs', [
-    'npm-test:browser:dashboard'
-  ]);
 
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);

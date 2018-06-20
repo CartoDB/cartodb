@@ -16,7 +16,7 @@ module Carto
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
-        :disqus_shortname, :available_for_hire
+        :disqus_shortname, :available_for_hire, :company, :industry, :phone, :job_role
       ].freeze
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
@@ -26,6 +26,7 @@ module Carto
       before_filter :initialize_google_plus_config, only: [:me]
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
+      skip_before_filter :check_user_state, only: [:me, :delete_me]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
@@ -67,6 +68,11 @@ module Carto
         attributes = params[:user]
 
         if attributes.present?
+          unless password_change?(user, attributes) ||
+                 user.valid_password_confirmation(attributes[:password_confirmation])
+            raise Carto::PasswordConfirmationError.new
+          end
+
           update_password_if_needed(user, attributes)
 
           if user.can_change_email? && attributes[:email].present?
@@ -81,7 +87,7 @@ module Carto
 
           user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
 
-          raise Sequel::ValidationFailed.new('Validation failed') unless user.valid?
+          raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
           user.update_in_central
           user.save(raise_on_failure: true)
         end
@@ -92,6 +98,8 @@ module Carto
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
       rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
+      rescue Carto::PasswordConfirmationError
+        render_jsonp({ message: "Error updating your account details", errors: user.errors }, 403)
       end
 
       def delete_me
@@ -203,10 +211,7 @@ module Carto
       end
 
       def update_password_if_needed(user, attributes)
-        password_change = (attributes[:new_password].present? || attributes[:confirm_password].present?) &&
-                          user.can_change_password?
-
-        if password_change
+        if password_change?(user, attributes)
           user.change_password(
             attributes[:old_password],
             attributes[:new_password],
@@ -215,6 +220,10 @@ module Carto
 
           update_session_security_token(user)
         end
+      end
+
+      def password_change?(user, attributes)
+        (attributes[:new_password].present? || attributes[:confirm_password].present?) && user.can_change_password?
       end
     end
   end

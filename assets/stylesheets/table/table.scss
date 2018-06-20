@@ -1,0 +1,709 @@
+/*
+ * Styles for the CartoDB table
+ */
+
+@-webkit-keyframes highlight-fade {
+  0% {
+    background: none;
+  }
+
+  20% {
+    background: #ECFCE5;
+  }
+
+  80% {
+    background: #ECFCE5;
+  }
+
+  100% {
+    background: none;
+  }
+}
+
+@keyframes highlight-fade {
+  0% {
+    background: none;
+  }
+
+  20% {
+    background: #ECFCE5;
+  }
+
+  80% {
+    background: #ECFCE5;
+  }
+
+  100% {
+    background: none;
+  }
+}
+
+div.panes {
+  position: absolute;
+  top: 78px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  // When table/layer is synced
+  &.synced {
+    top: 102px;
+  }
+
+  .emptyTableContainer {
+    display: inline-block;
+    position: fixed;
+    width: 100%;
+    transform-style: linear;
+    transition: text-indent 300ms;
+    text-align: center;
+
+    .emptynessInfo {
+      display: inline-block;
+      position: relative;
+      top: 1.5em;
+      width: 600px;
+      height: 375px;
+
+      &.emptyTableInfo {
+        background: url($assetsDir + '/images/layout/empty_table.png') no-repeat 0 0 #FFF;
+      }
+
+      &.emptyPublicTableInfo {
+        position: absolute;
+        left: 5%;
+        background: url($assetsDir + '/images/layout/empty_public.png') no-repeat center 70px #FFF;
+      }
+
+      &.emptySQLInfo {
+        background: url($assetsDir + '/images/layout/empty_sql.png') no-repeat 40px 0 #FFF;
+      }
+
+      h4 {
+        margin-top: 8em;
+        color: #333;
+        font-family: "Helvetica", Arial, sans-serif;
+        font-size: 17px;
+        font-weight: bold;
+        text-indent: 0;
+      }
+
+      p {
+        width: 325px;
+        margin: 1em auto;
+        color: #999;
+        font-size: 15px;
+        text-indent: 0;
+
+        a {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+div.table {
+  table {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    background: WHITE;
+
+    // Table head
+    thead {
+      width: 100%;
+      height: 60px;
+
+      div.sqlview {
+        display: block;
+        position: absolute;
+        z-index: 0;
+        top: 55px;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 37px;
+
+        p {
+          display: inline;
+          position: fixed;
+          z-index: 2;
+          left: 50%;
+          width: 100%;
+          margin: 12px 0 0 -50%;
+          padding: 12px 0;
+          transform-style: linear;
+          transition: text-indent 300ms;
+          border-bottom: 1px solid #CCC;
+          background-color: #E5FAEA;
+          box-shadow: rgba(#000, 0.055) 0 3px 1px 0;
+          color: #333;
+          color: #666;
+          font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+          font-size: 13px;
+          text-align: center;
+          text-indent: 0;
+        }
+      }
+
+      tr {
+        z-index: 2;
+        width: 100%;
+        height: 64px;
+        background: url($assetsDir + '/images/layout/thead_bkg.jpg') repeat 0 0;
+
+        th {
+          position: relative;
+          vertical-align: top;
+
+          & > div {
+            display: block;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 66px;
+
+            & > div {
+              display: inline-block;
+              position: fixed;
+              z-index: 1;
+              width: inherit;
+              height: 41px;
+              margin: 0;
+              padding: 10px 0 15px;
+              border-bottom: 1px solid #CCC;
+              background: url($assetsDir + '/images/layout/thead_bkg.jpg') repeat 0 0;
+              vertical-align: top;
+
+              &::after {
+                content: ' ';
+                position: absolute;
+                z-index: 0;
+                top: 13px;
+                left: 0;
+                width: 1px;
+                height: 42px;
+                background: rgba(#D9D9D9, 0.5);
+              }
+            }
+
+            label {
+              input {
+                position:relative;
+                margin: 0;
+                padding: 11px;
+                border: 1px solid #C0C1C2;
+                background: #FFF;
+                border-radius: 4px;
+                font-size: 15px;
+                font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+                color: #666666;
+                z-index:2;
+
+                &:focus {
+                  outline:none;
+                  border-color:#999999;
+                  box-shadow: rgba(0,0,0,0.1) 0 0 2px 2px;
+                }
+
+                &::-webkit-input-placeholder {
+                  color:rgba(#666666,0.3);
+                }
+
+                &:-moz-placeholder {
+                  color:rgba(#666666,0.3);
+                }
+              }
+
+              display: block;
+              padding: 0 5px;
+
+              &.nonInteractuable {
+                padding: 10px 5px;
+
+                span {
+                  display: inline-block;
+                  margin: 6px 0 5px 5px;
+                  color: #7C7C7C;
+                  vertical-align: top;
+                }
+              }
+
+              &.interactuable {
+                div,
+                a {
+                  display: inline-block;
+                  margin: 6px 0 5px 5px;
+                  color: #7C7C7C;
+                  vertical-align: top;
+
+                  &::after {
+                    content: '';
+                    display: inline-block;
+                    position: relative;
+                    left: 2px;
+                    border-top: 3px solid #7C7C7C;
+                    border-right: 3px solid transparent;
+                    border-left: 3px solid transparent;
+                    vertical-align: top;
+                  }
+
+                  &:hover {
+                    color: #565656;
+                    text-decoration: none;
+
+                    &::after {
+                      border-top-color: #565656;
+                    }
+                  }
+                }
+              }
+
+              a,
+              div {
+                display: inline-block;
+                margin: 6px 0 5px 5px;
+                color: #7C7C7C;
+                vertical-align: top;
+
+                &:hover {
+                  text-decoration: none;
+                }
+
+                span.geo {
+                  margin: 0 0 0 3px;
+                  padding: 1px 2px;
+                  border: 1px solid #C17400;
+                  border-radius: 2px;
+                  background: ORANGE;
+                  color: WHITE;
+                  text-decoration: uppercase;
+
+                  &:hover {
+                    cursor: pointer;
+                  }
+                }
+              }
+
+              input {
+                margin: 0;
+                padding: 3px 4px;
+                border: 1px solid #CCC;
+                border-radius: 3px;
+                background: WHITE;
+                color: #333;
+                font: bold 13px "Helvetica Neue", "Helvetica", Arial, sans-serif;
+              }
+            }
+
+            p {
+              padding: 0 10px;
+              line-height: 20px;
+
+              a {
+                padding: 0 10px 0 0;
+                color: #999;
+
+                &.disabled {
+                  color: #666;
+                }
+
+                &:hover {
+                  position: relative;
+                  padding: 0 10px 0 0;
+                  color: #666;
+                  text-decoration: none;
+
+                  &.own::after {
+                    content: ' ';
+                    position: absolute;
+                    right: 0;
+                    margin: 10px 0 0 5px;
+                    border-top: 3px solid #7C7C7C;
+                    border-right: 3px solid transparent;
+                    border-left: 3px solid transparent;
+                  }
+                }
+              }
+
+              // Fake column name added to each th
+              &.auto {
+                padding: 0 25px 0 0;
+                opacity: 0;
+              }
+            }
+          }
+
+          &:first-child {
+            width: 35px;
+            min-width: 35px;
+          }
+
+          &:last-child {
+            padding-right: 62px;
+            transform-style: linear;
+            transition: padding-right 500ms;
+          }
+
+          // Column options
+          div.dropdown {
+            width: 147px !important;
+          }
+        }
+      }
+
+      // Shadow
+      div.shadow {
+        position: fixed;
+        z-index: 0;
+        top: 144px;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 10px;
+        background: url($assetsDir + '/images/layout/thead_shadow.png') repeat 0 0;
+        pointer-events: none;
+      }
+
+      // Horizontal movement
+      &.horizontal {
+        tr th > div > div {
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+    } // thead
+
+    // Table body
+    tbody {
+      z-index: 1;
+      width: 100%;
+      border: none;
+
+      tr.placeholder,
+      tr.placeholder td {
+        height: 40px;
+        border: 1px solid #ECECEC;
+        cursor: pointer;
+
+        .addNewRow {
+          color: #E5E5E5;
+          font-size: 22px;
+          font-weight: bolder;
+          text-align: center;
+          vertical-align: middle;
+        }
+      }
+
+      tr.placeholder.decoration {
+        height: 15px;
+        border-bottom: 0;
+
+        &:hover {
+          border-color: #ECECEC;
+          background: inherit;
+
+          & + tr {
+            border-top-color: #ECECEC;
+          }
+        }
+      }
+
+      tr.placeholder.decoration td {
+        height: 15px;
+        border-top: 0;
+        border-bottom: 0;
+
+        &:hover {
+          border-top: 0;
+          border-color: #ECECEC;
+          border-top-color: #ECECEC;
+          background: inherit;
+        }
+      }
+
+      tr {
+        width: 100%;
+        border-top: 1px solid #ECECEC;
+        // z-index:0;
+        background: WHITE;
+
+        td {
+          vertical-align: top;
+
+          &:not(.row_header) {
+            div.cell:not(.disabled) {
+              cursor: pointer;
+            }
+          }
+
+          &.is-highlighted {
+            -webkit-animation: highlight-fade 3s ease-in-out 1;
+            animation: highlight-fade 3s ease-in-out 1;
+            -webkit-animation-delay: 150ms;
+            animation-delay: 150ms;
+          }
+
+          div.cell {
+            display: block;
+            max-width: 280px;
+            min-height: 13px;
+            max-height: 26px;
+            padding: 15px 10px;
+            overflow: hidden;
+            border-left: 1px solid #ECECEC;
+            color: #666;
+            font-size: 13px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.disabled {
+              color: #AAA;
+            }
+
+            &.isNull {
+              color: #AAA;
+              font-style: italic;
+            }
+          }
+
+          // Different column types
+          div.number {
+            color: #4DC964;
+          }
+
+          &.rowHeader:first-child {
+            & > div.row_header {
+              display: block;
+              position: relative;
+              height: 100%;
+              overflow: visible;
+
+              &::before {
+                content: '';
+                display: none;
+                position: absolute;
+                z-index: 0;
+                top: 15px;
+                left: 10px;
+                width: 12px;
+                height: 12px;
+                padding: 0;
+                border: 1px solid #999;
+                border-radius: 3px;
+                background: #FAFAFA;
+
+                background: linear-gradient(#FAFAFA, #E8E8E8);
+              }
+
+              &::after {
+                content: '';
+                display: none;
+                position: absolute;
+                z-index: 0;
+                top: 21px;
+                left: 15px;
+                width: 0;
+                height: 0;
+                border-top: 3px solid #666;
+                border-right: 2px solid transparent;
+                border-left: 2px solid transparent;
+                opacity: 1;
+                line-height: 16px;
+              }
+
+              &:hover::before {
+                background: linear-gradient(#FAFAFA, #E3D3E3);
+                background: #E8E8E8;
+                cursor: pointer;
+              }
+
+              &:active::before {
+                background: linear-gradient(#E3D3E3, #FAFAFA);
+                background: #E3D3E3;
+              }
+            }
+          }
+
+          &:last-child {
+            padding-right: 65px;
+            transform-style: linear;
+            transition: padding-right 500ms;
+            border-right: none;
+          }
+        }
+
+        &:last-child {
+          border-bottom: 1px solid #ECECEC;
+        }
+
+        &:hover {
+          border-color: #CCC;
+          background: #E8F9EC;
+
+          & + tr {
+            border-top-color: #CCC;
+          }
+
+          div.row_header::before,
+          div.row_header::after {
+            display: block !important;
+          }
+        }
+      } // tr
+    }
+
+    &.displaced {
+      // Last column of the table
+      tbody tr td:last-child,
+      thead tr th:last-child {
+        padding-right: 600px;
+        border-right: none;
+      }
+
+      // When a query is applied, the text should be moved some pixels
+      div.sqlview p {
+        text-indent: -600px;
+      }
+
+      // When a query is applied, the loader should be moved some pixels
+      tfoot.sql_loader div.float_info {
+        margin-left: -420px;
+      }
+
+      // When there is no results, move the block
+      tfoot div.emptyTableContainer {
+        text-indent: -600px;
+
+        p,
+        h4 {
+          text-indent: 0;
+        }
+      }
+
+      &.narrow {
+        tbody tr td:last-child,
+        thead tr th:last-child {
+          padding-right: 450px;
+        }
+
+        div.sqlview p {
+          text-indent: -450px;
+        }
+
+        tfoot.sql_loader div.float_info {
+          margin-left: -380px;
+        }
+
+        tfoot div.emptyTableContainer {
+          text-indent: -450px;
+        }
+      }
+    } // table.displaced
+  } // table
+
+  /* PAGINATION ZONE - CAUTION */
+
+  // If the user can paginate up (we are removing cells in the process)
+  // Let's add some top spacing as well to show the pagination loader ;)
+
+  // Let's add some bottom spacing to show always when it's neccessary the pagination loader
+  &.page_down {
+    padding-bottom: 30px; // More space due to the thead height
+  }
+
+  &.page_up {
+    padding-top: 180px; // More space due to the thead height
+    padding-bottom: 0;
+
+    thead tr th div > div {
+      margin-top: -180px;
+    }
+
+    tbody tr:first-child {
+      border-top: 1px solid #ECECEC;
+    }
+
+    thead div.sqlview p {
+      margin-top: -168px;
+    }
+  }
+
+  // public view
+  &.public {
+    th:last-child,
+    tr td:last-child {
+      padding-right: 0;
+    }
+  }
+} // div.table
+
+div.order_selector {
+  position: absolute;
+  top: -3px;
+  right: 0;
+
+  a.asc {
+    margin-right: 1px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+  }
+
+  a.desc {
+    margin-right: 10px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+  }
+
+  a.asc,
+  a.desc {
+    display: inline-block;
+    position: relative;
+    margin-top: 13px;
+    padding: 0;
+    padding: (21px - 9px) / 2 8px;
+    background-color: #F2F2F2;
+    color: #397DB9;
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+    vertical-align: top;
+
+    &:hover {
+      background-color: #397DB9;
+      color: #F2F2F2;
+    }
+
+    &.selected {
+      background-color: #397DB9;
+      color: #F2F2F2;
+      cursor: default;
+    }
+  }
+}
+
+// Hello hacks for Firefox
+@-moz-document url-prefix() {
+  table {
+    border-collapse: inherit;
+  }
+
+  thead div.sqlview {
+    z-index: 1 !important;
+  }
+
+  thead tr th div {
+    z-index: 2 !important;
+  }
+
+  thead div.shadow {
+    z-index: 1 !important;
+  }
+
+  tbody tr td {
+    border-spacing: 1px;
+    border-bottom: 1px solid #ECECEC;
+  }
+}

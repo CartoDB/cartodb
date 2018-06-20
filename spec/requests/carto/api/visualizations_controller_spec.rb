@@ -2,7 +2,6 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
-require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
 
 # TODO: Remove once Carto::Visualization is complete enough
@@ -21,9 +20,6 @@ describe Carto::Api::VisualizationsController do
   include Carto::Factories::Visualizations
   include VisualizationDestructionHelper
   include FeatureFlagHelper
-
-  it_behaves_like 'visualization controllers' do
-  end
 
   describe 'vizjson2 generator' do
     it_behaves_like 'vizjson generator' do
@@ -2575,6 +2571,26 @@ describe Carto::Api::VisualizationsController do
 
           visualization.destroy
         end
+
+        it 'migrates visualizations to v3' do
+          _, _, _, visualization = create_full_visualization(@user)
+          visualization.update_attributes!(version: 2)
+          visualization.analyses.each(&:destroy)
+
+          payload = {
+            id: visualization.id,
+            version: 3
+          }
+          put_json api_v1_visualizations_update_url(id: visualization.id), payload do |response|
+            response.status.should be_success
+            expect(response.body[:version]).to eq 3
+          end
+
+          visualization.reload
+          expect(visualization.analyses.any?).to be_true
+
+          visualization.destroy
+        end
       end
     end
 
@@ -2746,6 +2762,35 @@ describe Carto::Api::VisualizationsController do
       [vis_1_id, vis_2_id].include?(collection[1]['id']).should eq true
     end
 
+    it 'validates order param' do
+      get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
+      last_response.status.should == 200
+
+      get api_v1_visualizations_index_url(
+        api_key: @user.api_key,
+        types: 'derived',
+        order: '',
+        page: '',
+        per_page: ''
+      ), {}, @headers
+      last_response.status.should == 200
+
+      ['derived', 'slide'].each do |type|
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :mapviews), {}, @headers
+        last_response.status.should == 200
+      end
+
+      ['remote', 'table'].each do |type|
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :size), {}, @headers
+        last_response.status.should == 200
+      end
+
+      ['derived', 'remote', 'slide', 'table'].each do |type|
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :whatever), {}, @headers
+        last_response.status.should == 400
+        JSON.parse(last_response.body).fetch('error').should_not be_nil
+      end
+    end
   end
 
   describe 'index' do

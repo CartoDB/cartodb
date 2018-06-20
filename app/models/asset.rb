@@ -100,12 +100,10 @@ class Asset < Sequel::Model
   end
 
   def save_to_s3(filename)
-    o = s3_bucket.objects["#{target_asset_path}#{filename}"]
-    o.write(Pathname.new(@file.path), {
-      acl: :public_read,
-      content_type: MIME::Types.type_for(filename).first.to_s
-    })
-    o.public_url(secure: true).to_s
+    obj = s3_bucket.object("#{target_asset_path}#{filename}")
+    obj.upload_file(@file.path, acl: 'public-read', content_type: MIME::Types.type_for(filename).first.to_s)
+
+    obj.public_url.to_s
   end
 
   def local_dir
@@ -141,8 +139,8 @@ class Asset < Sequel::Model
       return
     end
     basename = File.basename(public_url)
-    o = s3_bucket.objects["#{target_asset_path}#{basename}"]
-    o.delete
+    obj = s3_bucket.object("#{target_asset_path}#{basename}")
+    obj.delete
   end
 
   def target_asset_path
@@ -150,10 +148,10 @@ class Asset < Sequel::Model
   end
 
   def s3_bucket
-    AWS.config(Cartodb.config[:aws]["s3"])
-    s3 = AWS::S3.new
-    bucket_name = Cartodb.config[:assets]["s3_bucket_name"]
-    @s3_bucket ||= s3.buckets[bucket_name]
+    s3_config = Cartodb.config[:aws]["s3"].symbolize_keys
+    Aws.config = s3_config
+    s3 = Aws::S3::Resource.new
+    @s3_bucket ||= s3.bucket(Cartodb.config[:assets]["s3_bucket_name"])
   end
 
   ASSET_SUBFOLDER = 'uploads'.freeze

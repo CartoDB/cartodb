@@ -160,7 +160,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       name:                   params[:table_name],
       user_id:                current_user.id,
       state:                  Synchronization::Member::STATE_CREATED,
-      # Keep in sync with https://carto.com/docs/carto-engine/import-api/sync-tables/#params-1
+      # Keep in sync with https://carto.com/developers/import-api/guides/sync-tables/#params-1
       type_guessing:          !["false", false].include?(params[:type_guessing]),
       quoted_fields_guessing: !["false", false].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing])

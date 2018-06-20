@@ -17,6 +17,7 @@ window['_fs_namespace'] = 'FS';
 FS.clearUserCookie();
 FS.identify('<%= current_user.username %>', {
   displayName: '<%= current_user.username %>',
-  email: '<%= current_user.email %>'
+  email: '<%= current_user.email %>',
+  accountType_str: '<%= current_user.account_type %>'
 });
 </script>

@@ -1,0 +1,107 @@
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// Error details dialog styles
+$width: 620px;
+
+.ErrorDetails-header .Dialog-headerIcon {
+  margin-bottom: 15px;
+  line-height: 40px;
+}
+
+.ErrorDetails-header .Dialog-headerTitle {
+  color: $cHighlight-negative;
+}
+
+.ErrorDetails-header .Dialog-headerText {
+  font-size: 14px;
+}
+
+.ErrorDetails-body {
+  width: $width;
+  min-width: initial;
+}
+
+.ErrorDetails-body--no-line {
+  padding: 0;
+  border-top: none;
+}
+
+.ErrorDetails-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px 0;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+
+.ErrorDetails-item:first-child {
+  padding-top: 0;
+}
+
+.ErrorDetails-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.ErrorDetails-itemStep {
+  width: 38px;
+  height: 38px;
+  margin-right: 20px;
+  border: 1px solid #CCC;
+  border-radius: 38px;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-normal;
+  line-height: 38px;
+  text-align: center;
+}
+
+.ErrorDetails-itemIcon {
+  width: $sIcon-layout;
+  height: $sIcon-layout;
+  margin: 0 auto;
+  border: 1px solid $cStructure-softLine;
+  border-radius: $sIcon-borderRadius;
+  font-size: 22px;
+  line-height: 44px;
+}
+
+.ErrorDetails-itemIcon--success {
+  border-color: #9BC63B;
+  color: #9BC63B;
+}
+
+.ErrorDetails-itemIcon--alert {
+  border-color: $cHighlight-alert2;
+  color: $cHighlight-alert2;
+}
+
+.ErrorDetails-itemStep--lessProminent {
+  border-color: #DDD;
+  color: #DDD;
+}
+
+.ErrorDetails-itemText {
+  width: $width - 120;
+}
+
+.ErrorDetails-itemTextStrong {
+  color: $cTypography-headers;
+}
+
+.ErrorDetails-footer {
+  width: $width;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ErrorDetails-footer--no-line {
+  border-top: none;
+}
+
+.ErrorDetails-footerButton {
+  display: inline-block;
+  padding-right: 40px;
+  padding-left: 40px;
+  line-height: 40px;
+}

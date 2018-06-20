@@ -1,6 +1,7 @@
 require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_relative '../../helpers/avatar_helper'
+require_dependency 'carto/controller_helper'
 
 module Carto
   module Api

@@ -5,7 +5,8 @@ module Carto
       :tables_created_count, :table_names, :append, :migrate_table, :table_copy, :from_query, :id, :service_name,
       :service_item_id, :stats, :type_guessing, :quoted_fields_guessing, :content_guessing, :host, :collision_strategy,
       :upload_host, :resque_ppid, :create_visualization, :visualization_id, :user_defined_limits, :import_extra_options,
-      :original_url, :privacy, :cartodbfy_time, :http_response_code, :rejected_layers, :runner_warnings, :server
+      :original_url, :privacy, :cartodbfy_time, :http_response_code, :rejected_layers, :runner_warnings, :server,
+      :synchronization_id
     ].freeze
 
     MAX_LOG_SIZE = 8192

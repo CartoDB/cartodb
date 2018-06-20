@@ -143,6 +143,8 @@ module CartoDB
       confirmation_new_vendor.js
       organization_new.js
       organization_new_vendor.js
+      lockout.js
+      lockout_vendor.js
       common_dashboard.js
 
       tipsy.js

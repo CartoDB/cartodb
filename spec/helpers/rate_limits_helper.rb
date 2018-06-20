@@ -24,6 +24,8 @@ module RateLimitsHelper
     $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ["6", "7", "8"]
     $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == ["9", "10", "11"]
     $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == ["12", "13", "14"]
+    $limits_metadata.LRANGE("#{sql_prefix}copy_from", 0, 2).should == ["1", "1", "60"]
+    $limits_metadata.LRANGE("#{sql_prefix}copy_to", 0, 2).should == ["1", "1", "60"]
   end
 
   def expect_rate_limits_custom_saved_to_redis(username)
@@ -51,6 +53,8 @@ module RateLimitsHelper
     $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ["16", "17", "18"]
     $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == ["19", "110", "111"]
     $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == ["112", "113", "114"]
+    $limits_metadata.LRANGE("#{sql_prefix}copy_from", 0, 2).should == ["11", "11", "160"]
+    $limits_metadata.LRANGE("#{sql_prefix}copy_to", 0, 2).should == ["11", "11", "160"]
   end
 
   def expect_rate_limits_pro_saved_to_redis(username)
@@ -78,6 +82,8 @@ module RateLimitsHelper
     $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ["3", "7", "8"]
     $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == ["4", "10", "11"]
     $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == ["5", "13", "14"]
+    $limits_metadata.LRANGE("#{sql_prefix}copy_from", 0, 2).should == ["2", "2", "61"]
+    $limits_metadata.LRANGE("#{sql_prefix}copy_to", 0, 2).should == ["2", "2", "61"]
   end
 
   def expect_rate_limits_exist(username)
@@ -105,5 +111,7 @@ module RateLimitsHelper
     $limits_metadata.EXISTS("#{sql_prefix}job_create").should eq 0
     $limits_metadata.EXISTS("#{sql_prefix}job_get").should eq 0
     $limits_metadata.EXISTS("#{sql_prefix}job_delete").should eq 0
+    $limits_metadata.EXISTS("#{sql_prefix}copy_from").should eq 0
+    $limits_metadata.EXISTS("#{sql_prefix}copy_to").should eq 0
   end
 end

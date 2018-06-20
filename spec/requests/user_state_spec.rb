@@ -94,7 +94,11 @@ describe "UserState" do
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
-        response.status.should == 404
+        response.status.should == if endpoint == "/api/v3/me"
+                                    200
+                                  else
+                                    404
+                                  end
       end
     end
 
@@ -132,7 +136,11 @@ describe "UserState" do
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
-        response.status.should == 404
+        response.status.should == if endpoint == "/api/v3/me"
+                                    200
+                                  else
+                                    404
+                                  end
       end
     end
     it 'non-logged user accessing a locked user resources' do
@@ -152,7 +160,11 @@ describe "UserState" do
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
-        response.status.should == 404
+        response.status.should == if endpoint == "/api/v3/me"
+                                    200
+                                  else
+                                    404
+                                  end
       end
     end
   end

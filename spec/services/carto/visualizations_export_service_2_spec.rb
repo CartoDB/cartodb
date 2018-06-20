@@ -14,6 +14,37 @@ describe Carto::VisualizationsExportService2 do
     }
   end
 
+  let(:visualization_sync_export) do
+    sync = {
+      id: "46a16aa4-3f67-11e8-b4f0-080027eb929e",
+      name: "world_borders_hd",
+      interval: 2592000,
+      url: "https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd",
+      state: "success",
+      created_at: "2018-04-13T22:09:03+00:00",
+      updated_at: "2018-04-13T22:09:36+00:00",
+      run_at: "2018-05-13T22:09:03+00:00",
+      retried_times: 0,
+      log_id: "7875e7e9-488d-435d-a1f3-234047678720",
+      error_code: null,
+      error_message: null,
+      ran_at: "2018-04-13T22:09:03+00:00",
+      modified_at: null,
+      etag: null,
+      checksum: "",
+      user_id: "dda292bc-e644-438a-8d0f-04f05c506569",
+      service_name: null,
+      service_item_id: "https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd",
+      type_guessing: true,
+      quoted_fields_guessing: true,
+      content_guessing: true,
+      visualization_id: "96b34ec5-42c1-4cc6-a90a-6b03f0d4bcbb",
+      from_external_source: true
+    }
+
+    mapcapped_visualization_export.merge(synchronization: sync)
+  end
+
   let(:mapcapped_visualization_export) do
     mapcap = {
       ids_json: {

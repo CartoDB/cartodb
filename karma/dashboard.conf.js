@@ -1,10 +1,6 @@
 // Karma configuration for Dashboard
 
-const webpack = require('webpack');
 const webpackConfig = require('../lib/build/tasks/webpack/webpack.config.js').task('');
-const excludedPlugins = [
-  webpack.optimize.CommonsChunkPlugin
-];
 
 module.exports = function (config) {
   config.set({
@@ -31,12 +27,15 @@ module.exports = function (config) {
 
     webpack: Object.assign({},
       {
+        mode: webpackConfig.mode,
         resolve: webpackConfig.resolve,
         module: webpackConfig.module,
-        plugins: webpackConfig.plugins.filter(
-          plugin => !excludedPlugins.some(excludedPlugin => plugin instanceof excludedPlugin)
-        ),
+        optimization: {
+          splitChunks: false,
+          runtimeChunk: false
+        },
         target: webpackConfig.target,
+        plugins: webpackConfig.plugins,
         node: webpackConfig.node
       }
     ),

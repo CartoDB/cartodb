@@ -2,6 +2,7 @@ var _ = require('underscore');
 var timer = require('grunt-timer');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
+var execSync = require('child_process').execSync;
 var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
 var webpackTask = null;
 var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
@@ -24,6 +25,12 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'torque.js',
   'turbo-carto'
 ];
+
+// Synchronously check if editor assets have changed
+var diff = execSync('git diff --numstat $(git rev-list --tags --skip=1  --max-count=1) -- $(git symbolic-ref --short HEAD) config/editor_assets_version.json', {
+  cwd: __dirname
+});
+var EDITOR_ASSETS_CHANGED = diff.toString().length > 0;
 
 function requireWebpackTask () {
   if (webpackTask === null) {
@@ -428,14 +435,9 @@ module.exports = function (grunt) {
     requireWebpackTask().compile.call(this, 'dashboard_specs');
   });
 
-  /**
-   * `grunt test`
-   */
-  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
+  var testTasks = [
     'connect:test',
     'beforeDefault',
-    'js_editor',
-    'jasmine:cartodbui',
     'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
@@ -445,7 +447,17 @@ module.exports = function (grunt) {
     'webpack:dashboard_specs',
     'jasmine:dashboard',
     'lint'
-  ]);
+  ];
+
+  // If the editor assets version has changed, add the editor tests
+  if (EDITOR_ASSETS_CHANGED) {
+    testTasks.splice(2, 0, 'js_editor', 'jasmine:cartodbui');
+  }
+
+  /**
+   * `grunt test`
+   */
+  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', testTasks);
 
   /**
    * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.

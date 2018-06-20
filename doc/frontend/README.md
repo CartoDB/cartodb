@@ -230,7 +230,7 @@ npm run test:dashboard
 You can optionally provide an argument to grunt to filter what specs will be generated, like this:
 
 ```bash
-npm run test:builder --match=dropdown
+npm run test:builder -- --match=dropdown
 ```
 
 After building the whole suite for the first time, a web server will be started on port 8088 and the spec runner webpage will show up. If you need to use a different port, change the port & URL values on the [connect task](lib/build/tasks/connect.js)

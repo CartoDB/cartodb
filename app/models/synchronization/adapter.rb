@@ -41,7 +41,6 @@ module CartoDB
           index_statements = @table_setup.generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
-          enforce_valid_cartodb_id(table_name)
           import_cleanup(user.database_schema, result.table_name)
           @table_setup.cartodbfy(result.table_name)
           @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
@@ -95,11 +94,6 @@ module CartoDB
                               result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
         raise exception
-      end
-
-      def enforce_valid_cartodb_id(table_name)
-        table = Carto::UserTable.find(user.tables.where(name: table_name).first.id).service
-        table.import_cleanup
       end
 
       def setup_table(table_name, geo_type)
@@ -198,17 +192,8 @@ module CartoDB
           # In that case:
           #  - If cartodb_id already exists, remove ogc_fid
           #  - If cartodb_id does not exist, treat this field as the auxiliary column
-          aux_cartodb_id_column = [:ogc_fid, :gid].find { |col| valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col) }
-          # aux_cartodb_id_column = user_database[%Q{
-          #   SELECT a.attname, t.typname
-          #   FROM pg_attribute a, pg_type t
-          #   WHERE attrelid = '#{qualified_table_name}'::regclass
-          #   AND (a.attname = 'ogc_fid' OR a.attname = 'gid')
-          #   AND a.atttypid = t.oid
-          #   AND a.attstattarget < 0
-          #   LIMIT 1
-          # }].first
-          # aux_cartodb_id_column = aux_cartodb_id_column[:attname] unless aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = [:ogc_fid, :gid].find do |col| valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col)
+          end
 
           # Remove primary key
           existing_pk = user_database[%Q{
@@ -351,19 +336,19 @@ module CartoDB
 
           # Make sensible sorting for UI
           case column[0]
-            when :cartodb_id
-              first_columns.insert(0,col)
-            when :the_geom
-              first_columns.insert(1,col)
-            when :created_at, :updated_at
-              last_columns.insert(-1,col)
-            else
-              middle_columns << col
+          when :cartodb_id
+            first_columns.insert(0, col)
+          when :the_geom
+            first_columns.insert(1, col)
+          when :created_at, :updated_at
+            last_columns.insert(-1, col)
+          else
+            middle_columns << col
           end
         end
 
         # sort middle columns alphabetically
-        middle_columns.sort! {|x,y| x[0].to_s <=> y[0].to_s}
+        middle_columns.sort! { |x, y| x[0].to_s <=> y[0].to_s }
 
         # group columns together and return
         (first_columns + middle_columns + last_columns).compact

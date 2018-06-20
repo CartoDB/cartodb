@@ -192,7 +192,8 @@ module CartoDB
           # In that case:
           #  - If cartodb_id already exists, remove ogc_fid
           #  - If cartodb_id does not exist, treat this field as the auxiliary column
-          aux_cartodb_id_column = [:ogc_fid, :gid].find do |col| valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col)
+          aux_cartodb_id_column = [:ogc_fid, :gid].find do |col|
+            valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col)
           end
 
           # Remove primary key

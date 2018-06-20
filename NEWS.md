@@ -10,9 +10,10 @@ sudo make install
 
 ### Features
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
-* New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl)
+* New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Fix wrong margins in the layer selector when the top layer has a bubble legend (https://github.com/CartoDB/support/issues/1566)
 * Fix error when styling points by value in animated aggregation style (https://github.com/CartoDB/cartodb/issues/14085)
 * Show errors coming from QueryRowsCollection in Dataset/Builder (https://github.com/CartoDB/cartodb/issues/14066)
 * Export JPG image as JPEG format instead of PNG (https://github.com/CartoDB/cartodb/issues/14042)

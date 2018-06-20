@@ -50,8 +50,11 @@ This is a list of available tasks to run:
 | `npm run carto-node`           | Create production builds for `carto-node`
 | `npm run test`                 | Run all test suites
 | `npm run test:builder`         | Run and watches builder test suites
+| `npm run test:ci:builder`      | Run builder's test suites in the command line
 | `npm run test:dashboard`       | Run and watches dashboard test suites
+| `npm run test:ci:dashboard`    | Run dashboard's test suites in the command line
 | `npm run test:editor`          | Run and watches editor test suites
+| `npm run test:ci:editor`       | Run editor's test suites in the command line
 | `npm run lint`                 | Runs the Javascript linter
 | `npm run lint:fix`             | Runs the Javascript linter with the `--fix` flag
 | `npm run lint:css`             | Runs the CSS linter

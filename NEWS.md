@@ -16,6 +16,7 @@ sudo make install
 * Export JPG image as JPEG format instead of PNG (https://github.com/CartoDB/cartodb/issues/14042)
 * Redirect to login or fix URL if trying to access another user private pages (https://github.com/CartoDB/cartodb/pull/14013)
 * Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
+* Sync ArcGIS datasets with null values in ogc_fid or gid (CartoDB/support/issues/1460)
 * List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583)
 * Send `Visited Private Page` event from Dashboard (#14041)
 * Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)

@@ -9,7 +9,6 @@ module CartoDB
       DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze
       OVERWRITE_ERROR = 2013
-      THE_GEOM_WEBMERCATOR = :the_geom_webmercator
 
       attr_accessor :table
 

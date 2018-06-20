@@ -8,6 +8,10 @@ cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
+New database configuration is required. Please add `prepared_statements: false` to `database.yml`
+(check `database.yml.sample` for an example)
+
+
 ### Features
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
@@ -58,6 +62,7 @@ to the oauth.google_plus section of the configuration file.
 ### NOTICE
 This releases updates the database connections, and `database.yml` needs to be updated to reflect it. The adapter
 should be replaced from `postgres` to `postgresql`. See `database.yml.sample` for an example.
+
 This upgrade changes the configuration format of basemaps. You must replace all `url` keys for `urlTemplate`. It is
 recommended that you replace the `basemaps` section completely, since this release also adds supports for high
 resolution maps, which have added `urlTemplate2x` keys to the configuration.

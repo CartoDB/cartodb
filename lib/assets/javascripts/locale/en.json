@@ -1394,7 +1394,7 @@
         },
         "description": "Any personal data that you have used to create it will also be publicly available",
         "cancel": "Cancel",
-        "confirm": "Ok, publish it"
+        "confirm": "Ok, Change privacy"
       },
       "password-confirmation": {
         "modal-title": "Please confirm your password.",

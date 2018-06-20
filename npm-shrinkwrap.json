@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.29",
+  "version": "4.12.32",
   "dependencies": {
     "@carto/carto.js": {
       "version": "4.0.8",
@@ -1694,6 +1694,11 @@
           "from": "pako@>=1.0.5 <1.1.0",
           "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.6.tgz"
         },
+        "path-browserify": {
+          "version": "0.0.0",
+          "from": "path-browserify@0.0.0",
+          "resolved": "https://registry.npmjs.org/path-browserify/-/path-browserify-0.0.0.tgz"
+        },
         "readable-stream": {
           "version": "2.3.6",
           "from": "readable-stream@>=2.3.3 <3.0.0",
@@ -1829,9 +1834,9 @@
       "resolved": "https://registry.npmjs.org/patch-text/-/patch-text-1.0.2.tgz"
     },
     "path-browserify": {
-      "version": "0.0.0",
+      "version": "0.0.1",
       "from": "path-browserify@>=0.0.0 <0.1.0",
-      "resolved": "https://registry.npmjs.org/path-browserify/-/path-browserify-0.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/path-browserify/-/path-browserify-0.0.1.tgz"
     },
     "path-dirname": {
       "version": "1.0.2",

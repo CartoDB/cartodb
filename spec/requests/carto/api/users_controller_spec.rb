@@ -11,6 +11,7 @@ describe Carto::Api::UsersController do
 
   before(:all) do
     @headers = { 'CONTENT_TYPE' => 'application/json' }
+    FactoryGirl.create(:notification, organization: @carto_organization)
   end
 
   before(:each) do
@@ -53,7 +54,12 @@ describe Carto::Api::UsersController do
         expect(response.body[:default_fallback_basemap].with_indifferent_access).to eq(user.default_basemap)
 
         dashboard_notifications = carto_user.notifications_for_category(:dashboard)
+
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
+        expect(response.body[:organization_notifications].count).to eq(1)
+        expect(response.body[:organization_notifications].first['icon']).to eq(
+          carto_user.received_notifications.unread.first.icon
+        )
         expect(response.body[:can_change_email]).to eq(user.can_change_email?)
         expect(response.body[:auth_username_password_enabled]).to eq(true)
         expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)

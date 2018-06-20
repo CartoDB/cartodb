@@ -94,7 +94,7 @@
   left: -460px;
   width: 1050px;
   height: 700px;
-  background: image-url("layout/import_animation.gif") no-repeat center center;
+  background: url($assetsDir + "/images/layout/import_animation.gif") no-repeat center center;
   background-size: 60% 60%;
 }
 

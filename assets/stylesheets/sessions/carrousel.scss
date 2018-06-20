@@ -66,7 +66,7 @@
 }
 
 .Carrousel-slide--01 {
-  background: image-url("layout/signup/slide-01-bg.png") no-repeat;
+  background: url($assetsDir + "/images/layout/signup/slide-01-bg.png") no-repeat;
 
   &.is-active {
     .Carrousel-card {
@@ -89,19 +89,19 @@
 
 .Carrousel-card--01,
 .Carrousel-card--06 {
-  background-image: image-url("layout/signup/slide-01-card-01-bg.png");
+  background-image: url($assetsDir + "/images/layout/signup/slide-01-card-01-bg.png");
 }
 
 .Carrousel-card--02,
 .Carrousel-card--03,
 .Carrousel-card--07 {
-  background-image: image-url("layout/signup/slide-01-card-02-bg.png");
+  background-image: url($assetsDir + "/images/layout/signup/slide-01-card-02-bg.png");
 }
 
 .Carrousel-card--04,
 .Carrousel-card--05,
 .Carrousel-card--08 {
-  background-image: image-url("layout/signup/slide-01-card-03-bg.png");
+  background-image: url($assetsDir + "/images/layout/signup/slide-01-card-03-bg.png");
 }
 
 .Carrousel-card--01 {
@@ -193,7 +193,7 @@
 }
 
 .Carrousel-slide--02 {
-  background: image-url("layout/signup/slide-02-bg.png") no-repeat;
+  background: url($assetsDir + "/images/layout/signup/slide-02-bg.png") no-repeat;
 
   &.is-active {
     .Carrousel-slide--02-inner {
@@ -219,11 +219,11 @@
 }
 
 .Carrousel-slide--02-inner {
-  background-image: image-url("layout/signup/slide-02-upload.png");
+  background-image: url($assetsDir + "/images/layout/signup/slide-02-upload.png");
 }
 
 .Carrousel-slide--03 {
-  background: image-url("layout/signup/slide-03-bg.png") no-repeat;
+  background: url($assetsDir + "/images/layout/signup/slide-03-bg.png") no-repeat;
 
   &.is-active {
     .Carrousel-point {
@@ -250,7 +250,7 @@
   height: 330px;
   -webkit-transition: all 0.3s ease-out 1.5s;
   transition: all 0.3s ease-out 1.5s;
-  background: image-url("layout/signup/slide-03-editor.png") no-repeat;
+  background: url($assetsDir + "/images/layout/signup/slide-03-editor.png") no-repeat;
 }
 
 .Carrousel-points {
@@ -345,7 +345,7 @@
 }
 
 .Carrousel-slide--04 {
-  background: image-url("layout/signup/slide-04-bg.png") no-repeat;
+  background: url($assetsDir + "/images/layout/signup/slide-04-bg.png") no-repeat;
 
   &.is-active {
     .Carrousel-slide--04-inner {
@@ -356,7 +356,7 @@
 }
 
 .Carrousel-slide--04-inner {
-  background-image: image-url("layout/signup/slide-04-share.png");
+  background-image: url($assetsDir + "/images/layout/signup/slide-04-share.png");
 }
 
 @-webkit-keyframes slideIn {

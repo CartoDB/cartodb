@@ -42,24 +42,24 @@ This is a list of available tasks to run:
 | Task                           | Description
 | ---------                      | ---
 | `npm start`                    | Compiles `carto-node`, the static pages and watches Builder and Dashboard
-| `npm dev`                      | Runs webpack for Builder and Dashboard
-| `npm dev:static`               | Runs webpack for static pages
-| `npm dev:editor`               | Runs Editor for development
-| `npm build`                    | Create production builds for Builder and Dashboard
-| `npm build:static`             | Create production builds for static pages
-| `npm carto-node`               | Create production builds for `carto-node`
-| `npm test`                     | Run all test suites
-| `npm test:builder`             | Run and watches builder test suites
-| `npm test:dashboard`           | Run and watches dashboard test suites
-| `npm test:editor`              | Run and watches editor test suites
-| `npm lint`                     | Runs the Javascript linter
-| `npm lint:fix`                 | Runs the Javascript linter with the `--fix` flag
-| `npm lint:css`                 | Runs the CSS linter
-| `npm bump`                     | Creates a patch version
-| `npm bump:major`               | Creates a major version
-| `npm bump:minor`               | Creates a minor version
-| `npm update-internal-deps`     | Update the `npm-shrinkwrap` file
-| `npm ci`                       | Runs the CSS lint and tests
+| `npm run dev`                  | Runs webpack for Builder and Dashboard
+| `npm run dev:static`           | Runs webpack for static pages
+| `npm run dev:editor`           | Runs Editor for development
+| `npm run build`                | Create production builds for Builder and Dashboard
+| `npm run build:static`         | Create production builds for static pages
+| `npm run carto-node`           | Create production builds for `carto-node`
+| `npm run test`                 | Run all test suites
+| `npm run test:builder`         | Run and watches builder test suites
+| `npm run test:dashboard`       | Run and watches dashboard test suites
+| `npm run test:editor`          | Run and watches editor test suites
+| `npm run lint`                 | Runs the Javascript linter
+| `npm run lint:fix`             | Runs the Javascript linter with the `--fix` flag
+| `npm run lint:css`             | Runs the CSS linter
+| `npm run bump`                 | Creates a patch version
+| `npm run bump:major`           | Creates a major version
+| `npm run bump:minor`           | Creates a minor version
+| `npm run update-internal-deps` | Update the `npm-shrinkwrap` file
+| `npm run ci`                   | Runs the CSS lint and tests
 
 ## Pull Request rules
 

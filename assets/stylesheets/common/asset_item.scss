@@ -7,7 +7,7 @@
   overflow: hidden;
   border: 1px solid #DDD;
   border-radius: 3px;
-  background: image-url("layout/loader_transparent.gif") no-repeat center;
+  background: url($assetsDir + "/images/layout/loader_transparent.gif") no-repeat center;
 
   &:nth-child(12n) {
     margin-right: 0;

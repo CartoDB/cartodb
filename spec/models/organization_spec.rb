@@ -767,6 +767,16 @@ describe Organization do
     organization.password_expiration_in_d.should eq 10
   end
 
+  it 'should handle redis keys properly' do
+    @organization = create_organization_with_users(name: 'overquota-org')
+
+    $users_metadata.hkeys(@organization.key).should_not be_empty
+
+    @organization.destroy
+
+    $users_metadata.hkeys(@organization.key).should be_empty
+  end
+
   def random_attributes(attributes = {})
     random = unique_name('viz')
     {

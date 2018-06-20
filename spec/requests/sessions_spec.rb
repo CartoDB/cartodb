@@ -39,18 +39,20 @@ feature "Sessions" do
     end
 
     scenario "Login in the application" do
-      visit login_path
-      fill_in 'email', :with => @user.email
-      fill_in 'password', :with => 'blablapassword'
-      click_link_or_button 'Log in'
+      Cartodb.with_config(bypass_static_pages: true) do
+        visit login_path
+        fill_in 'email', :with => @user.email
+        fill_in 'password', :with => 'blablapassword'
+        click_link_or_button 'Log in'
 
-      page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
-      page.should have_css("[@data-content='Your account or your password is not ok']")
+        page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
+        page.should have_css("[@data-content='Your account or your password is not ok']")
 
-      fill_in 'email', :with => @user.email
-      fill_in 'password', :with => @user.email.split('@').first
-      click_link_or_button 'Log in'
-      page.should be_dashboard
+        fill_in 'email', :with => @user.email
+        fill_in 'password', :with => @user.email.split('@').first
+        click_link_or_button 'Log in'
+        page.should be_dashboard
+      end
     end
 
     scenario "Get the session information via OAuth" do
@@ -113,9 +115,11 @@ feature "Sessions" do
     include_context 'organization with users helper'
 
     it 'allows login to organization users' do
-      visit org_login_url(@org_user_1.organization)
-      send_login_form(@org_user_1)
-      page.should be_dashboard
+      Cartodb.with_config(bypass_static_pages: true) do
+        visit org_login_url(@org_user_1.organization)
+        send_login_form(@org_user_1)
+        page.should be_dashboard
+      end
     end
 
     it 'does not allow user+password login to organization users if auth_username_password_enabled is false' do

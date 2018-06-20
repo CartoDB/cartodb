@@ -74,7 +74,7 @@ describe 'Warden' do
     end
 
     it 'allows access for non-expired session' do
-      Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
+      Cartodb.with_config(passwords: { 'expiration_in_d' => nil }, bypass_static_pages: true) do
         login
 
         host! "#{@user.username}.localhost.lan"

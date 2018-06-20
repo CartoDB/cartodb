@@ -206,27 +206,29 @@ describe Admin::PagesController do
     end
 
     it 'extracts username from redirection for dashboard with subdomainless' do
-      username = 'endedwithu'
-      anyuser = prepare_user(username)
-      host! 'localhost.lan'
-      login_as(anyuser, scope: anyuser.username)
-      CartoDB.stubs(:session_domain).returns('localhost.lan')
-      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      Cartodb.with_config(bypass_static_pages: true) do
+        username = 'endedwithu'
+        anyuser = prepare_user(username)
+        host! 'localhost.lan'
+        login_as(anyuser, scope: anyuser.username)
+        CartoDB.stubs(:session_domain).returns('localhost.lan')
+        CartoDB.stubs(:subdomainless_urls?).returns(true)
 
-      get '', {}, JSON_HEADER
+        get '', {}, JSON_HEADER
 
-      last_response.status.should == 302
-      uri = URI.parse(last_response.location)
-      uri.host.should == 'localhost.lan'
-      uri.path.should == "/user/#{username}/dashboard"
+        last_response.status.should == 302
+        uri = URI.parse(last_response.location)
+        uri.host.should == 'localhost.lan'
+        uri.path.should == "/user/#{username}/dashboard"
 
-      login_as(anyuser, scope: anyuser.username)
-      location = last_response.location
-      User.any_instance.stubs(:db_size_in_bytes).returns(0)
-      get location
-      last_response.status.should == 200
+        login_as(anyuser, scope: anyuser.username)
+        location = last_response.location
+        User.any_instance.stubs(:db_size_in_bytes).returns(0)
+        get location
+        last_response.status.should == 200
 
-      anyuser.delete
+        anyuser.delete
+      end
     end
 
     it 'redirects to login without login' do

@@ -57,10 +57,12 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
-      login_as(@user, scope: @user.username)
+      Cartodb.with_config(bypass_static_pages: true) do
+        login_as(@user, scope: @user.username)
 
-      get "/viz", {}, @headers
-      last_response.status.should == 200
+        get "/viz", {}, @headers
+        last_response.status.should == 200
+      end
     end
 
     it 'returns 403 if user not logged in' do
@@ -632,9 +634,11 @@ describe Admin::VisualizationsController do
     end
 
     it 'invokes user metadata redis caching' do
-      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
-      login_as(@user, scope: @user.username)
-      get dashboard_path, {}, @headers
+      Cartodb.with_config(bypass_static_pages: true) do
+        Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
+        login_as(@user, scope: @user.username)
+        get dashboard_path, {}, @headers
+      end
     end
   end
 

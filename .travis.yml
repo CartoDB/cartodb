@@ -9,10 +9,6 @@ addons:
   chrome: stable
 install:
   - npm install
-
-script:
-  - npm run ci
-
 notifications:
   email:
     on_success: never

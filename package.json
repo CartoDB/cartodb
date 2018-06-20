@@ -177,8 +177,7 @@
   },
   "scripts": {
     "start": "npm run carto-node && npm run build:static && npm run dev",
-    "ci": "npm run lint:css && npm run test",
-    "test": "grunt test",
+    "test": "npm run lint && npm run lint:css && npm run test:ci:builder && npm run test:ci:dashboard && grunt test-editor",
     "test:builder": "karma start karma/builder.conf.js",
     "test:ci:builder": "karma start karma/builder-ci.conf.js",
     "test:dashboard": "karma start karma/dashboard.conf.js",

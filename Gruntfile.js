@@ -3,7 +3,6 @@ var timer = require('grunt-timer');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
-var webpackTask = null;
 
 var REQUIRED_NODE_VERSION = '6.9.2';
 var REQUIRED_NPM_VERSION = '3.10.9';
@@ -23,13 +22,6 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'torque.js',
   'turbo-carto'
 ];
-
-function requireWebpackTask () {
-  if (webpackTask === null) {
-    webpackTask = require('./lib/build/tasks/webpack/webpack.js');
-  }
-  return webpackTask;
-}
 
 function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
   if (err) {
@@ -387,43 +379,14 @@ module.exports = function (grunt) {
     'invalidate'
   ]);
 
-  grunt.registerTask('generate_builder_specs', 'Generate only builder specs', function (option) {
-    requireWebpackTask().affected.call(this, option, grunt);
-  });
-
-  grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
-    requireWebpackTask().bootstrap.call(this, 'builder_specs', grunt);
-  });
-
-  grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {
-    requireWebpackTask().compile.call(this, 'builder_specs');
-  });
-
   /**
    * `grunt test`
    */
-  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
+  grunt.registerTask('test-editor', 'Runs editor specs in command line', [
     'connect:test',
     'beforeDefault',
     'js_editor',
-    'jasmine:cartodbui',
-    'generate_builder_specs',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:builder',
-    'lint'
-  ]);
-
-  /**
-   * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.
-   */
-  grunt.registerTask('test:browser:builder', 'Build all Builder specs', [
-    'generate_builder_specs',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:builder:build',
-    'connect:specs_builder',
-    'watch:js_affected'
+    'jasmine:cartodbui'
   ]);
 
   /**

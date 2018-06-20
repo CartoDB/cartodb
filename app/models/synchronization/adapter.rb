@@ -316,43 +316,7 @@ module CartoDB
       end
 
       def column_names(user, table_name)
-        schema(user, table_name).map(&:first)
-      end
-
-      def schema(user, table_name, options = {})
-        first_columns     = []
-        middle_columns    = []
-        last_columns      = []
-        user.in_database.schema(table_name, options.slice(:reload).merge(schema: user.database_schema)).each do |column|
-          next if column[0] == THE_GEOM_WEBMERCATOR
-
-          col_db_type = column[1][:db_type].starts_with?('geometry') ? 'geometry' : column[1][:db_type]
-          col = [
-            column[0],
-            # Default/unset or set to true means we want cartodb types
-            (options.include?(:cartodb_types) && options[:cartodb_types] == false ? col_db_type : col_db_type.convert_to_cartodb_type),
-            col_db_type == 'geometry' ? 'geometry' : nil,
-            col_db_type == 'geometry' ? 'geometry' : nil
-          ].compact
-
-          # Make sensible sorting for UI
-          case column[0]
-          when :cartodb_id
-            first_columns.insert(0, col)
-          when :the_geom
-            first_columns.insert(1, col)
-          when :created_at, :updated_at
-            last_columns.insert(-1, col)
-          else
-            middle_columns << col
-          end
-        end
-
-        # sort middle columns alphabetically
-        middle_columns.sort! { |x, y| x[0].to_s <=> y[0].to_s }
-
-        # group columns together and return
-        (first_columns + middle_columns + last_columns).compact
+        user.in_database.schema(table_name).map { |row| row[0] }
       end
 
       attr_reader :table_name, :runner, :database, :user

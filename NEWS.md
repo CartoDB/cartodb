@@ -13,6 +13,7 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
 * Show Organization notifications in static pages (https://github.com/CartoDB/cartodb/issues/14089)
 * Fix wrong margins in the layer selector when the top layer has a bubble legend (https://github.com/CartoDB/support/issues/1566)
 * Fix error when styling points by value in animated aggregation style (https://github.com/CartoDB/cartodb/issues/14085)

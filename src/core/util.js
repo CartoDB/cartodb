@@ -40,20 +40,22 @@ util.encodeBase64 = function (data) {
     return data;
   }
 
-  do { // pack three octets into four hexets
+  do {
+    // pack three octets into four hexets
     o1 = data.charCodeAt(i++);
     o2 = data.charCodeAt(i++);
     o3 = data.charCodeAt(i++);
 
-    bits = o1 << 16 | o2 << 8 | o3;
+    bits = (o1 << 16) | (o2 << 8) | o3;
 
-    h1 = bits >> 18 & 0x3f;
-    h2 = bits >> 12 & 0x3f;
-    h3 = bits >> 6 & 0x3f;
+    h1 = (bits >> 18) & 0x3f;
+    h2 = (bits >> 12) & 0x3f;
+    h3 = (bits >> 6) & 0x3f;
     h4 = bits & 0x3f;
 
     // use hexets to index into b64, and append result to encoded string
-    tmpArr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
+    tmpArr[ac++] =
+      b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
   } while (i < data.length);
 
   enc = tmpArr.join('');
@@ -70,13 +72,13 @@ util.uniqueCallbackName = function (str) {
 
 util.crc32 = function (str) {
   var crcTable = util._crcTable || (util._crcTable = util._makeCRCTable());
-  var crc = 0 ^ (-1);
+  var crc = 0 ^ -1;
 
   for (var i = 0, l = str.length; i < l; ++i) {
-    crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
+    crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xff];
   }
 
-  return (crc ^ (-1)) >>> 0;
+  return (crc ^ -1) >>> 0;
 };
 
 util._makeCRCTable = function () {
@@ -85,7 +87,7 @@ util._makeCRCTable = function () {
   for (var n = 0; n < 256; ++n) {
     c = n;
     for (var k = 0; k < 8; ++k) {
-      c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
     }
     crcTable[n] = c;
   }
@@ -94,7 +96,8 @@ util._makeCRCTable = function () {
 
 util._inferBrowser = function (ua) {
   var browser = {};
-  ua = ua || (typeof window !== 'undefined' && window.navigator.userAgent) || '';
+  ua =
+    ua || (typeof window !== 'undefined' && window.navigator.userAgent) || '';
   function detectIE () {
     var msie = ua.indexOf('MSIE ');
     var trident = ua.indexOf('Trident/');
@@ -113,7 +116,7 @@ util._inferBrowser = function (ua) {
   }
 
   if (detectIE()) {
-    browser.ie = {version: getIEVersion()};
+    browser.ie = { version: getIEVersion() };
   } else if (ua.indexOf('Edge/') > -1) browser.edge = ua;
   else if (ua.indexOf('Chrome') > -1) browser.chrome = ua;
   else if (ua.indexOf('Firefox') > -1) browser.firefox = ua;
@@ -125,7 +128,9 @@ util._inferBrowser = function (ua) {
 util.browser = util._inferBrowser();
 
 util.isMobileDevice = function () {
-  return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
 };
 
 util.supportsTouch = function () {
@@ -136,7 +141,8 @@ var webGLSupportedAndEnabled = null;
 util.isWebGLSupported = function () {
   if (webGLSupportedAndEnabled === null) {
     var canvas = document.createElement('canvas');
-    webGLSupportedAndEnabled = !!window.WebGLRenderingContext &&
+    webGLSupportedAndEnabled =
+      !!window.WebGLRenderingContext &&
       !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
   }
   return webGLSupportedAndEnabled;
@@ -152,7 +158,9 @@ util.endsWith = function (str, suffix) {
 util.checkRequiredOpts = function (actualOpts, requiredOpts, from) {
   _.each(requiredOpts, function (item) {
     if (_.isUndefined(actualOpts[item])) {
-      throw new Error(item + ' is required' + (from ? ' to initialize ' + from : ''));
+      throw new Error(
+        item + ' is required' + (from ? ' to initialize ' + from : '')
+      );
     }
   });
 };
@@ -180,8 +188,8 @@ util.isGoogleMapsLoaded = function () {
     throw new Error('Google Maps is required');
   }
   var version = window.google.maps.version;
-  if (version < '3.0.0' || version >= '3.31.0') {
-    throw new Error('Google Maps version should be >= 3.0 and < 3.31');
+  if (version < '3.31.0') {
+    throw new Error('Google Maps version should be >= 3.31');
   }
 };
 

@@ -602,6 +602,45 @@ describe('dataviews/dataview-model-base', function () {
       expect(error.message).toEqual('an error');
     });
   });
+
+  describe('._fetch', function () {
+    describe('when request is success', function () {
+      beforeEach(function () {
+        this.model.fetch = function (opts) {
+          opts.success();
+        };
+      });
+
+      it('sets _hasBinds to true', function () {
+        expect(this.model._hasBinds).toBe(false);
+
+        this.model._fetch();
+
+        expect(this.model._hasBinds).toBe(true);
+      });
+
+      it('calls ._onChangeBinds', function () {
+        spyOn(this.model, '_onChangeBinds');
+
+        this.model._fetch();
+
+        expect(this.model._onChangeBinds).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('._onMapBoundsChanged', function () {
+    describe('when _shouldFetchOnBoundingBoxChange is true', function () {
+      it('calls ._fetch', function () {
+        spyOn(this.model, '_shouldFetchOnBoundingBoxChange').and.returnValue(true);
+        spyOn(this.model, '_fetch');
+
+        this.model._onMapBoundsChanged();
+
+        expect(this.model._fetch).toHaveBeenCalled();
+      });
+    });
+  });
 });
 
 function sharedTestsForAnalysisEvents () {

@@ -1,196 +1,100 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Legends | CARTO</title>
-    <meta name="viewport" content="initial-scale=1.0">
-    <meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
-    <!-- Include Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
-    <!-- Include CARTO.js -->
-    <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        z-index: 0;
-      }
-      #legends {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 280px;
-        padding: 20px 24px;
-        background: white;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        z-index: 1;
-      }
-      #legends > ul {
-        list-style-type: none;
-        margin-bottom: 24px;
-      }
-      #legends > ul:last-child {
-        margin: 0;
-        padding: 0;
-        border: 0;
-      }
-      #legends h2 {
-        font: 600 12px/16px 'Open Sans';
-        color: #2D3C43;
-        margin-bottom: 12px;
-      }
-      .legends-category {
-        font: 600 10px/14px 'Open Sans';
-      }
-      .legends-category li {
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        text-transform: uppercase;
-      }
-      .legends-category li:last-child {
-        margin-bottom: 0;
-      }
-      button {
-        padding: 10px;
-        margin-top: 20px;
-      }
-      .circle {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 8px;
-      }
-      .circle-outline {
-        background: #F9F9F9;
-        border: 1px solid rgba(0,0,0,0.10);
-      }
-      #avg {
-        margin-top: 12px;
-      }
-      #avg p {
-        font: 400 10px/14px 'Open Sans';
-      }
-      #avg p strong {
-        font-weight: 600;
-      }
-      .legend-sizes {
-        display: flex;
-        align-items: center;
-      }
-      .legend-sizes > div {
-        margin-right: 32px;
-        display: flex;
-        align-items: center;
-      }
-      .legend-sizes > div:last-child {
-        margin-right: 0;
-      }
-      .legend-sizes p {
-        font: 600 10px/14px 'Open Sans';
-        text-transform: uppercase;
-      }
-      #controls {
-        position: absolute;
-        padding: 20px;
-        background: white;
-        top: 230px;
-        right: 12px;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        width: 200px;
-        color: #2E3C43;
-        z-index: 2;
-      }
-      #controls li {
-        list-style-type: none;
-        margin: 0 0 8px 0;
-        display: flex;
-        vertical-align: middle;
-      }
-      #controls li input {
-        margin: 0 8px 0 0;
-      }
-      #controls li label {
-        font: 12px/16px 'Open Sans';
-        cursor: pointer;
-      }
-      #controls li:last-child {
-        margin-bottom: 0;
-      }
-      #controls li:hover {
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <div id="legends">
-      <h2>World cities</h2>
-      <ul class="legends-category">
+
+<head>
+  <title>Legends | CARTO</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+  <!-- Include Google Maps -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+  <!-- Include CARTO.js -->
+  <script src="../../../dist/public/carto.js"></script>
+  <link href="../style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="map"></div>
+  <aside class="toolbox">
+    <div class="box">
+      <header>
+        <h1>Legends</h1>
+        <button class="github-logo js-source-link"></button>
+      </header>
+      <section>
+        <p class="description open-sans">Create dynamic legends.</p>
+        <div class="separator"></div>
+        <div id="controls">
+          <ul>
+            <li onclick="setAllCities()">
+              <input type="radio" name="data" checked id="all">
+              <label for="all">ALL cities</label>
+            </li>
+            <li onclick="setEuropeanCities()">
+              <input type="radio" name="data" id="europe">
+              <label for="europe">European cities</label>
+            </li>
+            <li onclick="setSpanishCities()">
+              <input type="radio" name="data" id="spain">
+              <label for="spain">Spanish cities</label>
+            </li>
+          </ul>
+          <div class="separator"></div>
+          <ul>
+            <li onchange="invertColors()">
+              <input type="checkbox" name="data" id="invertColors">
+              <label for="invertColors">Invert colors</label>
+            </li>
+          </ul>
+        </div>
+
+      </section>
+      <footer class="js-footer"></footer>
+    </div>
+
+    <div class="box legend">
+      <h2 class="h2">World cities</h2>
+      <ul class="category open-sans">
         <li id="capital"></li>
         <li id="normal"></li>
       </ul>
-      <h2>Inhabitants</h2>
+      <h2 class="h2">Inhabitants</h2>
       <ul id="legend-population">
-        <li class="legend-sizes">
+        <li class="size open-sans">
           <div id="min"></div>
           <div id="max"></div>
         </li>
-        <li id="avg"></li>
+        <li class="avg open-sans"></li>
       </ul>
     </div>
-    <div id="controls">
-      <ul>
-        <li onclick="setAllCities()">
-          <input type="radio" name="data" checked  id="all">
-          <label for="all">ALL cities</label>
-        </li>
-        <li onclick="setEuropeanCities()">
-          <input type="radio" name="data" id="europe">
-          <label for="europe">European cities</label>
-        </li>
-        <li onclick="setSpanishCities()">
-          <input type="radio" name="data" id="spain">
-          <label for="spain">Spanish cities</label>
-        </li>
-        <li onchange="invertColors()">
-          <input type="checkbox" name="data" id="invertColors">
-          <label for="invertColors">Invert colors</label>
-        </li>
-      </ul>
-    </div>
-    <script>
-      const map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 30, lng: 0},
-        zoom: 3
-      });
-      // Hide the map labels and geometry strokes
-      map.set('styles', [{
-        elementType: 'labels',
-        stylers: [{ visibility: 'off' }]
-      }, {
-        elementType: 'geometry.stroke',
-        stylers: [{ visibility: 'off' }]
-      }]);
+  </aside>
 
-      const client = new carto.Client({
-        apiKey: 'YOUR_API_KEY',
-        username: 'cartojs-test'
-      });
+  <script>
+    var map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: 30, lng: 0 },
+      zoom: 3,
+      fullscreenControl: false,
+      gestureHandling: 'cooperative'
+    });
+    // Hide the map labels and geometry strokes
+    map.set('styles', [{
+      elementType: 'labels',
+      stylers: [{ visibility: 'off' }]
+    }, {
+      elementType: 'geometry.stroke',
+      stylers: [{ visibility: 'off' }]
+    }]);
 
-      const populatedPlacesSource = new carto.source.SQL(`
+    const client = new carto.Client({
+      apiKey: 'default_public',
+      username: 'cartojs-test'
+    });
+
+    const populatedPlacesSource = new carto.source.SQL(`
         SELECT *
           FROM ne_10m_populated_places_simple
       `);
-      const populatedPlacesStyle = new carto.style.CartoCSS(`
+    const populatedPlacesStyle = new carto.style.CartoCSS(`
         #layer {
           marker-width: ramp([pop_max], range(2, 12), quantiles(5));
           marker-fill: ramp([adm0cap], (#EE4D5A, #68B69E), (0, 1), "=", category);
@@ -201,82 +105,82 @@
           marker-line-opacity: 0.2;
         }
       `);
-      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
+    const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
 
-      client.addLayer(populatedPlacesLayer);
-      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+    client.addLayer(populatedPlacesLayer);
+    map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      populatedPlacesLayer.on('metadataChanged', function(event) {
-        event.styles.forEach(function (styleMetadata) {
-          switch(styleMetadata.getProperty()) {
-            case 'marker-width':
-              renderLegendSize(styleMetadata);
-              break;
-            case 'marker-fill':
-              renderLegendCapital(styleMetadata);
-              break;
-          }
-        });
+    populatedPlacesLayer.on('metadataChanged', function (event) {
+      event.styles.forEach(function (styleMetadata) {
+        switch (styleMetadata.getProperty()) {
+          case 'marker-width':
+            renderLegendSize(styleMetadata);
+            break;
+          case 'marker-fill':
+            renderLegendCapital(styleMetadata);
+            break;
+        }
       });
+    });
 
-      function renderLegendSize(metadata) {
-        document.getElementById('min').innerHTML = `
+    function renderLegendSize(metadata) {
+      document.getElementById('min').innerHTML = `
           <div class="circle circle-outline" style="width:8px; height:8px;"></div> <p>${metadata.getMin()}</p>
         `;
-        document.getElementById('max').innerHTML = `
+      document.getElementById('max').innerHTML = `
           <div class="circle circle-outline" style="width:24px; height:24px;"></div> <p>${metadata.getMax()}</p>
         `;
-        document.getElementById('avg').innerHTML = `
+      document.querySelector('.legend .avg').innerHTML = `
           <p><b>Average: </b> ${metadata.getAverage().toFixed(2)}</p>
         `;
-      }
+    }
 
-      function renderLegendCapital(metadata) {
-        const categories = metadata.getCategories();
+    function renderLegendCapital(metadata) {
+      const categories = metadata.getCategories();
 
-        for (category of categories) {
-          switch (category.name) {
-            case 0:
-              document.getElementById('normal').innerHTML = `
+      for (category of categories) {
+        switch (category.name) {
+          case 0:
+            document.getElementById('normal').innerHTML = `
                 <div class="circle" style="background:${category.value}"></div> Normal
               `;
-              break;
-            case 1:
-              document.getElementById('capital').innerHTML = `
+            break;
+          case 1:
+            document.getElementById('capital').innerHTML = `
                 <div class="circle" style="background:${category.value}"></div> Capital
               `;
-              break;
-          }
+            break;
         }
       }
+    }
 
-      function setAllCities() {
-        populatedPlacesSource.setQuery(`
+    function setAllCities() {
+      populatedPlacesSource.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple
         `);
-      }
+    }
 
-      function setEuropeanCities() {
-        populatedPlacesSource.setQuery(`
+    function setEuropeanCities() {
+      populatedPlacesSource.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple
             WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
         `);
-      }
+    }
 
-      function setSpanishCities() {
-        populatedPlacesSource.setQuery(`
+    function setSpanishCities() {
+      populatedPlacesSource.setQuery(`
           SELECT *
             FROM ne_10m_populated_places_simple
             WHERE adm0name = \'Spain\'
         `);
-      }
+    }
 
-      function invertColors() {
-        const invert = document.getElementById('invertColors').checked;
-        const colors = invert ? '(#68B69E, #EE4D5A)' : '(#EE4D5A, #68B69E)';
-        const content = `
+    function invertColors() {
+      const invert = document.getElementById('invertColors').checked;
+      const colors = invert ? '(#68B69E, #EE4D5A)' : '(#EE4D5A, #68B69E)';
+      const content = `
           #layer {
             marker-width: ramp([pop_max], range(2, 12), quantiles(5));
             marker-fill: ramp([adm0cap], ${colors}, (0, 1), "=", category);
@@ -287,8 +191,9 @@
             marker-line-opacity: 0.2;
           }
         `;
-        populatedPlacesStyle.setContent(content);
-      }
-    </script>
-  </body>
+      populatedPlacesStyle.setContent(content);
+    }
+  </script>
+</body>
+
 </html>

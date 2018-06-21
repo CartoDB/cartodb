@@ -72,6 +72,8 @@ module.exports = Model.extend({
     opts = opts || {};
     util.checkRequiredOpts(opts, REQUIRED_OPTS, 'DataviewModelBase');
 
+    this._hasBinds = false;
+
     this._engine = opts.engine;
 
     if (!attrs.source) throw new Error('source is a required attr');
@@ -102,9 +104,9 @@ module.exports = Model.extend({
       this._checkBBoxFilter();
       if (this.syncsOnBoundingBoxChanges() && !this._bboxFilter.areBoundsAvailable()) {
         // wait until map gets bounds from view
-        this.listenTo(this._bboxFilter, 'boundsChanged', this._initialFetch);
+        this.listenTo(this._bboxFilter, 'boundsChanged', this._fetch);
       } else {
-        this._initialFetch();
+        this._fetch();
       }
     });
 
@@ -123,13 +125,13 @@ module.exports = Model.extend({
     this.on('change:url', function (model, value, opts) {
       this._newDataAvailable = true;
       if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
-        this.fetch();
+        this.refresh();
       }
     }, this);
 
     this.on('change:enabled', function (mdl, isEnabled) {
       if (isEnabled && this._newDataAvailable) {
-        this.fetch();
+        this.refresh();
         this._newDataAvailable = false;
       }
     }, this);
@@ -137,7 +139,10 @@ module.exports = Model.extend({
 
   _onMapBoundsChanged: function () {
     if (this._shouldFetchOnBoundingBoxChange()) {
-      this.fetch();
+      // If the widget is the first one created it changes the map bounds
+      // and cacels the first ._fetch request so we have to call ._fetch here
+      // instead of .refresh to set the binds if they're not set up yet
+      this._fetch();
     }
 
     if (this.syncsOnBoundingBoxChanges()) {
@@ -145,9 +150,14 @@ module.exports = Model.extend({
     }
   },
 
-  _initialFetch: function () {
+  _fetch: function () {
     this.fetch({
-      success: this._onChangeBinds.bind(this)
+      success: function () {
+        if (!this._hasBinds) {
+          this._hasBinds = true;
+          this._onChangeBinds();
+        }
+      }.bind(this)
     });
   },
 

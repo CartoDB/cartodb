@@ -96,10 +96,17 @@ var CartoDBLayerGroup = Backbone.Model.extend({
   },
 
   _generatePNGTileURLTemplate: function (urlTemplate) {
-    urlTemplate = urlTemplate
-      .replace('{layerIndexes}', this._getIndexesOfVisibleMapnikLayers())
-      .replace('{format}', 'png');
-    return this._appendAuthParamsToURL(urlTemplate);
+    var mapnikLayersIndexes = this._getIndexesOfVisibleMapnikLayers();
+
+    if (mapnikLayersIndexes) {
+      urlTemplate = urlTemplate
+        .replace('{layerIndexes}', mapnikLayersIndexes)
+        .replace('{format}', 'png');
+
+      return this._appendAuthParamsToURL(urlTemplate);
+    }
+
+    return '';
   },
 
   _generateMTVTileURLTemplate: function (urlTemplate) {

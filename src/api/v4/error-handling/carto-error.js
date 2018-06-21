@@ -58,8 +58,14 @@ function _transformWindshaftError (error, layers, analysis) {
   if (error.type === 'layer' && layers) {
     cartoError.layer = layers.findById(error.layerId);
   }
-  if (error.type === 'analysis' && analysis) {
-    cartoError.source = analysis;
+  if (error.type === 'analysis') {
+    if (analysis) {
+      cartoError.source = analysis;
+      cartoError.sourceId = analysis.getId && analysis.getId();
+    }
+    if (error.analysisId) {
+      cartoError.sourceId = error.analysisId;
+    }
   }
 
   return cartoError;
@@ -126,5 +132,6 @@ module.exports = CartoError;
  * @property {object} originalError - An object containing the internal/original error
  * @property {object} stack - Error stack trace
  * @property {string} type - Error type
+ * @property {string} sourceId - Available if the error is related to a source object. Indicates the ID of the source that has a problem. 
  * @api
  */

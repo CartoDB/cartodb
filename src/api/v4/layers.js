@@ -10,7 +10,7 @@ Layers.prototype.add = function (layer) {
 };
 
 Layers.prototype.remove = function (layer) {
-  return this._layers.splice(this._layers.indexOf(layer));
+  return this._layers.splice(this._layers.indexOf(layer), 1);
 };
 
 Layers.prototype.size = function () {

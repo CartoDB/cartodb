@@ -11,117 +11,52 @@
     <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body, *{ margin: 0; padding: 0; }
-      #map {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        z-index: 0;
-      }
-      #controls {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 300px;
-        z-index: 2;
-        padding: 8px 12px;
-        background: white;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        color: #2E3C43;
-      }
-      #controls h2 {
-        font: 300 12px/16px 'Open Sans';
-        background: rgba(0, 0, 0, 0.64);
-        border-radius: 4px;
-        padding: 8px 12px;
-        color: #fff;
-      }
-      .actions {
-        display: flex;
-      }
-      .actions li {
-        list-style-type: none;
-        display: flex;
-        align-items: center;
-      }
-      .actions li input {
-        margin: 0 8px 0 0;
-      }
-      .actions li label {
-        font: 12px/16px 'Open Sans';
-        cursor: pointer;
-      }
-      .actions li {
-        margin-right: 12px;
-      }
-      .actions li:last-child {
-        margin-right: 0;
-      }
-      .actions li:hover {
-        cursor: pointer;
-      }
-      .popup-container {
-        padding: 18px;
-        width: 180px;
-      }
-      .popup-container li {
-        list-style-type: none;
-        margin-bottom: 8px;
-      }
-      .popup-container li:last-child {
-        margin-bottom: 0;
-      }
-      .popup-container h2 {
-        font: 600 16px/22px 'Open Sans';
-        margin-bottom: 12px
-      }
-      .popup-container h3{
-        font: 400 10px/14px 'Open Sans';
-        color: #747D82;
-        text-transform: uppercase;
-      }
-      .popup-container h4{
-        font: 600 12px/16px 'Open Sans';
-      }
-
-      /* rewrite leaflet styles */
-      .leaflet-popup-content-wrapper {
-        border-radius: 4px !important;
-      }
-      .leaflet-popup-content {
-        margin: 0 !important;
-      }
-
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
   <body>
     <div id="map"></div>
-    <div id="controls">
-      <ul class="actions">
-        <li onclick="setPopupsClick()">
-          <input type="radio" name="style" value="01" id="popup">
-          <label for="popup">Pop-ups on click</label>
-        </li>
-        <li onclick="setPopupsHover()">
-          <input type="radio" name="style" value="01" id="hover">
-          <label for="hover">Pop-ups on hover</label>
-        </li>
-      </ul>
-    </div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Pop-Ups</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create pop-up information windows and interact with your map.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Select your preferred kind of pop-ups</p>
+          </section>
+
+          <div id="controls">
+            <ul class="actions">
+              <li onclick="setPopupsClick()">
+                <input type="radio" name="style" value="01" id="popup">
+                <label for="popup">Pop-ups on click</label>
+              </li>
+              <li onclick="setPopupsHover()">
+                <input type="radio" name="style" value="01" id="hover">
+                <label for="hover">Pop-ups on hover</label>
+              </li>
+            </ul>
+          </div>
+
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
     <script>
       const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
         maxZoom: 18
       }).addTo(map);
 
       const client = new carto.Client({
-        apiKey: 'YOUR_API_KEY',
+        apiKey: 'default_public',
         username: 'cartojs-test'
       });
 
@@ -146,17 +81,17 @@
 
       function openPopup(featureEvent) {
         let content = '';
-        content += `<div class="popup-container">`;
+        content += `<div class="widget">`;
         if (featureEvent.data.name) {
-          content += `<h2>${featureEvent.data.name}</h2>`;
+          content += `<h2 class="h2">${featureEvent.data.name}</h2>`;
         }
         if (featureEvent.data.pop_max || featureEvent.data.pop_min) {
           content += `<ul>`;
           if (featureEvent.data.pop_max) {
-            content += `<li><h3>Max:</h3> <h4>${featureEvent.data.pop_max}</h4></li>`;
+            content += `<li><h3>Max:</h3><p class="open-sans">${featureEvent.data.pop_max}</p></li>`;
           }
           if (featureEvent.data.pop_min) {
-            content += `<li><h3>Min:</h3> <h4>${featureEvent.data.pop_min}<h4></li>`;
+            content += `<li><h3>Min:</h3><p class="open-sans">${featureEvent.data.pop_min}</p></li>`;
           }
           content += `</ul>`;
         }

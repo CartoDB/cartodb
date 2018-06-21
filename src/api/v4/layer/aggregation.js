@@ -3,7 +3,7 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
 
 /**
  * List of possible aggregation operations.
- * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#columns } for more info.
+ * See {@link https://carto.com/developers/maps-api/tile-aggregation#columns } for more info.
  * @enum {string} carto.layer.Aggregation.operation
  * @memberof carto.layer.Aggregation
  * @api
@@ -23,7 +23,7 @@ var OPERATIONS = {
 
 /**
  * List of possible aggregation feature placements.
- * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement } for more info.
+ * See {@link https://carto.com/developers/maps-api/tile-aggregation#placement } for more info.
  * @enum {string} carto.layer.Aggregation.placement
  * @memberof carto.layer.Aggregation
  * @api
@@ -43,12 +43,12 @@ var VALID_RESOLUTIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
  * An aggregation can be passed to a {@link carto.layer.Layer} to reduce the number of visible points 
  * increasing the performance.
  * 
- * See {@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation} for more info.
+ * See {@link https://carto.com/developers/maps-api/guides/tile-aggregation/} for more info.
  * 
  * @param {object} opts 
  * @param {number} opts.threshold - The minimum number of rows in the dataset for aggregation to be applied
- * @param {number} opts.resolution - The cell-size of the spatial aggregation grid [more info]{@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#resolution}
- * @param {string} opts.placement - The kind of [aggregated geometry]{@link https://carto.com/docs/carto-engine/maps-api/tile-aggregation/#placement} generated
+ * @param {number} opts.resolution - The cell-size of the spatial aggregation grid [more info]{@link https://carto.com/developers/maps-api/tile-aggregation#resolution}
+ * @param {string} opts.placement - The kind of [aggregated geometry]{@link https://carto.com/developers/maps-api/tile-aggregation#placement} generated
  * @param {object} opts.columns - The new columns are computed by a applying an aggregate function to all the points in each group
  * @param {string} opts.columns.aggregatedFunction - The Function used to aggregate the points: avg (average), sum, min (minimum), max (maximum) and mode (the most frequent value in the group)
  * @param {string} opts.columns.aggregatedColumn - The name of the original column to be aggregated.

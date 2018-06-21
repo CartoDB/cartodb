@@ -1,106 +1,88 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Feature click | CARTO</title>
-    <meta name="viewport" content="initial-scale=1.0">
-    <meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
-    <!-- Include Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.30"></script>
-    <!-- Include CARTO.js -->
-    <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body, *{ margin: 0; padding: 0; }
-      #map {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        z-index: 0;
-      }
-      #controls {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 200px;
-        z-index: 2;
-      }
-      #controls h2 {
-        font: 300 12px/16px 'Open Sans';
-        background: rgba(0, 0, 0, 0.64);
-        border-radius: 4px;
-        padding: 8px 12px;
-        color: #fff;
-      }
-      .container {
-        padding: 8px 12px;
-        background: white;
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        color: #2E3C43;
-        margin-top: 12px;
-      }
-      #content h3 {
-        font: 400 16px/22px 'Open Sans';
-        margin-bottom: 4px;
-      }
-      #content p {
-        font: 400 12px/16px 'Open Sans';
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <div id="controls">
-      <h2>Click on the markers</h2>
-      <div id="content"></div>
+
+<head>
+  <title>Feature click | CARTO</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+  <!-- Include Google Maps -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+  <!-- Include CARTO.js -->
+  <script src="../../../dist/public/carto.js"></script>
+  <link href="../style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="map">
+  </div>
+  <!-- Description -->
+  <aside class="toolbox">
+    <div class="box">
+      <header>
+        <h1>Detect feature click</h1>
+        <button class="github-logo js-source-link"></button>
+      </header>
+      <section>
+        <p class="description open-sans">Interact with the features on the click event.</p>
+        <div class="separator"></div>
+        <section class="usage">
+          <header>USAGE</header>
+          <p class="open-sans">Click on the markers</p>
+        </section>
+        <div id="controls">
+          <div id="info"></div>
+        </div>
+      </section>
+      <footer class="js-footer"></footer>
     </div>
-    <script>
-      const map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 30, lng: 0},
-        zoom: 3
-      });
-      // Hide the map labels and geometry strokes
-      map.set('styles', [{
-        elementType: 'labels',
-        stylers: [{ visibility: 'off' }]
-      }, {
-        elementType: 'geometry.stroke',
-        stylers: [{ visibility: 'off' }]
-      }]);
+  </aside>
 
-      const client = new carto.Client({
-        apiKey: 'YOUR_API_KEY',
-        username: 'cartojs-test'
-      });
+  <script>
+    var map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: 30, lng: 0 },
+      zoom: 3,
+      fullscreenControl: false,
+      gestureHandling: 'cooperative'
+    });
+    // Hide the map labels and geometry strokes
+    map.set('styles', [{
+      elementType: 'labels',
+      stylers: [{ visibility: 'off' }]
+    }, {
+      elementType: 'geometry.stroke',
+      stylers: [{ visibility: 'off' }]
+    }]);
 
-      const source = new carto.source.Dataset(`
+    const client = new carto.Client({
+      apiKey: 'default_public',
+      username: 'cartojs-test'
+    });
+
+    const source = new carto.source.Dataset(`
         ne_10m_populated_places_simple
       `);
-      const style = new carto.style.CartoCSS(`
+    const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 7;
           marker-fill: #EE4D5A;
           marker-line-color: #FFFFFF;
         }
       `);
-      const layer = new carto.layer.Layer(source, style, {
-        featureClickColumns: ['name', 'pop_max']
-      });
+    const layer = new carto.layer.Layer(source, style, {
+      featureClickColumns: ['name', 'pop_max']
+    });
 
-      client.addLayer(layer);
-      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+    client.addLayer(layer);
+    map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
-      layer.on('featureClicked', featureEvent => {
-        let content = '';
-        content += `<div class="container">`;
-        content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
-        content += `<p>${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
-        content += `</div>`;
-        document.getElementById('content').innerHTML = content;
-      });
-    </script>
-  </body>
+    layer.on('featureClicked', featureEvent => {
+      let content = '';
+      content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
+      content += `<p class="open-sans">${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
+      document.getElementById('info').innerHTML = content;
+    });
+  </script>
+</body>
+
 </html>

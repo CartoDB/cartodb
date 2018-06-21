@@ -7,81 +7,17 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      *:focus {
-        outline: none;
-      }
-      body {
-        background: #f9f9f9;
-        padding: 24px;
-      }
-      #widget ul {
-        display: flex;
-        list-style-type: none;
-        flex-wrap: wrap;
-      }
-      #widget li {
-        margin: 0 20px 20px 0;
-      }
-      #widget h2 {
-        font: 16px/24px 'Open Sans';
-      }
-      .button {
-        border: 1px solid #1785FB;
-        color: #1785FB;
-        padding: 8px 20px;
-        border-radius: 4px;
-        font: 600 12px/16px 'Open Sans';
-        background: transparent;
-        cursor: pointer;
-      }
-      .button:hover {
-        background: rgba(23,133,251,.08)
-      }
-      .code {
-        margin-top: 32px;
-        font-size: 14px;
-        color: #747D82;
-      }
-      .input_text {
-        min-height: 32px;
-        padding: 7px 8px;
-        border: 1px solid #DDD;
-        border-radius: 4px;
-        font: 600 12px/16px 'Open Sans';
-      }
-      .input_text:hover,
-      .select:hover
-      {
-        border: 1px solid #1785FB;
-      }
-      .select {
-        -webkit-appearance: none;
-        appearance: none;
-        min-height: 32px;
-        padding: 7px 8px;
-        border: 1px solid #DDD;
-        border-radius: 4px;
-        font: 600 12px/16px 'Open Sans';
-        background: #fff;
-        min-width: 150px;
-      }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
-  <body>
-    <div id="widget">
+  <body class="bg-gray">
+    <div class="dataview">
       <ul>
         <li>
-          <h2>Column</h2>
-          <input id="column" type="text" value="date"  class="input_text"></input>
+          <h2 class="h2">Column</h2>
+          <input id="column" type="text" value="date"  class="input_text open-sans"></input>
         </li>
         <li>
-          <h2>Aggregation</h2>
+          <h2 class="h2">Aggregation</h2>
           <select id="aggregation"  class="select">
             <option value="auto">Auto</option>
             <option value="year">Year</option>
@@ -94,16 +30,37 @@
           </select>
         </li>
         <li>
-          <h2>Offset</h2>
-          <input id="offset" type="number" value="1"  class="input_text"></input>
+          <h2 class="h2">Offset</h2>
+          <input id="offset" type="number" value="1"  class="input_text open-sans"></input>
         </li>
       </ul>
-      <button  class="button" onclick="applyDataviewChanges()">Apply</button>
+      <button  class="button open-sans" onclick="applyDataviewChanges()">Apply</button>
       <pre class="code" id="data"></pre>
     </div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Time Series widget</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create a widget with the time series dataview.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Select different aggregations on the form.</p>
+          </section>
+          <div id="controls">
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
     <script>
       const client = new carto.Client({
-        apiKey: 'YOUR_API_KEY',
+        apiKey: 'default_public',
         username: 'cartojs-test'
       });
 

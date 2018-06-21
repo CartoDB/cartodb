@@ -6,7 +6,7 @@ const Package = require('./../package.json');
 const VERSION = Package.version;
 
 module.exports = {
-  entry: './lib/assets/javascripts/cartodb/static.js',
+  entry: './lib/assets/javascripts/dashboard/statics/static.js',
   output: {
     filename: `${VERSION}/javascripts/[name].js`,
     path: path.resolve(__dirname, '../public/assets'),
@@ -16,7 +16,7 @@ module.exports = {
   plugins: Object.keys(webpackFiles).map((entryName) => {
     return new HtmlWebpackPlugin({
       filename: path.resolve(__dirname, `../public/static/${entryName}/index.html`),
-      template: path.resolve(__dirname, '../lib/assets/javascripts/cartodb/static/index.jst.ejs'),
+      template: path.resolve(__dirname, '../lib/assets/javascripts/dashboard/statics/index.jst.ejs'),
       config: webpackFiles[entryName]
     });
   })

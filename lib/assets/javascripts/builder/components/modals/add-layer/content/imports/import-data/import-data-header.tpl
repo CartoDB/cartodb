@@ -8,7 +8,7 @@
 <p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
     <% fileEnabledText = _t('components.modals.add-layer.imports.header-import.select-a-file') +
-      ' <a href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">' +
+      ' <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">' +
       _t('components.modals.add-layer.imports.header-import.see-all-formats') +
       '</a>'
     %>

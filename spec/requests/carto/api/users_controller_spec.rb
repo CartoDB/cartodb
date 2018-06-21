@@ -11,6 +11,7 @@ describe Carto::Api::UsersController do
 
   before(:all) do
     @headers = { 'CONTENT_TYPE' => 'application/json' }
+    FactoryGirl.create(:notification, organization: @carto_organization)
   end
 
   before(:each) do
@@ -32,6 +33,17 @@ describe Carto::Api::UsersController do
       CartoDB::Hubspot.any_instance.unstub(:token)
     end
 
+    it 'returns the user info even when locked' do
+      user = @organization.owner
+      user.update(state: 'locked')
+
+      get_json api_v3_users_me_url(user_domain: user.username, api_key: user.api_key), @headers do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:user_data][:username]).to eq(user.username)
+      end
+    end
+
     it 'returns a hash with current user info' do
       user = @organization.owner
       carto_user = Carto::User.where(id: user.id).first
@@ -42,7 +54,12 @@ describe Carto::Api::UsersController do
         expect(response.body[:default_fallback_basemap].with_indifferent_access).to eq(user.default_basemap)
 
         dashboard_notifications = carto_user.notifications_for_category(:dashboard)
+
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
+        expect(response.body[:organization_notifications].count).to eq(1)
+        expect(response.body[:organization_notifications].first['icon']).to eq(
+          carto_user.received_notifications.unread.first.icon
+        )
         expect(response.body[:can_change_email]).to eq(user.can_change_email?)
         expect(response.body[:auth_username_password_enabled]).to eq(true)
         expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
@@ -331,6 +348,17 @@ describe Carto::Api::UsersController do
     end
 
     it 'deletes the authenticated user' do
+      payload = { deletion_password_confirmation: 'foobarbaz' }
+
+      delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
+        expect(response.status).to eq(200)
+        expect(Carto::User.exists?(@user.id)).to be_false
+      end
+    end
+
+    it 'deletes the authenticated user even when locked' do
+      @user.update(state: 'locked')
+
       payload = { deletion_password_confirmation: 'foobarbaz' }
 
       delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|

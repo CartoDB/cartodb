@@ -4,7 +4,6 @@ require 'carto/export/data_import_exporter'
 require_dependency 'carto/export/connector_configuration_exporter'
 
 # Not migrated
-# client_applications & friends -> deprecated?
 # likes -> difficult to do between clouds
 # snapshots -> difficult to do between clouds, not in use yet
 # tags -> regenerated from tables
@@ -17,7 +16,8 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.3: export rate limits
 # 1.0.4: company and phone in users table
 # 1.0.5: synchronization_oauths and connector configurations
-# 1.0.6: sql_copy rate_limits
+# 1.0.6: client_applications & friends and sql_copy rate_limits
+
 module Carto
   module UserMetadataExportServiceConfiguration
     CURRENT_VERSION = '1.0.6'.freeze
@@ -76,6 +76,15 @@ module Carto
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
+
+      client_application = user.client_applications.first
+      if client_application
+        client_application.access_tokens.each do |t|
+          # AR does not know about this, so it needs to be fixed
+          t.update_column(:type, 'AccessToken')
+          AccessToken[t.id].after_save
+        end
+      end
     end
 
     def save_imported_search_tweet(search_tweet, user)
@@ -122,6 +131,8 @@ module Carto
       user.synchronization_oauths = build_synchronization_oauths_from_hash(exported_user[:synchronization_oauths])
 
       user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
+
+      user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -180,6 +191,40 @@ module Carto
         updated_at: exported_hash[:updated_at]
       )
     end
+
+    def build_oauth_token_fom_hash(exported_oauth_token)
+      Carto::OauthToken.new(
+        token: exported_oauth_token[:token],
+        secret: exported_oauth_token[:secret],
+        callback_url: exported_oauth_token[:callback_url],
+        verifier: exported_oauth_token[:verifier],
+        scope: exported_oauth_token[:scope],
+        authorized_at: exported_oauth_token[:authorized_at],
+        invalidated_at: exported_oauth_token[:invalidated_at],
+        valid_to: exported_oauth_token[:valid_to],
+        created_at: exported_oauth_token[:created_at],
+        updated_at: exported_oauth_token[:updated_at]
+      )
+    end
+
+    def build_client_applications_from_hash(client_app_hash)
+      return [] unless client_app_hash
+
+      client_application = Carto::ClientApplication.new(
+        name: client_app_hash[:name],
+        url: client_app_hash[:url],
+        support_url: client_app_hash[:support_url],
+        callback_url: client_app_hash[:callback_url],
+        key: client_app_hash[:key],
+        secret: client_app_hash[:secret],
+        created_at: client_app_hash[:created_at],
+        updated_at: client_app_hash[:updated_at],
+        oauth_tokens: client_app_hash[:oauth_tokens].map { |t| build_oauth_token_fom_hash(t) },
+        access_tokens: client_app_hash[:access_tokens].map { |t| build_oauth_token_fom_hash(t) }
+      )
+
+      [client_application]
+    end
   end
 
   module UserMetadataExportServiceExporter
@@ -224,7 +269,42 @@ module Carto
         export_connector_configuration(cc)
       end
 
+      # Use Sequel models to export. Single table inheritance causes AR to try and create Sequel models -> fail.
+      user_hash[:client_application] = export_client_application(::User[user.id].client_application)
+
       user_hash
+    end
+
+    def export_client_application(app)
+      return nil unless app
+      a_t_tokens = app.access_tokens.map(&:token)
+      {
+        name: app.name,
+        url: app.url,
+        support_url: app.support_url,
+        callback_url: app.callback_url,
+        key: app.key,
+        secret: app.secret,
+        created_at: app.created_at,
+        updated_at: app.updated_at,
+        oauth_tokens: app.oauth_tokens.reject { |t| a_t_tokens.include?(t.token) }.map { |ot| export_oauth_token(ot) },
+        access_tokens: app.access_tokens.map { |ot| export_oauth_token(ot) }
+      }
+    end
+
+    def export_oauth_token(oauth_token)
+      {
+        token: oauth_token.token,
+        secret: oauth_token.secret,
+        callback_url: oauth_token.callback_url,
+        verifier: oauth_token.verifier,
+        scope: oauth_token.scope,
+        authorized_at: oauth_token.authorized_at,
+        invalidated_at: oauth_token.invalidated_at,
+        valid_to: oauth_token.valid_to,
+        created_at: oauth_token.created_at,
+        updated_at: oauth_token.updated_at
+      }
     end
 
     def export_asset(asset)

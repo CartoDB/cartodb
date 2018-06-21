@@ -26,6 +26,7 @@ module Carto
       before_filter :initialize_google_plus_config, only: [:me]
       before_filter :optional_api_authorization, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
+      skip_before_filter :check_user_state, only: [:me, :delete_me]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
@@ -36,12 +37,14 @@ module Carto
 
         cant_be_deleted_reason = carto_viewer.try(:cant_be_deleted_reason)
         can_be_deleted = carto_viewer.present? ? cant_be_deleted_reason.nil? : nil
+        viewer_organization_notifications = carto_viewer ? organization_notifications(carto_viewer) : []
 
         render json: {
           user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
           default_fallback_basemap: carto_viewer.try(:default_basemap),
           config: frontend_config_hash(current_viewer),
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
+          organization_notifications: viewer_organization_notifications,
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
           can_change_email: carto_viewer.try(:can_change_email?),
@@ -150,6 +153,10 @@ module Carto
 
       def google_plus_client_id
         @google_plus_config.present? ? @google_plus_config.client_id : nil
+      end
+
+      def organization_notifications(carto_viewer)
+        carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
       end
 
       def initialize_google_plus_config

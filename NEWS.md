@@ -13,6 +13,9 @@ sudo make install
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Remove unneeded space in collapsed legends view (https://github.com/CartoDB/cartodb/issues/14091)
+* Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
+* Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
 * Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
 * Show Organization notifications in static pages (https://github.com/CartoDB/cartodb/issues/14089)
 * Fix wrong margins in the layer selector when the top layer has a bubble legend (https://github.com/CartoDB/support/issues/1566)

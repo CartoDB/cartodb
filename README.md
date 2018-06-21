@@ -6,10 +6,10 @@ CARTO.js is a JavaScript library to create custom location intelligence applicat
 
 The best way to get started is to navigate through the CARTO.js documentation site:
 
-- [Guide](https://carto.com/developers/cartojs/guides/quickstart/) will give you a good overview of the library.
-- [API Reference](https://carto.com/developers/cartojs/docs/) will help you use a particular class or method.
-- [Examples](https://carto.com/developers/cartojs/examples/) will demo some specific features.
-- [Support](https://carto.com/developers/cartojs/support/) might answer some of your questions.
+- [Guide](https://carto.com/developers/carto-js/guides/quickstart/) will give you a good overview of the library.
+- [API Reference](https://carto.com/developers/carto-js/reference/) will help you use a particular class or method.
+- [Examples](https://carto.com/developers/carto-js/examples/) will demo some specific features.
+- [Support](https://carto.com/developers/carto-js/support/) might answer some of your questions.
 
 ## Versioning
 

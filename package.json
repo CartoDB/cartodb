@@ -187,6 +187,7 @@
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js",
+    "build:dev": "NODE_ENV=development webpack --progress --config webpack/v4/webpack.dev.config.js",
     "build:static": "NODE_ENV=production webpack --progress --config webpack/static-pages/webpack.prod.config.js",
     "carto-node": "NODE_ENV=production webpack --progress --config webpack/carto-node/webpack.config.js",
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",

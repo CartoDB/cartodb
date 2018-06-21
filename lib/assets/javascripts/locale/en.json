@@ -1397,7 +1397,11 @@
             "LINK": "You are about to make this dataset available to anyone with the link"
           }
         },
-        "description": "Any personal data that you have used to create it will also be publicly available",
+        "description": {
+          "PUBLIC": "Any personal data that you have used to create it will also be publicly available",
+          "LINK": "Any personal data that you have used to create it will also be publicly available with the link",
+          "PASSWORD": "Any personal data that you have used to create it will also be publicly available with the password"
+        },
         "cancel": "Cancel",
         "confirm": "Ok, Change privacy"
       },
@@ -2664,7 +2668,7 @@
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema...",
-          "help": "The column from your dataset to be used for labels"          
+          "help": "The column from your dataset to be used for labels"
         },
         "labels-font": "font",
         "labels-offset": "offset",

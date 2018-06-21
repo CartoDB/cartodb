@@ -117,6 +117,9 @@ module Carto
       user_table = build_user_table_from_hash(exported_visualization[:user_table])
       visualization.map.user_table = user_table if user_table
       visualization.synchronization = build_synchronization_from_hash(exported_visualization[:synchronization])
+      if visualization.synchronization
+        visualization.synchronization.id = exported_visualization.try(:[], :synchronization).try(:[], :id)
+      end
 
       visualization.id = exported_visualization[:id] if exported_visualization[:id]
       visualization
@@ -177,7 +180,6 @@ module Carto
       return nil unless exported_synchronization
 
       Carto::Synchronization.new(
-        id: exported_synchronization[:id],
         name: exported_synchronization[:name],
         interval: exported_synchronization[:interval],
         url: exported_synchronization[:url],

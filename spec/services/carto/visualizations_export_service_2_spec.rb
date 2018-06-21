@@ -9,8 +9,8 @@ describe Carto::VisualizationsExportService2 do
 
   let(:export) do
     {
-      visualization: mapcapped_visualization_export,
-      version: '2.1.1'
+      visualization: visualization_sync_export,
+      version: '2.1.3'
     }
   end
 
@@ -25,23 +25,24 @@ describe Carto::VisualizationsExportService2 do
       updated_at: "2018-04-13T22:09:36+00:00",
       run_at: "2018-05-13T22:09:03+00:00",
       retried_times: 0,
-      log_id: "7875e7e9-488d-435d-a1f3-234047678720",
-      error_code: null,
-      error_message: null,
+      log_id: nil,
+      error_code: nil,
+      error_message: nil,
       ran_at: "2018-04-13T22:09:03+00:00",
-      modified_at: null,
-      etag: null,
+      modified_at: nil,
+      etag: nil,
+      user_id: nil,
+      visualization_id: nil,
       checksum: "",
-      user_id: "dda292bc-e644-438a-8d0f-04f05c506569",
-      service_name: null,
+      service_name: nil,
       service_item_id: "https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd",
       type_guessing: true,
       quoted_fields_guessing: true,
       content_guessing: true,
-      visualization_id: "96b34ec5-42c1-4cc6-a90a-6b03f0d4bcbb",
-      from_external_source: true
+      from_external_source: false
     }
 
+    mapcapped_visualization_export[:mapcap][:export_json][:version] = '2.1.3'
     mapcapped_visualization_export.merge(synchronization: sync)
   end
 
@@ -322,6 +323,7 @@ describe Carto::VisualizationsExportService2 do
     verify_analyses_vs_export(visualization.analyses, visualization_export[:analyses])
 
     verify_mapcap_vs_export(visualization.latest_mapcap, visualization_export[:mapcap])
+    verify_sync_vs_export(visualization.synchronization, visualization_export[:synchronization])
   end
 
   def verify_map_vs_export(map, map_export)
@@ -352,6 +354,14 @@ describe Carto::VisualizationsExportService2 do
     deep_symbolize(mapcap.try(:ids_json)).should eq deep_symbolize(mapcap_export[:ids_json])
     deep_symbolize(mapcap.try(:export_json)).should eq deep_symbolize(mapcap_export[:export_json])
     mapcap.try(:created_at).should eq mapcap_export[:created_at]
+  end
+
+  def verify_sync_vs_export(sync, sync_export)
+    return true if sync.nil? && sync_export.nil?
+
+    sync.user_id = nil
+    sync.visualization_id = nil
+    deep_symbolize(sync).should eq deep_symbolize(sync_export)
   end
 
   def deep_symbolize(h)
@@ -515,6 +525,13 @@ describe Carto::VisualizationsExportService2 do
     describe '#build_visualization_from_json_export' do
       include Carto::Factories::Visualizations
 
+      after :each do
+        if export[:visualization][:synchronization]
+          sync = Carto::Synchronization.where(id: export[:visualization][:synchronization][:id]).first
+          sync.destroy if sync
+        end
+      end
+
       it 'fails if version is not 2' do
         expect {
           Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.merge(version: 1).to_json)
@@ -637,6 +654,7 @@ describe Carto::VisualizationsExportService2 do
         imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
         visualization.privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
+        visualization.destroy
 
         imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@no_private_maps_user, imported)
@@ -1288,7 +1306,8 @@ describe Carto::VisualizationsExportService2 do
                                     original_visualization,
                                     importing_user: nil,
                                     imported_name: original_visualization.name,
-                                    imported_privacy: original_visualization.privacy)
+                                    imported_privacy: original_visualization.privacy,
+                                    omit_sync: false)
       imported_visualization.name.should eq imported_name
       imported_visualization.description.should eq original_visualization.description
       imported_visualization.type.should eq original_visualization.type
@@ -1321,6 +1340,8 @@ describe Carto::VisualizationsExportService2 do
       verify_analyses_match(imported_visualization.analyses, original_visualization.analyses)
 
       verify_mapcap_match(imported_visualization.latest_mapcap, original_visualization.latest_mapcap)
+
+      verify_sync_match(imported_visualization.synchronization, original_visualization.synchronization) unless omit_sync
     end
 
     def verify_maps_match(imported_map, original_map)
@@ -1443,6 +1464,37 @@ describe Carto::VisualizationsExportService2 do
 
       imported_mapcap.export_json.should eq original_mapcap.export_json
       imported_mapcap.ids_json.should eq original_mapcap.ids_json
+    end
+
+    def verify_sync_match(imported_sync, original_sync)
+      return true if imported_sync.nil? && original_sync.nil?
+
+      imported_sync.id.should eq original_sync.id
+      imported_sync.name.should eq original_sync.name
+      imported_sync.interval.should eq original_sync.interval
+      imported_sync.url.should eq original_sync.url
+      imported_sync.state.should eq original_sync.state
+      imported_sync.run_at.should eq original_sync.run_at
+      imported_sync.retried_times.should eq original_sync.retried_times
+      imported_sync.error_code.should eq original_sync.error_code
+      imported_sync.error_message.should eq original_sync.error_message
+      imported_sync.ran_at.should eq original_sync.ran_at
+      imported_sync.etag.should eq original_sync.etag
+      imported_sync.checksum.should eq original_sync.checksum
+      imported_sync.user_id.should eq original_sync.user_id
+      imported_sync.service_name.should eq original_sync.service_name
+      imported_sync.service_item_id.should eq original_sync.service_item_id
+      imported_sync.type_guessing.should eq original_sync.type_guessing
+      imported_sync.quoted_fields_guessing.should eq original_sync.quoted_fields_guessing
+      imported_sync.content_guessing.should eq original_sync.content_guessing
+      imported_sync.visualization_id.should eq original_sync.visualization_id
+      imported_sync.from_external_source.should eq original_sync.from_external_source
+    end
+
+    def verify_data_import_match(imported_data_import, original_data_import)
+      return true if imported_data_import.nil? && original_data_import.nil?
+
+      imported_data_import.synchronization_id.should eq original_data_import.synchronization_id
     end
 
     describe 'maps' do
@@ -1738,18 +1790,27 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'importing an exported dataset should keep the synchronization' do
-        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        sync = FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        sync_id = sync.id
+
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Destroy sync before save_import because sync ID is preserved and otherwise it will fail
+        sync.destroy
 
         # Create user db table (destroyed above)
         @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 
         imported_viz = Carto::Visualization.find(imported_viz.id)
-        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2)
+
+        # we omit verify the sync since we had to destroy it so that the test works.
+        # since we've verified in other tests it should be fine
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2, omit_sync: true)
         sync = imported_viz.synchronization
         sync.should be
+        sync.id.should eq sync_id
         sync.user_id.should eq @user2.id
         sync.log.user_id.should eq @user2.id
 

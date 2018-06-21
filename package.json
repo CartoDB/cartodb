@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.32-webpack",
+  "version": "4.12.32-webpack.2",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

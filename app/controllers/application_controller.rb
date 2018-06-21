@@ -50,7 +50,7 @@ class ApplicationController < ActionController::Base
   end
 
   Warden::Manager.before_logout do |_user, auth, _opts|
-    auth.cookies.delete(ME_ENDPOINT_COOKIE)
+    auth.cookies.delete(ME_ENDPOINT_COOKIE, domain: Cartodb.config[:session_domain])
   end
 
   def handle_unverified_request

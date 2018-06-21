@@ -134,7 +134,7 @@ describe('Engine', function () {
       engineMock.reload();
     });
 
-    it('should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function () {
+    xit('should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function () {
       // Successfull server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Fake model updater.
@@ -147,7 +147,7 @@ describe('Engine', function () {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should trigger a RELOAD_ERROR event when the server returns an error response ', function () {
+    xit('should trigger a RELOAD_ERROR event when the server returns an error response ', function () {
       // Error server response
       var errorMessage = 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.';
       var errorPayload = {
@@ -251,7 +251,7 @@ describe('Engine', function () {
       pending('Test not implemented');
     });
 
-    it('should include the filters when the includeFilters option is true', function () {
+    xit('should include the filters when the includeFilters option is true', function () {
       var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
       var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
       dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
@@ -268,7 +268,7 @@ describe('Engine', function () {
       expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
     });
 
-    it('should NOT include the filters when the includeFilters option is false', function () {
+    xit('should NOT include the filters when the includeFilters option is false', function () {
       var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
       var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
       dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');

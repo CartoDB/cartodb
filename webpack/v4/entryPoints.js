@@ -68,7 +68,7 @@ module.exports = {
 
   mobile_apps: [
     rootDir('lib/assets/javascripts/dashboard/mobile-apps.js'),
-    ...glob.sync(rootDir('assets/stylesheets/mobile_apps/*.css'))
+    ...glob.sync(rootDir('assets/stylesheets/mobile_apps/*.scss'))
   ],
 
   account: rootDir('lib/assets/javascripts/dashboard/account.js'),

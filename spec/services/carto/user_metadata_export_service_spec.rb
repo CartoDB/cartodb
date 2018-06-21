@@ -63,6 +63,24 @@ describe Carto::UserMetadataExportService do
     sequel_user.save
     @user.reload
 
+    # Client Application tokens
+    sequel_user.client_application.access_tokens << ::AccessToken.new(
+      token: "access_token",
+      secret: "access_secret",
+      callback_url: "http://callback2",
+      verifier: "v2",
+      scope: nil,
+      client_application_id: sequel_user.client_application.id
+    ).save
+    sequel_user.client_application.oauth_tokens << ::OauthToken.new(
+      token: "oauth_token",
+      secret: "oauth_secret",
+      callback_url: "http//callback.com",
+      verifier: "v1",
+      scope: nil,
+      client_application_id: sequel_user.client_application.id
+    ).save
+
     @user.reload
   end
 
@@ -81,6 +99,7 @@ describe Carto::UserMetadataExportService do
       st.destroy
     end
     user.destroy
+    ::User[user.id].before_destroy(skip_table_drop: true)
   end
 
   let(:service) { Carto::UserMetadataExportService.new }
@@ -132,6 +151,12 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.5 (without client_application)' do
+      user = test_import_user_from_export(full_export_one_zero_five)
+
+      expect(user.client_applications).to be_empty
     end
 
     it 'imports 1.0.4 (without synchornization oauths nor connector configurations)' do
@@ -315,6 +340,7 @@ describe Carto::UserMetadataExportService do
     end
 
     expect_export_matches_rate_limit(export[:rate_limit], user.rate_limit)
+    expect_export_matches_client_application(export[:client_application], ::User[user.id].client_application)
   end
 
   def expect_export_matches_layer(exported_layer, layer)
@@ -368,6 +394,40 @@ describe Carto::UserMetadataExportService do
       next if [:sql_copy_from, :sql_copy_to].include?(k) && !exported_rate_limit[:limits].key?(k)
       expect(exported_rate_limit[:limits][k]).to eq v
     end
+  end
+
+  def expect_export_matches_client_application(exported_app, app)
+    expect(exported_app).to be_nil && return unless app
+
+    expect(exported_app[:name]).to eq app.name
+    expect(exported_app[:url]).to eq app.url
+    expect(exported_app[:support_url]).to eq app.support_url
+    expect(exported_app[:callback_url]).to eq app.callback_url
+    expect(exported_app[:key]).to eq app.key
+    expect(exported_app[:secret]).to eq app.secret
+    expect(exported_app[:created_at]).to eq app.created_at
+    expect(exported_app[:updated_at]).to eq app.updated_at
+    expect(exported_app[:oauth_tokens].size + exported_app[:access_tokens].size).to eq app.oauth_tokens.size
+    exported_app[:oauth_tokens].each do |ex_t|
+      expect_exported_token_matches_token(ex_t, app.oauth_tokens.find { |t| t.token == ex_t[:token] })
+    end
+    expect(exported_app[:access_tokens].size).to eq app.access_tokens.size
+    exported_app[:access_tokens].each do |ex_t|
+      expect_exported_token_matches_token(ex_t, app.access_tokens.find { |t| t.token == ex_t[:token] })
+    end
+  end
+
+  def expect_exported_token_matches_token(exported_t, token)
+    expect(exported_t[:token]).to eq token.token
+    expect(exported_t[:secret]).to eq token.secret
+    expect(exported_t[:callback_url]).to eq token.callback_url
+    expect(exported_t[:verifier]).to eq token.verifier
+    expect(exported_t[:scope]).to eq token.scope
+    expect(exported_t[:authorized_at]).to eq token.authorized_at
+    expect(exported_t[:invalidated_at]).to eq token.invalidated_at
+    expect(exported_t[:valid_to]).to eq token.valid_to
+    expect(exported_t[:created_at]).to eq token.created_at
+    expect(exported_t[:updated_at]).to eq token.updated_at
   end
 
   def export_import(user)
@@ -728,18 +788,54 @@ describe Carto::UserMetadataExportService do
             provider_name: @connector_provider.name
           }
         ]
+      },
+      client_application: {
+        name: 'Dummy Application',
+        url: 'http://somewhere.es',
+        support_url: 'http://somewhere.es/support',
+        callback_url: nil,
+        key: "crjNXIU3p8xKcoFMuX5eb10xDwK71BP446ToBRnP",
+        secret: "CH3M9gcd9BhLu4ukAg8TPruN0W5zsP4OJ0BQOdtv",
+        created_at: "2018-06-08T15:00:45+00:00",
+        updated_at: "2018-06-08T15:00:45+00:00",
+        oauth_tokens: [{
+          token: "oauth_token",
+          secret: "oauth_secret",
+          callback_url: "http//callback.com",
+          verifier: "v1",
+          scope: nil,
+          authorized_at: "2018-06-11T14:31:46+00:00",
+          invalidated_at: "2018-06-11T14:31:46+00:00",
+          valid_to: "2018-06-11T14:31:46+00:00",
+          created_at: "2018-06-11T14:31:46+00:00",
+          updated_at: "2018-06-11T14:31:46+00:00"
+        }],
+        access_tokens: [{
+          token: "access_token",
+          secret: "access_secret",
+          callback_url: "http://callback2",
+          verifier: "v2",
+          scope: nil,
+          authorized_at: "2018-06-11T14:31:46+00:00",
+          invalidated_at: "2018-06-11T14:31:46+00:00",
+          valid_to: "2018-06-11T14:31:46+00:00",
+          created_at: "2018-06-11T14:31:46+00:00",
+          updated_at: "2018-06-11T14:31:46+00:00"
+        }]
       }
     }
   end
 
   let(:full_export_one_zero_five) do
+    user_hash = full_export[:user].except!(:client_application)
     limits_hash = full_export[:user][:rate_limit][:limits]
+    full_export[:user] = user_hash
     full_export[:user][:rate_limit][:limits] = limits_hash.except!(:sql_copy_from).except!(:sql_copy_to)
     full_export
   end
 
   let(:full_export_one_zero_four) do
-    user_hash = full_export_one_zero_five[:user].except!(:synchronization_oauths).except!(:connector_configurations)
+    user_hash = full_export_one_zero_five[:user].except!(:synchronization_oauths, :connector_configurations)
     full_export[:user] = user_hash
     full_export
   end

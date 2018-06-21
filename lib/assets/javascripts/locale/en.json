@@ -584,6 +584,9 @@
         "false": "False",
         "null": "Null"
       },
+      "style": {
+        "select-by-column": "Select by column"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {
@@ -600,11 +603,13 @@
         "input-color": {
           "solid": "Solid",
           "value": "By value",
-          "img": "Img"
+          "img": "Img",
+          "select-color": "Select color"
         },
         "input-number": {
           "fixed": "Fixed",
-          "value": "By value"
+          "solid": "Solid",
+          "by-value": "By value"
         },
         "input-ramp": {
           "buckets": "bucket |||| buckets"
@@ -2565,7 +2570,15 @@
         "heatmap": "heatmap",
         "fill": {
           "size": "Change the %{type} size",
-          "color": "Change the %{type} color"
+          "color": "Change the %{type} color",
+          "color-heatmap": "Change the heatmap's color scheme",
+          "image": "Change the %{type} image",
+          "fixed-tab": "A fixed color for every %{type}",
+          "by-value-tab": "Vary each %{type}'s color by an attribute to create a category or classed %{type} map"
+        },
+        "size": {
+          "fixed-tab": "A fixed size for every %{type}",
+          "by-value-tab": "Vary each %{type}'s size by a numeric attribute to create a classed %{type} map"
         },
         "stroke": {
           "size": "Change the %{type} stroke size",
@@ -2573,13 +2586,28 @@
         }
       },
       "components": {
-        "fill": "Size/Color",
+        "size": "Size",
         "color": "Color",
+        "fillColor": {
+          "label": "Color",
+          "point": "Point",
+          "line": "Line",
+          "polygon": "Polygon"
+        },
         "stroke": {
           "label": "Stroke",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
+        },
+        "stroke-color": {
+          "label": "Stroke Color"
+        },
+        "stroke-size": {
+          "label": "Stroke Size"
+        },
+        "point-size": {
+          "label": "Point Size"
         },
         "blending": {
           "label": "Blending",
@@ -2628,11 +2656,13 @@
           "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
-          "error": "There was an error fetching node schema..."
+          "error": "There was an error fetching node schema...",
+          "help": "The column from your dataset to be used for labels"          
         },
         "labels-font": "font",
         "labels-offset": "offset",
-        "labels-fill": "size/color",
+        "labels-fill-size": "font size",
+        "labels-fill-color": "font color",
         "labels-overlap": {
           "label": "overlap",
           "options": {
@@ -2640,7 +2670,8 @@
             "false": "False"
           }
         },
-        "labels-halo": "halo",
+        "labels-halo-size": "halo size",
+        "labels-halo-color": "halo color",
         "labels-placement": {
           "label": "placement",
           "options": {

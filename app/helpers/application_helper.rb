@@ -122,61 +122,55 @@ module ApplicationHelper
     render(partial: 'shared/google_maps', locals: { query_string: query_string })
   end
 
+  def sources_with_path(path, sources)
+    options = sources.extract_options!.stringify_keys
+    with_full_path = []
+    debugger
+    sources.each do |source|
+      with_full_path << path + "#{source}"
+    end
+
+    with_full_path << options
+  end
+
   ##
   # Checks that the precompile list contains this file or raises an error, in dev only
   # Note: You will need to move config.assets.precompile to application.rb from production.rb
   def javascript_include_tag *sources
-    raise_on_asset_absence sources
+    #"/#{frontend_version}/"
+    #raise_on_asset_absence sources
 
+    #full_sources = sources_with_path("/#{frontend_version}/javascripts/", sources)
     super *sources
   end
 
   def stylesheet_link_tag *sources
-    raise_on_asset_absence sources
+    #"/#{frontend_version}/"
+    #raise_on_asset_absence sources
 
+    #full_sources = sources_with_path("/#{frontend_version}/stylesheets/", sources)
     super *sources
   end
 
   def editor_assets_path
     file = File.read("./config/editor_assets_version.json")
     version = JSON.parse(file)["version"]
-    "/assets/editor/#{version}"
+    #"/editor/#{version}"
+    "editor/#{version}"
   end
 
   def editor_stylesheet_link_tag(*sources)
     raise_on_asset_absence sources
 
-    options = sources.extract_options!.stringify_keys
-    path = editor_assets_path
-
-    sources_tags = sources.uniq.map { |source|
-      href = "#{path}/stylesheets/#{source}"
-      tag_options = {
-        "rel" => "stylesheet",
-        "media" => "screen",
-        "href" => href
-      }.merge!(options)
-      tag(:link, tag_options)
-    }.join("\n").html_safe
-
-    sources_tags
+    full_sources = sources_with_path("/#{editor_assets_path}/stylesheets/", sources)
+    stylesheet_link_tag full_sources
   end
 
   def editor_javascript_include_tag(*sources)
     raise_on_asset_absence sources
 
-    options = sources.extract_options!.stringify_keys
-    path = editor_assets_path
-
-    sources_tags = sources.uniq.map { |source|
-      href = "#{path}/javascripts/#{source}"
-      tag_options = {
-        "src" => href
-      }.merge!(options)
-      content_tag("script".freeze, "", tag_options)
-    }.join("\n").html_safe
-
-    sources_tags
+    full_sources = sources_with_path("/#{editor_assets_path}/javascripts/", sources)
+    javascript_include_tag full_sources
   end
 
   def editor_favicon_link_tag(source = "favicon.ico", options = {})

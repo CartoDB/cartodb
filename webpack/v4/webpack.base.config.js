@@ -177,6 +177,7 @@ module.exports = {
           rootDir('node_modules/tangram-cartocss'),
           rootDir('node_modules/tangram.cartodb'),
           rootDir('lib/assets/javascripts/carto-node'),
+          rootDir('lib/assets/javascripts/builder'),
           rootDir('lib/assets/javascripts/dashboard')
         ],
         options: {

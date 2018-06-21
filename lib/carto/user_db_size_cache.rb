@@ -14,7 +14,7 @@ module Carto
     end
 
     def update_if_old(user)
-      if user.dashboard_viewed_at.nil? || user.dashboard_viewed_at < (Time.now.utc - UPDATE_PROPAGATION_THRESHOLD)
+      if last_updated(user) > UPDATE_PROPAGATION_THRESHOLD
         set_db_size_in_bytes(user)
       end
     end
@@ -37,6 +37,10 @@ module Carto
     end
 
     private
+
+    def last_updated(user)
+      DB_SIZE_IN_BYTES_EXPIRATION - @redis.ttl(db_size_in_bytes_key(user.username))
+    end
 
     def set_db_size_in_bytes(user)
       @redis.setex(db_size_in_bytes_key(user.username), DB_SIZE_IN_BYTES_EXPIRATION.to_i, user.db_size_in_bytes)

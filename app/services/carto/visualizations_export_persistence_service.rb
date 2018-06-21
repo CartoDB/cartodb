@@ -141,7 +141,7 @@ module Carto
       can_be_private = visualization.derived? ? user.private_maps_enabled : user.private_tables_enabled
       unless can_be_private
         visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
-        visualization.table.privacy = Carto::UserTable::PRIVACY_PUBLIC if visualization.canonical?
+        visualization.user_table.privacy = Carto::UserTable::PRIVACY_PUBLIC if visualization.canonical?
       end
       # If password is not exported we must fallback to private
       if visualization.password_protected? && !visualization.has_password?

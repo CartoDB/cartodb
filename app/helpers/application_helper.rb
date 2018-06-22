@@ -171,11 +171,11 @@ module ApplicationHelper
     sources_tags
   end
 
-  def editor_favicon_link_tag(source = "favicon.ico", options = {})
+  def favicon_link_tag(source = "favicon.ico", options = {})
     tag("link", {
       rel: "shortcut icon",
       type: "image/x-icon",
-      href: "#{app_assets_base_url}/editor/#{editor_assets_version}/#{source}"
+      href: "#{app_assets_base_url}/favicons/#{source}"
     }.merge!(options.symbolize_keys))
   end
 

@@ -1,0 +1,70 @@
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.Metadata-form {
+  box-sizing: border-box;
+  width: 637px;
+  margin-left: -140px;
+}
+
+.Metadata-label {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 140px;
+  padding: $baseSize $baseSize * 2;
+  text-align: right;
+}
+
+.Metadata-label--auto {
+  width: auto;
+}
+
+.Metadata-label--big {
+  width: 168px;
+}
+
+.Metadata-textarea {
+  height: 100px;
+  resize: none;
+}
+
+.Metadata-select {
+  position: relative;
+  background-color: $cWhite;
+
+  .CustomList {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+// To be fixed in cartoassets
+.u-grow {
+  flex: 1;
+}
+
+.Markdown {
+  color: $cHintText;
+  font-size: $sFontSize-small;
+  text-align: right;
+}
+
+.Markdown-tooltip {
+  cursor: pointer;
+}
+
+.Markdown-icon {
+  margin-right: $baseSize;
+  padding: 0 2px 2px 5px;
+  border-radius: 2px;
+  background: $cMainLine;
+  color: $cThirdBackground;
+}
+
+.Markdown-icon-text {
+  font-size: $sFontSize-small - 2;
+}
+
+.Markdown-icon-char {
+  font-size: $sFontSize-medium;
+}

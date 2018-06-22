@@ -1,0 +1,139 @@
+// Custom list styles
+// --------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.CustomList,
+.CustomList-inner {
+  display: none;
+  position: absolute;
+  z-index: 100;
+  top: 36px;
+  right: 0;
+  min-width: 246px;
+  max-width: 272px;
+}
+
+.CustomList-inner {
+  top: 0;
+  right: auto;
+  left: 0;
+}
+
+.CustomList--small {
+  width: 215px;
+}
+
+.CustomList--inputs {
+  padding: 10px;
+  white-space: nowrap;
+}
+
+.CustomList.is-visible {
+  display: block;
+}
+
+.CustomList.is-up {
+  bottom: 36px;
+}
+
+.CustomList-listWrapper {
+  position: relative;
+}
+
+.CustomList-list {
+  position: relative;
+  width: 100%;
+  max-height: 168px;
+  overflow: hidden;
+}
+
+.CustomList-list.is-customized .CustomList-item--add {
+  display: none;
+}
+
+.CustomList--full {
+  width: 100%;
+}
+
+.CustomList-message {
+  padding: 16px;
+  text-align: center;
+}
+
+.CustomList-messageText {
+  max-width: 100%;
+  overflow: auto;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.CustomList-item {
+  &.is-highlighted,
+  &:hover {
+    background: rgba($cBlue, 0.08);
+    cursor: pointer;
+  }
+
+  &.is-disabled {
+    &:hover {
+      background: inherit;
+      cursor: default;
+    }
+  }
+
+  &--invert {
+    display: flex;
+  }
+}
+
+/* TODO move to cartoassets and change to border-top and :first-child */
+.CDB-ListDecoration-item {
+  flex: 1;
+  min-height: 41px;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+
+  .CDB-NavMenu-item:last-child {
+    margin-right: 0;
+  }
+}
+
+.CDB-ListDecoration-itemDisplay--flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.CDB-ListDecoration-itemPadding--vertical {
+  min-height: auto;
+}
+
+.CDB-ListDecoration-secondaryContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.CDB-ListDecoration-title {
+  flex: 1;
+  overflow: hidden;
+}
+
+.CDB-ListDecoration-rampNav-item {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0;
+}
+
+.CDB-ListDecoration-rampImg {
+  display: flex;
+  align-items: center;
+}
+
+.CDB-ListDecoration-rampItemBar {
+  width: 20px;
+}

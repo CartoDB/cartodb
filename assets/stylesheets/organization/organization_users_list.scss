@@ -1,0 +1,131 @@
+// Organization users list
+// --------------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/progress-bar";
+
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
+
+.OrganizationList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 1px; // makes the list not be overlapped by a .Filters block (so selected/hoevered item's border looks OK)
+  padding-bottom: 30px;
+}
+
+.OrganizationList--centered {
+  align-items: center;
+
+  justify-content: center;
+  min-height: 300px;
+}
+
+.OrganizationList-user {
+  position: relative;
+  width: 100%;
+
+  &:not(:last-child) { border-bottom: 1px solid $cStructure-softLine; }
+}
+// TODO: this is duplicated from .DatasetsList-item, can we consolidate these styles somehow?
+.OrganizationList-user.is-selectable:hover {
+  margin-top: -1px;
+  margin-right: -#{$sMargin-element};
+  margin-left: -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
+  border: 1px $cCard-hoverBorder solid;
+  border-radius: 4px;
+  background-color: $cCard-hoverFill;
+}
+
+.OrganizationList-user.is-selected {
+  margin-top: -1px; // to overlap border of prev element
+  margin-right: -#{$sMargin-element};
+  margin-left: -#{$sMargin-element};
+  padding: 0 $selectedItemPaddingOnSides;
+  border: 1px $cCard-selectedBorder solid;
+  border-radius: 4px;
+  background-color: $cCard-selectedFill;
+
+  &:hover {
+    border: 1px $cCard-selectedBorder solid;
+    background-color: $cCard-selectedFill;
+  }
+}
+
+.OrganizationList-userAvatar {
+  width: 42px;
+  height: 42px;
+  margin-right: 20px;
+}
+
+.OrganizationList-userAvatar--img {
+  border: 0;
+}
+
+.OrganizationList-userLink {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: $sMargin-element 0;
+  text-decoration: none !important;
+}
+
+.OrganizationList-userInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.OrganizationList-userInfoName {
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  justify-content: space-between;
+  max-width: 350px;
+  height: 40px;
+  padding: 1px 0;
+}
+
+.OrganizationList-userInfoSubtitle {
+  color: $cTypography-secondary;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 16px;
+}
+
+.OrganizationList-userInfoData {
+  display: flex;
+  flex-direction: row;
+}
+
+.OrganizationList-userStats {
+  width: 200px;
+  margin-top: 10px;
+
+  @include progress-bar(6px, 20px, false, 4px);
+}
+
+.OrganizationList-userLink:hover {
+  cursor: pointer;
+
+  &:not(.is-disabled) .OrganizationList-userInfoName {
+    color: $cTypography-linkHover;
+  }
+}
+
+.OrganizationList-userLink.is-disabled {
+  opacity: 0.5;
+  cursor: initial;
+}
+
+.OrganizationList-paginator {
+  display: flex;
+  justify-content: flex-end;
+  padding: 30px 0;
+}

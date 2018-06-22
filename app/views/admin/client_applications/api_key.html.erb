@@ -47,7 +47,7 @@
 <%= render 'admin/shared/footer' %>
 
 <% if @has_new_dashboard %>
-  <%= javascript_include_tag 'common_dashboard', 'api_keys_new_vendor', 'api_keys_new' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'api_keys_new' %>
 <% else %>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
 <% end %>

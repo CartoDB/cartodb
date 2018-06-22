@@ -1,6 +1,6 @@
 <% content_for :title do %>Reset your password<% end %>
 
-<%= javascript_include_tag 'common_dashboard', 'sessions_new_vendor', 'sessions_new' %>
+<%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">

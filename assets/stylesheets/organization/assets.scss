@@ -1,0 +1,98 @@
+@import '../variables/colors';
+
+// Color variables
+// ---------------
+
+// Form
+$cForms-hover: #AAA;
+$selectedBlue: #1181FB;
+$criticalColor: #FF6C6C;
+
+// Size variables
+// ---------------
+
+// Base
+$baseSize: 8px;
+
+// margin
+$iconMargin: 10px;
+
+// Action bar
+$actionBarHeight: 17px;
+
+.IconActions {
+  height: $actionBarHeight;
+}
+
+.IconPicker {
+  margin-bottom: 20px;
+}
+
+.IconList {
+  // scss-lint:disable Shorthand
+  display: flex;
+  position: relative;
+  flex-wrap: wrap;
+  margin: 0 -12px 0 0;
+}
+
+.IconList-item {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: $baseSize * 11;
+  min-width: $baseSize * 11;
+  height: $baseSize * 7;
+  margin-right: $iconMargin;
+  margin-bottom: $iconMargin;
+  overflow: hidden;
+  border: 1px solid $cForms-border;
+  border-radius: 4px;
+  background: $cStructure-mainBkg;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &:hover {
+    border: 1px solid $cForms-hover;
+    cursor: pointer;
+  }
+}
+
+.IconList-item--small {
+  width: $baseSize * 5;
+  min-width: $baseSize * 5;
+  height: $baseSize * 5;
+}
+
+.IconList-item--dashed {
+  border-style: dashed;
+
+  &:hover {
+    border: 1px dashed $cForms-hover;
+  }
+}
+
+.IconList-item.is-selected {
+  border: 1px solid $selectedBlue;
+}
+
+.IconItem-icon {
+  vertical-align: middle;
+}
+
+.IconText.is--critical {
+  color: $criticalColor;
+}
+
+.is-hidden {
+  display: none;
+}
+
+// To be removed once we insert tabs again to implement Dropbox uploading
+.IconModal {
+  // scss-lint:disable ImportantRule
+  padding: 0 !important;
+}

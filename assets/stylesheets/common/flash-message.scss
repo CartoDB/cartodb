@@ -1,0 +1,88 @@
+@import '../variables/colors';
+@import '../variables/sizes';
+
+// Confirmation flash message
+// --------------------------------------------------
+
+.FlashMessage {
+  width: 100%;
+  background: #FFF7DF;
+}
+
+.FlashMessage > .u-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 80px;
+  line-height: $sLineHeight-larger;
+}
+
+.FlashMessage.FlashMessage--inDialogWithFiltersNavListing {
+  position: fixed;
+  z-index: 2; // to place any scrolled content under the flash message
+  top: 157px;
+  border-bottom: 1px solid $cStructure-mainLine;
+
+  > .u-inner {
+    justify-content: center;
+  }
+}
+
+.FlashMessage--success {
+  background: #E8F0D6;
+}
+
+.FlashMessage--error {
+  background: #FFDBDB;
+}
+
+.FlashMessage--warning {
+  background: #FFFFD9;
+}
+
+.FlashMessage--main {
+  background: #F0F7FC;
+}
+
+.FlashMessage-info {
+  color: $cTypography-headers;
+  font-size: $sFontSize-large;
+}
+
+.FlashMessage-detail {
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+}
+
+.FlashMessage-info--larger {
+  max-width: 720px;
+}
+
+.FlashMessage-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.FlashMessage--button {
+  box-sizing: border-box;
+  height: 28px;
+  padding: 0 20px;
+  border: $sButton-border solid $cStructure-mainBkg;
+  border-radius: $sButton-borderRadius;
+  border-color: $cHighlight-main;
+  outline: none;
+  background-color: $cHighlight-main;
+  color: #FFF;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-button;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &:hover {
+    background-color: $cHighlight-mainHover;
+  }
+}

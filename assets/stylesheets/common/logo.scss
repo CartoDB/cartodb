@@ -1,0 +1,112 @@
+// Logo
+// - Different ways to show CartoDB logo
+// --------------------------------------------------
+$size: 36px;
+
+.Logo {
+  display: inline-block;
+  position: relative;
+}
+
+.Logo--avatar {
+  display: inline-block;
+  width: $size;
+  height: $size;
+  transition: border-radius 0.2s linear;
+  border-radius: 4px;
+  background: #FFF;
+  line-height: $size + 10;
+  text-align: center;
+  vertical-align: top;
+
+  i {
+    color: #3C93D8;
+    font-size: $size - 14;
+
+    &.Logo-icon--dark {
+      color: #2E3C43;
+    }
+  }
+}
+
+.Logo--footer {
+  margin-right: 20px;
+  background: #2E3C43;
+
+  i {
+    color: #FFF;
+  }
+}
+
+.Logo--grey {
+  width: $size;
+  min-width: $size;
+  height: $size;
+  border-radius: 3px;
+  background-color: #CCC;
+  line-height: 48px;
+  text-align: center;
+
+  .CDB-IconFont {
+    color: #FFF;
+    font-size: 24px;
+  }
+}
+
+.Logo-sub {
+  position: absolute;
+  z-index: 1;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  animation: fade-and-bounce-up 0.6s 350ms ease-in-out backwards;
+  border-radius: 24px;
+}
+
+.Logo-sub--google {
+  background: url($assetsDir + '/images/layout/google-platform-logo.png') no-repeat center center #FFFFFF;
+}
+
+.Logo.is-loading {
+  .Logo--avatar {
+    border-radius: $size + 1;
+  }
+
+  &::after {
+    animation: spin 0.7s linear infinite;
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-and-bounce-up {
+  0% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+
+  15% {
+    transform: translateY(-3px);
+    opacity: 0.8;
+  }
+
+  45% {
+    transform: translateY(2px);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateY(-1px);
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

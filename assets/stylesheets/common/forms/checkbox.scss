@@ -1,0 +1,70 @@
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// New checkbox input styled
+//
+//  <div class="Checkbox">
+//    <button class="Checkbox-input"></button>
+//    <label class="Checkbox-label">Checkbox label</label>
+//  </div>
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+$check-icon: '\2714'; //✔
+
+.Checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.Checkbox-input {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 2px solid $cStructure-mainLine;
+  border-radius: 3px;
+  outline: none;
+  background: white;
+
+  &:hover {
+    border-color: #AAA;
+  }
+}
+
+.Checkbox-input:focus {
+  border-color: #AAA;
+}
+
+.Checkbox-input.is-checked {
+  &::after {
+    content: $check-icon;
+    position: absolute;
+    top: -3px;
+    left: 1px;
+    color: #0090D7;
+    font-size: 16px;
+  }
+}
+
+.Checkbox-label {
+  margin-left: 8px;
+  color: $cTypography-secondary;
+}
+
+.Checkbox.is-disabled .Checkbox-input {
+  opacity: 0.4;
+
+  &:hover {
+    border-color: $cStructure-mainLine;
+    cursor: default;
+  }
+  &:focus { border-color: $cStructure-mainLine; }
+}
+
+.Checkbox.is-disabled .Checkbox-label {
+  opacity: 0.4;
+}
+
+.Checkbox-strong {
+  color: #2E3C43;
+}

@@ -1,0 +1,145 @@
+// Styles for Dropdowns
+// --------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-utilities/mixins';
+
+.Editor-dropdownContainer {
+  position: relative;
+  height: 250px;
+}
+
+.Editor-dropdown {
+  display: flex;
+  position: absolute;
+  z-index: 100; // Lets treat it the same depth as CDB-Box-modal
+  top: 40px;
+  right: 0;
+  flex-direction: row;
+}
+
+.Editor-dropDownInfoText {
+  box-sizing: border-box;
+  width: 160px;
+  padding: 14px;
+}
+
+.Editor-dropdownOperators {
+  display: none;
+  max-width: 244px;
+
+  &.is-visible {
+    display: flex;
+  }
+}
+
+.Editor-dropdownCalculations {
+  box-sizing: border-box;
+  padding: $sMargin-element;
+  border-right: 1px solid $cMainLine;
+  border-radius: 4px 0 0 4px;
+  background-color: $cSecondaryBackground;
+}
+
+.Editor-dropdownCalculationsElement {
+  margin-bottom: $sLineHeight-medium;
+  color: $cMainBg;
+  font-size: $sFontSize-small;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.Editor-dropdownOptions {
+  width: $baseSize * 20;
+  border-radius: 0 4px 4px 0;
+  background-color: $cWhite;
+  vertical-align: top;
+}
+
+.Editor-dropdownOptionsElement {
+  @include text-overflow();
+  padding: 12px 10px;
+  border-bottom: 1px solid $cMainLine;
+  color: $cBlue;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background-color: rgba(157, 224, 173, 0.2);
+    color: $cMainBg;
+    cursor: pointer;
+  }
+}
+
+.Editor-dropdownOptionsElement.is-selected {
+  color: $cMainBg;
+}
+
+.Editor-dropdownOptionsElement.is-disabled {
+  color: $cHintText;
+
+  &:hover {
+    background-color: transparent;
+    cursor: default;
+  }
+}
+
+.Editor-boxModal {
+  border: 1px solid $cMainLine;
+  border-radius: 4px;
+  background: $cWhite;
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.16);
+  white-space: normal;
+}
+
+.Editor-boxModal--darked {
+  border: 1px solid rgba(30, 39, 44, 0.34);
+  background: #263239;
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.36);
+}
+
+.Editor-boxModalHeader {
+  border-bottom: 1px solid $cMainLine;
+  background: $cSecondaryBackground;
+}
+
+.Editor-boxModalHeaderItem {
+  display: flex;
+  align-items: center;
+  padding: $baseSize + 4 $baseSize * 2;
+  border-bottom: 1px solid $cMainLine;
+}
+
+.Editor-boxModalContent {
+  padding: $baseSize * 2;
+}
+
+.Editor-boxModalContent .ps-scrollbar-x-rail {
+  z-index: 101;
+}
+
+.Editor-boxModalContent .ps-scrollbar-x-rail .ps-scrollbar-x {
+  pointer-events: all;
+}
+
+.Editor-boxModal .Editor-formInner {
+  margin-top: 0;
+}
+
+.Editor-boxModal .UISlider {
+  width: 58px;
+}
+
+.Editor-boxList .Editor-formInner {
+  padding: 12px 16px;
+  border-bottom: 1px solid $cSecondaryBackground;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}

@@ -1,7 +1,7 @@
 <% content_for :title do %><%= @organization ? @organization.name : 'User' %> sign up<% end %>
 
 <% content_for :js do %>
-  <%= javascript_include_tag 'common_dashboard', 'confirmation_new_vendor', 'confirmation_new' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'confirmation' %>
 
   <script>
     var userCreationId = "<%= @user_creation_id %>";

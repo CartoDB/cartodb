@@ -1,0 +1,437 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+/* compensate for the negative margins and border */
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
+$opacityTransition: 250ms;
+$bannedColor: #E1A7A5;
+
+.DatasetsList {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px $sMargin-element 0 $sMargin-element;
+}
+
+.DatasetsList.is-hidden {
+  display: none;
+}
+
+.DatasetsList-item {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  align-items: center;
+  margin-bottom: -1px;
+  padding: 16px;
+  transition: border 200ms ease-in;
+  border: 1px solid transparent;
+  border-bottom: 1px solid $cStructure-softLine;
+}
+
+.DatasetsList-item--selectable:hover,
+.DatasetsList-item--selectable.is--selected {
+  border-radius: 4px;
+}
+
+.DatasetsList-item--selectable:hover {
+  border: 1px solid #AAA;
+  cursor: pointer;
+}
+
+.DatasetsList-item--selectable.is--selected {
+  border: 1px solid #AAA;
+
+  &:hover {
+    cursor: default;
+  }
+}
+
+.DatasetsList-fake {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transition: opacity $opacityTransition;
+  opacity: 0;
+
+  background: url($assetsDir + '/images/layout/dataset-placeholder.png') no-repeat center center;
+}
+
+.DatasetsList.is-loading .DatasetsList-item,
+.DatasetsList.is-loading .DatasetsList-item--selectable,
+.DatasetsList.is-loading .DatasetsList-item--selectable.is--selected,
+.DatasetsList.is-loading .DatasetsList-item:hover,
+.DatasetsList.is-loading .DatasetsList-item--selectable:hover,
+.DatasetsList.is-loading .DatasetsList-item--selectable:hover.is--selected {
+  margin: 0;
+  padding: $sMargin-group 0;
+  border: none;
+  border-bottom: 1px solid $cStructure-softLine;
+  background: none;
+  cursor: default;
+
+  .DatasetsList-itemCategory {
+    opacity: 0;
+  }
+
+  .DatasetsList-itemInfo {
+    opacity: 0;
+  }
+
+  .DatasetsList-fake {
+    opacity: 1;
+  }
+}
+
+// Position of the geometry type icon
+@mixin geometry-type-icon($x-pos: 0, $y-pos: 0) {
+  background: url($assetsDir + '/images/layout/geometry-types-icons.png') no-repeat $x-pos $y-pos;
+  @include image-2x($assetsDir + "/images/layout/geometry-types-icons@2x.png", 200px, 120px, ($x-pos), ($y-pos));
+}
+
+.DatasetsList-itemCategory {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+  min-width: 40px;
+  height: 40px;
+  margin-top: 3px;
+  margin-right: $sMargin-element;
+  transition: opacity $opacityTransition ease-in-out;
+  border: none;
+  opacity: 1;
+
+  @include geometry-type-icon(-160px);
+}
+
+.DatasetsList-itemCategory.is--lineDataset {
+  @include geometry-type-icon(-40px);
+}
+
+.DatasetsList-itemCategory.is--polygonDataset {
+  @include geometry-type-icon(-80px);
+}
+
+.DatasetsList-itemCategory.is--pointDataset {
+  @include geometry-type-icon();
+}
+
+.DatasetsList-itemCategory.is--rasterDataset {
+  @include geometry-type-icon(-120px);
+}
+
+.DatasetsList-item--selectable:hover,
+.DatasetsList-item--selectable.is--selected {
+  .DatasetsList-itemCategory {
+    @include geometry-type-icon(-160px, -40px);
+  }
+
+  .DatasetsList-itemCategory.is--lineDataset {
+    @include geometry-type-icon(-40px, -40px);
+  }
+
+  .DatasetsList-itemCategory.is--polygonDataset {
+    @include geometry-type-icon(-80px, -40px);
+  }
+
+  .DatasetsList-itemCategory.is--pointDataset {
+    @include geometry-type-icon(0, -40px);
+  }
+
+  .DatasetsList-itemCategory.is--rasterDataset {
+    @include geometry-type-icon(-120px, -40px);
+  }
+}
+
+.DatasetsList-itemStatus {
+  position: absolute;
+  z-index: 2;
+  top: -8px;
+  right: -8px;
+  width: 17px;
+  height: 17px;
+  border: 1px solid rgba(black, 0.1);
+  border-radius: 17px;
+  background: rgba(white, 0.85);
+  color: $cHighlight-alert;
+  font-size: 9px;
+  line-height: 17px !important;
+  text-align: center;
+}
+
+.DatasetsList-aditionalItemStatus {
+  top: auto;
+  bottom: -8px;
+}
+
+.DatasetsList-itemStatus.CDB-IconFont-book {
+  font-size: 12px;
+}
+
+.DatasetsList-itemStatus.is-public {
+  color: $cHighlight-positive;
+}
+
+.DatasetsList-itemStatus.is-banned {
+  color: $bannedColor;
+}
+
+.DatasetsList-itemStatus.is-failure {
+  color: $cHighlight-negative;
+}
+
+.DatasetsList-itemStatus.is-success {
+  color: $cHighlight-positive;
+}
+
+.DatasetsList-itemInfo {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  flex-direction: column;
+  transition: opacity $opacityTransition;
+  opacity: 1;
+}
+
+.DatasetsList-itemPrimaryInfo {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.DatasetsList-itemSecondaryInfo {
+  width: 100%;
+  margin-top: 0;
+}
+
+.DatasetsList-itemTitle {
+  display: flex;
+  align-items: center;
+}
+
+.DatasetsList-itemTitle.is-disabled {
+  color: $cTypography-help;
+  font-weight: normal;
+}
+
+.DatasetsList-itemTitlePermission {
+  margin-left: $sMargin-elementInline;
+  background: WHITE;
+}
+
+.DatasetsList-itemTimeDiff .UserAvatar {
+  height: $sAvatar-meta + 2;
+  margin-left: $sMargin-min;
+}
+
+.DatasetsList-itemSource {
+  display: flex;
+  margin-left: $sMargin-min;
+}
+
+.DatasetsList-itemMeta {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2 * $sMargin-min;
+}
+
+.DatasetsList-itemTags {
+  margin-top: 4px;
+}
+
+.DatasetsList-itemMeta > * {
+  margin-right: 12px;
+}
+
+.DatasetsList-itemMeta > *:last-child {
+  margin-right: 0;
+}
+
+.DatasetsList-itemMeta > *:nth-child(2) {
+  order: 2;
+}
+
+.DatasetsList-itemMeta > *:nth-child(3) {
+  order: 3;
+}
+
+.DatasetsList-itemMeta > *:nth-child(4) {
+  order: 4;
+}
+
+.DatasetsList-itemMeta > *:nth-child(5) {
+  order: 5;
+}
+
+.DatasetsList-itemTags.EditableField {
+  text-align: right;
+
+  .EditableField-input {
+    width: 70%;
+    text-align: right;
+  }
+}
+
+.DatasetsList-itemDescription {
+  height: 16px;
+  margin-top: 4px;
+}
+
+// Banned dataset
+.DatasetsList-item--banned {
+  .DatasetsList-itemCategory {
+    @include geometry-type-icon(-160px, -80px);
+  }
+
+  .DatasetsList-itemCategory.is--lineDataset {
+    @include geometry-type-icon(-40px, -80px);
+  }
+
+  .DatasetsList-itemCategory.is--polygonDataset {
+    @include geometry-type-icon(-80px, -80px);
+  }
+
+  .DatasetsList-itemCategory.is--pointDataset {
+    @include geometry-type-icon(0, -80px);
+  }
+
+  .DatasetsList-itemCategory.is--rasterDataset {
+    @include geometry-type-icon(-120px, -80px);
+  }
+}
+
+@media only screen and (max-width: $sMedia-mobile) and (max-width: 959px) {
+  .DatasetsList {
+    width: 100%;
+  }
+
+  .DatasetsList-itemTitle {
+    margin-bottom: 3px;
+  }
+
+  .DatasetsList-itemMeta {
+    align-items: center;
+  }
+
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: 10px;
+    text-align: center;
+  }
+
+  .DatasetsList-itemMeta > *:last-child {
+    margin-right: 0;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(2) {
+    order: 2;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(3) {
+    order: 3;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(4) {
+    order: 4;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(5) {
+    order: 5;
+  }
+}
+
+@media only screen and (max-width: $sMedia-tablet) {
+  .DatasetsList {
+    width: 100%;
+  }
+
+  .DatasetsList-itemTitle {
+    margin-bottom: 3px;
+  }
+
+  .DatasetsList-itemMeta {
+    align-items: center;
+  }
+
+  .DatasetsList-itemMeta > * {
+    width: auto;
+    margin-right: 10px;
+    text-align: center;
+  }
+
+  .DatasetsList-itemMeta > *:last-child {
+    margin-right: 0;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(2) {
+    order: 2;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(3) {
+    order: 3;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(4) {
+    order: 4;
+  }
+}
+
+@media (min-width: $sMedia-desktop) {
+  .DatasetsList {
+    width: $sLayout-width;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .DatasetsList-itemInfo {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .DatasetsList-itemPrimaryInfo {
+    width: 440px;
+  }
+
+  .DatasetsList-itemSecondaryInfo {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .DatasetsList-itemTitle {
+    margin-bottom: 0;
+  }
+
+  .DatasetsList-itemMeta {
+    justify-content: flex-end;
+    margin-bottom: 0;
+  }
+
+  .DatasetsList-itemMeta > * {
+    margin-right: 12px;
+  }
+
+  .DatasetsList-itemMeta > *:last-child {
+    margin-right: 0;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(2) {
+    order: 2;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(3) {
+    order: 3;
+  }
+
+  .DatasetsList-itemMeta > *:nth-child(4) {
+    order: 4;
+  }
+}

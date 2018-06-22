@@ -1,0 +1,386 @@
+// Template light
+// --------------------------------------------------
+
+$primary: rgba(#2E3C43, 1);
+$secondary: rgba(#636D72, 1);
+$disabled: rgba(#CBCED0, 1);
+$elementBkg: rgba(#EEE, 1);
+$elementBkgHover: rgba(#AAA, 1);
+$elementBorder: rgba(#EEE, 1);
+$link: rgba(#1181FB, 1);
+$linkHover: rgba(#227DBD, 1);
+$lightHighlight: rgba(#000, 0.06);
+$highlighted: rgba(#9DE0AD, 1);
+$selected: rgba(#1181FB, 1);
+$darkHighlighted: rgba(#5BA45E, 1);
+$highlightedAlternative: rgba(#F2CC8F, 1);
+$darkHighlightedAlternative: rgba(#EFE0C8, 1);
+$positive: rgba(#8FB83F, 1);
+$negative: rgba(#F15743, 1);
+$loadingBkg: rgba(#F9F9F9, 1);
+$canvasBkg: rgba(#F2F6F9, 1);
+$commonBkg: rgba(#FFF, 1);
+$blackBkg: rgba(#000, 1);
+$chartHandleGrip: rgba(#CCC, 1);
+$chartLine: rgba(#EEE, 1);
+$chartAxis: rgba(#979EA1, 1);
+$chartMiniSelected: rgba(#333, 1);
+$timeSliderBorder: rgba(#FFF, 1);
+
+.CDB-Widget--light {
+  border-color: $canvasBkg;
+  background: $commonBkg;
+
+  .CDB-Widget-textInput {
+    color: $primary;
+  }
+
+  .CDB-Widget-link,
+  .CDB-Widget-buttonIcon {
+    border-color: $link;
+
+    &:hover {
+      border-color: $linkHover;
+      color: $linkHover;
+    }
+  }
+
+  .CDB-Widget-buttonIcon--circle {
+    color: $cBlue;
+  }
+
+  .CDB-Widget-buttonIcon--circle.is-selected {
+    background-color: $link;
+    color: #FFF;
+
+    &:hover {
+      border-color: $linkHover;
+      background: $linkHover;
+    }
+  }
+
+  .CDB-Widget-controlButton {
+    background-color: $link;
+
+    &:hover {
+      border-color: $linkHover;
+      background: $linkHover;
+    }
+  }
+
+  .CDB-Widget-controlButton.is-disabled {
+    opacity: 0.24;
+    pointer-events: none;
+
+    &:hover {
+      border-color: $primary;
+      background: $primary;
+    }
+  }
+
+  .CDB-Widget-progressBar {
+    background: $elementBkg;
+  }
+
+  .CDB-Widget-progressState {
+    background-color: $highlighted;
+  }
+
+  .CDB-Widget-progressState--positive {
+    background-color: $positive;
+  }
+
+  .CDB-Widget-progressState--negative {
+    background-color: $negative;
+  }
+
+  .CDB-Widget-progressState--inactive {
+    background-color: $elementBkg !important;
+  }
+
+  .CDB-Widget-progressState--pattern {
+    background-color: $cMainBg;
+    background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
+  }
+
+  .CDB-Widget-progressState.is-accepted {
+    background-color: $cMainBg;
+  }
+
+  .CDB-Widget-dot--navigation {
+    background: $elementBkg;
+
+    &:hover {
+      background: $elementBkgHover;
+    }
+  }
+
+  .CDB-Widget-dot--navigation.is-selected {
+    background: $secondary;
+  }
+
+  .CDB-Widget-listEdgeBorder {
+    background: $elementBorder;
+  }
+
+  .CDB-Widget-listEdgeShadow {
+    @include background-gradient($commonBkg, rgba($commonBkg, 0));
+    background-color: transparent;
+  }
+
+  .CDB-Widget-listItemInner--withBorders {
+    border-bottom: 1px solid $elementBorder;
+  }
+
+  .CDB-Widget-listItem--fake {
+    border-color: $loadingBkg;
+  }
+
+  .CDB-Widget-listItem--fake::after,
+  .CDB-Widget-listItem--fake::before {
+    background-color: $loadingBkg;
+  }
+
+  .CDB-Widget-listButton:hover {
+    .CDB-Widget-progressState:not(.is-accepted) {
+      background: $cHighlightHover;
+    }
+  }
+
+  .CDB-Widget-listButton--withBorder {
+    &::before {
+      background: transparent;
+    }
+
+    &::after {
+      background: $elementBkg;
+    }
+  }
+
+  .CDB-Widget-listButton--withBorder:hover {
+    &::after,
+    &::before {
+      background: $elementBkg;
+    }
+  }
+
+  .CDB-Widget-chartItem--fake,
+  .CDB-Widget-timeSeriesTimeInfo--fake,
+  .CDB-Widget-timeSeriesFakeControl,
+  .CDB-Widget-timeSeriesFakeChartItem {
+    background-color: $loadingBkg;
+  }
+
+  .CDB-Widget--error {
+    border-top: 2px solid $negative;
+  }
+
+  .CDB-Shape-dot {
+    background: $elementBorder;
+  }
+
+  .CDB-Shape-arrow::after,
+  .CDB-Shape-arrow::before {
+    background-color: $link;
+  }
+
+  .CDB-Shape-arrow:hover {
+    &::after,
+    &::before {
+      background-color: $linkHover;
+    }
+  }
+
+  .CDB-Shape-lens {
+    &::after {
+      border-color: $link;
+    }
+
+    &::before {
+      background: $link;
+    }
+  }
+
+  .CDB-Shape-lens:hover {
+    &::after {
+      border-color: $linkHover;
+    }
+
+    &::before {
+      background: $linkHover;
+    }
+  }
+
+  .CDB-Widget-checkbox {
+    border-color: $disabled;
+
+    &.is-checked {
+      background: $link;
+    }
+  }
+
+  //Charts
+  .extent {
+    stroke: $link;
+    color: $cMainBg;
+  }
+
+  .CDB-Chart-bar--timeSeries {
+    fill: $highlightedAlternative;
+  }
+
+  .CDB-Chart-bar--timeSeries.is-highlighted {
+    fill: $darkHighlightedAlternative;
+  }
+
+  .CDB-Chart-shadowBar {
+    fill: $lightHighlight;
+  }
+
+  .CDB-Chart-handleRect {
+    stroke-width: 1;
+    stroke: $link;
+    fill: $commonBkg;
+  }
+
+  .CDB-Chart-staticTip {
+    background: $chartLine;
+  }
+
+  .CDB-Chart-staticTipText,
+  .CDB-Chart-timeSliderTipText {
+    font-weight: bold;
+  }
+
+  .CDB-Chart-staticTipText {
+    color: $primary;
+  }
+
+  .CDB-Chart-timeSliderTip {
+    fill: $primary;
+  }
+
+  .CDB-Chart-timeSliderTipText {
+    fill: $chartLine;
+  }
+
+  .CDB-Chart-axisTipRect {
+    fill: $chartLine;
+  }
+
+  .CDB-Chart-axisTipRect--inverted {
+    fill: $primary;
+    font-weight: bold;
+  }
+
+  .CDB-Chart-axisTipText {
+    fill: $primary;
+    font-weight: bold;
+  }
+
+  .CDB-Chart-axisTipText--inverted {
+    stroke: $chartLine;
+  }
+
+  .CDB-Chart-handleLine {
+    stroke: $link;
+  }
+
+  .CDB-Chart.CDB-Chart--mini {
+    .CDB-Chart-bar {
+      fill: $lightHighlight;
+    }
+
+    .CDB-Chart-bar.is-selected {
+      fill: $chartMiniSelected;
+    }
+
+    .CDB-Chart-bar.is-filtered {
+      fill: $lightHighlight;
+    }
+  }
+
+  .CDB-Chart-line {
+    stroke: $chartLine;
+  }
+
+  .CDB-Chart-line.CDB-Chart-line--bottom {
+    stroke: $blackBkg;
+  }
+
+  .CDB-Chart-handleGrip {
+    stroke: $chartHandleGrip;
+  }
+
+  .CDB-Chart-axis {
+    fill: $chartAxis;
+  }
+
+  .CDB-Chart-axis.is-disabled {
+    fill: rgba($chartAxis, 0.4);
+  }
+
+  .CDB-Chart-axis line {
+    stroke: $chartLine;
+  }
+
+  // TimeSlider
+  .CDB-TimeSlider {
+    stroke-width: 1px;
+    stroke: $timeSliderBorder;
+    fill: $primary;
+  }
+
+  .CDB-Dropdown {
+    background: $commonBkg;
+  }
+
+  .CDB-Dropdown-item {
+    border-bottom: 1px solid $canvasBkg;
+  }
+
+  .CDB-Dropdown-item:last-child {
+    border-bottom: 0;
+  }
+
+  .CDB-Dropdown-link {
+    &:hover {
+      background: rgba($cHighlight, 0.16);
+    }
+
+    &.is-delete {
+      color: $negative;
+    }
+  }
+
+  // States
+  .is-disabled {
+    .CDB-Text,
+    .CDB-Widget-textNormal,
+    .CDB-Widget-textSmall,
+    .CDB-Widget-textSmaller,
+    .CDB-Widget-textSmaller--dark {
+      color: $disabled;
+    }
+
+    .CDB-Widget-progressState {
+      background-color: $disabled !important; // Preventing problems with inline colors
+    }
+
+    .CDB-Widget-progressState--pattern {
+      background-color: rgba($disabled, 0.3) !important;
+      background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.3) 1px, transparent 1px, transparent 2px) !important;
+    }
+  }
+}
+
+.CDB-Widget-tooltip--light {
+  &.CDB-Widget-tooltip {
+    background: $blackBkg;
+    color: $commonBkg;
+  }
+
+  &.CDB-Widget-tooltip::after {
+    border-top-color: $blackBkg;
+  }
+}

@@ -12,6 +12,10 @@ module Carto
       @@frontend_version ||= JSON::parse(File.read(Rails.root.join("package.json")))["version"]
     end
 
+    def editor_assets_version
+      @@editor_assets_version ||= JSON::parse(File.read(Rails.root.join("config/editor_assets_version.json")))["version"]
+    end
+
     def env_app_config
       app_config[ENV['RAILS_ENV'] || 'development']
     end

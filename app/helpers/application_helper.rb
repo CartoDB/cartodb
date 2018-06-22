@@ -137,20 +137,13 @@ module ApplicationHelper
     super *sources
   end
 
-  def editor_assets_path
-    file = File.read("./config/editor_assets_version.json")
-    version = JSON.parse(file)["version"]
-    "editor/#{version}"
-  end
-
   def editor_stylesheet_link_tag(*sources)
     raise_on_asset_absence sources
 
     options = sources.extract_options!.stringify_keys
-    path = editor_assets_path
 
     sources_tags = sources.uniq.map { |source|
-      href = "#{app_assets_base_url}/#{path}/stylesheets/#{source}"
+      href = "#{app_assets_base_url}/editor/#{editor_assets_version}/stylesheets/#{source}"
       tag_options = {
         "rel" => "stylesheet",
         "media" => "screen",
@@ -166,10 +159,9 @@ module ApplicationHelper
     raise_on_asset_absence sources
 
     options = sources.extract_options!.stringify_keys
-    path = editor_assets_path
 
     sources_tags = sources.uniq.map { |source|
-      href = "#{app_assets_base_url}/#{path}/javascripts/#{source}"
+      href = "#{app_assets_base_url}/editor/#{editor_assets_version}/javascripts/#{source}"
       tag_options = {
         "src" => href
       }.merge!(options)
@@ -180,11 +172,10 @@ module ApplicationHelper
   end
 
   def editor_favicon_link_tag(source = "favicon.ico", options = {})
-    path = editor_assets_path
     tag("link", {
       rel: "shortcut icon",
       type: "image/x-icon",
-      href: "#{path}/favicons/#{source}"
+      href: "#{app_assets_base_url}/editor/#{editor_assets_version}/#{source}"
     }.merge!(options.symbolize_keys))
   end
 

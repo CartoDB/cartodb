@@ -5,10 +5,10 @@
     </div>
     <div>
       <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--xl">
-        <%- _t('components.modals.privacy-warning.title.' + type) %>
+        <%- _t('components.modals.privacy-warning.title.' + type + '.' + selectedPrivacyType) %>
       </h2>
       <p class="CDB-Text CDB-Size-large u-altTextColor">
-          <%- _t('components.modals.privacy-warning.description') %>
+          <%- _t('components.modals.privacy-warning.description.' + selectedPrivacyType) %>
       </p>
       <ul class="Modal-listActions u-flex u-alignCenter">
         <li class="Modal-listActionsitem">

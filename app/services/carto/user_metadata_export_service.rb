@@ -76,10 +76,14 @@ module Carto
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
-      user.client_applications.first.access_tokens.each do |t|
-        # AR does not know about this, so it needs to be fixed
-        t.update_column(:type, 'AccessToken')
-        AccessToken[t.id].after_save
+
+      client_application = user.client_applications.first
+      if client_application
+        client_application.access_tokens.each do |t|
+          # AR does not know about this, so it needs to be fixed
+          t.update_column(:type, 'AccessToken')
+          AccessToken[t.id].after_save
+        end
       end
     end
 
@@ -188,13 +192,38 @@ module Carto
       )
     end
 
+    def build_oauth_token_fom_hash(exported_oauth_token)
+      Carto::OauthToken.new(
+        token: exported_oauth_token[:token],
+        secret: exported_oauth_token[:secret],
+        callback_url: exported_oauth_token[:callback_url],
+        verifier: exported_oauth_token[:verifier],
+        scope: exported_oauth_token[:scope],
+        authorized_at: exported_oauth_token[:authorized_at],
+        invalidated_at: exported_oauth_token[:invalidated_at],
+        valid_to: exported_oauth_token[:valid_to],
+        created_at: exported_oauth_token[:created_at],
+        updated_at: exported_oauth_token[:updated_at]
+      )
+    end
+
     def build_client_applications_from_hash(client_app_hash)
       return [] unless client_app_hash
 
-      # Restore tokens using AR so Sequel callbacks are not run
-      client_app_hash[:oauth_tokens] = client_app_hash[:oauth_tokens].map { |t| Carto::OauthToken.new(t) }
-      client_app_hash[:access_tokens] = client_app_hash[:access_tokens].map { |t| Carto::OauthToken.new(t) }
-      [Carto::ClientApplication.new(client_app_hash)]
+      client_application = Carto::ClientApplication.new(
+        name: client_app_hash[:name],
+        url: client_app_hash[:url],
+        support_url: client_app_hash[:support_url],
+        callback_url: client_app_hash[:callback_url],
+        key: client_app_hash[:key],
+        secret: client_app_hash[:secret],
+        created_at: client_app_hash[:created_at],
+        updated_at: client_app_hash[:updated_at],
+        oauth_tokens: client_app_hash[:oauth_tokens].map { |t| build_oauth_token_fom_hash(t) },
+        access_tokens: client_app_hash[:access_tokens].map { |t| build_oauth_token_fom_hash(t) }
+      )
+
+      [client_application]
     end
   end
 

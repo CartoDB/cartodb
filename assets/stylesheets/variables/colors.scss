@@ -1,0 +1,56 @@
+// Paragraphs
+$cTypography-headers: rgba(#333, 1);
+$cTypography-paragraphs: rgba(#666, 1);
+$cTypography-secondary: rgba(#999, 1);
+$cTypography-help: rgba(#CCC, 1); // Help text & tips
+$cTypography-headersOverBlack: rgba(#FFF, 1);
+$cTypography-helpSecondary: rgba(#636D72, 1);
+$cTypography-link: rgba(#3AA9E3, 1);
+$cTypography-linkHover: rgba(#227DBD, 1);
+$cTypography-linkSelected: rgba(#333, 1);
+$cTypography-labels: rgba(#424242, 1);
+$cTypography-linkSecondary: rgba(#979EA1, 1);
+$cTypography-linkSecondaryHover: rgba(#2E3C43, 1);
+
+// Structure
+$cStructure-mainBkg: rgba(#FFF, 1);
+$cStructure-mainLine: rgba(#DDD, 1);
+$cStructure-grayBkg: rgba(#F9F9F9, 1);
+$cStructure-softLine: rgba(#000, 0.06);
+$cStructure-darkGrey: rgba(#000, 0.1);
+$cStructure-darkLine: rgba(#000, 0.6);
+// Cards/Rows
+$cCard-hoverFill: rgba(#F5FAFE, 1);
+$cCard-hoverBorder: rgba(#BCD8F1, 1);
+$cCard-selectedFill: rgba(#EFF6FC, 1);
+$cCard-selectedBorder: rgba(#9DC2E0, 1);
+
+// Highlight
+$cHighlight-main: rgba(#0090D7, 1);
+$cHighlight-positive: rgba(#8FB83F, 1);
+$cHighlight-negative: rgba(#F15743, 1);
+$cHighlight-alert: rgba(#C67B44, 1);
+$cHighlight-alert2: rgba(#FFA500, 1);
+$cHighlight-alert3: rgba(#EA703D, 1);
+$cHighlight-alert4: rgba(#F5A623, 1);
+$cHighlight-caution: rgba(#F8B85C, 1);
+$cHighlight-stepDone:  #8EB83F;
+$cHighlight-mainHover: rgba(#007FBD, 1);
+
+// Icons
+$cIcons-default: rgba(#CCC, 1);
+$cIcons-active: rgba(#666, 1); // Active & hover
+
+// Forms
+$cForms-border: rgba(#CCC, 1);
+
+// Lateral nav buttons
+$cNavButton-default: rgba(#BBB, 1);
+$cNavButton-active: rgba(#888, 1);
+
+// Navmenu
+$cNavmenu-arrow: #AAA;
+$cNavmenu-sep: #DDD;
+
+// Notifications
+$cNotification: #73C86B;

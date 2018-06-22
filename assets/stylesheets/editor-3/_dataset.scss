@@ -1,0 +1,96 @@
+// Styles for dataset
+// --------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.Dataset {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.Dataset-view {
+  display: flex;
+  position: relative;
+  flex: 1;
+  flex-direction: column;
+}
+
+.Dataset-viewInfo {
+  box-sizing: content-box;
+  padding: 19px 25px 0;
+}
+
+.Dataset-viewOptions {
+  height: 40px;
+  padding: 0 20px;
+  border-top: 1px solid $cMainLine;
+  background: $cThirdBackground;
+}
+
+.Dataset-viewTable {
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+.Dataset-viewTable .Table-wrapper {
+  top: 40px;
+}
+
+.Dataset-options,
+.Dataset-notifier {
+  padding: 0 25px;
+}
+
+.Dataset-options.is-dark {
+  border-top: 1px solid #000;
+  background-color: $cMainBg;
+}
+
+.Dataset-options {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid $cThirdBackground;
+}
+
+.Dataset-options::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  right: 0;
+  left: 0;
+  height: 18px;
+  background-image: linear-gradient(0deg, rgba(#000, 0.08), transparent 88%);
+  pointer-events: none;
+}
+
+.Dataset-options-actions {
+  display: flex;
+}
+
+.Dataset-editor {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding-top: $baseSize * 3;
+}
+
+.Dataset-editor .CodeMirror-editor {
+  min-height: 200px;
+}
+
+.Dataset-editor .CodeMirror-message {
+  padding: 0 25px;
+}
+
+.Dataset-tablePreview {
+  color: $cBlue;
+}
+
+.is-dark .Dataset-tablePreview {
+  color: $cWhite;
+}

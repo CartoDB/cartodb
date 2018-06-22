@@ -1,0 +1,71 @@
+@import '../variables/colors';
+@import '../variables/sizes';
+
+// Mamufas dialog styles
+
+.MamufasDialog .Dialog-headerIcon {
+  margin-bottom: 12px;
+  line-height: 41px;
+
+  .CDB-IconFont-step {
+    font-size: 24px;
+  }
+}
+
+.MamufasDialog .Dialog-headerTitle {
+  font-size: $sFontSize-larger;
+}
+
+.MamufasDialog .Dialog-headerText {
+  font-size: 14px;
+}
+
+.MamufasDialog-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 40px 0;
+}
+
+.MamufasDialog .MamufasDialog-dropZone {
+  position: relative;
+  flex-grow: 100;
+  width: 940px;
+  margin: 0 auto 50px;
+  border: 2px dashed $cStructure-mainLine;
+  border-radius: 4px;
+}
+
+.MamufasDialog-dropZoneIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -30px;
+  margin-left: -26px;
+  color: $cTypography-help;
+  font-size: 60px;
+}
+
+.MamufasDialog-footer {
+  border-top: none;
+  text-align: center;
+}
+
+.MamufasDialog-footerInfo {
+  color: $cTypography-secondary;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+}
+
+.MamufasDialog-footerInfoIcon {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #F2C000;
+  border-radius: 20px;
+  background-color: #F6D35C;
+  color: #FFF;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+  line-height: 20px;
+  text-align: center;
+}

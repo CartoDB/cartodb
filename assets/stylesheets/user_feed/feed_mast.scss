@@ -1,0 +1,58 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+$cFeedMast: #EEEDEE;
+$sWidth: 4px;
+
+.FeedMast {
+  position: absolute;
+  top: 0;
+  flex: 0 0 $sWidth;
+  width: $sWidth;
+  height: 100%;
+  margin-left: 29px;
+  background: $cFeedMast;
+}
+
+.FeedMast.is-hidden {
+  display: none;
+}
+
+.FeedMast-ball {
+  position: absolute;
+  left: -5px;
+  width: 6px;
+  height: 6px;
+  border: $sWidth solid $cFeedMast;
+  border-radius: 50%;
+  background: #F9F9F9;
+}
+
+.FeedMast-ball.FeedMast-ball--top {
+  top: -12px;
+  background: none;
+}
+
+.FeedMast-ball.FeedMast-ball--bottom {
+  bottom: 0;
+  background: $cFeedMast;
+}
+
+@media only screen and (min-width: 521px) and (max-width: 899px) {
+  .FeedMast {
+    z-index: 0;
+    top: 0;
+    left: 50%;
+    margin-left: -2px;
+  }
+}
+
+@media only screen and (max-width: 520px) {
+  .FeedMast {
+    z-index: 0;
+    top: 0;
+    left: 50%;
+    margin-left: -2px;
+  }
+}

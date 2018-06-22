@@ -1,0 +1,9 @@
+@import '../../variables/colors';
+@import '../../variables/sizes';
+
+$c: #649DD0;
+
+.TwitterImportDetails-header .Dialog-headerIcon {
+  border-color: $c;
+  color: $c;
+}

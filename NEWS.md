@@ -38,6 +38,7 @@ sudo make install
 
 ### Internals
 * Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
+* Update to Webpack 4, move CSS processing from Grunt to Webpack (https://github.com/CartoDB/cartodb/pull/14033)
 
 
 4.12.x (2018-05-24)

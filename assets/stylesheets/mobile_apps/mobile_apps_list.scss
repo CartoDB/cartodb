@@ -1,0 +1,113 @@
+// MobileApps items list
+// --------------------------------------------------
+
+@import '../variables/colors';
+@import '../variables/sizes';
+
+$selectedItemPaddingOnSides: $sMargin-element - 1px;
+
+.MobileAppsList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
+  padding-bottom: 30px;
+}
+
+.MobileAppsList-item {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  align-items: flex-end;
+  width: 100%;
+  padding: $sMargin-element 0;
+  text-decoration: none;
+
+  &:last-child {
+    margin-bottom: 28px;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $cStructure-softLine;
+  }
+}
+
+.MobileAppsList-itemIcon {
+  width: 42px;
+  height: 42px;
+  margin-right: 20px;
+}
+
+.MobileAppsList-statusIcon {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.MobileAppsList-statusIcon--open {
+  background-color: $cHighlight-positive;
+}
+
+.MobileAppsList-statusIcon--dev {
+  background-color: $cHighlight-alert4;
+}
+
+.MobileAppsList-statusIcon--private {
+  background-color: $cHighlight-negative;
+}
+
+.MobileAppsList-itemIcon--img {
+  border: 0;
+}
+
+.MobileAppsList-itemInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.MobileAppsList-itemInfoName {
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  justify-content: space-between;
+  height: 42px;
+}
+
+.MobileAppsList-itemInfoTitle {
+  max-width: 350px;
+  color: $cHighlight-main;
+  font-size: 14px;
+  font-weight: $sFontWeight-normal;
+}
+
+.MobileAppsList-itemInfoSubtitle {
+  max-width: 350px;
+  color: $cTypography-secondary;
+  font-size: 13px;
+  font-weight: 300;
+}
+
+.MobileAppsList-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.MobileAppsList-details--paragraph {
+  color: $cTypography-linkSecondary;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.MobileAppsList-detail:not(:last-child) {
+  margin-right: 15px;
+}
+
+.MobileAppsList-details--icon {
+  margin-right: 2px;
+  font-size: 12px;
+}

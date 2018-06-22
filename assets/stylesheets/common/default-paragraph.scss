@@ -1,0 +1,59 @@
+@import '../variables/colors';
+@import '../variables/sizes';
+
+.DefaultParagraph {
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-large;
+}
+
+.DefaultParagraph--secondary {
+  color: $cTypography-secondary;
+}
+
+.DefaultParagraph--error {
+  color: $cHighlight-negative;
+
+  .Button--link {
+    color: $cHighlight-negative;
+    text-decoration: underline;
+  }
+}
+
+.DefaultParagraph--tertiary {
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-normal;
+}
+
+.DefaultParagraph--short {
+  width: 500px;
+}
+
+.DefaultParagraph--centered {
+  margin: 0 auto;
+}
+
+.DefaultParagraph--spaced {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.DefaultParagraph--normalSize {
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+}
+
+@media (min-width: $sMedia-mobile) {
+  .DefaultParagraph--short {
+    width: 200px;
+  }
+}
+
+@media (min-width: $sMedia-tablet) {
+  .DefaultParagraph--short {
+    width: 500px;
+  }
+}

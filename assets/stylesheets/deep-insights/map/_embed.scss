@@ -1,0 +1,292 @@
+@import '../widgets/tipsy-tooltip';
+
+$sEmbedTabs: 1rem;
+$cEmbedTabs-Primary: #FFF;
+$cEmbedTabs-Secondary: #DDD;
+$cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
+
+.CDB-Embed-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
+    margin-bottom: 0;
+    padding: $sEmbedTabs $sEmbedTabs 0;
+  }
+}
+
+.CDB-Embed-header {
+  z-index: 3;
+  padding: $sEmbedTabs;
+  border-bottom: 1px solid $cEmbedTabs-Secondary;
+  background: $cEmbedTabs-Primary;
+
+  &.CDB-Embed-header--shadow {
+    box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
+  }
+
+  h1 {
+    max-width: 100%;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .CDB-Embed-description {
+    margin-top: 8px;
+  }
+}
+
+.CDB-Embed-description {
+  max-height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  &.is-legends {
+    margin-bottom: 16px;
+  }
+}
+
+.CDB-Embed-content {
+  height: 100%;
+}
+
+.CDB-Embed-tab {
+  display: flex;
+  padding: 8px;
+
+  &:not(.is-active) {
+    display: none;
+  }
+
+  &.is-active {
+    display: flex;
+    box-shadow: none;
+  }
+}
+
+.CDB-Embed-tabs {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: $cEmbedTabs-Primary;
+  box-shadow: 0 2px 16px 0 $cEmbedTabs-Shadow;
+
+  .CDB-NavMenu-inner.CDB-NavMenu-inner--legends {
+    border-bottom: 1px solid $cEmbedTabs-Secondary;
+  }
+}
+
+.CDB-Embed-legends {
+  height: 100%;
+}
+
+.CDB-Overlay-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0;
+  }
+
+  &.is-collapsed {
+    padding-bottom: 10px;
+  }
+}
+
+.CDB-Overlay-inner {
+  display: none;
+  margin-top: 16px;
+
+  &.is-active {
+    display: block;
+  }
+
+  &.is-description {
+    margin-bottom: 16px;
+  }
+}
+
+.CDB-Legends-canvas .CDB-Legends-canvasInner {
+  padding: 10px 12px;
+}
+
+.CDB-Embed-legends {
+  .CDB-Legends-canvas {
+    display: block !important;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .CDB-Legends-canvasInner {
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: $sMedia-xl) {
+  .CDB-Embed-tab {
+    .CDB-Widget {
+      width: 250px;
+    }
+
+    .CDB-Widget.CDB-Widget--timeSeries {
+      width: auto;
+    }
+  }
+}
+
+@media (min-width: $sMedia-xl) {
+  .CDB-Overlay-title {
+    display: none;
+  }
+
+  .CDB-Overlay-inner {
+    margin-top: 0;
+
+    .CDB-Embed-description {
+      display: none;
+    }
+  }
+
+  // Override carto.js legends styles
+  .CDB-Legends-canvas {
+    &.is-overlay {
+      display: none;
+    }
+
+    .CDB-Legends-canvasInner {
+      padding: 10px 12px;
+    }
+  }
+}
+
+@media (min-width: $sMedia-min-w-vertical) {
+  .CDB-Embed-header,
+  .CDB-Embed-tabs,
+  .CDB-Embed-legends {
+    display: none;
+  }
+}
+
+@media (max-width: $sMedia-max-w-vertical) {
+  .CDB-Embed-view {
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+  }
+}
+
+@media (max-width: $sMedia-min-w-vertical - 1px) {
+  .CDB-Embed-content {
+    // 104px = header + tabs height
+    flex: 1;
+    height: calc(100% - 104px);
+  }
+
+  .CDB-Overlay-title {
+    display: none;
+  }
+
+  .CDB-Overlay-inner {
+    .CDB-Embed-description {
+      display: none;
+    }
+  }
+
+  .CDB-Legends-canvas {
+    &.is-overlay {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: $sMedia-max-w-vertical) {
+  .CDB-Embed-tab {
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+/*
+  Legend max height depends on whether there's a time series and or the menu bar is displayed,
+  hence all the possible cases.
+*/
+@media (max-width: $sMedia-tablet - 1) {
+  $offset: 262;
+  $timeSeriesHeight: 93;
+  $menuHeight: 38;
+
+  .CDB-Map .CDB-Legends-canvas,
+  .CDB-Map .CDB-Legends-canvasInner {
+    max-height: calc(100vh - #{$offset}px);
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight + $menuHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $menuHeight}px);
+    }
+  }
+}
+
+@media (min-width: $sMedia-tablet) {
+  $offset: 88;
+  $timeSeriesHeight: 169;
+  $menuHeight: 30;
+
+  .CDB-Map .CDB-Legends-canvas,
+  .CDB-Map .CDB-Legends-canvasInner {
+    max-height: calc(100vh - #{$offset}px);
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight + $menuHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withMenu {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $menuHeight}px);
+    }
+  }
+}

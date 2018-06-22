@@ -1,0 +1,46 @@
+// Preview map styles
+// --------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.PreviewMap {
+  position: absolute;
+  z-index: 51;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(#000, 0.6);
+}
+
+.PreviewMap-canvas {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  bottom: 40px;
+  left: 40px;
+  overflow: hidden;
+  transform: translateZ(0);
+  border-radius: 5px;
+  background: $cWhite;
+}
+
+.PreviewMap-map {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 65px;
+  left: 0;
+  overflow: hidden;
+  border-radius: 5px 5px 0 0;
+  background: $cWhite;
+}
+
+.PreviewMap-info {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 35px;
+  padding: 15px;
+}

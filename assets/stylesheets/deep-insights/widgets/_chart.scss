@@ -1,0 +1,135 @@
+// Chart styles
+// ----------------------------------------------
+
+.CDB-Widget-chart--fake {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(flex-end);
+  width: 100%;
+  height: 107px; // match real widget content height, to avoid "jumpy" behavior
+}
+
+.CDB-Widget-chartItem--fake {
+  @include flex-grow(1);
+  display: inline-block;
+  margin-right: 2px;
+}
+
+.CDB-Widget-chartItem--small {
+  height: 16px;
+}
+
+.CDB-Widget-chartItem--medium {
+  height: 32px;
+}
+
+.CDB-Widget-chartItem--big {
+  height: 48px;
+}
+
+.CDB-Chart.is-selectable .CDB-Chart-handle,
+.CDB-Chart.is-selectable .CDB-Chart-handleLine {
+  opacity: 1;
+}
+
+.extent {
+  opacity: 0;
+  fill-opacity: 0;
+  shape-rendering: crispEdges;
+}
+
+.CDB-Chart-bar {
+  transition: fill 200ms ease;
+  shape-rendering: geometricPrecision;
+}
+
+.CDB-Chart-bar.is-highlighted {
+  opacity: 1;
+}
+
+.CDB-Chart-line {
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.CDB-Chart-line.CDB-Chart-line--bottom {
+  stroke-width: 1;
+  opacity: 0.2;
+  shape-rendering: crispEdges;
+}
+
+.CDB-Chart-handle {
+  opacity: 0;
+}
+
+.CDB-Chart-handleRect {
+  stroke-width: 1;
+}
+
+.CDB-Chart-handleGrip {
+  stroke-width: 1;
+}
+
+.CDB-Chart-handleLine {
+  stroke-width: 2;
+  opacity: 0;
+}
+
+.CDB-Chart-staticTips {
+  display: none;
+  margin-right: $baseSize;
+  margin-left: 8px;
+}
+
+@media (min-width: $sMedia-s) and (max-width: $sMedia-l) {
+  .CDB-Chart-staticTips {
+    display: block;
+  }
+
+  .CDB-Chart-axisTip,
+  .CDB-Chart-axisTipRect {
+    display: none;
+  }
+}
+
+.CDB-Chart-staticTip {
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.CDB-Chart-axis {
+  @include css3-prefix(user-select, none);
+  shape-rendering: crispEdges;
+}
+
+.CDB-Chart-axis path {
+  display: none;
+}
+
+.CDB-Chart-axis line {
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.CDB-Chart-staticTipText {
+  line-height: 20px;
+}
+
+.CDB-Chart-axisTipText {
+  @include css3-prefix(user-select, none);
+  font-size: $sFontSize-small;
+}
+
+.CDB-Chart-shadowBar {
+  shape-rendering: crispEdges;
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Widget-chart--fake {
+    display: none;
+  }
+
+  .CDB-Widget-chartItem--fake {
+    display: none;
+  }
+}

@@ -1,0 +1,157 @@
+
+/*
+   * Styles for tipsy tooltip
+   */
+
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.tipsy {
+  position: absolute;
+  z-index: 100000;
+  padding: 8px;
+  font-family: 'Open Sans';
+  font-size: $sFontSize-small;
+  line-height: $sLineHeight-small;
+}
+
+.tipsy-inner {
+  max-width: 200px;
+  padding: 8px 16px 10px;
+  background-color: #000;
+  color: #FFF;
+  text-align: center;
+}
+
+/* Rounded corners */
+.tipsy-inner {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
+/* Uncomment for shadow */
+
+/* .tipsy-inner { box-shadow: 0 0 5px #000000; -webkit-box-shadow: 0 0 5px #000000; -moz-box-shadow: 0 0 5px #000000; } */
+
+.tipsy-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 4px dashed #000;
+  line-height: 0;
+}
+
+/* Rules to colour arrows */
+.tipsy-arrow-n {
+  border-bottom-color: #000;
+}
+
+.tipsy-arrow-s {
+  border-top-color: #000;
+}
+
+.tipsy-arrow-e {
+  border-left-color: #000;
+}
+
+.tipsy-arrow-w {
+  border-right-color: #000;
+}
+
+.tipsy-n .tipsy-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -8px;
+  border-top: none;
+  border-bottom-style: solid;
+  border-right-color: transparent;
+  border-left-color: transparent;
+}
+
+.tipsy-nw .tipsy-arrow {
+  top: 0;
+  left: 10px;
+  border-top: none;
+  border-bottom-style: solid;
+  border-right-color: transparent;
+  border-left-color: transparent;
+}
+
+.tipsy-ne .tipsy-arrow {
+  top: 0;
+  right: 10px;
+  border-top: none;
+  border-bottom-style: solid;
+  border-right-color: transparent;
+  border-left-color: transparent;
+}
+
+.tipsy-s .tipsy-arrow {
+  bottom: 4px;
+  left: 50%;
+  margin-left: -8px;
+  border-bottom: none;
+  border-top-style: solid;
+  border-right-color: transparent;
+  border-left-color: transparent;
+}
+
+.tipsy-sw .tipsy-arrow {
+  bottom: 0;
+  left: 10px;
+  border-bottom: none;
+  border-top-style: solid;
+  border-right-color: transparent;
+  border-left-color: transparent;
+}
+
+.tipsy-se .tipsy-arrow {
+  right: 10px;
+  bottom: 0;
+  border-bottom: none;
+  border-top-style: solid;
+  border-right-color: transparent;
+  border-left-color: transparent;
+}
+
+.tipsy-e .tipsy-arrow {
+  top: 50%;
+  right: 0;
+  margin-top: -8px;
+  border-right: none;
+  border-left-style: solid;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.tipsy-w .tipsy-arrow {
+  top: 50%;
+  left: 0;
+  margin-top: -8px;
+  border-left: none;
+  border-right-style: solid;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+/* dark style */
+.tipsy.dark .tipsy-inner {
+  background-color: WHITE;
+  color: #333;
+}
+
+.tipsy.dark .tipsy-arrow-n {
+  border-bottom-color: #FFF;
+}
+
+.tipsy.dark .tipsy-arrow-s {
+  border-top-color: #FFF;
+}
+
+.tipsy.dark .tipsy-arrow-e {
+  border-left-color: #FFF;
+}
+
+.tipsy.dark .tipsy-arrow-w {
+  border-right-color: #FFF;
+}

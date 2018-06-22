@@ -140,7 +140,7 @@ module ApplicationHelper
   def editor_assets_path
     file = File.read("./config/editor_assets_version.json")
     version = JSON.parse(file)["version"]
-    "/assets/editor/#{version}"
+    "editor/#{version}"
   end
 
   def editor_stylesheet_link_tag(*sources)
@@ -150,7 +150,7 @@ module ApplicationHelper
     path = editor_assets_path
 
     sources_tags = sources.uniq.map { |source|
-      href = "#{path}/stylesheets/#{source}"
+      href = "#{app_assets_base_url}/#{path}/stylesheets/#{source}"
       tag_options = {
         "rel" => "stylesheet",
         "media" => "screen",
@@ -169,7 +169,7 @@ module ApplicationHelper
     path = editor_assets_path
 
     sources_tags = sources.uniq.map { |source|
-      href = "#{path}/javascripts/#{source}"
+      href = "#{app_assets_base_url}/#{path}/javascripts/#{source}"
       tag_options = {
         "src" => href
       }.merge!(options)

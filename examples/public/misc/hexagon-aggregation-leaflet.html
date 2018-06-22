@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hexagon aggregation | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="https://libs.cartocdn.com/carto.js/v4.0.8/carto.min.js"></script>
+
+    <link href="https://carto.com/developers/carto-js/examples/maps/public/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <!-- Description -->
+    <aside class="toolbox">
+        <div class="box">
+            <header>
+                <h1>Create an hexagonal grid</h1>
+                <button class="github-logo js-source-link"></button>
+            </header>
+            <section>
+                <p class="description open-sans">Aggregate your points in hexagons.</p>
+            </section>
+            <footer class="js-footer"></footer>
+        </div>
+
+        <div class="box legend">
+            <h2 class="h2">Number of points aggregated in hexagons</h2>
+            <ul class="category open-sans">
+              <li><div class="circle" style="background: #04817E  "></div><p>1-2</p></li>
+              <li><div class="circle" style="background: #39AB7E "></div><p>>2</p></li>
+              <li><div class="circle" style="background: #8BD16D"></div><p>>9</p></li>
+              <li><div class="circle" style="background: #EDEF5D"></div><p>>30</p></li>
+            </ul>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        const map = L.map('map').setView([40, -80], 7);
+        map.scrollWheelZoom.disable();
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+
+
+        const client = new carto.Client({
+            apiKey: 'default_public',
+            username: 'public'
+        });
+
+        const source = new carto.source.SQL(`
+            WITH hgrid AS (
+                SELECT CDB_HexagonGrid(
+                    ST_Expand(!bbox!, CDB_XYZ_Resolution(9) * 12),
+                    CDB_XYZ_Resolution(9) * 12) as cell
+                )
+            SELECT  hgrid.cell as the_geom_webmercator, 
+                    count(1) as agg_value,
+                    row_number() over () as cartodb_id
+            FROM hgrid, (SELECT * FROM stormevents_locations_2014) i
+            WHERE ST_Intersects(i.the_geom_webmercator, hgrid.cell) 
+            GROUP BY hgrid.cell
+        `);
+
+        const style = new carto.style.CartoCSS(`
+        #layer {
+            [ agg_value > 0 ] {
+                  polygon-fill: #04817E;
+            }
+            [ agg_value > 2 ] {
+                  polygon-fill: #39AB7E;
+            }
+            [ agg_value > 9 ] {
+                  polygon-fill: #8BD16D;
+            }
+            [ agg_value > 30 ] {
+                  polygon-fill: #EDEF5D;
+            }
+          }
+          #layer::outline {
+                line-width: 1;
+            line-color: #FFFFFF;
+            line-opacity: 1;
+          }`);
+
+
+        const layer = new carto.layer.Layer(source, style);
+        client.addLayer(layer);
+        client.getLeafletLayer().addTo(map);
+
+
+
+
+    </script>
+</body>
+
+</html>

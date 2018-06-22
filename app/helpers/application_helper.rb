@@ -139,7 +139,7 @@ module ApplicationHelper
     options = sources.extract_options!.stringify_keys
     with_full_path = []
     sources.each do |source|
-      with_full_path << path + "#{source}"
+      with_full_path << path + source
     end
 
     with_full_path << options

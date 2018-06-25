@@ -1,0 +1,41 @@
+// Privacy toggler
+// --------------------------------------------------
+
+@import '../variables/colors';
+
+.PrivacyToggler {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  border: 1px solid $cStructure-softLine;
+  border-radius: 40px;
+  font-size: 16px;
+  line-height: 40px;
+  text-align: center;
+  vertical-align: middle;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.PrivacyToggler .CDB-IconFont {
+  line-height: 20px;
+}
+
+.PrivacyToggler--PUBLIC,
+.PrivacyToggler--PUBLIC:hover {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+
+.PrivacyToggler--PRIVATE,
+.PrivacyToggler--PRIVATE:hover {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+
+.PrivacyToggler.is-disabled {
+  opacity: 0.5;
+}

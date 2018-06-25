@@ -1,0 +1,29 @@
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// Default form styles as defined by style guide
+//
+// -------------------------------------------------------------------------------------------------------------------
+
+.Input {
+  height: $sForms-elementHeight;
+  padding: 0 $sMargin-elementInline;
+  border: 1px solid $cForms-border;
+  border-radius: $sForms-borderRadius;
+  color: $cTypography-paragraphs;
+
+  ::-webkit-input-placeholder { color: $cTypography-help; }
+  :-moz-placeholder { color: $cTypography-help; }
+  ::-moz-placeholder { color: $cTypography-help; }
+  :-ms-input-placeholder { color: $cTypography-help; }
+}
+
+.Input--slim {
+  height: $sMargin-group;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.Input.is-loading {
+  background: url($assetsDir + "/images/layout/loader_transparent.gif") no-repeat 10px 50%;
+}

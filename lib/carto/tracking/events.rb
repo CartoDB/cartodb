@@ -176,6 +176,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :page
+
+        def report_to_user_model
+          @format.fetch_record!(:user).view_dashboard if @format.to_hash['page'] == 'dashboard'
+        end
       end
 
       class DatasetEvent < Event

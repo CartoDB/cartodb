@@ -1,0 +1,170 @@
+
+/**
+ *  Public export styles
+ *
+ */
+
+.extra_options {
+  width: 100%;
+  margin: 30px 0 0;
+  padding: 13px 0 0;
+  float: left;
+  clear: both;
+  border-top: 1px solid #E5E5E5;
+  & { *zoom: 1; }
+  &:before, &:after { content: ""; display: table; }
+  &:after { clear: both; }
+
+  &.disabled {
+    display: none;
+  }
+
+  .row_count {
+    display: inline-block;
+    color: #858585;
+    font-size: 15px;
+    vertical-align: top;
+    vertical-align: middle;
+  }
+
+  .download_options {
+    & { *zoom: 1; }
+    &:before, &:after { content: ""; display: table; }
+    &:after { clear: both; }
+    display: inline-block;
+    margin: 0 0 0 5px;
+    vertical-align: top;
+    vertical-align: middle;
+
+    .download {
+      display: inline-block;
+      margin: 0 5px 0 3px;
+      color: #858585;
+      font-size: 15px;
+      vertical-align: top;
+      vertical-align: middle;
+
+      &::after {
+        content: '·';
+        position: relative;
+        margin-right: 9px;
+        float: left;
+      }
+    }
+
+    .loading {
+      display: inline-block;
+      color: #858585;
+      font-size: 15px;
+      vertical-align: top;
+      vertical-align: middle;
+
+      img {
+        margin: 0 5px 0 0;
+        vertical-align: middle;
+      }
+    }
+
+    a {
+      display: inline-block;
+      margin: 0;
+      padding: 0 11px;
+      font-family: 'Arial';
+      font-size: 11px;
+      line-height: 27px;
+      text-shadow: none;
+      text-transform: uppercase;
+      vertical-align: top;
+    }
+
+    h2 {
+      display: inline-block;
+      line-height: normal;
+      vertical-align: top;
+    }
+  }
+
+  .generating {
+    display: block;
+  }
+}
+
+.extra_options .user-options {
+  float: right;
+}
+
+.extra_options .button.green.clone {
+  display: none;
+  position: relative;
+  padding: 0 9px 0 28px;
+  font-family: 'Arial';
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 27px;
+  text-shadow: none;
+  text-transform: uppercase;
+
+  i.clone-icon {
+    background: url($assetsDir + '/images/layout/clone-icon.png') no-repeat 0 0;
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    width: 14px;
+    height: 13px;
+  }
+}
+
+.extra_options .button.grey.edit,
+.extra_options .button.grey.oneclick {
+  display: none;
+  position: relative;
+  padding: 0 9px;
+  font-family: 'Arial';
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 27px;
+  text-shadow: none;
+  text-transform: uppercase;
+}
+
+.extra_options .button.grey.oneclick {
+  display: inline-block;
+}
+
+@media only screen and (max-width: 710px) {
+  body.public-map .extra_options,
+  body.public .extra_options {
+    .download_options {
+      display: block !important;
+      margin: 10px 0 20px !important;
+
+      .download {
+        display: none !important;
+      }
+    }
+
+    .user-options {
+      width: 100%;
+      margin-top: 0;
+      float: left !important;
+    }
+  }
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
+  body.public-map .extra_options,
+  body.public .extra_options {
+    .download_options {
+      display: block !important;
+      margin: 10px 0 20px !important;
+
+      .download {
+        display: none !important;
+      }
+    }
+
+    .user-options {
+      margin-top: 28px;
+    }
+  }
+}

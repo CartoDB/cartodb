@@ -1,0 +1,41 @@
+@import "../../../variables/mixins";
+@import "../../../variables/colors";
+@import "../../../variables/sizes";
+
+// Import twitter view styles
+
+// Twitter categories
+.TwitterCategory .Form-inputIcon {
+  top: 8px;
+  font-size: 20px;
+}
+
+.TwitterCategory .Form-inputIcon.is-highlighted { color: #6F9FD0; }
+
+.TwitterCategory {
+  height: 0;
+  overflow: hidden;
+  transition: all 250ms linear;
+  opacity: 0;
+}
+
+.TwitterCategory.enabled {
+  height: 60px;
+  opacity: 1;
+}
+
+// Datepicker
+.DatePicker-info {
+  max-width: 140px !important;
+  line-height: 20px !important;
+}
+
+// Credits usage
+.ImportTwitterPanel-creditsUsage {
+  margin-bottom: 10px;
+}
+
+.CreditsUsage-info {
+  width: 300px;
+  color: $cTypography-paragraphs;
+}

@@ -1,0 +1,25 @@
+// Data info element styles
+// --------------------------------------------------
+
+.CDB-Widget-info {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+  width: 100%;
+}
+
+.CDB-Widget-infoDescription {
+  margin-right: $sMargin-element;
+  margin-left: $baseSize / 4;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+// Widget sizes
+@include media-query() {
+  .CDB-Widget-infoDescription {
+    margin-right: 8px;
+  }
+}

@@ -1,0 +1,73 @@
+@import "../../../variables/colors";
+@import "../../../variables/sizes";
+
+// Service list styles within import panel
+
+$w: 780px;
+
+.ServiceList {
+  display: block;
+  width: $w;
+  margin: 0 auto;
+}
+
+.ServiceList-header {
+  padding: 28px 0 16px;
+}
+.ServiceList-items { display: block; }
+
+.ServiceList-item {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  margin-top: 16px;
+  padding: 16px;
+  transition: border 200ms ease-in;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: #FFF;
+}
+.ServiceList-item:last-child { margin: 0; }
+
+.ServiceList-item:hover {
+  border: 1px solid #AAA;
+}
+
+.ServiceList-itemInfoTitle {
+  box-sizing: border-box;
+  max-width: 550px;
+  padding-right: 24px;
+}
+
+.ServiceList-itemExt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  color: #CCC;
+  text-transform: uppercase;
+}
+
+.ServiceList-itemInfo {
+  flex: 1;
+}
+
+.ServiceList-itemDescription {
+  margin-top: 3px;
+}
+
+.ServiceList-itemButton {
+  padding: 0 44px;
+  border: 1px solid #CCC;
+  background: transparent;
+  color: $cTypography-paragraphs;
+}
+
+.IntermediateInfo.ServiceList-empty {
+  width: 100%;
+  min-height: 250px;
+}

@@ -1,0 +1,50 @@
+// Default styles
+//
+// NOTICE!
+// Do NOT add default styles to common elements (e.g. input) unless you have OK'd it with the rest of us. We want to
+// avoid having unforeseen side-effects upon changes, and avoid having to reset unwanted styles for custom components.
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/mixins";
+
+* {
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: $cStructure-mainBkg;
+  font: normal #{$sFontSize-normal}/#{$sLineHeight-normal} 'Lato', sans-serif;
+  -moz-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  color: #1181FB;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+i {
+  font-style: normal;
+}
+
+button {
+  border: 0;
+  background: transparent;
+}
+
+button:focus {
+  outline: none;
+}

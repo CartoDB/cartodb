@@ -1,0 +1,27 @@
+@import "../variables/colors";
+@import "../variables/mixins";
+@import "../variables/sizes";
+
+.MapviewsGraph {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 25px;
+  padding: 22px 16px 0;
+  background: -moz-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%, rgba(#000, 0.5)), color-stop(70%, rgba(#000, 0.1)), color-stop(100%, rgba(#000, 0)));
+  background: -webkit-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: -o-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: -ms-linear-gradient(bottom, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+  background: linear-gradient(to top, rgba(#000, 0.5) 0%, rgba(#000, 0.1) 70%, rgba(#000, 0) 100%);
+}
+
+.MapviewsGraph-bar {
+  fill: rgba(white, 0.5);
+}
+// Hack for positioning tooltip in the center
+.MapviewsGraph-tooltip {
+  margin-left: 1px;
+}

@@ -158,6 +158,11 @@ class Organization < Sequel::Model
     save_metadata
   end
 
+  def after_destroy
+    super
+    destroy_metadata
+  end
+
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
   def destroy_cascade(delete_in_central: false)
@@ -462,6 +467,10 @@ class Organization < Sequel::Model
       'geocoder_provider', geocoder_provider,
       'isolines_provider', isolines_provider,
       'routing_provider', routing_provider
+  end
+
+  def destroy_metadata
+    $users_metadata.DEL key
   end
 
   def require_organization_owner_presence!

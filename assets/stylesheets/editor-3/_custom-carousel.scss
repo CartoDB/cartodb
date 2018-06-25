@@ -1,0 +1,108 @@
+// Carousel styles
+// ----------------------------------------------
+
+/* SG
+# Carousel
+```
+<ul class="CDB-Carousel">
+  <li class="CDB-CarouselItem is-selected"></li>
+  <li class="CDB-CarouselItem"></li>
+  <li class="CDB-CarouselItem"></li>
+  <li class="CDB-CarouselItem"></li>
+  <li class="CDB-CarouselItem"></li>
+</ul>
+```
+*/
+
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.Carousel {
+  position: relative;
+}
+
+.Carousel-list {
+  display: flex;
+  position: relative;
+  justify-content: flex-start;
+  padding-bottom: 19px;
+}
+
+.Carousel-item {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: $baseSize * 11;
+  min-width: $baseSize * 11;
+  height: $baseSize * 7;
+  margin-right: 8px;
+  overflow: hidden;
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  background: $cThirdBackground;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &:hover {
+    border: 2px solid $cBlueHover;
+    cursor: pointer;
+  }
+
+  &.is-selected {
+    border: 2px solid $cBlackHover;
+  }
+}
+
+.Carousel-item--small {
+  width: $baseSize * 5;
+  min-width: $baseSize * 5;
+  height: $baseSize * 5;
+}
+
+.Carousel-shadow {
+  display: block;
+  position: absolute;
+  z-index: 80;
+  top: 0;
+  box-sizing: border-box;
+  width: 30px;
+  height: $baseSize * 7;
+  transition: opacity, 400ms;
+  opacity: 0;
+  pointer-events: none;
+
+  &.is-visible {
+    opacity: 1;
+  }
+}
+
+.Carousel-shadow--left {
+  left: 0;
+  background-color: rgba(#FFF, 0) !important;
+  background-image: linear-gradient(to right, #FFF, rgba(#FFF, 0));
+}
+
+.Carousel-shadow--right {
+  right: 0;
+  background-image: linear-gradient(to right, rgba(#FFF, 0), #FFF);
+}
+
+.Carousel-list.ps-container > .ps-scrollbar-x-rail {
+  display: block;
+  width: 100%;
+}
+
+.ps-scrollbar-x-rail:hover {
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+}
+
+.ps-scrollbar-x-rail:active {
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+}

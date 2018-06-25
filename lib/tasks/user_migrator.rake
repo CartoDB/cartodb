@@ -1,6 +1,7 @@
 require_relative '../../services/user-mover/export_user.rb'
 require_relative '../../services/user-mover/import_user.rb'
 require_relative '../../app/services/carto/organization_metadata_export_service'
+require_relative '../../app/services/carto/redis_export_service'
 
 namespace :cartodb do
   namespace :user_migrator do
@@ -89,6 +90,108 @@ namespace :cartodb do
       umi.run_import
       puts "Import finished with status #{umi.state}"
       puts umi.log.entries unless umi.state == Carto::UserMigrationImport::STATE_COMPLETE
+    end
+
+    namespace :cleanup do
+      module OrganizationMigrationCleanup
+        def clean_user_metadata(user)
+          return unless user.present? && user.persisted?
+          carto_user = Carto::User.find(user.id)
+          carto_user.assets.each(&:delete)
+          user.destroy
+        end
+
+        def clean_organization_metadata(organization)
+          return unless organization.persisted?
+          organization.assets.each(&:delete)
+          organization.users.each { |u| u.assets.each(&:delete) }
+          organization.destroy_cascade
+        end
+
+        def clean_redis_user(user)
+          remove_keys(
+            $users_metadata,
+            $users_metadata.keys("user:#{user.username}*")
+          )
+          remove_keys(
+            $tables_metadata,
+            ["map_tpl|#{user.username}"]
+          )
+        end
+
+        def clean_redis_organization(organization)
+          remove_keys(
+            $users_metadata,
+            $users_metadata.keys("org:#{organization.name}*")
+          )
+          organization.users.each { |u| clean_redis_user(u) }
+        end
+
+        def clean_organization(organization)
+          puts "Cleaning organization #{organization.name}"
+          clean_redis_organization(organization)
+          clean_organization_metadata(organization)
+        end
+
+        def clean_user(user)
+          puts "Cleaning user #{user.username}"
+          clean_redis_user(user)
+          clean_user_metadata(user)
+        end
+      end
+
+      desc 'Cleans all organizations data and metadata matching filter in config file'
+      task :organizations_from_file, [:config_file] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        Organization.where(File.read(args[:config_file]).to_s).each { |org| clean_organization(org) }
+      end
+
+      desc 'Cleans all user data and metadata matching filter in config file'
+      task :users_from_file, [:config_file] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        User.where(File.read(args[:config_file]).to_s).each { |u| clean_user(u) }
+      end
+
+      desc 'Cleans all data for organization with given name'
+      task :organization, [:name] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        organization = Organization.where("name = '#{args[:name]}'").first || Organization.new(name: args[:orgname])
+        clean_organization(organization)
+      end
+
+      desc 'Cleans all data for user with given username'
+      task :user, [:username] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        user = User.where("username = '#{args[:username]}'").first || User.new(username: args[:username])
+        clean_user(user)
+      end
+
+
+      desc 'Cleans redis keys for org with given name'
+      task :redis_for_orgname, [:orgname] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        organization = Organization.where("name = '#{args[:orgname]}'").first || Organization.new(name: args[:orgname])
+        clean_redis_organization(organization)
+      end
+
+      desc 'Cleans all redis keys for given username'
+      task :redis_for_username, [:username] => :environment do |_, args|
+        include CartoDB::DataMover::Utils
+        include OrganizationMigrationCleanup
+        include ::Carto::RedisExportServiceImporter
+        user = User.where("username = '#{args[:username]}'").first || User.new(username: args[:username])
+        clean_redis_user(user)
+      end
     end
   end
 end

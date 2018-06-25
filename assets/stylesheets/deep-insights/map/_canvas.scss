@@ -1,0 +1,110 @@
+// Dashboard canvas
+// --------------------------------------------------
+
+// Canvas is out of widget themes
+$canvas-light: #F2F6F9;
+$canvas-dark: #293A41;
+
+.CDB-Dashboard-canvas {
+  display: flex;
+  position: relative;
+  box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
+  flex: 1;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%; // fill content to the visible viewport, but add scroll for overflowing inline content (e.g. widgets)
+  overflow-x: hidden;
+  background: $canvas-light;
+  box-shadow: inset 10px 0 10px -10px rgba(#000, 0.3);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.CDB-Dashboard-canvas.is-dark {
+  background: $canvas-dark;
+}
+
+.CDB-Dashboard-mapWrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.CDB-Map-canvas {
+  position: relative;
+  flex-grow: 1;
+}
+
+.CDB-Map {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.CDB-Dashboard-belowMap {
+  margin-top: 8px;
+}
+
+@media (min-width: $sMedia-xl + 1px) {
+  .CDB-Dashboard-mapWrapper--withMenu {
+    margin-left: 56px;
+  }
+}
+
+@media (max-width: $sMedia-xl) {
+  .CDB-Dashboard-canvas {
+    padding: 0;
+  }
+
+  .CDB-Dashboard-mapWrapper--withMenu {
+    height: calc(100% - 30px);
+  }
+
+  .CDB-Dashboard-canvas.CDB-Embed-tab--menu.is-active {
+    box-shadow: none;
+  }
+}
+
+@media (max-width: $sMedia-max-w-vertical) {
+  body {
+    width: 100%;
+  }
+
+  .CDB-Dashboard-canvas {
+    position: relative;
+    box-sizing: border-box;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .CDB-Dashboard-canvas--withMenu {
+    height: calc(100% - 38px);
+  }
+
+  .CDB-Map {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .CDB-Dashboard-mapWrapper--withMenu {
+    order: 1;
+    margin-left: 0;
+  }
+
+  .CDB-Dashboard-belowMap {
+    margin-top: 0;
+  }
+}

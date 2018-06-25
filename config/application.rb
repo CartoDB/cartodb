@@ -125,44 +125,32 @@ module CartoDB
 
       user_feed_deps.js
       user_feed.js
-
-      user_feed_new.js
-      user_feed_new_vendor.js
+      user_feed_new.css
       api_keys_new.js
-      api_keys_new_vendor.js
-      public_dashboard_new.js
-      public_dashboard_new_vendor.js
+      public_dashboard.js
       public_table_new.js
-      public_table_new_vendor.js
-      data_library_new.js
-      data_library_new_vendor.js
-      mobile_apps_new.js
-      mobile_apps_new_vendor.js
-      sessions_new.js
-      sessions_new_vendor.js
-      confirmation_new.js
-      confirmation_new_vendor.js
-      organization_new.js
-      organization_new_vendor.js
-      common_dashboard.js
+      sessions.js
+      confirmation.js
+      organization.js
+      lockout.js
 
       tipsy.js
       modernizr.js
       statsc.js
 
       builder.js
-      builder_vendor.js
       builder_embed.js
-      builder_embed_vendor.js
       dataset.js
-      dataset_vendor.js
       common.js
+      common_vendor.js
 
       deep_insights.css
+      deep_insights_new.css
       cdb.css
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css
       common.css
+      common_new.css
       old_common.css
       dashboard.css
       cartodb.css
@@ -171,7 +159,7 @@ module CartoDB
 
       common_editor3.css
       editor3.css
-      public_editor3.css
+      builder_embed.css
 
       table.css
       leaflet.css
@@ -181,18 +169,18 @@ module CartoDB
       organization.css
       password_protected.css
       public_dashboard.css
+      public_dashboard_new.css
       public_map.css
+      public_map_new.css
       embed_map.css
       data_library.css
       public_table.css
+      public_table_new.css
       sessions.css
-      user_feed.css
       explore.css
       mobile_apps.css
       api_keys.css
-
       api_keys_new.css
-      public_table_new.css
 
       plugins/tipsy.css
 

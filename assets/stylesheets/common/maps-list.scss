@@ -1,0 +1,117 @@
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// A list of .MapCard items.
+// Depending on context (private/public dashboard, delete items (affected maps)) it might look slightly differently.
+//
+// --------------------------------------------------
+.MapsList {
+  display: flex;
+  position: relative;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  width: $sLayout-width + $sMargin-element;
+  margin: 4px auto 0;
+  padding-right: $sMargin-elementInline;
+  padding-left: $sMargin-elementInline;
+}
+
+.MapsList-footer {
+  // To match the MapsList size above, with its margin+padding
+  width: $sLayout-width + $sMargin-element + 2 * $sMargin-elementInline;
+}
+
+.MapsList--centerItems {
+  justify-content: center;
+}
+
+.MapsList.is-hidden {
+  display: none;
+}
+
+.MapsList.is-bottom {
+  margin-bottom: 120px;
+}
+
+.MapsList-item {
+  position: relative;
+  width: 300px;
+  margin: 20px 10px 0;
+}
+
+.MapsList-item--wRightMargins {
+  margin: 0 20px 0 0;
+}
+
+.MapsList-item--woTopBottomMargins {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.MapsList .MapsList-item.MapsList-item--fake {
+  opacity: 0.6;
+}
+
+@media only screen and (max-width: $sMedia-mobile) {
+  .MapsList {
+    padding: 0;
+  }
+
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: none;
+  }
+
+  .MapsList .MapsList-item {
+    margin: 10px auto;
+  }
+}
+
+@media only screen and (max-width: $sMedia-tablet) {
+  .MapsList {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: none !important;
+  }
+}
+
+@media (min-width: $sMedia-desktop) {
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: block;
+  }
+}
+
+@media only screen and (max-width: 984px) {
+  .MapsList {
+    justify-content: center;
+    width: 640px;
+    padding: 0;
+  }
+
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: block;
+  }
+
+  .MapsList .MapsList-item {
+    margin: 10px auto;
+  }
+}
+
+@media only screen and (max-width: 663px) {
+  .MapsList {
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+  }
+
+  .MapsList .MapsList-item.MapsList-item--fake {
+    display: block;
+  }
+
+  .MapsList .MapsList-item {
+    margin: 10px auto;
+  }
+}

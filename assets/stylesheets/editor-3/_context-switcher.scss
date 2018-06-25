@@ -1,0 +1,79 @@
+// Context switcher styles (map view, table view)
+// ----------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import 'vars';
+
+.Editor-contextSwitchers {
+  display: flex;
+  position: absolute;
+  z-index: 11;
+  right: 16px;
+  bottom: 16px;
+}
+
+.Editor-contextSwitchers--table {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+}
+
+@media (max-width: 1200px) {
+  .Editor-contextSwitchers--table {
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
+.Editor-contextSwitcher {
+  margin-left: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: $cBlue;
+  box-shadow: 0 0 2px 0 rgba(#000, 0.24), 0 4px 8px 0 rgba(#000, 0.16);
+}
+
+.Editor-contextSwitcher.Editor-contextSwitcher--view {
+  height: 32px;
+  margin-top: -1px;
+  padding-left: 12px;
+  background: #FFF;
+}
+
+.Editor-contextSwitchers--table .Editor-contextSwitcher--geom {
+  display: none;
+}
+
+.Editor-contextSwitcherButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.Editor-contextSwitcherItem {
+  border-right: 1px solid rgba(#000, 0.08);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.Editor-contextSwitcherItem.is-disabled {
+  opacity: 0.24;
+
+  .Editor-contextSwitcherButton {
+    cursor: default;
+  }
+}
+
+.Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
+  fill: rgba(#000, 0.16);
+}
+
+.Editor-contextSwitcherMedia {
+  fill: $cWhite;
+}

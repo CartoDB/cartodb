@@ -1,0 +1,131 @@
+// This is a copy of the Builder style file /app/assets/stylesheets/editor-3/_modals-elements.scss
+// Copied as is to avoid referencing the file from outside Builder codebase
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.Modal-listActions {
+  margin-top: $baseSize * 4;
+}
+
+.Modal-listActionsitem,
+.Modal-icon {
+  margin-right: $baseSize * 2;
+}
+
+.Modal-listActionsitem:last-child {
+  margin-right: 0;
+}
+
+.Modal-icon {
+  margin-top: 6px;
+  line-height: 34px; /* align-items: baseline doesnt work correctly in ff */
+}
+
+.Modal-icon--svg {
+  width: 25px;
+  height: 25px;
+}
+
+.Modal-listTextItem {
+  margin-top: 32px;
+}
+
+.Modal-listTextHighlight {
+  display: inline-block;
+  padding: 4px 5px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+
+.Modal-listTextHighlight.is-code {
+  font: 500 12px 'Monaco', 'Monospace';
+}
+
+.Modal-listForm {
+  margin-left: 24px;
+}
+
+.Modal-listFormItem {
+  margin-right: 32px;
+}
+
+.Modal-listFormItem.is-disabled {
+  color: $cHintText;
+}
+
+.Modal-listFormItem:last-child {
+  margin-right: 0;
+}
+
+.Modal-addItem {
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cMainLine;
+  border-radius: $halfBaseSize;
+}
+
+.Modal-titleBasemap {
+  margin: $baseSize * 3 0;
+}
+
+.Modal-intervalLabel {
+  font-size: 10px;
+}
+
+/* animation analysis */
+.Analysis-animation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 304px;
+  height: 96px;
+  overflow: hidden;
+  border-top-left-radius: $halfBaseSize;
+  border-top-right-radius: $halfBaseSize;
+  background: $cMainText;
+}
+
+.Analysis-animation.is-rounded {
+  border-radius: $halfBaseSize;
+}
+
+.ModalBlockList-item.is-disabled .Analysis-animation {
+  opacity: 0.6;
+  background-color: transparent;
+  pointer-events: none;
+  filter: grayscale(100);
+}
+
+.ModalBlockList-item.is-disabled .u-actionTextColor {
+  display: none;
+}
+
+.Analysis-info {
+  padding: 16px;
+}
+
+.SubmenuModal {
+  margin-bottom: $baseSize * 4;
+  padding-bottom: $baseSize * 3;
+}
+
+.SubmenuModal-item::after {
+  content: '';
+  width: 3px;
+  height: 6px;
+  margin-left: 12px;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PHN2ZyB3aWR0aD0iM3B4IiBoZWlnaHQ9IjZweCIgdmlld0JveD0iMCAwIDMgNiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4gICAgICAgIDx0aXRsZT5MaW5lIENvcHkgOTwvdGl0bGU+ICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPiAgICA8ZGVmcz48L2RlZnM+ICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiPiAgICAgICAgPHBvbHlsaW5lIGlkPSJMaW5lLUNvcHktOSIgc3Ryb2tlPSIjQ0JDRUQwIiBzdHJva2Utd2lkdGg9IjEuMiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMS43NTAwMDAsIDMuMDAwMDAwKSByb3RhdGUoLTkwLjAwMDAwMCkgdHJhbnNsYXRlKC0xLjc1MDAwMCwgLTMuMDAwMDAwKSAiIHBvaW50cz0iLTAuMjQ5OTk5OTk2IDIuMjUgMS43NTAwMDAwMSAzLjI1IDMuNzUgMi4yNSI+PC9wb2x5bGluZT4gICAgPC9nPjwvc3ZnPg==);
+}
+
+.SubmenuModal-item:last-child::after {
+  display: none;
+}
+
+.Analysis-moreInfo {
+  width: 624px;
+}
+
+.Analysis-moreInfoTitle {
+  margin: 32px 0 20px;
+}

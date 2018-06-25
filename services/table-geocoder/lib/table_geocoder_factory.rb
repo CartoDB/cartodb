@@ -44,8 +44,10 @@ module Carto
 
           instance_config[:client_id] = user.google_maps_client_id
           instance_config[:private_key] = user.google_maps_private_key
-        else
+        elsif user.geocoder_provider == 'heremaps'
           geocoder_class = CartoDB::TableGeocoder
+        else
+          raise 'Unsupported geocoder provider'
         end
       else
         geocoder_class = CartoDB::InternalGeocoder::Geocoder

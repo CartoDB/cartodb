@@ -59,7 +59,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def index
     if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/dashboard_migration/index.html", layout: false)
+      return render(file: "public/static/dashboard/index.html", layout: false)
     end
 
     @first_time = !current_user.dashboard_viewed?
@@ -118,7 +118,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     get_viewed_user
     ff_user = @viewed_user || @org.try(:owner)
-    @has_new_dashboard = ff_user.has_feature_flag?('dashboard_migration')
+    @has_new_dashboard = ff_user.builder_enabled?
 
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]

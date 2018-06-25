@@ -32,7 +32,8 @@ module.exports = merge(baseConfig, {
       }),
       new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
-          zindex: false
+          zindex: false,
+          reduceIdents: false
         }
       })
     ]

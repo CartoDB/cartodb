@@ -4,7 +4,7 @@
   display: flex;
   flex-flow: column;
   height: calc(100vh - 180px);
-  background: image-url('backgrounds/lockout.png') no-repeat center;
+  background: url($assetsDir + '/images/backgrounds/lockout.png') no-repeat center;
   background-size: cover;
 }
 

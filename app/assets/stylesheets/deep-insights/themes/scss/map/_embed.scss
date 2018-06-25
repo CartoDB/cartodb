@@ -92,10 +92,6 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   h1 {
     margin: 0;
   }
-
-  &.is-collapsed {
-    padding-bottom: 10px;
-  }
 }
 
 .CDB-Overlay-inner {
@@ -228,7 +224,8 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   hence all the possible cases.
 */
 @media (max-width: $sMedia-tablet - 1) {
-  $offset: 262;
+  $offset: 76;
+  $widgetsHeight: 186;
   $timeSeriesHeight: 93;
   $menuHeight: 38;
 
@@ -237,10 +234,24 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     max-height: calc(100vh - #{$offset}px);
   }
 
-  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu {
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withMenu.CDB-Dashboard-canvas--withWidgets {
     .CDB-Map .CDB-Legends-canvas,
     .CDB-Map .CDB-Legends-canvasInner {
-      max-height: calc(100vh - #{$offset + $timeSeriesHeight + $menuHeight}px);
+      max-height: calc(100vh - #{$offset + $widgetsHeight + $timeSeriesHeight + $menuHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withTimeSeries.CDB-Dashboard-canvas--withWidgets {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $widgetsHeight + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withMenu.CDB-Dashboard-canvas--withWidgets {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $widgetsHeight + $menuHeight}px);
     }
   }
 
@@ -248,6 +259,13 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     .CDB-Map .CDB-Legends-canvas,
     .CDB-Map .CDB-Legends-canvasInner {
       max-height: calc(100vh - #{$offset + $timeSeriesHeight}px);
+    }
+  }
+
+  .CDB-Dashboard-canvas--withWidgets {
+    .CDB-Map .CDB-Legends-canvas,
+    .CDB-Map .CDB-Legends-canvasInner {
+      max-height: calc(100vh - #{$offset + $widgetsHeight}px);
     }
   }
 

@@ -134,7 +134,7 @@ $cBackgroundColor: #2E3C43;
   width: $sWidgetsPadWidth;
   height: 100%;
   transition: all 200ms ease-in-out 300ms;
-  background: image-url('layout/widgets.png') no-repeat center center;
+  background: url($assetsDir + '/images/layout/widgets.png') no-repeat center center;
   background-color: $cSecondaryBackground;
   background-position: 50% 0;
 }

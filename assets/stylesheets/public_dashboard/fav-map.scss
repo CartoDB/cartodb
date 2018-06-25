@@ -14,7 +14,7 @@ $heightTall: 450px;
   position: relative;
   height: $height / 2;
   overflow: hidden;
-  background: #333 image-url('layout/noise.png') repeat 0 0;
+  background: #333 url($assetsDir + '/images/layout/noise.png') repeat 0 0;
 }
 
 .FavMap::before {

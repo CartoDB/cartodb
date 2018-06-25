@@ -462,10 +462,9 @@ describe Carto::Api::ApiKeysController do
       before(:all) do
         @user_index = FactoryGirl.create(:valid_user)
         @carto_user_index = Carto::User.find(@user_index.id)
-        Carto::ApiKey.where(user_id: @user_index.id).each(&:destroy)
 
-        @apikeys = []
-        5.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
+        @apikeys = @carto_user_index.api_keys.order(:updated_at).all
+        3.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
       end
 
       it 'paginates correctly' do

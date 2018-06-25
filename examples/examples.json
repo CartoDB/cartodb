@@ -176,6 +176,14 @@
             "leaflet": "public/misc/error-handling-leaflet.html",
             "gmaps": "public/misc/error-handling-gmaps.html"
           }
+        },
+        {
+          "title": "Hexagon aggregation",
+          "desc": "Aggregate point data into hexagon grid",
+          "file": {
+            "leaflet": "public/misc/hexagon-aggregation-leaflet.html",
+            "gmaps": "public/misc/hexagon-aggregation-gmaps.html"
+          }
         }
       ]
     }

@@ -23,8 +23,7 @@ describe Carto::UserDbSizeCache do
       umrc.expects(:set_db_size_in_bytes).with(user_mock).once
       umrc.update_if_old(user_mock)
 
-      user_mock.db_size_in_bytes = 0
-      umrc.db_size_in_bytes(user_mock).should == user_mock.db_size_in_bytes
+      umrc.db_size_in_bytes(user_mock).should eq 0
     end
 
     it 'does not set db_size_in_bytes for users that have been updated in an hour' do

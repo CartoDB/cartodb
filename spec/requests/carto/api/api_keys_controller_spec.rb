@@ -468,7 +468,7 @@ describe Carto::Api::ApiKeysController do
         5.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
       end
 
-      it 'paginates correcty' do
+      it 'paginates correctly' do
         auth_user(@carto_user_index)
         get_json api_keys_url, auth_params.merge(per_page: 2), auth_headers do |response|
           response.status.should eq 200

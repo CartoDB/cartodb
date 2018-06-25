@@ -323,7 +323,6 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('beforeDefault', [
-    'clean',
     'config'
   ]);
 
@@ -338,19 +337,23 @@ module.exports = function (grunt) {
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
+  registerCmdTask('npm-build-dev', {cmd: 'npm', args: ['run', 'build:dev']});
 
   /**
    * `grunt dev`
    */
 
   grunt.registerTask('editor', [
+    'build-static',
+    'npm-build-dev',
     'dev-editor',
-    'npm-start'
+    'watch:css'
   ]);
 
   grunt.registerTask('default', [
-    'dev-editor',
-    'npm-start'
+    'build-static',
+    'npm-build-dev',
+    'dev-editor'
   ]);
 
   grunt.registerTask('lint', [

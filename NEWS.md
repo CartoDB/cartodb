@@ -8,6 +8,9 @@ cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
+This release introduces a new API Key system. In order to migrate existing users, run the following command:
+`bundle exec rake carto:api_key:create_default`
+
 ### Features
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
@@ -40,6 +43,7 @@ sudo make install
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 * Do not crash when checking nil password (#14099)
+* Remove Auth API FF, enable it by default (#13857)
 * User mover does not export user metadata if org metadata is not exported
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 

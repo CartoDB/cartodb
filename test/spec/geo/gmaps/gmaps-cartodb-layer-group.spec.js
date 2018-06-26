@@ -114,6 +114,29 @@ describe('gmaps-cartodb-layer-group-view', function () {
       });
     });
 
+    describe('._refreshView', function () {
+      var secondLayerGroupView;
+
+      it('sets the layer group in the same position', function () {
+        layerGroupView = new GoogleCartoDBLayerGroupClass(layerGroupModelMock, {
+          nativeMap: nativeMap,
+          mapModel: mapModelMock
+        });
+
+        secondLayerGroupView = new GoogleCartoDBLayerGroupClass(layerGroupModelMock, {
+          nativeMap: nativeMap,
+          mapModel: mapModelMock
+        });
+
+        nativeMap.overlayMapTypes.push(layerGroupView);
+        nativeMap.overlayMapTypes.push(secondLayerGroupView);
+
+        layerGroupView._refreshView();
+
+        expect(nativeMap.overlayMapTypes.getAt(1)).toEqual(secondLayerGroupView);
+      });
+    });
+
     afterEach(function () {
       document.body.removeChild(container);
     });

@@ -332,7 +332,7 @@ describe('Engine', function () {
         done();
       });
 
-      engineMock.reload({
+      engineMock._performReload({
         sourceId: 'fakeSourceId',
         forceFetch: true
       });
@@ -385,46 +385,40 @@ describe('Engine', function () {
       pending('Test not implemented');
     });
 
-    it('should include the filters when the includeFilters option is true', function (done) {
+    it('should include the filters when the includeFilters option is true', function () {
       var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
       var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
       dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
       engineMock.addDataview(dataview);
       spyOn(engineMock._windshaftClient, 'instantiateMap');
 
-      engineMock.reload({
+      engineMock._performReload({
         sourceId: 'fakeSourceId',
         forceFetch: false,
         includeFilters: true
       });
 
-      setTimeout(function () {
-        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
-        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
-        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
-        done();
-      }, 100);
+      expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
     });
 
-    it('should NOT include the filters when the includeFilters option is false', function (done) {
+    it('should NOT include the filters when the includeFilters option is false', function () {
       var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
       var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
       dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
       engineMock.addDataview(dataview);
       spyOn(engineMock._windshaftClient, 'instantiateMap');
 
-      engineMock.reload({
+      engineMock._performReload({
         sourceId: 'fakeSourceId',
         forceFetch: false,
         includeFilters: false
       });
 
-      setTimeout(function () {
-        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
-        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
-        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
-        done();
-      }, 100);
+      expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
+      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
     });
   });
 

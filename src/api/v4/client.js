@@ -21,7 +21,7 @@ function getValidationError (code) {
  *
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
- * 
+ *
  * If you want to learn more about authorization and authentication, please read the authorization fundamentals section of our Developer Center.
  *
  * @param {object} settings
@@ -34,7 +34,7 @@ function getValidationError (code) {
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE'
  * });
- * 
+ *
  * var client = new carto.Client({
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE',
@@ -295,6 +295,7 @@ Client.prototype.addDataviews = function (dataviews) {
 Client.prototype.removeDataview = function (dataview) {
   this._dataviews.splice(this._dataviews.indexOf(dataview));
   this._engine.removeDataview(dataview.$getInternalModel());
+  dataview.disable();
   return this._reload();
 };
 

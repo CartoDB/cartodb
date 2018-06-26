@@ -22,6 +22,7 @@ sudo make install
 * Set new message on privacy warning modal when new privacy is LINK (https://github.com/CartoDB/cartodb/issues/14030)
 * Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
 * Show Organization notifications in static pages (https://github.com/CartoDB/cartodb/issues/14089)
+* Log user destruction errors to Rollbar (#13745)
 * Fix wrong margins in the layer selector when the top layer has a bubble legend (https://github.com/CartoDB/support/issues/1566)
 * Fix error when styling points by value in animated aggregation style (https://github.com/CartoDB/cartodb/issues/14085)
 * Show errors coming from QueryRowsCollection in Dataset/Builder (https://github.com/CartoDB/cartodb/issues/14066)

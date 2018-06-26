@@ -1,9 +1,10 @@
 var $ = require('jquery');
-var _ = require('underscore');
 var Engine = require('../../src/engine');
+var WindshaftError = require('../../src/windshaft/error');
 var MockFactory = require('../helpers/mockFactory');
 var createEngine = require('../spec/fixtures/engine.fixture.js');
 var FAKE_RESPONSE = require('./windshaft/response.mock');
+var FAKE_ERROR_PAYLOAD = require('./windshaft/error.mock');
 var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
 var Dataview = require('../../src/dataviews/dataview-model-base');
 var Backbone = require('backbone');
@@ -134,40 +135,173 @@ describe('Engine', function () {
       engineMock.reload();
     });
 
-    xit('should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function () {
-      // Successfull server response
-      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
-      // Fake model updater.
-      spyOn(engineMock._modelUpdater, 'updateModels').and.callFake(function () { });
-      // Attach the success event to a spy.
-      var spy = jasmine.createSpy('successCallback');
+    xdescribe('when using Promises', function () {
+      it('should resolve when the server returns a successful response ', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, spy);
-      engineMock.reload();
-      expect(spy).toHaveBeenCalled();
+        engineMock.reload().then(function (nothing) {
+          expect(nothing).not.toBeDefined();
+          done();
+        });
+      });
+
+      it('should resolve consecutive calls when the server returns a successful response ', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process (nothing) {
+          expect(nothing).not.toBeDefined();
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload().then(_process);
+        engineMock.reload().then(_process);
+      });
+
+      it('should reject when the server returns an error response ', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+
+        engineMock.reload().catch(function (error) {
+          expect(error instanceof WindshaftError).toBe(true);
+          expect(error.message).toBe('Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.');
+          done();
+        });
+      });
+
+      it('should reject consecutive calls when the server returns an error response ', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process (error) {
+          expect(error).toBeDefined();
+          expect(error instanceof WindshaftError).toBe(true);
+          expect(error.message).toBe('Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.');
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload().catch(_process);
+        engineMock.reload().catch(_process);
+      });
     });
 
-    xit('should trigger a RELOAD_ERROR event when the server returns an error response ', function () {
-      // Error server response
-      var errorMessage = 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.';
-      var errorPayload = {
-        responseText: '{ "errors": ["' + errorMessage + '"]}'
-      };
-      spyOn($, 'ajax').and.callFake(function (params) {
-        params.error(errorPayload);
+    xdescribe('when using Callbacks', function () {
+      it('should call successCallback when the server returns a successful response ', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the success callback to a spy.
+        var successCallback = jasmine.createSpy('successCallback');
+
+        engineMock.reload({ success: successCallback }).then(function () {
+          expect(successCallback).toHaveBeenCalledWith(FAKE_RESPONSE);
+          done();
+        });
       });
-      spyOn(engineMock._modelUpdater, 'setErrors').and.callThrough();
-      // Attach the error event to a spy.
-      var spy = jasmine.createSpy('errorCallback');
-      engineMock.on(Engine.Events.RELOAD_ERROR, spy);
 
-      engineMock.reload();
+      it('should call consecutive successCallbacks when the server returns a successful response ', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the success callbacks to a spy.
+        var successCallbacks = [
+          jasmine.createSpy('successCallback0'),
+          jasmine.createSpy('successCallback1')
+        ];
 
-      expect(spy).toHaveBeenCalled();
-      var setErrorsArgs = engineMock._modelUpdater.setErrors.calls.mostRecent().args[0];
-      expect(setErrorsArgs).toBeDefined();
-      expect(_.isArray(setErrorsArgs)).toBe(true);
-      expect(setErrorsArgs[0].message).toEqual(errorMessage);
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process () {
+          expect(successCallbacks[counter]).toHaveBeenCalledWith(FAKE_RESPONSE);
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload({ success: successCallbacks[0] }).then(_process);
+        engineMock.reload({ success: successCallbacks[1] }).then(_process);
+      });
+
+      it('should call errorCallback when the server returns an error response ', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+        // Attach the error callback to a spy.
+        var errorCallback = jasmine.createSpy('errorCallback');
+
+        engineMock.reload({ error: errorCallback }).catch(function () {
+          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          expect(errorCallback).toHaveBeenCalledWith([error]);
+          done();
+        });
+      });
+
+      it('should call consecutive errorCallbacks when the server returns an error response ', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+        // Attach the error callbacks to a spy.
+        var errorCallbacks = [
+          jasmine.createSpy('errorCallback0'),
+          jasmine.createSpy('errorCallback1')
+        ];
+
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process () {
+          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          expect(errorCallbacks[counter]).toHaveBeenCalledWith([error]);
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload({ error: errorCallbacks[0] }).catch(_process);
+        engineMock.reload({ error: errorCallbacks[1] }).catch(_process);
+      });
+    });
+
+    xdescribe('when using Events', function () {
+      it('should trigger a RELOAD_STARTED event when the server returns a successful response ', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the started event handler to a spy.
+        var spy = jasmine.createSpy('startedEventHandler');
+
+        engineMock.on(Engine.Events.RELOAD_STARTED, spy);
+        engineMock.reload().then(function () {
+          expect(spy).toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the success event handler to a spy.
+        var spy = jasmine.createSpy('successEventHandler');
+
+        engineMock.on(Engine.Events.RELOAD_STARTED, spy);
+        engineMock.reload().then(function () {
+          expect(spy).toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should trigger a RELOAD_ERROR event when the server returns an error response ', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+        // Attach the error event handler to a spy.
+        var spy = jasmine.createSpy('errorEventHandler');
+
+        engineMock.on(Engine.Events.RELOAD_ERROR, spy);
+        engineMock.reload().catch(function () {
+          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          expect(spy).toHaveBeenCalledWith(error);
+          done();
+        });
+      });
     });
 
     it('should use the sourceID parameter', function (done) {

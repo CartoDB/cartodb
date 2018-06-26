@@ -1625,6 +1625,7 @@ describe User do
         it 'deletes client_application and friends' do
           user = create_user(email: 'clientapp@example.com', username: 'clientapp', password: @user_password)
 
+          user.create_client_application
           user.client_application.access_tokens << ::AccessToken.new(
             token: "access_token",
             secret: "access_secret",
@@ -1646,7 +1647,7 @@ describe User do
           base_key = "rails:oauth_access_tokens:#{user.client_application.access_tokens.first.token}"
 
           client_application = ClientApplication.where(user_id: user.id).first
-          expect(client_application).to_not be_nil
+          expect(ClientApplication.where(user_id: user.id).count).to eq 2
           expect(client_application.tokens).to_not be_empty
           expect(client_application.tokens.length).to eq 2
           $api_credentials.keys.should include(base_key)

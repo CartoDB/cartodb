@@ -18,7 +18,7 @@
     <% if @has_new_dashboard %>
       <%= stylesheet_link_tag 'deep_insights_new', 'common_new', 'public_dashboard_new', 'user_feed_new' %>
     <% else %>
-      <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard', 'user_feed' %>
+      <%= editor_stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard', 'user_feed' %>
     <% end %>
 
     <% if @needs_gmaps_lib %>
@@ -72,7 +72,7 @@
     <% if @has_new_dashboard %>
       <%= javascript_include_tag 'common', 'common_vendor', 'user_feed_new' %>
     <% else %>
-      <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
+      <%= editor_javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
     <% end %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>

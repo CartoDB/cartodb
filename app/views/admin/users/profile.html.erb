@@ -13,7 +13,7 @@
     var dashboard_notifications = <%= safe_js_object @dashboard_notifications.to_json %>;
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
+  <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>

@@ -216,6 +216,45 @@ describe('api/v4/client', function () {
     });
   });
 
+  describe('.removeDataview', function () {
+    var categoryDataview;
+
+    beforeEach(function () {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+        limit: 10,
+        operation: carto.operation.SUM,
+        operationColumn: 'pop_max'
+      });
+
+      client.addDataview(categoryDataview);
+
+      spyOn(client._engine, 'removeDataview');
+      spyOn(categoryDataview, 'disable');
+      spyOn(client, '_reload');
+    });
+
+    it('removes the dataview', function () {
+      expect(client._dataviews.length).toBe(1);
+
+      client.removeDataview(categoryDataview);
+
+      expect(client._dataviews.length).toBe(0);
+    });
+
+    it('disables the dataview', function () {
+      client.removeDataview(categoryDataview);
+
+      expect(client._engine.removeDataview).toHaveBeenCalled();
+    });
+
+    it('triggers a reload cycle', function () {
+      client.removeDataview(categoryDataview);
+
+      expect(client._reload).toHaveBeenCalled();
+    });
+  });
+
   describe('.moveLayer', function () {
     it('should throw a descriptive error when the parameter is invalid', function () {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');

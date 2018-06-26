@@ -14,8 +14,8 @@
 
 <body>
 
-  <button onclick="LAYERS.loadLayer('worldBorders')">Activar capa</button>
-  <button onclick="LAYERS.removeLayer('worldBorders')">Desactivar capa</button>
+  <button onclick="LAYERS.loadLayer('europe')">Activar capa</button>
+  <button onclick="LAYERS.removeLayer('europe')">Desactivar capa</button>
   <div id="map" style="width: 100%;height: 96vh;"></div>
 
   <script>
@@ -29,7 +29,7 @@
         loaded: false,
         client: new carto.Client({
           apiKey: 'default_public',
-          username: 'ruben-carto'
+          username: 'cartojs-test'
         }),
         source: new carto.source.Dataset('ne_10m_populated_places_simple'),
         cartoCSS: new carto.style.CartoCSS(`
@@ -40,13 +40,13 @@
           }
         `),
       },
-      worldBorders: {
+      europe: {
         loaded: false,
         client: new carto.Client({
           apiKey: 'default_public',
-          username: 'ruben-carto'
+          username: 'cartojs-test'
         }),
-        source: new carto.source.Dataset('world_borders'),
+        source: new carto.source.Dataset('ne_adm0_europe'),
         cartoCSS: new carto.style.CartoCSS(`
           #layer {
             polygon-fill: #826DBA;
@@ -80,7 +80,7 @@
       }
     };
 
-    LAYERS.loadLayer('worldBorders');
+    LAYERS.loadLayer('europe');
     LAYERS.loadLayer('populatedPlaces');
   </script>
 </body>

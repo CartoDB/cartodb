@@ -311,7 +311,7 @@ _.extend(
       var overlays = this.gmapsMap.overlayMapTypes.getArray();
 
       return _.findIndex(overlays, function (overlay) {
-        return overlay._id === this._id;
+        return overlay && overlay._id === this._id;
       }, this);
     },
 

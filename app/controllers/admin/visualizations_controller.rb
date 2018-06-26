@@ -58,24 +58,7 @@ class Admin::VisualizationsController < Admin::AdminController
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
-    if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/dashboard/index.html", layout: false)
-    end
-
-    @first_time = !current_user.dashboard_viewed?
-    @just_logged_in = !!flash['logged']
-    @google_maps_query_string = current_user.google_maps_query_string
-
-    carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
-    @dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
-    @organization_notifications = carto_viewer ? carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n) } : {}
-
-    current_user.view_dashboard
-
-    respond_to do |format|
-      format.html { render 'index', layout: 'application' }
-    end
-
+    render(file: "public/static/dashboard/index.html", layout: false)
   end
 
   def show
@@ -236,10 +219,6 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
 
-    if @viewed_user && @viewed_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/public_map/index.html", layout: false)
-    end
-
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
 
     if current_user && @visualization.is_privacy_private? &&
@@ -327,10 +306,6 @@ class Admin::VisualizationsController < Admin::AdminController
   def show_organization_public_map
     return(embed_forbidden) unless org_user_has_map_permissions?(current_user, @visualization)
 
-    if @viewed_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/public_map/index.html", layout: false)
-    end
-
     response.headers['Cache-Control'] = "no-cache,private"
 
     @protected_map_tokens = current_user.get_auth_tokens
@@ -381,10 +356,6 @@ class Admin::VisualizationsController < Admin::AdminController
     response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    if @viewed_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/public_map/index.html", layout: false)
-    end
-
     @protected_map_tokens = @visualization.get_auth_tokens
 
     @name = @visualization.user.name_or_username
@@ -421,10 +392,6 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     get_viewed_user
-
-    if @viewed_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/public_map/index.html", layout: false)
-    end
 
     response.headers['Cache-Control']   = "no-cache, private"
 
@@ -472,10 +439,6 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def public_map_protected
-    if @viewed_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/public_map/index.html", layout: false)
-    end
-
     render 'public_map_password', :layout => 'application_password_layout'
   end
 

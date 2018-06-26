@@ -15,11 +15,8 @@ class Admin::UsersController < Admin::AdminController
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :setup_user
-  before_filter :initialize_google_plus_config, only: [:profile, :account]
-  before_filter :load_services, only: [:account, :account_update, :delete]
-  before_filter :load_account_deletion_info, only: [:account, :delete]
-  before_filter :load_dashboard_notifications, only: [:account, :profile]
-  before_filter :load_organization_notifications, only: [:account, :profile]
+  before_filter :load_services, only: [:account_update, :delete]
+  before_filter :load_account_deletion_info, only: [:delete]
 
   skip_before_filter :check_user_state, only: [:delete]
 
@@ -28,25 +25,11 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
   def profile
-    if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/profile/index.html", layout: false)
-    end
-
-    @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
-
-    respond_to do |format|
-      format.html { render 'profile' }
-    end
+    render(file: "public/static/profile/index.html", layout: false)
   end
 
   def account
-    if current_user.has_feature_flag?('dashboard_migration')
-      return render(file: "public/static/account/index.html", layout: false)
-    end
-
-    respond_to do |format|
-      format.html { render 'account' }
-    end
+    render(file: "public/static/account/index.html", layout: false)
   end
 
   def account_update
@@ -148,11 +131,6 @@ class Admin::UsersController < Admin::AdminController
 
   private
 
-  def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
-  end
-
   def load_services
     @services = @user.get_oauth_services
   end
@@ -165,11 +143,4 @@ class Admin::UsersController < Admin::AdminController
   def setup_user
     @user = current_user
   end
-
-  def load_dashboard_notifications
-    carto_user = Carto::User.where(id: current_user.id).first if current_user
-
-    @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
-  end
-
 end

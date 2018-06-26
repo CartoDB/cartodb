@@ -161,6 +161,10 @@ module ApplicationHelper
     super "/#{frontend_version}/images/#{source}"
   end
 
+  def favicon_link_tag(source)
+    super "/#{frontend_version}/#{source}"
+  end
+
   def editor_stylesheet_link_tag(*sources)
     stylesheet_link_tag *([:editor] + sources)
   end

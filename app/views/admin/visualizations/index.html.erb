@@ -16,7 +16,7 @@
     var dashboard_notifications = <%= safe_js_object @dashboard_notifications.to_json %>;
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
+  <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
 <% end %>
 
 <%= content_for(:css) do -%>

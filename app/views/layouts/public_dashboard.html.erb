@@ -26,7 +26,7 @@
     <% if @has_new_dashboard %>
       <%= stylesheet_link_tag 'deep_insights_new', 'common_new', 'public_dashboard_new' %>
     <% else %>
-      <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard' %>
+      <%= editor_stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard' %>
     <% end %>
 
     <%= insert_google_tag_manager('embeds') %>
@@ -78,7 +78,7 @@
     <% if @has_new_dashboard %>
       <%= javascript_include_tag 'common', 'common_vendor', 'public_dashboard_new' %>
     <% else %>
-      <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
+      <%= editor_javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <% end %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>

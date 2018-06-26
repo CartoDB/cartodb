@@ -49,7 +49,8 @@ describe('gmaps-cartodb-layer-group-view', function () {
     var container;
     var cartoDbLayer0;
     var cartoDbLayer1;
-    var layerGroupView;
+    var layerGroupView0;
+    var layerGroupView1;
 
     var layerGroupModelMock;
     var layersCollection;
@@ -99,41 +100,35 @@ describe('gmaps-cartodb-layer-group-view', function () {
       }, {
         layersCollection: layersCollection
       });
+
+      layerGroupView0 = new GoogleCartoDBLayerGroupClass(layerGroupModelMock, { nativeMap: nativeMap, mapModel: mapModelMock });
+      layerGroupView1 = new GoogleCartoDBLayerGroupClass(layerGroupModelMock, { nativeMap: nativeMap, mapModel: mapModelMock });
+      nativeMap.overlayMapTypes.push(layerGroupView0);
+      nativeMap.overlayMapTypes.push(layerGroupView1);
     });
 
     describe('._getOverlayIndex', function () {
       it('returns the index of the given layour group', function () {
-        layerGroupView = new GoogleCartoDBLayerGroupClass(layerGroupModelMock, {
-          nativeMap: nativeMap,
-          mapModel: mapModelMock
-        });
-
-        nativeMap.overlayMapTypes.setAt(2, layerGroupView);
-
-        expect(layerGroupView._getOverlayIndex()).toEqual(2);
+        expect(layerGroupView0._getOverlayIndex()).toEqual(0);
+        expect(layerGroupView1._getOverlayIndex()).toEqual(1);
       });
     });
 
     describe('._refreshView', function () {
-      var secondLayerGroupView;
-
       it('sets the layer group in the same position', function () {
-        layerGroupView = new GoogleCartoDBLayerGroupClass(layerGroupModelMock, {
-          nativeMap: nativeMap,
-          mapModel: mapModelMock
-        });
+        layerGroupView0._refreshView();
 
-        secondLayerGroupView = new GoogleCartoDBLayerGroupClass(layerGroupModelMock, {
-          nativeMap: nativeMap,
-          mapModel: mapModelMock
-        });
+        expect(nativeMap.overlayMapTypes.getAt(0)).toEqual(layerGroupView0);
+        expect(nativeMap.overlayMapTypes.getAt(1)).toEqual(layerGroupView1);
+      });
+    });
 
-        nativeMap.overlayMapTypes.push(layerGroupView);
-        nativeMap.overlayMapTypes.push(secondLayerGroupView);
+    describe('.remove', function () {
+      it('removes the correct layer group', function () {
+        layerGroupView0.remove();
 
-        layerGroupView._refreshView();
-
-        expect(nativeMap.overlayMapTypes.getAt(1)).toEqual(secondLayerGroupView);
+        expect(nativeMap.overlayMapTypes.getLength()).toEqual(1);
+        expect(nativeMap.overlayMapTypes.getAt(0)).toEqual(layerGroupView1);
       });
     });
 

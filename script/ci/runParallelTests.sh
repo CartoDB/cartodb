@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# STATIC ASSETS
+script/ci/generateStaticAssets.sh || exit 1
+
 # BACKEND PARALLEL
 script/ci/generateSpecFull.sh || exit 1
 

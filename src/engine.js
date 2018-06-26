@@ -150,7 +150,6 @@ Engine.prototype.off = function (event, callback, context) {
  *
  */
 Engine.prototype.reload = function (options) {
-  var self = this;
   options = options || {};
   // Using a debouncer to optimize consecutive calls to reload the map.
   // This allows to change multiple map parameters reloading the map only once,
@@ -165,7 +164,7 @@ Engine.prototype.reload = function (options) {
     });
     var later = function () {
       timeout = null;
-      self._performReload(batchOptions)
+      this._performReload(batchOptions)
         .then(function () {
           // Resolve stacked callbacks and promises
           stackCalls.forEach(function (call) {
@@ -184,43 +183,42 @@ Engine.prototype.reload = function (options) {
           // Reset stack
           stackCalls = [];
         });
-    };
+    }.bind(this);
     clearTimeout(timeout);
     timeout = setTimeout(later, RELOAD_DEBOUNCE_TIME_IN_MILIS);
-  });
+  }.bind(this));
 };
 
 Engine.prototype._performReload = function (options) {
-  var self = this;
   return new Promise(function (resolve, reject) {
     // Build Windshaft options callbacks
-    var windshaftOptions = self._buildWindshaftOptions(options,
+    var windshaftOptions = this._buildWindshaftOptions(options,
       // Windshaft success callback
       function (serverResponse) {
-        self._onReloadSuccess(serverResponse, options.sourceId, options.forceFetch);
+        this._onReloadSuccess(serverResponse, options.sourceId, options.forceFetch);
         resolve();
-      },
+      }.bind(this),
       // Windshaft error callback
       function (errors) {
-        var windshaftError = self._onReloadError(errors);
+        var windshaftError = this._onReloadError(errors);
         reject(windshaftError);
-      }
+      }.bind(this)
     );
     try {
-      var params = self._buildParams(windshaftOptions.includeFilters);
-      var payload = self._getSerializer().serialize(self._layersCollection, self._dataviewsCollection);
+      var params = this._buildParams(windshaftOptions.includeFilters);
+      var payload = this._getSerializer().serialize(this._layersCollection, this._dataviewsCollection);
       var request = new Request(payload, params, windshaftOptions);
 
       // Trigger STARTED event
-      self._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+      this._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
       // Perform the request
-      self._windshaftClient.instantiateMap(request);
+      this._windshaftClient.instantiateMap(request);
     } catch (error) {
       // Convert error in a windshaftError
       var windshaftError = new WindshaftError({ message: error.message });
-      self._manageClientError(windshaftError, windshaftOptions);
+      this._manageClientError(windshaftError, windshaftOptions);
     }
-  });
+  }.bind(this));
 };
 
 /**

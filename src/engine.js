@@ -15,9 +15,10 @@ var WindshaftError = require('./windshaft/error');
 
 var RELOAD_DEBOUNCE_TIME_IN_MILIS = 100;
 
-// Variable to store the timeout
-// in the reload debounce
+// Variables for the reload debounce
 var timeout;
+var stackCalls = [];
+var batchOptions = {};
 
 /**
  *
@@ -150,44 +151,58 @@ Engine.prototype.off = function (event, callback, context) {
  */
 Engine.prototype.reload = function (options) {
   var self = this;
+  options = options || {};
   // Using a debouncer to optimize consecutive calls to reload the map.
   // This allows to change multiple map parameters reloading the map only once,
   // and therefore avoid the "You are over platform's limits" Windshaft error.
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
+    batchOptions = options;
+    stackCalls.push({
+      success: options.success,
+      error: options.error,
+      resolve: resolve,
+      reject: reject
+    });
     var later = function () {
       timeout = null;
-      resolve(self._reload(options));
+      self._performReload(batchOptions)
+        .then(function () {
+          // Resolve stacked callbacks and promises
+          stackCalls.forEach(function (call) {
+            call.success && call.success();
+            call.resolve();
+          });
+          // Reset stack
+          stackCalls = [];
+        })
+        .catch(function (windshaftError) {
+          // Reject stacked callbacks and promises
+          stackCalls.forEach(function (call) {
+            call.error && call.error(windshaftError);
+            call.reject(windshaftError);
+          });
+          // Reset stack
+          stackCalls = [];
+        });
     };
     clearTimeout(timeout);
     timeout = setTimeout(later, RELOAD_DEBOUNCE_TIME_IN_MILIS);
   });
 };
 
-Engine.prototype._reload = function (options) {
+Engine.prototype._performReload = function (options) {
   var self = this;
-  options = options || {};
   return new Promise(function (resolve, reject) {
     // Build Windshaft options callbacks
     var windshaftOptions = self._buildWindshaftOptions(options,
       // Windshaft success callback
       function (serverResponse) {
         self._onReloadSuccess(serverResponse, options.sourceId, options.forceFetch);
-        // Trigger SUCCESS event
-        self._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
-        // Call original success callback
-        options.success && options.success();
-        // Resolve original Promise
         resolve();
       },
       // Windshaft error callback
       function (errors) {
-        self._onReloadError(errors);
-        var windshaftError = self._getSimpleWindshaftError(errors);
-        // Trigger ERROR event
-        self._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, windshaftError);
-        // Call original error callback
-        options.error && options.error(windshaftError);
-        // Reject original Promise
+        var windshaftError = self._onReloadError(errors);
         reject(windshaftError);
       }
     );
@@ -277,22 +292,28 @@ Engine.prototype.removeDataview = function (dataview) {
 
 /**
  * Callback executed when the windhsaft client returns a successful response.
- * Update internal models.
+ * Update internal models and trigger a RELOAD_SUCCESS event.
  * @private
  */
 Engine.prototype._onReloadSuccess = function (serverResponse, sourceId, forceFetch) {
   var responseWrapper = new Response(this._windshaftSettings, serverResponse);
   this._modelUpdater.updateModels(responseWrapper, sourceId, forceFetch);
   this._restartAnalysisPolling();
+  // Trigger RELOAD_SUCCESS event
+  this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
 };
 
 /**
  * Callback executed when the windhsaft client returns a failed response.
- * Update internal models setting errors.
+ * Update internal models setting errors and trigger a RELOAD_ERROR event.
  * @private
  */
 Engine.prototype._onReloadError = function (errors) {
+  var windshaftError = this._getSimpleWindshaftError(errors);
   this._modelUpdater.setErrors(errors);
+  // Trigger RELOAD_ERROR event
+  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, windshaftError);
+  return windshaftError;
 };
 
 /**

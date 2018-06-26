@@ -772,8 +772,8 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(this.vizjson));
-      // TODO: skip reload debouncer
-      this.vis._engine.reload = this.vis._engine._reload;
+      // Skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._performReload;
       this.vis.instantiateMap();
       // Polling has started
       expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
@@ -872,8 +872,8 @@ describe('vis/vis', function () {
       spyOn($, 'ajax');
 
       this.vis.load(new VizJSON(this.vizjson));
-      // TODO: skip reload debouncer
-      this.vis._engine.reload = this.vis._engine._reload;
+      // Skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._performReload;
       this.vis.instantiateMap();
     });
 
@@ -1014,8 +1014,8 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(fakeVizJSON()));
-      // TODO: skip reload debouncer
-      this.vis._engine.reload = this.vis._engine._reload;
+      // Skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._performReload;
       this.vis.instantiateMap();
 
       expect(this.vis.setOk).toHaveBeenCalled();
@@ -1040,8 +1040,8 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(fakeVizJSON()));
-      // TODO: skip reload debouncer
-      this.vis._engine.reload = this.vis._engine._reload;
+      // Skip reload debouncer
+      this.vis._engine.reload = this.vis._engine._performReload;
       this.vis.instantiateMap();
 
       expect(this.vis.setOk).not.toHaveBeenCalled();

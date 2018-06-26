@@ -113,7 +113,7 @@ describe('Engine', function () {
       layer = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
     });
 
-    it('should perform a request with the state encoded in a payload (no layers, no dataviews) ', function (done) {
+    it('should perform a request with the state encoded in a payload (no layers, no dataviews)', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
         var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%5D%7D&stat_tag=fake-stat-tag&api_key=' + engineMock.getApiKey();
@@ -123,7 +123,7 @@ describe('Engine', function () {
       engineMock.reload();
     });
 
-    it('should perform a request with the state encoded in a payload (single layer) ', function (done) {
+    it('should perform a request with the state encoded in a payload (single layer)', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
         var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%7B%22type%22%3A%22mapnik%22%2C%22options%22%3A%7B%22cartocss_version%22%3A%222.1.0%22%2C%22source%22%3A%7B%22id%22%3A%22a1%22%7D%2C%22interactivity%22%3A%5B%22cartodb_id%22%5D%7D%7D%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%7B%22id%22%3A%22a1%22%2C%22type%22%3A%22source%22%2C%22params%22%3A%7B%22query%22%3A%22SELECT%20*%20FROM%20table%22%7D%7D%5D%7D&stat_tag=fake-stat-tag&api_key=' + engineMock.getApiKey();
@@ -135,8 +135,8 @@ describe('Engine', function () {
       engineMock.reload();
     });
 
-    xdescribe('when using Promises', function () {
-      it('should resolve when the server returns a successful response ', function (done) {
+    describe('when using Promises', function () {
+      it('should resolve when the server returns a successful response', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
@@ -146,7 +146,7 @@ describe('Engine', function () {
         });
       });
 
-      it('should resolve consecutive calls when the server returns a successful response ', function (done) {
+      it('should resolve consecutive calls when the server returns a successful response', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
@@ -162,7 +162,7 @@ describe('Engine', function () {
         engineMock.reload().then(_process);
       });
 
-      it('should reject when the server returns an error response ', function (done) {
+      it('should reject when the server returns an error response', function (done) {
         // Error server response
         spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
 
@@ -173,7 +173,7 @@ describe('Engine', function () {
         });
       });
 
-      it('should reject consecutive calls when the server returns an error response ', function (done) {
+      it('should reject consecutive calls when the server returns an error response', function (done) {
         // Error server response
         spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
 
@@ -193,7 +193,7 @@ describe('Engine', function () {
     });
 
     describe('when using Callbacks', function () {
-      it('should call successCallback when the server returns a successful response ', function (done) {
+      it('should call successCallback when the server returns a successful response', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
         // Attach the success callback to a spy.
@@ -205,7 +205,7 @@ describe('Engine', function () {
         });
       });
 
-      xit('should call consecutive successCallbacks when the server returns a successful response ', function (done) {
+      it('should call consecutive successCallbacks when the server returns a successful response', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
         // Attach the success callbacks to a spy.
@@ -226,7 +226,7 @@ describe('Engine', function () {
         engineMock.reload({ success: successCallbacks[1] }).then(_process);
       });
 
-      it('should call errorCallback when the server returns an error response ', function (done) {
+      it('should call errorCallback when the server returns an error response', function (done) {
         // Error server response
         spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
         // Attach the error callback to a spy.
@@ -239,7 +239,7 @@ describe('Engine', function () {
         });
       });
 
-      xit('should call consecutive errorCallbacks when the server returns an error response ', function (done) {
+      it('should call consecutive errorCallbacks when the server returns an error response', function (done) {
         // Error server response
         spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
         // Attach the error callbacks to a spy.
@@ -262,8 +262,8 @@ describe('Engine', function () {
       });
     });
 
-    xdescribe('when using Events', function () {
-      it('should trigger a RELOAD_STARTED event when the server returns a successful response ', function (done) {
+    describe('when using Events', function () {
+      it('should trigger a RELOAD_STARTED event when the server returns a successful response', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
         // Attach the started event handler to a spy.
@@ -276,7 +276,7 @@ describe('Engine', function () {
         });
       });
 
-      it('should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function (done) {
+      it('should trigger a RELOAD_SUCCESS event when the server returns a successful response', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
         // Attach the success event handler to a spy.
@@ -289,7 +289,7 @@ describe('Engine', function () {
         });
       });
 
-      it('should trigger a RELOAD_ERROR event when the server returns an error response ', function (done) {
+      it('should trigger a RELOAD_ERROR event when the server returns an error response', function (done) {
         // Error server response
         spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
         // Attach the error event handler to a spy.
@@ -385,7 +385,7 @@ describe('Engine', function () {
       pending('Test not implemented');
     });
 
-    xit('should include the filters when the includeFilters option is true', function () {
+    it('should include the filters when the includeFilters option is true', function (done) {
       var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
       var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
       dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
@@ -398,11 +398,15 @@ describe('Engine', function () {
         includeFilters: true
       });
 
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
+      setTimeout(function () {
+        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
+        done();
+      }, 100);
     });
 
-    xit('should NOT include the filters when the includeFilters option is false', function () {
+    it('should NOT include the filters when the includeFilters option is false', function (done) {
       var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
       var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
       dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
@@ -415,8 +419,12 @@ describe('Engine', function () {
         includeFilters: false
       });
 
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
+      setTimeout(function () {
+        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
+        done();
+      }, 100);
     });
   });
 

@@ -157,6 +157,10 @@ module ApplicationHelper
     super *sources_with_path('stylesheets', sources)
   end
 
+  def image_path(source)
+    super "/#{frontend_version}/images/#{source}"
+  end
+
   def editor_stylesheet_link_tag(*sources)
     stylesheet_link_tag *([:editor] + sources)
   end

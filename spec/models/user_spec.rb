@@ -2616,7 +2616,7 @@ describe User do
     end
 
     describe 'create api keys on user creation' do
-      it "creates master api key on user creation if ff auth_api is enabled for the user" do
+      it "creates master api key on user creation" do
         api_keys = Carto::ApiKey.where(user_id: @auth_api_user.id)
         api_keys.should_not be_empty
 

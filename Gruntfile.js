@@ -336,7 +336,7 @@ module.exports = function (grunt) {
     'build-static',
     'npm-build-dev',
     'dev-editor',
-    'watch:css'
+    'watch'
   ]);
 
   grunt.registerTask('default', [

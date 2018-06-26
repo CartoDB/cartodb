@@ -1644,13 +1644,13 @@ describe User do
           ).save
 
           base_key = "rails:oauth_access_tokens:#{user.client_application.access_tokens.first.token}"
-          
+
           client_application = ClientApplication.where(user_id: user.id).first
           expect(client_application).to_not be_nil
           expect(client_application.tokens).to_not be_empty
           expect(client_application.tokens.length).to eq 2
           $api_credentials.keys.should include(base_key)
-          
+
           user.destroy
 
           expect(ClientApplication.where(user_id: user.id).first).to be_nil

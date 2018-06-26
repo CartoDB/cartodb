@@ -31,7 +31,7 @@ sudo make install
 * Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
 * Sync ArcGIS datasets with null values in ogc_fid or gid (CartoDB/support/issues/1460)
 * List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583)
-* Send `Visited Private Page` event from Dashboard (#14041) and update user model (#14084)
+* Send `Visited Private Page` event from Dashboard (#14041), update user model (#14084) and db size cache (#14102)
 * Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)
 * Fix Broken CTA in the 'Connect Dataset' modal (https://github.com/CartoDB/cartodb/issues/14036)
 * Fix `Create map` from data library https://github.com/CartoDB/cartodb/issues/14020#event-1655755501

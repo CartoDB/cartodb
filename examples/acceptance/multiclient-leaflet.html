@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width">
+  <!-- Include Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+  <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+  <!-- Include Carto.js -->
+  <script src="../../dist/public/carto.js"></script>
+</head>
+
+<body>
+
+  <button onclick="LAYERS.loadLayer('worldBorders')">Activar capa</button>
+  <button onclick="LAYERS.removeLayer('worldBorders')">Desactivar capa</button>
+  <div id="map" style="width: 100%;height: 96vh;"></div>
+
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      var LAYERS = {
+        populatedPlaces: {
+          client: new carto.Client({
+            apiKey: 'default_public',
+            username: 'ruben-carto'
+          }),
+          source: new carto.source.Dataset('ne_10m_populated_places_simple'),
+          cartoCSS: new carto.style.CartoCSS(`
+              #layer {
+                marker-width: 7;
+                marker-fill: #EE4D5A;
+                marker-line-color: #FFFFFF;
+              }
+            `),
+        },
+        worldBorders: {
+          client: new carto.Client({
+            apiKey: 'default_public',
+            username: 'ruben-carto'
+          }),
+          source: new carto.source.Dataset('world_borders'),
+          cartoCSS: new carto.style.CartoCSS(`
+              #layer {
+                polygon-fill: #826DBA;
+                polygon-opacity: 0.8;
+                ::outline {
+                  line-width: 1;
+                  line-color: #FFFFFF;
+                  line-opacity: 0.8;
+                }
+              }
+            `),
+        },
+        loadLayer: function (layerName) {
+          const dataset = LAYERS[layerName];
+          const layer = new carto.layer.Layer(dataset.source, dataset.cartoCSS, {});
+          window.layers = window.layers ||  {};
+          window.layers[layerName] = layer;
+
+          dataset.client.addLayer(layer)
+          dataset.client.getLeafletLayer().addTo(map);
+        },
+        removeLayer: function (layerName) {
+          const dataset = LAYERS[layerName];
+          const layer = dataset.client.getLayers()[0];
+
+          dataset.client.removeLayer(layer);
+        }
+      };
+
+      LAYERS.loadLayer('worldBorders');
+      LAYERS.loadLayer('populatedPlaces');
+    </script>
+  </body>
+</html>

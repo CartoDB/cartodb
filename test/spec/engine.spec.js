@@ -192,7 +192,7 @@ describe('Engine', function () {
       });
     });
 
-    xdescribe('when using Callbacks', function () {
+    describe('when using Callbacks', function () {
       it('should call successCallback when the server returns a successful response ', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
@@ -200,12 +200,12 @@ describe('Engine', function () {
         var successCallback = jasmine.createSpy('successCallback');
 
         engineMock.reload({ success: successCallback }).then(function () {
-          expect(successCallback).toHaveBeenCalledWith(FAKE_RESPONSE);
+          expect(successCallback).toHaveBeenCalledWith();
           done();
         });
       });
 
-      it('should call consecutive successCallbacks when the server returns a successful response ', function (done) {
+      xit('should call consecutive successCallbacks when the server returns a successful response ', function (done) {
         // Successfull server response
         spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
         // Attach the success callbacks to a spy.
@@ -217,7 +217,7 @@ describe('Engine', function () {
         var counter = 0;
         var NUM_CALLS = 2;
         function _process () {
-          expect(successCallbacks[counter]).toHaveBeenCalledWith(FAKE_RESPONSE);
+          expect(successCallbacks[counter]).toHaveBeenCalledWith();
           counter++;
           (counter === NUM_CALLS) && done();
         }
@@ -234,12 +234,12 @@ describe('Engine', function () {
 
         engineMock.reload({ error: errorCallback }).catch(function () {
           var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
-          expect(errorCallback).toHaveBeenCalledWith([error]);
+          expect(errorCallback).toHaveBeenCalledWith(error);
           done();
         });
       });
 
-      it('should call consecutive errorCallbacks when the server returns an error response ', function (done) {
+      xit('should call consecutive errorCallbacks when the server returns an error response ', function (done) {
         // Error server response
         spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
         // Attach the error callbacks to a spy.
@@ -252,7 +252,7 @@ describe('Engine', function () {
         var NUM_CALLS = 2;
         function _process () {
           var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
-          expect(errorCallbacks[counter]).toHaveBeenCalledWith([error]);
+          expect(errorCallbacks[counter]).toHaveBeenCalledWith(error);
           counter++;
           (counter === NUM_CALLS) && done();
         }

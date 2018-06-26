@@ -165,32 +165,45 @@ Engine.prototype.reload = function (options) {
 
 Engine.prototype._reload = function (options) {
   var self = this;
+  options = options || {};
   return new Promise(function (resolve, reject) {
-    options = self._buildOptions(options);
-    var successCb = options.success;
-    var errorCb = options.error;
-    options.success = function (serverResponse) {
-      successCb(serverResponse);
-      resolve();
-    };
-    options.error = function (errors) {
-      errorCb(errors);
-      var error = self._getSimpleWindshaftError(errors);
-      reject(error);
-    };
+    // Build Windshaft options callbacks
+    var windshaftOptions = self._buildWindshaftOptions(options,
+      // Windshaft success callback
+      function (serverResponse) {
+        self._onReloadSuccess(serverResponse, options.sourceId, options.forceFetch);
+        // Trigger SUCCESS event
+        self._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
+        // Call original success callback
+        options.success && options.success();
+        // Resolve original Promise
+        resolve();
+      },
+      // Windshaft error callback
+      function (errors) {
+        self._onReloadError(errors);
+        var windshaftError = self._getSimpleWindshaftError(errors);
+        // Trigger ERROR event
+        self._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, windshaftError);
+        // Call original error callback
+        options.error && options.error(windshaftError);
+        // Reject original Promise
+        reject(windshaftError);
+      }
+    );
     try {
-      var params = self._buildParams(options.includeFilters);
+      var params = self._buildParams(windshaftOptions.includeFilters);
       var payload = self._getSerializer().serialize(self._layersCollection, self._dataviewsCollection);
-      var request = new Request(payload, params, options);
+      var request = new Request(payload, params, windshaftOptions);
 
+      // Trigger STARTED event
       self._eventEmmitter.trigger(Engine.Events.RELOAD_STARTED);
+      // Perform the request
       self._windshaftClient.instantiateMap(request);
     } catch (error) {
-      var windshaftError = new WindshaftError({
-        message: error.message
-      });
-      self._manageClientError(windshaftError, options);
-      reject(windshaftError);
+      // Convert error in a windshaftError
+      var windshaftError = new WindshaftError({ message: error.message });
+      self._manageClientError(windshaftError, windshaftOptions);
     }
   });
 };
@@ -264,45 +277,33 @@ Engine.prototype.removeDataview = function (dataview) {
 
 /**
  * Callback executed when the windhsaft client returns a successful response.
- * Update internal models and trigger a reload_sucess event.
+ * Update internal models.
  * @private
  */
-Engine.prototype._onReloadSuccess = function (serverResponse, options) {
+Engine.prototype._onReloadSuccess = function (serverResponse, sourceId, forceFetch) {
   var responseWrapper = new Response(this._windshaftSettings, serverResponse);
-  this._modelUpdater.updateModels(responseWrapper, options.sourceId, options.forceFetch);
+  this._modelUpdater.updateModels(responseWrapper, sourceId, forceFetch);
   this._restartAnalysisPolling();
-  this._eventEmmitter.trigger(Engine.Events.RELOAD_SUCCESS);
-  options.success && options.success();
 };
 
 /**
  * Callback executed when the windhsaft client returns a failed response.
- * Update internal models setting errores and trigger a reload_error event.
+ * Update internal models setting errors.
  * @private
  */
-Engine.prototype._onReloadError = function (errors, options) {
-  var error = this._getSimpleWindshaftError(errors);
+Engine.prototype._onReloadError = function (errors) {
   this._modelUpdater.setErrors(errors);
-  this._eventEmmitter.trigger(Engine.Events.RELOAD_ERROR, error);
-  options.error && options.error(error);
-
-  return error;
 };
 
 /**
  * Helper to get windhsaft request options.
  * @private
  */
-Engine.prototype._buildOptions = function (options) {
-  options = options || {};
+Engine.prototype._buildWindshaftOptions = function (options, successCallback, errorCallback) {
   return _.extend({
     includeFilters: true,
-    success: function (serverResponse) {
-      this._onReloadSuccess(serverResponse, options);
-    }.bind(this),
-    error: function (errors) {
-      return this._onReloadError(errors, options);
-    }.bind(this)
+    success: successCallback,
+    error: errorCallback
   }, _.pick(options, 'sourceId', 'forceFetch', 'includeFilters'));
 };
 
@@ -350,9 +351,9 @@ Engine.prototype._getSerializer = function () {
  * Manage and propagate the client error
  * @private
  */
-Engine.prototype._manageClientError = function (error, options) {
-  this._modelUpdater.setErrors([error]);
-  options.error && options.error([error]);
+Engine.prototype._manageClientError = function (windshaftError, windshaftOptions) {
+  this._modelUpdater.setErrors([windshaftError]);
+  windshaftOptions.error && windshaftOptions.error([windshaftError]);
 };
 
 /**

@@ -286,7 +286,7 @@ describe Carto::VisualizationsExportService2 do
 
   CHANGING_LAYER_OPTIONS_KEYS = [:user_name, :id, :stat_tag].freeze
 
-  def verify_visualization_vs_export(visualization, visualization_export, importing_user: nil)
+  def verify_visualization_vs_export(visualization, visualization_export, importing_user: nil, full_restore: false)
     visualization.name.should eq visualization_export[:name]
     visualization.description.should eq visualization_export[:description]
     visualization.type.should eq visualization_export[:type]
@@ -323,7 +323,7 @@ describe Carto::VisualizationsExportService2 do
     verify_analyses_vs_export(visualization.analyses, visualization_export[:analyses])
 
     verify_mapcap_vs_export(visualization.latest_mapcap, visualization_export[:mapcap])
-    verify_sync_vs_export(visualization.synchronization, visualization_export[:synchronization])
+    verify_sync_vs_export(visualization.synchronization, visualization_export[:synchronization], full_restore)
   end
 
   def verify_map_vs_export(map, map_export)
@@ -356,9 +356,10 @@ describe Carto::VisualizationsExportService2 do
     mapcap.try(:created_at).should eq mapcap_export[:created_at]
   end
 
-  def verify_sync_vs_export(sync, sync_export)
+  def verify_sync_vs_export(sync, sync_export, full_restore)
     return true if sync.nil? && sync_export.nil?
 
+    sync.id = sync_export[:id] unless full_restore
     sync.user_id = nil
     sync.visualization_id = nil
     deep_symbolize(sync).should eq deep_symbolize(sync_export)
@@ -1307,7 +1308,8 @@ describe Carto::VisualizationsExportService2 do
                                     importing_user: nil,
                                     imported_name: original_visualization.name,
                                     imported_privacy: original_visualization.privacy,
-                                    omit_sync: false)
+                                    full_restore: false)
+      imported_visualization.id.should eq original_visualization.id if full_restore
       imported_visualization.name.should eq imported_name
       imported_visualization.description.should eq original_visualization.description
       imported_visualization.type.should eq original_visualization.type
@@ -1341,7 +1343,7 @@ describe Carto::VisualizationsExportService2 do
 
       verify_mapcap_match(imported_visualization.latest_mapcap, original_visualization.latest_mapcap)
 
-      verify_sync_match(imported_visualization.synchronization, original_visualization.synchronization) unless omit_sync
+      verify_sync_match(imported_visualization.synchronization, original_visualization.synchronization, full_restore)
     end
 
     def verify_maps_match(imported_map, original_map)
@@ -1466,10 +1468,10 @@ describe Carto::VisualizationsExportService2 do
       imported_mapcap.ids_json.should eq original_mapcap.ids_json
     end
 
-    def verify_sync_match(imported_sync, original_sync)
+    def verify_sync_match(imported_sync, original_sync, full_restore)
       return true if imported_sync.nil? && original_sync.nil?
 
-      imported_sync.id.should eq original_sync.id
+      imported_sync.id.should eq original_sync.id if full_restore
       imported_sync.name.should eq original_sync.name
       imported_sync.interval.should eq original_sync.interval
       imported_sync.url.should eq original_sync.url
@@ -1628,12 +1630,15 @@ describe Carto::VisualizationsExportService2 do
           destroy_visualization(imported_viz.id)
         end
 
-        it 'true, it should keep the imported uuid, permission, mapcap, and locked' do
+        it 'true, it should keep the imported uuid, permission, mapcap, synchroniztion and locked' do
+          sync = FactoryGirl.create(:carto_synchronization, visualization: @visualization)
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           test_id = random_uuid
           built_viz.id = test_id
+          sync_id = sync.id
+          sync.destroy
 
           imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, full_restore: true)
           imported_viz.id.should eq test_id
@@ -1642,6 +1647,8 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.shared_entities.first.recipient_id.should eq @user2.id
           imported_viz.mapcapped?.should be_true
           imported_viz.locked?.should be_true
+          imported_viz.synchronization.should be
+          imported_viz.synchronization.id.should eq sync_id
           expect(imported_viz.created_at.to_s).to eq original_attributes[:created_at].to_s
           expect(imported_viz.updated_at.to_s).to eq original_attributes[:updated_at].to_s
 
@@ -1796,21 +1803,15 @@ describe Carto::VisualizationsExportService2 do
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
 
-        # Destroy sync before save_import because sync ID is preserved and otherwise it will fail
-        sync.destroy
-
         # Create user db table (destroyed above)
         @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
         imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 
         imported_viz = Carto::Visualization.find(imported_viz.id)
 
-        # we omit verify the sync since we had to destroy it so that the test works.
-        # since we've verified in other tests it should be fine
-        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2, omit_sync: true)
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2)
         sync = imported_viz.synchronization
         sync.should be
-        sync.id.should eq sync_id
         sync.user_id.should eq @user2.id
         sync.log.user_id.should eq @user2.id
 

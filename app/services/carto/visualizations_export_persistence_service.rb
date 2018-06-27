@@ -37,9 +37,8 @@ module Carto
 
         sync = visualization.synchronization
         if sync
-          sync.id ||= random_uuid
+          sync.id = random_uuid unless sync.id && full_restore
           sync.user = user
-          sync.visualization = visualization
           sync.log.user_id = user.id if sync.log
         end
 

@@ -116,6 +116,33 @@ describe Synchronization::Member do
         member.run
       end
 
+      it 'fails if user is inactive' do
+        url = 'https://wadus.com/guess_country.csv'
+
+        path = fake_data_path('guess_country.csv')
+        stub_download(url: url, filepath: path, content_disposition: false)
+
+        attrs = random_attributes(user_id: @user1.id).merge(service_item_id: url, url: url, name: 'guess_country')
+        member = Synchronization::Member.new(attrs).store
+
+        DataImport.create(
+          user_id: @user1.id,
+          data_source: fake_data_path('guess_country.csv'),
+          synchronization_id: member.id,
+          service_name: 'public_url',
+          service_item_id: url,
+          updated_at: Time.now
+        ).run_import!
+        @user1.state = Carto::User::STATE_LOCKED
+        @user1.save
+
+        CartoDB::Logger.stubs(:error).once
+
+        member.fetch.run
+
+        member.log.entries.should match /Can't run a synchronization for inactive user/
+      end
+
       it 'fails to overwrite tables with views' do
         url = 'https://wadus.com/guess_country.csv'
 

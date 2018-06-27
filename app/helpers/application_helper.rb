@@ -159,14 +159,14 @@ module ApplicationHelper
 
   def image_path(source, editor = false)
     if editor
-      super source
+      super "/editor/#{editor_assets_version}/images/#{source}"
     else
       super "/#{frontend_version}/images/#{source}"
     end
   end
 
   def editor_image_path(source)
-    image_path("/editor/#{editor_assets_version}/images/#{source}", true)
+    image_path(source, true)
   end
 
   def favicon_link_tag(source)

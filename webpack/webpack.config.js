@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const banner = require('./banner');
 
 module.exports = {
+  mode: 'production',
   entry: './src/api/v4/index.js',
   output: {
     path: path.resolve(__dirname, '../dist/public'),
@@ -11,9 +12,26 @@ module.exports = {
     libraryTarget: 'umd'
   },
   devtool: 'sourcemap',
+  module: {
+    rules: [{
+      test: /\.js$/,
+      loader: 'babel-loader',
+      exclude: [
+        path.resolve(__dirname, '../node_modules'),
+        path.resolve(__dirname, '../vendor')
+      ],
+      options: {
+        presets: ['env'],
+        plugins: ['transform-object-rest-spread']
+      }
+    }]
+  },
   plugins: [
     // Include only the lastest camshaft-reference
     new webpack.IgnorePlugin(/^\.\/((?!0\.59\.4).)*\/reference\.json$/),
     new webpack.BannerPlugin(banner)
-  ]
+  ],
+  optimization: {
+    minimize: false
+  }
 };

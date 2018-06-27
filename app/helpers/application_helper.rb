@@ -157,8 +157,16 @@ module ApplicationHelper
     super *sources_with_path('stylesheets', sources)
   end
 
-  def image_path(source)
+  def image_path(source, editor = false)
+    if editor
+      super source
+    else
     super "/#{frontend_version}/images/#{source}"
+  end
+  end
+
+  def editor_image_path(source)
+    image_path("/editor/#{editor_assets_version}/images/#{source}", true)
   end
 
   def favicon_link_tag(source)

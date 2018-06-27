@@ -39,6 +39,7 @@ feature "Sessions" do
     end
 
     scenario "Login in the application" do
+      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
       visit login_path
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => 'blablapassword'
@@ -50,7 +51,7 @@ feature "Sessions" do
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => @user.email.split('@').first
       click_link_or_button 'Log in'
-      page.should be_dashboard
+      page.should have_content('window.StaticConfig = {"page":"dashboard"')
     end
 
     scenario "Get the session information via OAuth" do
@@ -115,7 +116,7 @@ feature "Sessions" do
     it 'allows login to organization users' do
       visit org_login_url(@org_user_1.organization)
       send_login_form(@org_user_1)
-      page.should be_dashboard
+      page.should have_content('window.StaticConfig = {"page":"dashboard"')
     end
 
     it 'does not allow user+password login to organization users if auth_username_password_enabled is false' do

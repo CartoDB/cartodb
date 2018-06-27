@@ -422,7 +422,7 @@ describe('Engine', function () {
       });
     });
 
-    it('should include the filters when the any includeFilters option is true', function (done) {
+    it('should include the filters when the latest includeFilters option is true', function (done) {
       // Spy on instantiateMap to ensure thats called with fake_response
       spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
 
@@ -433,10 +433,10 @@ describe('Engine', function () {
         done();
       });
       engineMock.reload({
-        includeFilters: true
+        includeFilters: false
       });
       engineMock.reload({
-        includeFilters: false
+        includeFilters: true
       });
     });
 
@@ -459,18 +459,18 @@ describe('Engine', function () {
       });
     });
 
-    it('should NOT include the filters when all includeFilters options are false', function (done) {
+    it('should NOT include the filters when the latest includeFilters options is false', function (done) {
       // Spy on instantiateMap to ensure thats called with fake_response
       spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
 
       engineMock.reload({
-        includeFilters: false
+        includeFilters: true
       }).then(function () {
         expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
         done();
       });
       engineMock.reload({
-        includeFilters: false
+        includeFilters: true
       });
       engineMock.reload({
         includeFilters: false
@@ -511,14 +511,6 @@ describe('Engine', function () {
         done();
       });
     });
-  });
-
-  it('should update the analyses metadata according to the server response', function (done) {
-    pending('Test not implemented');
-  });
-
-  it('should update the dataview metadata according to the server response', function (done) {
-    pending('Test not implemented');
   });
 
   describe('CartoLayerGroup bindings', function () {

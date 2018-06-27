@@ -158,7 +158,7 @@ Engine.prototype.reload = function (options) {
     batchOptions = {
       sourceId: options.sourceId,
       forceFetch: batchOptions.forceFetch || options.forceFetch,
-      includeFilters: (batchOptions.includeFilters === undefined) ? options.includeFilters : batchOptions.includeFilters
+      includeFilters: options.includeFilters
     };
     stackCalls.push({
       success: options.success,

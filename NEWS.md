@@ -46,6 +46,7 @@ sudo make install
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 ### Internals
+* Add `internal-carto.js` to transpilation process in Webpack (https://github.com/CartoDB/cartodb/pull/14117)
 * Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
 * Update to Webpack 4, move CSS processing from Grunt to Webpack (https://github.com/CartoDB/cartodb/pull/14033)
 
@@ -683,7 +684,7 @@ ion for time-series (#12670)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
 * Add rake to remove duplicate legends in layer
-* Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052) 
+* Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052)
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 

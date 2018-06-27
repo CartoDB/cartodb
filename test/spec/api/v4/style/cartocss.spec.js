@@ -109,7 +109,7 @@ describe('api/v4/style/cartocss', function () {
       });
     });
 
-    xdescribe('when an engine is attached', function () {
+    describe('when an engine is attached', function () {
       var client;
 
       beforeAll(function () {

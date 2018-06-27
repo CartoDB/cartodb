@@ -310,13 +310,28 @@ describe('Engine', function () {
       // Spy on modelupdater to ensure thats called with fakesourceId
       var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
-      // When the reload is finished, check the spy.
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+      engineMock.reload({
+        sourceId: 'fakeSourceId'
+      }).then(function () {
         expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', undefined);
         done();
       });
+    });
+
+    it('should use the latest sourceID parameter', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
       engineMock.reload({
         sourceId: 'fakeSourceId'
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId2', undefined);
+        done();
+      });
+      engineMock.reload({
+        sourceId: 'fakeSourceId2'
       });
     });
 
@@ -326,15 +341,58 @@ describe('Engine', function () {
       // Spy on modelupdater to ensure thats called with fakesourceId
       var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
-      // When the reload is finished, check the spy.
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: true
+      }).then(function () {
         expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', true);
         done();
       });
+    });
 
-      engineMock._performReload({
+    it('should use true as the forceFetch parameter if any is true', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: false
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', true);
+        done();
+      });
+      engineMock.reload({
         sourceId: 'fakeSourceId',
         forceFetch: true
+      });
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: false
+      });
+    });
+
+    it('should use true as the forceFetch parameter if all are false true', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: false
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', false);
+        done();
+      });
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: false
+      });
+      engineMock.reload({
+        sourceId: 'fakeSourceId',
+        forceFetch: false
       });
     });
 

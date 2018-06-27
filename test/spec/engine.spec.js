@@ -335,82 +335,160 @@ describe('Engine', function () {
       });
     });
 
-    it('should use the forceFetch parameter', function (done) {
+    it('should use true for the forceFetch parameter if it is true', function (done) {
       // Error server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Spy on modelupdater to ensure thats called with fakesourceId
       var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
       engineMock.reload({
-        sourceId: 'fakeSourceId',
         forceFetch: true
       }).then(function () {
-        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', true);
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, true);
         done();
       });
     });
 
-    it('should use true as the forceFetch parameter if any is true', function (done) {
+    it('should use true for the forceFetch parameter if any is true', function (done) {
       // Error server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Spy on modelupdater to ensure thats called with fakesourceId
       var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
       engineMock.reload({
-        sourceId: 'fakeSourceId',
         forceFetch: false
       }).then(function () {
-        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', true);
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, true);
         done();
       });
       engineMock.reload({
-        sourceId: 'fakeSourceId',
         forceFetch: true
       });
       engineMock.reload({
-        sourceId: 'fakeSourceId',
         forceFetch: false
       });
     });
 
-    it('should use true as the forceFetch parameter if all are false true', function (done) {
+    it('should use false for the forceFetch parameter if it is false', function (done) {
       // Error server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Spy on modelupdater to ensure thats called with fakesourceId
       var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
       engineMock.reload({
-        sourceId: 'fakeSourceId',
         forceFetch: false
       }).then(function () {
-        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', false);
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, false);
+        done();
+      });
+    });
+
+    it('should use false for the forceFetch parameter if all are false', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
+      engineMock.reload({
+        forceFetch: false
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, false);
         done();
       });
       engineMock.reload({
-        sourceId: 'fakeSourceId',
         forceFetch: false
       });
       engineMock.reload({
-        sourceId: 'fakeSourceId',
         forceFetch: false
       });
     });
 
-    // The following tests overlaps the model-updater tests.
+    it('should include the filters when the includeFilters option is true', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+      // Add mock dataview
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
+      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
+      engineMock.addDataview(dataview);
+
+      engineMock.reload({
+        includeFilters: true
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
+        done();
+      });
+    });
+
+    it('should include the filters when the any includeFilters option is true', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+
+      engineMock.reload({
+        includeFilters: false
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
+        done();
+      });
+      engineMock.reload({
+        includeFilters: true
+      });
+      engineMock.reload({
+        includeFilters: false
+      });
+    });
+
+    it('should NOT include the filters when the includeFilters option is false', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+      // Add mock dataview
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
+      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
+      engineMock.addDataview(dataview);
+
+      engineMock.reload({
+        includeFilters: false
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
+        done();
+      });
+    });
+
+    it('should NOT include the filters when all includeFilters options are false', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+
+      engineMock.reload({
+        includeFilters: false
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
+        done();
+      });
+      engineMock.reload({
+        includeFilters: false
+      });
+      engineMock.reload({
+        includeFilters: false
+      });
+    });
 
     it('should update the layer metadata according to the server response', function (done) {
       // Successfull server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
       engineMock.addLayer(layer);
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+
+      engineMock.reload().then(function () {
         var expectedLayerMetadata = { cartocss: '#layer {\nmarker-color: red;\n}', stats: { estimatedFeatureCount: 10031 }, cartocss_meta: { rules: [] } };
         var actualLayerMetadata = engineMock._layersCollection.at(0).attributes.meta;
         expect(actualLayerMetadata).toEqual(expectedLayerMetadata);
         done();
       });
-
-      engineMock.reload();
     });
 
     it('should update the cartolayerGroup metadata according to the server response', function (done) {
@@ -418,7 +496,8 @@ describe('Engine', function () {
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
       engineMock.addLayer(layer);
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+
+      engineMock.reload().then(function () {
         var urls = engineMock._cartoLayerGroup.attributes.urls;
         // Ensure the modelUpdater has updated the cartoLayerGroup urls
         expect(urls.attributes[0]).toEqual('http://3.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/attributes');
@@ -431,53 +510,15 @@ describe('Engine', function () {
         expect(urls.tiles).toEqual('http://{s}.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/{layerIndexes}/{z}/{x}/{y}.{format}');
         done();
       });
-
-      engineMock.reload();
     });
+  });
 
-    it('should update the analyses metadata according to the server response', function (done) {
-      pending('Test not implemented');
-    });
+  it('should update the analyses metadata according to the server response', function (done) {
+    pending('Test not implemented');
+  });
 
-    it('should update the dataview metadata according to the server response', function (done) {
-      pending('Test not implemented');
-    });
-
-    it('should include the filters when the includeFilters option is true', function () {
-      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
-      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
-      engineMock.addDataview(dataview);
-      spyOn(engineMock._windshaftClient, 'instantiateMap');
-
-      engineMock._performReload({
-        sourceId: 'fakeSourceId',
-        forceFetch: false,
-        includeFilters: true
-      });
-
-      expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
-    });
-
-    it('should NOT include the filters when the includeFilters option is false', function () {
-      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
-      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
-      engineMock.addDataview(dataview);
-      spyOn(engineMock._windshaftClient, 'instantiateMap');
-
-      engineMock._performReload({
-        sourceId: 'fakeSourceId',
-        forceFetch: false,
-        includeFilters: false
-      });
-
-      expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
-    });
+  it('should update the dataview metadata according to the server response', function (done) {
+    pending('Test not implemented');
   });
 
   describe('CartoLayerGroup bindings', function () {

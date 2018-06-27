@@ -161,8 +161,8 @@ module ApplicationHelper
     if editor
       super source
     else
-    super "/#{frontend_version}/images/#{source}"
-  end
+      super "/#{frontend_version}/images/#{source}"
+    end
   end
 
   def editor_image_path(source)

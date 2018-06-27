@@ -157,7 +157,7 @@ Engine.prototype.reload = function (options) {
   return new Promise(function (resolve, reject) {
     batchOptions = {
       sourceId: options.sourceId,
-      forceFetch: (batchOptions.forceFetch === undefined) ? options.forceFetch : batchOptions.forceFetch,
+      forceFetch: batchOptions.forceFetch || options.forceFetch,
       includeFilters: (batchOptions.includeFilters === undefined) ? options.includeFilters : batchOptions.includeFilters
     };
     stackCalls.push({

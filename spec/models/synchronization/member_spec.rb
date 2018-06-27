@@ -141,6 +141,12 @@ describe Synchronization::Member do
         member.fetch.run
 
         member.log.entries.should match /Can't run a synchronization for inactive user/
+        expect(member.state).to eq 'failure'
+
+        @user1.state = Carto::User::STATE_ACTIVE
+        @user1.sync_tables_enabled = true
+        @user1.save
+        @user1.reload
       end
 
       it 'fails to overwrite tables with views' do

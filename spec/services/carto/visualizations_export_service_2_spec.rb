@@ -1343,7 +1343,7 @@ describe Carto::VisualizationsExportService2 do
 
       verify_mapcap_match(imported_visualization.latest_mapcap, original_visualization.latest_mapcap)
 
-      verify_sync_match(imported_visualization.synchronization, original_visualization.synchronization, full_restore)
+      verify_sync_match(imported_visualization.synchronization, original_visualization.synchronization, importing_user, full_restore)
     end
 
     def verify_maps_match(imported_map, original_map)
@@ -1468,7 +1468,7 @@ describe Carto::VisualizationsExportService2 do
       imported_mapcap.ids_json.should eq original_mapcap.ids_json
     end
 
-    def verify_sync_match(imported_sync, original_sync, full_restore)
+    def verify_sync_match(imported_sync, original_sync, importing_user, full_restore)
       return true if imported_sync.nil? && original_sync.nil?
 
       imported_sync.id.should eq original_sync.id if full_restore
@@ -1476,21 +1476,21 @@ describe Carto::VisualizationsExportService2 do
       imported_sync.interval.should eq original_sync.interval
       imported_sync.url.should eq original_sync.url
       imported_sync.state.should eq original_sync.state
-      imported_sync.run_at.should eq original_sync.run_at
+      imported_sync.run_at.utc.to_s.should eq original_sync.run_at.utc.to_s
       imported_sync.retried_times.should eq original_sync.retried_times
       imported_sync.error_code.should eq original_sync.error_code
       imported_sync.error_message.should eq original_sync.error_message
-      imported_sync.ran_at.should eq original_sync.ran_at
+      imported_sync.ran_at.utc.to_s.should eq original_sync.ran_at.utc.to_s
       imported_sync.etag.should eq original_sync.etag
       imported_sync.checksum.should eq original_sync.checksum
-      imported_sync.user_id.should eq original_sync.user_id
+      imported_sync.user_id.should eq importing_user.try(:id) || original_sync.user_id
       imported_sync.service_name.should eq original_sync.service_name
       imported_sync.service_item_id.should eq original_sync.service_item_id
       imported_sync.type_guessing.should eq original_sync.type_guessing
       imported_sync.quoted_fields_guessing.should eq original_sync.quoted_fields_guessing
       imported_sync.content_guessing.should eq original_sync.content_guessing
-      imported_sync.visualization_id.should eq original_sync.visualization_id
-      imported_sync.from_external_source.should eq original_sync.from_external_source
+      imported_sync.visualization_id.should eq original_sync.visualization_id if full_restore
+      imported_sync.from_external_source?.should eq original_sync.from_external_source?
     end
 
     def verify_data_import_match(imported_data_import, original_data_import)
@@ -1809,7 +1809,7 @@ describe Carto::VisualizationsExportService2 do
 
         imported_viz = Carto::Visualization.find(imported_viz.id)
 
-        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2)
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2, full_restore: false)
         sync = imported_viz.synchronization
         sync.should be
         sync.user_id.should eq @user2.id

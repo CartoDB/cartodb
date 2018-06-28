@@ -58,6 +58,10 @@
   flex: 1;
 }
 
+.Editor-formInput {
+  max-width: 160px;
+}
+
 .Editor-formInput:focus {
   outline: none;
 }

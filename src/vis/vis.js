@@ -106,7 +106,7 @@ var VisModel = Backbone.Model.extend({
     var windshaftSettings = {
       urlTemplate: vizjson.datasource.maps_api_template,
       userName: vizjson.datasource.user_name,
-      statTag: vizjson.datasource.stat_tag,
+      client: vizjson.datasource.client,
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
       templateName: vizjson.datasource.template_name
@@ -195,7 +195,7 @@ var VisModel = Backbone.Model.extend({
       username: windshaftSettings.userName,
       serverUrl: windshaftSettings.urlTemplate,
       templateName: windshaftSettings.templateName,
-      statTag: windshaftSettings.statTag
+      client: windshaftSettings.client
     });
 
     // TODO: Use engine.layerscollection in every reference

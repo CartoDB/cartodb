@@ -11,14 +11,14 @@ function createEngine (opts) {
   var spyReload = opts.hasOwnProperty('spyReload')
     ? opts.spyReload
     : true;
-  var statTag = opts.statTag || 'fake-stat-tag';
+  var client = opts.client || 'fake-stat-tag';
 
   var engine = new Engine({
     apiKey: apiKey,
     authToken: authToken,
     username: username,
     serverUrl: serverUrl,
-    statTag: statTag
+    client: client
   });
 
   if (spyReload) {

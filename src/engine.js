@@ -31,7 +31,7 @@ var WindshaftError = require('./windshaft/error');
  * @param {string} params.username - Name of the user registered in the windshaft server.
  * @param {string} params.serverUrl - Url of the windshaft server.
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
- * @param {boolean} params.statTag - Token used to get map view statistics.
+ * @param {boolean} params.client - Token used to get map view statistics.
  * @constructor
  */
 function Engine (params) {
@@ -41,7 +41,7 @@ function Engine (params) {
   this._windshaftSettings = {
     urlTemplate: params.serverUrl,
     userName: params.username,
-    statTag: params.statTag,
+    client: params.client,
     apiKey: params.apiKey,
     authToken: params.authToken,
     templateName: params.templateName
@@ -292,7 +292,7 @@ Engine.prototype._buildOptions = function (options) {
  */
 Engine.prototype._buildParams = function (includeFilters) {
   var params = {
-    stat_tag: this._windshaftSettings.statTag
+    client: this._windshaftSettings.client
   };
   if (includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
     params.filters = this._dataviewsCollection.getFilters();

@@ -21,7 +21,7 @@ function getValidationError (code) {
  *
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
- * 
+ *
  * If you want to learn more about authorization and authentication, please read the authorization fundamentals section of our Developer Center.
  *
  * @param {object} settings
@@ -34,7 +34,7 @@ function getValidationError (code) {
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE'
  * });
- * 
+ *
  * var client = new carto.Client({
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE',
@@ -56,7 +56,7 @@ function Client (settings) {
     apiKey: settings.apiKey,
     username: settings.username,
     serverUrl: settings.serverUrl || 'https://{user}.carto.com'.replace(/{user}/, settings.username),
-    statTag: 'carto.js-v' + VERSION
+    client: 'js-' + _getPublicVersion()
   });
   this._bindEngine(this._engine);
 }
@@ -455,6 +455,10 @@ Client.prototype._checkDuplicatedLayerId = function (layer) {
 /**
  * Utility function to reduce duplicated code.
  */
+function _getPublicVersion () {
+  return VERSION.split('-')[0];
+}
+
 function _checkLayer (layer) {
   if (!(layer instanceof LayerBase)) {
     throw getValidationError('badLayerType');

@@ -1,5 +1,5 @@
-const SQLBaseFilter = require('./sql-base-filter');
 const _ = require('underscore');
+const SQLBase = require('./base-sql');
 
 const RANGE_COMPARISON_OPERATORS = {
   LT: 'lt',
@@ -7,9 +7,9 @@ const RANGE_COMPARISON_OPERATORS = {
   GT: 'gt',
   GTE: 'gte',
   BETWEEN: 'between',
-  NOT_BETWEEN: 'not_between',
-  BETWEEN_SYMMETRIC: 'between_symmetric',
-  NOT_BETWEEN_SYMMETRIC: 'not_between_symmetric'
+  NOT_BETWEEN: 'notBetween',
+  BETWEEN_SYMMETRIC: 'betweenSymmetric',
+  NOT_BETWEEN_SYMMETRIC: 'notBetweenSymmetric'
 };
 
 const ALLOWED_FILTERS = Object.freeze(_.values(RANGE_COMPARISON_OPERATORS));
@@ -24,10 +24,10 @@ const ALLOWED_FILTERS = Object.freeze(_.values(RANGE_COMPARISON_OPERATORS));
  * @memberof carto.filter
  * @api
  */
-class Range extends SQLBaseFilter {
+class Range extends SQLBase {
   /**
    * Create a Range filter
-   *
+   * //TODO: poner not between y not between symmetric
    * @param {string} column - The column to filter rows
    * @param {object} [filters] - The filters you want to apply to the column
    * @param {(number|Date)} [filters.lt] - Filter rows whose column value is less than the provided value
@@ -37,22 +37,25 @@ class Range extends SQLBaseFilter {
    * @param {(number|Date)} [filters.between] - Filter rows whose column value is between the provided values
    * @param {(number|Date)} [filters.between.min] - Lowest value of the comparison range
    * @param {(number|Date)} [filters.between.max] - Upper value of the comparison range
-   * @param {(number|Date)} [filters.between_symmetric] - Filter rows whose column value is between the provided values after sorting them
-   * @param {(number|Date)} [filters.between_symmetric.min] - Lowest value of the comparison range
-   * @param {(number|Date)} [filters.between_symmetric.max] - Upper value of the comparison range
+   * @param {(number|Date)} [filters.betweenSymmetric] - Filter rows whose column value is between the provided values after sorting them
+   * @param {(number|Date)} [filters.betweenSymmetric.min] - Lowest value of the comparison range
+   * @param {(number|Date)} [filters.betweenSymmetric.max] - Upper value of the comparison range
    * @param {object} [options]
    * @param {boolean} [options.includeNull] - The operation to apply to the data
    * @param {boolean} [options.reverseConditions] - The operation to apply to the data
    */
-  constructor (column, filters, options) {
+  constructor (column, filters = {}, options) {
     super(column, options);
 
+    this.SQL_TEMPLATES = this._getSQLTemplates();
     this.ALLOWED_FILTERS = ALLOWED_FILTERS;
 
     this._checkFilters(filters);
     this._filters = filters;
+  }
 
-    this.SQL_TEMPLATES = {
+  _getSQLTemplates () {
+    return {
       [RANGE_COMPARISON_OPERATORS.LT]: '<%= column %> < <%= value %>',
       [RANGE_COMPARISON_OPERATORS.LTE]: '<%= column %> <= <%= value %>',
       [RANGE_COMPARISON_OPERATORS.GT]: '<%= column %> > <%= value %>',

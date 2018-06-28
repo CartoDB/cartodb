@@ -189,6 +189,27 @@ module.exports = {
     'invalid-bounds-object': {
       messageRegex: /invalidBoundsObject/,
       friendlyMessage: 'Bounds object is not valid. Use a carto.filter.Bounds object'
+    },
+    'column-required': {
+      messageRegex: /columnRequired/,
+      friendlyMessage: 'Column property is required.'
+    },
+    'column-string': {
+      messageRegex: /columnString/,
+      friendlyMessage: 'Column property must be a string.'
+    },
+    'empty-column': {
+      messageRegex: /emptyColumn/,
+      friendlyMessage: 'Column property must be not empty.'
+    },
+    'invalid-filter': {
+      messageRegex: /invalidFilter(.+)/,
+      // TODO: Add link to documentation?
+      friendlyMessage: "'$0' is not a valid filter. Please check documentation."
+    },
+    'invalid-option': {
+      messageRegex: /invalidOption(.+)/,
+      friendlyMessage: "'$0' is not a valid option for this filter."
     }
   },
   aggregation: {

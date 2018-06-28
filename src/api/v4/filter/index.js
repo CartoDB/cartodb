@@ -1,8 +1,8 @@
 const BoundingBox = require('./bounding-box');
 const BoundingBoxLeaflet = require('./bounding-box-leaflet');
 const BoundingBoxGoogleMaps = require('./bounding-box-gmaps');
-const Category = require('./sql/category');
-const Range = require('./sql/range');
+const Category = require('./category');
+const Range = require('./range');
 
 /**
  *  @namespace carto.filter

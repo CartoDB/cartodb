@@ -18,6 +18,7 @@ sudo make install
 * Remove unneeded space in collapsed legends view (https://github.com/CartoDB/cartodb/issues/14091)
 * Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
 * Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
+* Add schema to column_names (#14121)
 * Deprecate Twitter connector in `add dataset` modal (https://github.com/CartoDB/cartodb/issues/14081)
 * Set new message on privacy warning modal when new privacy is LINK (https://github.com/CartoDB/cartodb/issues/14030)
 * Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
@@ -683,7 +684,7 @@ ion for time-series (#12670)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
 * Add rake to remove duplicate legends in layer
-* Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052) 
+* Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052)
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 

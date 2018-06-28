@@ -16,6 +16,7 @@ sudo make install
 * Fix SVG spinner animations (https://github.com/CartoDB/cartodb/issues/14105)
 * Fix Dataset header dropdown (https://github.com/CartoDB/support/issues/1614)
 * Remove unneeded space in collapsed legends view (https://github.com/CartoDB/cartodb/issues/14091)
+* Validate Visualization type (#13841)
 * Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
 * Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
 * Deprecate Twitter connector in `add dataset` modal (https://github.com/CartoDB/cartodb/issues/14081)
@@ -683,7 +684,7 @@ ion for time-series (#12670)
 * Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
 * Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
 * Add rake to remove duplicate legends in layer
-* Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052) 
+* Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052)
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 

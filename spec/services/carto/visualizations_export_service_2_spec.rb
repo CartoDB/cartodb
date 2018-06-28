@@ -1797,8 +1797,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'importing an exported dataset should keep the synchronization' do
-        sync = FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
-        sync_id = sync.id
+        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
 
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)

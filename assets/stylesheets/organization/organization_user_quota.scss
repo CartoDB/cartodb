@@ -1,0 +1,104 @@
+// Organization user quota field
+// --------------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+@import "../variables/progress-bar";
+
+.OrganizationUser-quota {
+  display: flex;
+  // justify-content: flex-start;
+  // width: 680px;
+}
+
+.OrganizationUser-quotaProgress {
+  @include progress-bar(10px, 20px, false, 3px);
+  display: block;
+  width: 300px;
+}
+
+.OrganizationUser-quotaBar {
+  display: block;
+  width: 300px;
+  overflow: visible;
+}
+
+.OrganizationUser-quotaLegend {
+  display: flex;
+  align-items: center;
+  margin: 10px 0 0;
+}
+
+.OrganizationUser-quotaLegendItem {
+  margin: 0 12px 0 0;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+}
+
+.OrganizationUser-quotaLegendIcon {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 10px;
+  background: #F5F5F5;
+  box-shadow: inset 0 0 1px 0 rgba(black, 0.25);
+}
+
+.OrganizationUser-quotaLegendIcon--assigned {
+  background: #1181FB;
+}
+
+.OrganizationUser-quotaLegendIcon--used {
+  background: #71CEFB;
+}
+
+.OrganizationUser-quotaInfo {
+  display: inline-block;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
+  line-height: 13px;
+}
+
+.OrganizationUser-quotaInfoInput {
+  box-sizing: border-box;
+  width: 70px !important;
+  height: 32px;
+  padding: 0 5px;
+  text-align: right;
+}
+
+.OrganizationUser-quotaInfoLink {
+  color: $cTypography-link;
+
+  &:hover {
+    color: $cTypography-linkHover;
+    text-decoration: underline;
+  }
+}
+
+.UserQuotaDropdown {
+  width: 220px;
+  padding: 20px;
+}
+
+.UserQuotaDropdown-title {
+  padding-bottom: 18px;
+  border-bottom: 1px solid $cStructure-softLine;
+  color: $cTypography-headers;
+  font-size: $sFontSize-large;
+}
+
+.UserQuotaDropdown-info {
+  display: block;
+  margin-top: 15px;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+}
+
+.UserQuotaDropdown-slider {
+  width: 220px;
+  margin-top: 12px;
+}

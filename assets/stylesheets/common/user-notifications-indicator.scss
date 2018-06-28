@@ -1,0 +1,54 @@
+// User notifications
+// --------------------------------------------------
+
+@import "../variables/colors";
+@import "../variables/sizes";
+
+$idleColor: #99CAEF;
+$selectedColor: WHITE;
+
+.UserNotifications {
+  display: flex;
+  position: relative;
+  color: $idleColor;
+  text-decoration: none !important;
+}
+
+.UserNotifications:hover {
+  color: $selectedColor;
+}
+
+.UserNotifications-Icon {
+  color: #FFF;
+  font-size: $sFontSize-large;
+
+  &:hover {
+    color: $selectedColor;
+  }
+}
+
+.UserNotifications-badge {
+  transform: scale(0);
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+  background-color: $cNotification;
+  color: $cHighlight-negative;
+}
+// States
+.UserNotifications.has--alerts {
+  color: $selectedColor;
+
+  .UserNotifications-badge {
+    transform: scale(1);
+    transition: all 0.1s ease-in-out;
+    opacity: 1;
+    color: $selectedColor;
+  }
+}
+
+.UserNotifications.has--alerts:hover {
+  .UserNotifications-badge {
+    transform: scale(1.1);
+    transition: all 0.1s ease-in-out;
+  }
+}

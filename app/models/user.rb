@@ -456,7 +456,7 @@ class User < Sequel::Model
 
         if organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
-          CartoDB::StdoutLogger.info msg
+          CartoDB::Logger.info(message: msg)
           raise CartoDB::BaseCartoDBError.new(msg)
         end
       end
@@ -505,7 +505,7 @@ class User < Sequel::Model
       ClientApplication.where(user_id: id).each(&:destroy)
     rescue StandardError => exception
       error_happened = true
-      CartoDB::StdoutLogger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
+      CartoDB::Logger.error(message: "Error destroying user #{username}", exception: exception)
     end
 
     # Invalidate user cache
@@ -630,12 +630,12 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
-    (self.class.password_digest(old_password, salt) == crypted_password) ||
+    (old_password.present? && self.class.password_digest(old_password, salt) == crypted_password) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
   def valid_password_confirmation(password)
-    valid = password.present? && validate_old_password(password)
+    valid = validate_old_password(password)
     errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
     valid
   end
@@ -835,7 +835,7 @@ class User < Sequel::Model
       avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
-      CartoDB::StdoutLogger.info "Attribute avatars_base_url not found in config. Using default avatar"
+      CartoDB::Logger.info(message: "Attribute avatars_base_url not found in config. Using default avatar")
       return default_avatar
     end
   end

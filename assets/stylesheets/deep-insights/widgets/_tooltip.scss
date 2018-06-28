@@ -1,0 +1,35 @@
+// Tooltip styles
+// ----------------------------------------------
+
+.CDB-Widget-tooltip {
+  @include css3-prefix(user-select, none);
+  display: none;
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  box-sizing: border-box;
+  min-width: 50px;
+  max-width: 120px;
+  padding: 5px;
+  border-radius: $baseSize / 2;
+  text-align: center;
+  pointer-events: none;
+}
+
+.CDB-Widget-tooltip::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  bottom: -$baseSize / 2;
+  left: calc(50% - #{$baseSize / 2});
+  border-right: $baseSize / 2 solid transparent;
+  border-left: $baseSize / 2 solid transparent;
+  border-top-width: $baseSize / 2;
+  border-top-style: solid;
+}
+
+@include media-query-mobile() {
+  .CDB-Widget-tooltip {
+    display: none !important;
+  }
+}

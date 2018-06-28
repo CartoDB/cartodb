@@ -127,7 +127,7 @@ describe Synchronization::Member do
 
         DataImport.create(
           user_id: @user2.id,
-          data_source: fake_data_path('guess_country.csv'),
+          data_source: path,
           synchronization_id: member.id,
           service_name: 'public_url',
           service_item_id: url,
@@ -139,6 +139,39 @@ describe Synchronization::Member do
         member.run
         expect(member.state).to eq 'failure'
         expect(member.error_code).to eq 2013
+      end
+
+      it 'should sync files with missing ogc_fid' do
+        stub_arcgis_response_with_file(
+          File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'),
+          File.expand_path('spec/fixtures/arcgis_metadata_ogc_fid.json')
+        )
+
+        url = 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+
+        attrs = random_attributes(user_id: @user1.id)
+                .merge(service_item_id: url, url: url, name: 'land_zoning')
+        member = Synchronization::Member.new(attrs).store
+
+        data_import = DataImport.create(
+          user_id: @user1.id,
+          synchronization_id: member.id,
+          service_name: 'arcgis',
+          service_item_id: url,
+          updated_at: Time.now
+        )
+
+        data_import.run_import!
+        expect(data_import.state).to eq 'complete'
+
+        source_file = CartoDB::Importer2::SourceFile.new(
+          File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'),
+          'arcgis_response_missing_ogc_fid.json'
+        )
+        CartoDB::Importer2::Downloader.any_instance.stubs(:download_and_store).returns(source_file)
+        CartoDB::Importer2::Downloader.any_instance.stubs(:source_file).returns(source_file)
+        member.run
+        expect(member.state).to eq 'success'
       end
     end
   end

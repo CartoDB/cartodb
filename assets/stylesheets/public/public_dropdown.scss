@@ -1,0 +1,19 @@
+
+// Public dropdown styles // --------------------------------------------------
+
+div.dropdown {
+  z-index: 1000;
+  -webkit-transform: translate3d(0, 0, 10px) translateZ(10px);
+
+  a {
+    color: #2483B4;
+    font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+    font-size: 13px;
+    text-decoration: none;
+
+    &:hover {
+      color: black;
+      text-decoration: underline;
+    }
+  }
+}

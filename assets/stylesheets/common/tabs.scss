@@ -1,0 +1,133 @@
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+
+// A set of .TabLink where only the edge tabs have a border-radius
+.TabsPanel > .TabLink {
+  border-radius: 0;
+
+  &:first-child {
+    border-top-left-radius: $sCard-borderRadius;
+    border-bottom-left-radius: $sCard-borderRadius;
+  }
+
+  &:last-child {
+    border-top-right-radius: $sCard-borderRadius;
+    border-bottom-right-radius: $sCard-borderRadius;
+  }
+}
+
+.TabLink {
+  display: block;
+  box-sizing: content-box;
+  width: 138px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: $sCard-borderRadius;
+  color: $cTypography-secondary;
+  font-size: 14px;
+  line-height: 38px;
+
+  &:hover {
+    border-color: rgba(#BBD7F2, 1);
+    background: #FFF;
+    color: $cTypography-paragraphs;
+    text-decoration: none;
+  }
+}
+
+.TabLink:hover {
+  border-color: rgba(#BBD7F2, 1);
+}
+
+.is-selected > .TabLink,
+.is-selected > .TabLink:hover,
+.TabLink.selected,
+.TabLink.selected:hover {
+  border-color: rgba(#DDD, 1);
+  background: #FFF;
+  color: $cTypography-paragraphs;
+  cursor: default;
+}
+
+.TabLink.TabLink--positive.selected,
+.TabLink.TabLink--positive.selected:hover {
+  border-color: rgba(#BBD7F2, 1);
+}
+
+.TabLink.disabled {
+  opacity: 0.5;
+
+  &:hover {
+    border-color: $cStructure-mainLine;
+    background: transparent;
+    color: $cTypography-secondary;
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.TabLink.TabLink--textCenterUpcase {
+  color: $cTypography-paragraphs;
+  text-align: center;
+  text-transform: uppercase;
+
+  &.selected,
+  &.selected:hover {
+    border-color: $cCard-selectedBorder;
+    background: $cCard-selectedFill;
+    color: $cTypography-paragraphs;
+  }
+}
+
+.TabLink.arcgis {
+  width: 160px;
+}
+
+.TabLink.box {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+}
+
+// Tab icons
+.TabIcon {
+  @include image-2x($assetsDir + "/images/layout/new_import_icons@2x.png", 223px, 40px, 0, 0);
+  display: inline-block;
+  height: 20px;
+  margin: 0 6px 3px 0;
+  background: url($assetsDir + '/images/layout/new_import_icons.png') no-repeat 0 0;
+  vertical-align: middle;
+}
+
+@mixin tabIcon($name, $width, $x: 0, $y: -20px, $height: 20px) {
+  .TabIcon.is-#{$name} {
+    width: $width;
+    height: $height;
+    background-position: $x 0;
+  }
+
+  .is-selected > .TabLink .TabIcon.is-#{$name},
+  .is-selected > .TabLink:hover .TabIcon.is-#{$name},
+  .TabLink.selected .TabIcon.is-#{$name},
+  .TabLink:hover .TabIcon.is-#{$name} {
+    background-position: $x $y;
+  }
+
+  .TabLink.disabled .TabIcon.is-#{$name},
+  .TabLink.disabled:hover .TabIcon.is-#{$name} {
+    background-position: $x 0;
+  }
+}
+
+@include tabIcon(dropbox, 22px, -18px);
+@include tabIcon(gdrive, 25px, -40px);
+@include tabIcon(mailchimp, 18px, -65px);
+@include tabIcon(arcgis, 19px, -83px);
+@include tabIcon(twitter, 25px, -102px);
+@include tabIcon(file, 18px, -127px);
+@include tabIcon(instagram, 20px, -145px);
+@include tabIcon(salesforce, 29px, -165px);
+@include tabIcon(box, 29px, -194px);

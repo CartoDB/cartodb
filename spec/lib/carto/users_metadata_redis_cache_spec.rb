@@ -6,27 +6,28 @@ describe Carto::UserDbSizeCache do
     OpenStruct.new(id: 'kk', username: 'myusername', db_size_in_bytes: 123)
   end
 
-  let(:updatable_user_mock) do
-    user_mock.stubs(:dashboard_viewed_at).returns(Time.now.utc - 2.days)
-    user_mock
-  end
-
   let(:umrc) do
     Carto::UserDbSizeCache.new
   end
 
+  let(:redis_key) do
+    umrc.send(:db_size_in_bytes_key, user_mock.username)
+  end
+
+  before(:each) do
+    $users_metadata.del(redis_key)
+  end
+
   describe '#update_if_old' do
-    it 'sets db_size_in_bytes for users that have not seen the dashboard in 2 days' do
-      umrc.expects(:set_db_size_in_bytes).with(updatable_user_mock).once
+    it 'sets db_size_in_bytes for users that have not been updated in 2 days' do
+      umrc.expects(:set_db_size_in_bytes).with(user_mock).once
+      umrc.update_if_old(user_mock)
 
-      umrc.update_if_old(updatable_user_mock)
-
-      updatable_user_mock.db_size_in_bytes = 0
-      umrc.db_size_in_bytes(updatable_user_mock).should == updatable_user_mock.db_size_in_bytes
+      umrc.db_size_in_bytes(user_mock).should eq 0
     end
 
-    it 'does not set db_size_in_bytes for users that have seen the dashboard in 2 hours' do
-      user_mock.stubs(:dashboard_viewed_at).returns(Time.now.utc - 2.hours)
+    it 'does not set db_size_in_bytes for users that have been updated in an hour' do
+      $users_metadata.setex(redis_key, 2.days - 1.hour, 456)
       umrc.expects(:set_db_size_in_bytes).never
 
       umrc.update_if_old(user_mock)
@@ -35,11 +36,11 @@ describe Carto::UserDbSizeCache do
 
   describe '#db_size_in_bytes_change_users' do
     it 'returns db_size_in_bytes_change in a hash with username keys' do
-      umrc.update_if_old(updatable_user_mock)
+      umrc.update_if_old(user_mock)
 
       db_size_in_bytes_change_users = umrc.db_size_in_bytes_change_users
-      db_size_in_bytes_change_users.keys.include?(updatable_user_mock.username).should be_true
-      db_size_in_bytes_change_users[updatable_user_mock.username].should == updatable_user_mock.db_size_in_bytes
+      db_size_in_bytes_change_users.keys.include?(user_mock.username).should be_true
+      db_size_in_bytes_change_users[user_mock.username].should == user_mock.db_size_in_bytes
     end
   end
 end

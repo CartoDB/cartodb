@@ -1843,6 +1843,8 @@ describe Carto::VisualizationsExportService2 do
         imported_viz = Carto::Visualization.find(imported_viz.id)
         verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2,
                                                                         imported_privacy: 'private')
+        expect(imported_viz.user_table).to(be)
+        expect(imported_viz.user_table.privacy).to(eq(Carto::UserTable::PRIVACY_PRIVATE))
 
         destroy_visualization(imported_viz.id)
       end
@@ -1859,6 +1861,8 @@ describe Carto::VisualizationsExportService2 do
         imported_viz = Carto::Visualization.find(imported_viz.id)
         verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user_no_private_tables,
                                                                         imported_privacy: 'public')
+        expect(imported_viz.user_table).to(be)
+        expect(imported_viz.user_table.privacy).to(eq(Carto::UserTable::PRIVACY_PUBLIC))
 
         destroy_visualization(imported_viz.id)
       end

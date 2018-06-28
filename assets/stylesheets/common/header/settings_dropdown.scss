@@ -1,0 +1,71 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+@import "../../variables/progress-bar";
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.SettingsDropdown {
+  min-width: 220px;
+}
+
+.SettingsDropdown-item:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+.SettingsDropdown-item:last-child { margin-bottom: 0 !important; }
+
+.SettingsDropdown-sameline {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.SettingsDropdown-itemLink.SettingsDropdown-itemButtonLink {
+  color: $cTypography-link;
+}
+
+.SettingsDropdown-itemLink.SettingsDropdown-itemButtonLink:hover {
+  color: $cTypography-linkHover;
+  text-decoration: none;
+}
+
+.SettingsDropdown-itemLink:hover {
+  text-decoration: none;
+  .SettingsDropdown-itemLinkText { text-decoration: underline; }
+}
+
+.SettingsDropdown-accountType {
+  padding: 2px 8px;
+  background: $cThirdBackground;
+}
+
+.SettingsDropdown-email {
+  margin-top: 3px !important;
+}
+
+.SettingsDropdown-progressBar {
+  position: relative;
+
+  @include progress-bar(6px, 9px, true, false);
+}
+.SettingsDropdown-progressBar.is--inAlert div.progress-bar span { background: $cHighlight-caution !important; }
+.SettingsDropdown-progressBar.is--inDanger div.progress-bar span { background: $cHighlight-negative !important; }
+
+.SettingsDropdown-itemLink--public {
+  display: inline-block;
+  transition: color 0.2s ease;
+  color: #3AA9E3;
+
+  &:hover {
+    color: #2E3C43;
+  }
+}
+
+.Dropdown > ul > li.SettingsDropdown-item--public > p {
+  margin-top: 0;
+
+  &:not(:last-child) {
+    margin-bottom: 8px;
+  }
+}

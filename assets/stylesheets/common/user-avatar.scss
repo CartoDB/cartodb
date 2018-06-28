@@ -1,0 +1,122 @@
+// Different types of user avatars
+// Example usage:
+//  <div class="UserAvatar">
+//    <img class="UserAvatar--medium" ... />
+//  </div>
+// --------------------------------------------------
+
+@import '../variables/colors';
+@import '../variables/sizes';
+
+.UserAvatar {
+  display: flex;
+  align-items: center;
+}
+
+.UserAvatar.is-in-list {
+  margin-left: $sMargin-min;
+}
+
+.UserAvatar.is-error::before {
+  content: 'x';
+  display: flex;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 30px;
+  background-color: $cHighlight-negative;
+  color: #FFF;
+  font-size: $sFontSize-smallUpperCase;
+  text-align: center;
+}
+
+.UserAvatar-img {
+  border-right: 0;
+  border-left: 0;
+  background: #FFF;
+}
+
+.UserAvatar-img--no-src {
+  background-image: url($assetsDir + '/images/avatars/avatar_ghost_red.png');
+}
+
+.UserAvatar-img--textReplacement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $cTypography-link;
+  font-size: $sFontSize-small;
+
+  &:hover {
+    border-color: $cTypography-link;
+  }
+}
+
+.UserAvatar-img.is-error {
+  border-radius: $sAvatar-borderRadius;
+  border-color: $cHighlight-negative;
+}
+
+.UserAvatar-img--large {
+  width: $sAvatar-public;
+  height: $sAvatar-public;
+  border-radius: $sAvatar-borderRadius;
+  background-size: $sAvatar-public;
+}
+
+.UserAvatar-img--big {
+  width: $sAvatar-big;
+  height: $sAvatar-big;
+  border-radius: $sAvatar-borderRadius;
+  background-size: $sAvatar-big;
+}
+
+.UserAvatar-img--medium-large {
+  width: $sAvatar-medium;
+  height: $sAvatar-medium;
+  border-radius: $sAvatar-borderRadius;
+  background-size: $sAvatar-medium;
+}
+
+.UserAvatar-img--medium {
+  width: $sAvatar-default;
+  height: $sAvatar-default;
+  border-radius: $sAvatar-borderRadius;
+  background-size: $sAvatar-default;
+}
+
+.UserAvatar-img--small {
+  width: $sAvatar-small;
+  height: $sAvatar-small;
+  border-radius: $sAvatar-borderRadiusSmall;
+  background-size: $sAvatar-small;
+}
+
+.UserAvatar-img--smaller {
+  width: $sAvatar-meta;
+  height: $sAvatar-meta;
+  border-radius: $sAvatar-borderRadiusSmall;
+  background-size: $sAvatar-meta;
+}
+
+// to just show [...], used in delete items for example
+// Example usage: <div class="UserAvatar"><span class="UserAvatar--moreItems../div>
+.UserAvatar-moreItems {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  border-radius: $sAvatar-borderRadius;
+  box-shadow: 0 0 0 1px $cIcons-default inset; // use box-shadow to get border inside of the box
+  color: $cIcons-default;
+  font-size: 26px;
+  font-weight: $sFontWeight-normal;
+  line-height: 26px;
+}
+
+.UserAvatar-moreItems::before {
+  content: '...';
+}

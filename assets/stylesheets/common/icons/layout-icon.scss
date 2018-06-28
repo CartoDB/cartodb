@@ -1,0 +1,46 @@
+// The largest kind of icons, used mainly to indicate some general concept.
+//
+// Example usage:
+//   <div class="LayoutIcon LayoutIcon--positive">
+//     <i class="CDB-IconFont CDB-IconFont-unlock"></i>
+//   </div>
+// --------------------------------------------------
+
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+.LayoutIcon {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: $sIcon-layout;
+  min-width: $sIcon-layout; // to no be deformed due to flex layout
+  height: $sIcon-layout;
+  border: 1px solid $cIcons-default;
+  border-radius: $sIcon-borderRadius;
+  color: $cIcons-default;
+  font-size: 22px;
+}
+
+.LayoutIcon--positive {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+
+.LayoutIcon--negative {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+
+.LayoutIcon--warning {
+  border-color: $cHighlight-alert4;
+  color: $cHighlight-alert4;
+}
+
+.LayoutIcon--darkGrey {
+  border-color: $cStructure-darkLine;
+  color: $cIcons-active;
+}

@@ -206,6 +206,9 @@ describe Admin::PagesController do
     end
 
     it 'extracts username from redirection for dashboard with subdomainless' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       username = 'endedwithu'
       anyuser = prepare_user(username)
       host! 'localhost.lan'

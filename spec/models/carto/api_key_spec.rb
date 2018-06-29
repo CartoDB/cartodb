@@ -328,13 +328,11 @@ describe Carto::ApiKey do
 
   describe 'with plain users' do
     before(:all) do
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
-      @auth_api_feature_flag.destroy
       @user1.destroy
     end
 
@@ -343,14 +341,12 @@ describe Carto::ApiKey do
 
   describe 'with organization users' do
     before(:all) do
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @auth_organization = FactoryGirl.create(:organization, quota_in_bytes: 1.gigabytes)
       @user1 = TestUserFactory.new.create_owner(@auth_organization)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
-      @auth_api_feature_flag.destroy
       @user1.destroy
       @auth_organization.destroy
     end

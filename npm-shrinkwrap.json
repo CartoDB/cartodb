@@ -1885,9 +1885,9 @@
       "resolved": "https://registry.npmjs.org/lcid/-/lcid-1.0.0.tgz"
     },
     "leaflet": {
-      "version": "1.3.1",
-      "from": "leaflet@1.3.1",
-      "resolved": "https://registry.npmjs.org/leaflet/-/leaflet-1.3.1.tgz"
+      "version": "1.3.1-carto1",
+      "from": "cartodb/Leaflet#v1.3.1-carto1",
+      "resolved": "git://github.com/cartodb/Leaflet.git#8b851fb77839bf258f16f9574691d4a3eb19aef0"
     },
     "leb": {
       "version": "0.3.0",

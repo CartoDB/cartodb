@@ -21,7 +21,7 @@ function getValidationError (code) {
  *
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
- * 
+ *
  * If you want to learn more about authorization and authentication, please read the authorization fundamentals section of our Developer Center.
  *
  * @param {object} settings
@@ -34,7 +34,7 @@ function getValidationError (code) {
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE'
  * });
- * 
+ *
  * var client = new carto.Client({
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE',
@@ -324,16 +324,18 @@ Client.prototype.getDataviews = function () {
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
  *
+ * @param {object} options - {@link https://leafletjs.com/reference-1.3.0.html#tilelayer-minzoom|L.TileLayer} options.
+ *
  * @returns A {@link http://leafletjs.com/reference-1.3.1.html#tilelayer|L.TileLayer} layer that groups all the layers.
  *
  * @api
  */
-Client.prototype.getLeafletLayer = function () {
+Client.prototype.getLeafletLayer = function (options) {
   // Check if Leaflet is loaded
   utils.isLeafletLoaded();
   if (!this._leafletLayer) {
     var LeafletLayer = require('./native/leaflet-layer');
-    this._leafletLayer = new LeafletLayer(this._layers, this._engine);
+    this._leafletLayer = new LeafletLayer(this._layers, this._engine, options);
   }
   return this._leafletLayer;
 };

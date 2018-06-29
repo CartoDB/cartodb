@@ -455,6 +455,8 @@ class Table
 
   def remove_table_from_user_database
     owner.in_database(:as => :superuser) do |user_database|
+      # Give up if it cannot get ExclusiveLocks for DDL operations in a reasonable time
+      user_database.run(%{SET LOCAL lock_timeout = '1s'})
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
       rescue => e

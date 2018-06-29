@@ -210,6 +210,10 @@ module.exports = {
     'invalid-option': {
       messageRegex: /invalidOption(.+)/,
       friendlyMessage: "'$0' is not a valid option for this filter."
+    },
+    'wrong-filter-type': {
+      messageRegex: /wrongFilterType/,
+      friendlyMessage: 'Filters need to extend from carto.filter.SQLBase. Please use carto.filter.Category or carto.filter.Range.'
     }
   },
   aggregation: {

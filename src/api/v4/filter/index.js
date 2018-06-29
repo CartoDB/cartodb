@@ -3,6 +3,7 @@ const BoundingBoxLeaflet = require('./bounding-box-leaflet');
 const BoundingBoxGoogleMaps = require('./bounding-box-gmaps');
 const Category = require('./category');
 const Range = require('./range');
+const { AND, OR } = require('../../../filters/filters-collection');
 
 /**
  *  @namespace carto.filter
@@ -13,5 +14,7 @@ module.exports = {
   BoundingBoxLeaflet,
   BoundingBoxGoogleMaps,
   Category,
-  Range
+  Range,
+  AND,
+  OR
 };

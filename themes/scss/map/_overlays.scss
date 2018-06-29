@@ -293,6 +293,10 @@ $maxLegendContainerHeight: 300px;
   z-index: 3;
 }
 
+.CDB-Legend-item {
+  height: 100%;
+}
+
 .CDB-Legend-item div.cartodb-legend {
   position: static;
   padding: 0;
@@ -416,7 +420,7 @@ $maxLegendContainerHeight: 300px;
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
 }

@@ -57,6 +57,8 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
       login_as(@user, scope: @user.username)
 
       get "/viz", {}, @headers
@@ -632,6 +634,8 @@ describe Admin::VisualizationsController do
     end
 
     it 'invokes user metadata redis caching' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
       Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
       login_as(@user, scope: @user.username)
       get dashboard_path, {}, @headers

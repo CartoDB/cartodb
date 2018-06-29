@@ -147,6 +147,10 @@
   }
 }
 
+.CDB-InputText {
+  max-width: 160px;
+}
+
 .Editor-formHelp {
   padding: 0 0 1px;
 }
@@ -239,8 +243,7 @@
   }
 
   .by-column-range {
-    width: 100%;
-    max-width: 40px;
+
     padding-left: 8px;
     border-left: 1px #CCC solid;
     text-align: right;

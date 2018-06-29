@@ -628,20 +628,6 @@ describe Admin::VisualizationsController do
     end
   end
 
-  describe '#index' do
-    before(:each) do
-      @user.stubs(:should_load_common_data?).returns(false)
-    end
-
-    it 'invokes user metadata redis caching' do
-      # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
-      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
-      login_as(@user, scope: @user.username)
-      get dashboard_path, {}, @headers
-    end
-  end
-
   describe 'find visualizations by name' do
     before(:all) do
       @organization = create_organization_with_users(name: unique_name('organization'))

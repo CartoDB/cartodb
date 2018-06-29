@@ -9,7 +9,6 @@ require_relative '../../helpers/embed_redis_cache'
 require_dependency 'carto/tracking/events'
 require_dependency 'resque/user_jobs'
 require_dependency 'static_maps_url_helper'
-require_dependency 'carto/user_db_size_cache'
 require_dependency 'carto/helpers/frame_options_helper'
 require_dependency 'carto/visualization'
 
@@ -31,7 +30,6 @@ class Admin::VisualizationsController < Admin::AdminController
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
-  before_filter :user_metadata_propagation, only: [:index]
   before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected, :embed_map, :embed_protected]
 
   before_filter :resolve_visualization_and_table,
@@ -461,12 +459,6 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   private
-
-  def user_metadata_propagation
-    return true if current_user.nil?
-
-    Carto::UserDbSizeCache.new.update_if_old(current_user)
-  end
 
   def more_visualizations(user, excluded_visualization)
     vqb = Carto::VisualizationQueryBuilder.user_public_visualizations(user).with_order(:updated_at, :desc)

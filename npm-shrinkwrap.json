@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.9-1",
-      "from": "cartodb/carto.js#v4.0.9-1",
-      "resolved": "git://github.com/cartodb/carto.js.git#c6f631532950f31bd6f2d884ba7576a9e7ad66e8"
+      "version": "4.0.9-2",
+      "from": "cartodb/carto.js#v4.0.9-2",
+      "resolved": "git://github.com/cartodb/carto.js.git#bc46e953566699b626b4821820c3181057821cbb"
     },
     "interpret": {
       "version": "1.1.0",

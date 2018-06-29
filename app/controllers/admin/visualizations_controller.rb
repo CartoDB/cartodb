@@ -9,9 +9,7 @@ require_relative '../../helpers/embed_redis_cache'
 require_dependency 'carto/tracking/events'
 require_dependency 'resque/user_jobs'
 require_dependency 'static_maps_url_helper'
-require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
-require_dependency 'carto/ghost_tables_manager'
 require_dependency 'carto/helpers/frame_options_helper'
 require_dependency 'carto/visualization'
 
@@ -33,10 +31,8 @@ class Admin::VisualizationsController < Admin::AdminController
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
-  before_filter :link_ghost_tables, only: [:index]
   before_filter :user_metadata_propagation, only: [:index]
   before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected, :embed_map, :embed_protected]
-  before_filter :load_common_data, only: [:index]
 
   before_filter :resolve_visualization_and_table,
                 :ensure_visualization_viewable,
@@ -50,8 +46,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                          :show_protected_embed_map,
                                                          :public_map, :show_protected_public_map]
 
-  after_filter :update_user_last_activity, only: [:index, :show]
-  after_filter :track_dashboard_visit, only: :index
+  after_filter :update_user_last_activity, only: [:show]
 
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
@@ -467,30 +462,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
   private
 
-  def link_ghost_tables
-    return unless current_user.has_feature_flag?('ghost_tables')
-
-    # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
-    # or asynchronously otherwise.
-    Carto::GhostTablesManager.new(current_user.id).link_ghost_tables
-  end
-
   def user_metadata_propagation
     return true if current_user.nil?
 
     Carto::UserDbSizeCache.new.update_if_old(current_user)
-  end
-
-  def load_common_data
-    return true unless current_user.present?
-    begin
-      visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
-      ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
-    rescue Exception => e
-      # We don't block the load of the dashboard because we aren't able to load common dat
-      CartoDB.notify_exception(e, {user:current_user})
-      return true
-    end
   end
 
   def more_visualizations(user, excluded_visualization)
@@ -716,13 +691,6 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def data_library_user?
     @viewed_user && Cartodb.get_config(:data_library, 'username') == @viewed_user.username
-  end
-
-  def track_dashboard_visit
-    current_user_id = current_user.id
-    Carto::Tracking::Events::VisitedPrivatePage.new(current_user_id,
-                                                    user_id: current_user_id,
-                                                    page: 'dashboard').report
   end
 
   def redirect_to_builder_embed_if_v3

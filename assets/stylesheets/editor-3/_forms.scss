@@ -58,10 +58,6 @@
   flex: 1;
 }
 
-.Editor-formInput {
-  max-width: 160px;
-}
-
 .Editor-formInput:focus {
   outline: none;
 }
@@ -149,6 +145,10 @@
       border: 1px solid $cBlackHover;
     }
   }
+}
+
+.CDB-InputText {
+  max-width: 160px;
 }
 
 .Editor-formHelp {
@@ -243,6 +243,7 @@
   }
 
   .by-column-range {
+
     padding-left: 8px;
     border-left: 1px #CCC solid;
     text-align: right;

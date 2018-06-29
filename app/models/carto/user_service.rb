@@ -89,7 +89,6 @@ module Carto
           user_database.execute(%{SET LOCAL lock_timeout = '1s'})
           user_database.execute(%{SELECT cartodb.#{user_data_size_function}}).first['cdb_userdatasize'].to_i
         end
-
       rescue => e
         attempts += 1
         begin

@@ -77,6 +77,14 @@ class SQLBase extends Base {
       if (!isFilterValid) {
         throw this._getValidationError(`invalidFilter${filter}`);
       }
+
+      const hasCorrectType = this.PARAMETER_SPECIFICATION[filter].allowedTypes.some(
+        parameterType => parameterIsOfType(parameterType, filters[filter])
+      );
+
+      if (!hasCorrectType) {
+        throw this._getValidationError(`invalidFilterParameterType${filter}`);
+      }
     });
   }
 
@@ -92,7 +100,7 @@ class SQLBase extends Base {
 
   _convertValueToSQLString (filterValue) {
     if (_.isDate(filterValue)) {
-      return filterValue.toISOString();
+      return `'${filterValue.toISOString()}'`;
     }
 
     if (_.isArray(filterValue)) {
@@ -113,5 +121,9 @@ class SQLBase extends Base {
     return sqlString({ column: this._column, value: this._convertValueToSQLString(filterValue) });
   }
 }
+
+const parameterIsOfType = function (parameterType, parameterValue) {
+  return _[`is${parameterType}`](parameterValue);
+};
 
 module.exports = SQLBase;

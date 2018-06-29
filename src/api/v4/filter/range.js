@@ -2,17 +2,19 @@ const _ = require('underscore');
 const SQLBase = require('./base-sql');
 
 const RANGE_COMPARISON_OPERATORS = {
-  LT: 'lt',
-  LTE: 'lte',
-  GT: 'gt',
-  GTE: 'gte',
-  BETWEEN: 'between',
-  NOT_BETWEEN: 'notBetween',
-  BETWEEN_SYMMETRIC: 'betweenSymmetric',
-  NOT_BETWEEN_SYMMETRIC: 'notBetweenSymmetric'
+  lt: { parameterName: 'lt', allowedTypes: ['Number', 'Date'] },
+  lte: { parameterName: 'lte', allowedTypes: ['Number', 'Date'] },
+  gt: { parameterName: 'gt', allowedTypes: ['Number', 'Date'] },
+  gte: { parameterName: 'gte', allowedTypes: ['Number', 'Date'] },
+  between: { parameterName: 'between', allowedTypes: ['Number', 'Date'] },
+  not_between: { parameterName: 'not_between', allowedTypes: ['Number', 'Date'] },
+  between_symmetric: { parameterName: 'between_symmetric', allowedTypes: ['Number', 'Date'] },
+  not_between_symmetric: { parameterName: 'not_between_symmetric', allowedTypes: ['Number', 'Date'] }
 };
 
-const ALLOWED_FILTERS = Object.freeze(_.values(RANGE_COMPARISON_OPERATORS));
+const ALLOWED_FILTERS = Object.freeze(
+  _.values(RANGE_COMPARISON_OPERATORS).map(operator => operator.parameterName)
+);
 
 /**
  * Range Filter
@@ -49,6 +51,7 @@ class Range extends SQLBase {
 
     this.SQL_TEMPLATES = this._getSQLTemplates();
     this.ALLOWED_FILTERS = ALLOWED_FILTERS;
+    this.PARAMETER_SPECIFICATION = RANGE_COMPARISON_OPERATORS;
 
     this._checkFilters(filters);
     this._filters = filters;
@@ -56,14 +59,14 @@ class Range extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      [RANGE_COMPARISON_OPERATORS.LT]: '<%= column %> < <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.LTE]: '<%= column %> <= <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.GT]: '<%= column %> > <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.GTE]: '<%= column %> >= <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.BETWEEN]: '<%= column %> BETWEEN <%= value.min %> AND <%= value.max %>',
-      [RANGE_COMPARISON_OPERATORS.NOT_BETWEEN]: '<%= column %> NOT BETWEEN <%= value.min %> AND <%= value.max %>',
-      [RANGE_COMPARISON_OPERATORS.BETWEEN_SYMMETRIC]: '<%= column %> BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>',
-      [RANGE_COMPARISON_OPERATORS.NOT_BETWEEN_SYMMETRIC]: '<%= column %> NOT BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>'
+      [RANGE_COMPARISON_OPERATORS.lt]: '<%= column %> < <%= value %>',
+      [RANGE_COMPARISON_OPERATORS.lte]: '<%= column %> <= <%= value %>',
+      [RANGE_COMPARISON_OPERATORS.gt]: '<%= column %> > <%= value %>',
+      [RANGE_COMPARISON_OPERATORS.gte]: '<%= column %> >= <%= value %>',
+      [RANGE_COMPARISON_OPERATORS.between]: '<%= column %> BETWEEN <%= value.min %> AND <%= value.max %>',
+      [RANGE_COMPARISON_OPERATORS.not_between]: '<%= column %> NOT BETWEEN <%= value.min %> AND <%= value.max %>',
+      [RANGE_COMPARISON_OPERATORS.between_symmetric]: '<%= column %> BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>',
+      [RANGE_COMPARISON_OPERATORS.not_between_symmetric]: '<%= column %> NOT BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>'
     };
   }
 }

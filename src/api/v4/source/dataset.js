@@ -3,6 +3,7 @@ var Base = require('./base');
 var AnalysisModel = require('../../../analysis/analysis-model');
 var CamshaftReference = require('../../../analysis/camshaft-reference');
 var CartoValidationError = require('../error-handling/carto-validation-error');
+var CartoError = require('../error-handling/carto-error');
 
 /**
  * A Dataset that can be used as the data source for layers and dataviews.
@@ -17,9 +18,12 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  * @api
  */
 function Dataset (tableName) {
+  Base.apply(this, arguments);
+
   _checkTableName(tableName);
   this._tableName = tableName;
-  Base.apply(this, arguments);
+
+  this._appliedFilters.on('change:filters', () => this._updateInternalModelQuery(this._getQueryToApply()));
 }
 
 Dataset.prototype = Object.create(Base.prototype);
@@ -43,13 +47,41 @@ Dataset.prototype._createInternalModel = function (engine) {
   var internalModel = new AnalysisModel({
     id: this.getId(),
     type: 'source',
-    query: 'SELECT * from ' + this._tableName
+    query: `SELECT * from ${this._tableName}`
   }, {
     camshaftReference: CamshaftReference,
     engine: engine
   });
 
   return internalModel;
+};
+
+Dataset.prototype._updateInternalModelQuery = function (query) {
+  this._internalModel.set('query', query, { silent: true });
+
+  return this._internalModel._engine.reload()
+    .catch(windshaftError => Promise.reject(new CartoError(windshaftError)));
+};
+
+Dataset.prototype._getQueryToApply = function () {
+  const whereClause = this._appliedFilters.getSQL();
+  const datasetQuery = `SELECT * from ${this._tableName}`;
+
+  if (_.isEmpty(whereClause)) {
+    return datasetQuery;
+  }
+
+  return `SELECT * FROM (${datasetQuery}) as datasetQuery WHERE ${whereClause}`;
+};
+
+Dataset.prototype.addFilter = function (filter) {
+  Base.prototype.addFilter.apply(this, arguments);
+  this._updateInternalModelQuery(this._getQueryToApply());
+};
+
+Dataset.prototype.removeFilter = function (filters) {
+  Base.prototype.removeFilter.apply(this, arguments);
+  this._updateInternalModelQuery(this._getQueryToApply());
 };
 
 function _checkTableName (tableName) {

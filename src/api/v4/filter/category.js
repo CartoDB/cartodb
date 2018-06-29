@@ -2,15 +2,17 @@ const _ = require('underscore');
 const SQLBase = require('./base-sql');
 
 const CATEGORY_COMPARISON_OPERATORS = {
-  IN: 'in',
-  NOT_IN: 'notIn',
-  EQ: 'eq',
-  NOT_EQ: 'notEq',
-  LIKE: 'like',
-  SIMILAR_TO: 'similarTo'
+  in: { parameterName: 'in', allowedTypes: ['Array', 'String'] },
+  not_in: { parameterName: 'notIn', allowedTypes: ['Array', 'String'] },
+  eq: { parameterName: 'eq', allowedTypes: ['String', 'Number', 'Date'] },
+  not_eq: { parameterName: 'notEq', allowedTypes: ['String', 'Number', 'Date'] },
+  like: { parameterName: 'like', allowedTypes: ['String'] },
+  similar_to: { parameterName: 'like', allowedTypes: ['String'] }
 };
 
-const ALLOWED_FILTERS = Object.freeze(_.values(CATEGORY_COMPARISON_OPERATORS));
+const ALLOWED_FILTERS = Object.freeze(
+  _.values(CATEGORY_COMPARISON_OPERATORS).map(operator => operator.parameterName)
+);
 
 /**
  * Category Filter
@@ -42,6 +44,7 @@ class Category extends SQLBase {
 
     this.SQL_TEMPLATES = this._getSQLTemplates();
     this.ALLOWED_FILTERS = ALLOWED_FILTERS;
+    this.PARAMETER_SPECIFICATION = CATEGORY_COMPARISON_OPERATORS;
 
     this._checkFilters(filters);
     this._filters = filters;
@@ -49,12 +52,12 @@ class Category extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      [CATEGORY_COMPARISON_OPERATORS.IN]: '<%= column %> IN (<%= value %>)',
-      [CATEGORY_COMPARISON_OPERATORS.NOT_IN]: '<%= column %> NOT IN (<%= value %>)',
-      [CATEGORY_COMPARISON_OPERATORS.EQ]: '<%= column %> = <%= value %>',
-      [CATEGORY_COMPARISON_OPERATORS.NOT_EQ]: '<%= column %> != <%= value %>',
-      [CATEGORY_COMPARISON_OPERATORS.LIKE]: '<%= column %> LIKE <%= value %>',
-      [CATEGORY_COMPARISON_OPERATORS.SIMILAR_TO]: '<%= column %> SIMILAR TO <%= value %>'
+      [CATEGORY_COMPARISON_OPERATORS.in]: '<%= column %> IN (<%= value %>)',
+      [CATEGORY_COMPARISON_OPERATORS.not_in]: '<%= column %> NOT IN (<%= value %>)',
+      [CATEGORY_COMPARISON_OPERATORS.eq]: '<%= column %> = <%= value %>',
+      [CATEGORY_COMPARISON_OPERATORS.not_eq]: '<%= column %> != <%= value %>',
+      [CATEGORY_COMPARISON_OPERATORS.like]: '<%= column %> LIKE <%= value %>',
+      [CATEGORY_COMPARISON_OPERATORS.similar_to]: '<%= column %> SIMILAR TO <%= value %>'
     };
   }
 }

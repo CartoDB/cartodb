@@ -44,6 +44,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Retain backwards compatibility with exports without client applications(#14083)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
+* Log Resque errors (#14116)
 * Do not crash when checking nil password (#14099)
 * Remove Auth API FF, enable it by default (#13857)
 * User mover does not export user metadata if org metadata is not exported

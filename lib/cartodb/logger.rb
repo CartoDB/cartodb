@@ -42,6 +42,19 @@ module CartoDB
       log('debug', exception: exception, message: message, user: user, **additional_data)
     end
 
+    class RollbarLogger < Resque::Failure::Base
+      def save
+        Logger.error(
+          message: 'Uncaught Resque failure',
+          exception: exception,
+          host: worker.hostname,
+          pid: worker.pid,
+          job: payload['class'],
+          args: payload['args']
+        )
+      end
+    end
+
     # Private
 
     # Creates a Rollbar scope that replaces the auto-detected person with the user passed as parameter

@@ -155,11 +155,11 @@ Engine.prototype.reload = function (options) {
   // This allows to change multiple map parameters reloading the map only once,
   // and therefore avoid the "You are over platform's limits" Windshaft error.
   return new Promise(function (resolve, reject) {
-    batchOptions = {
+    batchOptions = _.pick({
       sourceId: options.sourceId,
       forceFetch: batchOptions.forceFetch || options.forceFetch,
       includeFilters: options.includeFilters
-    };
+    }, _.negate(_.isUndefined));
     stackCalls.push({
       success: options.success,
       error: options.error,

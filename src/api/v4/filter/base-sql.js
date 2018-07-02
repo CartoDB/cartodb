@@ -12,7 +12,6 @@ const DEFAULT_JOIN_OPERATOR = 'AND';
  * @class carto.filter.SQLBase
  * @extends carto.filter.Base
  * @memberof carto.filter
- * @api
  */
 class SQLBase extends Base {
   /**
@@ -34,6 +33,11 @@ class SQLBase extends Base {
     this._options = options;
   }
 
+  /**
+   * Set any of the filter conditions, overwriting the previous one.
+   * @param {string} filterType - The filter type that you want to set
+   * @param {string} filterValue - The value of the filter
+   */
   set (filterType, filterValue) {
     const newFilter = { [filterType]: filterValue };
 
@@ -43,6 +47,10 @@ class SQLBase extends Base {
     this.trigger('change:filters', newFilter);
   }
 
+  /**
+   * Set the filter conditions, overriding all the previous ones.
+   * @param {object} filters - The object containing all the new filters to apply.
+   */
   setFilters (filters) {
     this._checkFilters(filters);
     this._filters = filters;

@@ -13,11 +13,20 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
 
 /**
  * Category Filter
+ * SQL and Dataset source filter.
  *
- * When including this filter into a {@link source.sql} or a {@link source.dataset}, the rows will be filtered by the conditions included within the filter.
+ * When including this filter into a {@link carto.source.SQL} or a {@link carto.source.Dataset}, the rows will be filtered by the conditions included within the filter.
  *
- * @class carto.filter.Category
- * @extends carto.filter.SQLBase
+ * You can filter columns with `in`, `notIn`, `eq`, `notEq`, `like`, `similarTo` filters, and update the conditions with `.set()` or `.setFilters()` method. It will refresh the visualization automatically when any filter is added or modified.
+ *
+ * This filter won't include null values within returned rows by default but you can include them by setting `includeNull` option.
+ *
+ * @example
+ * // Create a filter by room type, showing only private rooms
+ * const roomTypeFilter = new carto.filter.Category('room_type', { eq: 'Entire home/apt' });
+ * airbnbDataset.addFilter(roomTypeFilter);
+ *
+ * @class Category
  * @memberof carto.filter
  * @api
  */
@@ -26,15 +35,14 @@ class Category extends SQLBase {
    * Create a Category Filter
    * @param {string} column - The column which the filter will be performed against
    * @param {object} filters - The filters that you want to apply to the table rows
-   * @param {string[]} [filters.in] - Filter rows whose column value is included within the provided values
-   * @param {string[]} [filters.notIn] - Filter rows whose column value is included within the provided values
-   * @param {(string|number|Date)} [filters.eq] - Filter rows whose column value is equal to the provided value
-   * @param {(string|number|Date)} [filters.notEq] - Filter rows whose column value is not equal to the provided value
-   * @param {string} [filters.like] - Filter rows whose column value is like the provided value
-   * @param {string} [filters.similarTo] - Filter rows whose column value is similar to the provided values
+   * @param {string[]} filters.in - Return rows whose column value is included within the provided values
+   * @param {string[]} filters.notIn - Return rows whose column value is included within the provided values
+   * @param {(string|number|Date)} filters.eq - Return rows whose column value is equal to the provided value
+   * @param {(string|number|Date)} filters.notEq - Return rows whose column value is not equal to the provided value
+   * @param {string} filters.like - Return rows whose column value is like the provided value
+   * @param {string} filters.similarTo - Return rows whose column value is similar to the provided values
    * @param {object} [options]
    * @param {boolean} [options.includeNull] - The operation to apply to the data
-   * @param {boolean} [options.reverseConditions] - The operation to apply to the data
    */
   constructor (column, filters = {}, options) {
     super(column, options);

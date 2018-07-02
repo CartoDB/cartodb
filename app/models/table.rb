@@ -458,11 +458,7 @@ class Table
       user_database.transaction do
         # Give up if it cannot get ExclusiveLocks for DDL operations in a reasonable time
         user_database.run(%{SET LOCAL lock_timeout = '1s'})
-        begin
-          user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
-        rescue => e
-          CartoDB::StdoutLogger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
-        end
+        user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
         Carto::OverviewsService.new(user_database).delete_overviews qualified_table_name
         user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
       end

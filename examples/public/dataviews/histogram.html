@@ -20,6 +20,14 @@
           <h2 class="h2">Bins</h2>
           <input id="bins" type="number" value="5" class="input_text open-sans"></input>
         </li>
+        <li>
+          <h2 class="h2">Start</h2>
+          <input id="start" type="number" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">End</h2>
+          <input id="end" type="number" class="input_text open-sans"></input>
+        </li>
       </ul>
       <button onclick="applyDataviewChanges()" class="button open-sans">Apply</button>
       <pre class="code" id="data"></pre>
@@ -72,7 +80,12 @@
       function applyDataviewChanges() {
         const column = document.getElementById('column').value;
         const bins = document.getElementById('bins').value;
+        const start = document.getElementById('start').value || null;
+        const end = document.getElementById('end').value || null;
+
         histogramDataview.setColumn(column);
+        histogramDataview.setStart(start);
+        histogramDataview.setEnd(start);
         histogramDataview.setBins(parseInt(bins));
       }
     </script>

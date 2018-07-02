@@ -21,6 +21,17 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  *
  * This filter won't include null values within returned rows by default but you can include them by setting `includeNull` option.
  *
+ * @param {string} column - The column which the filter will be performed against
+ * @param {object} filters - The filters that you want to apply to the table rows
+ * @param {string[]} filters.in - Return rows whose column value is included within the provided values
+ * @param {string[]} filters.notIn - Return rows whose column value is included within the provided values
+ * @param {(string|number|Date)} filters.eq - Return rows whose column value is equal to the provided value
+ * @param {(string|number|Date)} filters.notEq - Return rows whose column value is not equal to the provided value
+ * @param {string} filters.like - Return rows whose column value is like the provided value
+ * @param {string} filters.similarTo - Return rows whose column value is similar to the provided values
+ * @param {object} [options]
+ * @param {boolean} [options.includeNull] - The operation to apply to the data
+ *
  * @example
  * // Create a filter by room type, showing only private rooms
  * const roomTypeFilter = new carto.filter.Category('room_type', { eq: 'Entire home/apt' });

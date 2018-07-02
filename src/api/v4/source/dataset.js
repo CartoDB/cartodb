@@ -64,7 +64,7 @@ Dataset.prototype._updateInternalModelQuery = function (query) {
 };
 
 Dataset.prototype._getQueryToApply = function () {
-  const whereClause = this._appliedFilters.getSQL();
+  const whereClause = this._appliedFilters.$getSQL();
   const datasetQuery = `SELECT * from ${this._tableName}`;
 
   if (_.isEmpty(whereClause)) {

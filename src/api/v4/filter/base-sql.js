@@ -9,19 +9,15 @@ const DEFAULT_JOIN_OPERATOR = 'AND';
  *
  * A SQL filter is the base for all the SQL filters such as the Category Filter or the Range filter
  *
- * @class carto.filter.SQLBase
+ * @param {string} column - The filtering will be performed against this column
+ * @param {object} [options={}]
+ * @param {boolean} [options.includeNull] - The operation to apply to the data
+ *
+ * @class SQLBase
  * @extends carto.filter.Base
  * @memberof carto.filter
  */
 class SQLBase extends Base {
-  /**
-   * Creates an instance of SQLBase.
-   * @param {string} column - The filtering will be performed against this column
-   * @param {object} [options={}]
-   * @param {boolean} [options.includeNull] - The operation to apply to the data
-   * @param {boolean} [options.reverseConditions] - The operation to apply to the data
-   * @memberof carto.filter.SQLBase
-   */
   constructor (column, options = {}) {
     super();
 
@@ -58,7 +54,7 @@ class SQLBase extends Base {
     this.trigger('change:filters', filters);
   }
 
-  getSQL () {
+  $getSQL () {
     const filters = Object.keys(this._filters);
     let sql = filters.map(filterType => this._interpolateFilter(filterType, this._filters[filterType]))
       .join(` ${DEFAULT_JOIN_OPERATOR} `);

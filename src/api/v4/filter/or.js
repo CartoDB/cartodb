@@ -36,8 +36,8 @@ class OR extends FiltersCollection {
     this.JOIN_OPERATOR = 'OR';
   }
 
-  getSQL () {
-    const sql = FiltersCollection.prototype.getSQL.apply(this);
+  $getSQL () {
+    const sql = FiltersCollection.prototype.$getSQL.apply(this);
 
     if (this.count() > 1) {
       return `(${sql})`;

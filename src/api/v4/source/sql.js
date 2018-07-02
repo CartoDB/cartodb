@@ -91,7 +91,7 @@ SQL.prototype._updateInternalModelQuery = function (query) {
 };
 
 SQL.prototype._getQueryToApply = function () {
-  const whereClause = this._appliedFilters.getSQL();
+  const whereClause = this._appliedFilters.$getSQL();
 
   if (!this._hasFiltersApplied || _.isEmpty(whereClause)) {
     return this._query;

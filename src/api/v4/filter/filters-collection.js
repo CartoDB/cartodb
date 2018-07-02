@@ -42,8 +42,8 @@ class FiltersCollection extends Base {
     return this._filters.length;
   }
 
-  getSQL () {
-    return this._filters.map(filter => filter.getSQL())
+  $getSQL () {
+    return this._filters.map(filter => filter.$getSQL())
       .join(` ${this.JOIN_OPERATOR || DEFAULT_JOIN_OPERATOR} `);
   }
 

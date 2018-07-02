@@ -138,6 +138,18 @@ module.exports = Model.extend({
     this.fetch();
   },
 
+  getStart: function () {
+    var data = this.getData();
+
+    return data.length ? _.first(data).start : null;
+  },
+
+  getEnd: function () {
+    var data = this.getData();
+
+    return data.length ? _.last(data).end : null;
+  },
+
   _getCurrentOffset: function () {
     return this.get('localTimezone')
       ? this.get('localOffset')

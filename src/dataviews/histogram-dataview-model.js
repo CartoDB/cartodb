@@ -71,6 +71,14 @@ module.exports = DataviewModelBase.extend({
     if (attrs && (attrs.min || attrs.max)) {
       this.filter && this.filter.setRange(this.get('min'), this.get('max'));
     }
+
+    if (this.get('customStart')) {
+      this.set('start', this.get('customStart'));
+    }
+
+    if (this.get('customEnd')) {
+      this.set('end', this.get('customEnd'));
+    }
   },
 
   _initBinds: function () {
@@ -88,6 +96,7 @@ module.exports = DataviewModelBase.extend({
     this.on('change:localTimezone', this._onLocalTimezoneChanged, this);
     this.on('change', this._onFieldsChanged, this);
     this.on('change:column_type', this._onColumnTypeChanged, this);
+    this.on('change:customStart change:customEnd', this._onStartEndChanged, this);
   },
 
   _onLocalTimezoneChanged: function () {
@@ -318,6 +327,10 @@ module.exports = DataviewModelBase.extend({
     };
   },
 
+  _hasCustomStartEnd: function () {
+    return this.get('customStart') || this.get('customEnd');
+  },
+
   _onColumnTypeChanged: function () {
     this.filter && this.filter.set('column_type', this.get('column_type'));
   },
@@ -338,7 +351,8 @@ module.exports = DataviewModelBase.extend({
   _onTotalsDataFetched: function (data, model) {
     var start = model.get('start');
     var end = model.get('end');
-    if (_.isFinite(start) && _.isFinite(end)) {
+
+    if (!this._hasCustomStartEnd() && _.isFinite(start) && _.isFinite(end)) {
       this.set({
         start: start,
         end: end
@@ -365,8 +379,16 @@ module.exports = DataviewModelBase.extend({
       : this.fetch();
   },
 
+  _onStartEndChanged: function () {
+    this.set({
+      start: this.get('customStart') || this._totals.getStart(),
+      end: this.get('customEnd') || this._totals.getEnd()
+    }, { silent: true });
+    this.fetch();
+  },
+
   _onFieldsChanged: function () {
-    if (!helper.hasChangedSomeOf(['offset', 'bins', 'aggregation'], this.changed)) {
+    if (!helper.hasChangedSomeOf(['bins', 'aggregation', 'offset'], this.changed)) {
       return;
     }
 

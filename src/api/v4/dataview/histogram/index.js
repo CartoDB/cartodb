@@ -12,6 +12,8 @@ var parseHistogramData = require('./parse-data.js');
  * @param {string} column - The column name to get the data
  * @param {object} [options]
  * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
+ * @param {number} [options.start] - Lower limit of the data range
+ * @param {number} [options.end] - Upper limit of the data range
  *
  * @fires dataChanged
  * @fires columnChanged
@@ -52,6 +54,8 @@ var parseHistogramData = require('./parse-data.js');
 function Histogram (source, column, options) {
   this._initialize(source, column, options);
   this._bins = this._options.bins;
+  this._start = this._options.start;
+  this._end = this._options.end;
 }
 
 Histogram.prototype = Object.create(Base.prototype);
@@ -102,6 +106,54 @@ Histogram.prototype.getBins = function () {
 };
 
 /**
+ * Set the lower limit of the bins range
+ *
+ * @param {number} start
+ * @return {carto.dataview.Histogram} this
+ * @api
+ */
+Histogram.prototype.setStart = function (start) {
+  this._validateStart(start);
+  this._changeProperty('start', start, 'customStart');
+
+  return this;
+};
+
+/**
+ * Return the current value of start
+ *
+ * @return {number} Current value of start
+ * @api
+ */
+Histogram.prototype.getStart = function () {
+  return this._start;
+};
+
+/**
+ * Set the upper limit of the bins range
+ *
+ * @param {number} end
+ * @return {carto.dataview.Histogram} this
+ * @api
+ */
+Histogram.prototype.setEnd = function (end) {
+  this._validateEnd(end);
+  this._changeProperty('end', end, 'customEnd');
+
+  return this;
+};
+
+/**
+ * Return the current value of end
+ *
+ * @return {number} Current value of end
+ * @api
+ */
+Histogram.prototype.getEnd = function () {
+  return this._end;
+};
+
+/**
  * Return the distribution type of the current data according to [Galtung’s AJUS System]{@link https://en.wikipedia.org/wiki/Multimodal_distribution#Galtung.27s_classification}
  *
  * @return {string} Distribution type of current data
@@ -121,6 +173,18 @@ Histogram.prototype._validateBins = function (bins) {
   }
 };
 
+Histogram.prototype._validateStart = function (start) {
+  if (!_.isFinite(start) && !_.isNull(start)) {
+    throw this._getValidationError('histogramInvalidStart');
+  }
+};
+
+Histogram.prototype._validateEnd = function (end) {
+  if (!_.isFinite(end) && !_.isNull(end)) {
+    throw this._getValidationError('histogramInvalidEnd');
+  }
+};
+
 Histogram.prototype._checkOptions = function (options) {
   if (_.isUndefined(options)) {
     throw this._getValidationError('histogramOptionsRequired');
@@ -133,6 +197,8 @@ Histogram.prototype._createInternalModel = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._column,
     bins: this._bins,
+    customStart: this._start,
+    customEnd: this._end,
     sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled,
     column_type: 'number'

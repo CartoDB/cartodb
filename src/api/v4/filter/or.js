@@ -23,6 +23,7 @@ const FiltersCollection = require('./filters-collection');
  * source.addFilter(filterByRoomTypeOrPrice);
  *
  * @class OR
+ * @extends carto.filter.FiltersCollection
  * @memberof carto.filter
  * @api
  */

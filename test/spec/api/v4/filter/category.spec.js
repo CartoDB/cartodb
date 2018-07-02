@@ -1,6 +1,6 @@
 const carto = require('../../../../../src/api/v4/index');
 
-describe('api/v4/filter/sql/category', function () {
+describe('api/v4/filter/category', function () {
   describe('constructor', function () {
     it('should throw a descriptive error when an unknown filter has been passed', function () {
       expect(function () {

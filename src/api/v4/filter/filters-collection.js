@@ -1,6 +1,6 @@
 const _ = require('underscore');
-const Base = require('../api/v4/filter/base');
-const SQLBase = require('../api/v4/filter/base-sql');
+const Base = require('./base');
+const SQLBase = require('./base-sql');
 
 const DEFAULT_JOIN_OPERATOR = 'AND';
 
@@ -14,12 +14,12 @@ class FiltersCollection extends Base {
     this._filters = [];
 
     if (filters && filters.length) {
-      filters.map(filter => this.add(filter));
+      filters.map(filter => this.addFilter(filter));
     }
   }
 
-  add (filter) {
-    if (!(filter instanceof SQLBase)) {
+  addFilter (filter) {
+    if (!(filter instanceof SQLBase) && !(filter instanceof FiltersCollection)) {
       throw this._getValidationError('wrongFilterType');
     }
 
@@ -27,12 +27,15 @@ class FiltersCollection extends Base {
 
     filter.on('change:filters', filters => this._triggerFilterChange(filters));
     this._filters.push(filter);
+    this._triggerFilterChange();
   }
 
-  remove (filter) {
+  removeFilter (filter) {
     if (!_.contains(this._filters, filter)) return;
 
-    return this._filters.splice(_.indexOf(filter), 1);
+    const removedElement = this._filters.splice(_.indexOf(filter), 1);
+    this._triggerFilterChange();
+    return removedElement;
   }
 
   count () {
@@ -49,22 +52,4 @@ class FiltersCollection extends Base {
   }
 }
 
-class AND extends FiltersCollection {
-  constructor (filters) {
-    super(filters);
-    this.JOIN_OPERATOR = 'AND';
-  }
-}
-
-class OR extends FiltersCollection {
-  constructor (filters) {
-    super(filters);
-    this.JOIN_OPERATOR = 'OR';
-  }
-}
-
-module.exports = {
-  FiltersCollection,
-  AND,
-  OR
-};
+module.exports = FiltersCollection;

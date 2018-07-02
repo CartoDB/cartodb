@@ -214,6 +214,10 @@ module.exports = {
     'wrong-filter-type': {
       messageRegex: /wrongFilterType/,
       friendlyMessage: 'Filters need to extend from carto.filter.SQLBase. Please use carto.filter.Category or carto.filter.Range.'
+    },
+    'invalid-parameter-type': {
+      messageRegex: /invalidParameterType(.+)/,
+      friendlyMessage: "Invalid parameter type for '$0'. Please check filters documentation."
     }
   },
   aggregation: {

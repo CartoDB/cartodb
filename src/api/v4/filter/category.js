@@ -1,18 +1,15 @@
-const _ = require('underscore');
 const SQLBase = require('./base-sql');
 
 const CATEGORY_COMPARISON_OPERATORS = {
-  in: { parameterName: 'in', allowedTypes: ['Array', 'String'] },
-  not_in: { parameterName: 'notIn', allowedTypes: ['Array', 'String'] },
-  eq: { parameterName: 'eq', allowedTypes: ['String', 'Number', 'Date'] },
-  not_eq: { parameterName: 'notEq', allowedTypes: ['String', 'Number', 'Date'] },
-  like: { parameterName: 'like', allowedTypes: ['String'] },
-  similar_to: { parameterName: 'like', allowedTypes: ['String'] }
+  in: { parameters: [{ name: 'in', allowedTypes: ['Array', 'String'] }] },
+  notIn: { parameters: [{ name: 'notIn', allowedTypes: ['Array', 'String'] }] },
+  eq: { parameters: [{ name: 'eq', allowedTypes: ['String', 'Number', 'Date'] }] },
+  notEq: { parameters: [{ name: 'notEq', allowedTypes: ['String', 'Number', 'Date'] }] },
+  like: { parameters: [{ name: 'like', allowedTypes: ['String'] }] },
+  similarTo: { parameters: [{ name: 'similarTo', allowedTypes: ['String'] }] }
 };
 
-const ALLOWED_FILTERS = Object.freeze(
-  _.values(CATEGORY_COMPARISON_OPERATORS).map(operator => operator.parameterName)
-);
+const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS));
 
 /**
  * Category Filter
@@ -52,12 +49,12 @@ class Category extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      [CATEGORY_COMPARISON_OPERATORS.in]: '<%= column %> IN (<%= value %>)',
-      [CATEGORY_COMPARISON_OPERATORS.not_in]: '<%= column %> NOT IN (<%= value %>)',
-      [CATEGORY_COMPARISON_OPERATORS.eq]: '<%= column %> = <%= value %>',
-      [CATEGORY_COMPARISON_OPERATORS.not_eq]: '<%= column %> != <%= value %>',
-      [CATEGORY_COMPARISON_OPERATORS.like]: '<%= column %> LIKE <%= value %>',
-      [CATEGORY_COMPARISON_OPERATORS.similar_to]: '<%= column %> SIMILAR TO <%= value %>'
+      in: '<%= column %> IN (<%= value %>)',
+      notIn: '<%= column %> NOT IN (<%= value %>)',
+      eq: '<%= column %> = <%= value %>',
+      notEq: '<%= column %> != <%= value %>',
+      like: '<%= column %> LIKE <%= value %>',
+      similarTo: '<%= column %> SIMILAR TO <%= value %>'
     };
   }
 }

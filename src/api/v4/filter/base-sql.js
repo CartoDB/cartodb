@@ -51,9 +51,15 @@ class SQLBase extends Base {
   }
 
   getSQL () {
-    return Object.keys(this._filters)
-      .map(filterType => this._interpolateFilterIntoTemplate(filterType, this._filters[filterType]))
+    const filters = Object.keys(this._filters);
+    let sql = filters.map(filterType => this._interpolateFilter(filterType, this._filters[filterType]))
       .join(` ${DEFAULT_JOIN_OPERATOR} `);
+
+    if (this._options.includeNull) {
+      this._includeNullInQuery(sql);
+    }
+
+    return sql;
   }
 
   _checkColumn (column) {
@@ -78,12 +84,16 @@ class SQLBase extends Base {
         throw this._getValidationError(`invalidFilter${filter}`);
       }
 
-      const hasCorrectType = this.PARAMETER_SPECIFICATION[filter].allowedTypes.some(
-        parameterType => parameterIsOfType(parameterType, filters[filter])
+      const parameters = this.PARAMETER_SPECIFICATION[filter].parameters;
+      const haveCorrectType = parameters.every(
+        parameter => {
+          const parameterValue = _.property(parameter.name)(filters[filter]) || filters[parameter.name];
+          return parameter.allowedTypes.some(type => parameterIsOfType(type, parameterValue));
+        }
       );
 
-      if (!hasCorrectType) {
-        throw this._getValidationError(`invalidFilterParameterType${filter}`);
+      if (!haveCorrectType) {
+        throw this._getValidationError(`invalidParameterType${filter}`);
       }
     });
   }
@@ -116,9 +126,19 @@ class SQLBase extends Base {
     return `'${filterValue.toString()}'`;
   }
 
-  _interpolateFilterIntoTemplate (filterType, filterValue) {
+  _interpolateFilter (filterType, filterValue) {
     const sqlString = _.template(this.SQL_TEMPLATES[filterType]);
     return sqlString({ column: this._column, value: this._convertValueToSQLString(filterValue) });
+  }
+
+  _includeNullInQuery (sql) {
+    const filters = Object.keys(this._filters);
+
+    if (filters.length > 1) {
+      sql = `(${sql})`;
+    }
+
+    return `(${sql} OR ${this._column} IS NULL)`;
   }
 }
 

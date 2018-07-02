@@ -3,7 +3,8 @@ const BoundingBoxLeaflet = require('./bounding-box-leaflet');
 const BoundingBoxGoogleMaps = require('./bounding-box-gmaps');
 const Category = require('./category');
 const Range = require('./range');
-const { AND, OR } = require('../../../filters/filters-collection');
+const AND = require('./and');
+const OR = require('./or');
 
 /**
  *  @namespace carto.filter

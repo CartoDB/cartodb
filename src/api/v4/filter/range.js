@@ -1,20 +1,37 @@
-const _ = require('underscore');
 const SQLBase = require('./base-sql');
 
 const RANGE_COMPARISON_OPERATORS = {
-  lt: { parameterName: 'lt', allowedTypes: ['Number', 'Date'] },
-  lte: { parameterName: 'lte', allowedTypes: ['Number', 'Date'] },
-  gt: { parameterName: 'gt', allowedTypes: ['Number', 'Date'] },
-  gte: { parameterName: 'gte', allowedTypes: ['Number', 'Date'] },
-  between: { parameterName: 'between', allowedTypes: ['Number', 'Date'] },
-  not_between: { parameterName: 'not_between', allowedTypes: ['Number', 'Date'] },
-  between_symmetric: { parameterName: 'between_symmetric', allowedTypes: ['Number', 'Date'] },
-  not_between_symmetric: { parameterName: 'not_between_symmetric', allowedTypes: ['Number', 'Date'] }
+  lt: { parameters: [{ name: 'lt', allowedTypes: ['Number', 'Date'] }] },
+  lte: { parameters: [{ name: 'lte', allowedTypes: ['Number', 'Date'] }] },
+  gt: { parameters: [{ name: 'gt', allowedTypes: ['Number', 'Date'] }] },
+  gte: { parameters: [{ name: 'gte', allowedTypes: ['Number', 'Date'] }] },
+  between: {
+    parameters: [
+      { name: 'min', allowedTypes: ['Number', 'Date'] },
+      { name: 'max', allowedTypes: ['Number', 'Date'] }
+    ]
+  },
+  notBetween: {
+    parameters: [
+      { name: 'min', allowedTypes: ['Number', 'Date'] },
+      { name: 'max', allowedTypes: ['Number', 'Date'] }
+    ]
+  },
+  betweenSymmetric: {
+    parameters: [
+      { name: 'min', allowedTypes: ['Number', 'Date'] },
+      { name: 'max', allowedTypes: ['Number', 'Date'] }
+    ]
+  },
+  notBetweenSymmetric: {
+    parameters: [
+      { name: 'min', allowedTypes: ['Number', 'Date'] },
+      { name: 'max', allowedTypes: ['Number', 'Date'] }
+    ]
+  }
 };
 
-const ALLOWED_FILTERS = Object.freeze(
-  _.values(RANGE_COMPARISON_OPERATORS).map(operator => operator.parameterName)
-);
+const ALLOWED_FILTERS = Object.freeze(Object.keys(RANGE_COMPARISON_OPERATORS));
 
 /**
  * Range Filter
@@ -59,14 +76,14 @@ class Range extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      [RANGE_COMPARISON_OPERATORS.lt]: '<%= column %> < <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.lte]: '<%= column %> <= <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.gt]: '<%= column %> > <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.gte]: '<%= column %> >= <%= value %>',
-      [RANGE_COMPARISON_OPERATORS.between]: '<%= column %> BETWEEN <%= value.min %> AND <%= value.max %>',
-      [RANGE_COMPARISON_OPERATORS.not_between]: '<%= column %> NOT BETWEEN <%= value.min %> AND <%= value.max %>',
-      [RANGE_COMPARISON_OPERATORS.between_symmetric]: '<%= column %> BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>',
-      [RANGE_COMPARISON_OPERATORS.not_between_symmetric]: '<%= column %> NOT BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>'
+      lt: '<%= column %> < <%= value %>',
+      lte: '<%= column %> <= <%= value %>',
+      gt: '<%= column %> > <%= value %>',
+      gte: '<%= column %> >= <%= value %>',
+      between: '<%= column %> BETWEEN <%= value.min %> AND <%= value.max %>',
+      notBetween: '<%= column %> NOT BETWEEN <%= value.min %> AND <%= value.max %>',
+      betweenSymmetric: '<%= column %> BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>',
+      notBetweenSymmetric: '<%= column %> NOT BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>'
     };
   }
 }

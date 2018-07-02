@@ -1,7 +1,7 @@
 const _ = require('underscore');
 const Backbone = require('backbone');
 const CartoError = require('../error-handling/carto-error');
-const { FiltersCollection } = require('../../../filters/filters-collection');
+const FiltersCollection = require('../filter/filters-collection');
 const EVENTS = require('../events');
 
 /**
@@ -83,7 +83,7 @@ Base.prototype.$getInternalModel = function () {
 };
 
 Base.prototype.addFilter = function (filter) {
-  this._appliedFilters.add(filter);
+  this._appliedFilters.addFilter(filter);
   this._hasFiltersApplied = true;
 };
 
@@ -92,7 +92,7 @@ Base.prototype.addFilters = function (filters) {
 };
 
 Base.prototype.removeFilter = function (filter) {
-  this._appliedFilters.remove(filter);
+  this._appliedFilters.removeFilter(filter);
   this._hasFiltersApplied = Boolean(this._appliedFilters.count());
 };
 

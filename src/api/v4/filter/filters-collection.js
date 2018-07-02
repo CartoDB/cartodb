@@ -35,6 +35,7 @@ class FiltersCollection extends Base {
    *
    * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
    * @memberof FiltersCollection
+   * @api
    */
   addFilter (filter) {
     if (!(filter instanceof SQLBase) && !(filter instanceof FiltersCollection)) {
@@ -54,6 +55,7 @@ class FiltersCollection extends Base {
    * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
    * @returns {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} The removed element
    * @memberof FiltersCollection
+   * @api
    */
   removeFilter (filter) {
     if (!_.contains(this._filters, filter)) return;
@@ -68,6 +70,7 @@ class FiltersCollection extends Base {
    *
    * @returns {number} Number of contained filters
    * @memberof FiltersCollection
+   * @api
    */
   count () {
     return this._filters.length;

@@ -34,7 +34,8 @@ const RANGE_COMPARISON_OPERATORS = {
 const ALLOWED_FILTERS = Object.freeze(Object.keys(RANGE_COMPARISON_OPERATORS));
 
 /**
- * Range Filter
+ * Range Filter.
+ *
  * SQL and Dataset source filter.
  *
  * When including this filter into a {@link carto.source.SQL} or a {@link carto.source.Dataset}, the rows will be filtered by the conditions included within the filter.
@@ -50,16 +51,16 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(RANGE_COMPARISON_OPERATORS));
  * @param {(number|Date)} filters.gt - Return rows whose column value is greater than to the provided value
  * @param {(number|Date)} filters.gte - Return rows whose column value is greater than or equal to the provided value
  * @param {(number|Date)} filters.between - Return rows whose column value is between the provided values
- * @param {(number|Date)} filters.between.min - Lowest value of the comparison range
+ * @param {(number|Date)} filters.between.min - Lower value of the comparison range
  * @param {(number|Date)} filters.between.max - Upper value of the comparison range
  * @param {(number|Date)} filters.notBetween - Return rows whose column value is not between the provided values
- * @param {(number|Date)} filters.notBetween.min - Lowest value of the comparison range
+ * @param {(number|Date)} filters.notBetween.min - Lower value of the comparison range
  * @param {(number|Date)} filters.notBetween.max - Upper value of the comparison range
  * @param {(number|Date)} filters.betweenSymmetric - Return rows whose column value is between the provided values after sorting them
- * @param {(number|Date)} filters.betweenSymmetric.min - Lowest value of the comparison range
+ * @param {(number|Date)} filters.betweenSymmetric.min - Lower value of the comparison range
  * @param {(number|Date)} filters.betweenSymmetric.max - Upper value of the comparison range
  * @param {(number|Date)} filters.notBetweenSymmetric - Return rows whose column value is not between the provided values after sorting them
- * @param {(number|Date)} filters.notBetweenSymmetric.min - Lowest value of the comparison range
+ * @param {(number|Date)} filters.notBetweenSymmetric.min - Lower value of the comparison range
  * @param {(number|Date)} filters.notBetweenSymmetric.max - Upper value of the comparison range
  * @param {object} [options]
  * @param {boolean} [options.includeNull] - The operation to apply to the data
@@ -107,6 +108,7 @@ class Range extends SQLBase {
  * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Range}
  *
  * @method set
+ * @api
  */
 
 /**
@@ -130,6 +132,7 @@ class Range extends SQLBase {
  * @param {(number|Date)} filters.notBetweenSymmetric.max - Upper value of the comparison range
  *
  * @method setFilters
+ * @api
  */
 
 module.exports = Range;

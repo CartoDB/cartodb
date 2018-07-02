@@ -12,7 +12,8 @@ const CATEGORY_COMPARISON_OPERATORS = {
 const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS));
 
 /**
- * Category Filter
+ * Category Filter.
+ *
  * SQL and Dataset source filter.
  *
  * When including this filter into a {@link carto.source.SQL} or a {@link carto.source.Dataset}, the rows will be filtered by the conditions included within the filter.
@@ -71,6 +72,7 @@ class Category extends SQLBase {
  * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Category}
  *
  * @method set
+ * @api
  */
 
 /**
@@ -84,6 +86,7 @@ class Category extends SQLBase {
  * @param {string} filters.similarTo - Return rows whose column value is similar to the provided values
  *
  * @method setFilters
+ * @api
  */
 
 module.exports = Category;

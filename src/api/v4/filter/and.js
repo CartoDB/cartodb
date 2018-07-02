@@ -1,7 +1,8 @@
 const FiltersCollection = require('./filters-collection');
 
 /**
- * AND Filter Group
+ * AND Filter Group.
+ *
  * SQL and Dataset source filter.
  *
  * When including this filter into a {@link carto.source.SQL} or a {@link carto.source.Dataset}, the rows will be filtered by the conditions included within filters.

@@ -17,7 +17,8 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
-* Fix gaps in tiles (https://github.com/CartoDB/support/issues/1362)gs
+* Fix custom carousel item select event (https://github.com/CartoDB/cartodb/issues/14070)
+* Fix gaps in tiles (https://github.com/CartoDB/support/issues/1362)
 * Fix style issues (https://github.com/CartoDB/cartodb/pull/14123)
 * Fix SVG spinner animations (https://github.com/CartoDB/cartodb/issues/14105)
 * Fix Dataset header dropdown (https://github.com/CartoDB/support/issues/1614)

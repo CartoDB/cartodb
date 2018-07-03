@@ -167,6 +167,9 @@ aside.toolbox {
 #controls li input {
   margin: 0 8px 0 0;
 }
+#controls li input[type=checkbox] {
+  margin: 2px 8px 0 0;
+}
 #controls li label {
   font: 12px/16px 'Open Sans';
   cursor: pointer;

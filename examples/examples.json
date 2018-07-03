@@ -127,6 +127,27 @@
       ]
     },
     {
+      "title": "Filters",
+      "samples": [
+        {
+          "title": "Category Filter",
+          "desc": "Create a Category filter with checkbox selectors",
+          "file": {
+            "leaflet": "public/filters/category-filter.html",
+            "gmaps": "public/filters/category-filter.html"
+          }
+        },
+        {
+          "title": "Range Filter",
+          "desc": "Create a Range filter with a range slider",
+          "file": {
+            "leaflet": "public/filters/range-filter.html",
+            "gmaps": "public/filters/range-filter.html"
+          }
+        }
+      ]
+    },
+    {
       "title": "Misc",
       "samples": [
         {

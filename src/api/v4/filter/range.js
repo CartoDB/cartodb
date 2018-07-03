@@ -7,26 +7,26 @@ const RANGE_COMPARISON_OPERATORS = {
   gte: { parameters: [{ name: 'gte', allowedTypes: ['Number', 'Date'] }] },
   between: {
     parameters: [
-      { name: 'min', allowedTypes: ['Number', 'Date'] },
-      { name: 'max', allowedTypes: ['Number', 'Date'] }
+      { name: 'between.min', allowedTypes: ['Number', 'Date'] },
+      { name: 'between.max', allowedTypes: ['Number', 'Date'] }
     ]
   },
   notBetween: {
     parameters: [
-      { name: 'min', allowedTypes: ['Number', 'Date'] },
-      { name: 'max', allowedTypes: ['Number', 'Date'] }
+      { name: 'notBetween.min', allowedTypes: ['Number', 'Date'] },
+      { name: 'notBetween.max', allowedTypes: ['Number', 'Date'] }
     ]
   },
   betweenSymmetric: {
     parameters: [
-      { name: 'min', allowedTypes: ['Number', 'Date'] },
-      { name: 'max', allowedTypes: ['Number', 'Date'] }
+      { name: 'betweenSymmetric.min', allowedTypes: ['Number', 'Date'] },
+      { name: 'betweenSymmetric.max', allowedTypes: ['Number', 'Date'] }
     ]
   },
   notBetweenSymmetric: {
     parameters: [
-      { name: 'min', allowedTypes: ['Number', 'Date'] },
-      { name: 'max', allowedTypes: ['Number', 'Date'] }
+      { name: 'notBetweenSymmetric.min', allowedTypes: ['Number', 'Date'] },
+      { name: 'notBetweenSymmetric.max', allowedTypes: ['Number', 'Date'] }
     ]
   }
 };
@@ -100,39 +100,23 @@ class Range extends SQLBase {
       notBetweenSymmetric: '<%= column %> NOT BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>'
     };
   }
+
+  /**
+   * Set any of the filter conditions, overwriting the previous one.
+   * @param {string} filterType - The filter type that you want to set. `lt`, `lte`, `gt`, `gte`, `between`, `notBetween`, `betweenSymmetric`, `notBetweenSymmetric`.
+   * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Range}
+   *
+   * @method set
+   * @api
+   */
+
+  /**
+   * Set filter conditions, overriding all the previous ones.
+   * @param {object} filters - Object containing all the new filters to apply. Check filter options above.
+   *
+   * @method setFilters
+   * @api
+   */
 }
-
-/**
- * Set any of the filter conditions, overwriting the previous one.
- * @param {string} filterType - The filter type that you want to set. `lt`, `lte`, `gt`, `gte`, `between`, `notBetween`, `betweenSymmetric`, `notBetweenSymmetric`.
- * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Range}
- *
- * @method set
- * @api
- */
-
-/**
- * Set filter conditions, overriding all the previous ones.
- * @param {object} filters - Object containing all the new filters to apply.
- * @param {(number|Date)} filters.lt - Return rows whose column value is less than the provided value
- * @param {(number|Date)} filters.lte - Return rows whose column value is less than or equal to the provided value
- * @param {(number|Date)} filters.gt - Return rows whose column value is greater than to the provided value
- * @param {(number|Date)} filters.gte - Return rows whose column value is greater than or equal to the provided value
- * @param {(number|Date)} filters.between - Return rows whose column value is between the provided values
- * @param {(number|Date)} filters.between.min - Lowest value of the comparison range
- * @param {(number|Date)} filters.between.max - Upper value of the comparison range
- * @param {(number|Date)} filters.notBetween - Return rows whose column value is not between the provided values
- * @param {(number|Date)} filters.notBetween.min - Lowest value of the comparison range
- * @param {(number|Date)} filters.notBetween.max - Upper value of the comparison range
- * @param {(number|Date)} filters.betweenSymmetric - Return rows whose column value is between the provided values after sorting them
- * @param {(number|Date)} filters.betweenSymmetric.min - Lowest value of the comparison range
- * @param {(number|Date)} filters.betweenSymmetric.max - Upper value of the comparison range
- * @param {(number|Date)} filters.notBetweenSymmetric - Return rows whose column value is not between the provided values after sorting them
- * @param {(number|Date)} filters.notBetweenSymmetric.min - Lowest value of the comparison range
- * @param {(number|Date)} filters.notBetweenSymmetric.max - Upper value of the comparison range
- *
- * @method setFilters
- * @api
- */
 
 module.exports = Range;

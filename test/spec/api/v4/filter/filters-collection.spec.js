@@ -21,6 +21,7 @@ describe('api/v4/filter/filters-collection', function () {
 
     it('should set provided filters and call add()', function () {
       spyOn(FiltersCollection.prototype, 'addFilter').and.callThrough();
+      debugger;
 
       const filters = [
         new carto.filter.Range(column, { lt: 1 }),
@@ -114,7 +115,7 @@ describe('api/v4/filter/filters-collection', function () {
     });
   });
 
-  describe('.getSQL', function () {
+  describe('.$getSQL', function () {
     let filtersCollection;
 
     beforeEach(function () {
@@ -127,7 +128,7 @@ describe('api/v4/filter/filters-collection', function () {
     });
 
     it('should build the SQL string and join filters', function () {
-      expect(filtersCollection.getSQL()).toEqual("fake_column < 1 AND fake_column IN ('category')");
+      expect(filtersCollection.$getSQL()).toEqual("fake_column < 1 AND fake_column IN ('category')");
     });
   });
 

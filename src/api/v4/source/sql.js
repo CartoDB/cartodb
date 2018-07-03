@@ -83,6 +83,8 @@ SQL.prototype._createInternalModel = function (engine) {
 };
 
 SQL.prototype._updateInternalModelQuery = function (query) {
+  if (!this._internalModel) return;
+
   this._internalModel.set('query', query, { silent: true });
 
   return this._internalModel._engine.reload()

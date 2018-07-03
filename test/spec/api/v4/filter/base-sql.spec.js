@@ -122,7 +122,7 @@ describe('api/v4/filter/base-sql', function () {
     });
   });
 
-  describe('.getSQL', function () {
+  describe('.$getSQL', function () {
     it('should return SQL string containing all the filters joined by AND clause', function () {
       const sqlFilter = new SQLBase(column);
       sqlFilter.ALLOWED_FILTERS = ['in', 'like'];
@@ -136,7 +136,7 @@ describe('api/v4/filter/base-sql', function () {
       };
       sqlFilter.setFilters({ in: ['category 1', 'category 2'], like: '%category%' });
 
-      expect(sqlFilter.getSQL()).toBe("fake_column IN ('category 1','category 2') AND fake_column LIKE '%category%'");
+      expect(sqlFilter.$getSQL()).toBe("fake_column IN ('category 1','category 2') AND fake_column LIKE '%category%'");
     });
 
     it('should call _includeNullInQuery if includeNull option is set', function () {
@@ -148,7 +148,7 @@ describe('api/v4/filter/base-sql', function () {
 
       spyOn(sqlFilter, '_includeNullInQuery');
 
-      sqlFilter.getSQL();
+      sqlFilter.$getSQL();
 
       expect(sqlFilter._includeNullInQuery).toHaveBeenCalled();
     });

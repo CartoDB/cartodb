@@ -91,7 +91,7 @@ class SQLBase extends Base {
       const parameters = this.PARAMETER_SPECIFICATION[filter].parameters;
       const haveCorrectType = parameters.every(
         parameter => {
-          const parameterValue = _.property(parameter.name)(filters[filter]) || filters[parameter.name];
+          const parameterValue = _.property(parameter.name)(filters);
           return parameter.allowedTypes.some(type => parameterIsOfType(type, parameterValue));
         }
       );

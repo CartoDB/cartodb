@@ -44,6 +44,9 @@ describe Admin::TablesController do
 
   describe 'GET /dashboard' do
     it 'returns a list of tables' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       login_as(@user, scope: @user.username)
 
       get "/dashboard", {}, @headers

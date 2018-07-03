@@ -72,6 +72,9 @@ describe 'Warden' do
     end
 
     it 'allows access for non-expired session' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
         login
 

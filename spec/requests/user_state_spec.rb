@@ -109,7 +109,7 @@ describe "UserState" do
       to_be_deleted_user.save
 
       login(to_be_deleted_user)
-      delete account_delete_user_url, deletion_password_confirmation: 'pwd123'
+      delete api_v3_users_delete_me_url, deletion_password_confirmation: 'pwd123'
 
       expect(User.find(id: to_be_deleted_user.id)).to be_nil
     end
@@ -178,7 +178,10 @@ describe "UserState" do
       @locked_user.save
     end
     it 'owner accessing their resources' do
+      # we use this to avoid generating the static assets in CI
       Admin::UsersController.any_instance.stubs(:render)
+      Admin::VisualizationsController.any_instance.stubs(:render)
+
       login(@locked_user)
       host! "#{@locked_user.username}.localhost.lan"
       @dashboard_endpoints.each do |endpoint|
@@ -223,6 +226,9 @@ describe "UserState" do
       end
     end
     it 'non locked user accessing a locked user resources' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render)
+
       login(@non_locked_user)
       @user_endpoints.each do |endpoint|
         host! "#{@locked_user.username}.localhost.lan"

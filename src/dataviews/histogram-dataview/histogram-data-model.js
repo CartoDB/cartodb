@@ -46,6 +46,19 @@ module.exports = Model.extend({
         params.push('auth_token=' + authToken);
       }
     }
+
+    // Start - End
+    var start = this.get('start');
+    var end = this.get('end');
+
+    if (_.isFinite(start)) {
+      params.push('start=' + start);
+    }
+
+    if (_.isFinite(end)) {
+      params.push('end=' + end);
+    }
+
     return this.get('url') + '?' + params.join('&');
   },
 

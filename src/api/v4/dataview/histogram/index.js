@@ -12,8 +12,8 @@ var parseHistogramData = require('./parse-data.js');
  * @param {string} column - The column name to get the data
  * @param {object} [options]
  * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
- * @param {number} [options.start] - Lower limit of the data range
- * @param {number} [options.end] - Upper limit of the data range
+ * @param {number} [options.start] - Lower limit of the data range, if not present, the lower limit of the actual data will be used
+ * @param {number} [options.end] - Upper limit of the data range, if not present, the upper limit of the actual data will be used
  *
  * @fires dataChanged
  * @fires columnChanged
@@ -114,7 +114,7 @@ Histogram.prototype.getBins = function () {
  */
 Histogram.prototype.setStart = function (start) {
   this._validateStart(start);
-  this._changeProperty('start', start, 'customStart');
+  this._changeProperty('start', start);
 
   return this;
 };
@@ -138,7 +138,7 @@ Histogram.prototype.getStart = function () {
  */
 Histogram.prototype.setEnd = function (end) {
   this._validateEnd(end);
-  this._changeProperty('end', end, 'customEnd');
+  this._changeProperty('end', end);
 
   return this;
 };
@@ -197,8 +197,8 @@ Histogram.prototype._createInternalModel = function (engine) {
     source: this._source.$getInternalModel(),
     column: this._column,
     bins: this._bins,
-    customStart: this._start,
-    customEnd: this._end,
+    start: this._start,
+    end: this._end,
     sync_on_bbox_change: !!this._boundingBoxFilter,
     enabled: this._enabled,
     column_type: 'number'

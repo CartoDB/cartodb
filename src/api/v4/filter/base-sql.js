@@ -56,7 +56,9 @@ class SQLBase extends Base {
 
   $getSQL () {
     const filters = Object.keys(this._filters);
-    let sql = filters.map(filterType => this._interpolateFilter(filterType, this._filters[filterType]))
+    let sql = filters
+      .map(filterType => this._interpolateFilter(filterType, this._filters[filterType]))
+      .filter(filter => Boolean(filter))
       .join(` ${DEFAULT_JOIN_OPERATOR} `);
 
     if (this._options.includeNull) {

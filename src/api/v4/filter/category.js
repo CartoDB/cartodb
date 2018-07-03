@@ -56,8 +56,8 @@ class Category extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      in: '<%= column %> IN (<%= value %>)',
-      notIn: '<%= column %> NOT IN (<%= value %>)',
+      in: '<% if (value) { %><%= column %> IN (<%= value %>)<% } else { %>true = false<% } %>',
+      notIn: '<% if (value) { %><%= column %> NOT IN (<%= value %>)<% } %>',
       eq: '<%= column %> = <%= value %>',
       notEq: '<%= column %> != <%= value %>',
       like: '<%= column %> LIKE <%= value %>',

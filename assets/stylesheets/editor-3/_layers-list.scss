@@ -115,7 +115,7 @@
 
   &--placeholder {
     border-color: $cSecondaryBackground;
-    background: red;
+    background: $cSecondaryBackground;
   }
 
   &--fetching {
@@ -143,6 +143,10 @@
 .Editor-ListLayer .ui-sortable-helper,
 .Editor-newLayerContainer .Editor-ListLayer-item {
   cursor: move;
+}
+
+.Editor-newLayerContainer {
+  left: 24px !important;
 }
 
 .Editor-ListLayer-dragIcon {

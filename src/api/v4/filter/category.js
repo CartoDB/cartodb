@@ -71,20 +71,16 @@ class Category extends SQLBase {
  * @param {string} filterType - The filter type that you want to set. `in`, `notIn`, `eq`, `notEq`, `like`, `similarTo`.
  * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Category}
  *
+ * @memberof Category
  * @method set
  * @api
  */
 
 /**
  * Set filter conditions, overriding all the previous ones.
- * @param {object} filters - The object containing all the new filters to apply.
- * @param {string[]} filters.in - Return rows whose column value is included within the provided values
- * @param {string[]} filters.notIn - Return rows whose column value is included within the provided values
- * @param {(string|number|Date)} filters.eq - Return rows whose column value is equal to the provided value
- * @param {(string|number|Date)} filters.notEq - Return rows whose column value is not equal to the provided value
- * @param {string} filters.like - Return rows whose column value is like the provided value
- * @param {string} filters.similarTo - Return rows whose column value is similar to the provided values
+* @param {object} filters - Object containing all the new filters to apply. Check filter options in {@link carto.filter.Category}.
  *
+ * @memberof Category
  * @method setFilters
  * @api
  */

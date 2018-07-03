@@ -106,14 +106,16 @@ class Range extends SQLBase {
    * @param {string} filterType - The filter type that you want to set. `lt`, `lte`, `gt`, `gte`, `between`, `notBetween`, `betweenSymmetric`, `notBetweenSymmetric`.
    * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Range}
    *
+   * @memberof Range
    * @method set
    * @api
    */
 
   /**
    * Set filter conditions, overriding all the previous ones.
-   * @param {object} filters - Object containing all the new filters to apply. Check filter options above.
+   * @param {object} filters - Object containing all the new filters to apply. Check filter options in {@link carto.filter.Range}.
    *
+   * @memberof Range
    * @method setFilters
    * @api
    */

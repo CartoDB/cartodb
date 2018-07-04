@@ -58,7 +58,7 @@ describe('api/v4/source/dataset', function () {
     beforeEach(function () {
       populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
       spyOn(populatedPlacesDataset, '_updateInternalModelQuery');
-    })
+    });
 
     it('should return original query if applied filters returns no SQL', function () {
       expect(populatedPlacesDataset._getQueryToApply()).toBe('SELECT * from ne_10m_populated_places_simple');

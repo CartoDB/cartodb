@@ -148,7 +148,7 @@ describe('api/v4/source/sql', function () {
     beforeEach(function () {
       populatedPlacesSQL = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
       spyOn(populatedPlacesSQL, '_updateInternalModelQuery');
-    })
+    });
 
     it('should return original query if applied filters returns no SQL', function () {
       expect(populatedPlacesSQL._getQueryToApply()).toBe('SELECT * FROM ne_10m_populated_places_simple');

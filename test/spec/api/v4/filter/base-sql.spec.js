@@ -136,7 +136,7 @@ describe('api/v4/filter/base-sql', function () {
       };
       sqlFilter.setFilters({ in: ['category 1', 'category 2'], like: '%category%' });
 
-      expect(sqlFilter.$getSQL()).toBe("fake_column IN ('category 1','category 2') AND fake_column LIKE '%category%'");
+      expect(sqlFilter.$getSQL()).toBe("(fake_column IN ('category 1','category 2') AND fake_column LIKE '%category%')");
     });
 
     it('should call _includeNullInQuery if includeNull option is set', function () {

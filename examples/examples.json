@@ -132,34 +132,22 @@
         {
           "title": "Category Filter",
           "desc": "Create a Category filter with checkbox selectors",
-          "file": {
-            "leaflet": "public/filters/category-filter.html",
-            "gmaps": "public/filters/category-filter.html"
-          }
+          "file": "public/filters/category-filter.html"
         },
         {
           "title": "Range Filter",
           "desc": "Create a Range filter with a range slider",
-          "file": {
-            "leaflet": "public/filters/range-filter.html",
-            "gmaps": "public/filters/range-filter.html"
-          }
+          "file": "public/filters/range-filter.html"
         },
         {
           "title": "AND Filter",
           "desc": "Apply an AND filter to combine multiple filters",
-          "file": {
-            "leaflet": "public/filters/and-filter.html",
-            "gmaps": "public/filters/and-filter.html"
-          }
+          "file": "public/filters/and-filter.html"
         },
         {
           "title": "Complex Filter",
           "desc": "Apply several combined filters to a dataset",
-          "file": {
-            "leaflet": "public/filters/complex-filter.html",
-            "gmaps": "public/filters/complex-filter.html"
-          }
+          "file": "public/filters/complex-filter.html"
         }
       ]
     },

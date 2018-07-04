@@ -11,7 +11,7 @@ var AGGREGATION_DATA = {
   year: { unit: 'month', factor: 12 },
   decade: { unit: 'month', factor: 120 },
   century: { unit: 'month', factor: 1200 },
-  millenium: { unit: 'month', factor: 12000 }
+  millennium: { unit: 'month', factor: 12000 }
 };
 
 var helper = {};

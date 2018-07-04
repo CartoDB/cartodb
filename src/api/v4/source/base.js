@@ -83,8 +83,8 @@ Base.prototype.$getInternalModel = function () {
 };
 
 Base.prototype.addFilter = function (filter) {
-  this._appliedFilters.addFilter(filter);
   this._hasFiltersApplied = true;
+  this._appliedFilters.addFilter(filter);
 };
 
 Base.prototype.addFilters = function (filters) {

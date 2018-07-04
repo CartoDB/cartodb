@@ -27,7 +27,7 @@
           <ul>
             <li class="open-sans">Between 30€ and 40€.</li>
             <li class="open-sans">Centro neighbourhood.</li>
-            <li class="open-sans">Entire home/apartment listings OR listings that have been reviewed after January 2015.</li>
+            <li class="open-sans">Entire home/apartment listings OR listings that have been reviewed after May 2015.</li>
           </ul>
 
           <p class="description open-sans">If you want to know more, please go to <a href="https://cartojs-test.carto.com/tables/airbnb_listings/public">Airbnb Listings dataset</a>.</p>
@@ -64,7 +64,7 @@
       const entireHomeFilter = new carto.filter.Category('room_type', { eq: 'Entire home/apt' });
       const neighbourhoodFilter = new carto.filter.Category('neighbourhood_group', { in: ['Centro'] });
       const reviewsInLastYearFilter = new carto.filter.Range('last_review', { gte: new Date('2015-05-01T00:00:00.000Z') });
-      const priceFilter = new carto.filter.Range('price', { gte: 30, lte: 40 });
+      const priceFilter = new carto.filter.Range('price', { between: { min: 30, max: 40 } });
 
       const filtersCombination = new carto.filter.AND([
         neighbourhoodFilter,

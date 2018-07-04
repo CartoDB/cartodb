@@ -11,8 +11,7 @@ var defaultOptions = {
     'http://maps.googleapis.com/maps/api/js?key=AIzaSyA4KzmztukvT7C49NSlzWkz75Xg3J_UyFI&v=3.32',
     'node_modules/jasmine-ajax/lib/mock-ajax.js',
     'node_modules/leaflet/dist/leaflet-src.js'
-  ],
-  helpers: 'test/helpers/SpecHelper.js'
+  ]
 };
 
 /**

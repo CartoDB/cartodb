@@ -15,11 +15,6 @@ var WindshaftError = require('./windshaft/error');
 
 var RELOAD_DEBOUNCE_TIME_IN_MILIS = 100;
 
-// Variables for the reload debounce
-var timeout;
-var stackCalls = [];
-var batchOptions = {};
-
 /**
  *
  * Creates a new Engine.
@@ -44,6 +39,11 @@ var batchOptions = {};
 function Engine (params) {
   if (!params) throw new Error('new Engine() called with no paramters');
   this._isNamedMap = params.templateName !== undefined;
+
+  // Variables for the reload debounce
+  this._timeout;
+  this._stackCalls = [];
+  this._batchOptions = {};
 
   this._windshaftSettings = {
     urlTemplate: params.serverUrl,
@@ -155,43 +155,43 @@ Engine.prototype.reload = function (options) {
   // This allows to change multiple map parameters reloading the map only once,
   // and therefore avoid the "You are over platform's limits" Windshaft error.
   return new Promise(function (resolve, reject) {
-    batchOptions = _.pick({
+    this._batchOptions = _.pick({
       sourceId: options.sourceId,
-      forceFetch: batchOptions.forceFetch || options.forceFetch,
+      forceFetch: this._batchOptions.forceFetch || options.forceFetch,
       includeFilters: options.includeFilters
     }, _.negate(_.isUndefined));
-    stackCalls.push({
+    this._stackCalls.push({
       success: options.success,
       error: options.error,
       resolve: resolve,
       reject: reject
     });
     var later = function () {
-      timeout = null;
-      this._performReload(batchOptions)
+      this._timeout = null;
+      this._performReload(this._batchOptions)
         .then(function () {
           // Resolve stacked callbacks and promises
-          stackCalls.forEach(function (call) {
+          this._stackCalls.forEach(function (call) {
             call.success && call.success();
             call.resolve();
           });
           // Reset stack
-          stackCalls = [];
-          batchOptions = {};
-        })
+          this._stackCalls = [];
+          this._batchOptions = {};
+        }.bind(this))
         .catch(function (windshaftError) {
           // Reject stacked callbacks and promises
-          stackCalls.forEach(function (call) {
+          this._stackCalls.forEach(function (call) {
             call.error && call.error(windshaftError);
             call.reject(windshaftError);
           });
           // Reset stack
-          stackCalls = [];
-          batchOptions = {};
-        });
+          this._stackCalls = [];
+          this._batchOptions = {};
+        }.bind(this));
     }.bind(this);
-    clearTimeout(timeout);
-    timeout = setTimeout(later, RELOAD_DEBOUNCE_TIME_IN_MILIS);
+    clearTimeout(this._timeout);
+    this._timeout = setTimeout(later, RELOAD_DEBOUNCE_TIME_IN_MILIS);
   }.bind(this));
 };
 

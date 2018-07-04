@@ -47,7 +47,6 @@ SQL.prototype.setQuery = function (query) {
   return this._internalModel._engine.reload()
     .then(function () {
       this._triggerQueryChanged(this, query);
-      return Promise.resolve();
     }.bind(this))
     .catch(function (windshaftError) {
       return Promise.reject(new CartoError(windshaftError));

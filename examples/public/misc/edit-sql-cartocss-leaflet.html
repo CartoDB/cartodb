@@ -80,10 +80,17 @@
 
       function updateSource() {
         reset('#sql');
+        console.log('tucutu');
         populatedPlacesSource.setQuery(getValue('#sql'))
+          .then((payload) => {
+            console.log(payload);
+          })
           .catch(cartoError => {
-            error('#sql', cartoError);
+            //error('#sql', cartoError);
+            console.log('fuera');
+            console.error(cartoError);
           });
+        console.log('chi');
       }
 
       function updateStyle() {

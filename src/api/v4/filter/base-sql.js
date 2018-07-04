@@ -73,6 +73,10 @@ class SQLBase extends Base {
       this._includeNullInQuery(sql);
     }
 
+    if (filters.length > 1) {
+      return `(${sql})`;
+    }
+
     return sql;
   }
 

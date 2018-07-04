@@ -144,6 +144,22 @@
             "leaflet": "public/filters/range-filter.html",
             "gmaps": "public/filters/range-filter.html"
           }
+        },
+        {
+          "title": "AND Filter",
+          "desc": "Apply an AND filter to combine multiple filters",
+          "file": {
+            "leaflet": "public/filters/and-filter.html",
+            "gmaps": "public/filters/and-filter.html"
+          }
+        },
+        {
+          "title": "Complex Filter",
+          "desc": "Apply several combined filters to a dataset",
+          "file": {
+            "leaflet": "public/filters/complex-filter.html",
+            "gmaps": "public/filters/complex-filter.html"
+          }
         }
       ]
     },

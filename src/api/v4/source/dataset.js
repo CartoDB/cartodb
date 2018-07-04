@@ -47,7 +47,7 @@ Dataset.prototype._createInternalModel = function (engine) {
   var internalModel = new AnalysisModel({
     id: this.getId(),
     type: 'source',
-    query: `SELECT * from ${this._tableName}`
+    query: this._getQueryToApply()
   }, {
     camshaftReference: CamshaftReference,
     engine: engine
@@ -57,6 +57,8 @@ Dataset.prototype._createInternalModel = function (engine) {
 };
 
 Dataset.prototype._updateInternalModelQuery = function (query) {
+  if (!this._internalModel) return;
+
   this._internalModel.set('query', query, { silent: true });
 
   return this._internalModel._engine.reload()

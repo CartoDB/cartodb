@@ -33,16 +33,6 @@ class AND extends FiltersCollection {
     super(filters);
     this.JOIN_OPERATOR = 'AND';
   }
-
-  $getSQL () {
-    const sql = FiltersCollection.prototype.$getSQL.apply(this);
-
-    if (this.count() > 1) {
-      return `(${sql})`;
-    }
-
-    return sql;
-  }
 }
 
 module.exports = AND;

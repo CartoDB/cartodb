@@ -71,7 +71,7 @@ SQL.prototype._createInternalModel = function (engine) {
   var internalModel = new AnalysisModel({
     id: this.getId(),
     type: 'source',
-    query: this._query
+    query: this._getQueryToApply()
   }, {
     camshaftReference: CamshaftReference,
     engine: engine

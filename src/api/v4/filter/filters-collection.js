@@ -78,8 +78,14 @@ class FiltersCollection extends Base {
   }
 
   $getSQL () {
-    return this._filters.map(filter => filter.$getSQL())
+    const sql = this._filters.map(filter => filter.$getSQL())
       .join(` ${this.JOIN_OPERATOR || DEFAULT_JOIN_OPERATOR} `);
+
+    if (this.count() > 1) {
+      return `(${sql})`;
+    }
+
+    return sql;
   }
 
   _triggerFilterChange (filters) {

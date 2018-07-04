@@ -42,6 +42,21 @@ describe('dataview/helpers/histogram-helper', function () {
       var expected = 170107634;
       expect(actual).toBe(expected);
     });
+    it('should add decades properly', function () {
+      var actual = helper.add(12341234, 4, 'century');
+      var expected = 12635122034;
+      expect(actual).toBe(expected);
+    });
+    it('should add centuries properly', function () {
+      var actual = helper.add(12341234, 5, 'century');
+      var expected = 15790882034;
+      expect(actual).toBe(expected);
+    });
+    it('should add milleniums properly', function () {
+      var actual = helper.add(12341234, 2, 'millenium');
+      var expected = 63126245234;
+      expect(actual).toBe(expected);
+    });
     it('should throw an error for a wrong aggregation', function () {
       expect(function () {
         helper.add(12341234, 1, 'wrong');

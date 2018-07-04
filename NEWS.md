@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.22.2`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.23.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -49,6 +49,8 @@ This release introduces a new API Key system. In order to migrate existing users
 * Retain backwards compatibility with exports without client applications(#14083)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
+* Update extension to 0.22.2 to fix hyphenates usernames (cartodb-postgresql#331)
+* Update extension to 0.23.0 to add a new helper function `_CDB_Table_Exists(table_name_with_optional_schema TEXT)` (cartodb-postgresql#332)
 * Log Resque errors (#14116)
 * Do not crash when checking nil password (#14099)
 * Remove Auth API FF, enable it by default (#13857)

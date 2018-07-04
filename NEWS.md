@@ -685,6 +685,7 @@ ion for time-series (#12670)
 * Add rake to remove duplicate legends in layer
 * Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052) 
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
+* Do not allow empty password in LDAP logins
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals

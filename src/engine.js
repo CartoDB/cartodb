@@ -291,20 +291,26 @@ Engine.prototype._buildOptions = function (options) {
  * @private
  */
 Engine.prototype._buildParams = function (includeFilters) {
-  var params = {
-    client: this._windshaftSettings.client
-  };
+  var params = {};
+
+  if (__ENV__ === 'production') {
+    params.client = this._windshaftSettings.client;
+  }
+
   if (includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
     params.filters = this._dataviewsCollection.getFilters();
   }
+
   if (this._windshaftSettings.apiKey) {
     params.api_key = this._windshaftSettings.apiKey;
     return params;
   }
+
   if (this._windshaftSettings.authToken) {
     params.auth_token = this._windshaftSettings.authToken;
     return params;
   }
+
   console.warn('Engine initialized with no apiKeys neither authToken');
 };
 

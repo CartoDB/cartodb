@@ -35,6 +35,10 @@ class SQLBase extends Base {
    * @param {string} filterValue - The value of the filter
    */
   set (filterType, filterValue) {
+    if (!filterType || !filterValue || !_.isString(filterType) || !_.isString(filterValue)) {
+      return;
+    }
+
     const newFilter = { [filterType]: filterValue };
 
     this._checkFilters(newFilter);
@@ -48,6 +52,10 @@ class SQLBase extends Base {
    * @param {object} filters - The object containing all the new filters to apply.
    */
   setFilters (filters) {
+    if (!filters || !_.isObject(filters) || _.isEmpty(filters)) {
+      return;
+    }
+
     this._checkFilters(filters);
     this._filters = filters;
 
@@ -121,7 +129,7 @@ class SQLBase extends Base {
 
     if (_.isArray(filterValue)) {
       return filterValue
-        .map(value => `'${value.toString()}'`)
+        .map(value => `'${normalizeString(value.toString())}'`)
         .join(',');
     }
 
@@ -129,7 +137,7 @@ class SQLBase extends Base {
       return filterValue;
     }
 
-    return `'${filterValue.toString()}'`;
+    return `'${normalizeString(filterValue.toString())}'`;
   }
 
   _interpolateFilter (filterType, filterValue) {
@@ -150,6 +158,10 @@ class SQLBase extends Base {
 
 const parameterIsOfType = function (parameterType, parameterValue) {
   return _[`is${parameterType}`](parameterValue);
+};
+
+const normalizeString = function (value) {
+  return value.replace(/\n/g, '\\n').replace(/\"/g, '\\"').replace(/'/g, "''");
 };
 
 module.exports = SQLBase;

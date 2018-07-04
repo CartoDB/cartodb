@@ -64,25 +64,25 @@ class Category extends SQLBase {
       similarTo: '<%= column %> SIMILAR TO <%= value %>'
     };
   }
+
+  /**
+   * Set any of the filter conditions, overwriting the previous one.
+   * @param {string} filterType - The filter type that you want to set. `in`, `notIn`, `eq`, `notEq`, `like`, `similarTo`.
+   * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Category}
+   *
+   * @memberof Category
+   * @method set
+   * @api
+   */
+
+  /**
+   * Set filter conditions, overriding all the previous ones.
+  * @param {object} filters - Object containing all the new filters to apply. Check filter options in {@link carto.filter.Category}.
+   *
+   * @memberof Category
+   * @method setFilters
+   * @api
+   */
 }
-
-/**
- * Set any of the filter conditions, overwriting the previous one.
- * @param {string} filterType - The filter type that you want to set. `in`, `notIn`, `eq`, `notEq`, `like`, `similarTo`.
- * @param {string} filterValue - The value of the filter. Check types in {@link carto.filter.Category}
- *
- * @memberof Category
- * @method set
- * @api
- */
-
-/**
- * Set filter conditions, overriding all the previous ones.
-* @param {object} filters - Object containing all the new filters to apply. Check filter options in {@link carto.filter.Category}.
- *
- * @memberof Category
- * @method setFilters
- * @api
- */
 
 module.exports = Category;

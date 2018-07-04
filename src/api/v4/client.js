@@ -56,7 +56,7 @@ function Client (settings) {
     apiKey: settings.apiKey,
     username: settings.username,
     serverUrl: settings.serverUrl || 'https://{user}.carto.com'.replace(/{user}/, settings.username),
-    client: 'js-' + _getPublicVersion()
+    client: 'js-' + VERSION
   });
   this._bindEngine(this._engine);
 }
@@ -455,10 +455,6 @@ Client.prototype._checkDuplicatedLayerId = function (layer) {
 /**
  * Utility function to reduce duplicated code.
  */
-function _getPublicVersion () {
-  return VERSION.split('-')[0];
-}
-
 function _checkLayer (layer) {
   if (!(layer instanceof LayerBase)) {
     throw getValidationError('badLayerType');

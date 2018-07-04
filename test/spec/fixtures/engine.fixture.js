@@ -11,7 +11,7 @@ function createEngine (opts) {
   var spyReload = opts.hasOwnProperty('spyReload')
     ? opts.spyReload
     : true;
-  var client = opts.client || 'fake-stat-tag';
+  var client = opts.client || 'fake-client';
 
   var engine = new Engine({
     apiKey: apiKey,

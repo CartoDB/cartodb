@@ -63,7 +63,7 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(RANGE_COMPARISON_OPERATORS));
  * @param {(number|Date)} filters.notBetweenSymmetric.min - Lower value of the comparison range
  * @param {(number|Date)} filters.notBetweenSymmetric.max - Upper value of the comparison range
  * @param {object} [options]
- * @param {boolean} [options.includeNull] - The operation to apply to the data
+ * @param {boolean} [options.includeNull] - Include null rows when returning data
  *
  * @example
  * // Create a filter by price, showing only listings lower than or equal to 50€, and higher than 100€

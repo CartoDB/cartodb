@@ -45,7 +45,7 @@ class FiltersCollection extends Base {
 
     if (_.contains(this._filters, filter)) return;
 
-    filter.on('change:filters', filters => this._triggerFilterChange(filters));
+    this.listenTo(filter, 'change:filters', filters => this._triggerFilterChange(filters));
     this._filters.push(filter);
     this._triggerFilterChange();
   }
@@ -59,9 +59,12 @@ class FiltersCollection extends Base {
    * @api
    */
   removeFilter (filter) {
-    if (!_.contains(this._filters, filter)) return;
+    const filterIndex = _.indexOf(this._filters, filter);
+    if (filterIndex === -1) return;
 
-    const removedElement = this._filters.splice(_.indexOf(filter), 1);
+    const removedElement = this._filters.splice(filterIndex, 1)[0];
+    removedElement.off('change:filters', null, this);
+
     this._triggerFilterChange();
     return removedElement;
   }

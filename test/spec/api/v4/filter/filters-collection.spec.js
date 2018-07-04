@@ -34,10 +34,11 @@ describe('api/v4/filter/filters-collection', function () {
   });
 
   describe('.addFilter', function () {
-    let filtersCollection, rangeFilter, triggerFilterChangeSpy;
+    let filtersCollection, rangeFilter, triggerFilterChangeSpy, listenToChangeSpy;
 
     beforeEach(function () {
       triggerFilterChangeSpy = spyOn(FiltersCollection.prototype, '_triggerFilterChange');
+      listenToChangeSpy = spyOn(FiltersCollection.prototype, 'listenTo');
       filtersCollection = new FiltersCollection();
       rangeFilter = new carto.filter.Range(column, { lt: 1 });
     });
@@ -64,12 +65,11 @@ describe('api/v4/filter/filters-collection', function () {
     });
 
     it('should register listener to change:filters event in the added filter', function () {
-      spyOn(rangeFilter, 'on');
-
       filtersCollection.addFilter(rangeFilter);
 
-      expect(rangeFilter.on).toHaveBeenCalled();
-      expect(rangeFilter.on.calls.mostRecent().args[0]).toEqual('change:filters');
+      expect(listenToChangeSpy).toHaveBeenCalled();
+      expect(listenToChangeSpy.calls.mostRecent().args[0]).toBe(rangeFilter);
+      expect(listenToChangeSpy.calls.mostRecent().args[1]).toEqual('change:filters');
     });
   });
 
@@ -92,7 +92,7 @@ describe('api/v4/filter/filters-collection', function () {
     it('should remove the filter if it was already added', function () {
       filtersCollection.addFilter(rangeFilter);
 
-      const removedElement = filtersCollection.removeFilter(rangeFilter)[0];
+      const removedElement = filtersCollection.removeFilter(rangeFilter);
 
       expect(removedElement).toBe(rangeFilter);
       expect(triggerFilterChangeSpy).toHaveBeenCalled();

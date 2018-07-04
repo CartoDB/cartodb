@@ -12,7 +12,7 @@ const DEFAULT_JOIN_OPERATOR = 'AND';
  *
  * @param {string} column - The filtering will be performed against this column
  * @param {object} [options={}]
- * @param {boolean} [options.includeNull] - The operation to apply to the data
+ * @param {boolean} [options.includeNull] - Include null rows when returning data
  *
  * @class SQLBase
  * @extends carto.filter.Base

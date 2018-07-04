@@ -31,7 +31,7 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  * @param {string} filters.like - Return rows whose column value is like the provided value
  * @param {string} filters.similarTo - Return rows whose column value is similar to the provided values
  * @param {object} [options]
- * @param {boolean} [options.includeNull] - The operation to apply to the data
+ * @param {boolean} [options.includeNull] - Include null rows when returning data
  *
  * @example
  * // Create a filter by room type, showing only private rooms

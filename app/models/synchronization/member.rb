@@ -182,6 +182,8 @@ module CartoDB
           raise "Couldn't instantiate synchronization user. Data: #{to_s}"
         end
 
+        raise "Can't run a synchronization for inactive user: #{user.username}" unless user.reload.active?
+
         if !authorize?(user)
           raise CartoDB::Datasources::AuthError.new('User is not authorized to sync tables')
         end

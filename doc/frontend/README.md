@@ -35,10 +35,6 @@ That enables CSS and JS watchers for rebuilding bundles automatically upon chang
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
 
-On master as of right now, Rails will serve old assets unless your user has the specific feature flag `dashboard_migration`. You can see this on admin/visualizations_controller.rb, line 61. If you add that feature flag to your users[1] or simply remove the check, you will see the new assets. Sorry for this inconvenience, we'll remove it from the code base very soon.
-
-[1] http://cartodb.readthedocs.io/en/latest/operations/change_feature_flags.html
-
 
 ## Tasks
 

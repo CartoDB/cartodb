@@ -818,7 +818,7 @@ describe 'UserMigration' do
       @user = FactoryGirl.build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
-      @master_api_key = @carto_user.api_keys.create_master_key!
+      @master_api_key = @carto_user.api_keys.master.first
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_user,
                                                            name: 'Some ApiKey',

@@ -351,7 +351,7 @@ class User < Sequel::Model
     save_metadata
     self.load_avatar
 
-    db.after_commit { create_api_keys } if has_feature_flag?('auth_api')
+    db.after_commit { create_api_keys }
 
     db_service.monitor_user_notification
     sleep 1
@@ -1389,7 +1389,12 @@ class User < Sequel::Model
       user_data_size_function =
         self.db_service.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()"
                                                           : "CDB_UserDataSize('#{self.database_schema}')"
-      in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
+      in_database(as: :superuser) do |user_database|
+        user_database.transaction do
+          user_database.fetch(%{SET LOCAL lock_timeout = '1s'})
+          user_database.fetch(%{SELECT cartodb.#{user_data_size_function}}).first[:cdb_userdatasize]
+        end
+      end
     rescue => e
       attempts += 1
       begin

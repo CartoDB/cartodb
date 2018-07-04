@@ -52,8 +52,8 @@ describe('dataview/helpers/histogram-helper', function () {
       var expected = 15790882034;
       expect(actual).toBe(expected);
     });
-    it('should add milleniums properly', function () {
-      var actual = helper.add(12341234, 2, 'millenium');
+    it('should add millenniums properly', function () {
+      var actual = helper.add(12341234, 2, 'millennium');
       var expected = 63126245234;
       expect(actual).toBe(expected);
     });

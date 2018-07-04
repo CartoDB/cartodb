@@ -304,8 +304,9 @@ var VisModel = Backbone.Model.extend({
   reload: function (options) {
     if (this._instantiateMapWasCalled) {
       this.trigger('reload');
-      this._engine.reload(options);
+      return this._engine.reload(options);
     }
+    return Promise.resolve();
   },
 
   _isAnyAnalysisNodeLoading: function (analysisNodes) {

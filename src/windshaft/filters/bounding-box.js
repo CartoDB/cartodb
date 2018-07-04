@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Model = require('../../core/model');
-var BOUNDING_BOX_FILTER_WAIT = 300;
+var BOUNDING_BOX_FILTER_WAIT = 350;
 
 module.exports = Model.extend({
   initialize: function (mapAdapter) {

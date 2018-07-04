@@ -1,9 +1,10 @@
 var $ = require('jquery');
-var _ = require('underscore');
 var Engine = require('../../src/engine');
+var WindshaftError = require('../../src/windshaft/error');
 var MockFactory = require('../helpers/mockFactory');
 var createEngine = require('../spec/fixtures/engine.fixture.js');
 var FAKE_RESPONSE = require('./windshaft/response.mock');
+var FAKE_ERROR_PAYLOAD = require('./windshaft/error.mock');
 var CartoDBLayer = require('../../src/geo/map/cartodb-layer');
 var Dataview = require('../../src/dataviews/dataview-model-base');
 var Backbone = require('backbone');
@@ -112,7 +113,7 @@ describe('Engine', function () {
       layer = new CartoDBLayer({ source: source, style: style }, { engine: engineMock });
     });
 
-    it('should perform a request with the state encoded in a payload (no layers, no dataviews) ', function (done) {
+    it('should perform a request with the state encoded in a payload (no layers, no dataviews)', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
         var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%5D%7D&stat_tag=fake-stat-tag&api_key=' + engineMock.getApiKey();
@@ -122,7 +123,7 @@ describe('Engine', function () {
       engineMock.reload();
     });
 
-    it('should perform a request with the state encoded in a payload (single layer) ', function (done) {
+    it('should perform a request with the state encoded in a payload (single layer)', function (done) {
       spyOn($, 'ajax').and.callFake(function (params) {
         var actual = params.url;
         var expected = 'http://example.com/api/v1/map?config=%7B%22buffersize%22%3A%7B%22mvt%22%3A0%7D%2C%22layers%22%3A%5B%7B%22type%22%3A%22mapnik%22%2C%22options%22%3A%7B%22cartocss_version%22%3A%222.1.0%22%2C%22source%22%3A%7B%22id%22%3A%22a1%22%7D%2C%22interactivity%22%3A%5B%22cartodb_id%22%5D%7D%7D%5D%2C%22dataviews%22%3A%7B%7D%2C%22analyses%22%3A%5B%7B%22id%22%3A%22a1%22%2C%22type%22%3A%22source%22%2C%22params%22%3A%7B%22query%22%3A%22SELECT%20*%20FROM%20table%22%7D%7D%5D%7D&stat_tag=fake-stat-tag&api_key=' + engineMock.getApiKey();
@@ -134,40 +135,173 @@ describe('Engine', function () {
       engineMock.reload();
     });
 
-    it('should trigger a RELOAD_SUCCESS event when the server returns a successful response ', function () {
-      // Successfull server response
-      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
-      // Fake model updater.
-      spyOn(engineMock._modelUpdater, 'updateModels').and.callFake(function () { });
-      // Attach the success event to a spy.
-      var spy = jasmine.createSpy('successCallback');
+    describe('when using Promises', function () {
+      it('should resolve when the server returns a successful response', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, spy);
-      engineMock.reload();
-      expect(spy).toHaveBeenCalled();
+        engineMock.reload().then(function (nothing) {
+          expect(nothing).not.toBeDefined();
+          done();
+        });
+      });
+
+      it('should resolve consecutive calls when the server returns a successful response', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process (nothing) {
+          expect(nothing).not.toBeDefined();
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload().then(_process);
+        engineMock.reload().then(_process);
+      });
+
+      it('should reject when the server returns an error response', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+
+        engineMock.reload().catch(function (error) {
+          expect(error instanceof WindshaftError).toBe(true);
+          expect(error.message).toBe('Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.');
+          done();
+        });
+      });
+
+      it('should reject consecutive calls when the server returns an error response', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process (error) {
+          expect(error).toBeDefined();
+          expect(error instanceof WindshaftError).toBe(true);
+          expect(error.message).toBe('Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.');
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload().catch(_process);
+        engineMock.reload().catch(_process);
+      });
     });
 
-    it('should trigger a RELOAD_ERROR event when the server returns an error response ', function () {
-      // Error server response
-      var errorMessage = 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.';
-      var errorPayload = {
-        responseText: '{ "errors": ["' + errorMessage + '"]}'
-      };
-      spyOn($, 'ajax').and.callFake(function (params) {
-        params.error(errorPayload);
+    describe('when using Callbacks', function () {
+      it('should call successCallback when the server returns a successful response', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the success callback to a spy.
+        var successCallback = jasmine.createSpy('successCallback');
+
+        engineMock.reload({ success: successCallback }).then(function () {
+          expect(successCallback).toHaveBeenCalledWith();
+          done();
+        });
       });
-      spyOn(engineMock._modelUpdater, 'setErrors').and.callThrough();
-      // Attach the error event to a spy.
-      var spy = jasmine.createSpy('errorCallback');
-      engineMock.on(Engine.Events.RELOAD_ERROR, spy);
 
-      engineMock.reload();
+      it('should call consecutive successCallbacks when the server returns a successful response', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the success callbacks to a spy.
+        var successCallbacks = [
+          jasmine.createSpy('successCallback0'),
+          jasmine.createSpy('successCallback1')
+        ];
 
-      expect(spy).toHaveBeenCalled();
-      var setErrorsArgs = engineMock._modelUpdater.setErrors.calls.mostRecent().args[0];
-      expect(setErrorsArgs).toBeDefined();
-      expect(_.isArray(setErrorsArgs)).toBe(true);
-      expect(setErrorsArgs[0].message).toEqual(errorMessage);
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process () {
+          expect(successCallbacks[counter]).toHaveBeenCalledWith();
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload({ success: successCallbacks[0] }).then(_process);
+        engineMock.reload({ success: successCallbacks[1] }).then(_process);
+      });
+
+      it('should call errorCallback when the server returns an error response', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+        // Attach the error callback to a spy.
+        var errorCallback = jasmine.createSpy('errorCallback');
+
+        engineMock.reload({ error: errorCallback }).catch(function () {
+          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          expect(errorCallback).toHaveBeenCalledWith(error);
+          done();
+        });
+      });
+
+      it('should call consecutive errorCallbacks when the server returns an error response', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+        // Attach the error callbacks to a spy.
+        var errorCallbacks = [
+          jasmine.createSpy('errorCallback0'),
+          jasmine.createSpy('errorCallback1')
+        ];
+
+        var counter = 0;
+        var NUM_CALLS = 2;
+        function _process () {
+          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          expect(errorCallbacks[counter]).toHaveBeenCalledWith(error);
+          counter++;
+          (counter === NUM_CALLS) && done();
+        }
+
+        engineMock.reload({ error: errorCallbacks[0] }).catch(_process);
+        engineMock.reload({ error: errorCallbacks[1] }).catch(_process);
+      });
+    });
+
+    describe('when using Events', function () {
+      it('should trigger a RELOAD_STARTED event when the server returns a successful response', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the started event handler to a spy.
+        var spy = jasmine.createSpy('startedEventHandler');
+
+        engineMock.on(Engine.Events.RELOAD_STARTED, spy);
+        engineMock.reload().then(function () {
+          expect(spy).toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should trigger a RELOAD_SUCCESS event when the server returns a successful response', function (done) {
+        // Successfull server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+        // Attach the success event handler to a spy.
+        var spy = jasmine.createSpy('successEventHandler');
+
+        engineMock.on(Engine.Events.RELOAD_STARTED, spy);
+        engineMock.reload().then(function () {
+          expect(spy).toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should trigger a RELOAD_ERROR event when the server returns an error response', function (done) {
+        // Error server response
+        spyOn($, 'ajax').and.callFake(function (params) { params.error(FAKE_ERROR_PAYLOAD); });
+        // Attach the error event handler to a spy.
+        var spy = jasmine.createSpy('errorEventHandler');
+
+        engineMock.on(Engine.Events.RELOAD_ERROR, spy);
+        engineMock.reload().catch(function () {
+          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          expect(spy).toHaveBeenCalledWith(error);
+          done();
+        });
+      });
     });
 
     it('should use the sourceID parameter', function (done) {
@@ -176,49 +310,185 @@ describe('Engine', function () {
       // Spy on modelupdater to ensure thats called with fakesourceId
       var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
-      // When the reload is finished, check the spy.
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+      engineMock.reload({
+        sourceId: 'fakeSourceId'
+      }).then(function () {
         expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', undefined);
         done();
       });
-      engineMock.reload({
-        sourceId: 'fakeSourceId'
-      });
     });
 
-    it('should use the forceFetch parameter', function (done) {
+    it('should use the latest sourceID parameter', function (done) {
       // Error server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
       // Spy on modelupdater to ensure thats called with fakesourceId
       var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
 
-      // When the reload is finished, check the spy.
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
-        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId', true);
+      engineMock.reload({
+        sourceId: 'fakeSourceId'
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), 'fakeSourceId2', undefined);
         done();
       });
-
       engineMock.reload({
-        sourceId: 'fakeSourceId',
-        forceFetch: true
+        sourceId: 'fakeSourceId2'
       });
     });
 
-    // The following tests overlaps the model-updater tests.
+    it('should use true for the forceFetch parameter if it is true', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
+      engineMock.reload({
+        forceFetch: true
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, true);
+        done();
+      });
+    });
+
+    it('should use true for the forceFetch parameter if any is true', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
+      engineMock.reload({
+        forceFetch: false
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, true);
+        done();
+      });
+      engineMock.reload({
+        forceFetch: true
+      });
+      engineMock.reload({
+        forceFetch: false
+      });
+    });
+
+    it('should use false for the forceFetch parameter if it is false', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
+      engineMock.reload({
+        forceFetch: false
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, false);
+        done();
+      });
+    });
+
+    it('should use false for the forceFetch parameter if all are false', function (done) {
+      // Error server response
+      spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
+      // Spy on modelupdater to ensure thats called with fakesourceId
+      var updateModelsSpy = spyOn(engineMock._modelUpdater, 'updateModels');
+
+      engineMock.reload({
+        forceFetch: false
+      }).then(function () {
+        expect(updateModelsSpy).toHaveBeenCalledWith(jasmine.anything(), undefined, false);
+        done();
+      });
+      engineMock.reload({
+        forceFetch: false
+      });
+      engineMock.reload({
+        forceFetch: false
+      });
+    });
+
+    it('should include the filters when the includeFilters option is true', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+      // Add mock dataview
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
+      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
+      engineMock.addDataview(dataview);
+
+      engineMock.reload({
+        includeFilters: true
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
+        done();
+      });
+    });
+
+    it('should include the filters when the latest includeFilters option is true', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+
+      engineMock.reload({
+        includeFilters: false
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
+        done();
+      });
+      engineMock.reload({
+        includeFilters: false
+      });
+      engineMock.reload({
+        includeFilters: true
+      });
+    });
+
+    it('should NOT include the filters when the includeFilters option is false', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+      // Add mock dataview
+      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
+      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
+      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
+      engineMock.addDataview(dataview);
+
+      engineMock.reload({
+        includeFilters: false
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap).toHaveBeenCalled();
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
+        done();
+      });
+    });
+
+    it('should NOT include the filters when the latest includeFilters options is false', function (done) {
+      // Spy on instantiateMap to ensure thats called with fake_response
+      spyOn(engineMock._windshaftClient, 'instantiateMap').and.callFake(function (request) { request.options.success(FAKE_RESPONSE); });
+
+      engineMock.reload({
+        includeFilters: true
+      }).then(function () {
+        expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
+        done();
+      });
+      engineMock.reload({
+        includeFilters: true
+      });
+      engineMock.reload({
+        includeFilters: false
+      });
+    });
 
     it('should update the layer metadata according to the server response', function (done) {
       // Successfull server response
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
       engineMock.addLayer(layer);
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+
+      engineMock.reload().then(function () {
         var expectedLayerMetadata = { cartocss: '#layer {\nmarker-color: red;\n}', stats: { estimatedFeatureCount: 10031 }, cartocss_meta: { rules: [] } };
         var actualLayerMetadata = engineMock._layersCollection.at(0).attributes.meta;
         expect(actualLayerMetadata).toEqual(expectedLayerMetadata);
         done();
       });
-
-      engineMock.reload();
     });
 
     it('should update the cartolayerGroup metadata according to the server response', function (done) {
@@ -226,7 +496,8 @@ describe('Engine', function () {
       spyOn($, 'ajax').and.callFake(function (params) { params.success(FAKE_RESPONSE); });
 
       engineMock.addLayer(layer);
-      engineMock.on(Engine.Events.RELOAD_SUCCESS, function () {
+
+      engineMock.reload().then(function () {
         var urls = engineMock._cartoLayerGroup.attributes.urls;
         // Ensure the modelUpdater has updated the cartoLayerGroup urls
         expect(urls.attributes[0]).toEqual('http://3.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/0/attributes');
@@ -239,50 +510,6 @@ describe('Engine', function () {
         expect(urls.tiles).toEqual('http://{s}.ashbu.cartocdn.com/fake-username/api/v1/map/2edba0a73a790c4afb83222183782123:1508164637676/{layerIndexes}/{z}/{x}/{y}.{format}');
         done();
       });
-
-      engineMock.reload();
-    });
-
-    it('should update the analyses metadata according to the server response', function (done) {
-      pending('Test not implemented');
-    });
-
-    it('should update the dataview metadata according to the server response', function (done) {
-      pending('Test not implemented');
-    });
-
-    it('should include the filters when the includeFilters option is true', function () {
-      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
-      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
-      engineMock.addDataview(dataview);
-      spyOn(engineMock._windshaftClient, 'instantiateMap');
-
-      engineMock.reload({
-        sourceId: 'fakeSourceId',
-        forceFetch: false,
-        includeFilters: true
-      });
-
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(true);
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters.dataviews.dataviewId).toEqual('dataview1');
-    });
-
-    it('should NOT include the filters when the includeFilters option is false', function () {
-      var source = MockFactory.createAnalysisModel({ id: 'a1', type: 'source', query: 'SELECT * FROM table' });
-      var dataview = new Dataview({ id: 'dataview1', source: source }, { filter: new Backbone.Model(), map: {}, engine: engineMock });
-      dataview.toJSON = jasmine.createSpy('toJSON').and.returnValue('fakeJson');
-      engineMock.addDataview(dataview);
-      spyOn(engineMock._windshaftClient, 'instantiateMap');
-
-      engineMock.reload({
-        sourceId: 'fakeSourceId',
-        forceFetch: false,
-        includeFilters: false
-      });
-
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].options.includeFilters).toEqual(false);
-      expect(engineMock._windshaftClient.instantiateMap.calls.mostRecent().args[0].params.filters).toBeUndefined();
     });
   });
 

@@ -9,7 +9,9 @@ var AGGREGATION_DATA = {
   month: { unit: 'month', factor: 1 },
   quarter: { unit: 'month', factor: 3 },
   year: { unit: 'month', factor: 12 },
-  decade: { unit: 'month', factor: 120 }
+  decade: { unit: 'month', factor: 120 },
+  century: { unit: 'month', factor: 1200 },
+  millenium: { unit: 'month', factor: 12000 }
 };
 
 var helper = {};

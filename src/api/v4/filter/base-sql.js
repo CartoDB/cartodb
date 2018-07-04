@@ -1,5 +1,6 @@
 const _ = require('underscore');
 const Base = require('./base');
+const getObjectValue = require('../../../../src/util/get-object-value');
 
 const ALLOWED_OPTIONS = ['includeNull'];
 const DEFAULT_JOIN_OPERATOR = 'AND';
@@ -35,7 +36,7 @@ class SQLBase extends Base {
    * @param {string} filterValue - The value of the filter
    */
   set (filterType, filterValue) {
-    if (!filterType || !filterValue || !_.isString(filterType) || !_.isString(filterValue)) {
+    if (!filterType || !filterValue || !_.isString(filterType)) {
       return;
     }
 
@@ -105,7 +106,7 @@ class SQLBase extends Base {
       const parameters = this.PARAMETER_SPECIFICATION[filter].parameters;
       const haveCorrectType = parameters.every(
         parameter => {
-          const parameterValue = _.property(parameter.name)(filters);
+          const parameterValue = getObjectValue(filters, parameter.name);
           return parameter.allowedTypes.some(type => parameterIsOfType(type, parameterValue));
         }
       );

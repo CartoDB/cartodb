@@ -41,7 +41,7 @@ function Engine (params) {
   this._isNamedMap = params.templateName !== undefined;
 
   // Variables for the reload debounce
-  this._timeout;
+  this._timeout = null;
   this._stackCalls = [];
   this._batchOptions = {};
 

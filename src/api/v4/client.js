@@ -324,16 +324,18 @@ Client.prototype.getDataviews = function () {
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
  *
+ * @param {object} options - {@link https://leafletjs.com/reference-1.3.0.html#tilelayer-minzoom|L.TileLayer} options.
+ *
  * @returns A {@link http://leafletjs.com/reference-1.3.1.html#tilelayer|L.TileLayer} layer that groups all the layers.
  *
  * @api
  */
-Client.prototype.getLeafletLayer = function () {
+Client.prototype.getLeafletLayer = function (options) {
   // Check if Leaflet is loaded
   utils.isLeafletLoaded();
   if (!this._leafletLayer) {
     var LeafletLayer = require('./native/leaflet-layer');
-    this._leafletLayer = new LeafletLayer(this._layers, this._engine);
+    this._leafletLayer = new LeafletLayer(this._layers, this._engine, options);
   }
   return this._leafletLayer;
 };

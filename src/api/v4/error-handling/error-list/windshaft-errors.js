@@ -60,7 +60,7 @@ module.exports = {
       friendlyMessage: 'Your time series column type is $0. Please use a date type.'
     },
     'invalid-aggregation-value': {
-      messageRegex: /Invalid aggregation value. Valid ones: auto, minute, hour, day, week, month, quarter, year/
+      messageRegex: /Invalid aggregation value. Valid ones: auto, minute, hour, day, week, month, quarter, year, decade, century, millennium/
     }
   },
   auth: {

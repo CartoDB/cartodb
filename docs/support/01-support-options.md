@@ -4,7 +4,7 @@ Feeling stuck? There are many ways to find help.
 
 * Ask a question on [GIS StackExchange](https://gis.stackexchange.com/questions/tagged/carto) using the `CARTO` tag.
 * [Report an issue](https://github.com/CartoDB/carto.js/issues) in Github.
-* Engine Plan customers have additional access to enterprise-level support through CARTO's support representatives.
+* Enterprise Plan customers have additional access to enterprise-level support through CARTO's support representatives.
 
 If you just want to describe an issue or share an idea, just <a class="typeform-share" href="https://cartohq.typeform.com/to/mH6RRl" data-mode="popup" target="_blank"> send your feedback</a><script>(function() { var qs,js,q,s,d=document, gi=d.getElementById, ce=d.createElement, gt=d.getElementsByTagName, id="typef_orm_share", b="https://embed.typeform.com/"; if(!gi.call(d,id)){ js=ce.call(d,"script"); js.id=id; js.src=b+"embed.js"; q=gt.call(d,"script")[0]; q.parentNode.insertBefore(js,q) } })() </script>.
 
@@ -29,9 +29,9 @@ When posting a new question, please consider the following:
 * Be informative in your post. Details, code snippets, logs, screenshots, etc. help others to understand your problem.
 * Use code that demonstrates the problem. It is very hard to debug errors without sample code to reproduce the problem.
 
-### Engine Plan Customers
+### Enterprise Plan Customers
 
-Engine Plan customers have additional support options beyond general community support. As per your account Terms of Service, you have access to enterprise-level support through CARTO's support representatives available at [enterprise-support@carto.com](mailto:enterprise-support@carto.com)
+Enterprise Plan customers have additional support options beyond general community support. As per your account Terms of Service, you have access to enterprise-level support through CARTO's support representatives available at [enterprise-support@carto.com](mailto:enterprise-support@carto.com)
 
 In order to speed up the resolution of your issue, provide as much information as possible (even if it is a link from community support). This allows our engineers to investigate your problem as soon as possible.
 

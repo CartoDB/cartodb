@@ -74,8 +74,7 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   isInteractive: function () {
-    // By default it has one field (cartodb_id)
-    return this.getInteractiveColumnNames().length > 1;
+    return this._hasInfowindowFields() || this._hasTooltipFields();
   },
 
   _hasInfowindowFields: function () {

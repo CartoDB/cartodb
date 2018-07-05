@@ -145,6 +145,33 @@ describe('geo/map/cartodb-layer', function () {
     });
   });
 
+  describe('.isInteractive', function () {
+    var layer, infowindowSpy, tooltipSpy;
+
+    beforeEach(function () {
+      layer = new CartoDBLayer({}, { engine: engineMock });
+
+      infowindowSpy = spyOn(layer, '_hasInfowindowFields');
+      tooltipSpy = spyOn(layer, '_hasTooltipFields');
+    });
+
+    it('returns true if there are selected fields', function () {
+      infowindowSpy.and.returnValue(true);
+      tooltipSpy.and.returnValue(false);
+      expect(layer.isInteractive()).toBe(true);
+
+      infowindowSpy.and.returnValue(false);
+      tooltipSpy.and.returnValue(true);
+      expect(layer.isInteractive()).toBe(true);
+    });
+
+    it('returns true if there are selected fields', function () {
+      infowindowSpy.and.returnValue(false);
+      tooltipSpy.and.returnValue(false);
+      expect(layer.isInteractive()).toBe(false);
+    });
+  });
+
   describe('.getInteractiveColumnNames', function () {
     it("should return 'cartodb_id' and the names of the fields for infowindows and tooltips with no duplicates", function () {
       this.layer = new CartoDBLayer({

@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.10",
-      "from": "cartodb/carto.js#fix-gradient-legends",
-      "resolved": "git://github.com/cartodb/carto.js.git#edccc801e3e4f06f068fc921baa9cbfdd43b748c"
+      "version": "4.0.11-0",
+      "from": "cartodb/carto.js#v4.0.11-0",
+      "resolved": "git://github.com/cartodb/carto.js.git#c090c42dc2cb9da131a321e1e749d4118f50f70a"
     },
     "interpret": {
       "version": "1.1.0",

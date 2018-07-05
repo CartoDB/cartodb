@@ -217,7 +217,7 @@ describe('api/v4/client', function () {
   });
 
   describe('.removeDataview', function () {
-    var categoryDataview;
+    var categoryDataview, populationDataview;
 
     beforeEach(function () {
       var source = new carto.source.Dataset('ne_10m_populated_places_simple');
@@ -227,7 +227,14 @@ describe('api/v4/client', function () {
         operationColumn: 'pop_max'
       });
 
+      populationDataview = new carto.dataview.Category(source, 'adm1name', {
+        limit: 10,
+        operation: carto.operation.SUM,
+        operationColumn: 'pop_max'
+      });
+
       client.addDataview(categoryDataview);
+      client.addDataview(populationDataview);
 
       spyOn(client._engine, 'removeDataview');
       spyOn(categoryDataview, 'disable');
@@ -235,11 +242,11 @@ describe('api/v4/client', function () {
     });
 
     it('removes the dataview', function () {
-      expect(client._dataviews.length).toBe(1);
+      expect(client._dataviews.length).toBe(2);
 
       client.removeDataview(categoryDataview);
 
-      expect(client._dataviews.length).toBe(0);
+      expect(client._dataviews.length).toBe(1);
     });
 
     it('disables the dataview', function () {

@@ -293,7 +293,11 @@ Client.prototype.addDataviews = function (dataviews) {
  * @api
  */
 Client.prototype.removeDataview = function (dataview) {
-  this._dataviews.splice(this._dataviews.indexOf(dataview));
+  var dataviewIndex = this._dataviews.indexOf(dataview);
+
+  if (dataviewIndex === -1) return;
+
+  this._dataviews.splice(dataviewIndex, 1);
   this._engine.removeDataview(dataview.$getInternalModel());
   dataview.disable();
   return this._reload();

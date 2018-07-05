@@ -17,6 +17,12 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Improve style for Analysis modal blocks (https://github.com/CartoDB/cartodb/issues/13361)
+* Use ellipsis for widgets title (https://github.com/CartoDB/cartodb/issues/13332)
+* Fix dark menu links (https://github.com/CartoDB/cartodb/issues/11257)
+* Fix legend editor margin (https://github.com/CartoDB/cartodb/issues/13338)
+* Fix slider width for point/stroke size (https://github.com/CartoDB/support/issues/1641)
+* Fix gradient legends margin (https://github.com/CartoDB/support/issues/1640)
 * Fix drag new layer from Torque source (https://github.com/CartoDB/support/issues/1625)  
 * Fix custom carousel item select event (https://github.com/CartoDB/cartodb/issues/14070)
 * Fix gaps in tiles (https://github.com/CartoDB/support/issues/1362)

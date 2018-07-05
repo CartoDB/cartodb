@@ -420,9 +420,13 @@ $maxLegendContainerHeight: 300px;
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
+
+  &.no-average {
+    margin-bottom: 4px;
+  }
 }
 .Legend-choropleth::before {
   position: absolute;

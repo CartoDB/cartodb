@@ -105,13 +105,13 @@ describe('Engine', function () {
 
   describe('._buildParams', function () {
     it('should send client tag for analytics when environment is production', function () {
-      var previousENVValue = window.__ENV__;
-      window.__ENV__ = 'production';
+      var previousENVValue = __ENV__;
+      __ENV__ = 'production';
 
       var params = engineMock._buildParams();
       expect(params.client).toBeDefined();
 
-      window.__ENV__ = previousENVValue;
+      __ENV__ = previousENVValue;
     });
   });
 

@@ -25,7 +25,6 @@ module.exports = {
         var bOpts = bundle.options.browserifyOptions;
         if (bOpts) {
           if (bOpts.standalone) cfg[name].options.browserifyOptions.standalone = bOpts.standalone;
-          if (bOpts.insertGlobalVars) cfg[name].options.browserifyOptions.insertGlobalVars = bOpts.insertGlobalVars;
         }
       }
     }

@@ -20,20 +20,13 @@ module.exports = {
     ],
     dest: '<%= tmp %>/src-specs.js',
     options: {
-      require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ],
-      browserifyOptions: {
-        insertGlobalVars: {
-          // We need to set __ENV__ to production to simulate
-          // the same behaviour as webpack.definePlugin
-          __ENV__: function () { return JSON.stringify('test'); }
-        }
-      },
       transform: [
         ['babelify', {
           presets: ['env'],
           plugins: ['transform-object-rest-spread']
         }]
-      ]
+      ],
+      require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ]
     }
   },
 

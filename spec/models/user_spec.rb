@@ -1621,6 +1621,44 @@ describe User do
             @org_user_owner.in_database["SELECT 1 FROM pg_roles WHERE rolname = '#{api_key.db_role}'"].first
           ).to be_nil
         end
+
+        it 'deletes client_application and friends' do
+          user = create_user(email: 'clientapp@example.com', username: 'clientapp', password: @user_password)
+
+          user.create_client_application
+          user.client_application.access_tokens << ::AccessToken.new(
+            token: "access_token",
+            secret: "access_secret",
+            callback_url: "http://callback2",
+            verifier: "v2",
+            scope: nil,
+            client_application_id: user.client_application.id
+          ).save
+
+          user.client_application.oauth_tokens << ::OauthToken.new(
+            token: "oauth_token",
+            secret: "oauth_secret",
+            callback_url: "http//callback.com",
+            verifier: "v1",
+            scope: nil,
+            client_application_id: user.client_application.id
+          ).save
+
+          base_key = "rails:oauth_access_tokens:#{user.client_application.access_tokens.first.token}"
+
+          client_application = ClientApplication.where(user_id: user.id).first
+          expect(ClientApplication.where(user_id: user.id).count).to eq 2
+          expect(client_application.tokens).to_not be_empty
+          expect(client_application.tokens.length).to eq 2
+          $api_credentials.keys.should include(base_key)
+
+          user.destroy
+
+          expect(ClientApplication.where(user_id: user.id).first).to be_nil
+          expect(AccessToken.where(user_id: user.id).first).to be_nil
+          expect(OauthToken.where(user_id: user.id).first).to be_nil
+          $api_credentials.keys.should_not include(base_key)
+        end
       end
     end
   end
@@ -2608,30 +2646,21 @@ describe User do
 
   describe 'api keys' do
     before(:all) do
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @auth_api_user = FactoryGirl.create(:valid_user)
     end
 
     after(:all) do
-      @auth_api_feature_flag.destroy
       @auth_api_user.destroy
     end
 
     describe 'create api keys on user creation' do
-      it "creates master api key on user creation if ff auth_api is enabled for the user" do
+      it "creates master api key on user creation" do
         api_keys = Carto::ApiKey.where(user_id: @auth_api_user.id)
         api_keys.should_not be_empty
 
         master_api_key = Carto::ApiKey.where(user_id: @auth_api_user.id).master.first
         master_api_key.should be
         master_api_key.token.should eq @auth_api_user.api_key
-      end
-
-      it "does not create master api key on user creation if ff auth_api is not enabled for the user" do
-        user = FactoryGirl.create(:valid_user)
-        api_keys = Carto::ApiKey.where(user_id: @user.id)
-        api_keys.should be_empty
-        user.destroy
       end
     end
 

@@ -2,4 +2,5 @@
   + <%- _t('editor.layers.add-layer.label') %>
 </button>
 <ul class="Editor-ListLayer js-layers"></ul>
+<ul class="Editor-ListLayer js-basemaps"></ul>
 <div class="Editor-dropArea js-drop"></div>

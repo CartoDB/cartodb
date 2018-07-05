@@ -150,7 +150,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     if Cartodb.asset_path
       "#{Cartodb.asset_path}/assets/unversioned/images/avatars/mobile_app_default_avatar.png"
     else
-      "#{relative_url_root}/images/avatars/mobile_app_default_avatar.png"
+      "#{relative_url_root}/#{frontend_version}/images/avatars/mobile_app_default_avatar.png"
     end
   end
 

@@ -18,6 +18,16 @@ This release introduces a new API Key system. In order to migrate existing users
 
 ### Bug fixes / enhancements
 * Fix wrong style after creating a feature (https://github.com/CartoDB/cartodb/issues/13680)
+* Fix bug computing next page in datasets (https://github.com/CartoDB/cartodb/issues/14138)
+* Move to the last page after adding a row (https://github.com/CartoDB/cartodb/issues/10720)
+* Fix pagination after deleting a row (https://github.com/CartoDB/cartodb/issues/9868)
+* Fix Widget view click (https://github.com/CartoDB/cartodb/issues/13409)
+* Improve style for Analysis modal blocks (https://github.com/CartoDB/cartodb/issues/13361)
+* Use ellipsis for widgets title (https://github.com/CartoDB/cartodb/issues/13332)
+* Fix dark menu links (https://github.com/CartoDB/cartodb/issues/11257)
+* Fix legend editor margin (https://github.com/CartoDB/cartodb/issues/13338)
+* Fix slider width for point/stroke size (https://github.com/CartoDB/support/issues/1641)
+* Fix gradient legends margin (https://github.com/CartoDB/support/issues/1640)
 * Fix drag new layer from Torque source (https://github.com/CartoDB/support/issues/1625)  
 * Fix custom carousel item select event (https://github.com/CartoDB/cartodb/issues/14070)
 * Fix gaps in tiles (https://github.com/CartoDB/support/issues/1362)
@@ -60,6 +70,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 ### Internals
+* Add `internal-carto.js` to transpilation process in Webpack (https://github.com/CartoDB/cartodb/pull/14117)
 * Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
 * Update to Webpack 4, move CSS processing from Grunt to Webpack (https://github.com/CartoDB/cartodb/pull/14033)
 
@@ -703,6 +714,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Editor assets are frozen now (#14090)
 * Added specs for the migrated dashboard (#14037)
 * Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)
 * CARTO.js internal version is now called internal-carto.js (#13960)

@@ -20,6 +20,12 @@ module.exports = {
     ],
     dest: '<%= tmp %>/src-specs.js',
     options: {
+      transform: [
+        ['babelify', {
+          presets: ['env'],
+          plugins: ['transform-object-rest-spread']
+        }]
+      ],
       require: [ 'camshaft-reference/versions/0.59.4/reference.json:./versions/0.59.4/reference.json' ]
     }
   },

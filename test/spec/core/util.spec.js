@@ -49,7 +49,11 @@ describe('core/util', function () {
     });
 
     it('should support it if msMaxTouchPoints has more than one', function () {
-      delete window.ontouchstart;
+      Object.defineProperty(window, 'ontouchstart', {
+        value: undefined,
+        writable: true
+      });
+
       navigator.msMaxTouchPoints = 2;
       expect(util.supportsTouch()).toBeTruthy();
     });

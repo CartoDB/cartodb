@@ -58,6 +58,12 @@ var status = {
 var timeAggregation = {
   /** Auto */
   AUTO: 'auto',
+  /** Millennium */
+  MILLENNIUM: 'millennium',
+  /** Century */
+  CENTURY: 'century',
+  /** Decade */
+  DECADE: 'decade',
   /** Year */
   YEAR: 'year',
   /** Quarter */

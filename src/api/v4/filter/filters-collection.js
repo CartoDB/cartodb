@@ -32,7 +32,7 @@ class FiltersCollection extends Base {
   }
 
   /**
-   * Add a new filter to the collection
+   * Add a new filter to collection
    *
    * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
    * @memberof FiltersCollection
@@ -51,7 +51,7 @@ class FiltersCollection extends Base {
   }
 
   /**
-   * Remove an existing filter from the collection
+   * Remove an existing filter from collection
    *
    * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
    * @returns {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} The removed element
@@ -70,7 +70,7 @@ class FiltersCollection extends Base {
   }
 
   /**
-   * Get the number of added filters to the collection
+   * Get the number of added filters
    *
    * @returns {number} Number of contained filters
    * @memberof FiltersCollection

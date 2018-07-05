@@ -82,20 +82,52 @@ Base.prototype.$getInternalModel = function () {
   return this._internalModel;
 };
 
+/**
+ * Add new filter to the source
+ *
+ * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
+ *
+ * @memberof carto.filter.Base
+ * @api
+ */
 Base.prototype.addFilter = function (filter) {
   this._hasFiltersApplied = true;
   this._appliedFilters.addFilter(filter);
 };
 
+/**
+ * Add new filters to the source
+ *
+ * @param {Array<carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR>} filters
+ *
+ * @memberof carto.filter.Base
+ * @api
+ */
 Base.prototype.addFilters = function (filters) {
   filters.forEach(filter => this.addFilter(filter));
 };
 
+/**
+ * Remove an existing filter from source
+ *
+ * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
+ *
+ * @memberof carto.filter.Base
+ * @api
+ */
 Base.prototype.removeFilter = function (filter) {
   this._appliedFilters.removeFilter(filter);
   this._hasFiltersApplied = Boolean(this._appliedFilters.count());
 };
 
+/**
+ * Remove existing filters from source
+ *
+ * @param {Array<carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR>} filters
+ *
+ * @memberof carto.filter.Base
+ * @api
+ */
 Base.prototype.removeFilters = function (filters) {
   filters.forEach(filter => this.removeFilter(filter));
 };

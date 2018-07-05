@@ -17,6 +17,10 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Fix bug computing next page in datasets (https://github.com/CartoDB/cartodb/issues/14138)
+* Move to the last page after adding a row (https://github.com/CartoDB/cartodb/issues/10720)
+* Fix pagination after deleting a row (https://github.com/CartoDB/cartodb/issues/9868)
+* Fix Widget view click (https://github.com/CartoDB/cartodb/issues/13409)
 * Improve style for Analysis modal blocks (https://github.com/CartoDB/cartodb/issues/13361)
 * Use ellipsis for widgets title (https://github.com/CartoDB/cartodb/issues/13332)
 * Fix dark menu links (https://github.com/CartoDB/cartodb/issues/11257)

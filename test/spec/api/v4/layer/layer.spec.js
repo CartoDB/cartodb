@@ -625,6 +625,30 @@ describe('api/v4/layer', function () {
     });
   });
 
+  describe('.isInteractive', function () {
+    it('returns true if layer has featureClickColumns', function () {
+      const layer = new carto.layer.Layer(source, style, {
+        featureClickColumns: ['cartodb_id']
+      });
+
+      expect(layer.isInteractive()).toBe(true);
+    });
+
+    it('returns true if layer has featureOverColumns', function () {
+      const layer = new carto.layer.Layer(source, style, {
+        featureOverColumns: ['cartodb_id']
+      });
+
+      expect(layer.isInteractive()).toBe(true);
+    });
+
+    it('returns false if layer doesn\'t have getFeatureClickColumns or getFeatureHoverColumns', function () {
+      const layer = new carto.layer.Layer(source, style);
+
+      expect(layer.isInteractive()).toBe(false);
+    });
+  });
+
   xit('should update "internalmodel.cartocss" when the style is updated', function (done) {
     var client = new carto.Client({
       apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',

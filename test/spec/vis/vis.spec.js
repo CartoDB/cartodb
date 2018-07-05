@@ -304,7 +304,7 @@ describe('vis/vis', function () {
       it('should NOT instantiate map', function (done) {
         spyOn(this.vis._engine, 'reload');
 
-        this.vis.reload({}).then(function () {
+        this.vis.reload({}).then(() => {
           expect(this.vis._engine.reload).not.toHaveBeenCalled();
           done();
         });

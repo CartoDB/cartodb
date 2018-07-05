@@ -18,10 +18,10 @@ var CartoError = require('../error-handling/carto-error');
  * @api
  */
 function Dataset (tableName) {
-  Base.apply(this, arguments);
-
   _checkTableName(tableName);
   this._tableName = tableName;
+
+  Base.apply(this, arguments);
 
   this._appliedFilters.on('change:filters', () => this._updateInternalModelQuery(this._getQueryToApply()));
 }

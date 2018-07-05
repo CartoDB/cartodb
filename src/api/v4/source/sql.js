@@ -19,10 +19,10 @@ var CartoError = require('../error-handling/carto-error');
  * @api
  */
 function SQL (query) {
-  Base.apply(this, arguments);
-
   _checkQuery(query);
   this._query = query;
+
+  Base.apply(this, arguments);
 
   this._appliedFilters.on('change:filters', () => this._updateInternalModelQuery(this._getQueryToApply()));
 }

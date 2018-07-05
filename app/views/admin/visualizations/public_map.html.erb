@@ -10,7 +10,7 @@
 <%= content_for(:body_class) do %> PublicMap <% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'cartodb', 'common', 'public_map' %>
+  <%= editor_stylesheet_link_tag 'cartodb', 'common', 'public_map' %>
 <% end %>
 
 <%= content_for(:content) do %>
@@ -399,7 +399,7 @@
 
   </script>
 
-  <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'public_map'  %>
+  <%= editor_javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'public_map'  %>
 
   <script>
 

@@ -150,11 +150,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     if Cartodb.asset_path
       "#{Cartodb.asset_path}/assets/unversioned/images/avatars/mobile_app_default_avatar.png"
     else
-      "#{relative_url_root}/images/avatars/mobile_app_default_avatar.png"
+      "#{relative_url_root}/#{frontend_version}/images/avatars/mobile_app_default_avatar.png"
     end
   end
 
   def check_new_dashboard
-    current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
+    current_user.builder_enabled?
   end
 end

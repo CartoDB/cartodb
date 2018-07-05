@@ -155,6 +155,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def check_new_dashboard
-    current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
+    current_user.builder_enabled?
   end
 end

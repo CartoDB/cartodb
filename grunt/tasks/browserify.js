@@ -11,12 +11,7 @@ module.exports = {
         options: {
           watch: '<%= doWatchify %>',
           browserifyOptions: {
-            debug: true, // to generate source-maps
-            insertGlobalVars: {
-              // We need to set __ENV__ to production to simulate
-              // the same behaviour as webpack.definePlugin
-              __ENV__: function () { return JSON.stringify('production'); }
-            }
+            debug: true // to generate source-maps
           }
         }
       };

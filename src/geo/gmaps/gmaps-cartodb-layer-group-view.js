@@ -20,6 +20,10 @@ function setImageOpacityIE8 (img, opacity) {
   }
 }
 
+function generateId () {
+  return (((1 + Math.random()) * 0x100000000) | 0).toString(16).substring(1);
+}
+
 var GMapsCartoDBLayerGroupView = function (layerModel, options) {
   var self = this;
   var hovers = [];
@@ -83,6 +87,9 @@ var GMapsCartoDBLayerGroupView = function (layerModel, options) {
     blankImage: options.blankImage || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
   };
 
+  // internal id
+  this._id = generateId();
+
   // non-configurable options
   this.interactive = true;
   this.tileSize = new google.maps.Size(256, 256);
@@ -107,9 +114,10 @@ _.extend(
     },
 
     remove: function () {
-      var overlayIndex = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
+      var overlayIndex = this._getOverlayIndex();
+
       if (overlayIndex >= 0) {
-        this.gmapsMap.overlayMapTypes.removeAt(0);
+        this.gmapsMap.overlayMapTypes.removeAt(overlayIndex);
       }
 
       this._clearInteraction();
@@ -272,9 +280,9 @@ _.extend(
     _reload: function () {
       var tileURLTemplates;
       if (this.model.hasTileURLTemplates()) {
-        tileURLTemplates = [ this.model.getTileURLTemplatesWithSubdomains()[0] ];
+        tileURLTemplates = [this.model.getTileURLTemplatesWithSubdomains()[0]];
       } else {
-        tileURLTemplates = [ EMPTY_GIF ];
+        tileURLTemplates = [EMPTY_GIF];
       }
 
       this.options.tiles = tileURLTemplates;
@@ -285,17 +293,26 @@ _.extend(
     },
 
     _refreshView: function () {
-      var overlayIndex = this.gmapsMap.overlayMapTypes.getArray().indexOf(this);
+      var overlays = this.gmapsMap.overlayMapTypes;
+      var overlayIndex = this._getOverlayIndex();
+
       if (overlayIndex >= 0) {
-        this.gmapsMap.overlayMapTypes.removeAt(overlayIndex);
+        overlays.setAt(overlayIndex, overlays.getAt(overlayIndex));
       }
-      this.gmapsMap.overlayMapTypes.setAt(0, this);
     },
 
     _checkLayer: function () {
       if (!this.options.added) {
         throw new Error('the layer is not still added to the map');
       }
+    },
+
+    _getOverlayIndex: function () {
+      var overlays = this.gmapsMap.overlayMapTypes.getArray();
+
+      return _.findIndex(overlays, function (overlay) {
+        return overlay && overlay._id === this._id;
+      }, this);
     },
 
     /**

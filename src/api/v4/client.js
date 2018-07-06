@@ -56,7 +56,7 @@ function Client (settings) {
     apiKey: settings.apiKey,
     username: settings.username,
     serverUrl: settings.serverUrl || 'https://{user}.carto.com'.replace(/{user}/, settings.username),
-    statTag: 'carto.js-v' + VERSION
+    client: 'js-' + VERSION
   });
   this._bindEngine(this._engine);
 }

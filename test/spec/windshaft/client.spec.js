@@ -49,7 +49,7 @@ describe('windshaft/client', function () {
 
     it('should include the given params and handle JSON objects correctly', function () {
       var request = new Request({ some: 'json that must be encoded' }, {
-        stat_tag: 'stat_tag',
+        client: 'client_version',
         filters: { some: 'filters that will be applied' }
       }, {});
       this.client.instantiateMap(request);
@@ -59,7 +59,7 @@ describe('windshaft/client', function () {
 
       expect(url).toEqual('https://cartojs-test.carto.com:443/api/v1/map');
       expect(params[0]).toEqual('config=%7B%22some%22%3A%22json%20that%20must%20be%20encoded%22%7D');
-      expect(params[1]).toEqual('stat_tag=stat_tag');
+      expect(params[1]).toEqual('client=client_version');
       expect(params[2]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
       expect(this.ajaxParams.method).toEqual('GET');
       expect(this.ajaxParams.dataType).toEqual('jsonp');

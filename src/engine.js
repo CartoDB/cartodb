@@ -33,7 +33,7 @@ var RELOAD_DEBOUNCE_TIME_IN_MILIS = 100;
  * @param {string} params.username - Name of the user registered in the windshaft server.
  * @param {string} params.serverUrl - Url of the windshaft server.
  * @param {boolean} params.templateName - While we dont remove named maps we must explicitly say when the map is named. Defaults to false.
- * @param {boolean} params.statTag - Token used to get map view statistics.
+ * @param {boolean} params.client - Token used to get map view statistics.
  * @constructor
  */
 function Engine (params) {
@@ -48,7 +48,7 @@ function Engine (params) {
   this._windshaftSettings = {
     urlTemplate: params.serverUrl,
     userName: params.username,
-    statTag: params.statTag,
+    client: params.client,
     apiKey: params.apiKey,
     authToken: params.authToken,
     templateName: params.templateName
@@ -338,20 +338,26 @@ Engine.prototype._buildWindshaftOptions = function (options, successCallback, er
  * @private
  */
 Engine.prototype._buildParams = function (includeFilters) {
-  var params = {
-    stat_tag: this._windshaftSettings.statTag
-  };
+  var params = {};
+
+  if (__ENV__ === 'production') {
+    params.client = this._windshaftSettings.client;
+  }
+
   if (includeFilters && !_.isEmpty(this._dataviewsCollection.getFilters())) {
     params.filters = this._dataviewsCollection.getFilters();
   }
+
   if (this._windshaftSettings.apiKey) {
     params.api_key = this._windshaftSettings.apiKey;
     return params;
   }
+
   if (this._windshaftSettings.authToken) {
     params.auth_token = this._windshaftSettings.authToken;
     return params;
   }
+
   console.warn('Engine initialized with no apiKeys neither authToken');
 };
 

@@ -295,7 +295,9 @@ Client.prototype.addDataviews = function (dataviews) {
 Client.prototype.removeDataview = function (dataview) {
   var dataviewIndex = this._dataviews.indexOf(dataview);
 
-  if (dataviewIndex === -1) return;
+  if (dataviewIndex === -1) {
+    return Promise.resolve();
+  }
 
   this._dataviews.splice(dataviewIndex, 1);
   this._engine.removeDataview(dataview.$getInternalModel());

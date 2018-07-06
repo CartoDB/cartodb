@@ -17,6 +17,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
 * Improve input image when color changes (https://github.com/CartoDB/cartodb/issues/11326)
 * Fix pagination buttons style (https://github.com/CartoDB/cartodb/issues/13456)
 * Fix edit month in table cell (https://github.com/CartoDB/support/issues/1352)

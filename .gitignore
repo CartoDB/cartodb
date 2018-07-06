@@ -76,3 +76,4 @@ doc/manual/build
 yarn.lock
 public/static.tar.gz
 compilation-stats.json
+npm-debug.log.*

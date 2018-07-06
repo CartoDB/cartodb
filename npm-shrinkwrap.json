@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.45",
+  "version": "4.12.46",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.10",
+      "version": "4.0.12",
       "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.10.tgz"
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.12.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.11-1",
-      "from": "cartodb/carto.js#v4.0.11-1",
-      "resolved": "git://github.com/cartodb/carto.js.git#a87594d592a085f36ac209b794a97a648df25475"
+      "version": "4.0.12",
+      "from": "cartodb/carto.js#v4.0.12",
+      "resolved": "git://github.com/cartodb/carto.js.git#655211487ceeb22aced27e28135bb9c723b79386"
     },
     "interpret": {
       "version": "1.1.0",

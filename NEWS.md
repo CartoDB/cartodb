@@ -19,6 +19,7 @@ This release introduces a new API Key system. In order to migrate existing users
 ### Bug fixes / enhancements
 * Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
 * Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
+* Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
 * Improve input image when color changes (https://github.com/CartoDB/cartodb/issues/11326)
 * Fix pagination buttons style (https://github.com/CartoDB/cartodb/issues/13456)
 * Fix edit month in table cell (https://github.com/CartoDB/support/issues/1352)

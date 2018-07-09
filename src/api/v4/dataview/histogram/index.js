@@ -163,10 +163,10 @@ Histogram.prototype._validateBins = function (bins) {
 
 Histogram.prototype._validateStartEnd = function (start, end) {
   const values = [start, end];
-  const notBothNumber = _.some(values, _.isFinite) && !_.every(values, _.isFinite);
-  const notBothNull = _.some(values, _.isNull) && !_.every(values, _.isNull);
+  const bothAreNumbers = _.every(values, _.isFinite);
+  const bothAreNull = _.every(values, _.isNull);
 
-  if (notBothNumber || notBothNull) {
+  if (!bothAreNumbers && !bothAreNull) {
     throw this._getValidationError('histogramInvalidStartEnd');
   }
 };

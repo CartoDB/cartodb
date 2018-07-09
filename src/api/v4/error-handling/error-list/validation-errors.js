@@ -204,7 +204,6 @@ module.exports = {
     },
     'invalid-filter': {
       messageRegex: /invalidFilter(.+)/,
-      // TODO: Add link to documentation?
       friendlyMessage: "'$0' is not a valid filter. Please check documentation."
     },
     'invalid-option': {

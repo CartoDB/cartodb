@@ -3,16 +3,9 @@
   "version": "4.12.50-fixvulnerabilities",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.15",
-      "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.15.tgz",
-      "dependencies": {
-        "jquery": {
-          "version": "2.1.4",
-          "from": "jquery@2.1.4",
-          "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
-        }
-      }
+      "version": "4.0.9-0",
+      "from": "cartodb/carto.js#fix-vulnerabilities-external",
+      "resolved": "git://github.com/cartodb/carto.js.git#6135cd912226f352a86b3eeb7047278f8e9eb9c0"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -674,16 +667,9 @@
       "resolved": "https://registry.npmjs.org/cli-width/-/cli-width-2.2.0.tgz"
     },
     "clip-path-polygon": {
-      "version": "0.1.12",
-      "from": "clip-path-polygon@0.1.12",
-      "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.12.tgz",
-      "dependencies": {
-        "jquery": {
-          "version": "2.1.4",
-          "from": "jquery@2.1.4",
-          "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
-        }
-      }
+      "version": "0.1.13",
+      "from": "clip-path-polygon@0.1.13",
+      "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.13.tgz"
     },
     "clipboard": {
       "version": "1.6.1",
@@ -1681,19 +1667,7 @@
     "internal-carto.js": {
       "version": "4.0.9-0",
       "from": "cartodb/carto.js#fix-vulnerabilities",
-      "resolved": "git://github.com/cartodb/carto.js.git#f3805e21ca8c05e413e0629cb2537cddd815c53e",
-      "dependencies": {
-        "clip-path-polygon": {
-          "version": "0.1.13",
-          "from": "clip-path-polygon@0.1.13",
-          "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.13.tgz"
-        },
-        "mustache": {
-          "version": "2.3.0",
-          "from": "mustache@2.3.0",
-          "resolved": "https://registry.npmjs.org/mustache/-/mustache-2.3.0.tgz"
-        }
-      }
+      "resolved": "git://github.com/cartodb/carto.js.git#f3805e21ca8c05e413e0629cb2537cddd815c53e"
     },
     "interpret": {
       "version": "1.1.0",
@@ -2171,9 +2145,9 @@
       "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz"
     },
     "mustache": {
-      "version": "1.1.0",
-      "from": "mustache@1.1.0",
-      "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
+      "version": "2.3.0",
+      "from": "mustache@2.3.0",
+      "resolved": "https://registry.npmjs.org/mustache/-/mustache-2.3.0.tgz"
     },
     "mute-stream": {
       "version": "0.0.7",

@@ -14,7 +14,7 @@
   "contributors": [],
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@carto/carto.js": "^4.0.6",
+    "@carto/carto.js": "CartoDB/carto.js#fix-vulnerabilities-external",
     "@carto/zera": "1.0.6",
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",

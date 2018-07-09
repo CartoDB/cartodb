@@ -50,12 +50,8 @@ module.exports = Model.extend({
     // Start - End
     var start = this.get('start');
     var end = this.get('end');
-
-    if (_.isFinite(start)) {
+    if (_.isFinite(start) && _.isFinite(end)) {
       params.push('start=' + start);
-    }
-
-    if (_.isFinite(end)) {
       params.push('end=' + end);
     }
 

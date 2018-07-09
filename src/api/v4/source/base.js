@@ -87,7 +87,7 @@ Base.prototype.$getInternalModel = function () {
  *
  * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
  *
- * @memberof carto.filter.Base
+ * @memberof carto.source.Base
  * @api
  */
 Base.prototype.addFilter = function (filter) {
@@ -100,7 +100,7 @@ Base.prototype.addFilter = function (filter) {
  *
  * @param {Array<carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR>} filters
  *
- * @memberof carto.filter.Base
+ * @memberof carto.source.Base
  * @api
  */
 Base.prototype.addFilters = function (filters) {
@@ -112,7 +112,7 @@ Base.prototype.addFilters = function (filters) {
  *
  * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
  *
- * @memberof carto.filter.Base
+ * @memberof carto.source.Base
  * @api
  */
 Base.prototype.removeFilter = function (filter) {
@@ -125,7 +125,7 @@ Base.prototype.removeFilter = function (filter) {
  *
  * @param {Array<carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR>} filters
  *
- * @memberof carto.filter.Base
+ * @memberof carto.source.Base
  * @api
  */
 Base.prototype.removeFilters = function (filters) {

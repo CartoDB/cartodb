@@ -70,7 +70,7 @@ module DataServicesMetricsHelper
   def get_isolines_data(user, from, to)
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::IsolinesUsageMetrics.new(user.username, orgname)
-    isolines_key = CartoDB::IsolinesUsageMetrics::ISOLINES_KEYS.fetch(user.isolines_provider, :mapbox_isolines)
+    isolines_key = CartoDB::IsolinesUsageMetrics::ISOLINES_KEYS.fetch(user.isolines_provider, :tomtom_isolines)
     success = usage_metrics.get_sum_by_date_range(isolines_key, :isolines_generated, from, to)
     empty = usage_metrics.get_sum_by_date_range(isolines_key, :empty_responses, from, to)
     success + empty
@@ -79,7 +79,7 @@ module DataServicesMetricsHelper
   def get_routing_data(user, from, to)
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
-    routing_key = CartoDB::RoutingUsageMetrics::ROUTING_KEYS.fetch(user.routing_provider, :routing_mapbox)
+    routing_key = CartoDB::RoutingUsageMetrics::ROUTING_KEYS.fetch(user.routing_provider, :routing_tomtom)
     success = usage_metrics.get_sum_by_date_range(routing_key, :success_responses, from, to)
     empty = usage_metrics.get_sum_by_date_range(routing_key, :empty_responses, from, to)
     success + empty

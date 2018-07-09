@@ -199,7 +199,7 @@ module CartoDB
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    config.action_controller.relative_url_root = "/assets/#{frontend_version}"
+    config.action_controller.relative_url_root = "/assets"
 
     custom_app_views_paths.reverse.each do |custom_views_path|
       config.paths['app/views'].unshift(custom_views_path)

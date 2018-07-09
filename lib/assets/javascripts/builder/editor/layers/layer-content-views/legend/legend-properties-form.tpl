@@ -1,4 +1,4 @@
-<div class="u-flex u-bSpace--xl">
+<div class="Editor-HeaderInfo">
   <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
   <div class="Editor-HeaderInfo-inner CDB-Text js-selector">
     <div class="Editor-HeaderInfo-title u-bSpace--m">

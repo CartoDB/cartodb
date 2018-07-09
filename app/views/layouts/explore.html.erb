@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <%= favicon_link_tag "favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
     <meta name="keywords" content="carto, maps, data visualization tools, big data, location intelligence, deep insights, datasets">
@@ -14,7 +14,7 @@
     <meta property="og:type" content="visualization" />
     <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= @avatar_url %>" />
-    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'user_feed', 'explore' %>
+    <%= editor_stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'user_feed', 'explore' %>
     <%= insert_google_tag_manager('primary') %>
   </head>
   <body class="CDB-Text PublicBody PublicBody--grey">
@@ -43,7 +43,7 @@
     </script>
 
     <%= insert_trackjs() %>
-    <%= javascript_include_tag 'cdb.js', 'templates', 'explore_deps', 'explore' %>
+    <%= editor_javascript_include_tag 'cdb.js', 'templates', 'explore_deps', 'explore' %>
     <%= yield :js %>
     <%= insert_google_analytics('primary', true) %>
     <%= insert_hubspot() -%>

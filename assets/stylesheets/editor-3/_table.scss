@@ -226,7 +226,7 @@ $tableBorderColor: $cSecondaryLine;
 
 .Table-editor {
   position: absolute;
-  z-index: 5;
+  z-index: 100;
   min-width: 200px;
   padding: 10px;
 }
@@ -309,8 +309,13 @@ $tableBorderColor: $cSecondaryLine;
   justify-content: center;
   width: $baseSize * 4;
   height: $halfBaseSize * 7;
+  cursor: default;
 
-  &:hover {
+  &.is-active {
+    cursor: pointer;
+  }
+
+  &.is-active:hover {
     background: rgba($cBlue, 0.08);
   }
 

@@ -313,6 +313,9 @@ describe SessionsController do
     end
 
     it "authenticates users with casing differences in email" do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
       Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email.upcase)
 

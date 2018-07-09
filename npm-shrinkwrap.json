@@ -1,11 +1,18 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.50",
+  "version": "4.12.50-fixvulnerabilities",
   "dependencies": {
     "@carto/carto.js": {
       "version": "4.0.15",
       "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.15.tgz"
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.15.tgz",
+      "dependencies": {
+        "jquery": {
+          "version": "2.1.4",
+          "from": "jquery@2.1.4",
+          "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
+        }
+      }
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -669,7 +676,14 @@
     "clip-path-polygon": {
       "version": "0.1.12",
       "from": "clip-path-polygon@0.1.12",
-      "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.12.tgz"
+      "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.12.tgz",
+      "dependencies": {
+        "jquery": {
+          "version": "2.1.4",
+          "from": "jquery@2.1.4",
+          "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
+        }
+      }
     },
     "clipboard": {
       "version": "1.6.1",
@@ -1667,12 +1681,12 @@
     "internal-carto.js": {
       "version": "4.0.9-0",
       "from": "cartodb/carto.js#fix-vulnerabilities",
-      "resolved": "git://github.com/cartodb/carto.js.git#18d6fe7f6d2c715a8065765453fe9ab4a176850c",
+      "resolved": "git://github.com/cartodb/carto.js.git#f3805e21ca8c05e413e0629cb2537cddd815c53e",
       "dependencies": {
-        "jquery": {
-          "version": "3.3.1",
-          "from": "jquery@3.3.1",
-          "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.3.1.tgz"
+        "clip-path-polygon": {
+          "version": "0.1.13",
+          "from": "clip-path-polygon@0.1.13",
+          "resolved": "https://registry.npmjs.org/clip-path-polygon/-/clip-path-polygon-0.1.13.tgz"
         },
         "mustache": {
           "version": "2.3.0",
@@ -1830,9 +1844,9 @@
       "resolved": "https://registry.npmjs.org/isobject/-/isobject-3.0.1.tgz"
     },
     "jquery": {
-      "version": "2.1.4",
-      "from": "jquery@2.1.4",
-      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
+      "version": "3.3.1",
+      "from": "jquery@3.3.1",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.3.1.tgz"
     },
     "js-base64": {
       "version": "2.4.5",

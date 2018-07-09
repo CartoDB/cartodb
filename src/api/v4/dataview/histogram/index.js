@@ -112,9 +112,11 @@ Histogram.prototype.getBins = function () {
  * @return {carto.dataview.Histogram} this
  * @api
  */
-Histogram.prototype.setStart = function (start) {
-  this._validateStart(start);
+Histogram.prototype.setStartEnd = function (start, end) {
+  this._validateStartEnd(start, end);
+
   this._changeProperty('start', start);
+  this._changeProperty('end', end);
 
   return this;
 };
@@ -127,20 +129,6 @@ Histogram.prototype.setStart = function (start) {
  */
 Histogram.prototype.getStart = function () {
   return this._start;
-};
-
-/**
- * Set the upper limit of the bins range
- *
- * @param {number} end
- * @return {carto.dataview.Histogram} this
- * @api
- */
-Histogram.prototype.setEnd = function (end) {
-  this._validateEnd(end);
-  this._changeProperty('end', end);
-
-  return this;
 };
 
 /**
@@ -173,15 +161,13 @@ Histogram.prototype._validateBins = function (bins) {
   }
 };
 
-Histogram.prototype._validateStart = function (start) {
-  if (!_.isFinite(start) && !_.isNull(start)) {
-    throw this._getValidationError('histogramInvalidStart');
-  }
-};
+Histogram.prototype._validateStartEnd = function (start, end) {
+  const values = [start, end];
+  const notBothNumber = _.some(values, _.isFinite) && !_.every(values, _.isFinite);
+  const notBothNull = _.some(values, _.isNull) && !_.every(values, _.isNull);
 
-Histogram.prototype._validateEnd = function (end) {
-  if (!_.isFinite(end) && !_.isNull(end)) {
-    throw this._getValidationError('histogramInvalidEnd');
+  if (notBothNumber || notBothNull) {
+    throw this._getValidationError('histogramInvalidStartEnd');
   }
 };
 

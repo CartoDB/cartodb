@@ -176,6 +176,7 @@ Histogram.prototype._checkOptions = function (options) {
     throw this._getValidationError('histogramOptionsRequired');
   }
   this._validateBins(options.bins);
+  this._validateStartEnd(options.start, options.end);
 };
 
 Histogram.prototype._createInternalModel = function (engine) {

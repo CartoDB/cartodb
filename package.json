@@ -34,7 +34,7 @@
     "fastclick": "^1.0.6",
     "html-webpack-plugin": "^3.2.0",
     "internal-carto.js": "CartoDB/carto.js#fix-vulnerabilities",
-    "jquery": "2.1.4",
+    "jquery": "3.3.1",
     "leaflet": "CartoDB/Leaflet#v1.3.1-carto1",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",

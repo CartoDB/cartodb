@@ -163,6 +163,9 @@ Histogram.prototype._validateBins = function (bins) {
 
 Histogram.prototype._validateStartEnd = function (start, end) {
   const values = [start, end];
+
+  if (_.every(values, _.isUndefined)) return;
+
   const bothAreNumbers = _.every(values, _.isFinite);
   const bothAreNull = _.every(values, _.isNull);
 

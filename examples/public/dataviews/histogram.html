@@ -44,6 +44,7 @@
           <section class="usage">
             <header>USAGE</header>
             <p class="open-sans">Change column or bins on the form.</p>
+            <p class="open-sans">Start and end values must be used together.</p>
             <p class="open-sans">Example columns: price, minimum_nights, availability_365.</p>
           </section>
           <div id="controls">
@@ -84,8 +85,7 @@
         const end = document.getElementById('end').value || null;
 
         histogramDataview.setColumn(column);
-        histogramDataview.setStart(start);
-        histogramDataview.setEnd(end);
+        histogramDataview.setStartEnd(start, end);
         histogramDataview.setBins(parseInt(bins));
       }
     </script>

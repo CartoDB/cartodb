@@ -12,8 +12,8 @@ var parseHistogramData = require('./parse-data.js');
  * @param {string} column - The column name to get the data
  * @param {object} [options]
  * @param {number} [options.bins=10] - Number of bins to aggregate the data range into
- * @param {number} [options.start] - Lower limit of the data range, if not present, the lower limit of the actual data will be used
- * @param {number} [options.end] - Upper limit of the data range, if not present, the upper limit of the actual data will be used
+ * @param {number} [options.start] - Lower limit of the data range, if not present, the lower limit of the actual data will be used. Start and end values must be used together.
+ * @param {number} [options.end] - Upper limit of the data range, if not present, the upper limit of the actual data will be used. Start and end values must be used together.
  *
  * @fires dataChanged
  * @fires columnChanged

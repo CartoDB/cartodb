@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.50-0",
+  "version": "4.12.50",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.12",
+      "version": "4.0.15",
       "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.12.tgz"
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.15.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -3238,9 +3238,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.4.3",
+      "version": "3.4.4",
       "from": "uglify-js@>=3.4.0 <3.5.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.3.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.4.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

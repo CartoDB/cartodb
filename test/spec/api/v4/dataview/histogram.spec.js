@@ -100,6 +100,26 @@ describe('api/v4/dataview/histogram', function () {
 
       expect(test).toThrowError(Error, 'Bins must be a positive integer value.');
     });
+
+    it('throw error if start is present but not end', function () {
+      var test = function () {
+        new carto.dataview.Histogram(source, 'population', { // eslint-disable-line no-new
+          start: 10
+        });
+      };
+
+      expect(test).toThrowError(Error, 'Both start and end values must be a number or null.');
+    });
+
+    it('throw error if end is present but not start', function () {
+      var test = function () {
+        new carto.dataview.Histogram(source, 'population', { // eslint-disable-line no-new
+          end: 10
+        });
+      };
+
+      expect(test).toThrowError(Error, 'Both start and end values must be a number or null.');
+    });
   });
 
   describe('.getData', function () {
@@ -220,6 +240,66 @@ describe('api/v4/dataview/histogram', function () {
       dataview.setBins(11);
 
       expect(binsChangedSpy).toHaveBeenCalledWith(11);
+    });
+  });
+
+  describe('.setStartEnd', function () {
+    var dataview;
+
+    beforeEach(function () {
+      dataview = new carto.dataview.Histogram(source, 'population');
+    });
+
+    it('should throw an error if only start is present', function () {
+      var test = function () {
+        dataview.setStartEnd(20, null);
+      };
+
+      expect(test).toThrowError(Error, 'Both start and end values must be a number or null.');
+    });
+
+    it('should throw an error if only end is present', function () {
+      var test = function () {
+        dataview.setStartEnd(null, 30);
+      };
+
+      expect(test).toThrowError(Error, 'Both start and end values must be a number or null.');
+    });
+
+    it('should set bins to internal model as well', function () {
+      dataview._internalModel = createHistogramInternalModelMock();
+
+      dataview.setStartEnd(20, 30);
+
+      expect(dataview._internalModel.set).toHaveBeenCalledWith('start', 20);
+      expect(dataview._internalModel.set).toHaveBeenCalledWith('end', 30);
+      expect(dataview.getStart()).toBe(20); // We assert .getStart() as well
+      expect(dataview.getEnd()).toBe(30); // We assert .getEnd() as well
+
+      // Clean
+      dataview._internalModel = null;
+    });
+
+    it('should trigger a startChanged event when the start is changed', function () {
+      var startChangedSpy = jasmine.createSpy('startChangedSpy');
+      dataview.on('startChanged', startChangedSpy);
+
+      expect(startChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngine());
+      dataview.setStartEnd(20, 30);
+
+      expect(startChangedSpy).toHaveBeenCalledWith(20);
+    });
+
+    it('should trigger a endChanged event when the end is changed', function () {
+      var endChangedSpy = jasmine.createSpy('endChangedSpy');
+      dataview.on('endChanged', endChangedSpy);
+
+      expect(endChangedSpy).not.toHaveBeenCalled();
+      dataview.$setEngine(createEngine());
+      dataview.setStartEnd(20, 30);
+
+      expect(endChangedSpy).toHaveBeenCalledWith(30);
     });
   });
 

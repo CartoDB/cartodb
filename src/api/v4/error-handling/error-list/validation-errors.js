@@ -146,7 +146,7 @@ module.exports = {
     },
     'histogram-invalid-start-end': {
       messageRegex: /histogramInvalidStartEnd/,
-      friendlyMessage: 'Both values must be a number or null.'
+      friendlyMessage: 'Both start and end values must be a number or null.'
     },
     'formula-options-required': {
       messageRegex: /formulaOptionsRequired/,

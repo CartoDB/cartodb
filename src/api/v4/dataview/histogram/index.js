@@ -128,7 +128,7 @@ Histogram.prototype.setStartEnd = function (start, end) {
  * @api
  */
 Histogram.prototype.getStart = function () {
-  return this._start;
+  return this._start || this._internalModel.get('start');
 };
 
 /**
@@ -138,7 +138,7 @@ Histogram.prototype.getStart = function () {
  * @api
  */
 Histogram.prototype.getEnd = function () {
-  return this._end;
+  return this._end || this._internalModel.get('end');
 };
 
 /**

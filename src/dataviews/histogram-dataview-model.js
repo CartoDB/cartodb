@@ -369,7 +369,10 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
-    if (helper.hasChangedSomeOf(['start', 'end'], this.changed)) {
+    const startEndChanged = helper.hasChangedSomeOf(['start', 'end'], this.changed);
+    const startEndValid = _.isFinite(this.get('start')) && _.isFinite(this.get('end'));
+
+    if (startEndChanged && startEndValid) {
       this._totals.set({
         start: this.get('start'),
         end: this.get('end')

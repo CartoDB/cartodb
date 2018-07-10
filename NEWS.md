@@ -45,6 +45,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Validate Visualization type (#13841)
 * Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
 * Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
+* Add schema to column_names (#14121)
 * Deprecate Twitter connector in `add dataset` modal (https://github.com/CartoDB/cartodb/issues/14081)
 * Set new message on privacy warning modal when new privacy is LINK (https://github.com/CartoDB/cartodb/issues/14030)
 * Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)

@@ -21,8 +21,8 @@ module.exports = merge(baseConfig, {
       new UglifyJsPlugin({
         cache: false,
         parallel: true,
+        sourceMap: true,
         uglifyOptions: {
-          sourceMap: true,
           keep_fnames: true,
           output: {
             ascii_only: true,

@@ -13,7 +13,8 @@ module CartoDB
       DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'.freeze
 
       def self.support?(source_file)
-        source_file.extension == '.gpx'
+        source_file.extension == '.gdb' || 
+        source_file.extension == '.fgdb'
       end
 
       def initialize(source_file, temporary_directory, ogr2ogr_config = nil)
@@ -82,7 +83,7 @@ module CartoDB
         file_layer_name = "#{source_file.name}_#{layer_name}"
         File.join(
           temporary_directory,
-          Unp.new.underscore(file_layer_name) + '.gpx'
+          Unp.new.underscore(file_layer_name) + '.gpkg'
         )
       end
 

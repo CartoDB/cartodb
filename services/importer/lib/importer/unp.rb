@@ -7,6 +7,7 @@ require_relative './source_file'
 require_relative './kml_splitter'
 require_relative './gpx_splitter'
 require_relative './osm_splitter'
+require_relative './fgdb_splitter'
 
 module CartoDB
   module Importer2
@@ -18,7 +19,7 @@ module CartoDB
         .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
         .gpx .tab .tsv .txt .gdb
       }
-      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
+      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter, FgdbSplitter]
 
       DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 

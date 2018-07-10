@@ -35,7 +35,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Fix legend editor margin (https://github.com/CartoDB/cartodb/issues/13338)
 * Fix slider width for point/stroke size (https://github.com/CartoDB/support/issues/1641)
 * Fix gradient legends margin (https://github.com/CartoDB/support/issues/1640)
-* Fix drag new layer from Torque source (https://github.com/CartoDB/support/issues/1625)  
+* Fix drag new layer from Torque source (https://github.com/CartoDB/support/issues/1625)
 * Fix custom carousel item select event (https://github.com/CartoDB/cartodb/issues/14070)
 * Fix gaps in tiles (https://github.com/CartoDB/support/issues/1362)
 * Fix style issues (https://github.com/CartoDB/cartodb/pull/14123)
@@ -72,6 +72,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Log Resque errors (#14116)
 * Do not crash when checking nil password (#14099)
 * Remove Auth API FF, enable it by default (#13857)
+* Fix table sharing from users with hyphens in their name (quoting) (support#1635)
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)

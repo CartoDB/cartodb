@@ -105,12 +105,25 @@ describe('api/v4/filter/filters-collection', function () {
     beforeEach(function () {
       filtersCollection = new FiltersCollection();
       rangeFilter = new carto.filter.Range(column, { lt: 1 });
+      filtersCollection.addFilter(rangeFilter);
     });
 
     it('should return filters length', function () {
-      filtersCollection.addFilter(rangeFilter);
-
       expect(filtersCollection.count()).toBe(1);
+    });
+  });
+
+  describe('.getFilters', function () {
+    let filtersCollection, rangeFilter;
+
+    beforeEach(function () {
+      filtersCollection = new FiltersCollection();
+      rangeFilter = new carto.filter.Range(column, { lt: 1 });
+      filtersCollection.addFilter(rangeFilter);
+    });
+
+    it('should return added filters', function () {
+      expect(filtersCollection.getFilters()).toEqual([rangeFilter]);
     });
   });
 

@@ -80,6 +80,17 @@ class FiltersCollection extends Base {
     return this._filters.length;
   }
 
+  /**
+   * Get added filters
+   *
+   * @returns {Array} Added filters
+   * @memberof FiltersCollection
+   * @api
+   */
+  getFilters () {
+    return this._filters;
+  }
+
   $getSQL () {
     const sql = this._filters.map(filter => filter.$getSQL())
       .join(` ${this.JOIN_OPERATOR || DEFAULT_JOIN_OPERATOR} `);

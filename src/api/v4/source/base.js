@@ -83,6 +83,17 @@ Base.prototype.$getInternalModel = function () {
 };
 
 /**
+ * Get added filters
+ *
+ * @returns {Array} Added filters
+ * @memberof carto.source.Base
+ * @api
+ */
+Base.prototype.getFilters = function () {
+  return this._appliedFilters.getFilters();
+};
+
+/**
  * Add new filter to the source
  *
  * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter

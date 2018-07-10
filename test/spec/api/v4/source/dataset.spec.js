@@ -110,6 +110,21 @@ describe('api/v4/source/dataset', function () {
     });
   });
 
+  describe('.getFilters', function () {
+    let populatedPlacesDataset, filter;
+
+    beforeEach(function () {
+      filter = new carto.filter.Category('fake_column', { in: ['category'] });
+
+      populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+      populatedPlacesDataset.addFilter(filter);
+    });
+
+    it('should return added filters', function () {
+      expect(populatedPlacesDataset.getFilters()).toEqual([filter]);
+    });
+  });
+
   describe('errors', function () {
     it('should trigger an error when invalid', function (done) {
       var client = new carto.Client({

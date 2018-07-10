@@ -80,13 +80,13 @@
 
       function applyDataviewChanges() {
         const column = document.getElementById('column').value;
-        const bins = document.getElementById('bins').value;
-        const start = document.getElementById('start').value || null;
-        const end = document.getElementById('end').value || null;
+        const bins = parseInt(document.getElementById('bins').value);
+        const start = parseInt(document.getElementById('start').value) || null;
+        const end = parseInt(document.getElementById('end').value) || null;
 
         histogramDataview.setColumn(column);
         histogramDataview.setStartEnd(start, end);
-        histogramDataview.setBins(parseInt(bins));
+        histogramDataview.setBins(bins);
       }
     </script>
   </body>

@@ -115,8 +115,7 @@ Histogram.prototype.getBins = function () {
 Histogram.prototype.setStartEnd = function (start, end) {
   this._validateStartEnd(start, end);
 
-  this._changeProperty('start', start);
-  this._changeProperty('end', end);
+  this._changeProperties({ start, end });
 
   return this;
 };
@@ -166,7 +165,7 @@ Histogram.prototype._validateStartEnd = function (start, end) {
 
   if (_.every(values, _.isUndefined)) return;
 
-  const bothAreNumbers = _.every(values, _.isFinite);
+  const bothAreNumbers = _.every(values, number => _.isNumber(number) && !_.isNaN(number));
   const bothAreNull = _.every(values, _.isNull);
 
   if (!bothAreNumbers && !bothAreNull) {

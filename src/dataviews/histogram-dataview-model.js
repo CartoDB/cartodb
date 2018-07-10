@@ -369,15 +369,14 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
+    const start = this.get('start');
+    const end = this.get('end');
     const startEndChanged = helper.hasChangedSomeOf(['start', 'end'], this.changed);
-    const startEndValid = _.isFinite(this.get('start')) && _.isFinite(this.get('end'));
+    const startEndValid = _.isFinite(start) && _.isFinite(end);
+    const hasDifferentValues = this._totals.get('start') !== start || this._totals.get('end') !== end;
 
-    if (startEndChanged && startEndValid) {
-      this._totals.set({
-        start: this.get('start'),
-        end: this.get('end')
-      });
-
+    if (startEndChanged && startEndValid && hasDifferentValues) {
+      this._totals.set({ start, end });
       this._totals.refresh();
     }
 

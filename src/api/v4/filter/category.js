@@ -73,7 +73,7 @@ class Category extends SQLBase {
 
   /**
    * Set filter conditions, overriding all the previous ones.
-  * @param {object} filters - Object containing all the new filters to apply. Check filter options in {@link carto.filter.Category}.
+   * @param {object} filters - Object containing all the new filters to apply. Check filter options in {@link carto.filter.Category}.
    *
    * @memberof Category
    * @method setFilters

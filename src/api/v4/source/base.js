@@ -86,7 +86,6 @@ Base.prototype.$getInternalModel = function () {
  * Get added filters
  *
  * @returns {Array} Added filters
- * @memberof carto.source.Base
  * @api
  */
 Base.prototype.getFilters = function () {
@@ -97,8 +96,6 @@ Base.prototype.getFilters = function () {
  * Add new filter to the source
  *
  * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
- *
- * @memberof carto.source.Base
  * @api
  */
 Base.prototype.addFilter = function (filter) {
@@ -110,8 +107,6 @@ Base.prototype.addFilter = function (filter) {
  * Add new filters to the source
  *
  * @param {Array<carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR>} filters
- *
- * @memberof carto.source.Base
  * @api
  */
 Base.prototype.addFilters = function (filters) {
@@ -122,8 +117,6 @@ Base.prototype.addFilters = function (filters) {
  * Remove an existing filter from source
  *
  * @param {(carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR)} filter
- *
- * @memberof carto.source.Base
  * @api
  */
 Base.prototype.removeFilter = function (filter) {
@@ -135,8 +128,6 @@ Base.prototype.removeFilter = function (filter) {
  * Remove existing filters from source
  *
  * @param {Array<carto.filter.Range|carto.filter.Category|carto.filter.AND|carto.filter.OR>} filters
- *
- * @memberof carto.source.Base
  * @api
  */
 Base.prototype.removeFilters = function (filters) {

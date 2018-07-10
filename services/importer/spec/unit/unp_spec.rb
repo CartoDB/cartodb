@@ -47,6 +47,17 @@ describe Unp do
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
+    it 'extracts the contents of a FGDB file' do
+      zipfile   = zipfile_factory(filename: 'filegeodatabase.gdb.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
+      unp.source_files.length.should eq 2
+      (unp.source_files.map { |f| f.layer }).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
     it 'extracts the contents of a carto file with rar in the name (see #11954)' do
       zipfile   = zipfile_factory(filename: 'this_is_not_a_rar_file.carto')
       unp       = Unp.new
@@ -94,6 +105,7 @@ describe Unp do
 
       unp.compressed?('bogus.gz').should eq true
       unp.compressed?('bogus.csv').should eq false
+      unp.compressed?('bogus.zip').should eq true
     end
   end
 

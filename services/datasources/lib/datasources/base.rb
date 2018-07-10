@@ -10,6 +10,8 @@ module CartoDB
       FORMAT_EXCEL = 'xls'
       # .GPX
       FORMAT_GPX = 'gpx'
+      # .GPKG
+      FORMAT_GPKG = 'gpkg'
       # .KML
       FORMAT_KML = 'kml'
       # .png

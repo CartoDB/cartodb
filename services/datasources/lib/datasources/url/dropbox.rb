@@ -26,6 +26,7 @@ module CartoDB
             FORMAT_CSV =>         %W( .csv ),
             FORMAT_EXCEL =>       %W( .xls .xlsx ),
             FORMAT_GPX =>         %W( .gpx ),
+            FORMAT_GPKG =>        %W( .gpkg ),
             FORMAT_KML =>         %W( .kml ),
             FORMAT_COMPRESSED =>  %W( .zip )
         }

@@ -112,11 +112,7 @@ CartoDB::Application.routes.draw do
 
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
-    put    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile_update', as: :profile_update_user
     get    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account',        as: :account_user
-    delete '(/user/:user_domain)(/u/:user_domain)/account' => 'users#delete',        as: :account_delete_user
-    put    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account_update', as: :account_update_user
-    delete '(/user/:user_domain)(/u/:user_domain)/account/:id' => 'users#delete', as: :delete_user
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout

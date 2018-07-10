@@ -174,11 +174,14 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [
-          rootDir('node_modules/tangram-cartocss'),
-          rootDir('node_modules/tangram.cartodb'),
           rootDir('lib/assets/javascripts/carto-node'),
           rootDir('lib/assets/javascripts/builder'),
-          rootDir('lib/assets/javascripts/dashboard')
+          rootDir('lib/assets/javascripts/dashboard'),
+          rootDir('node_modules/internal-carto.js')
+        ],
+        exclude: [
+          rootDir('node_modules/internal-carto.js/node_modules'),
+          rootDir('node_modules/internal-carto.js/vendor')
         ],
         options: {
           presets: ['env'],

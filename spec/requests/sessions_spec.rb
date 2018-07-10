@@ -39,6 +39,10 @@ feature "Sessions" do
     end
 
     scenario "Login in the application" do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
       visit login_path
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => 'blablapassword'
@@ -50,7 +54,10 @@ feature "Sessions" do
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => @user.email.split('@').first
       click_link_or_button 'Log in'
-      page.should be_dashboard
+      page.status_code.should eq 200
+
+      page.should_not have_css(".Sessions-fieldError.js-Sessions-fieldError")
+      page.should_not have_css("[@data-content='Your account or your password is not ok']")
     end
 
     scenario "Get the session information via OAuth" do
@@ -113,9 +120,14 @@ feature "Sessions" do
     include_context 'organization with users helper'
 
     it 'allows login to organization users' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       visit org_login_url(@org_user_1.organization)
       send_login_form(@org_user_1)
-      page.should be_dashboard
+
+      page.status_code.should eq 200
+      page.should_not have_css(".Sessions-fieldError.js-Sessions-fieldError")
     end
 
     it 'does not allow user+password login to organization users if auth_username_password_enabled is false' do

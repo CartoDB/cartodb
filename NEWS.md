@@ -2,20 +2,47 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.22.2`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.23.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
+This release introduces a new API Key system. In order to migrate existing users, run the following command:
+`bundle exec rake carto:api_key:create_default`
+
 ### Features
+* Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
+* Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
+* Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
+* Improve input image when color changes (https://github.com/CartoDB/cartodb/issues/11326)
+* Fix pagination buttons style (https://github.com/CartoDB/cartodb/issues/13456)
+* Fix edit month in table cell (https://github.com/CartoDB/support/issues/1352)
+* Fix wrong style after creating a feature (https://github.com/CartoDB/cartodb/issues/13680)
+* Map instantiation is now debounced thanks to Carto.js 4.0.12 (https://github.com/CartoDB/cartodb/pull/14142)
+* Fix bug computing next page in datasets (https://github.com/CartoDB/cartodb/issues/14138)
+* Move to the last page after adding a row (https://github.com/CartoDB/cartodb/issues/10720)
+* Fix pagination after deleting a row (https://github.com/CartoDB/cartodb/issues/9868)
+* Fix Widget view click (https://github.com/CartoDB/cartodb/issues/13409)
+* Improve style for Analysis modal blocks (https://github.com/CartoDB/cartodb/issues/13361)
+* Use ellipsis for widgets title (https://github.com/CartoDB/cartodb/issues/13332)
+* Fix dark menu links (https://github.com/CartoDB/cartodb/issues/11257)
+* Fix legend editor margin (https://github.com/CartoDB/cartodb/issues/13338)
+* Fix slider width for point/stroke size (https://github.com/CartoDB/support/issues/1641)
+* Fix gradient legends margin (https://github.com/CartoDB/support/issues/1640)
+* Fix drag new layer from Torque source (https://github.com/CartoDB/support/issues/1625)
+* Fix custom carousel item select event (https://github.com/CartoDB/cartodb/issues/14070)
+* Fix gaps in tiles (https://github.com/CartoDB/support/issues/1362)
+* Fix style issues (https://github.com/CartoDB/cartodb/pull/14123)
 * Fix SVG spinner animations (https://github.com/CartoDB/cartodb/issues/14105)
 * Fix Dataset header dropdown (https://github.com/CartoDB/support/issues/1614)
 * Remove unneeded space in collapsed legends view (https://github.com/CartoDB/cartodb/issues/14091)
+* Validate Visualization type (#13841)
 * Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
 * Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
 * Add schema to column_names (#14121)
@@ -42,11 +69,19 @@ sudo make install
 * Retain backwards compatibility with exports without client applications(#14083)
 * Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
+* Update extension to 0.22.2 to fix hyphenates usernames (cartodb-postgresql#331)
+* Update extension to 0.23.0 to add a new helper function `_CDB_Table_Exists(table_name_with_optional_schema TEXT)` (cartodb-postgresql#332)
+* Log Resque errors (#14116)
 * Do not crash when checking nil password (#14099)
+* Do not crash when saving WMS layers with long metadata (Suppoer#1643)
+* Remove Auth API FF, enable it by default (#13857)
 * User mover does not export user metadata if org metadata is not exported
+* Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 ### Internals
+* Re-enable sourcemaps in production, they were broken since the move to webpack v4 (https://github.com/CartoDB/cartodb/pull/14150)
+* Add `internal-carto.js` to transpilation process in Webpack (https://github.com/CartoDB/cartodb/pull/14117)
 * Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
 * Update to Webpack 4, move CSS processing from Grunt to Webpack (https://github.com/CartoDB/cartodb/pull/14033)
 
@@ -686,9 +721,11 @@ ion for time-series (#12670)
 * Add rake to remove duplicate legends in layer
 * Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052)
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
+* Disable syncs for locked users (https://github.com/CartoDB/cartodb/issues/13832)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Editor assets are frozen now (#14090)
 * Added specs for the migrated dashboard (#14037)
 * Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)
 * CARTO.js internal version is now called internal-carto.js (#13960)
@@ -888,6 +925,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Revamp grunt default task to compile assets (#12325)
+* Remove dashboard_migration ff from backend (#14103)
 * Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)

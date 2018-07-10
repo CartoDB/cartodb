@@ -1,6 +1,7 @@
 <button class="Table-paginatorButton Table-paginatorButton--prev
   <% if (isPrevAvailable) { %>
     js-prev
+    is-active
   <% } %>
 ">
   <i class="CDB-IconFont is-semibold CDB-IconFont-lArrowLight CDB-Size-small
@@ -23,6 +24,7 @@
 <button class="Table-paginatorButton Table-paginatorButton--next
   <% if (isNextAvailable) { %>
     js-next
+    is-active
   <% } %>
 ">
   <i class="CDB-IconFont is-semibold CDB-IconFont-rArrowLight CDB-Size-small

@@ -314,10 +314,10 @@ Base.prototype._changeProperty = function (key, value, internalKey) {
 
 Base.prototype._changeProperties = function (properties) {
   _.each(properties, (value, key) => {
-    const prevValue = this['_' + key];
-    this['_' + key] = value;
+    const prevValue = this[`_${key}`];
 
     if (prevValue !== value) {
+      this[`_${key}`] = value;
       this._triggerChange(key, value);
     }
   });

@@ -42,6 +42,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Fix SVG spinner animations (https://github.com/CartoDB/cartodb/issues/14105)
 * Fix Dataset header dropdown (https://github.com/CartoDB/support/issues/1614)
 * Remove unneeded space in collapsed legends view (https://github.com/CartoDB/cartodb/issues/14091)
+* Validate Visualization type (#13841)
 * Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
 * Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
 * Deprecate Twitter connector in `add dataset` modal (https://github.com/CartoDB/cartodb/issues/14081)

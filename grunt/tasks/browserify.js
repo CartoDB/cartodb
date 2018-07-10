@@ -20,6 +20,7 @@ module.exports = {
       if (opts) {
         if (opts.external) cfg[name].options.external = opts.external;
         if (opts.require) cfg[name].options.require = opts.require;
+        if (opts.transform) cfg[name].options.transform = opts.transform;
 
         var bOpts = bundle.options.browserifyOptions;
         if (bOpts) {

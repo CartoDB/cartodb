@@ -25,7 +25,9 @@ var LeafletLayer = L.TileLayer.extend({
     attribution: constants.ATTRIBUTION
   },
 
-  initialize: function (layers, engine) {
+  initialize: function (layers, engine, options) {
+    _.extend(this.options, options);
+
     this._layers = layers;
     this._engine = engine;
     this._internalView = null;

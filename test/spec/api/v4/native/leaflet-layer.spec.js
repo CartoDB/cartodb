@@ -17,14 +17,23 @@ describe('src/api/v4/native/leaflet-layer', function () {
       username: 'cartojs-test'
     });
     map = L.map('map').setView([42.431234, -8.643616], 5);
-    leafletLayer = client.getLeafletLayer();
   });
 
   afterEach(function () {
     document.getElementById('map').remove();
   });
 
+  it('allows custom options', function () {
+    leafletLayer = client.getLeafletLayer({ maxZoom: 10 });
+
+    expect(leafletLayer.options.maxZoom).toBe(10);
+  });
+
   describe('addTo', function () {
+    beforeEach(function () {
+      leafletLayer = client.getLeafletLayer();
+    });
+
     it('should add a leaflet layer to the map', function () {
       expect(countLeafletLayers(map)).toEqual(0);
 
@@ -35,6 +44,10 @@ describe('src/api/v4/native/leaflet-layer', function () {
   });
 
   describe('removeFrom', function () {
+    beforeEach(function () {
+      leafletLayer = client.getLeafletLayer();
+    });
+
     it('should remove the leaflet layer from the map', function () {
       expect(countLeafletLayers(map)).toEqual(0);
 
@@ -55,6 +68,7 @@ describe('src/api/v4/native/leaflet-layer', function () {
     beforeEach(function () {
       spy = jasmine.createSpy('spy');
 
+      leafletLayer = client.getLeafletLayer();
       leafletLayer.addTo(map);
 
       var source = new carto.source.SQL('foo');

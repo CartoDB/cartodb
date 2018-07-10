@@ -4,9 +4,9 @@ CARTO.js 4.0 introduces new concepts that in some cases, change the behavior of 
 
 ### Do I need an API Key?
 
-Yes. See the [full reference API]({{site.cartojs_docs}}/reference/#authentication) for details.
+Yes. See the guide _[Get API Key]({{site.cartojs_docs}}/guides/get-api-key/)_ or the [full reference API]({{site.cartojs_docs}}/reference/#authentication) for details.
 
-If you want to learn more about authorization and authentication, read the [fundamentals]({{site.fundamental_docs}}/authorization/) about this topic, or dig into the [Auth API]({{site.authapi_docs}}/) details.
+If you want to learn more about authorization and authentication in the CARTO Platform, read the [fundamentals]({{site.fundamental_docs}}/authorization/) about this topic, or dig into the [Auth API]({{site.authapi_docs}}/) details.
 
 ### How do I pay for my API Keys?
 

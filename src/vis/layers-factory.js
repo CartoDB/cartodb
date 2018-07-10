@@ -108,7 +108,7 @@ var LAYER_CONSTRUCTORS = {
     attrs = _.extend(attrs, {
       user_name: windshaftSettings.userName,
       maps_api_template: windshaftSettings.urlTemplate,
-      stat_tag: windshaftSettings.statTag,
+      client: windshaftSettings.client,
       api_key: windshaftSettings.apiKey,
       auth_token: windshaftSettings.authToken
     });

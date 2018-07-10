@@ -187,8 +187,7 @@ util.isGoogleMapsLoaded = function () {
   if (!window.google.maps) {
     throw new Error('Google Maps is required');
   }
-  var version = window.google.maps.version;
-  if (version < '3.31.0') {
+  if (window.google.maps.version < '3.31.0') {
     throw new Error('Google Maps version should be >= 3.31');
   }
 };

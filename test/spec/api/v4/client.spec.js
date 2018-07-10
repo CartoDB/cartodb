@@ -145,7 +145,7 @@ describe('api/v4/client', function () {
     });
   });
 
-  xdescribe('.addLayers', function () {
+  describe('.addLayers', function () {
     it('should add a layers array', function () { });
     it('should add a layer array triggering ONE reload cycle by default', function () { });
     it('should add a layers array without triggering a reload cycle when opts.reload is false', function () { });
@@ -213,6 +213,52 @@ describe('api/v4/client', function () {
       client.removeLayers(client.getLayers());
 
       expect(client.getLayers().length).toEqual(0);
+    });
+  });
+
+  describe('.removeDataview', function () {
+    var categoryDataview, populationDataview;
+
+    beforeEach(function () {
+      var source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+        limit: 10,
+        operation: carto.operation.SUM,
+        operationColumn: 'pop_max'
+      });
+
+      populationDataview = new carto.dataview.Category(source, 'adm1name', {
+        limit: 10,
+        operation: carto.operation.SUM,
+        operationColumn: 'pop_max'
+      });
+
+      client.addDataview(categoryDataview);
+      client.addDataview(populationDataview);
+
+      spyOn(client._engine, 'removeDataview');
+      spyOn(categoryDataview, 'disable');
+      spyOn(client, '_reload');
+    });
+
+    it('removes the dataview', function () {
+      expect(client._dataviews.length).toBe(2);
+
+      client.removeDataview(categoryDataview);
+
+      expect(client._dataviews.length).toBe(1);
+    });
+
+    it('disables the dataview', function () {
+      client.removeDataview(categoryDataview);
+
+      expect(client._engine.removeDataview).toHaveBeenCalled();
+    });
+
+    it('triggers a reload cycle', function () {
+      client.removeDataview(categoryDataview);
+
+      expect(client._reload).toHaveBeenCalled();
     });
   });
 

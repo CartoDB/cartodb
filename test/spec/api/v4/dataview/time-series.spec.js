@@ -103,7 +103,7 @@ describe('api/v4/dataview/time-series', function () {
     it('throw error if aggregation is not a proper value', function () {
       var test = function () {
         new carto.dataview.TimeSeries(source, 'population', { // eslint-disable-line no-new
-          aggregation: 'century'
+          aggregation: 'terasecond'
         });
       };
 
@@ -223,7 +223,7 @@ describe('api/v4/dataview/time-series', function () {
 
     it('should validate aggregation', function () {
       var test = function () {
-        dataview.setAggregation('century');
+        dataview.setAggregation('terasecond');
       };
 
       expect(test).toThrowError(Error, 'Time aggregation must be a valid value. Use carto.dataview.timeAggregation.');

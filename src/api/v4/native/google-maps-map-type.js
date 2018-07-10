@@ -22,6 +22,7 @@ function GoogleMapsMapType (layers, engine, map) {
   this._internalView = new GMapsCartoDBLayerGroupView(this._engine._cartoLayerGroup, {
     nativeMap: map
   });
+  this._id = this._internalView._id;
   this._internalView.on('featureClick', this._onFeatureClick, this);
   this._internalView.on('featureOver', this._onFeatureOver, this);
   this._internalView.on('featureOut', this._onFeatureOut, this);

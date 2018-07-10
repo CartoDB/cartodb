@@ -77,7 +77,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 ### Internals
-* Re-enable sourcemaps in production, they were broken since the move to webpack v4
+* Re-enable sourcemaps in production, they were broken since the move to webpack v4 (https://github.com/CartoDB/cartodb/pull/14150)
 * Add `internal-carto.js` to transpilation process in Webpack (https://github.com/CartoDB/cartodb/pull/14117)
 * Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
 * Update to Webpack 4, move CSS processing from Grunt to Webpack (https://github.com/CartoDB/cartodb/pull/14033)

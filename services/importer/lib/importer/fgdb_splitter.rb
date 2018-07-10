@@ -67,7 +67,7 @@ module CartoDB
           .select { |line| line =~ /^\d+/ }
           .map { |line| line.match /\d+: \"?(.*?)\"? \(/ }
           .map { |line| line[1] }
-                
+        
         fgdb_layers.each do |layer|
           stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, '-so', source_file.fullpath, layer)
           number_rows = stdout.split("\n")

@@ -25,6 +25,28 @@ describe Unp do
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
+    it 'extracts the contents of a GPKG file' do
+      zipfile   = zipfile_factory(filename: 'geopackage.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('geopackage.gpkg')
+      unp.source_files.length.should eq 2
+      (unp.source_files.map { |f| f.layer }).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a FGDB file' do
+      zipfile   = zipfile_factory(filename: 'filegeodatabase.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
+      unp.source_files.length.should eq 2
+      (unp.source_files.map { |f| f.layer }).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
     it 'extracts the contents of a carto file with rar in the name (see #11954)' do
       zipfile   = zipfile_factory(filename: 'this_is_not_a_rar_file.carto')
       unp       = Unp.new
@@ -160,6 +182,8 @@ describe Unp do
 
       unp.supported?('foo.doc').should eq false
       unp.supported?('foo.xls').should eq true
+      unp.supported?('foo.gpkg').should eq true
+      unp.supported?('foo.gdb').should eq true
     end
   end
 

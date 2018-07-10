@@ -24,8 +24,6 @@ linters:
     severity: warning
   Comment:
     enabled: false
-  Compass::PropertyWithMixin:
-    enabled: false
   DebugStatement:
     enabled: true
   DeclarationOrder:

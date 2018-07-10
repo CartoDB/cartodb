@@ -17,6 +17,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)
 * Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
 * Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
 * Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)

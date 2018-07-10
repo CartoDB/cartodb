@@ -1,10 +1,6 @@
 const FiltersCollection = require('./filters-collection');
 
 /**
- * OR Filter Group.
- *
- * SQL and Dataset source filter.
- *
  * When including this filter into a {@link carto.source.SQL} or a {@link carto.source.Dataset}, the rows will be filtered by the conditions included within filters.
  *
  * This filter will group as many filters as you want and it will add them to the query returning the rows that match ANY of the filters to render the visualization.

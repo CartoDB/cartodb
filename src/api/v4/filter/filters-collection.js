@@ -5,8 +5,6 @@ const SQLBase = require('./base-sql');
 const DEFAULT_JOIN_OPERATOR = 'AND';
 
 /**
- * Filters Collection.
- *
  * Base class for AND and OR filters.
  *
  * Filters Collection is a way to group a set of filters in order to create composed filters, allowing the user to change the operator that joins the filters.

@@ -12,10 +12,6 @@ const CATEGORY_COMPARISON_OPERATORS = {
 const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS));
 
 /**
- * Category Filter.
- *
- * SQL and Dataset source filter.
- *
  * When including this filter into a {@link carto.source.SQL} or a {@link carto.source.Dataset}, the rows will be filtered by the conditions included within the filter.
  *
  * You can filter columns with `in`, `notIn`, `eq`, `notEq`, `like`, `similarTo` filters, and update the conditions with `.set()` or `.setFilters()` method. It will refresh the visualization automatically when any filter is added or modified.

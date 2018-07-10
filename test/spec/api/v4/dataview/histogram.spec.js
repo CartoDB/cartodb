@@ -271,8 +271,7 @@ describe('api/v4/dataview/histogram', function () {
 
       dataview.setStartEnd(20, 30);
 
-      expect(dataview._internalModel.set).toHaveBeenCalledWith('start', 20);
-      expect(dataview._internalModel.set).toHaveBeenCalledWith('end', 30);
+      expect(dataview._internalModel.set).toHaveBeenCalledWith({ start: 20, end: 30 });
       expect(dataview.getStart()).toBe(20); // We assert .getStart() as well
       expect(dataview.getEnd()).toBe(30); // We assert .getEnd() as well
 

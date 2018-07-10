@@ -230,5 +230,14 @@ describe('api/v4/dataview/base', function () {
 
       expect(test).toThrowError('Filter property is required.');
     });
+
+    it('should throw an error if an SQL filter is passed', function () {
+      function test () {
+        var categoryFilter = new carto.filter.Category('fake_column', { in: ['category_value'] });
+        base.addFilter(categoryFilter);
+      }
+
+      expect(test).toThrowError('Filter property is required.');
+    });
   });
 });

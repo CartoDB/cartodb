@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var status = require('../constants').status;
 var SourceBase = require('../source/base');
 var FilterBase = require('../filter/base');
+var SQLFilterBase = require('../filter/base-sql');
 var CartoError = require('../error-handling/carto-error');
 var CartoValidationError = require('../error-handling/carto-validation-error');
 
@@ -11,14 +12,14 @@ var CartoValidationError = require('../error-handling/carto-validation-error');
  *
  * Dataviews are a way to extract data from a CARTO account in predefined ways
  * (eg: a list of categories, the result of a formula operation, etc.).
- * 
+ *
  * **This object should not be used directly**
  *
  * The data used in a dataviews cames from a {@link carto.source.Base|source} that might change
  * due to different reasons (eg: SQL query changed).
- * 
+ *
  * When dataview data changes the dataview will trigger events to notify subscribers when new data is available.
- * 
+ *
  * @example
  * // Keep your widget data sync. Remember each dataview has his own data format.
  * dataview.on('dataChanged', newData => {
@@ -246,7 +247,7 @@ Base.prototype._checkOptions = function (options) {
 };
 
 Base.prototype._checkFilter = function (filter) {
-  if (!(filter instanceof FilterBase)) {
+  if (!(filter instanceof FilterBase) || filter instanceof SQLFilterBase) {
     throw this._getValidationError('filterRequired');
   }
 };

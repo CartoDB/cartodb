@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Complex Filter Example | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Complex Example</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+
+        <section>
+          <p class="description open-sans">This map has applied a filters combination that show listings meeting these conditions:</p>
+
+          <ul>
+            <li class="open-sans">Between 30€ and 40€.</li>
+            <li class="open-sans">Centro neighbourhood.</li>
+            <li class="open-sans">Entire home/apartment listings OR listings that have been reviewed after May 2015.</li>
+          </ul>
+
+          <p class="description open-sans">If you want to know more, please go to <a href="https://cartojs-test.carto.com/tables/airbnb_listings/public">Airbnb Listings dataset</a>.</p>
+
+          <div class="separator"></div>
+
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Go to the source code below, and see how filters are applied.</p>
+          </section>
+        </section>
+
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const map = L.map('map').setView([40.4175117794419, -3.6971674673259263], 15);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset('airbnb_listings');
+      // or
+      // const source = new carto.source.SQL('SELECT * FROM airbnb_listings');
+
+      const entireHomeFilter = new carto.filter.Category('room_type', { eq: 'Entire home/apt' });
+      const neighbourhoodFilter = new carto.filter.Category('neighbourhood_group', { in: ['Centro'] });
+      const reviewsInLastYearFilter = new carto.filter.Range('last_review', { gte: new Date('2015-05-01T00:00:00.000Z') });
+      const priceFilter = new carto.filter.Range('price', { between: { min: 30, max: 40 } });
+
+      const filtersCombination = new carto.filter.AND([
+        neighbourhoodFilter,
+        priceFilter,
+        new carto.filter.OR([ entireHomeFilter, reviewsInLastYearFilter ])
+      ]);
+
+      source.addFilter(filtersCombination);
+
+      const style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const layer = new carto.layer.Layer(source, style);
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+    </script>
+  </body>
+</html>

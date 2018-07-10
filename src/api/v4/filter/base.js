@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var CartoValidationError = require('../error-handling/carto-validation-error');
 
 /**
  * Base filter object
@@ -12,6 +13,10 @@ var Backbone = require('backbone');
 function Base () {}
 
 _.extend(Base.prototype, Backbone.Events);
+
+Base.prototype._getValidationError = function (code) {
+  return new CartoValidationError('filter', code);
+};
 
 module.exports = Base;
 

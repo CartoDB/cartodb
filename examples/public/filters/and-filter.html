@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AND Filter | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>AND Filter</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+
+        <section>
+          <p class="description open-sans">Apply an AND filter to exclude listings that are not within the selected room types and have a higher price than the one we set.</p>
+
+          <div class="separator"></div>
+
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Change the selected price range and the selected room types to filter the listings.</p>
+          </section>
+
+          <div id="controls">
+            <div id="info">
+              <h3>Room Types</h3>
+            </div>
+
+            <ul>
+              <li>
+                <input type="checkbox" name="roomTypes[]" id="entire" value="Entire home/apt" checked>
+                <label for="entire">Entire home/apt</label>
+              </li>
+              <li>
+                <input type="checkbox" name="roomTypes[]" id="private" value="Private room" checked>
+                <label for="private">Private Room</label>
+              </li>
+              <li>
+                <input type="checkbox" name="roomTypes[]" id="shared" value="Shared room" checked>
+                <label for="shared">Shared Room</label>
+              </li>
+            </ul>
+
+            <div id="info">
+              <h3>Price</h3>
+            </div>
+
+            <div class="widget">
+              <p class="open-sans">Showing listings below and equal to <span class="js-price-placeholder">40€</span></p>
+            </div>
+            <input type="range" name="price" class="slider" min="1" max="60" value="40" step="1" min-with-suffix="1€" max-with-suffix="60€">
+          </div>
+        </section>
+
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const map = L.map('map').setView([40.42252398976147, -3.659729361534119], 12);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const inputRange = document.querySelector('#controls input[type=range]');
+      inputRange.style.setProperty('--value', (inputRange.value - inputRange.min) / 0.59);
+
+      const pricePlaceholder = document.querySelector('#controls .js-price-placeholder');
+      const roomTypesCheckboxes = document.querySelectorAll('#controls input[type=checkbox]');
+
+      function getSelectedRoomTypes () {
+        const values = [];
+
+        roomTypesCheckboxes.forEach(input => input.checked ? values.push(input.value): null);
+        return values;
+      }
+
+      function applyPriceFilters (e) {
+        const maximumPrice = parseInt(e.target.value);
+
+        pricePlaceholder.innerText = maximumPrice + "€";
+        priceFilter.setFilters({ lte: maximumPrice });
+        // or
+        // priceFilter.set('lte', maximumPrice);
+      }
+
+      function applyRoomFilters () {
+        roomTypeFilter.setFilters({ in: getSelectedRoomTypes() });
+        // or
+        // roomTypeFilter.set('in', getSelectedRoomTypes());
+      }
+
+      function registerListeners () {
+        inputRange.addEventListener('input', e => {
+          inputRange.style.setProperty('--value', (inputRange.value - inputRange.min) / 0.59);
+        });
+
+        inputRange.addEventListener('change', e => {
+          applyPriceFilters(e)
+        });
+
+        roomTypesCheckboxes.forEach(
+          input => input.addEventListener('click', () => applyRoomFilters())
+        );
+      }
+
+      const roomTypeFilter = new carto.filter.Category('room_type', { in: getSelectedRoomTypes() });
+      const priceFilter = new carto.filter.Range('price', { lte: 40 });
+
+      const source = new carto.source.SQL('SELECT * FROM airbnb_listings');
+
+      // You can apply both filters in two different ways
+      // 1. Adding both filters to the source
+      source.addFilters([ priceFilter, roomTypeFilter ]);
+
+      // 2. Creating an AND filter to join the two filters and adding it to the source
+      // const roomAndPriceFilter = new carto.filter.AND([ priceFilter, roomTypeFilter ]);
+      // source.addFilter(roomAndPriceFilter)
+
+      const style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-line-color: #FFFFFF;
+          marker-fill: ramp([price], (#ffc6c4, #ee919b, #cc607d, #9e3963, #672044), quantiles);
+        }
+      `);
+      const layer = new carto.layer.Layer(source, style);
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+
+      registerListeners();
+    </script>
+  </body>
+</html>

@@ -127,6 +127,31 @@
       ]
     },
     {
+      "title": "Filters",
+      "samples": [
+        {
+          "title": "Category Filter",
+          "desc": "Create a Category filter with checkbox selectors",
+          "file": "public/filters/category-filter.html"
+        },
+        {
+          "title": "Range Filter",
+          "desc": "Create a Range filter with a range slider",
+          "file": "public/filters/range-filter.html"
+        },
+        {
+          "title": "AND Filter",
+          "desc": "Apply an AND filter to combine multiple filters",
+          "file": "public/filters/and-filter.html"
+        },
+        {
+          "title": "Complex Filter",
+          "desc": "Apply several combined filters to a dataset",
+          "file": "public/filters/complex-filter.html"
+        }
+      ]
+    },
+    {
       "title": "Misc",
       "samples": [
         {

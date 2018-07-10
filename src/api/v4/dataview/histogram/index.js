@@ -45,6 +45,15 @@ var parseHistogramData = require('./parse-data.js');
  * // Add the histogram to the client
  * client.addDataview(histogram);
  * @example
+ * // Create a cities population histogram with a range
+ * var histogram = new carto.dataview.Histogram(citiesSource, 'population', { start: 100000, end: 5000000 });
+ * // Set up a callback to render the histogram data every time new data is obtained.
+ *  histogram.on('dataChanged', histogramData => {
+ *    console.log(histogramData);
+ *  });
+ * // Add the histogram to the client
+ * client.addDataview(histogram);
+ * @example
  * // The histogram is an async object so it can be on different states: LOADING, ERROR...
  * // Listen to state events
  * histogram.on('statusChanged', (newStatus, error) => { });

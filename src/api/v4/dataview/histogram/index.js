@@ -106,9 +106,10 @@ Histogram.prototype.getBins = function () {
 };
 
 /**
- * Set the lower limit of the bins range
+ * Set the lower and upper limit of the bins range
  *
  * @param {number} start
+ * @param {number} end
  * @return {carto.dataview.Histogram} this
  * @api
  */
@@ -121,7 +122,7 @@ Histogram.prototype.setStartEnd = function (start, end) {
 };
 
 /**
- * Return the current value of start
+ * Return the lower limit of the bins' range
  *
  * @return {number} Current value of start
  * @api
@@ -131,7 +132,7 @@ Histogram.prototype.getStart = function () {
 };
 
 /**
- * Return the current value of end
+ * Return the upper limit of the bins' range
  *
  * @return {number} Current value of end
  * @api

@@ -8,9 +8,9 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class FgdbSplitter
-      MAX_LAYERS = 50
-      ITEM_COUNT_REGEX = 'Feature Count:\s'
-      OGRINFO_BINARY = 'ogrinfo'
+      MAX_LAYERS = 50.freeze
+      ITEM_COUNT_REGEX = 'Feature Count:\s'.freeze
+      OGRINFO_BINARY = 'ogrinfo'.freeze
       DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'.freeze
 
       def self.support?(source_file)
@@ -30,9 +30,10 @@ module CartoDB
       def run
         n_layers = layers_in(source_file).length
         return self if n_layers <= 1
-        raise CartoDB::Importer2::TooManyLayersError.new(
-          "File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}"
-        ) if n_layers > MAX_LAYERS
+        if n_layers > MAX_LAYERS
+          raise CartoDB::Importer2::TooManyLayersError.new(
+            "File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}")
+        end 
         @source_files = source_files_for(source_file, layers_in(source_file))
         self
       end

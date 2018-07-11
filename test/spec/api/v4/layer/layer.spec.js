@@ -36,6 +36,14 @@ describe('api/v4/layer', function () {
       expect(id1).not.toEqual(id2);
     });
 
+    it('should be able to create a hidden layer', function () {
+      var layer = new carto.layer.Layer(source, style, {
+        visible: false
+      });
+
+      expect(layer.isHidden()).toBe(true);
+    });
+
     it('should build a new Layer params: (source, style, options)', function () {
       var layer = new carto.layer.Layer(source, style, {
         featureClickColumns: ['a', 'b'],

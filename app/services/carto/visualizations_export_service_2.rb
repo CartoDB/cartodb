@@ -19,9 +19,10 @@ require_dependency 'carto/export/data_import_exporter'
 # 2.1.0: export datasets: permissions, user_tables and syncs
 # 2.1.1: export vizjson2 mark
 # 2.1.2: export locked and password
+# 2.1.3: export synchronization id
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.1.2'.freeze
+    CURRENT_VERSION = '2.1.3'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -175,7 +176,7 @@ module Carto
     def build_synchronization_from_hash(exported_synchronization)
       return nil unless exported_synchronization
 
-      Carto::Synchronization.new(
+      sync = Carto::Synchronization.new(
         name: exported_synchronization[:name],
         interval: exported_synchronization[:interval],
         url: exported_synchronization[:url],
@@ -197,6 +198,9 @@ module Carto
         quoted_fields_guessing: exported_synchronization[:quoted_fields_guessing],
         content_guessing: exported_synchronization[:content_guessing]
       )
+
+      sync.id = exported_synchronization[:id]
+      sync
     end
 
     def build_user_table_from_hash(exported_user_table)
@@ -368,6 +372,7 @@ module Carto
     def export_syncronization(synchronization)
       return nil unless synchronization
       {
+        id: synchronization.id,
         name: synchronization.name,
         interval: synchronization.interval,
         url: synchronization.url,

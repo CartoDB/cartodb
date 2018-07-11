@@ -266,7 +266,7 @@ describe('api/v4/dataview/histogram', function () {
       expect(test).toThrowError(Error, 'Both start and end values must be a number or null.');
     });
 
-    it('should set bins to internal model as well', function () {
+    it('should set start and end with a number', function () {
       dataview._internalModel = createHistogramInternalModelMock();
 
       dataview.setStartEnd(20, 30);
@@ -274,6 +274,19 @@ describe('api/v4/dataview/histogram', function () {
       expect(dataview._internalModel.set).toHaveBeenCalledWith({ start: 20, end: 30 });
       expect(dataview.getStart()).toBe(20); // We assert .getStart() as well
       expect(dataview.getEnd()).toBe(30); // We assert .getEnd() as well
+
+      // Clean
+      dataview._internalModel = null;
+    });
+
+    it('should set start and end with null', function () {
+      dataview._internalModel = createHistogramInternalModelMock();
+
+      dataview.setStartEnd(null, null);
+
+      expect(dataview._internalModel.set).toHaveBeenCalledWith({ start: null, end: null });
+      expect(dataview.getStart()).toBe(undefined); // We assert .getStart() as well
+      expect(dataview.getEnd()).toBe(undefined); // We assert .getEnd() as well
 
       // Clean
       dataview._internalModel = null;

@@ -57,6 +57,12 @@ module CartoDB
         layers_in(source_file).length > 1
       end
 
+      def number_or_nil(string)
+        Integer(string || '')
+      rescue ArgumentError
+        nil
+      end
+
       def layers_in(source_file)
         layers = []
 
@@ -71,7 +77,7 @@ module CartoDB
           number_rows = stdout.split("\n")
                               .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/ }
                               .map { |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first
-          number_rows = Integer(number_rows) rescue nil
+          number_rows = number_or_nil(number_rows)
           layers << layer if !number_rows.nil? && number_rows > 0
         end
         layers

@@ -14,8 +14,7 @@ module CartoDB
       DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'.freeze
 
       def self.support?(source_file)
-        source_file.extension == '.gdb' ||
-        source_file.extension == '.fgdb'
+        source_file.extension == '.gdb' || source_file.extension == '.fgdb'
       end
 
       def initialize(source_file, temporary_directory, ogr2ogr_config = nil)
@@ -60,6 +59,12 @@ module CartoDB
         layers_in(source_file).length > 1
       end
 
+      def number_or_nil(string)
+        Integer(string || '')
+      rescue ArgumentError
+        nil
+      end
+            
       def layers_in(source_file)
         layers = []
 
@@ -74,7 +79,7 @@ module CartoDB
           number_rows = stdout.split("\n")
                               .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/ }
                               .map { |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first
-          number_rows = Integer(number_rows) rescue nil
+          number_rows = number_or_nil(number_rows)
           layers << layer if !number_rows.nil? && number_rows > 0
         end
         layers

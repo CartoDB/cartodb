@@ -81,7 +81,7 @@ module CartoDB
           next if subpath =~ /\.version\.txt/i
 
           fullpath = normalize("#{path}/#{subpath}")
-          (crawl(fullpath, files) and next) if File.directory?(fullpath) and !subpath =~ /\.gdb$/i
+          (crawl(fullpath, files) and next) if File.directory?(fullpath) && !subpath =~ /\.gdb$/i
           files.push(fullpath)
         end
 

@@ -376,7 +376,7 @@ module CartoDB
         },
         {
           content_types: ['application/zip'],
-          extensions: ['.zip', '.carto','.gdb.zip']
+          extensions: ['.zip', '.carto', '.gdb.zip']
         },
         {
           content_types: ['application/x-gzip'],

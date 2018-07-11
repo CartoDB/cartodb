@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
@@ -33,8 +34,6 @@ describe CartoDB::Importer2::GpkgSplitter do
   end
 
   def path_to(filepath)
-    File.expand_path(
-      File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-    )
+    File.expand_path(File.join(File.dirname(__FILE__), "../fixtures/#{filepath}"))
   end
 end

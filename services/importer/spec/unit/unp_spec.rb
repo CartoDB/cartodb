@@ -32,7 +32,7 @@ describe Unp do
       unp.run(zipfile)
       Dir.entries(unp.temporary_directory).should include('geopackage.gpkg')
       unp.source_files.length.should eq 2
-      (unp.source_files.map { |f| f.layer }).should eq ["pts", "lns"]
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
@@ -43,7 +43,7 @@ describe Unp do
       unp.run(zipfile)
       Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
       unp.source_files.length.should eq 2
-      (unp.source_files.map { |f| f.layer }).should eq ["pts", "lns"]
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
@@ -54,7 +54,7 @@ describe Unp do
       unp.run(zipfile)
       Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
       unp.source_files.length.should eq 2
-      (unp.source_files.map { |f| f.layer }).should eq ["pts", "lns"]
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
       FileUtils.rm_rf(unp.temporary_directory)
     end
 

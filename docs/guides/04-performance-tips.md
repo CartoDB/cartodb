@@ -14,7 +14,7 @@ populationSource.setQuery('SELECT column1 FROM your_dataset');
 
 ``` js
 const populationDataset = new carto.source.Dataset('your_dataset');
-populationDataset.setDataset('your_new_dataset');
+populationDataset.setTableName('your_new_dataset');
 ```
 
 That way, all the dataviews and visualizations will be automatically updated without doing anything else.

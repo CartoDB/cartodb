@@ -30,6 +30,7 @@ var metadataParser = require('./metadata/parser');
  * @param {carto.style.CartoCSS} style - A CartoCSS object with the layer styling
  * @param {object} [options]
  * @param {Array<string>} [options.featureClickColumns=[]] - Columns that will be available for `featureClick` events
+ * @param {boolean} [options.visible=true] - A boolean value indicating the layer's visibility
  * @param {Array<string>} [options.featureOverColumns=[]] - Columns that will be available for `featureOver` events
  * @param {carto.layer.Aggregation} [options.aggregation={}] - Specify {@link carto.layer.Aggregation|aggregation } options
  * @param {string} [options.id] - An unique identifier for the layer
@@ -39,6 +40,13 @@ var metadataParser = require('./metadata/parser');
  * @fires featureOver
  * @fires error
  * @example
+ * const citiesSource = new carto.source.SQL('SELECT * FROM cities');
+ * const citiesStyle = new carto.style.CartoCSS(`
+ *   #layer {
+ *     marker-fill: #FABADA;
+ *     marker-width: 10;
+ *   }
+ * `);
  * // Create a layer with no options
  * new carto.layer.Layer(citiesSource, citiesStyle);
  * @example
@@ -54,6 +62,16 @@ var metadataParser = require('./metadata/parser');
  *   featureOverColumns: [ 'name' ]
  * });
  * @example
+ * const citiesSource = new carto.source.SQL('SELECT * FROM cities');
+ * const citiesStyle = new carto.style.CartoCSS(`
+ *   #layer {
+ *     marker-fill: #FABADA;
+ *     marker-width: 10;
+ *   }
+ * `);
+ * // Create a hidden layer
+ * new carto.layer.Layer(citiesSource, citiesStyle, { visible: false });
+ * @example
  * // Listen to the event thrown when the mouse is over a feature
  * layer.on('featureOver', featureEvent => {
  *   console.log(`Mouse over city with name: ${featureEvent.data.name}`);
@@ -63,13 +81,20 @@ var metadataParser = require('./metadata/parser');
  * @memberof carto.layer
  * @api
  */
-function Layer (source, style, options) {
+function Layer (source, style, options = {}) {
   Base.apply(this, arguments);
-
-  options = options || {};
 
   _checkSource(source);
   _checkStyle(style);
+
+  options = _.defaults(options, {
+    visible: true,
+    featureClickColumns: [],
+    featureOverColumns: [],
+    minzoom: 0,
+    maxzoom: undefined,
+    aggregation: {}
+  });
 
   this._client = undefined;
   this._engine = undefined;
@@ -77,12 +102,12 @@ function Layer (source, style, options) {
 
   this._source = source;
   this._style = style;
-  this._visible = true;
-  this._featureClickColumns = options.featureClickColumns || [];
-  this._featureOverColumns = options.featureOverColumns || [];
-  this._minzoom = options.minzoom || 0;
-  this._maxzoom = options.maxzoom || undefined;
-  this._aggregation = options.aggregation || {};
+  this._visible = options.visible;
+  this._featureClickColumns = options.featureClickColumns;
+  this._featureOverColumns = options.featureOverColumns;
+  this._minzoom = options.minzoom;
+  this._maxzoom = options.maxzoom;
+  this._aggregation = options.aggregation;
 
   _validateAggregationColumnsAndInteractivity(this._aggregation.columns, this._featureClickColumns, this._featureOverColumns);
 }

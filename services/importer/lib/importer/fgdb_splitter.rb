@@ -64,7 +64,7 @@ module CartoDB
       rescue ArgumentError
         nil
       end
-            
+
       def layers_in(source_file)
         layers = []
 

@@ -246,48 +246,6 @@ populatedPlaces.on(carto.layer.events.FEATURE_OUT, featureEvent => {
 
 When `featureOut` is triggered, this code removes the pop-up from the map.
 
-### Creating a Formula Widget
-
-Now that you have a working country selector, let's add a widget that will display the average max population of the populated places for the selected country (or display ALL if no country is selected).
-
-#### Defining a Formula Dataview
-
-`carto.dataview.Formula` allows you to execute aggregate functions (count, sum, average, max, min) on a data source:
-
-```javascript
-const averagePopulation = new carto.dataview.Formula(populatedPlacesSource, 'pop_max', {
-  operation: carto.operation.AVG
-});
-```
-
-The `averagePopulation` dataview triggers a `dataChanged` event every time a new average has been calculated.
-
-#### Listening to Data Changes on the Dataview
-
-The `dataChanged` event allows you to get results of the aggregate function and use it in many ways.
-
-```javascript
-averagePopulation.on('dataChanged', data => {
-  refreshAveragePopulationWidget(data.result);
-});
-
-function refreshAveragePopulationWidget(avgPopulation) {
-  const widgetDom = document.querySelector('#avgPopulationWidget');
-  const averagePopulationDom = widgetDom.querySelector('.js-average-population');
-  averagePopulationDom.innerText = Math.floor(avgPopulation);
-}
-```
-
-This snippet refreshes the averaged population widget every time a new average is available (e.g., when a new country is selected).
-
-#### Adding the dataview to the client
-
-To get a full working dataview, add it to your client:
-
-```javascript
-client.addDataview(averagePopulation);
-```
-
 ### Creating a Country Selector Widget
 
 This section describes how to get data from a previously defined data source and display a country selector the map. As a result, selecting a country on the map highlights the country and filters by populated places.
@@ -383,6 +341,48 @@ The dataview needs to be added to the client in order to fetch data from CARTO.
 
 ```javascript
 client.addDataview(countriesDataview);
+```
+
+### Creating a Formula Widget
+
+Now that you have a working country selector, let's add a widget that will display the average max population of the populated places for the selected country (or display ALL if no country is selected).
+
+#### Defining a Formula Dataview
+
+`carto.dataview.Formula` allows you to execute aggregate functions (count, sum, average, max, min) on a data source:
+
+```javascript
+const averagePopulation = new carto.dataview.Formula(populatedPlacesSource, 'pop_max', {
+  operation: carto.operation.AVG
+});
+```
+
+The `averagePopulation` dataview triggers a `dataChanged` event every time a new average has been calculated.
+
+#### Listening to Data Changes on the Dataview
+
+The `dataChanged` event allows you to get results of the aggregate function and use it in many ways.
+
+```javascript
+averagePopulation.on('dataChanged', data => {
+  refreshAveragePopulationWidget(data.result);
+});
+
+function refreshAveragePopulationWidget(avgPopulation) {
+  const widgetDom = document.querySelector('#avgPopulationWidget');
+  const averagePopulationDom = widgetDom.querySelector('.js-average-population');
+  averagePopulationDom.innerText = Math.floor(avgPopulation);
+}
+```
+
+This snippet refreshes the averaged population widget every time a new average is available (e.g., when a new country is selected).
+
+#### Adding the dataview to the client
+
+To get a full working dataview, add it to your client:
+
+```javascript
+client.addDataview(averagePopulation);
 ```
 
 ### Conclusion

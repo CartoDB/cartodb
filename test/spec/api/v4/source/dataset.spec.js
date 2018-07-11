@@ -32,6 +32,117 @@ describe('api/v4/source/dataset', function () {
     });
   });
 
+  describe('.setDataset', function () {
+    let populatedPlacesDataset;
+
+    beforeEach(function () {
+      populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+    });
+
+    it('should set the dataset', function () {
+      populatedPlacesDataset.setDataset('airbnb_listings');
+      expect(populatedPlacesDataset.getTableName()).toEqual('airbnb_listings');
+    });
+
+    it('should throw an error if query is empty', function () {
+      expect(function () {
+        populatedPlacesDataset.setDataset(undefined);
+      }).toThrowError('Table name is required.');
+    });
+
+    it('should throw an error if query is not a valid string', function () {
+      expect(function () {
+        populatedPlacesDataset.setDataset(333);
+      }).toThrowError('Table name must be a string.');
+    });
+
+    it('should throw an error if query is empty', function () {
+      expect(function () {
+        populatedPlacesDataset.setDataset('');
+      }).toThrowError('Table name must be not empty.');
+    });
+
+    it('should trigger an datasetChanged event when there is no internal model', function (done) {
+      const expectedTable = 'airbnb_listings';
+
+      populatedPlacesDataset.on('datasetChanged', function (newQuery) {
+        expect(newQuery).toEqual(expectedTable);
+        done();
+      });
+
+      populatedPlacesDataset.setDataset(expectedTable);
+    });
+
+    it('should trigger an datasetChanged event when there is an internal model', function (done) {
+      const client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      const style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      const layer = new carto.layer.Layer(populatedPlacesDataset, style);
+      const datasetChangedSpy = jasmine.createSpy('datasetChangedSpy');
+      const newDataset = 'airbnb_listings';
+
+      populatedPlacesDataset.on('datasetChanged', datasetChangedSpy);
+
+      client.addLayer(layer)
+        .then(function () {
+          return populatedPlacesDataset.setDataset(newDataset);
+        })
+        .then(function () {
+          expect(datasetChangedSpy).toHaveBeenCalledWith(newDataset);
+          done();
+        });
+    });
+
+    it('should return a resolved promise when there is no internal model', function (done) {
+      const newDataset = 'airbnb_listings';
+      populatedPlacesDataset.setDataset(newDataset)
+        .then(function () {
+          expect(populatedPlacesDataset.getTableName()).toEqual(newDataset);
+          done();
+        });
+    });
+
+    it('should return a resolved promise when there is an internal model', function (done) {
+      const client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      const style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      const layer = new carto.layer.Layer(populatedPlacesDataset, style);
+      const newDataset = 'airbnb_listings';
+
+      client.addLayer(layer)
+        .then(function () {
+          return populatedPlacesDataset.setDataset(newDataset);
+        })
+        .then(function () {
+          expect(populatedPlacesDataset.getTableName()).toEqual(newDataset);
+          done();
+        });
+    });
+
+    it('should return a rejected promise with a CartoError when there is an internal model (and a reload error)', function (done) {
+      const client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test'
+      });
+      const style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
+      const layer = new carto.layer.Layer(populatedPlacesDataset, style);
+      const newDataset = 'invalid_dataset';
+
+      client.addLayer(layer)
+        .then(function () {
+          return populatedPlacesDataset.setDataset(newDataset);
+        })
+        .catch(function (cartoError) {
+          expect(cartoError.message).toMatch(/Invalid dataset name used. Dataset "invalid_dataset" does not exist./);
+          done();
+        });
+    });
+  });
+
   describe('.getTableName', function () {
     it('should return the table name', function () {
       var dataset = new carto.source.Dataset('ne_10m_populated_places_simple');

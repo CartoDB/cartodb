@@ -37,7 +37,7 @@ Dataset.prototype = Object.create(Base.prototype);
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
  * @api
  */
-Dataset.prototype.setDataset = function (tableName) {
+Dataset.prototype.setTableName = function (tableName) {
   _checkTableName(tableName);
 
   this._tableName = tableName;

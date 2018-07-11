@@ -32,7 +32,7 @@ describe('api/v4/source/dataset', function () {
     });
   });
 
-  describe('.setDataset', function () {
+  describe('.setTableName', function () {
     let populatedPlacesDataset;
 
     beforeEach(function () {
@@ -40,25 +40,25 @@ describe('api/v4/source/dataset', function () {
     });
 
     it('should set the dataset', function () {
-      populatedPlacesDataset.setDataset('airbnb_listings');
+      populatedPlacesDataset.setTableName('airbnb_listings');
       expect(populatedPlacesDataset.getTableName()).toEqual('airbnb_listings');
     });
 
     it('should throw an error if query is empty', function () {
       expect(function () {
-        populatedPlacesDataset.setDataset(undefined);
+        populatedPlacesDataset.setTableName(undefined);
       }).toThrowError('Table name is required.');
     });
 
     it('should throw an error if query is not a valid string', function () {
       expect(function () {
-        populatedPlacesDataset.setDataset(333);
+        populatedPlacesDataset.setTableName(333);
       }).toThrowError('Table name must be a string.');
     });
 
     it('should throw an error if query is empty', function () {
       expect(function () {
-        populatedPlacesDataset.setDataset('');
+        populatedPlacesDataset.setTableName('');
       }).toThrowError('Table name must be not empty.');
     });
 
@@ -70,7 +70,7 @@ describe('api/v4/source/dataset', function () {
         done();
       });
 
-      populatedPlacesDataset.setDataset(expectedTable);
+      populatedPlacesDataset.setTableName(expectedTable);
     });
 
     it('should trigger an datasetChanged event when there is an internal model', function (done) {
@@ -81,25 +81,25 @@ describe('api/v4/source/dataset', function () {
       const style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
       const layer = new carto.layer.Layer(populatedPlacesDataset, style);
       const datasetChangedSpy = jasmine.createSpy('datasetChangedSpy');
-      const newDataset = 'airbnb_listings';
+      const newTableName = 'airbnb_listings';
 
       populatedPlacesDataset.on('datasetChanged', datasetChangedSpy);
 
       client.addLayer(layer)
         .then(function () {
-          return populatedPlacesDataset.setDataset(newDataset);
+          return populatedPlacesDataset.setTableName(newTableName);
         })
         .then(function () {
-          expect(datasetChangedSpy).toHaveBeenCalledWith(newDataset);
+          expect(datasetChangedSpy).toHaveBeenCalledWith(newTableName);
           done();
         });
     });
 
     it('should return a resolved promise when there is no internal model', function (done) {
-      const newDataset = 'airbnb_listings';
-      populatedPlacesDataset.setDataset(newDataset)
+      const newTableName = 'airbnb_listings';
+      populatedPlacesDataset.setTableName(newTableName)
         .then(function () {
-          expect(populatedPlacesDataset.getTableName()).toEqual(newDataset);
+          expect(populatedPlacesDataset.getTableName()).toEqual(newTableName);
           done();
         });
     });
@@ -111,14 +111,14 @@ describe('api/v4/source/dataset', function () {
       });
       const style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
       const layer = new carto.layer.Layer(populatedPlacesDataset, style);
-      const newDataset = 'airbnb_listings';
+      const newTableName = 'airbnb_listings';
 
       client.addLayer(layer)
         .then(function () {
-          return populatedPlacesDataset.setDataset(newDataset);
+          return populatedPlacesDataset.setTableName(newTableName);
         })
         .then(function () {
-          expect(populatedPlacesDataset.getTableName()).toEqual(newDataset);
+          expect(populatedPlacesDataset.getTableName()).toEqual(newTableName);
           done();
         });
     });
@@ -130,11 +130,11 @@ describe('api/v4/source/dataset', function () {
       });
       const style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
       const layer = new carto.layer.Layer(populatedPlacesDataset, style);
-      const newDataset = 'invalid_dataset';
+      const newTableName = 'invalid_dataset';
 
       client.addLayer(layer)
         .then(function () {
-          return populatedPlacesDataset.setDataset(newDataset);
+          return populatedPlacesDataset.setTableName(newTableName);
         })
         .catch(function (cartoError) {
           expect(cartoError.message).toMatch(/Invalid dataset name used. Dataset "invalid_dataset" does not exist./);

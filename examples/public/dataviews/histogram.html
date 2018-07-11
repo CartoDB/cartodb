@@ -84,9 +84,13 @@
         const start = parseInt(document.getElementById('start').value) || null;
         const end = parseInt(document.getElementById('end').value) || null;
 
-        histogramDataview.setColumn(column);
-        histogramDataview.setStartEnd(start, end);
-        histogramDataview.setBins(bins);
+        try {
+          histogramDataview.setColumn(column);
+          histogramDataview.setStartEnd(start, end);
+          histogramDataview.setBins(bins);
+        } catch(error) {
+          alert(error.message);
+        }
       }
     </script>
   </body>

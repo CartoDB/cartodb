@@ -32,7 +32,7 @@ module CartoDB
         if n_layers > MAX_LAYERS
           raise CartoDB::Importer2::TooManyLayersError.new(
             "File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}"
-            )
+          )
         end
         @source_files = source_files_for(source_file, layers_in(source_file))
         self

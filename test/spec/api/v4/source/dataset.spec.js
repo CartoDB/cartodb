@@ -62,10 +62,10 @@ describe('api/v4/source/dataset', function () {
       }).toThrowError('Table name must be not empty.');
     });
 
-    it('should trigger an datasetChanged event when there is no internal model', function (done) {
+    it('should trigger an tableNameChanged event when there is no internal model', function (done) {
       const expectedTable = 'airbnb_listings';
 
-      populatedPlacesDataset.on('datasetChanged', function (newQuery) {
+      populatedPlacesDataset.on('tableNameChanged', function (newQuery) {
         expect(newQuery).toEqual(expectedTable);
         done();
       });
@@ -73,24 +73,24 @@ describe('api/v4/source/dataset', function () {
       populatedPlacesDataset.setTableName(expectedTable);
     });
 
-    it('should trigger an datasetChanged event when there is an internal model', function (done) {
+    it('should trigger an tableNameChanged event when there is an internal model', function (done) {
       const client = new carto.Client({
         apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
         username: 'cartojs-test'
       });
       const style = new carto.style.CartoCSS('#layer { marker-fill: red; }');
       const layer = new carto.layer.Layer(populatedPlacesDataset, style);
-      const datasetChangedSpy = jasmine.createSpy('datasetChangedSpy');
+      const tableNameChangedSpy = jasmine.createSpy('tableNameChangedSpy');
       const newTableName = 'airbnb_listings';
 
-      populatedPlacesDataset.on('datasetChanged', datasetChangedSpy);
+      populatedPlacesDataset.on('tableNameChanged', tableNameChangedSpy);
 
       client.addLayer(layer)
         .then(function () {
           return populatedPlacesDataset.setTableName(newTableName);
         })
         .then(function () {
-          expect(datasetChangedSpy).toHaveBeenCalledWith(newTableName);
+          expect(tableNameChangedSpy).toHaveBeenCalledWith(newTableName);
           done();
         });
     });

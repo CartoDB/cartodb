@@ -6,6 +6,7 @@
     "jasmine": true
   },
   "globals": {
+    "__ENV__": true
   },
   "rules": {
     "no-useless-escape": "off"

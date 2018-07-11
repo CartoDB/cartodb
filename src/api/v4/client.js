@@ -21,7 +21,7 @@ function getValidationError (code) {
  *
  * To create a new client you need a CARTO account, where you will be able to get
  * your API key and username.
- * 
+ *
  * If you want to learn more about authorization and authentication, please read the authorization fundamentals section of our Developer Center.
  *
  * @param {object} settings
@@ -34,7 +34,7 @@ function getValidationError (code) {
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE'
  * });
- * 
+ *
  * var client = new carto.Client({
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE',
@@ -56,7 +56,7 @@ function Client (settings) {
     apiKey: settings.apiKey,
     username: settings.username,
     serverUrl: settings.serverUrl || 'https://{user}.carto.com'.replace(/{user}/, settings.username),
-    statTag: 'carto.js-v' + VERSION
+    client: 'js-' + VERSION
   });
   this._bindEngine(this._engine);
 }
@@ -293,8 +293,15 @@ Client.prototype.addDataviews = function (dataviews) {
  * @api
  */
 Client.prototype.removeDataview = function (dataview) {
-  this._dataviews.splice(this._dataviews.indexOf(dataview));
+  var dataviewIndex = this._dataviews.indexOf(dataview);
+
+  if (dataviewIndex === -1) {
+    return Promise.resolve();
+  }
+
+  this._dataviews.splice(dataviewIndex, 1);
   this._engine.removeDataview(dataview.$getInternalModel());
+  dataview.disable();
   return this._reload();
 };
 
@@ -324,16 +331,18 @@ Client.prototype.getDataviews = function () {
  * // Add the leafletLayer to a leafletMap
  * client.getLeafletLayer().addTo(map);
  *
+ * @param {object} options - {@link https://leafletjs.com/reference-1.3.0.html#tilelayer-minzoom|L.TileLayer} options.
+ *
  * @returns A {@link http://leafletjs.com/reference-1.3.1.html#tilelayer|L.TileLayer} layer that groups all the layers.
  *
  * @api
  */
-Client.prototype.getLeafletLayer = function () {
+Client.prototype.getLeafletLayer = function (options) {
   // Check if Leaflet is loaded
   utils.isLeafletLoaded();
   if (!this._leafletLayer) {
     var LeafletLayer = require('./native/leaflet-layer');
-    this._leafletLayer = new LeafletLayer(this._layers, this._engine);
+    this._leafletLayer = new LeafletLayer(this._layers, this._engine, options);
   }
   return this._leafletLayer;
 };

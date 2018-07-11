@@ -21,7 +21,10 @@ var CartoError = require('../error-handling/carto-error');
 function SQL (query) {
   _checkQuery(query);
   this._query = query;
+
   Base.apply(this, arguments);
+
+  this._appliedFilters.on('change:filters', () => this._updateInternalModelQuery(this._getQueryToApply()));
 }
 
 SQL.prototype = Object.create(Base.prototype);
@@ -29,7 +32,7 @@ SQL.prototype = Object.create(Base.prototype);
 /**
  * Update the query. This method is asyncronous and returns a promise which is resolved when the style
  * is changed succesfully. It also fires a 'queryChanged' event.
- * 
+ *
  * @param {string} query - The sql query that will be the source of the data
  * @fires queryChanged
  * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
@@ -38,19 +41,15 @@ SQL.prototype = Object.create(Base.prototype);
 SQL.prototype.setQuery = function (query) {
   _checkQuery(query);
   this._query = query;
+
+  const sqlString = this._getQueryToApply();
+
   if (!this._internalModel) {
-    this._triggerQueryChanged(this, query);
+    this._triggerQueryChanged(this, sqlString);
     return Promise.resolve();
   }
-  this._internalModel.set('query', query, { silent: true });
 
-  return this._internalModel._engine.reload()
-    .then(function () {
-      this._triggerQueryChanged(this, query);
-    }.bind(this))
-    .catch(function (windshaftError) {
-      return Promise.reject(new CartoError(windshaftError));
-    });
+  return this._updateInternalModelQuery(sqlString);
 };
 
 /**
@@ -72,7 +71,7 @@ SQL.prototype._createInternalModel = function (engine) {
   var internalModel = new AnalysisModel({
     id: this.getId(),
     type: 'source',
-    query: this._query
+    query: this._getQueryToApply()
   }, {
     camshaftReference: CamshaftReference,
     engine: engine
@@ -81,6 +80,36 @@ SQL.prototype._createInternalModel = function (engine) {
   internalModel.on('change:query', this._triggerQueryChanged, this);
 
   return internalModel;
+};
+
+SQL.prototype._updateInternalModelQuery = function (query) {
+  if (!this._internalModel) return;
+
+  this._internalModel.set('query', query, { silent: true });
+
+  return this._internalModel._engine.reload()
+    .then(() => this._triggerQueryChanged(this, query))
+    .catch(windshaftError => Promise.reject(new CartoError(windshaftError)));
+};
+
+SQL.prototype._getQueryToApply = function () {
+  const whereClause = this._appliedFilters.$getSQL();
+
+  if (!this._hasFiltersApplied || _.isEmpty(whereClause)) {
+    return this._query;
+  }
+
+  return `SELECT * FROM (${this._query}) as originalQuery WHERE ${whereClause}`;
+};
+
+SQL.prototype.addFilter = function (filter) {
+  Base.prototype.addFilter.apply(this, arguments);
+  this._updateInternalModelQuery(this._getQueryToApply());
+};
+
+SQL.prototype.removeFilter = function (filters) {
+  Base.prototype.removeFilter.apply(this, arguments);
+  this._updateInternalModelQuery(this._getQueryToApply());
 };
 
 SQL.prototype._triggerQueryChanged = function (model, value) {

@@ -189,6 +189,34 @@ module.exports = {
     'invalid-bounds-object': {
       messageRegex: /invalidBoundsObject/,
       friendlyMessage: 'Bounds object is not valid. Use a carto.filter.Bounds object'
+    },
+    'column-required': {
+      messageRegex: /columnRequired/,
+      friendlyMessage: 'Column property is required.'
+    },
+    'column-string': {
+      messageRegex: /columnString/,
+      friendlyMessage: 'Column property must be a string.'
+    },
+    'empty-column': {
+      messageRegex: /emptyColumn/,
+      friendlyMessage: 'Column property must be not empty.'
+    },
+    'invalid-filter': {
+      messageRegex: /invalidFilter(.+)/,
+      friendlyMessage: "'$0' is not a valid filter. Please check documentation."
+    },
+    'invalid-option': {
+      messageRegex: /invalidOption(.+)/,
+      friendlyMessage: "'$0' is not a valid option for this filter."
+    },
+    'wrong-filter-type': {
+      messageRegex: /wrongFilterType/,
+      friendlyMessage: 'Filters need to extend from carto.filter.SQLBase. Please use carto.filter.Category or carto.filter.Range.'
+    },
+    'invalid-parameter-type': {
+      messageRegex: /invalidParameterType(.+)/,
+      friendlyMessage: "Invalid parameter type for '$0'. Please check filters documentation."
     }
   },
   aggregation: {

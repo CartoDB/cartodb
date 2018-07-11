@@ -1,4 +1,5 @@
-var carto = require('../../../../../src/api/v4');
+const Base = require('../../../../../src/api/v4/source/base');
+const carto = require('../../../../../src/api/v4');
 
 describe('api/v4/source/dataset', function () {
   describe('constructor', function () {
@@ -48,6 +49,79 @@ describe('api/v4/source/dataset', function () {
       expect(internalModel.get('id')).toEqual(populatedPlacesDataset.getId());
       expect(internalModel.get('query')).toEqual('SELECT * from ne_10m_populated_places_simple');
       expect(internalModel._engine).toEqual('fakeEngine');
+    });
+  });
+
+  describe('.getQueryToApply', function () {
+    let populatedPlacesDataset;
+
+    beforeEach(function () {
+      populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+      spyOn(populatedPlacesDataset, '_updateInternalModelQuery');
+    });
+
+    it('should return original query if applied filters returns no SQL', function () {
+      expect(populatedPlacesDataset._getQueryToApply()).toBe('SELECT * from ne_10m_populated_places_simple');
+    });
+
+    it('should return wrapped query if filters are applied', function () {
+      populatedPlacesDataset.addFilter(new carto.filter.Category('fake_column', { in: ['category'] }));
+
+      expect(populatedPlacesDataset._getQueryToApply()).toBe("SELECT * FROM (SELECT * from ne_10m_populated_places_simple) as datasetQuery WHERE fake_column IN ('category')");
+    });
+  });
+
+  describe('.addFilter', function () {
+    let populatedPlacesDataset;
+
+    beforeEach(function () {
+      spyOn(Base.prototype, 'addFilter');
+
+      populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+      spyOn(populatedPlacesDataset, '_updateInternalModelQuery');
+    });
+
+    it('should call original addFilter and _updateInternalModelQuery', function () {
+      populatedPlacesDataset.addFilter(new carto.filter.Category('fake_column', { in: ['category'] }));
+
+      expect(Base.prototype.addFilter).toHaveBeenCalled();
+      expect(populatedPlacesDataset._updateInternalModelQuery).toHaveBeenCalledWith(populatedPlacesDataset._getQueryToApply());
+    });
+  });
+
+  describe('.removeFilter', function () {
+    let populatedPlacesDataset, filter;
+
+    beforeEach(function () {
+      spyOn(Base.prototype, 'addFilter');
+
+      populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+      spyOn(populatedPlacesDataset, '_updateInternalModelQuery');
+
+      filter = populatedPlacesDataset.addFilter(new carto.filter.Category('fake_column', { in: ['category'] }));
+      populatedPlacesDataset.addFilter(filter);
+    });
+
+    it('should call original removeFilter and _updateInternalModelQuery', function () {
+      populatedPlacesDataset.removeFilter(filter);
+
+      expect(Base.prototype.addFilter).toHaveBeenCalled();
+      expect(populatedPlacesDataset._updateInternalModelQuery).toHaveBeenCalledWith(populatedPlacesDataset._getQueryToApply());
+    });
+  });
+
+  describe('.getFilters', function () {
+    let populatedPlacesDataset, filter;
+
+    beforeEach(function () {
+      filter = new carto.filter.Category('fake_column', { in: ['category'] });
+
+      populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');
+      populatedPlacesDataset.addFilter(filter);
+    });
+
+    it('should return added filters', function () {
+      expect(populatedPlacesDataset.getFilters()).toEqual([filter]);
     });
   });
 

@@ -230,7 +230,7 @@ $maxLegendContainerHeight: 300px;
 .CDB-LayerLegends {
   margin-top: 0;
 
-  + .CDB-LayerLegends {
+  &:not(:empty) + &:not(:empty) {
     margin-top: 12px;
   }
 }
@@ -293,6 +293,10 @@ $maxLegendContainerHeight: 300px;
   z-index: 3;
 }
 
+.CDB-Legend-item {
+  height: 100%;
+}
+
 .CDB-Legend-item div.cartodb-legend {
   position: static;
   padding: 0;
@@ -318,11 +322,11 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-container {
   position: relative;
-  top: 7px;
+  top: 0;
   right: 0;
   width: 100%;
   height: 100px;
-  margin: 10px 0;
+  margin: 16px 0 10px;
 }
 
 .Bubble-circle {
@@ -419,6 +423,10 @@ $maxLegendContainerHeight: 300px;
   margin-bottom: 20px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
+
+  &.no-average {
+    margin-bottom: 4px;
+  }
 }
 .Legend-choropleth::before {
   position: absolute;

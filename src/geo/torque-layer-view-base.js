@@ -76,7 +76,7 @@ var TorqueLayerViewBase = {
       // TODO: manage time columns
       countby: 'count(cartodb_id)',
       maps_api_template: model.get('maps_api_template'),
-      stat_tag: model.get('stat_tag'),
+      client: model.get('client'),
       animationDuration: model.get('torque-duration'),
       steps: model.get('torque-steps'),
       sql: this._getQuery(model),

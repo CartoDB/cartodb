@@ -25,7 +25,7 @@ describe('vis/layers-factory', function () {
       urlTemplate: 'http://{user}.carto.com',
       userName: 'JUAN',
       templateName: 'TPL_12345678',
-      statTag: 'STAT_TAG',
+      client: 'CLIENT_VERSION',
       apiKey: 'API_KEY',
       authToken: 'AUTH_TOKEN'
     };
@@ -165,7 +165,7 @@ describe('vis/layers-factory', function () {
       });
       expect(layerModel.get('user_name')).toEqual('JUAN');
       expect(layerModel.get('maps_api_template')).toEqual('http://{user}.carto.com');
-      expect(layerModel.get('stat_tag')).toEqual('STAT_TAG');
+      expect(layerModel.get('client')).toEqual('CLIENT_VERSION');
       expect(layerModel.get('named_map')).toEqual({
         name: 'TPL_12345678'
       });

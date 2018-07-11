@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width">
+  <!-- Include Carto.js -->
+  <script src="../../dist/public/carto.js"></script>
+  <!-- Include Leaflet -->
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places,visualization,drawing"></script>
+
+
+</head>
+
+<body>
+
+  <button onclick="LAYERS.loadLayer('europe')">Activar capa</button>
+  <button onclick="LAYERS.removeLayer('europe')">Desactivar capa</button>
+  <div id="map" style="width: 100%;height: 96vh;"></div>
+
+  <script>
+    const MAP = new google.maps.Map(document.getElementById('map'), {
+      zoom: 3,
+      center: { lat: 0, lng: 0 }
+    });
+
+    var LAYERS = {
+      populatedPlaces: {
+        loaded: false,
+        client: new carto.Client({
+          apiKey: 'default_public',
+          username: 'cartojs-test'
+        }),
+        source: new carto.source.Dataset('ne_10m_populated_places_simple'),
+        cartoCSS: new carto.style.CartoCSS(`
+          #layer {
+            marker-width: 7;
+            marker-fill: #EE4D5A;
+            marker-line-color: #FFFFFF;
+          }
+        `),
+      },
+      europe: {
+        loaded: false,
+        client: new carto.Client({
+          apiKey: 'default_public',
+          username: 'cartojs-test'
+        }),
+        source: new carto.source.Dataset('ne_adm0_europe'),
+        cartoCSS: new carto.style.CartoCSS(`
+          #layer {
+            polygon-fill: #826DBA;
+            polygon-opacity: 0.8;
+            ::outline {
+              line-width: 1;
+              line-color: #FFFFFF;
+              line-opacity: 0.8;
+            }
+          }
+        `),
+      },
+      loadLayer: function (layerName) {
+        const dataset = LAYERS[layerName];
+        const layer = new carto.layer.Layer(dataset.source, dataset.cartoCSS, {});
+        window.layers = window.layers || {};
+        window.layers[layerName] = layer;
+
+        dataset.client.addLayer(layer)
+
+        if (!dataset.loaded) {
+          MAP.overlayMapTypes.push(dataset.client.getGoogleMapsMapType(MAP));
+          dataset.loaded = true;
+        }
+      },
+      removeLayer: function (layerName) {
+        const dataset = LAYERS[layerName];
+        const layer = dataset.client.getLayers()[0];
+
+        dataset.client.removeLayer(layer);
+      }
+    };
+
+    LAYERS.loadLayer('europe');
+    LAYERS.loadLayer('populatedPlaces');
+  </script>
+</body>
+
+</html>

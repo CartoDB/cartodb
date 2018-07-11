@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'open3'
 require_relative './source_file'
 require_relative './unp'
@@ -13,7 +14,7 @@ module CartoDB
       DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'.freeze
 
       def self.support?(source_file)
-        source_file.extension == '.gdb' || 
+        source_file.extension == '.gdb' ||
         source_file.extension == '.fgdb'
       end
 
@@ -49,7 +50,7 @@ module CartoDB
           SourceFile.new(layer_file_name, nil, layer_name)
         end
       end
-      
+
       # Cannot write to FGDB, use GPKG as intermediate format
       def extract(extracted_file_path, source_file, layer_name)
         system(@ogr2ogr_binary, '-f', 'GPKG', extracted_file_path, source_file.fullpath, layer_name)
@@ -58,21 +59,21 @@ module CartoDB
       def multiple_layers?(source_file)
         layers_in(source_file).length > 1
       end
-      
+
       def layers_in(source_file)
         layers = []
-        
+
         stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, source_file.fullpath)
         fgdb_layers = stdout.split("\n")
-          .select { |line| line =~ /^\d+/ }
-          .map { |line| line.match /\d+: \"?(.*?)\"? \(/ }
-          .map { |line| line[1] }
-        
+                            .select { |line| line =~ /^\d+/ }
+                            .map { |line| line.match /\d+: \"?(.*?)\"? \(/ }
+                            .map { |line| line[1] }
+
         fgdb_layers.each do |layer|
           stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, '-so', source_file.fullpath, layer)
           number_rows = stdout.split("\n")
-                        .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/ }
-                        .map { |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first
+                              .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/ }
+                              .map { |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first
           number_rows = Integer(number_rows) rescue nil
           layers << layer if !number_rows.nil? && number_rows > 0
         end

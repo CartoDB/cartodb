@@ -48,7 +48,7 @@ module CartoDB
           SourceFile.new(layer_file_name, nil, layer_name)
         end
       end
-      
+
       def extract(extracted_file_path, source_file, layer_name)
         system(@ogr2ogr_binary, '-f', 'GPKG', extracted_file_path, source_file.fullpath, layer_name)
       end
@@ -56,10 +56,10 @@ module CartoDB
       def multiple_layers?(source_file)
         layers_in(source_file).length > 1
       end
-      
+
       def layers_in(source_file)
         layers = []
-        
+
         stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, source_file.fullpath)
         gpkg_layers = stdout.split("\n")
                             .select { |line| line =~ /^\d+/ }

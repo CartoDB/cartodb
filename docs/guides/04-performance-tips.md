@@ -12,10 +12,14 @@ const populationSource = new carto.source.SQL('SELECT * FROM your_dataset');
 populationSource.setQuery('SELECT column1 FROM your_dataset');
 ```
 
+![setQuery diagram](../img/set_query_diagram.png)
+
 ``` js
 const populationDataset = new carto.source.Dataset('your_dataset');
 populationDataset.setTableName('your_new_dataset');
 ```
+
+![setTableName diagram](../img/set_table_name_diagram.png)
 
 That way, all the dataviews and visualizations will be automatically updated without doing anything else.
 
@@ -43,6 +47,8 @@ layerStyle.setContent(`
 `);
 
 ```
+
+![setContent diagram](../img/set_content_diagram.png)
 
 ### Layers
 Layers are a fundamental part of your CARTO.js application. They are composed of a source and its attached styles.

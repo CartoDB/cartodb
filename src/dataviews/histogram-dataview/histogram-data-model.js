@@ -110,7 +110,7 @@ module.exports = Model.extend({
 
   parse: function (data) {
     var aggregation = data.aggregation || this.get('aggregation');
-    var numberOfBins = data.bins_count;
+    var numberOfBins = data.bins_count || 0;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
 

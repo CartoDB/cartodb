@@ -83,11 +83,10 @@ module CartoDB
           fullpath = normalize("#{path}/#{subpath}")
           if File.directory?(fullpath)
             gdbpath = normalize("#{fullpath}/gdb")
-            if ! File.file?(gdbpath)
-              crawl(fullpath, files) and next
+            if !(File.file?(gdbpath) && fullpath =~ /\.gdb$/i)
+              crawl(fullpath, files) && next
             end
           end
-          (crawl(fullpath, files) and next) if File.directory?(fullpath)
           files.push(fullpath)
         end
 

@@ -3,6 +3,8 @@
 As you go through developing your applications with CARTO.js, you might find useful some tips to ease the development and make your application more performant.
 
 ### Sources
+Every layer needs a source to get data from. The source is the entity that points to the data we want to show, at least, in one of our layers.
+
 When working with sources, you may want to change the actual query to show other data in your visualization or dataviews. The visualizations and dataviews react to changes coming from linked sources, so that you don't have to create another source, and layer or dataview to reflect the changes in your application.
 
 As you might think, the way to go is to call `.setQuery` method to update the SQL query when using a `carto.source.SQL`, or use `.setDataset` in a `carto.source.Dataset` source, like this example:
@@ -21,10 +23,12 @@ populationDataset.setTableName('your_new_dataset');
 
 ![setTableName diagram](../../img/set_table_name_diagram.svg)
 
-That way, all the dataviews and visualizations will be automatically updated without doing anything else.
+That way, the dataviews and visualizations retrieving data from that source will be automatically updated without doing something else.
 
 ### Styles
-Style in maps work the same way as sources do. It is pretty common to change styles in your map based on certain triggers, so that you can adequate your visualization to what you want to show.
+We need to use CartoCSS whenever we want to change the style of our markers or polygons, among other things. Each CartoCSS instance contains the styles we want to apply to any of our layers.
+
+These style instances work the same way as sources do. It is pretty common to change styles in your map based on certain triggers, so that you can adequate your visualization to what you want to show.
 
 When linked to a layer, it will be automatically updated by invoking `.setContent` with a string containing the new style content.
 
@@ -45,7 +49,6 @@ layerStyle.setContent(`
     marker-allow-overlap: true;
   }
 `);
-
 ```
 
 ![setContent diagram](../../img/set_content_diagram.svg)

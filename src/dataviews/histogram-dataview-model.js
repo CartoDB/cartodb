@@ -208,7 +208,9 @@ module.exports = DataviewModelBase.extend({
   _onColumnChanged: function () {
     this._totals.set({
       column_type: this.get('column_type'),
-      column: this.get('column')
+      column: this.get('column'),
+      start: null,
+      end: null
     });
     this.set('aggregation', undefined, { silent: true });
 

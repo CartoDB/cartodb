@@ -90,6 +90,12 @@ Histogram.prototype.getData = function () {
   return null;
 };
 
+Histogram.prototype.setColumn = function (column) {
+  Base.prototype.setColumn.apply(this, arguments);
+  this._start = null;
+  this._end = null;
+};
+
 /**
  * Set the number of bins.
  *

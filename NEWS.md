@@ -17,6 +17,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)
 * Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
 * Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
 * Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
@@ -42,8 +43,10 @@ This release introduces a new API Key system. In order to migrate existing users
 * Fix SVG spinner animations (https://github.com/CartoDB/cartodb/issues/14105)
 * Fix Dataset header dropdown (https://github.com/CartoDB/support/issues/1614)
 * Remove unneeded space in collapsed legends view (https://github.com/CartoDB/cartodb/issues/14091)
+* Validate Visualization type (#13841)
 * Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
 * Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
+* Add schema to column_names (#14121)
 * Deprecate Twitter connector in `add dataset` modal (https://github.com/CartoDB/cartodb/issues/14081)
 * Set new message on privacy warning modal when new privacy is LINK (https://github.com/CartoDB/cartodb/issues/14030)
 * Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
@@ -73,11 +76,13 @@ This release introduces a new API Key system. In order to migrate existing users
 * Do not crash when checking nil password (#14099)
 * Do not crash when saving WMS layers with long metadata (Suppoer#1643)
 * Remove Auth API FF, enable it by default (#13857)
+* Fix table sharing from users with hyphens in their name (quoting) (support#1635)
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 ### Internals
+* Re-enable sourcemaps in production, they were broken since the move to webpack v4 (https://github.com/CartoDB/cartodb/pull/14150)
 * Add `internal-carto.js` to transpilation process in Webpack (https://github.com/CartoDB/cartodb/pull/14117)
 * Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
 * Update to Webpack 4, move CSS processing from Grunt to Webpack (https://github.com/CartoDB/cartodb/pull/14033)
@@ -287,6 +292,7 @@ ion for time-series (#12670)
 * Fix copy on Twitter connector deprecation
 * Properly destroys and sets cartodb_base_url cookie (https://github.com/CartoDB/cartodb/pull/14064)
 * Fix apply button loading state for queries that alter the data (https://github.com/CartoDB/cartodb/pull/13979)
+* Fix synchronization IDs in migrations (CartoDB/support/issues/1603)
 * Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)
 * Show "Select points in polygons" analysis only for polygons (https://github.com/CartoDB/cartodb/pull/13982)
 * Allow only numeric values in latitude/longitude select in georeference analysis (https://github.com/CartoDB/cartodb/pull/13974)
@@ -718,6 +724,7 @@ ion for time-series (#12670)
 * Add rake to remove duplicate legends in layer
 * Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052)
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
+* Do not allow empty password in LDAP logins
 * Disable syncs for locked users (https://github.com/CartoDB/cartodb/issues/13832)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 

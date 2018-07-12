@@ -127,7 +127,7 @@ Warden::Strategies.add(:ldap) do
   end
 
   def authenticate!
-    (fail! and return) unless (params[:email] && params[:password])
+    (fail! and return) if (params[:email].blank? || params[:password].blank?)
 
     user = nil
     begin

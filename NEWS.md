@@ -116,6 +116,7 @@ You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to sy
 This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
 
 ### Features
+* Export GPKG files (CartoDB/support#1220)
 * Show migrated public pages (/me, /maps, /datasets) for all builder users (#14039)
 * Allow users to edit all their information in Profile (#13793)
 * Ask for password confirmation when updating organization or user settings (#13795)

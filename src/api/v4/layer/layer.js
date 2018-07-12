@@ -87,27 +87,18 @@ function Layer (source, style, options = {}) {
   _checkSource(source);
   _checkStyle(style);
 
-  options = _.defaults(options, {
-    visible: true,
-    featureClickColumns: [],
-    featureOverColumns: [],
-    minzoom: 0,
-    maxzoom: undefined,
-    aggregation: {}
-  });
-
   this._client = undefined;
   this._engine = undefined;
   this._internalModel = undefined;
 
   this._source = source;
   this._style = style;
-  this._visible = options.visible;
-  this._featureClickColumns = options.featureClickColumns;
-  this._featureOverColumns = options.featureOverColumns;
-  this._minzoom = options.minzoom;
-  this._maxzoom = options.maxzoom;
-  this._aggregation = options.aggregation;
+  this._visible = _.isBoolean(options.visible) ? options.visible : true;
+  this._featureClickColumns = options.featureClickColumns || [];
+  this._featureOverColumns = options.featureOverColumns || [];
+  this._minzoom = options.minzoom || 0;
+  this._maxzoom = options.maxzoom || undefined;
+  this._aggregation = options.aggregation || {};
 
   _validateAggregationColumnsAndInteractivity(this._aggregation.columns, this._featureClickColumns, this._featureOverColumns);
 }

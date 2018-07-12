@@ -81,8 +81,14 @@
       function applyDataviewChanges() {
         const column = document.getElementById('column').value;
         const bins = parseInt(document.getElementById('bins').value);
-        const start = parseInt(document.getElementById('start').value) || null;
-        const end = parseInt(document.getElementById('end').value) || null;
+        const startValue = parseInt(document.getElementById('start').value);
+        const endValue = parseInt(document.getElementById('end').value);
+        const start = Number.isFinite(startValue)
+          ? startValue
+          : null;
+        const end = Number.isFinite(endValue)
+          ? endValue
+          : null;
 
         try {
           histogramDataview.setColumn(column);

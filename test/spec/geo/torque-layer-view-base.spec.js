@@ -13,7 +13,7 @@ describe('geo/torque-layer-base-view', function () {
     engineMock = createEngine();
     this.model = new TorqueLayer({
       type: 'torque',
-      query: 'select * from table',
+      table_name: 'table',
       sql_wrap: 'select * from (<%= sql %>) as _cdbfromsqlwrap',
       query_wrapper: 'select * from (<%= sql %>) as _cdbfromquerywrapper',
       cartocss: 'Map {}',
@@ -22,15 +22,42 @@ describe('geo/torque-layer-base-view', function () {
   });
 
   describe('_getQuery', function () {
-    it('should take sql_wrap in case it is defined', function () {
-      var query = TorqueLayerViewBase._getQuery(this.model);
-      expect(query).toBe('select * from (select * from table) as _cdbfromsqlwrap');
+    describe('without source', function () {
+      it('should take sql_wrap in case it is defined', function () {
+        var query = TorqueLayerViewBase._getQuery(this.model);
+        expect(query).toBe('select * from (select * from table) as _cdbfromsqlwrap');
+      });
+
+      it('should not take query_wrapper in case sql_wrap is not defined', function () {
+        this.model.unset('sql_wrap');
+        var query = TorqueLayerViewBase._getQuery(this.model);
+        expect(query).toBe('select * from table');
+      });
     });
 
-    it('should not take query_wrapper in case sql_wrap is not defined', function () {
-      this.model.unset('sql_wrap');
-      var query = TorqueLayerViewBase._getQuery(this.model);
-      expect(query).toBe('select * from table');
+    describe('with source', function () {
+      var sourceMock = new Backbone.Model({
+        query: 'select * from new_table'
+      });
+
+      beforeEach(function () {
+        this.model.set('source', sourceMock);
+      });
+
+      it('should take sql_wrap in case it is defined', function () {
+        var query = TorqueLayerViewBase._getQuery(this.model);
+        expect(query).toBe('select * from (select * from new_table) as _cdbfromsqlwrap');
+      });
+
+      it('should not take query_wrapper in case sql_wrap is not defined', function () {
+        this.model.unset('sql_wrap');
+        var query = TorqueLayerViewBase._getQuery(this.model);
+        expect(query).toBe('select * from new_table');
+      });
+
+      afterEach(function () {
+        this.model.unset('source');
+      });
     });
   });
 

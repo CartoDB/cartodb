@@ -30,7 +30,7 @@ We need to use CartoCSS whenever we want to change the style of our markers or p
 
 These style instances work the same way as sources do. It is pretty common to change styles in your map based on certain triggers, so that you can adequate your visualization to what you want to show.
 
-When linked to a layer, the will automatically show the style change by invoking `.setContent` on the style object with a string containing the new style content.
+When linked to a layer, it will automatically show the style change when invoking `.setContent` on the style object with a string containing the new style content.
 
 ```js
 const layerStyle = new carto.style.CartoCSS(`

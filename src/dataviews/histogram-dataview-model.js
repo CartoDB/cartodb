@@ -62,7 +62,9 @@ module.exports = DataviewModelBase.extend({
       apiKey: opts && opts.engine && opts.engine.getApiKey(),
       authToken: opts && opts.engine && opts.engine.getAuthToken(),
       localTimezone: this.get('localTimezone'),
-      localOffset: this._localOffset
+      localOffset: this._localOffset,
+      start: this.get('start'),
+      end: this.get('end')
     });
 
     DataviewModelBase.prototype.initialize.apply(this, arguments);
@@ -206,7 +208,9 @@ module.exports = DataviewModelBase.extend({
   _onColumnChanged: function () {
     this._totals.set({
       column_type: this.get('column_type'),
-      column: this.get('column')
+      column: this.get('column'),
+      start: null,
+      end: null
     });
     this.set('aggregation', undefined, { silent: true });
 
@@ -338,6 +342,7 @@ module.exports = DataviewModelBase.extend({
   _onTotalsDataFetched: function (data, model) {
     var start = model.get('start');
     var end = model.get('end');
+
     if (_.isFinite(start) && _.isFinite(end)) {
       this.set({
         start: start,
@@ -366,7 +371,9 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onFieldsChanged: function () {
-    if (!helper.hasChangedSomeOf(['offset', 'bins', 'aggregation'], this.changed)) {
+    this._setTotalsStartEnd();
+
+    if (!helper.hasChangedSomeOf(['bins', 'aggregation', 'offset'], this.changed)) {
       return;
     }
 
@@ -389,6 +396,20 @@ module.exports = DataviewModelBase.extend({
     }
   },
 
+  _setTotalsStartEnd: function () {
+    const start = this.get('start');
+    const end = this.get('end');
+
+    const startEndChanged = helper.hasChangedSomeOf(['start', 'end'], this.changed);
+    const startEndValid = _.isFinite(start) && _.isFinite(end);
+    const hasDifferentValues = this._totals.get('start') !== start || this._totals.get('end') !== end;
+
+    if (startEndChanged && startEndValid && hasDifferentValues) {
+      this._totals.set({ start, end });
+      this._totals.refresh();
+    }
+  },
+
   _resetFilterAndFetch: function () {
     this._resetFilter();
     this.fetch();
@@ -401,7 +422,10 @@ module.exports = DataviewModelBase.extend({
 
   _onTotalsError: function (model, error) {
     var parsedError = error && this._parseError(error);
-    this._triggerStatusError(parsedError);
+
+    if (parsedError && parsedError.message !== 'abort') {
+      this._triggerStatusError(parsedError);
+    }
   },
 
   getCurrentOffset: function () {

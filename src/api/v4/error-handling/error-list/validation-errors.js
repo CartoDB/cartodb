@@ -144,6 +144,10 @@ module.exports = {
       messageRegex: /histogramInvalidBins/,
       friendlyMessage: 'Bins must be a positive integer value.'
     },
+    'histogram-invalid-start-end': {
+      messageRegex: /histogramInvalidStartEnd/,
+      friendlyMessage: 'Both start and end values must be a number or null.'
+    },
     'formula-options-required': {
       messageRegex: /formulaOptionsRequired/,
       friendlyMessage: 'Formula dataview options are not defined.'

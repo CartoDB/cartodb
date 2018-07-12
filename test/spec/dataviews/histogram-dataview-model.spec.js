@@ -678,6 +678,34 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(engineMock.reload).toHaveBeenCalled();
       expect(this.model.get('aggregation')).toBeUndefined();
     });
+
+    it('should reset totals start and end values', function () {
+      spyOn(this.model._totals, 'sync').and.callFake(function (method, model, options) {
+        options.success({
+          bin_width: 10,
+          bins_count: 3,
+          bins_start: 12,
+          nulls: 0,
+          aggregation: 'quarter'
+        });
+      });
+
+      this.model._totals.fetch();
+
+      expect(this.model._totals.get('start')).toEqual(12);
+      expect(this.model._totals.get('end')).toEqual(42);
+
+      this.model.set({
+        column: 'time',
+        aggregation: 'week',
+        offset: 3600
+      });
+
+      this.model._onColumnChanged();
+
+      expect(this.model._totals.get('start')).toBeNull();
+      expect(this.model._totals.get('end')).toBeNull();
+    });
   });
 
   describe('._calculateTotalAmount', function () {

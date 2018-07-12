@@ -313,6 +313,21 @@ Base.prototype._changeProperty = function (key, value, internalKey) {
   }
 };
 
+Base.prototype._changeProperties = function (properties) {
+  _.each(properties, (value, key) => {
+    const prevValue = this[`_${key}`];
+
+    if (prevValue !== value) {
+      this[`_${key}`] = value;
+      this._triggerChange(key, value);
+    }
+  });
+
+  if (this._internalModel) {
+    this._internalModel.set(properties);
+  }
+};
+
 Base.prototype._triggerChange = function (key, value) {
   this.trigger(key + 'Changed', value);
 };

@@ -54,8 +54,8 @@
       }).addTo(map);
 
       var client = new carto.Client({
-              apiKey: 'YOUR_API_KEY',
-              username: 'cartojs-test'
+        apiKey: 'default_public',
+        username: 'cartojs-test'
       });
       const europeanCountriesDataset = new carto.source.Dataset(`
         ne_adm0_europe
@@ -198,8 +198,6 @@
       }
 
       client.addDataview(countriesDataview);
-
-
     </script>
   </body>
-</html
+</html>

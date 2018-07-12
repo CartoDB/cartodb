@@ -3,9 +3,9 @@
   "version": "4.12.54",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.15",
+      "version": "4.0.16",
       "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.15.tgz"
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.16.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -499,9 +499,9 @@
       "resolved": "https://registry.npmjs.org/browserify-cipher/-/browserify-cipher-1.0.1.tgz"
     },
     "browserify-des": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "from": "browserify-des@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/browserify-des/-/browserify-des-1.0.1.tgz"
+      "resolved": "https://registry.npmjs.org/browserify-des/-/browserify-des-1.0.2.tgz"
     },
     "browserify-rsa": {
       "version": "4.0.1",
@@ -1410,9 +1410,9 @@
       "resolved": "https://registry.npmjs.org/get-assigned-identifiers/-/get-assigned-identifiers-1.2.0.tgz"
     },
     "get-caller-file": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "get-caller-file@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/get-caller-file/-/get-caller-file-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/get-caller-file/-/get-caller-file-1.0.3.tgz"
     },
     "get-stream": {
       "version": "3.0.0",
@@ -1504,9 +1504,9 @@
       "resolved": "https://registry.npmjs.org/hash-base/-/hash-base-3.0.4.tgz"
     },
     "hash.js": {
-      "version": "1.1.4",
+      "version": "1.1.5",
       "from": "hash.js@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/hash.js/-/hash.js-1.1.4.tgz"
+      "resolved": "https://registry.npmjs.org/hash.js/-/hash.js-1.1.5.tgz"
     },
     "he": {
       "version": "1.1.1",
@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.12",
-      "from": "cartodb/carto.js#v4.0.12",
-      "resolved": "git://github.com/cartodb/carto.js.git#655211487ceeb22aced27e28135bb9c723b79386"
+      "version": "4.0.15",
+      "from": "cartodb/carto.js#improve-reload",
+      "resolved": "git://github.com/cartodb/carto.js.git#4b4d3d49fab6f28f76a51c66e4fa1b082439b4c2"
     },
     "interpret": {
       "version": "1.1.0",
@@ -1823,9 +1823,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.4.5",
+      "version": "2.4.6",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.5.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.6.tgz"
     },
     "json-parse-better-errors": {
       "version": "1.0.2",

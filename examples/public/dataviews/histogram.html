@@ -81,8 +81,8 @@
       function applyDataviewChanges() {
         const column = document.getElementById('column').value;
         const bins = parseInt(document.getElementById('bins').value);
-        const startValue = parseInt(document.getElementById('start').value);
-        const endValue = parseInt(document.getElementById('end').value);
+        const startValue = parseFloat(document.getElementById('start').value);
+        const endValue = parseFloat(document.getElementById('end').value);
         const start = Number.isFinite(startValue)
           ? startValue
           : null;

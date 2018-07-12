@@ -71,8 +71,8 @@ module CartoDB
         stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, source_file.fullpath)
         gpkg_layers = stdout.split("\n")
                             .select { |line| line =~ /^\d+/ }
-                            .map { |line| line.match /\d+: (\S+)/ }
-                            .map { |line| line[1] }
+                            .map { |line| line.gsub(/^\d+: /, "") }
+                            .map { |line| line.gsub(/ \([\w ]+\)$/, "") }
 
         gpkg_layers.each do |layer|
           stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, '-so', source_file.fullpath, layer)

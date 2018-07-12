@@ -199,10 +199,10 @@ var TorqueLayerViewBase = {
 
   _getQuery: function (layerModel) {
     var source = layerModel.get('source');
-    var query = source ? source.get('query') : '';
+    var query = source ? source.get('query') : 'select * from ' + layerModel.get('table_name');
     var qw = layerModel.get('sql_wrap');
     if (qw) {
-      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+      query = _.template(qw)({ sql: query });
     }
     return query;
   }

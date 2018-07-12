@@ -206,6 +206,34 @@ describe Synchronization::Member do
         member.run
         expect(member.state).to eq 'success'
       end
+
+      it 'keeps indices' do
+        url = 'https://wadus.com/guess_country.csv'
+
+        path = fake_data_path('guess_country.csv')
+        stub_download(url: url, filepath: path, content_disposition: false)
+
+        attrs = random_attributes(user_id: @user2.id).merge(service_item_id: url, url: url, name: 'guess_country')
+        member = Synchronization::Member.new(attrs).store
+
+        DataImport.create(
+          user_id: @user2.id,
+          data_source: path,
+          synchronization_id: member.id,
+          service_name: 'public_url',
+          service_item_id: url,
+          updated_at: Time.now
+        ).run_import!
+
+        @user2.in_database.execute('CREATE INDEX ON guess_country (country)')
+
+        member.run
+        expect(member.state).to eq 'success'
+        indexed_columns = UserTable.first.service.pg_indexes.map { |x| x[:column] }
+        expected_indices = ['cartodb_id', 'the_geom', 'the_geom_webmercator', 'country']
+
+        expect(indexed_columns.sort).to eq(expected_indices.sort)
+      end
     end
   end
 

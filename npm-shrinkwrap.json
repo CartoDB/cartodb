@@ -3,9 +3,9 @@
   "version": "4.12.54",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.16",
+      "version": "4.0.17",
       "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.16.tgz"
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.17.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -1142,9 +1142,9 @@
       }
     },
     "eslint-scope": {
-      "version": "3.7.2",
+      "version": "3.7.1",
       "from": "eslint-scope@>=3.7.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/eslint-scope/-/eslint-scope-3.7.2.tgz",
+      "resolved": "https://registry.npmjs.org/eslint-scope/-/eslint-scope-3.7.1.tgz",
       "dependencies": {
         "estraverse": {
           "version": "4.2.0",
@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.16",
-      "from": "cartodb/carto.js#fix-torque",
-      "resolved": "git://github.com/cartodb/carto.js.git#7b534ca182f4043377e745aeb8c8bc92d2ee67d4"
+      "version": "4.0.18-0",
+      "from": "cartodb/carto.js#v4.0.18-0",
+      "resolved": "git://github.com/cartodb/carto.js.git#f1964aaf454b1bd2221fc45946cc495886152e3b"
     },
     "interpret": {
       "version": "1.1.0",

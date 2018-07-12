@@ -38,8 +38,15 @@ describe CartoDB::Importer2::GpkgSplitter do
     it 'returns all complexly labelled layers' do
       source_file = CartoDB::Importer2::SourceFile.new(@difficult_layer_filepath)
       splitter    = CartoDB::Importer2::GpkgSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)
-      splitter.layers_in(source_file).length.should eq 5
-      splitter.layers_in(source_file).should eq ["LayerMixedCase", "Layer with Spaces and 'Punctuation", "LayerUnknownGType", "Unknown GeomType and Spaces", "Unknown GeomType and Spaces and $#!'@Punctuation"]
+      lyrs = splitter.layers_in(source_file)
+      lyrs.length.should eq 5
+      lyrs.should eq ["LayerMixedCase", "Layer with Spaces and 'Punctuation", "LayerUnknownGType", "Unknown GeomType and Spaces", "Unknown GeomType and Spaces and $#!'@Punctuation"]
+      sff = splitter.source_files_for(source_file, lyrs)
+      sff.map do |sf|
+        file_exists = File.file?(sf.fullpath)
+        file_exists.should eq true
+      end
+      FileUtils.rm_rf(@temporary_directory)
     end
   end
 

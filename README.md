@@ -1,4 +1,4 @@
-# CARTO.js 4.0
+# CARTO.js 4
 
 CARTO.js is a JavaScript library to create custom location intelligence applications that leverage the power of [CARTO](https://carto.com/). It is the library that powers [Builder](https://carto.com/builder/) and it is part of the [Engine](https://carto.com/pricing/engine/) ecosystem.
 

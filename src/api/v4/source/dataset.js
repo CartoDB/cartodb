@@ -29,6 +29,28 @@ function Dataset (tableName) {
 Dataset.prototype = Object.create(Base.prototype);
 
 /**
+ * Update the table name. This method is asyncronous and returns a promise which is resolved when the style
+ * is changed succesfully. It also fires a 'tableNameChanged' event.
+ *
+ * @param {string} tableName The name of an existing table
+ * @fires TableNameChanged
+ * @returns {Promise} - A promise that will be fulfilled when the reload cycle is completed
+ * @api
+ */
+Dataset.prototype.setTableName = function (tableName) {
+  _checkTableName(tableName);
+
+  this._tableName = tableName;
+
+  if (!this._internalModel) {
+    this._triggerTableNameChanged(this, tableName);
+    return Promise.resolve();
+  }
+
+  return this._updateInternalModelQuery(this._getQueryToApply());
+};
+
+/**
  * Return the table name being used in  this Dataset object.
  *
  * @return {string} The table name being used in  this Dataset object
@@ -62,6 +84,7 @@ Dataset.prototype._updateInternalModelQuery = function (query) {
   this._internalModel.set('query', query, { silent: true });
 
   return this._internalModel._engine.reload()
+    .then(() => this._triggerTableNameChanged(this, this._tableName))
     .catch(windshaftError => Promise.reject(new CartoError(windshaftError)));
 };
 
@@ -84,6 +107,10 @@ Dataset.prototype.addFilter = function (filter) {
 Dataset.prototype.removeFilter = function (filters) {
   Base.prototype.removeFilter.apply(this, arguments);
   this._updateInternalModelQuery(this._getQueryToApply());
+};
+
+Dataset.prototype._triggerTableNameChanged = function (model, value) {
+  this.trigger('tableNameChanged', value);
 };
 
 function _checkTableName (tableName) {

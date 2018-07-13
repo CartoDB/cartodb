@@ -7,9 +7,7 @@ require 'rspec/mocks'
 # Unp includes reference to fgdb_splitter
 require_relative '../../lib/importer/unp'
 
-include CartoDB::Importer2
-
-describe FgdbSplitter do
+describe CartoDB::Importer2::FgdbSplitter do
   before do
     @multiple_layer_filepath  = path_to('filegeodatabase.gdb')
     @temporary_directory      = '/var/tmp'

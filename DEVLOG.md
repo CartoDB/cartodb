@@ -1,6 +1,91 @@
 # Changelog
 
 ## Current
+- Add performance tips to CARTO.js docs
+- Refactor and ignore tests
+
+## 4.0.18 - 2018-07-12
+
+- Add 'start' and 'end' values to histogram public API
+
+## 4.0.18-0 - 2018-07-12
+
+- Fix torque
+
+## 4.0.17 - 2018-07-12
+
+- Add 'visible' to layer options
+- Fix API key in quickstart example
+- Update 01-quickstart.md
+- Remove Gemfile (compass)
+
+## 4.0.16 - 2018-07-10
+
+- Source Filters
+
+## 4.0.15 - 2018-07-06
+
+- Allow multiple carto clients using Google Maps
+
+## 4.0.14 - 2018-07-06
+
+- Fix removeDataview
+
+## 4.0.13 - 2018-07-06
+
+- Add metrics to map instantiation
+
+## 4.0.12 - 2018-07-05
+
+- Debounced fetch
+
+## 4.0.11 - 2018-07-05
+
+- Fix interactivity when only 'cartodb_id' is selected
+
+## 4.0.11-1 - 2018-07-05
+
+- Transpile ES6 code through Babel in Webpack 4
+
+## 4.0.11-0 - 2018-07-05
+
+- Fix gradient legends margin
+
+## 4.0.10 - 2018-07-04
+
+- Document new time series aggregations
+
+## 4.0.10-1 - 2018-07-04
+
+
+## 4.0.10-0 - 2018-07-04
+
+- Add century and millenium to date aggregation
+
+## 4.0.9 - 2018-07-02
+
+### New features
+- add options to getLeafletLayer (#2125)
+
+## 4.0.9-2 - 2018-06-29
+
+- Add new logo
+
+## 4.0.9-1 - 2018-06-29
+
+- Fix choropleth legends margin
+- add hexagon aggregation example
+- Improving structure of contents
+- Fixes Getting Started links
+
+## 4.0.9-0 - 2018-06-19
+
+- Fix margins on legends
+- Replace 'YOUR_API_KEY' with 'default_public' in examples
+- Update cdn url in reference documentation
+
+## 4.0.8 - 2018-06-04
+
 - Fix iOS examples
 
 ## 4.0.7 - 2018-06-04

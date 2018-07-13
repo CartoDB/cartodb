@@ -8,20 +8,44 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## 4.1.0 - 2018-07-13
+
+### Added
+- Histogram: added `start` and `end` options to modify the histogram range. [#2142](https://github.com/CartoDB/carto.js/issues/2142)
+- Time-series: added century and millennium aggregations [#2162](https://github.com/CartoDB/carto.js/issues/2162)
+- Layers: added `visible` to options. [#2004](https://github.com/CartoDB/carto.js/issues/2004)
+- Source filters: added new feature for filtering sources. [#2141](https://github.com/CartoDB/carto.js/issues/2141)
+- Added options as input argument to the getLeafletLayer() method. [#2125](https://github.com/CartoDB/carto.js/issues/2125)
+- Docs:
+    - added performance tips guide. [#2168](https://github.com/CartoDB/carto.js/issues/2168)
+    - added hexagon aggregation example. [#2151](https://github.com/CartoDB/carto.js/pull/2151)
+    - improved structure of contents. [#2137](https://github.com/CartoDB/carto.js/pull/2137)
+
+### Fixed
+- Allow multiple CARTO.js clients using Google Maps. [#2132](https://github.com/CartoDB/carto.js/issues/2132)
+- Dataviews:
+    - fix removeDataview not stopping fetching data [#2119](https://github.com/CartoDB/carto.js/issues/2119)
+- Debounced map instantiation. [#2140](https://github.com/CartoDB/carto.js/issues/2140)
+- Fix interactivity when only 'cartodb_id' is selected [#2089](https://github.com/CartoDB/carto.js/issues/2089)
+- Docs:
+    - fixed Getting Started links. [#2144](https://github.com/CartoDB/carto.js/pull/2144)
+    - replaced 'YOUR_API_KEY' with 'default_public' in examples. [#2136](https://github.com/CartoDB/carto.js/pull/2136)
+    - Updated CDN URL in reference documentation. [#2128](https://github.com/CartoDB/carto.js/pull/2128)
+
 ## 4.0.8 - 2018-06-04
 
-### Fixed
+### Fixed
 
-- Google Maps examples were not working on iOS (https://github.com/CartoDB/carto.js/issues/1995)[https://github.com/CartoDB/carto.js/issues/1995]
+- Google Maps examples were not working on iOS [#1995](https://github.com/CartoDB/carto.js/issues/1995)
 
 ## 4.0.7 - 2018-06-04
 
-### Fixes
+### Fixed
 - Remove upper limit on Google Maps dependency.
 
 ## 4.0.6 - 2018-05-11
 
-### Fixes
+### Fixed
 - Fix remove layers
 
 ## 4.0.5 - 2018-05-10
@@ -48,7 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Upgrading carto.js to gmaps v3.31
 
-## [4.0.0] 2018-04-17
+## 4.0.0 - 2018-04-17
 
 First public release of CARTO.js library
 

@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.1.0",
-      "from": "cartodb/carto.js#fix-set-view",
-      "resolved": "git://github.com/cartodb/carto.js.git#253e13b4ba5e69d55754df2e9dd00ba7315bf499"
+      "version": "4.1.1-0",
+      "from": "cartodb/carto.js#v4.1.1-0",
+      "resolved": "git://github.com/cartodb/carto.js.git#85499951eb4ea2199c6c11db4ce4071f2880fe10"
     },
     "interpret": {
       "version": "1.1.0",

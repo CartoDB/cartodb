@@ -20,6 +20,14 @@
           <h2 class="h2">Bins</h2>
           <input id="bins" type="number" value="5" class="input_text open-sans"></input>
         </li>
+        <li>
+          <h2 class="h2">Start</h2>
+          <input id="start" type="number" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">End</h2>
+          <input id="end" type="number" class="input_text open-sans"></input>
+        </li>
       </ul>
       <button onclick="applyDataviewChanges()" class="button open-sans">Apply</button>
       <pre class="code" id="data"></pre>
@@ -36,6 +44,7 @@
           <section class="usage">
             <header>USAGE</header>
             <p class="open-sans">Change column or bins on the form.</p>
+            <p class="open-sans">Start and end values must be used together.</p>
             <p class="open-sans">Example columns: price, minimum_nights, availability_365.</p>
           </section>
           <div id="controls">
@@ -71,9 +80,23 @@
 
       function applyDataviewChanges() {
         const column = document.getElementById('column').value;
-        const bins = document.getElementById('bins').value;
-        histogramDataview.setColumn(column);
-        histogramDataview.setBins(parseInt(bins));
+        const bins = parseInt(document.getElementById('bins').value);
+        const startValue = parseFloat(document.getElementById('start').value);
+        const endValue = parseFloat(document.getElementById('end').value);
+        const start = Number.isFinite(startValue)
+          ? startValue
+          : null;
+        const end = Number.isFinite(endValue)
+          ? endValue
+          : null;
+
+        try {
+          histogramDataview.setColumn(column);
+          histogramDataview.setStartEnd(start, end);
+          histogramDataview.setBins(bins);
+        } catch(error) {
+          alert(error.message);
+        }
       }
     </script>
   </body>

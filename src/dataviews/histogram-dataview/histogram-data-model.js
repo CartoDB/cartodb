@@ -46,6 +46,15 @@ module.exports = Model.extend({
         params.push('auth_token=' + authToken);
       }
     }
+
+    // Start - End
+    var start = this.get('start');
+    var end = this.get('end');
+    if (_.isFinite(start) && _.isFinite(end)) {
+      params.push('start=' + start);
+      params.push('end=' + end);
+    }
+
     return this.get('url') + '?' + params.join('&');
   },
 
@@ -101,7 +110,7 @@ module.exports = Model.extend({
 
   parse: function (data) {
     var aggregation = data.aggregation || this.get('aggregation');
-    var numberOfBins = data.bins_count;
+    var numberOfBins = data.bins_count || 0;
     var width = data.bin_width;
     var start = this.get('column_type') === 'date' ? data.timestamp_start : data.bins_start;
 

@@ -61,7 +61,7 @@ echo "Adding version in index.html"
 sed -i "s|%VERSION|$TRAVIS_BRANCH|g" index.html
 
 echo "Using unpkg CDN carto.js in the v4 examples"
-CDN="https://unpkg.com/carto.js/carto.min.js"
+CDN="https://unpkg.com/@carto/carto.js/carto.min.js"
 OLD="../../../dist/public/carto.js"
 sed -i "s|$OLD|$CDN|g" $EXAMPLES_DIR/v4/public/**/*.html
 OLD="../dist/public/carto.js"

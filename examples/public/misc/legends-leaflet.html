@@ -81,10 +81,7 @@
         username: 'cartojs-test'
       });
 
-      const populatedPlacesSource = new carto.source.SQL(`
-        SELECT *
-          FROM ne_10m_populated_places_simple
-      `);
+      const populatedPlacesSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
       const populatedPlacesStyle = new carto.style.CartoCSS(`
         #layer {
           marker-width: ramp([pop_max], range(2, 12), quantiles(5));
@@ -118,9 +115,11 @@
         document.getElementById('min').innerHTML = `
           <div class="circle circle-outline" style="width:8px; height:8px;"></div> <p>${metadata.getMin()}</p>
         `;
+
         document.getElementById('max').innerHTML = `
           <div class="circle circle-outline" style="width:24px; height:24px;"></div> <p>${metadata.getMax()}</p>
         `;
+
         document.querySelector('.legend .avg').innerHTML = `
           <p><b>Average: </b> ${metadata.getAverage().toFixed(2)}</p>
         `;
@@ -146,10 +145,7 @@
       }
 
       function setAllCities() {
-        populatedPlacesSource.setQuery(`
-          SELECT *
-            FROM ne_10m_populated_places_simple
-        `);
+        populatedPlacesSource.setQuery('SELECT * FROM ne_10m_populated_places_simple');
       }
 
       function setEuropeanCities() {

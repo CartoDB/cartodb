@@ -11,26 +11,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.12/leaflet.draw-src.css" />
     <!-- Include CARTO.js -->
     <script src="../../../dist/public/carto.js"></script>
-    <style>
-      body { margin: 0; padding: 0; }
-      #map { position: absolute; height: 100%; width: 100%; }
-      .column-right { display: flex; flex-direction: column; right: 0; z-index: 1000; }
-      .widgets { position: absolute; padding: 20px; background: white; }
-      #widgetCategory { padding: 10px; font-size: 1.2em; }
-      #widgetCategory span { font-size: 1.5em; }
-      #widgetFormula { padding: 10px; font-size: 1.5em; }
-      #widgetFormula span { font-size: 2em; }
-    </style>
+    <link href="../style.css" rel="stylesheet">
   </head>
 
   <body>
     <div id="map"></div>
-    <div class="widgets column-right">
-      <h2>POPULATION</h2>
-      <p>Select a custom bounding box</p>
-      <div id="widgetCategory"></div>
-      <div id="widgetFormula"></div>
-    </div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Custom Bounding Box filter</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Apply a custom bounding box filter to dataviews.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Click on the <em>Draw a rectangle</em> button and draw a rectangle</p>
+          </section>
+          <div class="widget category"></div>
+          <div class="widget formula"></div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
     <script>
       const map = L.map('map').setView([30, 0], 3);
 
@@ -43,9 +48,8 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+      const source = new carto.source.Dataset('ne_10m_populated_places_simple');
+
       const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 20;
@@ -53,6 +57,7 @@
           marker-line-color: #FFFFFF;
         }
       `);
+
       const layer = new carto.layer.Layer(source, style, {
         featureOverColumns: ['name', 'pop_max']
       });
@@ -65,15 +70,15 @@
         operation: carto.operation.SUM,
         operationColumn: 'pop_max'
       });
-      categoryDataview.on('dataChanged', renderWidgetCategory);
 
+      categoryDataview.on('dataChanged', renderWidgetCategory);
       client.addDataview(categoryDataview);
 
       const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
         operation: carto.operation.COUNT,
       });
-      formulaDataview.on('dataChanged', renderWidgetFormula);
 
+      formulaDataview.on('dataChanged', renderWidgetFormula);
       client.addDataview(formulaDataview);
 
       const bboxFilter = new carto.filter.BoundingBox(map);
@@ -114,17 +119,20 @@
       });
 
       function renderWidgetCategory(data) {
-        let content = '';
-        for (let category of data.categories) {
-          content += `<b>${category.name}</b>
-          <p><span>${parseInt(category.value)}</span> inhabitants</p>`;
-        }
-        document.getElementById('widgetCategory').innerHTML = content;
+        const categories = data.categories.map(category => `
+          <li>
+            <h3>${category.name}</h3>
+            <p class="open-sans">${parseInt(category.value)} <small>inhabitants</small></p>
+          </li>
+        `).join('');
+        const content = `<ul>${categories}</ul>`;
+
+        document.querySelector('.widget.category').innerHTML = content;
       }
 
       function renderWidgetFormula(data) {
-        const content = `<span>${data.result}</span> cities`;
-        document.getElementById('widgetFormula').innerHTML = content;
+        const content = `<h2 class="h2">${data.result} <small>cities</small></h2>`;
+        document.querySelector('.widget.formula').innerHTML = content;
       }
     </script>
   </body>

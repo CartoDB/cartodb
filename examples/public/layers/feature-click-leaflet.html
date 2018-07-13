@@ -49,9 +49,7 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+      const source = new carto.source.Dataset('ne_10m_populated_places_simple');
       const style = new carto.style.CartoCSS(`
         #layer {
           marker-width: 7;
@@ -67,9 +65,11 @@
       client.getLeafletLayer().addTo(map);
 
       layer.on('featureClicked', featureEvent => {
-        let content = '';
-        content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
-        content += `<p class="open-sans">${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
+        const content = `
+          <h3>${featureEvent.data.name.toUpperCase()}</h3>
+          <p class="open-sans">${featureEvent.data.pop_max} <small>max inhabitants</small></p>
+        `;
+
         document.getElementById('info').innerHTML = content;
       });
     </script>

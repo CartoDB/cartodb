@@ -15,7 +15,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
-* Support FileGeodatabase format uploads (https://github.com/CartoDB/product/issues/121)
+* Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancements
 * Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)

@@ -19,9 +19,9 @@ module CartoDB
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
-        .gpx .tab .tsv .txt .gdb
+        .gpx .tab .tsv .txt .gdb .fgdb
       }
-      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter, FgdbSplitter, GpkgSplitter]
+      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter, FgdbSplitter, GpkgSplitter].freeze
 
       DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 

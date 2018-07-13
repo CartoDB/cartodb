@@ -197,6 +197,7 @@ describe Unp do
       unp.supported?('foo.xls').should eq true
       unp.supported?('foo.gpkg').should eq true
       unp.supported?('foo.gdb').should eq true
+      unp.supported?('foo.fgdb').should eq true
     end
   end
 

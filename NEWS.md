@@ -728,6 +728,7 @@ ion for time-series (#12670)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Fix test error output for builder (#14158)
 * Editor assets are frozen now (#14090)
 * Added specs for the migrated dashboard (#14037)
 * Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)

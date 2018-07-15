@@ -23,13 +23,6 @@ Installations assume you use UTF8. You can set the locale by doing this:
   sudo locale-gen en_US.UTF-8
   sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-APT tools
-~~~~~~~~~
-In order to easily install some packages repositories sources is suggested to install this tool:
-
-.. code-block:: bash
-
-  sudo apt-get install python-software-properties
 
 Build essentials
 ~~~~~~~~~~~~~~~~
@@ -39,15 +32,6 @@ Although we try to maintain packaged versions of almost every part of the stack,
 .. code-block:: bash
 
   sudo apt-get install make pkg-config
-
-
-You will also need to install GCC 4.9 in order to build some Node modules later. You can install it doing this:
-
-.. code-block:: bash
-
-  sudo apt-get install gcc-4.9 g++-4.9
-  export CC=/usr/bin/gcc-4.9
-  export CXX=/usr/bin/g++-4.9
 
 
 GIT
@@ -333,23 +317,21 @@ Editor
 
   .. code-block:: bash
 
-    sudo wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-    sudo python /tmp/get-pip.py
-
-* Install a necessary package for python dependencies
-
-  .. code-block:: bash
-
    sudo apt-get install python-pip
 
 
-* Install dependencies
+* Install ruby dependencies
 
   .. code-block:: bash
 
     sudo apt-get install imagemagick unp zip libicu-dev
     RAILS_ENV=development bundle install
-    npm install
+
+
+* Install python dependencies
+
+  .. code-block:: bash
+
     sudo pip install --no-use-wheel -r python_requirements.txt
 
 .. warning::
@@ -369,12 +351,12 @@ Editor
 
     If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
 
-
-* Install all necesary gems
+* Install node dependencies
 
   .. code-block:: bash
 
-    bundle install
+    npm install
+
 
 * Compile static assets
 

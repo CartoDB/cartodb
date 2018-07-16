@@ -1,0 +1,20 @@
+// Time diff indicator (2 weeks ago by ...)
+// --------------------------------------------------
+
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.DefaultTimeDiff {
+  display: flex;
+  align-items: center;
+}
+
+.DefaultTimeDiff-icon {
+  margin-right: 5px;
+  color: $cTypography-help;
+  font-size: $sFontSize-smallUpperCase;
+}
+
+.DefaultTimeDiff p {
+  margin-left: 5px;
+}

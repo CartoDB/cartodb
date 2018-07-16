@@ -1,0 +1,23 @@
+// Onboarding top notification
+// --------------------------------------------------
+
+.onboardingNotification {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  color: #FFF;
+  text-align: center;
+}
+
+.onboardingNotification-link {
+  color: #FFF;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.onboardingNotification-closeButton {
+  position: absolute;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+}

@@ -1,6 +1,6 @@
 <% if (image && !isCustomMarker) { %>
 <button type="button" class="Editor-fillImage <% if (help) { %> js-help<% } %>" <% if (help) { %> data-tooltip="<%- help %>"<% } %>>
-  <div class="js-image-container"></div>
+  <div class="IconContainer js-image-container"></div>
 </button>
 <% } %>
 

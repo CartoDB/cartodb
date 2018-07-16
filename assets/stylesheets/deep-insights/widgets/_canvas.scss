@@ -1,0 +1,118 @@
+// Canvas for widgets
+// --------------------------------------------------
+
+.CDB-Widget-canvas {
+  position: relative;
+  width: $desktopLayout;
+  min-width: $desktopLayout;
+  max-width: $desktopLayout;
+  border-radius: $baseSize / 2;
+}
+
+.CDB-Widget-canvasInner {
+  display: flex;
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-x: visible;
+  overflow-y: auto;
+  border-radius: $baseSize / 2;
+}
+
+.CDB-Widget-canvas,
+.CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+  margin-left: 8px;
+}
+
+.CDB-Widget-canvasShadow {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  left: 0;
+  height: 60px;
+  pointer-events: none;
+}
+
+.CDB-Widget-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
+  top: 0;
+  border-top-left-radius: $baseSize / 2;
+  border-top-right-radius: $baseSize / 2;
+}
+
+.CDB-Widget-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
+  bottom: 0;
+  border-bottom-right-radius: $baseSize / 2;
+  border-bottom-left-radius: $baseSize / 2;
+}
+
+.CDB-Widget-canvasShadow.is-visible {
+  display: block;
+}
+
+.CDB-Widget-canvas .ps-scrollbar-y-rail {
+  z-index: 3;
+}
+
+.CDB-Widget-canvas .ps-scrollbar-x-rail {
+  z-index: 3;
+}
+
+@media (max-width: $sMedia-max-embed) {
+  .CDB-Widget-canvas {
+    width: $mobileLayout;
+    min-width: $mobileLayout;
+    max-width: $mobileLayout;
+  }
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Map-canvas {
+    display: flex;
+    flex: 2;
+  }
+
+  .CDB-LayerWidgets-canvas {
+    display: flex;
+    position: relative;
+    flex-wrap: nowrap;
+  }
+
+  .CDB-Widget-canvas .simplebar-content {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .CDB-Widget-canvasShadow.is-visible {
+    display: none;
+  }
+
+  .CDB-Widget-canvas,
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+    order: 3;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    border-radius: 0;
+    background: #FFF;
+  }
+}
+
+@media (max-width: $sMedia-l) and (orientation: portrait) {
+  .CDB-Widget-canvasInner {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: $sMedia-l + 1px) and (max-width: $sMedia-xl) {
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+    height: calc(100% - 30px);
+  }
+}

@@ -1,0 +1,69 @@
+@import '../../variables/colors';
+@import '../../variables/sizes';
+
+// Error details dialog styles
+$w: 560px;
+
+.BackgroundPollingDetails-body {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: $w;
+  min-width: initial;
+  margin: 0 auto;
+  padding: $sMargin-group 0;
+  border-top: 1px solid $cStructure-mainLine;
+  border-bottom: 0;
+}
+
+.BackgroundPollingDetails-body--noBorderTop {
+  border-top: 0;
+}
+
+.BackgroundPollingDetails-icon {
+  margin-right: $sMargin-element;
+  font-size: 28px;
+}
+
+.BackgroundPollingDetails-icon .CDB-IconFont-dollar {
+  margin-bottom: 8px; /* :( */
+}
+
+.BackgroundPollingDetails-icon.is-nonFree {
+  border-color: #D4BD7F;
+  box-shadow: rgba(#D4BD7F, 0.1) 0 0 2px 2px;
+  color: #D4BD7F;
+}
+
+.BackgroundPollingDetails-icon.is-free {
+  border-color: $cHighlight-positive;
+  box-shadow: rgba($cHighlight-positive, 0.2) 0 0 2px 2px;
+  color: $cHighlight-positive;
+}
+
+.BackgroundPollingDetails-infoTitle {
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-larger;
+  font-weight: normal;
+}
+
+.BackgroundPollingDetails-infoText {
+  margin-top: 3px;
+  font-size: $sFontSize-normal;
+}
+
+.BackgroundPollingDetails-footer {
+  width: $w;
+  margin: 0 auto;
+  padding: $sMargin-group 0;
+  border-top: 0;
+  text-align: center;
+}
+
+.Button.BackgroundPollingDetails-footerButton {
+  display: inline-block;
+}
+
+.Button.BackgroundPollingDetails-footerButton span {
+  line-height: 42px;
+}

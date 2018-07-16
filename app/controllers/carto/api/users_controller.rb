@@ -26,6 +26,7 @@ module Carto
 
       before_filter :initialize_google_plus_config, only: [:me]
       before_filter :optional_api_authorization, only: [:me]
+      before_filter :recalculate_user_db_size, only: [:me]
       skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
       skip_before_filter :check_user_state, only: [:me, :delete_me]
 
@@ -231,6 +232,10 @@ module Carto
 
       def password_change?(user, attributes)
         (attributes[:new_password].present? || attributes[:confirm_password].present?) && user.can_change_password?
+      end
+
+      def recalculate_user_db_size
+        current_user && Carto::UserDbSizeCache.new.update_if_old(current_user)
       end
     end
   end

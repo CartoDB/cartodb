@@ -1,0 +1,147 @@
+@import '../../variables/colors';
+@import '../../variables/sizes';
+
+// Background importer styles
+
+$radius: 4px;
+
+.BackgroundPolling {
+  position: fixed;
+  z-index: 10;
+  bottom: -255px;
+  left: 20px;
+  width: 420px;
+  transition: all 300ms;
+  border: 1px solid #CCC;
+  border-radius: $radius;
+  opacity: 0;
+  background: white;
+  box-shadow: 0 0 3px 3px rgba(black, 0.1);
+}
+
+.BackgroundPolling.is-visible {
+  bottom: 20px;
+
+  opacity: 1;
+}
+
+.BackgroundPolling-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 65px;
+  padding: 0 20px;
+  border-bottom: 1px solid $cStructure-mainLine;
+  border-top-left-radius: $radius;
+  border-top-right-radius: $radius;
+  background: $cStructure-grayBkg;
+}
+
+.BackgroundPolling-headerTitle {
+  width: 220px;
+  margin-left: 20px;
+  color: $cTypography-paragraphs;
+  font-family: 'Lato';
+  font-size: $sFontSize-large;
+}
+
+.BackgroundPolling-headerBadge {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #CCC;
+  border-radius: 3px;
+  line-height: 42px;
+  text-align: center;
+}
+
+.BackgroundPolling-headerBadgeIcon {
+  color: $cTypography-help;
+  font-size: 23px;
+}
+
+.BackgroundPolling-headerBadge.has-failures {
+  border-color: $cHighlight-negative;
+  .BackgroundPolling-headerBadgeIcon { color: $cHighlight-negative; }
+}
+
+.BackgroundPolling-headerBadgeCount {
+  /* "backwards" to use the first keyframe's styles before animation starts */
+  animation: fade-and-bounce-up 0.6s 350ms ease-in-out backwards;
+}
+
+.BackgroundPolling-headerButton {
+  border: 1px solid #CCC;
+  background-color: transparent;
+  color: $cTypography-paragraphs;
+
+  &:hover {
+    border-color: $cTypography-headers;
+    color: $cTypography-headers;
+  }
+}
+
+.BackgroundPolling-list {
+  max-height: 230px;
+  overflow: auto;
+}
+
+@keyframes fade-and-scale-in {
+  0% {
+    transform: scale(2);
+    opacity: 0;
+  }
+
+  10% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-and-bounce-up {
+  0% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+
+  15% {
+    transform: translateY(-3px);
+    opacity: 0.8;
+  }
+
+  45% {
+    transform: translateY(2px);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateY(-1px);
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-and-scale-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  80% {
+    transform: scale(1.4);
+    opacity: 0.05;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

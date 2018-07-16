@@ -1,0 +1,143 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+$headerWrapperSize: $baseSize * 3 + 16px; //header padding top + header text line height
+
+.Modal {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: $cThirdBackground;
+}
+
+.Modal-header {
+  border-bottom: 1px solid $cSecondaryLine;
+  background: $cWhite;
+}
+
+.Modal-container {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  padding: 32px 0 0;
+  overflow: hidden;
+}
+
+.Modal-container .ScrollView {
+  align-items: center;
+  margin-top: -32px;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.Modal-container--analysis .ScrollView {
+  padding-bottom: 250px + $baseSize * 3;
+}
+
+.Modal-container--analysis .ScrollView-shadow--bottom {
+  bottom: 250px + $baseSize * 3;
+}
+
+.Modal-footer,
+.Modal-header {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.Modal-footer {
+  border-top: 1px solid $cSecondaryLine;
+}
+
+.Modal-footer.is-disabled {
+  display: none;
+}
+
+.Modal-navigation {
+  position: fixed;
+  z-index: 2;
+  width: 100%;
+  margin-top: -33px;
+  padding-top: 1px;
+  border-bottom: 1px solid $cMainLine;
+  background: $cWhite;
+}
+
+.Modal-container .ScrollView-wrapper {
+  width: 100%;
+}
+
+.Modal-inner .ScrollView-content,
+.Modal-navigationInner,
+.Modal-headerContainer,
+.Modal-footerContainer {
+  flex: 0 0 auto;
+  width: 940px;
+  margin: 0 auto;
+}
+
+.Modal-header {
+  padding: $baseSize * 3 0;
+}
+
+.Modal-footerContainer {
+  padding: $baseSize * 3 0 0;
+}
+
+.Dialog-contentWrapper--withBreadcrumbs .Modal-header {
+  padding-top: 0;
+}
+
+.Dialog-headerWrapper {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 940px;
+  margin: $baseSize * 3 auto 0 auto;
+}
+
+.Dialog-contentWrapper.Dialog-contentWrapper--withHeaderWrapper {
+  .Modal-footerContainer {
+    margin-bottom: $headerWrapperSize + 30px;
+  }
+}
+
+.Modal-inner--with-navigation {
+  padding: 32px 0 0;
+}
+
+.Modal-inner .ScrollView-content {
+  margin-top: 5px;
+}
+
+.Modal-inner {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.Modal-inner--grid {
+  flex: 0 503px;
+  overflow: visible;
+}
+
+.Modal-inner--medium {
+  flex: 0 780px;
+}
+
+.Modal-inner--full {
+  flex: 0 944px;
+}
+
+.Modal-outer {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.Modal-basemapContainer {
+  flex-direction: column;
+}
+
+.Dialog-content--expanded {
+  height: 100vh;
+}

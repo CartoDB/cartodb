@@ -1,0 +1,203 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.CDB-ListDecoration-item .ColorBar {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -14px;
+    left: 0;
+    height: 2px;
+    transition: background-color 0.2s ease-in;
+    background: transparent;
+  }
+
+  &:hover {
+    &::after {
+      background: $cBlueHover;
+    }
+  }
+
+  &.ColorBar--disableHighlight:hover {
+    &::after {
+      background: initial;
+    }
+  }
+
+  &.is-selected {
+    &::after {
+      background: $cMainBg;
+    }
+  }
+}
+
+.CDB-ListDecoration-itemLink.is-selected .ColorBarContainer {
+  position: relative;
+  z-index: 2;
+}
+
+.CDB-ListDecoration-itemLink.is-selected .ColorBarContainer::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: -6px;
+  right: -6px;
+  bottom: -6px;
+  left: -6px;
+  border: 1px solid rgba($cBlue, 0.64);
+  border-radius: 8px;
+  background: rgba($cBlue, 0.08);
+}
+
+.CDB-ListDecoration-itemLink--double {
+  padding: 16px;
+}
+
+.ColorBarContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border-radius: 6px;
+  background-image:
+    linear-gradient(45deg, rgba(#000, 0.08) 25%, transparent 25%, transparent 75%, rgba(#000, 0.08) 75%, rgba(#000, 0.08)),
+    linear-gradient(45deg, rgba(#000, 0.08) 25%, transparent 25%, transparent 75%, rgba(#000, 0.08) 75%, rgba(#000, 0.08));
+  background-position: 0 0, 4px 4px;
+  background-size: 8px 8px;
+}
+
+.ColorBarContainer--rampEditing {
+  width: 171px;
+
+  .ColorBar::after {
+    bottom: -14px - 2 * $baseSize;
+  }
+}
+
+.ColorsBar {
+  display: flex;
+  flex: 1;
+  padding: 13px 8px;
+}
+
+.ColorBar {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: $baseSize - 2;
+  border: 1px solid rgba(#000, 0.2);
+  border-radius: $baseSize - 2;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.ColorBar.is-selected {
+  position: relative;
+}
+
+.ColorBar.is-selected::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -14px - 2 * $baseSize;
+  left: 0;
+  height: 2px;
+  background: $cMainBg;
+}
+
+.ColorBar-gradient {
+  border: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba(#000, 0.2);
+    border-radius: $baseSize - 2;
+  }
+}
+
+.ColorBar.ColorBar--spaceMedium {
+  margin-right: $baseSize / 2;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.ColorBar--inline {
+  display: inline-block;
+  width: 30px;
+}
+
+.ColorBar--spaceless {
+  border-width: 1px 0;
+  border-radius: 0;
+
+  &:first-child {
+    border-width: 1px 0 1px 1px;
+    border-radius: $baseSize - 2 0 0 $baseSize - 2;
+  }
+
+  &:last-child {
+    border-width: 1px 1px 1px 0;
+    border-radius: 0 $baseSize - 2 $baseSize - 2 0;
+  }
+
+  &:only-child {
+    border-width: 1px;
+    border-radius: $baseSize - 2;
+  }
+}
+
+.ColorBar--spaceSmall {
+  margin-right: 2px;
+  border-radius: 2px;
+}
+
+.ColorBar--clickable {
+  cursor: pointer;
+}
+
+.ColorBarWrapper--withInvertLink {
+  flex: 1;
+}
+
+.ColorBar-invertLink {
+  position: relative;
+  top: 12px;
+  flex: 0 0 27px;
+  height: 13px;
+  opacity: 0;
+  background-image: url($assetsDir + '/images/layout/colorpicker/invert.svg');
+  background-repeat: no-repeat;
+}
+
+.is-inverted .ColorBar-invertLink {
+  background-image: url($assetsDir + '/images/layout/colorpicker/invert_inverted.svg');
+}
+
+.is-selected .ColorBar-invertLink {
+  opacity: 1;
+}
+
+.CustomList-item--invert:hover .ColorBar-invertLink {
+  opacity: 1;
+}
+
+.IconContainer {
+  display: flex;
+  border-radius: 2px;
+  background-image:
+    linear-gradient(45deg, rgba(#000, 0.08) 25%, transparent 25%, transparent 75%, rgba(#000, 0.08) 75%, rgba(#000, 0.08)),
+    linear-gradient(45deg, rgba(#000, 0.08) 25%, transparent 25%, transparent 75%, rgba(#000, 0.08) 75%, rgba(#000, 0.08));
+  background-position: 0 0, 4px 4px;
+  background-size: 8px 8px;
+}

@@ -1,0 +1,52 @@
+// Mixins
+// - Necessary SCSS functions
+// - Browser support:
+//  · IE => 11
+//  · Chrome => 21
+//  · Sarafi => 6
+//  · Firefox => 24
+//  · Opera => 12
+// --------------------------------------------------
+
+@mixin grayscale() {
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
+}
+
+@mixin image-2x($image, $width, $height, $x: 0, $y: 0) {
+  @media (-webkit-min-device-pixel-ratio: 1.3),
+    (min-resolution: 1.3dppx) {
+    /* on retina, use image that's scaled by 2 */
+    background: url($image);
+    background-position: $x $y;
+    background-size: $width $height;
+  }
+}
+
+/* FONT FACE */
+@mixin font-face($fontFamily: myFont, $eotFileSrc: 'myFont.eot', $woffFileSrc: 'myFont.woff', $ttfFileSrc: 'myFont.ttf', $svgFileSrc: 'myFont.svg', $svgFontID: '#myFont') {
+  font-family: $fontFamily;
+  src: url($eotFileSrc) format('eot'), url($woffFileSrc) format('woff'), url($ttfFileSrc) format('truetype'), url($svgFileSrc + $svgFontID) format('svg');
+}
+
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+
+  &::after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 2 * $sLineHeight-normal;
+    height: $sLineHeight-normal;
+    background-image: linear-gradient(to right, rgba(#FFF, 0), rgba(#FFF, 1));
+  }
+}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <%= favicon_link_tag "favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
     <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, carto">
@@ -23,7 +23,12 @@
     <meta name="twitter:image" content="<%= @avatar_url %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
-    <%= stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard' %>
+    <% if @has_new_dashboard %>
+      <%= stylesheet_link_tag 'deep_insights_new', 'common_new', 'public_dashboard_new' %>
+    <% else %>
+      <%= editor_stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard' %>
+    <% end %>
+
     <%= insert_google_tag_manager('embeds') %>
   </head>
   <body class="PublicBody PublicBody--grey">
@@ -69,10 +74,11 @@
     <% if @needs_gmaps_lib %>
       <%= insert_google_maps(@gmaps_query_string) %>
     <% end %>
+
     <% if @has_new_dashboard %>
-      <%= javascript_include_tag 'common_dashboard.js', 'public_dashboard_new_vendor', 'public_dashboard_new' %>
+      <%= javascript_include_tag 'common', 'common_vendor', 'public_dashboard_new' %>
     <% else %>
-      <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
+      <%= editor_javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <% end %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>

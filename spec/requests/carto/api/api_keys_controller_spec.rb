@@ -68,7 +68,6 @@ describe Carto::Api::ApiKeysController do
   end
 
   before(:all) do
-    @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
     @user = FactoryGirl.create(:valid_user)
     @carto_user = Carto::User.find(@user.id)
     @other_user = FactoryGirl.create(:valid_user)
@@ -80,7 +79,6 @@ describe Carto::Api::ApiKeysController do
     @table2.destroy
     @table1.destroy
     @user.destroy
-    @auth_api_feature_flag.destroy
   end
 
   after(:each) do
@@ -135,22 +133,6 @@ describe Carto::Api::ApiKeysController do
           expect(response.status).to eq 404
         end
       end
-    end
-
-    describe 'without feature flag' do
-      before(:all) do
-        @unauthorized_user = Carto::User.find(FactoryGirl.create(:valid_user).id)
-      end
-
-      before(:each) do
-        User.any_instance.stubs(:has_feature_flag?).with('auth_api').returns(false)
-      end
-
-      after(:all) do
-        ::User[@unauthorized_user.id].destroy
-      end
-
-      it_behaves_like 'unauthorized'
     end
 
     describe 'without engine_enabled' do
@@ -480,13 +462,12 @@ describe Carto::Api::ApiKeysController do
       before(:all) do
         @user_index = FactoryGirl.create(:valid_user)
         @carto_user_index = Carto::User.find(@user_index.id)
-        Carto::ApiKey.where(user_id: @user_index.id).each(&:destroy)
 
-        @apikeys = []
-        5.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
+        @apikeys = @carto_user_index.api_keys.order(:updated_at).all
+        3.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
       end
 
-      it 'paginates correcty' do
+      it 'paginates correctly' do
         auth_user(@carto_user_index)
         get_json api_keys_url, auth_params.merge(per_page: 2), auth_headers do |response|
           response.status.should eq 200

@@ -38,6 +38,8 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
 
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze
 
@@ -88,6 +90,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
+  validates :type, inclusion: { in: VALID_TYPES }
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create

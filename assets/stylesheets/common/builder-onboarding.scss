@@ -1,0 +1,266 @@
+@import '../variables/colors';
+@import '../variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+$sSmallDescriptionWidth: 200px;
+$sRegularDescriptionWidth: 445px;
+$sBigDescriptionWidth: 550px;
+$sToolbarWidth-mediaXL: 48px;
+$sWidgetsPadWidth: 378px;
+$cBackgroundColor: #2E3C43;
+
+.BuilderOnboarding {
+  display: flex;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.BuilderOnboarding-footer {
+  margin-top: $sMargin-section;
+}
+
+.BuilderOnboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.BuilderOnboarding-contentWrapper {
+  display: flex;
+  z-index: 5;
+  flex: 1;
+  align-items: center;
+  height: 100%;
+  background: rgba($cBackgroundColor, 0.88);
+  pointer-events: all;
+}
+
+.BuilderOnboarding-contentWrapper.is-step0 {
+  justify-content: center;
+}
+
+.BuilderOnboarding-contentWrapper.is-step1,
+.BuilderOnboarding-contentWrapper.is-step2,
+.BuilderOnboarding-contentWrapper.is-step3 {
+  justify-content: flex-start;
+}
+
+.BuilderOnboarding-contentWrapper.is-step4 {
+  justify-content: flex-end;
+}
+
+.BuilderOnboarding-forget,
+.BuilderOnboarding-header,
+.BuilderOnboarding-footer,
+.BuilderOnboarding-step {
+  display: none;
+}
+
+.BuilderOnboarding-forget,
+.BuilderOnboarding-header,
+.BuilderOnboarding-footer {
+  min-width: 300px;
+}
+
+.BuilderOnboarding-footer .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper .BuilderOnboarding-header p,
+.BuilderOnboarding-contentWrapper .BuilderOnboarding-step p {
+  transition: opacity 200ms ease-in-out 1s;
+  opacity: 0;
+}
+
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step p {
+  transition: opacity 100ms ease-in-out 100ms;
+}
+
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-footer.is-step0 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-footer.is-step1 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-footer.is-step2 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-footer.is-step3 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-footer.is-step4 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-header.is-step0 p,
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-step.is-step0 p,
+.BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-step.is-step1 p,
+.BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-step.is-step2 p,
+.BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-step.is-step3 p,
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step.is-step4 p {
+  opacity: 1;
+}
+
+.BuilderOnboarding.is-step0 .BuilderOnboarding-header,
+.BuilderOnboarding.is-step0 .BuilderOnboarding-footer.is-step0,
+.BuilderOnboarding.is-step1 .BuilderOnboarding-footer.is-step1,
+.BuilderOnboarding.is-step2 .BuilderOnboarding-footer.is-step2,
+.BuilderOnboarding.is-step3 .BuilderOnboarding-footer.is-step3,
+.BuilderOnboarding.is-step4 .BuilderOnboarding-footer.is-step4,
+.BuilderOnboarding.is-step0 .BuilderOnboarding-step.is-step0,
+.BuilderOnboarding.is-step1 .BuilderOnboarding-step.is-step1,
+.BuilderOnboarding.is-step2 .BuilderOnboarding-step.is-step2,
+.BuilderOnboarding.is-step3 .BuilderOnboarding-step.is-step3,
+.BuilderOnboarding.is-step4 .BuilderOnboarding-step.is-step4 {
+  display: block;
+}
+
+.BuilderOnboarding.is-step0 .BuilderOnboarding-step.is-step1 {
+  opacity: 0;
+}
+
+.BuilderOnboarding-body {
+  width: auto;
+  margin: 0 80px;
+}
+
+.BuilderOnboarding-description {
+  width: $sRegularDescriptionWidth;
+  margin-bottom: $sMargin-elementInline;
+  transition: width 100ms ease-in-out;
+  color: #FFF;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.BuilderOnboarding-pad,
+.BuilderOnboarding-pad4 {
+  opacity: 0.88;
+  background: $cBackgroundColor;
+}
+
+.BuilderOnboarding-pad4,
+.BuilderOnboarding-pad5 {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: -$sWidgetsPadWidth;
+  width: $sWidgetsPadWidth;
+  height: 100%;
+  transition: all 200ms ease-in-out 300ms;
+  background: url($assetsDir + '/images/layout/widgets.png') no-repeat center center;
+  background-color: $cSecondaryBackground;
+  background-position: 50% 0;
+}
+
+.BuilderOnboarding-pad,
+.BuilderOnboarding-pad2,
+.BuilderOnboarding-pad3,
+.BuilderOnboarding-pad4 {
+  z-index: 10;
+  width: 0;
+  height: 100%;
+  transition: width 300ms ease-in-out;
+}
+
+.BuilderOnboarding.is-step1 {
+  .BuilderOnboarding-body {
+    width: 0;
+  }
+
+  .BuilderOnboarding-pad2 {
+    width: 72px;
+
+    @media (max-width: $sMedia-xl) {
+      width: $sToolbarWidth-mediaXL;
+    }
+  }
+
+  .BuilderOnboarding-description {
+    width: $sBigDescriptionWidth;
+  }
+}
+
+.BuilderOnboarding.is-step2 {
+  .BuilderOnboarding-body {
+    width: 0;
+  }
+
+  .BuilderOnboarding-pad {
+    width: 72px;
+
+    @media (max-width: $sMedia-xl) {
+      width: $sToolbarWidth-mediaXL;
+    }
+  }
+
+  .BuilderOnboarding-pad2 {
+    width: 345px;
+  }
+
+  .BuilderOnboarding-pad5 {
+    right: -$sWidgetsPadWidth;
+    transition: right 0 ease-in-out 0;
+  }
+
+  .BuilderOnboarding-description {
+    width: $sBigDescriptionWidth;
+  }
+}
+
+.BuilderOnboarding.is-step3 {
+  .BuilderOnboarding-body {
+    width: 0;
+  }
+
+  .BuilderOnboarding-pad2 {
+    width: 0;
+  }
+
+  .BuilderOnboarding-pad3 {
+    flex: 1;
+  }
+
+  .BuilderOnboarding-description {
+    width: $sSmallDescriptionWidth;
+  }
+
+  .BuilderOnboarding-pad4 {
+    right: 0;
+    width: $sWidgetsPadWidth - 13;
+    transition: right 0 ease-in-out 0;
+    background: $cBackgroundColor;
+  }
+
+  .BuilderOnboarding-contentWrapper {
+    flex: 0 0 416px;
+
+    @media (max-width: $sMedia-xl) {
+      flex: 0 0 392px;
+    }
+  }
+
+  .BuilderOnboarding-pad5 {
+    right: 0;
+  }
+}
+
+.BuilderOnboarding.is-step4 {
+  .BuilderOnboarding-body {
+    width: 285px;
+  }
+
+  .BuilderOnboarding-pad {
+    display: none;
+  }
+
+  .BuilderOnboarding-pad4 {
+    position: relative;
+    width: $sWidgetsPadWidth;
+    background: none;
+  }
+
+  .BuilderOnboarding-description {
+    width: auto;
+  }
+
+  .BuilderOnboarding-pad5 {
+    right: 0;
+  }
+}
+
+.BuilderOnboarding-shadow {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  width: $sWidgetsPadWidth - 13;
+  height: 60px;
+  background-image: linear-gradient(to bottom, rgba(#FFF, 0), #FFF);
+}

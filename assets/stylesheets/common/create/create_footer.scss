@@ -1,0 +1,69 @@
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// Create dialog footer styles
+
+.CreateDialog-footer {
+  position: fixed;
+  z-index: 4;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0 !important;
+  border: 0 !important;
+  text-align: center;
+}
+
+.CreateDialog-footerInner {
+  display: flex;
+  position: relative;
+  align-items: baseline;
+  justify-content: space-between;
+  min-height: 72px; // To have same consistent height regardless if the footer has buttons or not
+  margin: 0 auto;
+  padding: 16px 40px;
+  background: $cStructure-grayBkg;
+}
+
+@media (min-width: $sMedia-tablet) { .CreateDialog-footerInner { width: $sMedia-tablet; } }
+
+@media (min-width: 940px) { .CreateDialog-footerInner { width: 940px; } }
+
+.CreateDialog-footerShadow {
+  position: absolute;
+  z-index: 2;
+  top: -19px;
+  left: 50%;
+  width: 1020px;
+  height: 18px;
+  margin-left: -510px;
+  background-image: linear-gradient(to bottom, rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
+}
+
+.CreateDialog-footerLine {
+  position: absolute;
+  z-index: 2;
+  top: -1px;
+  left: 50%;
+  width: 940px;
+  height: 1px;
+  margin-left: -470px;
+  background: $cStructure-mainLine;
+}
+
+.CreateDialog-footerInner.is-centered {
+  display: block;
+  justify-content: initial;
+}
+.CreateDialog-footerInfoIcon { margin-right: 8px; }
+
+.CreateDialog-footerInfoEnquiry {
+  padding-bottom: 10px;
+}
+
+.CreateDialog-footerActions {
+  display: flex;
+  align-items: center;
+}
+.CreateDialog-footerActionsButton.is-separated { margin-right: 10px; }

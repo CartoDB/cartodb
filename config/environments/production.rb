@@ -31,6 +31,8 @@ CartoDB::Application.configure do
     ActiveSupport::Logger.new(Carto::Conf.new.log_file_path('production.log'), Logger::INFO)
   )
 
+  config.log_level = :info
+
   # # Adjust the log level. Note that assigning to `config.log_level` would
   # # have no effect here, since we have set the logger explicitly.
   # # We'll set the level to :info, which omits SQL statements in the log.

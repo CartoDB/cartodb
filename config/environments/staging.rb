@@ -28,6 +28,8 @@ CartoDB::Application.configure do
     ActiveSupport::Logger.new(Carto::Conf.new.log_file_path('staging.log'), Logger::INFO)
   )
 
+  config.log_level = :info
+
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
 

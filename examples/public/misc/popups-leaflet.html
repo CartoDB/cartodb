@@ -80,22 +80,28 @@
       const popup = L.popup({ closeButton: false });
 
       function openPopup(featureEvent) {
-        let content = '';
-        content += `<div class="widget">`;
+        let content = '<div class="widget">';
+
         if (featureEvent.data.name) {
           content += `<h2 class="h2">${featureEvent.data.name}</h2>`;
         }
+
         if (featureEvent.data.pop_max || featureEvent.data.pop_min) {
           content += `<ul>`;
+
           if (featureEvent.data.pop_max) {
             content += `<li><h3>Max:</h3><p class="open-sans">${featureEvent.data.pop_max}</p></li>`;
           }
+
           if (featureEvent.data.pop_min) {
             content += `<li><h3>Min:</h3><p class="open-sans">${featureEvent.data.pop_min}</p></li>`;
           }
+
           content += `</ul>`;
         }
+
         content += `</div>`;
+
         popup.setContent(content);
         popup.setLatLng(featureEvent.latLng);
         if (!popup.isOpen()) {

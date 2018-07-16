@@ -78,6 +78,7 @@
           SELECT *
             FROM ne_10m_populated_places_simple
         `);
+
         populatedPlacesStyle.setContent(`
           #layer {
             marker-fill: #EE4D5A;
@@ -93,6 +94,7 @@
             FROM ne_10m_populated_places_simple
             ORDER BY pop_max DESC LIMIT ${limit}
         `);
+
         populatedPlacesStyle.setContent(`
           #layer {
             marker-fill: #68B69E;
@@ -112,6 +114,7 @@
             FROM ne_10m_populated_places_simple
             ORDER BY pop_max ASC LIMIT ${limit}
         `);
+
         populatedPlacesStyle.setContent(`
           #layer {
             marker-fill: #F15743;

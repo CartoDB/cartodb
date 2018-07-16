@@ -5,6 +5,7 @@
   <title>Change order | CARTO</title>
   <meta name="viewport" content="initial-scale=1.0">
   <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
   <!-- Include Google Maps -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
   <!-- Include CARTO.js -->
@@ -64,32 +65,28 @@
       username: 'cartojs-test'
     });
 
-    const spainCitiesSource = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+    const spainCitiesSource = new carto.source.Dataset('ne_10m_populated_places_simple');
     const spainCitiesStyle = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 7;
-          marker-fill: #EE4D5A;
-          marker-line-color: #FFFFFF;
-        }
-      `);
+      #layer {
+        marker-width: 7;
+        marker-fill: #EE4D5A;
+        marker-line-color: #FFFFFF;
+      }
+    `);
     const spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
 
-    const europeCountriesSource = new carto.source.Dataset(`
-        ne_adm0_europe
-      `);
+    const europeCountriesSource = new carto.source.Dataset('ne_adm0_europe');
     const europeCountriesStyle = new carto.style.CartoCSS(`
-        #layer {
-          polygon-fill: #826DBA;
-          polygon-opacity: 0.8;
-          ::outline {
-            line-width: 1;
-            line-color: #FFFFFF;
-            line-opacity: 0.8;
-          }
+      #layer {
+        polygon-fill: #826DBA;
+        polygon-opacity: 0.8;
+        ::outline {
+          line-width: 1;
+          line-color: #FFFFFF;
+          line-opacity: 0.8;
         }
-      `);
+      }
+    `);
     const europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);
 
     client.addLayers([europeCountriesLayer, spainCitiesLayer]);
@@ -107,7 +104,7 @@
       spainCitiesLayer.bringToFront();
       // or
       // spainCitiesLayer.setOrder(1);
-      // // or
+      // or
       // client.moveLayer(spainCitiesLayer, 1);
     }
   </script>

@@ -351,7 +351,7 @@ Editor
 
     If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
 
-* Install node dependencies
+* Install Node.js dependencies
 
   .. code-block:: bash
 

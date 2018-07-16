@@ -6,43 +6,6 @@ var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var zera = require('@carto/zera');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-var findContainerPoint = function (map, o) {
-  var curleft = 0;
-  var curtop = 0;
-  var obj = map.getContainer();
-
-  var x, y;
-  if (o.e.changedTouches && o.e.changedTouches.length > 0) {
-    x = o.e.changedTouches[0].clientX + window.scrollX;
-    y = o.e.changedTouches[0].clientY + window.scrollY;
-  } else {
-    x = o.e.clientX;
-    y = o.e.clientY;
-  }
-
-  // If the map is fixed at the top of the window, we can't use offsetParent
-  // cause there might be some scrolling that we need to take into account.
-  var point;
-  if (obj.offsetParent && obj.offsetTop > 0) {
-    do {
-      curleft += obj.offsetLeft;
-      curtop += obj.offsetTop;
-      obj = obj.offsetParent;
-    } while (obj);
-    point = new L.Point(
-      x - curleft, y - curtop);
-  } else {
-    var rect = obj.getBoundingClientRect();
-    var scrollX = (window.scrollX || window.pageXOffset);
-    var scrollY = (window.scrollY || window.pageYOffset);
-    point = new L.Point(
-      (o.e.clientX ? o.e.clientX : x) - rect.left - obj.clientLeft - scrollX,
-      (o.e.clientY ? o.e.clientY : y) - rect.top - obj.clientTop - scrollY);
-  }
-
-  return point;
-};
-
 var LeafletCartoDBLayerGroupView = function (layerModel, opts) {
   LeafletLayerView.apply(this, arguments);
   CartoDBLayerGroupViewBase.apply(this, arguments);
@@ -100,7 +63,7 @@ LeafletCartoDBLayerGroupView.prototype = _.extend(
     },
 
     _manageOnEvents: function (nativeMap, zeraEvent) {
-      var containerPoint = findContainerPoint(nativeMap, zeraEvent);
+      var containerPoint = nativeMap.layerPointToContainerPoint(zeraEvent.layerPoint);
 
       if (!containerPoint || isNaN(containerPoint.x) || isNaN(containerPoint.y)) {
         return false;

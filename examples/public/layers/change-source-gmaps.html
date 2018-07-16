@@ -5,6 +5,7 @@
   <title>Change source | CARTO</title>
   <meta name="viewport" content="initial-scale=1.0">
   <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
   <!-- Include Google Maps -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
   <!-- Include CARTO.js -->
@@ -57,6 +58,7 @@
       fullscreenControl: false,
       gestureHandling: 'cooperative'
     });
+
     // Hide the map labels and geometry strokes
     map.set('styles', [{
       elementType: 'labels',
@@ -71,17 +73,14 @@
       username: 'cartojs-test'
     });
 
-    const source = new carto.source.SQL(`
-        SELECT *
-          FROM ne_10m_populated_places_simple
-      `);
+    const source = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
     const style = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 7;
-          marker-fill: #EE4D5A;
-          marker-line-color: #FFFFFF;
-        }
-      `);
+      #layer {
+        marker-width: 7;
+        marker-fill: #EE4D5A;
+        marker-line-color: #FFFFFF;
+      }
+    `);
     const layer = new carto.layer.Layer(source, style);
 
     client.addLayer(layer);

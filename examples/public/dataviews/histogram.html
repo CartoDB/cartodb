@@ -61,9 +61,8 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.SQL(`
-        SELECT * FROM airbnb_listings WHERE price < 150
-      `);
+      const source = new carto.source.SQL('SELECT * FROM airbnb_listings WHERE price < 150');
+
       const histogramDataview = new carto.dataview.Histogram(source, 'price', {
         bins: 5
       });
@@ -83,12 +82,9 @@
         const bins = parseInt(document.getElementById('bins').value);
         const startValue = parseFloat(document.getElementById('start').value);
         const endValue = parseFloat(document.getElementById('end').value);
-        const start = Number.isFinite(startValue)
-          ? startValue
-          : null;
-        const end = Number.isFinite(endValue)
-          ? endValue
-          : null;
+
+        const start = Number.isFinite(startValue) ? startValue : null;
+        const end = Number.isFinite(endValue) ? endValue : null;
 
         try {
           histogramDataview.setColumn(column);

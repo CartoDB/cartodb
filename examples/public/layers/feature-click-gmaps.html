@@ -45,6 +45,7 @@
       fullscreenControl: false,
       gestureHandling: 'cooperative'
     });
+
     // Hide the map labels and geometry strokes
     map.set('styles', [{
       elementType: 'labels',
@@ -59,16 +60,14 @@
       username: 'cartojs-test'
     });
 
-    const source = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+    const source = new carto.source.Dataset('ne_10m_populated_places_simple');
     const style = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 7;
-          marker-fill: #EE4D5A;
-          marker-line-color: #FFFFFF;
-        }
-      `);
+      #layer {
+        marker-width: 7;
+        marker-fill: #EE4D5A;
+        marker-line-color: #FFFFFF;
+      }
+    `);
     const layer = new carto.layer.Layer(source, style, {
       featureClickColumns: ['name', 'pop_max']
     });
@@ -77,9 +76,11 @@
     map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
 
     layer.on('featureClicked', featureEvent => {
-      let content = '';
-      content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
-      content += `<p class="open-sans">${featureEvent.data.pop_max} <small>max inhabitants</small></p>`;
+      const content = `
+        <h3>${featureEvent.data.name.toUpperCase()}</h3>
+        <p class="open-sans">${featureEvent.data.pop_max} <small>max inhabitants</small></p>
+      `;
+
       document.getElementById('info').innerHTML = content;
     });
   </script>

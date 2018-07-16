@@ -65,9 +65,8 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+      const source = new carto.source.Dataset('ne_10m_populated_places_simple');
+
       const categoryDataview = new carto.dataview.Category(source, 'adm0name', {
         limit: 10,
         operation: carto.operation.SUM,
@@ -89,6 +88,7 @@
         const limit = document.getElementById('limit').value;
         const operation = document.getElementById('operation').value;
         const operationColumn = document.getElementById('operationColumn').value;
+
         categoryDataview.setColumn(column);
         categoryDataview.setLimit(parseInt(limit));
         categoryDataview.setOperation(operation);

@@ -4,6 +4,7 @@
     <title>Multilayer | CARTO</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
     <!-- Include Leaflet -->
     <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
     <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
@@ -54,9 +55,7 @@
       `);
       const spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
 
-      const europeCountriesSource = new carto.source.Dataset(`
-        ne_adm0_europe
-      `);
+      const europeCountriesSource = new carto.source.Dataset('ne_adm0_europe');
       const europeCountriesStyle = new carto.style.CartoCSS(`
         #layer {
           polygon-fill: #826DBA;

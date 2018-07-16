@@ -58,9 +58,8 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+      const source = new carto.source.Dataset('ne_10m_populated_places_simple');
+
       const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
         operation: carto.operation.COUNT
       });
@@ -78,6 +77,7 @@
       function applyDataviewChanges() {
         const column = document.getElementById('column').value;
         const operation = document.getElementById('operation').value;
+
         formulaDataview.setColumn(column);
         formulaDataview.setOperation(operation);
       }

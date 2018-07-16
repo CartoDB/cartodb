@@ -55,6 +55,7 @@
       fullscreenControl: false,
       gestureHandling: 'cooperative'
     });
+
     // Hide the map labels and geometry strokes
     map.set('styles', [{
       elementType: 'labels',
@@ -69,16 +70,14 @@
       username: 'cartojs-test'
     });
 
-    const source = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+    const source = new carto.source.Dataset('ne_10m_populated_places_simple');
     const style = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 7;
-          marker-fill: #EE4D5A;
-          marker-line-color: #FFFFFF;
-        }
-      `);
+      #layer {
+        marker-width: 7;
+        marker-fill: #EE4D5A;
+        marker-line-color: #FFFFFF;
+      }
+    `);
     const layer = new carto.layer.Layer(source, style);
 
     client.addLayer(layer);
@@ -86,34 +85,33 @@
 
     function setRed() {
       style.setContent(`
-          #layer {
-            marker-width: 7;
-            marker-fill: #EE4D5A;
-            marker-line-color: #FFFFFF;
-          }
-        `);
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-line-color: #FFFFFF;
+        }
+      `);
     }
 
     function setGreen() {
       style.setContent(`
-          #layer {
-            marker-width: 7;
-            marker-fill: #9BC63B;
-            marker-line-color: #FFFFFF;
-          }
-        `);
+        #layer {
+          marker-width: 7;
+          marker-fill: #9BC63B;
+          marker-line-color: #FFFFFF;
+        }
+      `);
     }
 
     function setBlue() {
       style.setContent(`
-          #layer {
-            marker-width: 9;
-            marker-fill: #1785FB;
-            marker-line-color: #FFFFFF;
-          }
-        `);
+        #layer {
+          marker-width: 9;
+          marker-fill: #1785FB;
+          marker-line-color: #FFFFFF;
+        }
+      `);
     }
   </script>
 </body>
-
 </html>

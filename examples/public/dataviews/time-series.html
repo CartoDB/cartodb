@@ -67,9 +67,8 @@
         username: 'cartojs-test'
       });
 
-      const source = new carto.source.Dataset(`
-        railroad_data
-      `);
+      const source = new carto.source.Dataset('railroad_data');
+
       const timeseriesDataview = new carto.dataview.TimeSeries(source, 'date', {
         aggregation: carto.dataview.timeAggregation.AUTO,
         offset: 1
@@ -89,6 +88,7 @@
         const column = document.getElementById('column').value;
         const aggregation = document.getElementById('aggregation').value;
         const offset = document.getElementById('offset').value;
+
         timeseriesDataview.setColumn(column);
         timeseriesDataview.setAggregation(aggregation);
         timeseriesDataview.setOffset(parseInt(offset));

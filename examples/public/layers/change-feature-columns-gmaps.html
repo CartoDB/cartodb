@@ -69,16 +69,14 @@
       username: 'cartojs-test'
     });
 
-    const source = new carto.source.Dataset(`
-        ne_10m_populated_places_simple
-      `);
+    const source = new carto.source.Dataset('ne_10m_populated_places_simple');
     const style = new carto.style.CartoCSS(`
-        #layer {
-          marker-width: 7;
-          marker-fill: #EE4D5A;
-          marker-line-color: #FFFFFF;
-        }
-      `);
+      #layer {
+        marker-width: 7;
+        marker-fill: #EE4D5A;
+        marker-line-color: #FFFFFF;
+      }
+    `);
     const layer = new carto.layer.Layer(source, style, {
       featureClickColumns: ['name']
     });
@@ -88,15 +86,19 @@
 
     layer.on('featureClicked', featureEvent => {
       let content = '';
+
       if (featureEvent.data.name) {
         content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
       }
+
       if (featureEvent.data.pop_max) {
         content += `<p class="open-sans">${featureEvent.data.pop_max} <span>max inhabitants</span></p>`;
       }
+
       if (featureEvent.data.pop_min) {
         content += `<p class="open-sans">${featureEvent.data.pop_min} <span>min inhabitants</span></p>`;
       }
+
       document.getElementById('info').innerHTML = content;
     });
 

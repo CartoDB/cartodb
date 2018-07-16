@@ -166,10 +166,10 @@ Redis
 
   For data safety, make sure to have proper values of *save*, *appendonly* and *appendfsync* config attributes. For more information check `http://redis.io/topics/persistence`
 
-NodeJS
+Node.js
 ------
 
-NodeJS is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of the editor.
+Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of the editor.
 
 
 * Add the PPA
@@ -178,13 +178,13 @@ NodeJS is required by different parts of the stack. The more significant are the
 
     sudo add-apt-repository ppa:cartodb/nodejs && sudo apt-get update
 
-* Install NodeJS
+* Install Node.js
 
   .. code-block:: bash
 
     sudo apt-get install nodejs
 
-  Note this should install both NodeJS 6.9.2 and npm 3.10.9. You can verify the installation went as expected with:
+  Note this should install both Node.js 6.9.2 and npm 3.10.9. You can verify the installation went as expected with:
 
   .. code-block:: bash
 
@@ -192,9 +192,9 @@ NodeJS is required by different parts of the stack. The more significant are the
     npm -v
 
 .. warning::
-      CARTO uses Node JS v6.9.2 and npm 3.10.9. You must use these precise versions to avoid problems.
+      CARTO uses Node.js v6.9.2 and npm 3.10.9. You must use these precise versions to avoid problems.
 
-We will also install some development libraries that will be necessary to build some Node modules:
+We will also install some development libraries that will be necessary to build some Node.js modules:
 
   .. code-block:: bash
 

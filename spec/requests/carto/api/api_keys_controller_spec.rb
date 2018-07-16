@@ -463,7 +463,7 @@ describe Carto::Api::ApiKeysController do
         @user_index = FactoryGirl.create(:valid_user)
         @carto_user_index = Carto::User.find(@user_index.id)
 
-        @apikeys = @carto_user_index.api_keys.order(:updated_at).all
+        @apikeys = @carto_user_index.api_keys.order(:updated_at).all.to_a
         3.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
       end
 

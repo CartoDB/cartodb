@@ -21,14 +21,14 @@ describe Carto::VisualizationsExportService2 do
       interval: 2592000,
       url: "https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd",
       state: "success",
-      created_at: "2018-04-13T22:09:03+00:00",
-      updated_at: "2018-04-13T22:09:36+00:00",
-      run_at: "2018-05-13T22:09:03+00:00",
+      created_at: Time.now.utc.to_json,
+      updated_at: Time.now.utc.to_json,
+      run_at: Time.now.utc.to_json,
       retried_times: 0,
       log_id: nil,
       error_code: nil,
       error_message: nil,
-      ran_at: "2018-04-13T22:09:03+00:00",
+      ran_at: Time.now.utc.to_json,
       modified_at: nil,
       etag: nil,
       user_id: nil,
@@ -359,10 +359,25 @@ describe Carto::VisualizationsExportService2 do
   def verify_sync_vs_export(sync, sync_export, full_restore)
     return true if sync.nil? && sync_export.nil?
 
-    sync.id = sync_export[:id] unless full_restore
-    sync.user_id = nil
-    sync.visualization_id = nil
-    deep_symbolize(sync).should eq deep_symbolize(sync_export)
+    sync.id.should eq sync_export[:id] if full_restore
+    sync.name.should eq sync_export[:name]
+    sync.interval.should eq sync_export[:interval]
+    sync.url.should eq sync_export[:url]
+    sync.state.should eq sync_export[:state]
+    sync.run_at.to_json.should eq sync_export[:run_at]
+    sync.retried_times.should eq sync_export[:retried_times]
+    sync.error_code.should eq sync_export[:error_code]
+    sync.error_message.should eq sync_export[:error_message]
+    sync.ran_at.to_json.should eq sync_export[:ran_at]
+    sync.etag.should eq sync_export[:etag]
+    sync.checksum.should eq sync_export[:checksum]
+    sync.service_name.should eq sync_export[:service_name]
+    sync.service_item_id.should eq sync_export[:service_item_id]
+    sync.type_guessing.should eq sync_export[:type_guessing]
+    sync.quoted_fields_guessing.should eq sync_export[:quoted_fields_guessing]
+    sync.content_guessing.should eq sync_export[:content_guessing]
+    sync.visualization_id.should eq sync_export[:visualization_id] if full_restore
+    sync.from_external_source?.should eq sync_export[:from_external_source]
   end
 
   def deep_symbolize(h)

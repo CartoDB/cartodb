@@ -3,9 +3,9 @@
   "version": "4.12.58",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.1.0",
-      "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.1.0.tgz"
+      "version": "4.1.1",
+      "from": "@carto/carto.js@>=4.1.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.1.1.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.1.1-0",
-      "from": "cartodb/carto.js#v4.1.1-0",
-      "resolved": "git://github.com/cartodb/carto.js.git#85499951eb4ea2199c6c11db4ce4071f2880fe10"
+      "version": "4.1.1",
+      "from": "cartodb/carto.js#v4.1.1",
+      "resolved": "git://github.com/cartodb/carto.js.git#655a301ae6d1422273cfcf7c391d52bcb6c49f55"
     },
     "interpret": {
       "version": "1.1.0",
@@ -2760,9 +2760,9 @@
       "resolved": "https://registry.npmjs.org/run-queue/-/run-queue-1.0.3.tgz"
     },
     "rxjs": {
-      "version": "6.2.1",
+      "version": "6.2.2",
       "from": "rxjs@>=6.1.0 <7.0.0",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-6.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-6.2.2.tgz"
     },
     "safe-buffer": {
       "version": "5.1.2",
@@ -3238,9 +3238,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.4.4",
+      "version": "3.4.5",
       "from": "uglify-js@>=3.4.0 <3.5.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.4.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.5.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",

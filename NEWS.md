@@ -755,6 +755,7 @@ ion for time-series (#12670)
 * Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
 * Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
 * Merge Deep-insights project in Cartodb (#13284)
+* Add caching headers for emebeds
 * Affected specs tasks now take into account multiple specs folders [PR #13295](https://github.com/CartoDB/cartodb/pull/13295)
 
 ### NOTICE

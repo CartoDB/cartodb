@@ -25,7 +25,6 @@ module OAuth
         def allow?
           if @strategies.any? do |strategy|
               @strategy  = strategy.to_sym
-              byebug
               send @strategy
             end
             true

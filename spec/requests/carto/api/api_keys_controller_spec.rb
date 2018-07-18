@@ -9,10 +9,10 @@ describe Carto::Api::ApiKeysController do
 
   def response_grants_should_include_request_permissions(reponse_grants, table_permissions)
     table_permissions.each do |stp|
-      response_tables = reponse_grants.find { |grant| grant['type'] == 'database' }['tables']
+      response_tables = reponse_grants.find { |grant| grant[:type] == 'database' }[:tables]
       response_permissions_for_table =
-        response_tables.find { |rtp| rtp['schema'] == stp['schema'] && rtp['name'] == stp['name'] }['permissions']
-      response_permissions_for_table.sort.should eq stp['permissions'].sort
+        response_tables.find { |rtp| rtp[:schema] == stp[:schema] && rtp[:name] == stp[:name] }[:permissions]
+      response_permissions_for_table.sort.should eq stp[:permissions].sort
     end
   end
 
@@ -50,16 +50,16 @@ describe Carto::Api::ApiKeysController do
       name: 'wadus',
       grants: [
         {
-          "type" => "apis",
-          "apis" => []
+          type: "apis",
+          apis: []
         },
         {
-          "type" => "database",
-          "tables" => [
+          type: "database",
+          tables: [
             {
-              "schema" => @carto_user.database_schema,
-              "name" => @table1.name,
-              "permissions" => []
+              schema: @carto_user.database_schema,
+              name: @table1.name,
+              permissions: []
             }
           ]
         }
@@ -153,16 +153,16 @@ describe Carto::Api::ApiKeysController do
       it 'creates a new API key' do
         grants = [
           {
-            "type" => "apis",
-            "apis" => ["sql", "maps"]
+            type: "apis",
+            apis: ["sql", "maps"]
           },
           {
-            "type" => "database",
-            "tables" => [
+            type: "database",
+            tables: [
               {
-                "schema" => @carto_user.database_schema,
-                "name" => @table1.name,
-                "permissions" => [
+                schema: @carto_user.database_schema,
+                name: @table1.name,
+                permissions: [
                   "insert",
                   "select",
                   "update",
@@ -170,9 +170,9 @@ describe Carto::Api::ApiKeysController do
                 ]
               },
               {
-                "schema" => @carto_user.database_schema,
-                "name" => @table2.name,
-                "permissions" => [
+                schema: @carto_user.database_schema,
+                name: @table2.name,
+                permissions: [
                   "select"
                 ]
               }
@@ -194,7 +194,7 @@ describe Carto::Api::ApiKeysController do
           api_key_response[:type].should eq 'regular'
           api_key_response[:token].should_not be_empty
 
-          request_table_permissions = grants.find { |grant| grant['type'] == 'database' }['tables']
+          request_table_permissions = grants.find { |grant| grant[:type] == 'database' }[:tables]
           response_grants_should_include_request_permissions(api_key_response[:grants], request_table_permissions)
 
           api_key_response[:databaseConfig].should_not be
@@ -248,7 +248,7 @@ describe Carto::Api::ApiKeysController do
             'type' => 'database',
             'tables' => [
               'schema' => @carto_user.database_schema,
-              'name' => @table1.name,
+              :name => @table1.name,
               'permissions' => ['read']
             ]
           },
@@ -271,7 +271,7 @@ describe Carto::Api::ApiKeysController do
             'type' => 'database',
             'tables' => [
               'schema' => @carto_user.database_schema,
-              'name' => 'wadus',
+              :name => 'wadus',
               'permissions' => ['select']
             ]
           },
@@ -294,7 +294,7 @@ describe Carto::Api::ApiKeysController do
             'type' => 'database',
             'tables' => [
               'schema' => 'wadus',
-              'name' => @table1.name,
+              :name => @table1.name,
               'permissions' => ['select']
             ]
           },
@@ -317,7 +317,7 @@ describe Carto::Api::ApiKeysController do
             'type' => 'database',
             'tables' => [
               'schema' => @table1.database_schema,
-              'name' => @table1.name,
+              :name => @table1.name,
               'permissions' => ['select']
             ]
           },
@@ -463,7 +463,7 @@ describe Carto::Api::ApiKeysController do
         @user_index = FactoryGirl.create(:valid_user)
         @carto_user_index = Carto::User.find(@user_index.id)
 
-        @apikeys = @carto_user_index.api_keys.order(:updated_at).all
+        @apikeys = @carto_user_index.api_keys.order(:updated_at).all.to_a
         3.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
       end
 
@@ -478,8 +478,8 @@ describe Carto::Api::ApiKeysController do
           response.body[:_links][:next][:href].should match /page=2/
           response.body[:_links][:last][:href].should match /page=3/
           response.body[:result].size.should eq 2
-          response.body[:result][0]['name'].should eq @apikeys[0].name
-          response.body[:result][1]['name'].should eq @apikeys[1].name
+          response.body[:result][0][:name].should eq @apikeys[0].name
+          response.body[:result][1][:name].should eq @apikeys[1].name
         end
 
         auth_user(@carto_user_index)
@@ -492,8 +492,8 @@ describe Carto::Api::ApiKeysController do
           response.body[:_links][:next][:href].should match /page=3/
           response.body[:_links][:last][:href].should match /page=3/
           response.body[:result].size.should eq 2
-          response.body[:result][0]['name'].should eq @apikeys[2].name
-          response.body[:result][1]['name'].should eq @apikeys[3].name
+          response.body[:result][0][:name].should eq @apikeys[2].name
+          response.body[:result][1][:name].should eq @apikeys[3].name
         end
 
         auth_user(@carto_user_index)
@@ -505,7 +505,7 @@ describe Carto::Api::ApiKeysController do
           expect(response.body[:_links].keys).not_to include(:next)
           response.body[:_links][:last][:href].should match /page=3/
           response.body[:result].size.should eq 1
-          response.body[:result][0]['name'].should eq @apikeys[4].name
+          response.body[:result][0][:name].should eq @apikeys[4].name
         end
 
         auth_user(@carto_user_index)
@@ -517,7 +517,7 @@ describe Carto::Api::ApiKeysController do
           response.body[:_links][:next][:href].should match /page=2/
           response.body[:_links][:last][:href].should match /page=2/
           response.body[:result].size.should eq 3
-          3.times { |n| response.body[:result][n]['name'].should eq @apikeys[n].name }
+          3.times { |n| response.body[:result][n][:name].should eq @apikeys[n].name }
         end
 
         auth_user(@carto_user_index)
@@ -529,7 +529,7 @@ describe Carto::Api::ApiKeysController do
           expect(response.body[:_links].keys).not_to include(:prev)
           expect(response.body[:_links].keys).not_to include(:next)
           response.body[:result].size.should eq 5
-          5.times { |n| response.body[:result][n]['name'].should eq @apikeys[n].name }
+          5.times { |n| response.body[:result][n][:name].should eq @apikeys[n].name }
         end
       end
 
@@ -670,8 +670,8 @@ describe Carto::Api::ApiKeysController do
           response.body[:total].should eq 1
           response.body[:count].should eq 1
           response.body[:result].length.should eq 1
-          response.body[:result].first['user']['username'].should eq @carto_user.username
-          response.body[:result].first['token'].should eq public_api_key.token
+          response.body[:result].first[:user][:username].should eq @carto_user.username
+          response.body[:result].first[:token].should eq public_api_key.token
         end
       end
 
@@ -681,8 +681,8 @@ describe Carto::Api::ApiKeysController do
           response.body[:total].should eq 1
           response.body[:count].should eq 1
           response.body[:result].length.should eq 1
-          response.body[:result].first['user']['username'].should eq @carto_user.username
-          response.body[:result].first['token'].should eq regular_api_key.token
+          response.body[:result].first[:user][:username].should eq @carto_user.username
+          response.body[:result].first[:token].should eq regular_api_key.token
         end
       end
 
@@ -864,8 +864,8 @@ describe Carto::Api::ApiKeysController do
           response.body[:total].should eq 1
           response.body[:count].should eq 1
           response.body[:result].length.should eq 1
-          response.body[:result].first['user']['username'].should eq @carto_user.username
-          response.body[:result].first['token'].should eq public_api_key.token
+          response.body[:result].first[:user][:username].should eq @carto_user.username
+          response.body[:result].first[:token].should eq public_api_key.token
         end
       end
 
@@ -875,8 +875,8 @@ describe Carto::Api::ApiKeysController do
           response.body[:total].should eq 1
           response.body[:count].should eq 1
           response.body[:result].length.should eq 1
-          response.body[:result].first['user']['username'].should eq @carto_user.username
-          response.body[:result].first['token'].should eq regular_api_key.token
+          response.body[:result].first[:user][:username].should eq @carto_user.username
+          response.body[:result].first[:token].should eq regular_api_key.token
         end
       end
     end

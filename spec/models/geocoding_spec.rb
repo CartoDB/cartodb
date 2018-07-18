@@ -109,17 +109,24 @@ describe Geocoding do
     end
 
     it 'sends a payload with duration information' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
+      def is_metrics_payload?(str)
+        payload = JSON.parse(str)
+        payload.key?('queue_time') && payload.key?('processing_time') &&
+          payload['queue_time'] > 0 && payload['processing_time'] > 0
+      rescue JSON::ParserError
+        false
+      end
+
+      geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, kind: 'admin0',
+                                                 geometry_type: 'polygon', formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:run).returns true
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:process_results).returns true
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
 
       # metrics_payload is sent to the log in json
-      Logger.any_instance.expects(:info).once {|str|
-        payload = JSON.parse(str)
-        payload.has_key?('queue_time') && payload.has_key?('processing_time') && payload['queue_time'] > 0 && payload['processing_time'] > 0
-      }
+      Logger.any_instance.expects(:info).once.with { |str| is_metrics_payload?(str) }
+      Logger.any_instance.stubs(:info).with { |str| !is_metrics_payload?(str) }
 
       geocoding.run!
       geocoding.reload.state.should eq 'finished'

@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails',                   '3.2.22'
+gem 'rails',                   '4.2.10'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.15.0'
@@ -8,19 +8,20 @@ gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
-# NOTE: Forced on purpose due to this bug https://github.com/tlconnor/activerecord-postgres-array/issues/37
-gem 'activerecord-postgres-array', '0.0.9'
+
+gem 'protected_attributes'
+gem 'responders', '~> 2.0'
 
 gem 'sequel-rails', '0.9.15'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
-gem 'oauth',                   '0.5.1'
-gem 'oauth-plugin',            '0.4.0.pre4'
+gem 'oauth',                   '0.4.7'
+gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git', :branch => 'cartodb'
 
 gem 'redis',                   '3.3.0'
 gem 'hiredis',                 '0.6.1'
-gem 'nokogiri',                '~> 1.6.6.2'
+gem 'nokogiri',                '~> 1.8.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk-s3',              '~> 1'
 gem 'ruby-prof',               '0.15.1'
@@ -48,7 +49,7 @@ end
 
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
-gem 'state_machine',           '1.1.2'
+gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
@@ -69,10 +70,6 @@ gem 'uuidtools',                '2.1.5'
 
 # Markdown
 gem 'redcarpet', '3.3.3'
-
-# TODO we should be able to remove this using the new
-#      Rails routes DSL
-gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 
 # TODO Production gems, put them in :production group
 gem 'rollbar',               '~>2.11.1'

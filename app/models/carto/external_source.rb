@@ -10,8 +10,6 @@ class Carto::ExternalSource < ActiveRecord::Base
   belongs_to :visualization, inverse_of: :external_source
   validates :visualization, :import_url, :rows_counted, :size, presence: true
 
-  before_create :fix_geometry_types_for_insert
-
   def update_data(import_url, geometry_types, rows_counted, size, username = nil)
     self.import_url = import_url
     # This check avoids a "false change" if the data is actually equal (AR bug on arrays)
@@ -34,9 +32,5 @@ class Carto::ExternalSource < ActiveRecord::Base
     string = '{}' if string.nil?
 
     "{#{array.join(',')}}" == string
-  end
-
-  def fix_geometry_types_for_insert
-    self.geometry_types = Carto::InsertableArray.new(geometry_types) if geometry_types
   end
 end

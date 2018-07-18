@@ -8,6 +8,9 @@ cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
+New database configuration is required. Please add `prepared_statements: false` to `database.yml`
+(check `database.yml.sample` for an example)
+
 This release introduces a new API Key system. In order to migrate existing users, run the following command:
 `bundle exec rake carto:api_key:create_default`
 
@@ -109,6 +112,9 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### NOTICE
+This releases updates the database connections, and `database.yml` needs to be updated to reflect it. The adapter
+should be replaced from `postgres` to `postgresql`. See `database.yml.sample` for an example.
+
 This upgrade changes the configuration format of basemaps. You must replace all `url` keys for `urlTemplate`. It is
 recommended that you replace the `basemaps` section completely, since this release also adds supports for high
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
@@ -757,6 +763,7 @@ ion for time-series (#12670)
 * Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
 * Merge Deep-insights project in Cartodb (#13284)
 * Affected specs tasks now take into account multiple specs folders [PR #13295](https://github.com/CartoDB/cartodb/pull/13295)
+* Updated to Rails 4.2.10 (#11735)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

@@ -3,7 +3,6 @@ require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
-  include ::SslRequirement
   include UrlHelper
   protect_from_forgery
 
@@ -30,14 +29,14 @@ class ApplicationController < ActionController::Base
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
 
-  # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
-  unless Rails.env.production? || Rails.env.staging?
-    def self.ssl_required(*splat)
-      false
+  def self.ssl_required(*splat)
+    if Rails.env.production? || Rails.env.staging?
+      force_ssl only: splat
     end
-    def self.ssl_allowed(*splat)
-      true
-    end
+  end
+
+  def self.ssl_allowed(*_splat)
+    # noop
   end
 
   protected

@@ -20,6 +20,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 
 ### Bug fixes / enhancements
+* Fix broken data tab when analyses or custom SQL are present (https://github.com/CartoDB/cartodb/issues/14169)
 * Use setView instead of flyTo to improve zoom transitions (https://github.com/CartoDB/carto.js/pull/2178)
 * Fix torque layers when filter analysis is added (https://github.com/CartoDB/support/issues/1038)
 * Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)

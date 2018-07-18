@@ -37,6 +37,8 @@ gem 'execjs',                  '~> 0.4' # Required by ejs
 gem 'net-ldap',                '0.16.0'
 gem 'json-schema',             '2.1.9'
 
+gem 'mime-types',              '3.1'
+
 group :production, :staging do
   gem 'unicorn',               '4.8.2'
   gem 'unicorn-worker-killer'

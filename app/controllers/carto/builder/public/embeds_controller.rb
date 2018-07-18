@@ -34,7 +34,7 @@ module Carto
 
           response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
           response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
-          response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate,public"
+          response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
 
           render 'show', layout: 'application_public_visualization_layout'
         end

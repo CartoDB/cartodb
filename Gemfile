@@ -17,7 +17,7 @@ gem 'sequel-rails', '0.9.15'
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
 gem 'oauth',                   '0.4.7'
-gem 'oauth-plugin',            '0.4.1'
+gem 'oauth-plugin',            '0.5.1'
 
 gem 'redis',                   '3.3.0'
 gem 'hiredis',                 '0.6.1'

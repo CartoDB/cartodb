@@ -206,7 +206,7 @@ GEM
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     oauth (0.4.7)
-    oauth-plugin (0.4.1)
+    oauth-plugin (0.5.1)
       multi_json
       oauth (~> 0.4.4)
       oauth2 (>= 0.5.0)
@@ -434,7 +434,7 @@ DEPENDENCIES
   net-telnet
   nokogiri (~> 1.8.2)
   oauth (= 0.4.7)
-  oauth-plugin (= 0.4.1)
+  oauth-plugin (= 0.5.1)
   pg (= 0.15.0)
   poltergeist (>= 1.0.0)
   protected_attributes

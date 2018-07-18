@@ -431,6 +431,7 @@ DEPENDENCIES
   instagram (= 1.1.6)
   json-schema (= 2.1.9)
   memory_profiler
+  mime-types (= 3.1)
   mocha (= 1.1.0)
   mock_redis
   net-ldap (= 0.16.0)

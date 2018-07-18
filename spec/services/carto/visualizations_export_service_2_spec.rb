@@ -21,14 +21,14 @@ describe Carto::VisualizationsExportService2 do
       interval: 2592000,
       url: "https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd",
       state: "success",
-      created_at: "2018-04-13T22:09:03+00:00",
-      updated_at: "2018-04-13T22:09:36+00:00",
-      run_at: "2018-05-13T22:09:03+00:00",
+      created_at: Time.now.utc.to_json,
+      updated_at: Time.now.utc.to_json,
+      run_at: Time.now.utc.to_json,
       retried_times: 0,
       log_id: nil,
       error_code: nil,
       error_message: nil,
-      ran_at: "2018-04-13T22:09:03+00:00",
+      ran_at: Time.now.utc.to_json,
       modified_at: nil,
       etag: nil,
       user_id: nil,
@@ -279,8 +279,8 @@ describe Carto::VisualizationsExportService2 do
       permission: { access_control_list: [] },
       synchronization: nil,
       user_table: nil,
-      created_at: DateTime.now,
-      updated_at: DateTime.now
+      created_at: DateTime.now.to_json,
+      updated_at: DateTime.now.to_json
     }
   end
 
@@ -359,10 +359,25 @@ describe Carto::VisualizationsExportService2 do
   def verify_sync_vs_export(sync, sync_export, full_restore)
     return true if sync.nil? && sync_export.nil?
 
-    sync.id = sync_export[:id] unless full_restore
-    sync.user_id = nil
-    sync.visualization_id = nil
-    deep_symbolize(sync).should eq deep_symbolize(sync_export)
+    sync.id.should eq sync_export[:id] if full_restore
+    sync.name.should eq sync_export[:name]
+    sync.interval.should eq sync_export[:interval]
+    sync.url.should eq sync_export[:url]
+    sync.state.should eq sync_export[:state]
+    sync.run_at.to_json.should eq sync_export[:run_at]
+    sync.retried_times.should eq sync_export[:retried_times]
+    sync.error_code.should eq sync_export[:error_code]
+    sync.error_message.should eq sync_export[:error_message]
+    sync.ran_at.to_json.should eq sync_export[:ran_at]
+    sync.etag.should eq sync_export[:etag]
+    sync.checksum.should eq sync_export[:checksum]
+    sync.service_name.should eq sync_export[:service_name]
+    sync.service_item_id.should eq sync_export[:service_item_id]
+    sync.type_guessing.should eq sync_export[:type_guessing]
+    sync.quoted_fields_guessing.should eq sync_export[:quoted_fields_guessing]
+    sync.content_guessing.should eq sync_export[:content_guessing]
+    sync.visualization_id.should eq sync_export[:visualization_id] if full_restore
+    sync.from_external_source?.should eq sync_export[:from_external_source]
   end
 
   def deep_symbolize(h)
@@ -512,16 +527,6 @@ describe Carto::VisualizationsExportService2 do
 
   describe 'importing' do
     include Carto::Factories::Visualizations
-    it 'imports synchronization with missing log' do
-      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-      FactoryGirl.create(:carto_synchronization, visualization: @visualization)
-
-      @visualization.synchronization.log.destroy
-      @visualization.synchronization.reload
-      visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, @visualization)
-
-      visualization.should be
-    end
 
     describe '#build_visualization_from_json_export' do
       include Carto::Factories::Visualizations
@@ -1619,13 +1624,16 @@ describe Carto::VisualizationsExportService2 do
           built_viz = export_service.build_visualization_from_json_export(exported_string)
           original_id = built_viz.id
 
+          Delorean.jump(10)
           imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+          Delorean.back_to_the_present
           imported_viz.id.should_not eq original_id
           imported_viz.permission.acl.should be_empty
           imported_viz.shared_entities.count.should be_zero
           imported_viz.mapcapped?.should be_false
           expect(imported_viz.created_at.to_s).not_to eq original_attributes[:created_at].to_s
           expect(imported_viz.updated_at.to_s).not_to eq original_attributes[:updated_at].to_s
+          puts imported_viz.created_at, original_attributes[:created_at]
 
           destroy_visualization(imported_viz.id)
         end
@@ -1640,7 +1648,9 @@ describe Carto::VisualizationsExportService2 do
           sync_id = sync.id
           sync.destroy
 
+          Delorean.jump(10)
           imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz, full_restore: true)
+          Delorean.back_to_the_present
           imported_viz.id.should eq test_id
           imported_viz.permission.acl.should_not be_empty
           imported_viz.shared_entities.count.should eq 1
@@ -1817,10 +1827,30 @@ describe Carto::VisualizationsExportService2 do
         destroy_visualization(imported_viz.id)
       end
 
+      it 'imports a synchronization without log' do
+        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        @table_visualization.synchronization.log = nil
+        @table_visualization.synchronization.save
+
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Create user db table (destroyed above)
+        @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+        sync = imported_viz.synchronization
+        sync.should be
+        sync.log.should be_nil
+
+        destroy_visualization(imported_viz.id)
+      end
+
       it 'imports an exported dataset with external data import without a synchronization' do
         @table.data_import = FactoryGirl.create(:data_import, user: @user2, table_id: @table.id)
         @table.save!
-        FactoryGirl.create(:external_data_import_with_external_source, data_import: @table.data_import)
+        edi = FactoryGirl.create(:external_data_import_with_external_source, data_import: @table.data_import)
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user2)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")

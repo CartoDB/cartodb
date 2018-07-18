@@ -36,7 +36,7 @@ module Carto
     end
 
     def count
-      results.count 
+      results.count
     end
 
     def first
@@ -53,17 +53,17 @@ module Carto
     # e.g. visualization.likes
     def get_results
       all = @query.all
-      @order_by_asc_or_desc_by_attribute.each { |attribute, asc_or_desc|
+      @order_by_asc_or_desc_by_attribute.each do |attribute, asc_or_desc|
         # Cache attribute type
-        is_array = all.count == 0 ? false : all.first.send(attribute).is_a?(Array)
-        all = all.sort { |x, y|
+        is_array = all.present? && all.first.send(attribute).respond_to?(:count)
+        all = all.sort do |x, y|
           x_attribute = is_array ? x.send(attribute).count : x.send(attribute)
           y_attribute = is_array ? y.send(attribute).count : y.send(attribute)
           x_attribute = 0 if x_attribute.nil?
           y_attribute = 0 if y_attribute.nil?
           asc_or_desc == :asc ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
-        }
-      }
+        end
+      end
       all[@offset, last_index(all)]
     end
 

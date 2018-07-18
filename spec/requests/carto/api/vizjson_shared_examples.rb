@@ -190,7 +190,7 @@ shared_examples_for 'vizjson generator' do
       viz_id = viz.id
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: valid_callback), {}, @headers
       last_response.status.should == 200
-      (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
+      (last_response.body =~ /^(\/\*\*\/)?#{valid_callback}\(\{/i).should eq 0
 
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
       last_response.status.should == 400
@@ -207,7 +207,7 @@ shared_examples_for 'vizjson generator' do
 
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: valid_callback2), {}, @headers
       last_response.status.should == 200
-      (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
+      (last_response.body =~ /^(\/\*\*\/)?#{valid_callback2}\(\{/i).should eq 0
 
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key), {}, @headers
       last_response.status.should == 200

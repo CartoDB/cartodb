@@ -110,10 +110,9 @@ describe Carto::VisualizationQueryBuilder do
     # From here on, uses OffdatabaseQueryAdapter
 
     # Likes
-
-    table1.table_visualization.likes.create!(actor: @carto_user1)
-    table1.table_visualization.likes.create!(actor: @carto_user2)
-    table3.table_visualization.likes.create!(actor: @carto_user1)
+    table1.table_visualization.likes.create!(actor: @carto_user1.id)
+    table1.table_visualization.likes.create!(actor: @carto_user2.id)
+    table3.table_visualization.likes.create!(actor: @carto_user1.id)
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL)
               .with_order('likes', :desc)
@@ -161,7 +160,9 @@ describe Carto::VisualizationQueryBuilder do
     mocked_vis3.stubs(:size).returns(600)
 
     # Careful to not do anything else on this spec after this size assertions
-    ActiveRecord::Relation.any_instance.stubs(:all).returns([mocked_vis3, mocked_vis1, mocked_vis2])
+    Carto::Visualization::ActiveRecord_Relation.any_instance.stubs(:all).returns(
+      [mocked_vis3, mocked_vis1, mocked_vis2]
+    )
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('size', :desc).build.map(&:id)
     ids.should == [table3.table_visualization.id, table1.table_visualization.id, table2.table_visualization.id]

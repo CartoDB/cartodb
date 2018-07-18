@@ -19,7 +19,7 @@ module Carto
     def build_data_import_from_hash(exported_data_import)
       return nil unless exported_data_import
 
-      di = DataImport.new(exported_data_import.slice(*EXPORTED_DATA_IMPORT_ATTRIBUTES))
+      di = DataImport.new(exported_data_import.slice(*EXPORTED_DATA_IMPORT_ATTRIBUTES).except(:id))
 
       di.log = build_log_from_hash(exported_data_import[:log])
       di.external_data_imports = exported_data_import[:external_data_imports].map do |edi|

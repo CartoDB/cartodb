@@ -65,6 +65,7 @@ module CartoDB
             h[k.to_sym] = v
           }
           yml_config[:user] = yml_config.delete :username
+          yml_config[:adapter].sub!('postgresql', 'postgres')
           yml_config
         rescue
           raise("Configure database settings in RAILS_ROOT/config/database.yml or spec/factories/database.json")

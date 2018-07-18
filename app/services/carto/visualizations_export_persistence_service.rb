@@ -64,7 +64,6 @@ module Carto
           visualization.locked = false
         end
 
-
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
         end
@@ -162,7 +161,9 @@ module Carto
             layers.push(layer)
           end
         end
-        visualization.map.layers = layers
+        visualization.map.layers.clear
+        visualization.map.layers_maps.clear
+        layers.each { |l| visualization.map.layers << l }
       end
     end
   end

@@ -37,6 +37,7 @@ class User < Sequel::Model
   include Carto::BillingCycle
   include Carto::EmailCleaner
   extend Carto::UserAuthenticator
+  include SequelFormCompatibility
 
   OAUTH_SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
@@ -473,7 +474,10 @@ class User < Sequel::Model
       ActiveRecord::Base.transaction do
         delete_external_data_imports
         delete_external_sources
-        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each do |v|
+          v.user.viewer = false
+          v.destroy!
+        end
         Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 

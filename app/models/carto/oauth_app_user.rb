@@ -15,7 +15,9 @@ module Carto
     private
 
     def code_or_api_key_present
-      errors.add(:code, 'must be present if api key is missing') unless code || api_key
+      errors.add(:code, 'must be present if redirect_url is') if !code.present? && redirect_url.present?
+      errors.add(:redirect_url, 'must be present if code is') if code.present? && !redirect_url.present?
+      errors.add(:api_key, 'must be present if code is missing') if code.present? && !api_key.present?
     end
   end
 end

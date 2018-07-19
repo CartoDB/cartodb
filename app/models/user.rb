@@ -149,6 +149,8 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  include VarnishCacheHandler
+
   def db_service
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
@@ -573,11 +575,6 @@ class User < Sequel::Model
         CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
       end
     end
-  end
-
-  def invalidate_varnish_cache(options = {})
-    options[:regex] ||= '.*'
-    CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
   end
 
   # allow extra vars for auth

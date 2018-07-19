@@ -3,7 +3,7 @@ require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
 
-# Unp includes reference to kml_splitter
+# Unp includes reference to gpx_splitter
 require_relative '../../lib/importer/unp'
 
 describe CartoDB::Importer2::GpxSplitter do

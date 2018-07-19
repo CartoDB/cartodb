@@ -5,6 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     create_table :oauth_apps_users do
+      Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
       foreign_key :oauth_app_id, :oauth_apps, type: :uuid, null: false, index: true, on_delete: :cascade
       foreign_key :user_id, :users, type: :uuid, null: false, index: true, on_delete: :cascade
       foreign_key :api_key_id, :api_keys, type: :uuid, null: false, index: true, on_delete: :restrict

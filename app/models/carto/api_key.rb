@@ -243,7 +243,6 @@ module Carto
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def invalidate_cache
-      user = ::User[user_id]
       return unless user
       user.invalidate_varnish_cache
     end

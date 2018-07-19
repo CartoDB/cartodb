@@ -54,7 +54,7 @@ module Carto
     end
 
     def build_organization_from_hash(exported_organization)
-      organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES))
+      organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES - [:id]))
 
       organization.assets = exported_organization[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
       organization.groups = exported_organization[:groups].map { |group| build_group_from_hash(group.symbolize_keys) }
@@ -214,9 +214,9 @@ module Carto
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
 
       # Groups and notifications must be saved after users
-      groups = organization.groups.dup
+      groups = organization.groups.map(&:clone)
       organization.groups.clear
-      notifications = organization.notifications.dup
+      notifications = organization.notifications.map(&:clone)
       organization.notifications.clear
 
       save_imported_organization(organization)

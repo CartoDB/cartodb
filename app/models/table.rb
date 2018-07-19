@@ -208,7 +208,7 @@ class Table
     if table_name =~ /\./
       table_name, schema = table_name.split('.').reverse
       # remove quotes from schema
-      schema = schema.delete('"', '')
+      schema = schema.delete('"')
       [table_name, (schema if schema != 'public')]
     else
       [table_name, nil]

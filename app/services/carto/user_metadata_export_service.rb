@@ -110,7 +110,7 @@ module Carto
     end
 
     def build_user_from_hash(exported_user)
-      user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
+      user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES - [:id]))
 
       user.feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
                                                              .compact

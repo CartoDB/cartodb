@@ -2150,6 +2150,10 @@ describe Table do
       it 'returns the table name when there is no schema' do
         Table.table_and_schema("sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
       end
+
+      it 'returns schema without quotes' do
+        Table.table_and_schema("\"user-hyphen\".table").should == ["table", "user-hyphen"]
+      end
     end
 
     describe 'self.get_valid_column_name' do

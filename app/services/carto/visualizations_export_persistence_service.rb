@@ -37,7 +37,7 @@ module Carto
 
         sync = visualization.synchronization
         if sync
-          sync.id = random_uuid
+          sync.id = random_uuid unless sync.id && full_restore
           sync.user = user
           sync.log.user_id = user.id if sync.log
         end
@@ -63,7 +63,6 @@ module Carto
           visualization.updated_at = DateTime.now
           visualization.locked = false
         end
-
 
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
@@ -162,7 +161,9 @@ module Carto
             layers.push(layer)
           end
         end
-        visualization.map.layers = layers
+        visualization.map.layers.clear
+        visualization.map.layers_maps.clear
+        layers.each { |l| visualization.map.layers << l }
       end
     end
   end

@@ -11,12 +11,12 @@ describe Admin::OrganizationUsersController do
     host! "#{@organization.name}.localhost.lan"
   end
 
-  let(:username) { 'user-1' }
+  let(:username) { unique_name('user') }
 
   let(:user_params) do
     {
       username: username,
-      email: 'user-1@org.com',
+      email: "#{username}@org.com",
       password: 'user-1',
       password_confirmation: 'user-1',
       quota_in_bytes: 1000,
@@ -307,8 +307,7 @@ describe Admin::OrganizationUsersController do
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
 
-        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
-        last_response.body.should include input
+        last_response.body.should include 123456789.to_s
       end
 
       it 'quota defaults to remaining quota if the assigned default goes overquota' do
@@ -318,8 +317,7 @@ describe Admin::OrganizationUsersController do
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
 
-        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
-        last_response.body.should include input
+        last_response.body.should include expected_quota.to_s
       end
     end
 

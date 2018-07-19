@@ -46,7 +46,7 @@ FactoryGirl.define do
         "alternative_names": {},
         "width": 226,
         "maxHeight": 180
-      }.to_json
+      }
 
       infowindow infowindow_light
     end
@@ -58,7 +58,7 @@ FactoryGirl.define do
         "template": "",
         "alternative_names": {},
         "maxHeight": 180
-      }.to_json
+      }
 
       tooltip tooltip_light
     end

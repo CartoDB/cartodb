@@ -1243,6 +1243,7 @@ describe User do
 
     CartoDB::Varnish.any_instance.expects(:purge)
                     .with("#{doomed_user.database_name}.*")
+                    .at_least(1)
                     .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
                     .with(".*#{uuid}:vizjson")

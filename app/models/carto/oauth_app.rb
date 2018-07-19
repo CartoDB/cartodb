@@ -3,6 +3,7 @@
 module Carto
   class OauthApp < ActiveRecord::Base
     belongs_to :user, inverse_of: :oauth_apps
+    has_many :oauth_app_users, inverse_of: :oauth_app, dependent: :destroy
 
     validates :user, presence: true
     validates :name, presence: true

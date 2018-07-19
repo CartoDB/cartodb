@@ -80,7 +80,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :api_keys, inverse_of: :user
 
-  has_many :oauth_apps, inverse_of: :user
+  has_many :oauth_apps, inverse_of: :user, dependent: :destroy
+  has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
 
   delegate [
       :database_username, :database_password, :in_database,

@@ -249,8 +249,13 @@ class Carto::VisualizationQueryBuilder
 
     if @shared_with_user_id
       user = Carto::User.where(id: @shared_with_user_id).first
-      query = query.joins(:shared_entities)
-                   .where(:shared_entities => { recipient_id: recipient_ids(user) })
+      shared_vizs = Carto::SharedEntity.where(recipient_id: recipient_ids(user)).select(:entity_id).uniq
+      query = query.from([Arel::Nodes::SqlLiteral.new("
+        visualizations
+        JOIN
+          (#{shared_vizs.to_sql}) shared_ent
+        ON
+          visualizations.id = shared_ent.entity_id")])
     end
 
     if @owned_by_or_shared_with_user_id

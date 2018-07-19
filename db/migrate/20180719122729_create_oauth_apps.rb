@@ -6,7 +6,7 @@ migration(
   Proc.new do
     create_table :oauth_apps do
       Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
-      foreign_key :user_id, :users, type: :uuid, null: false, index: true
+      foreign_key :user_id, :users, type: :uuid, null: false, index: true, on_delete: :restrict
       String      :name, null: false
       DateTime    :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
       DateTime    :updated_at, null: false, default: Sequel::CURRENT_TIMESTAMP

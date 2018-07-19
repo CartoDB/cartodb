@@ -16,6 +16,7 @@ module Carto
     private
 
     def code_or_api_key_present
+      # You can have either code + redirect_url if the token is not exchanged yet, or else, an api_key
       errors.add(:code, 'must be present if redirect_url is') if code.blank? && redirect_url.present?
       errors.add(:redirect_url, 'must be present if code is') if code.present? && redirect_url.blank?
       errors.add(:api_key, 'must be present if code is missing') if code.blank? && api_key.blank?

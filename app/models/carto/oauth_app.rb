@@ -29,6 +29,7 @@ module Carto
       uri = URI.parse(url)
       return errors.add(:callback_urls, "#{url} must be absolute") unless uri.absolute?
       return errors.add(:callback_urls, "#{url} must be https") unless uri.scheme == 'https'
+      return errors.add(:callback_urls, "#{url} must not contain a fragment") unless uri.fragment.nil?
     rescue
       errors.add(:callback_urls, "#{url} must be valid")
     end

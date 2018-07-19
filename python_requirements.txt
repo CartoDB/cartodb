@@ -3,6 +3,6 @@ argparse==1.2.1
 brewery==0.6
 redis==2.4.9
 python-varnish==0.1.2
-gdal==1.10.0
+gdal==2.2.2
 csvkit==0.9.0
 openpyxl==2.1.3

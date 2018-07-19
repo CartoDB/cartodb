@@ -57,7 +57,7 @@ describe Carto::Api::UsersController do
 
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
         expect(response.body[:organization_notifications].count).to eq(1)
-        expect(response.body[:organization_notifications].first['icon']).to eq(
+        expect(response.body[:organization_notifications].first[:icon]).to eq(
           carto_user.received_notifications.unread.first.icon
         )
         expect(response.body[:can_change_email]).to eq(user.can_change_email?)
@@ -65,7 +65,7 @@ describe Carto::Api::UsersController do
         expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
         expect(response.body[:can_change_password]).to eq(true)
         expect(response.body[:plan_name]).to eq('ORGANIZATION USER')
-        expect(response.body[:services]).to eq(user.get_oauth_services)
+        expect(response.body[:services]).to eq(user.get_oauth_services.map(&:symbolize_keys))
         expect(response.body[:google_sign_in]).to eq(user.google_sign_in)
       end
     end
@@ -338,6 +338,7 @@ describe Carto::Api::UsersController do
   describe 'delete_me' do
     before(:each) do
       @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
+      User.any_instance.stubs(:delete_in_central)
     end
 
     let(:url_options) do

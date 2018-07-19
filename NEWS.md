@@ -8,6 +8,9 @@ cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
+New database configuration is required. Please add `prepared_statements: false` to `database.yml`
+(check `database.yml.sample` for an example)
+
 This release introduces a new API Key system. In order to migrate existing users, run the following command:
 `bundle exec rake carto:api_key:create_default`
 
@@ -18,6 +21,9 @@ This release introduces a new API Key system. In order to migrate existing users
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancements
+* Use setView instead of flyTo to improve zoom transitions (https://github.com/CartoDB/carto.js/pull/2178)
+* Fix torque layers when filter analysis is added (https://github.com/CartoDB/support/issues/1038)
+* Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)
 * Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
 * Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
 * Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
@@ -73,9 +79,11 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update extension to 0.22.2 to fix hyphenates usernames (cartodb-postgresql#331)
 * Update extension to 0.23.0 to add a new helper function `_CDB_Table_Exists(table_name_with_optional_schema TEXT)` (cartodb-postgresql#332)
 * Log Resque errors (#14116)
+* Avoid creating double indices on sync (#14157)
 * Do not crash when checking nil password (#14099)
 * Do not crash when saving WMS layers with long metadata (Suppoer#1643)
 * Remove Auth API FF, enable it by default (#13857)
+* Fix table sharing from users with hyphens in their name (quoting) (support#1635)
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
@@ -105,6 +113,9 @@ This release changes the way Google ouath login works. If you are using it, you 
 to the oauth.google_plus section of the configuration file.
 
 ### NOTICE
+This releases updates the database connections, and `database.yml` needs to be updated to reflect it. The adapter
+should be replaced from `postgres` to `postgresql`. See `database.yml.sample` for an example.
+
 This upgrade changes the configuration format of basemaps. You must replace all `url` keys for `urlTemplate`. It is
 recommended that you replace the `basemaps` section completely, since this release also adds supports for high
 resolution maps, which have added `urlTemplate2x` keys to the configuration.
@@ -115,6 +126,7 @@ You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to sy
 This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
 
 ### Features
+* Export GPKG files (CartoDB/support#1220)
 * Show migrated public pages (/me, /maps, /datasets) for all builder users (#14039)
 * Allow users to edit all their information in Profile (#13793)
 * Ask for password confirmation when updating organization or user settings (#13795)
@@ -291,6 +303,7 @@ ion for time-series (#12670)
 * Fix copy on Twitter connector deprecation
 * Properly destroys and sets cartodb_base_url cookie (https://github.com/CartoDB/cartodb/pull/14064)
 * Fix apply button loading state for queries that alter the data (https://github.com/CartoDB/cartodb/pull/13979)
+* Fix synchronization IDs in migrations (CartoDB/support/issues/1603)
 * Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)
 * Show "Select points in polygons" analysis only for polygons (https://github.com/CartoDB/cartodb/pull/13982)
 * Allow only numeric values in latitude/longitude select in georeference analysis (https://github.com/CartoDB/cartodb/pull/13974)
@@ -722,10 +735,12 @@ ion for time-series (#12670)
 * Add rake to remove duplicate legends in layer
 * Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052)
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
+* Do not allow empty password in LDAP logins
 * Disable syncs for locked users (https://github.com/CartoDB/cartodb/issues/13832)
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Fix test error output for builder (#14158)
 * Editor assets are frozen now (#14090)
 * Added specs for the migrated dashboard (#14037)
 * Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)
@@ -748,6 +763,7 @@ ion for time-series (#12670)
 * Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
 * Merge Deep-insights project in Cartodb (#13284)
 * Affected specs tasks now take into account multiple specs folders [PR #13295](https://github.com/CartoDB/cartodb/pull/13295)
+* Updated to Rails 4.2.10 (#11735)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:

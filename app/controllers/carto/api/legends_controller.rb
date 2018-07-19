@@ -84,7 +84,7 @@ module Carto
       end
 
       def legend_params
-        params.slice(:title, :pre_html, :post_html, :type, :definition, :conf)
+        params.slice(:title, :pre_html, :post_html, :type, :definition, :conf).permit!
       end
     end
   end

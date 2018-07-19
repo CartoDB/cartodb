@@ -42,12 +42,14 @@ CartoDB::Application.configure do
   config.assets.digest = false
   config.assets.debug = false
 
+  config.eager_load = false
+
   # config.assets.prefix = 'assets-test'
   # config.logger = Logger.new(STDOUT)
   # config.logger.level = Logger::WARN
 
   # Configure static asset server for tests with Cache-Control for performance
-  config.serve_static_assets = true
+  config.serve_static_files = true
   config.static_cache_control = "public, max-age=3600"
 
   # Allow pass debug_assets=true as a query parameter to load pages with unpackaged assets

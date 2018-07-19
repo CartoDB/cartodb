@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.53",
+  "version": "4.12.59",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.0.15",
-      "from": "@carto/carto.js@>=4.0.6 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.0.15.tgz"
+      "version": "4.1.1",
+      "from": "@carto/carto.js@>=4.1.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.1.1.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -499,9 +499,9 @@
       "resolved": "https://registry.npmjs.org/browserify-cipher/-/browserify-cipher-1.0.1.tgz"
     },
     "browserify-des": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "from": "browserify-des@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/browserify-des/-/browserify-des-1.0.1.tgz"
+      "resolved": "https://registry.npmjs.org/browserify-des/-/browserify-des-1.0.2.tgz"
     },
     "browserify-rsa": {
       "version": "4.0.1",
@@ -1142,9 +1142,9 @@
       }
     },
     "eslint-scope": {
-      "version": "3.7.1",
+      "version": "3.7.3",
       "from": "eslint-scope@>=3.7.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/eslint-scope/-/eslint-scope-3.7.1.tgz",
+      "resolved": "https://registry.npmjs.org/eslint-scope/-/eslint-scope-3.7.3.tgz",
       "dependencies": {
         "estraverse": {
           "version": "4.2.0",
@@ -1410,9 +1410,9 @@
       "resolved": "https://registry.npmjs.org/get-assigned-identifiers/-/get-assigned-identifiers-1.2.0.tgz"
     },
     "get-caller-file": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "get-caller-file@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/get-caller-file/-/get-caller-file-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/get-caller-file/-/get-caller-file-1.0.3.tgz"
     },
     "get-stream": {
       "version": "3.0.0",
@@ -1504,9 +1504,9 @@
       "resolved": "https://registry.npmjs.org/hash-base/-/hash-base-3.0.4.tgz"
     },
     "hash.js": {
-      "version": "1.1.4",
+      "version": "1.1.5",
       "from": "hash.js@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/hash.js/-/hash.js-1.1.4.tgz"
+      "resolved": "https://registry.npmjs.org/hash.js/-/hash.js-1.1.5.tgz"
     },
     "he": {
       "version": "1.1.1",
@@ -1519,9 +1519,9 @@
       "resolved": "https://registry.npmjs.org/hmac-drbg/-/hmac-drbg-1.0.1.tgz"
     },
     "html-minifier": {
-      "version": "3.5.18",
+      "version": "3.5.19",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.18.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.19.tgz"
     },
     "html-webpack-plugin": {
       "version": "3.2.0",
@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.0.12",
-      "from": "cartodb/carto.js#v4.0.12",
-      "resolved": "git://github.com/cartodb/carto.js.git#655211487ceeb22aced27e28135bb9c723b79386"
+      "version": "4.1.1",
+      "from": "cartodb/carto.js#v4.1.1",
+      "resolved": "git://github.com/cartodb/carto.js.git#655a301ae6d1422273cfcf7c391d52bcb6c49f55"
     },
     "interpret": {
       "version": "1.1.0",
@@ -1823,9 +1823,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.4.5",
+      "version": "2.4.6",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.5.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.6.tgz"
     },
     "json-parse-better-errors": {
       "version": "1.0.2",
@@ -2760,9 +2760,9 @@
       "resolved": "https://registry.npmjs.org/run-queue/-/run-queue-1.0.3.tgz"
     },
     "rxjs": {
-      "version": "6.2.1",
+      "version": "6.2.2",
       "from": "rxjs@>=6.1.0 <7.0.0",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-6.2.1.tgz"
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-6.2.2.tgz"
     },
     "safe-buffer": {
       "version": "5.1.2",
@@ -3238,9 +3238,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.4.4",
+      "version": "3.4.5",
       "from": "uglify-js@>=3.4.0 <3.5.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.4.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.5.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",
@@ -3392,9 +3392,9 @@
       "resolved": "https://registry.npmjs.org/url-parse/-/url-parse-1.4.1.tgz"
     },
     "use": {
-      "version": "3.1.0",
+      "version": "3.1.1",
       "from": "use@>=3.1.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/use/-/use-3.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/use/-/use-3.1.1.tgz"
     },
     "util": {
       "version": "0.10.4",

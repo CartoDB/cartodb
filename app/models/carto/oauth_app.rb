@@ -8,7 +8,7 @@ module Carto
     validates :name, presence: true
     validates :client_id, presence: true
     validates :client_secret, presence: true
-    validates :callback_urls, presence: true
+    validates :redirect_urls, presence: true
 
     before_validation :generate_keys
 

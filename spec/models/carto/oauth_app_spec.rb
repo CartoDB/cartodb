@@ -64,6 +64,11 @@ module Carto
           expect(app.errors[:redirect_urls]).to(be_empty)
         end
       end
+
+      it 'accepts if valid' do
+        app = OauthApp.new(user: @user, name: 'name', redirect_urls: ['https://re.dir'])
+        expect(app).to(be_valid)
+      end
     end
 
     it 'fills client id and secret automatically' do

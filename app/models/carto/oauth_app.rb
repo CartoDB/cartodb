@@ -30,7 +30,7 @@ module Carto
       return errors.add(:redirect_urls, "#{url} must be absolute") unless uri.absolute?
       return errors.add(:redirect_urls, "#{url} must be https") unless uri.scheme == 'https'
       return errors.add(:redirect_urls, "#{url} must not contain a fragment") unless uri.fragment.nil?
-    rescue
+    rescue URI::InvalidURIError
       errors.add(:redirect_urls, "#{url} must be valid")
     end
   end

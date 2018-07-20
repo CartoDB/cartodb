@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'fileutils'
 require_relative '../../lib/importer/unp'
 require_relative '../../../../spec/rspec_configuration.rb'
@@ -22,6 +23,39 @@ describe Unp do
 
       unp.run(zipfile)
       Dir.entries(unp.temporary_directory).should include('bogus1.csv', 'bogus2.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a GPKG file' do
+      zipfile   = zipfile_factory(filename: 'geopackage.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('geopackage.gpkg')
+      unp.source_files.length.should eq 2
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a FGDB file' do
+      zipfile   = zipfile_factory(filename: 'filegeodatabase.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
+      unp.source_files.length.should eq 2
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a FGDB file' do
+      zipfile   = zipfile_factory(filename: 'filegeodatabase.gdb.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
+      unp.source_files.length.should eq 2
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
@@ -72,6 +106,7 @@ describe Unp do
 
       unp.compressed?('bogus.gz').should eq true
       unp.compressed?('bogus.csv').should eq false
+      unp.compressed?('bogus.zip').should eq true
     end
   end
 
@@ -160,6 +195,9 @@ describe Unp do
 
       unp.supported?('foo.doc').should eq false
       unp.supported?('foo.xls').should eq true
+      unp.supported?('foo.gpkg').should eq true
+      unp.supported?('foo.gdb').should eq true
+      unp.supported?('foo.fgdb').should eq true
     end
   end
 

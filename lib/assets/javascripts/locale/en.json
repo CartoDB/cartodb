@@ -1239,7 +1239,7 @@
             "import-url": "Import your data from a %{brand} URL",
             "file-selected": "File selected",
             "paste-url": "Paste a URL %{fileEnabled} ",
-            "select-a-file": "or select a file such as CSV, XLS, ZIP, KML, GPX,",
+            "select-a-file": "or select a file such as CSV, XLS, ZIP, KML, GPX, GPKG, FGDB,",
             "see-all-formats": "see all formats",
             "sync-enabled": "Keep it synchronized with the source",
             "sync-disabled": "Sync options are not available",

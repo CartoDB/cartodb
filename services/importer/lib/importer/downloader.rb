@@ -375,10 +375,6 @@ module CartoDB
           extensions: ['.gpx']
         },
         {
-          content_types: ['application/zip'],
-          extensions: ['.zip', '.carto']
-        },
-        {
           content_types: ['application/x-gzip'],
           extensions: ['.tgz', '.gz']
         },

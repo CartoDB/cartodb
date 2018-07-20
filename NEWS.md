@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.23.0`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -18,8 +18,10 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
+* Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancements
+* Fix broken data tab when analyses or custom SQL are present (https://github.com/CartoDB/cartodb/issues/14169)
 * Use setView instead of flyTo to improve zoom transitions (https://github.com/CartoDB/carto.js/pull/2178)
 * Fix torque layers when filter analysis is added (https://github.com/CartoDB/support/issues/1038)
 * Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)

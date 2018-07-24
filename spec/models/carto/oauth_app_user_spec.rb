@@ -33,29 +33,13 @@ module Carto
         expect(app_user.errors[:api_key]).to(include("must be present if code is missing"))
       end
 
-      it 'requires code and redirection_url to be present at the same time' do
-        app_user = OauthAppUser.new(code: 'code')
-        expect(app_user).to_not(be_valid)
-        expect(app_user.errors[:redirect_url]).to(include("must be present if code is"))
-
-        app_user = OauthAppUser.new(redirect_url: 'something')
-        expect(app_user).to_not(be_valid)
-        expect(app_user.errors[:code]).to(include("must be present if redirect_url is"))
-      end
-
-      it 'must match application redirection URL' do
-        app_user = OauthAppUser.new(redirect_url: 'something', oauth_app: @app)
-        expect(app_user).to_not(be_valid)
-        expect(app_user.errors[:redirect_url]).to(include("is not registered"))
-      end
-
       it 'validates with api_key' do
         app_user = OauthAppUser.new(user: @user, oauth_app: @app, api_key: @api_key)
         expect(app_user).to(be_valid)
       end
 
       it 'validates with code' do
-        app_user = OauthAppUser.new(user: @user, oauth_app: @app, code: 'wadus', redirect_url: @app.redirect_urls.first)
+        app_user = OauthAppUser.new(user: @user, oauth_app: @app, code: 'wadus')
         expect(app_user).to(be_valid)
       end
     end

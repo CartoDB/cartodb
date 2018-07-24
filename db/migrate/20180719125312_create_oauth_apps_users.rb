@@ -11,7 +11,6 @@ migration(
       foreign_key :api_key_id, :api_keys, type: :uuid, null: false, index: true, on_delete: :restrict
       column      :scopes, 'text[]', null: false, default: "'{}'".lit
       String      :code, null: true
-      String      :redirect_url, null: true
       DateTime    :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
       DateTime    :updated_at, null: false, default: Sequel::CURRENT_TIMESTAMP
     end

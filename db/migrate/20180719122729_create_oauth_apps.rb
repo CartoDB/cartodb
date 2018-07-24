@@ -13,7 +13,7 @@ migration(
       # Oauth parameters
       String      :client_id, unique: true, null: false
       String      :client_secret, null: false
-      column      :redirect_urls, 'text[]', null: false
+      String      :redirect_uri, null: false
     end
   end,
   Proc.new do

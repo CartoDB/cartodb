@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+require_dependency 'carto/oauth_provider/errors'
+
 module Carto
   class OauthProviderController < ApplicationController
     ssl_required

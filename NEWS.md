@@ -20,6 +20,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
 * Oauth provider (WIP)
   * Data model (#14163)
+  * Consent screen backend (#14164)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancements

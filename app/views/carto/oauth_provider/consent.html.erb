@@ -1,0 +1,17 @@
+Authorize?
+
+<%= form_tag(oauth2_authorize_url, method: :post) do %>
+<%= hidden_field_tag 'response_type', @response_type %>
+<%= hidden_field_tag 'client_id', @oauth_app.client_id %>
+<%= hidden_field_tag 'redirect_uri', @redirect_uri %>
+<%= hidden_field_tag 'scope', @scopes.join(' ') %>
+<%= hidden_field_tag 'state', @state %>
+<%= submit_tag 'Cancel' %>
+<%= submit_tag 'Accept', name: 'accept' %>
+<% end %>
+
+      #   response_type code
+      #   client_id findApp
+      #   redirect_uri (optional)
+      #   scope (optional)
+      #   state

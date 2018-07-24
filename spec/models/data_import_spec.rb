@@ -2,6 +2,7 @@
 require_relative '../spec_helper'
 require_relative '../helpers/file_server_helper'
 require_relative 'data_import_shared_examples'
+require_relative '../../lib/carto/ghost_tables_manager'
 
 describe DataImport do
   let(:data_import_class) { ::DataImport }

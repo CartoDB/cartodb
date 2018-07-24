@@ -15,9 +15,7 @@ module Carto
 
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
-    def consent
-
-    end
+    def consent; end
 
     def authorize
       # TODO
@@ -29,16 +27,16 @@ module Carto
     def token
       # TODO
       # Input
-      #grant_type == authorization_code
-      #code =
-      #redirect_uri
-      #client_id
+      # grant_type == authorization_code
+      # code =
+      # redirect_uri
+      # client_id
 
       # Out
-      #{
-      #  "access_token":"87as6das87tdy",
-      #  "token_type":"api_key",
-      #}
+      # {
+      #   "access_token":"87as6das87tdy",
+      #   "token_type":"api_key",
+      # }
     end
 
     private
@@ -77,7 +75,7 @@ module Carto
       unless params[:grant_type] == 'authorization_code'
         raise OauthProvider::Errors::UnsupportedGrantType.new(
           'Only grant_type=authorization_code is currently supported'
-          )
+        )
       end
     end
 

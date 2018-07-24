@@ -71,7 +71,6 @@ describe Carto::OauthProviderController do
 
       expect(response.status).to(eq(302))
       expect(response.location).to(start_with(@oauth_app.redirect_uri))
-      qs = Addressable::URI.parse(response.location).query_values
       expect(Addressable::URI.parse(response.location).query_values['error']).to(eq('invalid_scope'))
     end
 

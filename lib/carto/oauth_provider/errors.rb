@@ -1,7 +1,7 @@
 module Carto
   module OauthProvider
     module Errors
-      class BaseError < Exception
+      class BaseError < RuntimeError
         def initialize(code, description = nil, uri = nil)
           @code = code
           @description = description

@@ -81,6 +81,9 @@ describe 'UserMigration' do
       migrate_metadata ? @user.destroy : drop_user_database(@user)
 
       Cartodb.with_config(agg_ds_config) do
+        # Do not depend on dataservices_client to be installed
+        CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
           database_host: @user_attributes['database_host'],
@@ -729,6 +732,9 @@ describe 'UserMigration' do
         migrate_metadata ? @organization.destroy_cascade : drop_user_database(@organization.owner)
 
         Cartodb.with_config(agg_ds_config) do
+          # Do not depend on dataservices_client to be installed
+          CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+
           import = Carto::UserMigrationImport.create(
             exported_file: export.exported_file,
             database_host: owner_attributes['database_host'],

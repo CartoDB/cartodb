@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.23.0`. Run the following to have it available:
+This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -563,6 +563,7 @@ ion for time-series (#12670)
 * Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)
 * Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
+* Fix problem with visualization search when a visualization is shared with a user from multiple entities (Support #1451)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)
 * Fix random timeout in specs (#12625)

@@ -461,11 +461,17 @@ module CartoDB
           # If there's no config we assume there's no need to install the
           # geocoder client as it is an independent API
           return if geocoder_api_config.blank?
-          install_geocoder_api_extension(geocoder_api_config)
-          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
-              SET search_path TO #{build_search_path}")
-          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_public_username}\"
-              SET search_path TO #{build_search_path}") if @user.organization_user?
+          install_geocoder_api_extension
+          @user.in_database(as: :superuser) do |db|
+            db.transaction do
+              db.run(build_geocoder_server_config_sql(geocoder_api_config))
+              db.run(build_entity_config_sql)
+              db.run("ALTER USER \"#{@user.database_username}\" SET search_path TO #{build_search_path}")
+              if @user.organization_user?
+                db.run("ALTER USER \"#{@user.database_public_username}\" SET search_path TO #{build_search_path}")
+              end
+            end
+          end
           return true
         rescue => e
           CartoDB.notify_error(
@@ -475,15 +481,12 @@ module CartoDB
           return false
       end
 
-      def install_geocoder_api_extension(geocoder_api_config)
+      def install_geocoder_api_extension
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
             db.run("CREATE EXTENSION IF NOT EXISTS cdb_dataservices_client VERSION '#{CDB_DATASERVICES_CLIENT_VERSION}'")
             db.run("ALTER EXTENSION cdb_dataservices_client UPDATE TO '#{CDB_DATASERVICES_CLIENT_VERSION}'")
-            geocoder_server_sql = build_geocoder_server_config_sql(geocoder_api_config)
-            db.run(geocoder_server_sql)
-            db.run(build_entity_config_sql)
           end
         end
       end
@@ -537,7 +540,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.23.0'
+          cdb_extension_target_version = '0.23.2'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|

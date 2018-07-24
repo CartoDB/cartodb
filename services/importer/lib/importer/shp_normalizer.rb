@@ -96,7 +96,7 @@ module CartoDB
       end
 
       def filter_supported_encodings(encoding)
-        encoding.nil? || !SUPPORTED_ENCODINGS_DOWNCASED.include?(encoding.downcase) ? nil : encoding
+        encoding.nil? || !SUPPORTED_ENCODINGS_DOWNCASED.include?(encoding.downcase.strip) ? nil : encoding
       end
 
       def tab_encoding

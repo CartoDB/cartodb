@@ -133,6 +133,7 @@ describe Carto::VisualizationQueryBuilder do
       expect(vqb.count).to eq 1
       expect(vqb.all.map(&:id)).to eq [shared_visualization.id]
 
+      org_shared_entity.destroy
       @group.destroy
     end
 

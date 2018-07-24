@@ -20,12 +20,14 @@ module Carto
     end
 
     def authorize
+      # TODO
       raise OauthProvider::Errors::AccessDenied.new unless params[:accept]
 
       redirect_to_oauth_app(code: 'wadus', state: @state)
     end
 
     def token
+      # TODO
       # Input
       #grant_type == authorization_code
       #code =

@@ -89,7 +89,7 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
     delete '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#destroy',          as: :organization_destroy
     get    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update, via: [:put, :patch]
     post '(/user/:user_domain)(/u/:user_domain)/organization/regenerate_api_keys'       => 'organizations#regenerate_all_api_keys', as: :regenerate_organization_users_api_key
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/groups(/*other)' => 'organizations#groups',          as: :organization_groups

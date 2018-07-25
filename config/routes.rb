@@ -95,7 +95,7 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/organization/groups(/*other)' => 'organizations#groups',          as: :organization_groups
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth',        as: :organization_auth
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update, via: [:put, :patch]
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#notifications',          as: :organization_notifications_admin
     post   '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#new_notification',          as: :new_organization_notification_admin

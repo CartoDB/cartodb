@@ -89,13 +89,13 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
     delete '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#destroy',          as: :organization_destroy
     get    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update, via: [:put, :patch]
     post '(/user/:user_domain)(/u/:user_domain)/organization/regenerate_api_keys'       => 'organizations#regenerate_all_api_keys', as: :regenerate_organization_users_api_key
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/groups(/*other)' => 'organizations#groups',          as: :organization_groups
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth',        as: :organization_auth
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update, via: [:put, :patch]
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#notifications',          as: :organization_notifications_admin
     post   '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#new_notification',          as: :new_organization_notification_admin
@@ -103,7 +103,7 @@ CartoDB::Application.routes.draw do
 
     # Organization users management
     get '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
-    put '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    match '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }, via: [:put, :patch]
     get '(/user/:user_domain)(/u/:user_domain)/organization/users'                 => 'organizations#show',            as: :organization_users
     post '(/user/:user_domain)(/u/:user_domain)/organization/users'           => 'organization_users#create',  as: :create_organization_user
     delete '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }

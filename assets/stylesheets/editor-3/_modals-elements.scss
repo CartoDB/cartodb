@@ -93,10 +93,14 @@
   font-weight: $sFontWeight-semibold;
 }
 
-.ModalBlockList-item.is-disabled .Analysis-animation {
-  opacity: 0.6;
-  background-color: transparent;
+.ModalBlockList-item.is-disabled {
+  border: none;
+  opacity: 0.24;
   pointer-events: none;
+}
+
+.ModalBlockList-item.is-disabled .Analysis-animation {
+  background-color: transparent;
   filter: grayscale(100);
 }
 

@@ -43,7 +43,7 @@
   <%= javascript_include_tag 'common', 'common_vendor', 'builder_embed' %>
 
   <% if Cartodb.get_config(:graphite_public, 'host') %>
-    <%= javascript_include_tag "statsc.js" %>
+    <%= editor_javascript_include_tag "statsc.js" %>
   <% end %>
   <script>
     (function () {

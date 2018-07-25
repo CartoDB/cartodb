@@ -13,6 +13,7 @@ $cRoyal:      rgba(#7882B9, 1);
 $cRoyalDark:  rgba(#9013FE, 1);
 $cMagenta:    rgba(#BD10E0, 1);
 $cLingon:     rgba(#AC638B, 1);
+$cSmaltBlue:  rgba(#577590, 1);
 
 //  Filled circles with an icon in the middle, typically used together with a CDB-IconFont.
 //
@@ -42,6 +43,7 @@ $cLingon:     rgba(#AC638B, 1);
 .IllustrationIcon--royalDark { background-color: $cRoyalDark; }
 .IllustrationIcon--magenta { background-color: $cMagenta; }
 .IllustrationIcon--lingon { background-color: $cLingon; }
+.IllustrationIcon--smaltBlue { background-color: $cSmaltBlue; }
 
 .IllustrationIcon-text {
   font-size: $sFontSize-smallUpperCase;

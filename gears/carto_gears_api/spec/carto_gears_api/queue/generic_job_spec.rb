@@ -8,7 +8,7 @@ describe CartoGearsApi::Queue::GenericJob do
       from = 'support@carto.com'
       to = 'backend@carto.com'
       subject = 'test email'
-      CartoGearsApi::Mailers::TestMail.any_instance.should_receive(:test_mail).with(from, to, subject)
+      CartoGearsApi::Mailers::TestMail.should_receive(:test_mail).with(from, to, subject)
       CartoGearsApi::Queue::GenericJob.perform('CartoGearsApi::Mailers::TestMail', :test_mail, from, to, subject)
     end
   end

@@ -10,7 +10,7 @@ namespace :cartodb do
     overlays = vis_ids.map { |i| Carto::Overlay.where(visualization_id: i[0], type: i[1]) }
 
     overlays.each do |o|
-      o.sort! { |l, r| r.order <=> l.order }
+      o.to_a.sort! { |l, r| r.order <=> l.order }
       o.slice(1..o.count).each(&:destroy)
     end
   end

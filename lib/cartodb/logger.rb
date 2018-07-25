@@ -1,3 +1,5 @@
+require 'resque'
+
 module CartoDB
   class Logger
     def self.log(level, exception: nil, message: nil, user: nil, **additional_data)
@@ -40,6 +42,19 @@ module CartoDB
 
     def self.debug(exception: nil, message: nil, user: nil, **additional_data)
       log('debug', exception: exception, message: message, user: user, **additional_data)
+    end
+
+    class RollbarLogger < Resque::Failure::Base
+      def save
+        Logger.error(
+          message: 'Uncaught Resque failure',
+          exception: exception,
+          host: worker.hostname,
+          pid: worker.pid,
+          job: payload['class'],
+          args: payload['args']
+        )
+      end
     end
 
     # Private

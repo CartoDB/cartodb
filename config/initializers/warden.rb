@@ -127,7 +127,7 @@ Warden::Strategies.add(:ldap) do
   end
 
   def authenticate!
-    (fail! and return) unless (params[:email] && params[:password])
+    (fail! and return) if (params[:email].blank? || params[:password].blank?)
 
     user = nil
     begin
@@ -328,11 +328,6 @@ module Carto::Api::AuthApiAuthentication
     api_key = user.api_keys.where(token: token)
     api_key = require_master_key ? api_key.master : api_key
 
-    # TODO: Remove this block when all api keys are in sync 'auth_api'
-    unless api_key.exists?
-      return success!(user) if user.api_key == token
-    end
-
     return fail! unless api_key.exists?
     success!(user)
   rescue
@@ -346,10 +341,7 @@ module Carto::Api::AuthApiAuthentication
     @request_api_key = user.api_keys.where(token: token).first if user && token
 
     # If user is logged in though other means, assume a master key
-    # TODO: switch to real master api key when all api keys are in sync (FF 'auth_api')
-    if !@request_api_key && current_user
-      @request_api_key = current_user.api_keys.create_in_memory_master
-    end
+    @request_api_key = current_user.api_keys.master.first if !@request_api_key && current_user
 
     @request_api_key
   end

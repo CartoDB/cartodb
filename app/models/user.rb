@@ -37,6 +37,7 @@ class User < Sequel::Model
   include Carto::BillingCycle
   include Carto::EmailCleaner
   extend Carto::UserAuthenticator
+  include SequelFormCompatibility
 
   OAUTH_SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
@@ -351,7 +352,7 @@ class User < Sequel::Model
     save_metadata
     self.load_avatar
 
-    db.after_commit { create_api_keys } if has_feature_flag?('auth_api')
+    db.after_commit { create_api_keys }
 
     db_service.monitor_user_notification
     sleep 1
@@ -473,7 +474,10 @@ class User < Sequel::Model
       ActiveRecord::Base.transaction do
         delete_external_data_imports
         delete_external_sources
-        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each do |v|
+          v.user.viewer = false
+          v.destroy!
+        end
         Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 
@@ -1389,7 +1393,12 @@ class User < Sequel::Model
       user_data_size_function =
         self.db_service.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()"
                                                           : "CDB_UserDataSize('#{self.database_schema}')"
-      in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
+      in_database(as: :superuser) do |user_database|
+        user_database.transaction do
+          user_database.fetch(%{SET LOCAL lock_timeout = '1s'})
+          user_database.fetch(%{SELECT cartodb.#{user_data_size_function}}).first[:cdb_userdatasize]
+        end
+      end
     rescue => e
       attempts += 1
       begin

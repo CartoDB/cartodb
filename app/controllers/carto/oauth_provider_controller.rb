@@ -54,6 +54,8 @@ module Carto
     end
 
     def rescue_oauth_errors(exception)
+      CartoDB::Logger.debug(message: 'Oauth provier error', exception)
+
       if @redirect_on_error && @oauth_app
         redirect_to_oauth_app(exception.parameters)
       elsif @redirect_on_error

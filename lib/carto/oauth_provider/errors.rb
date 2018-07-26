@@ -24,8 +24,8 @@ module Carto
       end
 
       class UnsupportedResponseType < BaseError
-        def initialize(description = nil, uri = nil)
-          super('unsupported_response_type', description, uri)
+        def initialize(supported)
+          super('unsupported_response_type', "Only the following response types are supported: #{supported.join(', ')}")
         end
       end
 
@@ -48,8 +48,8 @@ module Carto
       end
 
       class UnsupportedGrantType < BaseError
-        def initialize(description = nil, uri = nil)
-          super('unsupported_grant_type', description, uri)
+        def initialize(supported)
+          super('unsupported_grant_type', "Only the following grant types are supported: #{supported.join(', ')}")
         end
       end
 

@@ -4,6 +4,9 @@ require_dependency 'carto/oauth_provider/errors'
 
 module Carto
   class OauthProviderController < ApplicationController
+    SUPPORTED_GRANT_TYPES = ['authorization_code'].freeze
+    SUPPORTED_RESPONSE_TYPES = ['code'].freeze
+
     ssl_required
 
     layout 'frontend'
@@ -70,16 +73,14 @@ module Carto
 
     def validate_response_type
       @response_type = params[:response_type]
-      unless @response_type == 'code'
-        raise OauthProvider::Errors::UnsupportedResponseType.new('Only response_type=code is currently supported')
+      unless SUPPORTED_RESPONSE_TYPES.include?(@response_type)
+        raise OauthProvider::Errors::UnsupportedResponseType.new(SUPPORTED_RESPONSE_TYPES)
       end
     end
 
     def validate_grant_type
-      unless params[:grant_type] == 'authorization_code'
-        raise OauthProvider::Errors::UnsupportedGrantType.new(
-          'Only grant_type=authorization_code is currently supported'
-        )
+      unless SUPPORTED_GRANT_TYPES.include?('authorization_code')
+        raise OauthProvider::Errors::UnsupportedGrantType.new(SUPPORTED_GRANT_TYPES)
       end
     end
 

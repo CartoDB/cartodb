@@ -2,7 +2,7 @@
 
 module Carto
   class OauthApp < ActiveRecord::Base
-    # Multiple of 3 for prety base64
+    # Multiple of 3 for pretty base64
     CLIENT_ID_RANDOM_BYTES = 9
     CLIENT_SECRET_RANDOM_BYTES = 18
 

@@ -2,6 +2,10 @@
 
 module Carto
   class OauthApp < ActiveRecord::Base
+    # Multiple of 3 for prety base64
+    CLIENT_ID_RANDOM_BYTES = 9
+    CLIENT_SECRET_RANDOM_BYTES = 18
+
     belongs_to :user, inverse_of: :oauth_apps
     has_many :oauth_app_users, inverse_of: :oauth_app, dependent: :destroy
 
@@ -17,8 +21,8 @@ module Carto
     private
 
     def ensure_keys_generated
-      self.client_id ||= SecureRandom.urlsafe_base64(9)
-      self.client_secret ||= SecureRandom.urlsafe_base64(18)
+      self.client_id ||= SecureRandom.urlsafe_base64(CLIENT_ID_RANDOM_BYTES)
+      self.client_secret ||= SecureRandom.urlsafe_base64(CLIENT_SECRET_RANDOM_BYTES)
     end
 
     def validate_uri

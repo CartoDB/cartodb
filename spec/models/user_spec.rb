@@ -359,15 +359,18 @@ describe User do
       end
     end
 
-    it 'should inherit twitter_datasource_enabled from organization on creation' do
+    it 'should inherit twitter_datasource_enabled from organizations with custom config on creation' do
       organization = create_organization_with_users(twitter_datasource_enabled: true)
       organization.save
       organization.twitter_datasource_enabled.should be_true
       organization.users.reject(&:organization_owner?).each do |u|
+        CartoDB::Datasources::DatasourcesFactory.stubs(:customized_config?).with(Search::Twitter::DATASOURCE_NAME, u).returns(true)
         u.twitter_datasource_enabled.should be_true
       end
+      CartoDB::Datasources::DatasourcesFactory.stubs(:customized_config?).returns(true)
       user = create_user(organization: organization)
       user.save
+      CartoDB::Datasources::DatasourcesFactory.stubs(:customized_config?).with(Search::Twitter::DATASOURCE_NAME, user).returns(true)
       user.twitter_datasource_enabled.should be_true
       organization.destroy
     end

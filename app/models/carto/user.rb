@@ -220,11 +220,12 @@ class Carto::User < ActiveRecord::Base
   end
 
   def twitter_datasource_enabled
-    if has_organization?
-      organization.twitter_datasource_enabled || read_attribute(:twitter_datasource_enabled)
-    else
-      read_attribute(:twitter_datasource_enabled)
-    end
+    (read_attribute(:twitter_datasource_enabled) || organization.try(&:twitter_datasource_enabled)) && twitter_configured?
+  end
+
+  def twitter_configured?
+    # DatasourcesFactory.config_for takes configuration from organization if user is an organization user
+    CartoDB::Datasources::DatasourcesFactory.customized_config?(Search::Twitter::DATASOURCE_NAME, self)
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name

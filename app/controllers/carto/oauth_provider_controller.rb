@@ -44,8 +44,7 @@ module Carto
     def redirect_to_oauth_app(parameters)
       redirect_uri = Addressable::URI.parse(@oauth_app.redirect_uri)
       query = redirect_uri.query_values || {}
-      query.merge!(parameters)
-      redirect_uri.query_values = query
+      redirect_uri.query_values = query.merge(parameters)
 
       redirect_to redirect_uri.to_s
     end

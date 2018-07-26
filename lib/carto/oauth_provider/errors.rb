@@ -36,8 +36,8 @@ module Carto
       end
 
       class AccessDenied < BaseError
-        def initialize(description = nil, uri = nil)
-          super('access_denied', description, uri)
+        def initialize
+          super('access_denied', 'The user rejected the authentication request')
         end
       end
 
@@ -54,8 +54,8 @@ module Carto
       end
 
       class InvalidGrant < BaseError
-        def initialize(description = nil, uri = nil)
-          super('invalid_grant', description, uri)
+        def initialize
+          super('invalid_grant', 'Provided code is not valid or has expired')
         end
       end
     end

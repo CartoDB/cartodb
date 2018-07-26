@@ -12,11 +12,11 @@ module Carto
     validates :redirect_uri, presence: true
     validate :validate_uri
 
-    before_validation :generate_keys
+    before_validation :ensure_keys_generated
 
     private
 
-    def generate_keys
+    def ensure_keys_generated
       self.client_id ||= SecureRandom.urlsafe_base64(9)
       self.client_secret ||= SecureRandom.urlsafe_base64(18)
     end

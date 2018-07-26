@@ -54,7 +54,7 @@ module Carto
     end
 
     def rescue_oauth_errors(exception)
-      CartoDB::Logger.debug(message: 'Oauth provier error',
+      CartoDB::Logger.debug(message: 'Oauth provider error',
                             exception: exception,
                             redirect_on_error: @redirect_on_error,
                             oauth_app: @oauth_app)

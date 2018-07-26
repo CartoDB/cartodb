@@ -94,7 +94,7 @@ module Carto
 
     def validate_scopes
       @scopes = (params[:scope] || '').split(' ')
-      raise OauthProvider::Errors::InvalidScope.new("Unsupported scopes: #{@scopes.join(', ')}") if @scopes.any?
+      raise OauthProvider::Errors::InvalidScope.new(@scopes) if @scopes.any?
     end
 
     def ensure_state

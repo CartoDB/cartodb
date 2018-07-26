@@ -23,11 +23,13 @@ This release introduces a new API Key system. In order to migrate existing users
 ### Bug fixes / enhancement
 * Fix disconnect from external data sources (gdrive, box and dropbox) for organization users (https://github.com/CartoDB/support/issues/1671)
 * Fix broken data tab when analyses or custom SQL are present (https://github.com/CartoDB/cartodb/issues/14169)
+* Don't render geometry columns that are not the_geom (https://github.com/CartoDB/support/issues/1404)
 * Use setView instead of flyTo to improve zoom transitions (https://github.com/CartoDB/carto.js/pull/2178)
 * Fix torque layers when filter analysis is added (https://github.com/CartoDB/support/issues/1038)
 * Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)
 * Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
 * Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
+* Twitter import only if enabled and with user/org configuration (https://github.com/CartoDB/support/issues/1612).
 * Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
 * Improve input image when color changes (https://github.com/CartoDB/cartodb/issues/11326)
 * Fix pagination buttons style (https://github.com/CartoDB/cartodb/issues/13456)

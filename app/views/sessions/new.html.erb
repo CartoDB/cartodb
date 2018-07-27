@@ -37,7 +37,7 @@
                   <% end %>
 
                   <div class="Sessions-field">
-                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
+                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => t('email.title'), placeholder: t('email.placeholder'), class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
@@ -45,7 +45,7 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= password_field_tag :password, "", placeholder: "password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                    <%= password_field_tag :password, "", placeholder: t('password'), class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>

@@ -7,3 +7,7 @@ en:
       subject: 'Thanks for signing up for cartodb beta'
     invitation_sent:
       subject: 'Thanks for signing up for cartodb beta'
+  email:
+    title: 'Email or username'
+    placeholder: 'email or username'
+  password: 'password'

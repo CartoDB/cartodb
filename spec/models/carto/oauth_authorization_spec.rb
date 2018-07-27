@@ -8,6 +8,7 @@ module Carto
       before(:all) do
         @user = FactoryGirl.build(:carto_user)
         @app = FactoryGirl.build(:oauth_app, user: @user)
+        @api_key = FactoryGirl.build(:master_api_key, user: @user)
         @app_user = OauthAppUser.new(user: @user, oauth_app: @app)
       end
 

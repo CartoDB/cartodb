@@ -35,6 +35,8 @@ module Carto
       # redirect_uri
       # client_id
 
+      # TODO: Check that code is recently generated (< 10 min, or even less)
+
       # Out
       # {
       #   "access_token":"87as6das87tdy",

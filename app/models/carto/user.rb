@@ -99,6 +99,9 @@ class Carto::User < ActiveRecord::Base
   before_create :generate_api_key
 
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
+  after_destroy :invalidate_varnish_cache
+
+  include ::VarnishCacheHandler
 
   # Auto creates notifications on first access
   def static_notifications_with_creation

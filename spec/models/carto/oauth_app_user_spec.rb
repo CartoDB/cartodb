@@ -10,6 +10,11 @@ module Carto
         @app = FactoryGirl.create(:oauth_app, user: @user)
       end
 
+      after(:all) do
+        @user.destroy
+        @app.destroy
+      end
+
       it 'requires user' do
         app_user = OauthAppUser.new
         expect(app_user).to_not(be_valid)

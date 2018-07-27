@@ -5,6 +5,7 @@ module Carto
     belongs_to :user, inverse_of: :oauth_app_users
     belongs_to :oauth_app, inverse_of: :oauth_app_users
     belongs_to :api_key, inverse_of: :oauth_app_user
+    has_many :oauth_authorizations, inverse_of: :oauth_app_users, dependent: :destroy
 
     validates :user, presence: true, uniqueness: { scope: :oauth_app }
     validates :oauth_app, presence: true

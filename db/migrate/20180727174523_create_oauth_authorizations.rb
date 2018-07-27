@@ -6,7 +6,7 @@ migration(
   Proc.new do
     create_table :oauth_authorizations do
       Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
-      foreign_key :oauth_app_user_id, :oauth_apps_users, type: :uuid, null: false, index: true, on_delete: :cascade
+      foreign_key :oauth_app_user_id, :oauth_app_users, type: :uuid, null: false, index: true, on_delete: :cascade
       foreign_key :api_key_id, :api_keys, type: :uuid, null: true, on_delete: :restrict,
                                           index: { where: 'api_key_id IS NOT NULL', unique: true }
       column      :scopes, 'text[]', null: false, default: "'{}'".lit

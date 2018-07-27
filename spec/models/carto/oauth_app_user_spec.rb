@@ -6,9 +6,8 @@ module Carto
   describe OauthAppUser do
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.build(:carto_user)
-        @app = FactoryGirl.build(:oauth_app)
-        @api_key = FactoryGirl.build(:master_api_key, user: @user)
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
       end
 
       it 'requires user' do
@@ -23,23 +22,19 @@ module Carto
         expect(app_user.errors[:oauth_app]).to(include("can't be blank"))
       end
 
-      it 'requires code or api_key' do
-        app_user = OauthAppUser.new
-        expect(app_user).to_not(be_valid)
-        expect(app_user.errors[:api_key]).to(include("must be present if code is missing"))
-
-        app_user.code = ''
-        expect(app_user).to_not(be_valid)
-        expect(app_user.errors[:api_key]).to(include("must be present if code is missing"))
+      it 'does not allow duplicates' do
+        begin
+          @app_user1 = OauthAppUser.create!(user: @user, oauth_app: @app)
+          app_user2 = OauthAppUser.new(user: @user, oauth_app: @app)
+          expect(app_user2).to_not(be_valid)
+          expect(app_user2.errors[:user]).to(include("has already been taken"))
+        ensure
+          @app_user1.destroy if @app_user1
+        end
       end
 
-      it 'validates with api_key' do
-        app_user = OauthAppUser.new(user: @user, oauth_app: @app, api_key: @api_key)
-        expect(app_user).to(be_valid)
-      end
-
-      it 'validates with code' do
-        app_user = OauthAppUser.new(user: @user, oauth_app: @app, code: 'wadus')
+      it 'validates' do
+        app_user = OauthAppUser.new(user: @user, oauth_app: @app)
         expect(app_user).to(be_valid)
       end
     end

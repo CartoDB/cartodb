@@ -23,7 +23,7 @@ describe('Engine', function () {
     it('should throw a descriptive error when called with no parameters', function () {
       expect(function () {
         new Engine(); // eslint-disable-line
-      }).toThrowError('new Engine() called with no paramters');
+      }).toThrowError('new Engine() called with no parameters');
     });
   });
 
@@ -245,7 +245,7 @@ describe('Engine', function () {
         var errorCallback = jasmine.createSpy('errorCallback');
 
         engineMock.reload({ error: errorCallback }).catch(function () {
-          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          var error = new WindshaftError({ message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.' });
           expect(errorCallback).toHaveBeenCalledWith(error);
           done();
         });
@@ -263,7 +263,7 @@ describe('Engine', function () {
         var counter = 0;
         var NUM_CALLS = 2;
         function _process () {
-          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          var error = new WindshaftError({ message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.' });
           expect(errorCallbacks[counter]).toHaveBeenCalledWith(error);
           counter++;
           (counter === NUM_CALLS) && done();
@@ -309,7 +309,7 @@ describe('Engine', function () {
 
         engineMock.on(Engine.Events.RELOAD_ERROR, spy);
         engineMock.reload().catch(function () {
-          var error = new WindshaftError({message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.'});
+          var error = new WindshaftError({ message: 'Postgis Plugin: ERROR:  transform: couldnt project point (242 611 0): latitude or longitude exceeded limits.' });
           expect(spy).toHaveBeenCalledWith(error);
           done();
         });

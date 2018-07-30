@@ -127,9 +127,10 @@ describe Carto::ApiKey do
       end
     end
 
+    let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
+
     describe '#destroy' do
       it 'removes the role from DB' do
-        grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
         @user1.in_database(as: :superuser) do |db|
@@ -144,7 +145,6 @@ describe Carto::ApiKey do
       end
 
       it 'removes the role from Redis' do
-        grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
         $users_metadata.hgetall(api_key.send(:redis_key)).should_not be_empty
@@ -153,11 +153,17 @@ describe Carto::ApiKey do
 
         $users_metadata.hgetall(api_key.send(:redis_key)).should be_empty
       end
+
+      it 'invalidates varnish cache' do
+        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+        api_key.destroy
+      end
     end
 
     describe '#regenerate_token!' do
       it 'regenerates the value in Redis only after save' do
-        grants = [apis_grant, database_grant(@table1.database_schema, @table1.name)]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
         old_redis_key = api_key.send(:redis_key)
@@ -175,6 +181,15 @@ describe Carto::ApiKey do
 
         $users_metadata.hgetall(new_redis_key).should_not be_empty
         $users_metadata.hgetall(old_redis_key).should be_empty
+      end
+
+      it 'invalidates varnish cache' do
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+
+        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+
+        api_key.regenerate_token!
+        api_key.save!
       end
     end
 

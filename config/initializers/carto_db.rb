@@ -288,4 +288,25 @@ module CartoDB
   rescue
     nil
   end
+
+  def self.standard_logger(log_file_path)
+    logger = ::Logger.new(log_file_path)
+    logger.formatter = proc do |_severity, _datetime, _progname, msg|
+      "#{logger_msg2str(msg)}\n"
+    end
+    logger
+  end
+
+  # Taken from /usr/lib/ruby/2.2.0/logger.rb (msg2str) to mimic standard Logger behaviour
+  def self.logger_msg2str(msg)
+    case msg
+    when ::String
+      msg
+    when ::Exception
+      "#{msg.message} (#{msg.class})\n" <<
+        (msg.backtrace || []).join("\n")
+    else
+      msg.inspect
+    end
+  end
 end

@@ -466,7 +466,7 @@ module CartoDB
       end
 
       def exportjob_logger
-        @@exportjob_logger ||= ::Logger.new(log_file_path("datamover.log"))
+        @@exportjob_logger ||= CartoDB.standard_logger(log_file_path("datamover.log"))
       end
 
       def get_db_size(database)

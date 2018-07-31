@@ -56,7 +56,7 @@ module Carto
     private
 
     def create_authorization
-      authorization = @oauth_app_user.oauth_authorizations.create_with_code!
+      authorization = @oauth_app_user.oauth_authorizations.create_with_code!(@redirect_uri)
       redirect_to_oauth_app(code: authorization.code, state: @state)
     end
 
@@ -136,6 +136,9 @@ module Carto
     def load_authorization
       @authorization = OauthAuthorization.find_by_code!(params[:code])
       raise OauthProvider::Errors::InvalidGrant.new unless @authorization.oauth_app_user.oauth_app == @oauth_app
+      unless @redirect_uri == @authorization.redirect_uri
+        raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri must match the authorization request')
+      end
     rescue ActiveRecord::RecordNotFound
       raise OauthProvider::Errors::InvalidGrant.new
     end

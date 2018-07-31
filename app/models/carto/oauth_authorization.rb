@@ -15,8 +15,8 @@ module Carto
     validates :oauth_app_user, presence: true
     validate :code_or_api_key_present
 
-    def self.create_with_code!
-      create!(code: SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES))
+    def self.create_with_code!(redirect_uri)
+      create!(code: SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES), redirect_uri: redirect_uri)
     end
 
     def exchange!

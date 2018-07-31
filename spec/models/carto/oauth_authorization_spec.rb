@@ -65,6 +65,7 @@ module Carto
         @authorization.exchange!
         expect(@authorization.code).to(be_nil)
         expect(@authorization.api_key).to(be)
+        expect(@authorization.api_key.type).to(eq('internal'))
       end
     end
   end

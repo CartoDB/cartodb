@@ -38,7 +38,8 @@ module Carto
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
-    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
+    TYPE_INTERNAL = 'internal'.freeze
+    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_INTERNAL].freeze
 
     NAME_MASTER = 'Master'.freeze
     NAME_DEFAULT_PUBLIC = 'Default public'.freeze
@@ -55,14 +56,14 @@ module Carto
     belongs_to :user
     has_one :oauth_authorization, inverse_of: :api_key, dependent: :restrict_with_exception
 
-    before_create :create_token, if: ->(k) { k.regular? && !k.token }
-    before_create :create_db_config, if: ->(k) { k.regular? && !(k.db_role && k.db_password) }
+    before_create :create_token, if: ->(k) { k.needs_setup? && !k.token }
+    before_create :create_db_config, if: ->(k) { k.needs_setup? && !(k.db_role && k.db_password) }
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
 
     validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
     validates :type, inclusion: { in: VALID_TYPES }
-    validates :type, uniqueness: { scope: :user_id }, unless: :regular?
+    validates :type, uniqueness: { scope: :user_id }, unless: :needs_setup?
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
@@ -70,16 +71,18 @@ module Carto
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
-    after_create :setup_db_role, if: ->(k) { k.regular? && !k.skip_role_setup }
+    after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save :add_to_redis, if: :valid_user?
 
-    after_destroy :drop_db_role, if: :regular?
+    after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
     scope :regular, -> { where(type: TYPE_REGULAR) }
+
+    default_scope { where.not(type: TYPE_INTERNAL) }
 
     attr_accessor :skip_role_setup
 
@@ -118,18 +121,13 @@ module Carto
       )
     end
 
-    def self.create_in_memory_master(user: Carto::User.find(scope_attributes['user_id']))
-      api_key = new(
+    def self.build_internal_key(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+      create!(
         user: user,
-        type: TYPE_MASTER,
-        name: NAME_MASTER,
-        token: user.api_key,
-        grants: GRANTS_ALL_APIS,
-        db_role: user.database_username,
-        db_password: user.database_password
+        type: TYPE_INTERNAL,
+        name: name,
+        grants: grants
       )
-      api_key.readonly!
-      api_key
     end
 
     def self.new_from_hash(api_key_hash)
@@ -198,6 +196,14 @@ module Carto
 
     def regular?
       type == TYPE_REGULAR
+    end
+
+    def internal?
+      type == TYPE_INTERNAL
+    end
+
+    def needs_setup?
+      regular? || internal?
     end
 
     def valid_name_for_type

@@ -35,6 +35,14 @@ describe Carto::OauthProviderController do
       }
     end
 
+    it 'logged out, redirects to login' do
+      logout
+      get oauth_provider_authorize_url(valid_payload)
+
+      expect(response.status).to(eq(302))
+      expect(response.location).to(include('/login'))
+    end
+
     it 'shows the consent form' do
       get oauth_provider_authorize_url(valid_payload)
 

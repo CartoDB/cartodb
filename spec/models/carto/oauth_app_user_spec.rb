@@ -56,5 +56,36 @@ module Carto
         expect(oau).not_to(be_authorized(['allowed_1', 'not_allowed']))
       end
     end
+
+    describe '#upgrade!' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
+      end
+
+      after(:all) do
+        @user.destroy
+        @app.destroy
+      end
+
+      it 'grants all new scopes without duplicates' do
+        oau = OauthAppUser.create!(user: @user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
+
+        oau.upgrade!([])
+        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2']))
+
+        oau.upgrade!(['allowed_1'])
+        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2']))
+
+        oau.upgrade!(['new_1'])
+        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2', 'new_1']))
+
+        oau.upgrade!(['allowed_2', 'new_2'])
+        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2', 'new_1', 'new_2']))
+
+        oau.upgrade!([])
+        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2', 'new_1', 'new_2']))
+      end
+    end
   end
 end

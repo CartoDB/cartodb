@@ -40,7 +40,16 @@ module Carto
     end
 
     def token
-      authorization.exchange!
+      @authorization.exchange!
+
+      response = {
+        access_token: @authorization.api_key.token,
+        token_type: 'bearer'
+        # expires_in: seconds
+        # refresh_token:
+      }
+
+      render(json: response)
       # TODO
       # Input
       # grant_type == authorization_code

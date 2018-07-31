@@ -1,7 +1,10 @@
 require 'spec_helper_min'
 require 'carto/oauth_provider_controller'
+require 'support/helpers'
 
 describe Carto::OauthProviderController do
+  include HelperMethods
+
   before(:all) do
     @sequel_developer = FactoryGirl.create(:valid_user)
     @developer = Carto::User.find(@sequel_developer.id)
@@ -19,11 +22,6 @@ describe Carto::OauthProviderController do
 
   after(:each) do
     Carto::User.find(@user.id).oauth_app_users.each(&:destroy)
-  end
-
-  before(:each) do
-    login_as(@user, scope: @user.username)
-    host!("#{@user.username}.localhost.lan")
   end
 
   let(:valid_payload) do
@@ -80,6 +78,11 @@ describe Carto::OauthProviderController do
   end
 
   describe '#consent' do
+    before(:each) do
+      login_as(@user, scope: @user.username)
+      host!("#{@user.username}.localhost.lan")
+    end
+
     it_behaves_like 'authorization parameter validation' do
       def request_endpoint(parameters)
         get oauth_provider_authorize_url(parameters)
@@ -119,6 +122,11 @@ describe Carto::OauthProviderController do
   end
 
   describe '#authorize' do
+    before(:each) do
+      login_as(@user, scope: @user.username)
+      host!("#{@user.username}.localhost.lan")
+    end
+
     it_behaves_like 'authorization parameter validation' do
       def request_endpoint(parameters)
         post oauth_provider_authorize_url(parameters)
@@ -146,5 +154,92 @@ describe Carto::OauthProviderController do
     end
 
     # TODO: Upgrade oauth_app_user if requesting more scopes
+  end
+
+  describe '#token' do
+    before(:each) do
+      @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+      @authorization = @oauth_app_user.oauth_authorizations.create_with_code!
+    end
+
+    let (:token_payload) do
+      {
+        client_id: @oauth_app.client_id,
+        client_secret: @oauth_app.client_secret,
+        grant_type: 'authorization_code',
+        code: @authorization.code
+      }
+    end
+
+    it 'with valid code returns an api key' do
+      post_json oauth_provider_token_url(token_payload) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be_nil)
+        expect(@authorization.api_key).to(be)
+
+        expect(response.status).to(eq(200))
+        expect(response.body).to(eq({
+          access_token: @authorization.api_key.token,
+          token_type: "bearer"
+        }))
+      end
+    end
+
+    it 'with expired code, returns code not valid' do
+      Delorean.jump(2.minutes)
+
+      post_json oauth_provider_token_url(token_payload) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('invalid_grant'))
+      end
+    end
+
+    it 'with invalid code, returns error without creating the api key' do
+      post_json oauth_provider_token_url(token_payload.merge(code: 'invalid')) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('invalid_grant'))
+      end
+    end
+
+    it 'with invalid client_id, returns error without creating the api key' do
+      post_json oauth_provider_token_url(token_payload.merge(client_id: 'invalid')) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('invalid_client'))
+      end
+    end
+
+    it 'with invalid client_secret, returns error without creating the api key' do
+      post_json oauth_provider_token_url(token_payload.merge(client_secret: 'invalid')) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('invalid_client'))
+      end
+    end
+
+    it 'with invalid grant_type, returns error without creating the api key' do
+      post_json oauth_provider_token_url(token_payload.merge(grant_type: 'invalid')) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('unsupported_grant_type'))
+      end
+    end
   end
 end

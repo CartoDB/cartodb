@@ -241,5 +241,16 @@ describe Carto::OauthProviderController do
         expect(response.body[:error]).to(eq('unsupported_grant_type'))
       end
     end
+
+    it 'with invalid redirect_uri, returns error without creating the api key' do
+      post_json oauth_provider_token_url(token_payload.merge(redirect_uri: 'invalid')) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('invalid_request'))
+      end
+    end
   end
 end

@@ -5,6 +5,8 @@ module Carto
     # Multiple of 3 for pretty base64
     CODE_RANDOM_BYTES = 12
 
+    CODE_EXPIRATION_TIME = 1.minute
+
     belongs_to :oauth_app_user, inverse_of: :oauth_authorizations
     belongs_to :api_key, inverse_of: :oauth_authorization
 
@@ -15,7 +17,19 @@ module Carto
       create!(code: SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES))
     end
 
+    def exchange!
+      raise OauthProvider::Errors::InvalidGrant.new if expired?
+
+      self.code = nil
+      self.api_key = ApiKey.create_regular_key!(name: "_oauth_authorization #{id}", grants: [])
+      save!
+    end
+
     private
+
+    def expired?
+      created_at < Time.now - CODE_EXPIRATION_TIME
+    end
 
     def code_or_api_key_present
       # You can have either code if the token is not exchanged yet, or an api_key

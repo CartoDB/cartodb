@@ -16,7 +16,7 @@ module Carto
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
-    before_action :validate_grant_type, only: [:token]
+    before_action :validate_grant_type, :load_authorization, :verify_client_secret, only: [:token]
 
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
@@ -37,6 +37,7 @@ module Carto
     end
 
     def token
+      authorization.exchange!
       # TODO
       # Input
       # grant_type == authorization_code
@@ -125,6 +126,19 @@ module Carto
 
     def load_oauth_app_user
       @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_user.id)
+    end
+
+    def load_authorization
+      @authorization = OauthAuthorization.find_by_code!(params[:code])
+    rescue ActiveRecord::RecordNotFound
+      raise OauthProvider::Errors::InvalidGrant.new
+    end
+
+    def verify_client_secret
+      oauth_app = @authorization.oauth_app_user.oauth_app
+      unless oauth_app == @oauth_app && params[:client_secret] == @oauth_app.client_secret
+        raise OauthProvider::Errors::InvalidGrant.new
+      end
     end
   end
 end

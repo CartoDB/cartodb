@@ -9,5 +9,13 @@ module Carto
 
     validates :user, presence: true, uniqueness: { scope: :oauth_app }
     validates :oauth_app, presence: true
+
+    def authorized?(requested_scopes)
+      (requested_scopes - scopes).empty?
+    end
+
+    def upgrade!(requested_scopes)
+      update!(scopes: scopes | requested_scopes)
+    end
   end
 end

@@ -15,6 +15,7 @@ module Carto
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
+    before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, only: [:token]
 
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
@@ -25,7 +26,13 @@ module Carto
       # TODO
       raise OauthProvider::Errors::AccessDenied.new unless params[:accept]
 
-      redirect_to_oauth_app(code: 'wadus', state: @state)
+      if @oauth_app_user
+        @oauth_app_user.upgrade!(@scopes)
+      else
+        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_user.id, scopes: @scopes)
+      end
+
+      create_authorization
     end
 
     def token
@@ -46,6 +53,11 @@ module Carto
     end
 
     private
+
+    def create_authorization
+      authorization = @oauth_app_user.oauth_authorizations.create_with_code!
+      redirect_to_oauth_app(code: authorization.code, state: @state)
+    end
 
     def redirect_to_oauth_app(parameters)
       redirect_uri = Addressable::URI.parse(@oauth_app.redirect_uri)
@@ -82,7 +94,7 @@ module Carto
     end
 
     def validate_grant_type
-      unless SUPPORTED_GRANT_TYPES.include?('authorization_code')
+      unless SUPPORTED_GRANT_TYPES.include?(params[:grant_type])
         raise OauthProvider::Errors::UnsupportedGrantType.new(SUPPORTED_GRANT_TYPES)
       end
     end
@@ -108,6 +120,10 @@ module Carto
     def ensure_state
       @state = params[:state]
       raise OauthProvider::Errors::InvalidRequest.new('state is mandatory') unless @state.present?
+    end
+
+    def load_oauth_app_user
+      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_user.id)
     end
   end
 end

@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_dependency 'carto/oauth_provider/errors'
+
 module Carto
   class OauthAuthorization < ActiveRecord::Base
     # Multiple of 3 for pretty base64

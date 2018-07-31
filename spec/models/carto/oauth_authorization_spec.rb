@@ -32,5 +32,40 @@ module Carto
         expect(authorization).to(be_valid)
       end
     end
+
+    describe '#exchange!' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @app_user = OauthAppUser.create(user: @user, oauth_app: @app)
+      end
+
+      after(:all) do
+        @app_user.destroy
+        @user.destroy
+        @app.destroy
+      end
+
+      before(:each) do
+        @authorization = @app_user.oauth_authorizations.create_with_code!
+      end
+
+      after(:each) do
+        @authorization.destroy
+      end
+
+      it 'fails if the code is expired' do
+        @authorization.created_at -= 10.minutes
+        expect { @authorization.exchange! }.to(raise_error(OauthProvider::Errors::InvalidGrant))
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+      end
+
+      it 'creates a new api key and blanks the code' do
+        @authorization.exchange!
+        expect(@authorization.code).to(be_nil)
+        expect(@authorization.api_key).to(be)
+      end
+    end
   end
 end

@@ -44,7 +44,7 @@ describe Carto::OauthProviderController do
       request_endpoint(valid_payload.merge(response_type: 'err'))
 
       expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uri))
+      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
       expect(Addressable::URI.parse(response.location).query_values['error']).to(eq('unsupported_response_type'))
     end
 
@@ -52,7 +52,7 @@ describe Carto::OauthProviderController do
       request_endpoint(valid_payload.merge(state: ''))
 
       expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uri))
+      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
       qs = Addressable::URI.parse(response.location).query_values
       expect(qs['error']).to(eq('invalid_request'))
       expect(qs['error_description']).to(eq('state is mandatory'))
@@ -62,7 +62,7 @@ describe Carto::OauthProviderController do
       request_endpoint(valid_payload.merge(scope: 'invalid wadus'))
 
       expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uri))
+      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
       expect(Addressable::URI.parse(response.location).query_values['error']).to(eq('invalid_scope'))
     end
 
@@ -70,7 +70,7 @@ describe Carto::OauthProviderController do
       request_endpoint(valid_payload.merge(redirect_uri: 'invalid'))
 
       expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uri))
+      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
       qs = Addressable::URI.parse(response.location).query_values
       expect(qs['error']).to(eq('invalid_request'))
       expect(qs['error_description']).to(eq('The redirect_uri is not authorized for this application'))

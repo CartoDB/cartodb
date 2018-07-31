@@ -61,9 +61,9 @@ module Carto
     end
 
     def redirect_to_oauth_app(parameters)
-      redirect_uri = Addressable::URI.parse(@oauth_app.redirect_uri)
+      redirect_uri = Addressable::URI.parse(@redirect_uri || @oauth_app.redirect_uris.first)
       query = redirect_uri.query_values || {}
-      redirect_uri.query_values = query.merge(parameters)
+      redirect_uri.query_values = query.merge(parameters).merge(state: @state)
 
       redirect_to redirect_uri.to_s
     end
@@ -112,8 +112,9 @@ module Carto
     end
 
     def verify_redirect_uri
-      redirect_uri = params[:redirect_uri]
-      if redirect_uri.present? && redirect_uri != @oauth_app.redirect_uri
+      @redirect_uri = params[:redirect_uri]
+      if @redirect_uri.present? && !@oauth_app.redirect_uris.include?(@redirect_uri)
+        @redirect_uri = nil
         raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri is not authorized for this application')
       end
     end

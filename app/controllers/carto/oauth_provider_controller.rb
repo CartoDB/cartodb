@@ -20,10 +20,11 @@ module Carto
 
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
-    def consent; end
+    def consent
+      return create_authorization if @oauth_app_user.try(:authorized?, @scopes)
+    end
 
     def authorize
-      # TODO
       raise OauthProvider::Errors::AccessDenied.new unless params[:accept]
 
       if @oauth_app_user

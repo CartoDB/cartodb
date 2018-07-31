@@ -13,8 +13,8 @@ module Carto
     validates :name, presence: true
     validates :client_id, presence: true
     validates :client_secret, presence: true
-    validates :redirect_uri, presence: true
-    validate :validate_uri
+    validates :redirect_uris, presence: true
+    validate :validate_uris
 
     before_validation :ensure_keys_generated
 
@@ -25,13 +25,17 @@ module Carto
       self.client_secret ||= SecureRandom.urlsafe_base64(CLIENT_SECRET_RANDOM_BYTES)
     end
 
-    def validate_uri
+    def validate_uris
+      redirect_uris && redirect_uris.each { |uri| validate_uri(uri) }
+    end
+
+    def validate_uri(redirect_uri)
       uri = URI.parse(redirect_uri)
-      errors.add(:redirect_uri, "must be absolute") unless uri.absolute?
-      errors.add(:redirect_uri, "must be https") unless uri.scheme == 'https'
-      errors.add(:redirect_uri, "must not contain a fragment") unless uri.fragment.nil?
+      errors.add(:redirect_uris, "must be absolute") unless uri.absolute?
+      errors.add(:redirect_uris, "must be https") unless uri.scheme == 'https'
+      errors.add(:redirect_uris, "must not contain a fragment") unless uri.fragment.nil?
     rescue URI::InvalidURIError
-      errors.add(:redirect_uri, "must be valid")
+      errors.add(:redirect_uris, "must be valid")
     end
   end
 end

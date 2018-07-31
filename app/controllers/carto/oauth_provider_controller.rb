@@ -11,6 +11,9 @@ module Carto
 
     layout 'frontend'
 
+    skip_before_action :ensure_org_url_if_org_user
+    skip_before_action :verify_authenticity_token, only: [:token]
+
     before_action :login_required, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :load_oauth_app, :verify_redirect_uri

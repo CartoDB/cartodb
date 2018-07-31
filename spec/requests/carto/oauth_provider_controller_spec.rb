@@ -101,6 +101,19 @@ describe Carto::OauthProviderController do
       expect(response.body).to(include(valid_payload[:client_id]))
       expect(response.body).to(include(valid_payload[:state]))
     end
+
+    it 'with valid payload, and pre-authorized, redirects back to the application' do
+      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+      get oauth_provider_authorize_url(valid_payload)
+
+      authorization = oau.oauth_authorizations.first
+      expect(authorization).to(be)
+      expect(authorization.code).to(be_present)
+      expect(authorization.api_key).not_to(be)
+
+      expect(response.status).to(eq(302))
+      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
+    end
   end
 
   describe '#authorize' do

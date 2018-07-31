@@ -114,6 +114,8 @@ describe Carto::OauthProviderController do
       expect(response.status).to(eq(302))
       expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
     end
+
+    # TODO: Do not auto-consent if requesting more scopes
   end
 
   describe '#authorize' do
@@ -142,5 +144,7 @@ describe Carto::OauthProviderController do
       expect(response.status).to(eq(302))
       expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
     end
+
+    # TODO: Upgrade oauth_app_user if requesting more scopes
   end
 end

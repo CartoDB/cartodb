@@ -37,7 +37,7 @@ var RELOAD_DEBOUNCE_TIME_IN_MILIS = 100;
  * @constructor
  */
 function Engine (params) {
-  if (!params) throw new Error('new Engine() called with no paramters');
+  if (!params) throw new Error('new Engine() called with no parameters');
   this._isNamedMap = params.templateName !== undefined;
 
   // Variables for the reload debounce

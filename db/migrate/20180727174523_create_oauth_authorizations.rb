@@ -11,6 +11,7 @@ migration(
                                           index: { where: 'api_key_id IS NOT NULL', unique: true }
       column      :scopes, 'text[]', null: false, default: "'{}'".lit
       String      :code, null: true, index: { where: 'code IS NOT NULL' }
+      String      :redirect_uri, null: true
       DateTime    :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
       DateTime    :updated_at, null: false, default: Sequel::CURRENT_TIMESTAMP
     end

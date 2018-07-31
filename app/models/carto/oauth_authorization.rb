@@ -21,7 +21,9 @@ module Carto
       raise OauthProvider::Errors::InvalidGrant.new if expired?
 
       self.code = nil
-      self.api_key = ApiKey.create_regular_key!(name: "_oauth_authorization #{id}", grants: [])
+      self.api_key = oauth_app_user.user.api_keys.create_regular_key!(
+        name: "oauth_authorization #{id}", grants: [{ type: 'apis', apis: [] }]
+      )
       save!
     end
 

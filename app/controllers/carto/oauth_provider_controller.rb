@@ -21,6 +21,7 @@ module Carto
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :load_authorization, :verify_client_secret, only: [:token]
 
+    rescue_from StandardError, with: :rescue_generic_errors
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
@@ -84,6 +85,11 @@ module Carto
       else
         render json: exception.parameters, status: 400
       end
+    end
+
+    def rescue_generic_errors(exception)
+      CartoDB::Logger.error(exception: exception)
+      rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 
     def validate_response_type

@@ -159,7 +159,7 @@ describe Carto::OauthProviderController do
   describe '#token' do
     before(:each) do
       @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-      @authorization = @oauth_app_user.oauth_authorizations.create_with_code!
+      @authorization = @oauth_app_user.oauth_authorizations.create_with_code!(nil)
     end
 
     let (:token_payload) do

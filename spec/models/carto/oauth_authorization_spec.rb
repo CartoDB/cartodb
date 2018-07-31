@@ -47,7 +47,7 @@ module Carto
       end
 
       before(:each) do
-        @authorization = @app_user.oauth_authorizations.create_with_code!
+        @authorization = @app_user.oauth_authorizations.create_with_code!(nil)
       end
 
       after(:each) do

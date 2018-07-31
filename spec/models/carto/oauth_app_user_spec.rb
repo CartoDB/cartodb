@@ -43,5 +43,18 @@ module Carto
         expect(app_user).to(be_valid)
       end
     end
+
+    describe '#authorized?' do
+      it 'is authorized only if all requested scopes are already granted' do
+        oau = OauthAppUser.new(scopes: ['allowed_1', 'allowed_2'])
+
+        expect(oau).to(be_authorized(['allowed_1']))
+        expect(oau).to(be_authorized(['allowed_2']))
+        expect(oau).to(be_authorized(['allowed_1', 'allowed_2']))
+
+        expect(oau).not_to(be_authorized(['not_allowed']))
+        expect(oau).not_to(be_authorized(['allowed_1', 'not_allowed']))
+      end
+    end
   end
 end

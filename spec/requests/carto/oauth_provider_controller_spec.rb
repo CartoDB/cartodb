@@ -178,10 +178,7 @@ describe Carto::OauthProviderController do
         expect(@authorization.api_key).to(be)
 
         expect(response.status).to(eq(200))
-        expect(response.body).to(eq({
-          access_token: @authorization.api_key.token,
-          token_type: "bearer"
-        }))
+        expect(response.body).to(eq(access_token: @authorization.api_key.token, token_type: "bearer"))
       end
     end
 

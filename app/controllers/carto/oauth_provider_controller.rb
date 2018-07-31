@@ -19,7 +19,7 @@ module Carto
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
-    before_action :validate_grant_type, :verify_client_secret, :load_authorization , only: [:token]
+    before_action :validate_grant_type, :verify_client_secret, :load_authorization, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors

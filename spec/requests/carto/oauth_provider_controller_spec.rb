@@ -249,5 +249,20 @@ describe Carto::OauthProviderController do
         expect(response.body[:error]).to(eq('invalid_request'))
       end
     end
+
+    it 'without redirect_uri, returns error without creating the api key' do
+      @authorization.update!(redirect_uri: @oauth_app.redirect_uris.first)
+
+      post_json oauth_provider_token_url(token_payload) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be)
+        expect(@authorization.api_key).to(be_nil)
+
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('invalid_request'))
+      end
+    end
+
+    # TODO: multiple authorized redirect uris tests (authorize and token)
   end
 end

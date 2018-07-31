@@ -81,8 +81,7 @@ module Carto
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
     scope :regular, -> { where(type: TYPE_REGULAR) }
-
-    default_scope { where.not(type: TYPE_INTERNAL) }
+    scope :non_internal, -> { where.not(type: TYPE_INTERNAL) }
 
     attr_accessor :skip_role_setup
 

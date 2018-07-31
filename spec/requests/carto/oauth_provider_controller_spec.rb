@@ -22,7 +22,8 @@ describe Carto::OauthProviderController do
   end
 
   before(:each) do
-    login_as(@user)
+    login_as(@user, scope: @user.username)
+    host!("#{@user.username}.localhost.lan")
   end
 
   describe '#consent' do

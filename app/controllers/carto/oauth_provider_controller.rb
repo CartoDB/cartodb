@@ -19,7 +19,7 @@ module Carto
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
-    before_action :validate_grant_type, :load_authorization, :verify_client_secret, only: [:token]
+    before_action :validate_grant_type, :verify_client_secret, :load_authorization , only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
@@ -108,7 +108,7 @@ module Carto
     def load_oauth_app
       @oauth_app = OauthApp.find_by_client_id!(params[:client_id])
     rescue ActiveRecord::RecordNotFound
-      raise OauthProvider::Errors::InvalidRequest.new('Client ID not found')
+      raise OauthProvider::Errors::InvalidClient.new
     end
 
     def verify_redirect_uri
@@ -134,15 +134,13 @@ module Carto
 
     def load_authorization
       @authorization = OauthAuthorization.find_by_code!(params[:code])
+      raise OauthProvider::Errors::InvalidGrant.new unless @authorization.oauth_app_user.oauth_app == @oauth_app
     rescue ActiveRecord::RecordNotFound
       raise OauthProvider::Errors::InvalidGrant.new
     end
 
     def verify_client_secret
-      oauth_app = @authorization.oauth_app_user.oauth_app
-      unless oauth_app == @oauth_app && params[:client_secret] == @oauth_app.client_secret
-        raise OauthProvider::Errors::InvalidGrant.new
-      end
+      raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
     end
   end
 end

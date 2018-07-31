@@ -11,6 +11,7 @@ module Carto
 
     layout 'frontend'
 
+    before_action :login_required, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]

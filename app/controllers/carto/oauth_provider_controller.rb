@@ -21,8 +21,7 @@ module Carto
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, :load_authorization, only: [:token]
 
-    rescue_from StandardError, with: :rescue_generic_errors
-    rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
+    rescue_from StandardError, with: :rescue_oauth_errors
 
     def consent
       return create_authorization if @oauth_app_user.try(:authorized?, @scopes)
@@ -73,10 +72,17 @@ module Carto
     end
 
     def rescue_oauth_errors(exception)
-      CartoDB::Logger.debug(message: 'Oauth provider error',
-                            exception: exception,
-                            redirect_on_error: @redirect_on_error,
-                            oauth_app: @oauth_app)
+      if exception.is_a?(OauthProvider::Errors::BaseError)
+        CartoDB::Logger.debug(message: 'OAuth provider error',
+                              exception: exception,
+                              redirect_on_error: @redirect_on_error,
+                              oauth_app: @oauth_app)
+      else
+        CartoDB::Logger.error(message: 'Unexpected OAuth provider error',
+                              exception: exception,
+                              oauth_app: @oauth_app)
+        exception = OauthProvider::Errors::ServerError.new
+      end
 
       if @redirect_on_error && @oauth_app
         redirect_to_oauth_app(exception.parameters)
@@ -85,11 +91,6 @@ module Carto
       else
         render json: exception.parameters, status: 400
       end
-    end
-
-    def rescue_generic_errors(exception)
-      CartoDB::Logger.error(exception: exception)
-      rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 
     def validate_response_type

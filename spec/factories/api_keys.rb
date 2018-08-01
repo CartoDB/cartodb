@@ -17,10 +17,10 @@ FactoryGirl.define do
               apis: ["sql", "maps"] }]
   end
 
-  factory :internal_api_key, class: Carto::ApiKey do
+  factory :oauth_api_key, class: Carto::ApiKey do
     initialize_with { Carto::ApiKey.send :new }
 
-    type Carto::ApiKey::TYPE_INTERNAL
+    type Carto::ApiKey::TYPE_OAUTH
     name { unique_name('internal api key') }
     grants [{ type: "apis", apis: [] }]
   end

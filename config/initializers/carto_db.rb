@@ -289,7 +289,7 @@ module CartoDB
     nil
   end
 
-  def self.standard_logger(log_file_path)
+  def self.unformatted_logger(log_file_path)
     logger = ::Logger.new(log_file_path)
     logger.formatter = proc do |_severity, _datetime, _progname, msg|
       "#{logger_msg2str(msg)}\n"

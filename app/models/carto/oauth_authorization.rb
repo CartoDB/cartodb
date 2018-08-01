@@ -14,6 +14,7 @@ module Carto
 
     validates :oauth_app_user, presence: true
     validate :code_or_api_key_present
+    validate :redirect_uri_absent, if: :api_key
 
     def self.create_with_code!(redirect_uri)
       create!(code: SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES), redirect_uri: redirect_uri)
@@ -23,6 +24,7 @@ module Carto
       raise OauthProvider::Errors::InvalidGrant.new if expired?
 
       self.code = nil
+      self.redirect_uri = nil
       self.api_key = build_api_key
       save!
     end
@@ -43,6 +45,10 @@ module Carto
     def code_or_api_key_present
       # You can have either code if the token is not exchanged yet, or an api_key
       errors.add(:api_key, 'must be present if code is missing') if code.blank? && api_key.blank?
+    end
+
+    def redirect_uri_absent
+      errors.add(:redirect_uri, 'must be nil if api_key is present') unless redirect_uri.nil?
     end
   end
 end

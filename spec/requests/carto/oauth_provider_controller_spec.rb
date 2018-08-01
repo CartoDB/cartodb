@@ -265,4 +265,51 @@ describe Carto::OauthProviderController do
 
     # TODO: multiple authorized redirect uris tests (authorize and token)
   end
+
+  describe '#acceptance' do
+    include Capybara::DSL
+
+    it 'following the oauth flow produces a valid API Key' do
+      # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
+      redirect_uri = "https://#{@user.username}.localhost.lan/redirect"
+      @oauth_app.update!(redirect_uri: redirect_uri)
+
+      # Login
+      login_as(@user, scope: @user.username)
+      base_uri = "http://#{@user.username}.localhost.lan"
+      begin
+        visit "#{base_uri}/login"
+      rescue ActionView::MissingTemplate
+        # Expected error trying to load dashboard statics
+      end
+
+      # Request authorization
+      state = '123qweasdzxc'
+      visit "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=#{state}&response_type=code"
+
+      begin
+        click_on 'Accept'
+      rescue ActionController::RoutingError
+        # Expected error since /redirect is a made up URL
+      end
+
+      response_parameters = Addressable::URI.parse(current_url).query_values
+      expect(response_parameters['state']).to(eq(state))
+      code = response_parameters['code']
+
+      # Exchange token for API Key
+      payload = {
+        client_id: @oauth_app.client_id,
+        client_secret: @oauth_app.client_secret,
+        grant_type: 'authorization_code',
+        code: code
+      }
+      api_key = post_json oauth_provider_token_url(payload) do |response|
+        expect(response.status).to(eq(200))
+        response.body[:access_token]
+      end
+
+      # TODO: Try to use API Key, must implement some scopes first
+    end
+  end
 end

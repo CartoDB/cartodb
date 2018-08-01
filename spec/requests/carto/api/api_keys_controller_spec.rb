@@ -449,7 +449,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns 404 for internal api keys' do
-        api_key = FactoryGirl.create(:internal_api_key, user_id: @user.id)
+        api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
         auth_user(@carto_user)
         get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 404
@@ -474,7 +474,7 @@ describe Carto::Api::ApiKeysController do
 
         @apikeys = @carto_user_index.api_keys.order(:updated_at).all.to_a
         3.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
-        @apikeys << FactoryGirl.create(:internal_api_key, user_id: @user_index.id)
+        @apikeys << FactoryGirl.create(:oauth_api_key, user_id: @user_index.id)
       end
 
       it 'does not include internal keys' do

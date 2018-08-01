@@ -30,7 +30,7 @@ module Carto
     private
 
     def build_api_key
-      oauth_app_user.user.api_keys.build_internal_key(
+      oauth_app_user.user.api_keys.build_oauth_key(
         name: "oauth_authorization #{id}",
         grants: [{ type: 'apis', apis: [] }]
       )

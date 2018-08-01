@@ -38,8 +38,8 @@ module Carto
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
-    TYPE_INTERNAL = 'internal'.freeze
-    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_INTERNAL].freeze
+    TYPE_OAUTH = 'oauth'.freeze
+    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_OAUTH].freeze
 
     NAME_MASTER = 'Master'.freeze
     NAME_DEFAULT_PUBLIC = 'Default public'.freeze
@@ -81,7 +81,7 @@ module Carto
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
     scope :regular, -> { where(type: TYPE_REGULAR) }
-    scope :non_internal, -> { where.not(type: TYPE_INTERNAL) }
+    scope :user_visible, -> { where(type: [TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_REGULAR]) }
 
     attr_accessor :skip_role_setup
 
@@ -120,10 +120,10 @@ module Carto
       )
     end
 
-    def self.build_internal_key(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+    def self.build_oauth_key(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
       create!(
         user: user,
-        type: TYPE_INTERNAL,
+        type: TYPE_OAUTH,
         name: name,
         grants: grants
       )
@@ -197,12 +197,12 @@ module Carto
       type == TYPE_REGULAR
     end
 
-    def internal?
-      type == TYPE_INTERNAL
+    def oauth?
+      type == TYPE_OAUTH
     end
 
     def needs_setup?
-      regular? || internal?
+      regular? || oauth?
     end
 
     def valid_name_for_type

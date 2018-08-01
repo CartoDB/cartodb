@@ -58,6 +58,12 @@ module Carto
           super('invalid_grant', 'Provided code is not valid or has expired')
         end
       end
+
+      class InvalidClient < BaseError
+        def initialize
+          super('invalid_client', 'Invalid client ID or secret')
+        end
+      end
     end
   end
 end

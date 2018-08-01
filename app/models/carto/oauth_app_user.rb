@@ -2,21 +2,20 @@
 
 module Carto
   class OauthAppUser < ActiveRecord::Base
-    self.table_name = 'oauth_apps_users'
-
     belongs_to :user, inverse_of: :oauth_app_users
     belongs_to :oauth_app, inverse_of: :oauth_app_users
     belongs_to :api_key, inverse_of: :oauth_app_user
+    has_many :oauth_authorizations, inverse_of: :oauth_app_user, dependent: :destroy
 
-    validates :user, presence: true
+    validates :user, presence: true, uniqueness: { scope: :oauth_app }
     validates :oauth_app, presence: true
-    validate :code_or_api_key_present
 
-    private
+    def authorized?(requested_scopes)
+      (requested_scopes - scopes).empty?
+    end
 
-    def code_or_api_key_present
-      # You can have either code if the token is not exchanged yet, or an api_key
-      errors.add(:api_key, 'must be present if code is missing') if code.blank? && api_key.blank?
+    def upgrade!(requested_scopes)
+      update!(scopes: scopes | requested_scopes)
     end
   end
 end

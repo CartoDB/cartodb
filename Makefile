@@ -256,6 +256,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/notification_spec.rb \
 	spec/models/carto/oauth_app_spec.rb \
 	spec/models/carto/oauth_app_user_spec.rb \
+	spec/models/carto/oauth_authorization_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/carto/rate_limit_spec.rb \
 	spec/models/carto/received_notification_spec.rb \

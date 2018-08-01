@@ -11,38 +11,54 @@ module Carto
 
     layout 'frontend'
 
+    skip_before_action :ensure_org_url_if_org_user
+    skip_before_action :verify_authenticity_token, only: [:token]
+
+    before_action :login_required, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
-    before_action :validate_grant_type, only: [:token]
+    before_action :load_oauth_app_user, only: [:consent, :authorize]
+    before_action :validate_grant_type, :verify_client_secret, :load_authorization, only: [:token]
 
+    rescue_from StandardError, with: :rescue_generic_errors
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
-    def consent; end
+    def consent
+      return create_authorization if @oauth_app_user.try(:authorized?, @scopes)
+    end
 
     def authorize
-      # TODO
       raise OauthProvider::Errors::AccessDenied.new unless params[:accept]
 
-      redirect_to_oauth_app(code: 'wadus', state: @state)
+      if @oauth_app_user
+        @oauth_app_user.upgrade!(@scopes)
+      else
+        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_user.id, scopes: @scopes)
+      end
+
+      create_authorization
     end
 
     def token
-      # TODO
-      # Input
-      # grant_type == authorization_code
-      # code =
-      # redirect_uri
-      # client_id
+      @authorization.exchange!
 
-      # Out
-      # {
-      #   "access_token":"87as6das87tdy",
-      #   "token_type":"api_key",
-      # }
+      response = {
+        access_token: @authorization.api_key.token,
+        token_type: 'bearer'
+        # expires_in: seconds
+        # refresh_token:
+      }
+
+      render(json: response)
     end
 
     private
+
+    def create_authorization
+      authorization = @oauth_app_user.oauth_authorizations.create_with_code!
+      redirect_to_oauth_app(code: authorization.code, state: @state)
+    end
 
     def redirect_to_oauth_app(parameters)
       redirect_uri = Addressable::URI.parse(@oauth_app.redirect_uri)
@@ -71,6 +87,11 @@ module Carto
       end
     end
 
+    def rescue_generic_errors(exception)
+      CartoDB::Logger.error(exception: exception)
+      rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
+    end
+
     def validate_response_type
       @response_type = params[:response_type]
       unless SUPPORTED_RESPONSE_TYPES.include?(@response_type)
@@ -79,7 +100,7 @@ module Carto
     end
 
     def validate_grant_type
-      unless SUPPORTED_GRANT_TYPES.include?('authorization_code')
+      unless SUPPORTED_GRANT_TYPES.include?(params[:grant_type])
         raise OauthProvider::Errors::UnsupportedGrantType.new(SUPPORTED_GRANT_TYPES)
       end
     end
@@ -87,7 +108,7 @@ module Carto
     def load_oauth_app
       @oauth_app = OauthApp.find_by_client_id!(params[:client_id])
     rescue ActiveRecord::RecordNotFound
-      raise OauthProvider::Errors::InvalidRequest.new('Client ID not found')
+      raise OauthProvider::Errors::InvalidClient.new
     end
 
     def verify_redirect_uri
@@ -105,6 +126,21 @@ module Carto
     def ensure_state
       @state = params[:state]
       raise OauthProvider::Errors::InvalidRequest.new('state is mandatory') unless @state.present?
+    end
+
+    def load_oauth_app_user
+      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_user.id)
+    end
+
+    def load_authorization
+      @authorization = OauthAuthorization.find_by_code!(params[:code])
+      raise OauthProvider::Errors::InvalidGrant.new unless @authorization.oauth_app_user.oauth_app == @oauth_app
+    rescue ActiveRecord::RecordNotFound
+      raise OauthProvider::Errors::InvalidGrant.new
+    end
+
+    def verify_client_secret
+      raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
     end
   end
 end

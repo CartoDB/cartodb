@@ -262,7 +262,11 @@ describe Carto::OauthProviderController do
       # Login
       login_as(@user, scope: @user.username)
       base_uri = "http://#{@user.username}.localhost.lan"
-      visit "#{base_uri}/login"
+      begin
+        visit "#{base_uri}/login"
+      rescue ActionView::MissingTemplate
+        # Expected error trying to load dashboard statics
+      end
 
       # Request authorization
       state = '123qweasdzxc'

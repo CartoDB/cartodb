@@ -8,15 +8,19 @@ describe Carto::OauthProviderController do
   before(:all) do
     @sequel_developer = FactoryGirl.create(:valid_user)
     @developer = Carto::User.find(@sequel_developer.id)
-    @oauth_app = FactoryGirl.create(:oauth_app, user: @developer)
-
     @user = FactoryGirl.create(:valid_user)
   end
 
-  after(:all) do
-    @oauth_app.destroy
-    @developer.destroy
+  before(:each) do
+    @oauth_app = FactoryGirl.create(:oauth_app, user: @developer)
+  end
 
+  after(:each) do
+    @oauth_app.destroy
+  end
+
+  after(:all) do
+    @developer.destroy
     @user.destroy
   end
 
@@ -153,6 +157,22 @@ describe Carto::OauthProviderController do
       expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
     end
 
+    it 'with valid payload and redirect URIs, creates an authorization and redirects back to the requested URI' do
+      @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
+
+      post oauth_provider_authorize_url(valid_payload.merge(redirect_uri: 'https://domain3'))
+
+      authorization = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorizations.first
+      expect(authorization).to(be)
+      expect(authorization.code).to(be_present)
+      expect(authorization.redirect_uri).to(eq('https://domain3'))
+      expect(authorization.api_key).not_to(be)
+
+      expect(response.status).to(eq(302))
+      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
+      expect(response.location).to(start_with('https://domain3'))
+    end
+
     # TODO: Upgrade oauth_app_user if requesting more scopes
   end
 
@@ -173,6 +193,20 @@ describe Carto::OauthProviderController do
 
     it 'with valid code returns an api key' do
       post_json oauth_provider_token_url(token_payload) do |response|
+        @authorization.reload
+        expect(@authorization.code).to(be_nil)
+        expect(@authorization.api_key).to(be)
+
+        expect(response.status).to(eq(200))
+        expect(response.body).to(eq(access_token: @authorization.api_key.token, token_type: "bearer"))
+      end
+    end
+
+    it 'with valid code and redirect uri returns an api key' do
+      @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
+      @authorization.update!(redirect_uri: 'https://domain3')
+
+      post_json oauth_provider_token_url(token_payload.merge(redirect_uri: 'https://domain3')) do |response|
         @authorization.reload
         expect(@authorization.code).to(be_nil)
         expect(@authorization.api_key).to(be)
@@ -262,8 +296,6 @@ describe Carto::OauthProviderController do
         expect(response.body[:error]).to(eq('invalid_request'))
       end
     end
-
-    # TODO: multiple authorized redirect uris tests (authorize and token)
   end
 
   describe '#acceptance' do
@@ -272,7 +304,7 @@ describe Carto::OauthProviderController do
     it 'following the oauth flow produces a valid API Key' do
       # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
       redirect_uri = "https://#{@user.username}.localhost.lan/redirect"
-      @oauth_app.update!(redirect_uris: [redirect_uri])
+      @oauth_app.update!(redirect_uris: ['https://fake_uri', redirect_uri])
 
       # Login
       login_as(@user, scope: @user.username)
@@ -285,7 +317,8 @@ describe Carto::OauthProviderController do
 
       # Request authorization
       state = '123qweasdzxc'
-      visit "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=#{state}&response_type=code"
+      visit "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=#{state}" \
+            "&response_type=code&redirect_uri=#{redirect_uri}"
 
       begin
         click_on 'Accept'
@@ -293,6 +326,7 @@ describe Carto::OauthProviderController do
         # Expected error since /redirect is a made up URL
       end
 
+      expect(current_url).to(start_with(redirect_uri))
       response_parameters = Addressable::URI.parse(current_url).query_values
       expect(response_parameters['state']).to(eq(state))
       code = response_parameters['code']
@@ -302,13 +336,15 @@ describe Carto::OauthProviderController do
         client_id: @oauth_app.client_id,
         client_secret: @oauth_app.client_secret,
         grant_type: 'authorization_code',
-        code: code
+        code: code,
+        redirect_uri: redirect_uri
       }
       api_key = post_json oauth_provider_token_url(payload) do |response|
         expect(response.status).to(eq(200))
         response.body[:access_token]
       end
 
+      expect(api_key).to(be)
       # TODO: Try to use API Key, must implement some scopes first
     end
   end

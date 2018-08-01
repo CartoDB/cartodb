@@ -272,7 +272,7 @@ describe Carto::OauthProviderController do
     it 'following the oauth flow produces a valid API Key' do
       # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
       redirect_uri = "https://#{@user.username}.localhost.lan/redirect"
-      @oauth_app.update!(redirect_uri: redirect_uri)
+      @oauth_app.update!(redirect_uris: [redirect_uri])
 
       # Login
       login_as(@user, scope: @user.username)

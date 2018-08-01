@@ -113,7 +113,7 @@ module Carto
     end
 
     def verify_redirect_uri
-      # Redirect URI is optional but, if present, msut match a registered URI
+      # Redirect URI is optional but, if present, must match a registered URI
       @redirect_uri = params[:redirect_uri].presence
       if @redirect_uri.present? && !@oauth_app.redirect_uris.include?(@redirect_uri)
         @redirect_uri = nil

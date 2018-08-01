@@ -64,7 +64,7 @@ module Carto
     def redirect_to_oauth_app(parameters)
       redirect_uri = Addressable::URI.parse(@redirect_uri || @oauth_app.redirect_uris.first)
       query = redirect_uri.query_values || {}
-      redirect_uri.query_values = query.merge(parameters).merge(state: @state)
+      redirect_uri.query_values = query.merge(parameters)
 
       redirect_to redirect_uri.to_s
     end
@@ -80,7 +80,7 @@ module Carto
                             oauth_app: @oauth_app)
 
       if @redirect_on_error && @oauth_app
-        redirect_to_oauth_app(exception.parameters)
+        redirect_to_oauth_app(exception.parameters.merge(state: @state))
       elsif @redirect_on_error
         render_404
       else

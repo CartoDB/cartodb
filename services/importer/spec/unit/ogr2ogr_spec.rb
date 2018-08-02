@@ -111,6 +111,20 @@ describe Ogr2ogr do
       record.fetch(:field_1).should eq 'id'
     end
 
+    it 'It fails if the amount of used memory surpasses the limit' do
+      header = ["id", "2"]
+      data   = ["5", "cell_#{rand(999)}"]
+      csv    = Factories::CSV.new.write(header, data)
+
+      ogr_options = {
+        ogr2ogr_memory_limit: 0
+      }
+      @wrapper = CartoDB::Importer2::Ogr2ogr.new(@table_name, csv.filepath, @pg_options, nil, ogr_options)
+      expect{
+        @wrapper.run
+      }.to raise_exception
+    end
+
   end
 
   describe '#command_output' do

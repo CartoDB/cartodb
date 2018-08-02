@@ -163,7 +163,7 @@ class DataImport < Sequel::Model
   end
 
   def dataimport_logger
-    @@dataimport_logger ||= Logger.new(log_file_path("imports.log"))
+    @@dataimport_logger ||= CartoDB.unformatted_logger(log_file_path("imports.log"))
   end
 
   # Meant to be used when calling from API endpoints (hides some fields not needed at editor scope)

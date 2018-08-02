@@ -18,12 +18,10 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
+* Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancements
 * Update googlemaps api version to v3.32 (https://github.com/CartoDB/cartodb/issues/13902)
-* Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
-
-### Bug fixes / enhancement
 * Fix wrong position for color dialog and sticky popups when styling analysis (https://github.com/CartoDB/support/issues/1649 and https://github.com/CartoDB/support/issues/1673)
 * Fix incorrect metric event styling a layer (https://github.com/CartoDB/cartodb/issues/14183)
 * Fix legend for style by boolean field (https://github.com/CartoDB/support/issues/1647)

@@ -315,7 +315,15 @@ module CartoDB
       end
 
       def column_names(user, table_name)
-        user.in_database.schema(table_name).map { |row| row[0] }
+        user.in_database.schema(table_name, schema: user.database_schema).map { |row| row[0] }
+      rescue => e
+        CartoDB::Logger.error(
+          message: 'Error in column_names from sync adapter',
+          exception: e,
+          user: user,
+          table: table_name
+        )
+        []
       end
 
       attr_reader :table_name, :runner, :database, :user

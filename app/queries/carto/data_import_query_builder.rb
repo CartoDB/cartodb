@@ -27,7 +27,7 @@ class Carto::DataImportQueryBuilder
   end
 
   def build
-    query = Carto::DataImport.scoped
+    query = Carto::DataImport.all
 
     if @user_id
       query = query.where(user_id: @user_id)

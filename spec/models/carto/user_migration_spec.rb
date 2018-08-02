@@ -81,6 +81,9 @@ describe 'UserMigration' do
       migrate_metadata ? @user.destroy : drop_user_database(@user)
 
       Cartodb.with_config(agg_ds_config) do
+        # Do not depend on dataservices_client to be installed
+        CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
           database_host: @user_attributes['database_host'],
@@ -729,6 +732,9 @@ describe 'UserMigration' do
         migrate_metadata ? @organization.destroy_cascade : drop_user_database(@organization.owner)
 
         Cartodb.with_config(agg_ds_config) do
+          # Do not depend on dataservices_client to be installed
+          CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+
           import = Carto::UserMigrationImport.create(
             exported_file: export.exported_file,
             database_host: owner_attributes['database_host'],
@@ -1134,6 +1140,7 @@ describe 'UserMigration' do
     def remove_user(carto_user)
       Carto::Visualization.where(user_id: carto_user.id).each do |v|
         v.overlays.each(&:delete)
+        v.user_table.delete if v.user_table # Delete user_table since it can conflict by name
         v.delete
       end
       gum = CartoDB::GeocoderUsageMetrics.new(carto_user.username)

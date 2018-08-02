@@ -7,23 +7,23 @@ require_dependency 'carto/bounding_box_utils'
 class Carto::Map < ActiveRecord::Base
   include Carto::MapBoundaries
 
-  has_many :layers_maps
-  has_many :layers, class_name: 'Carto::Layer',
-                    order: '"order"',
-                    through: :layers_maps,
-                    after_add: Proc.new { |map, layer| layer.after_added_to_map(map) },
-                    dependent: :destroy
+  has_many :layers_maps, dependent: :destroy
+  has_many :layers, -> { order(:order) }, class_name: 'Carto::Layer',
+                                          through: :layers_maps,
+                                          after_add: Proc.new { |map, layer| layer.after_added_to_map(map) }
 
-  has_many :base_layers, class_name: 'Carto::Layer',
-                         order: '"order"',
-                         through: :layers_maps,
-                         source: :layer
+  has_many :base_layers, -> { order(:order) }, class_name: 'Carto::Layer',
+                                               through: :layers_maps,
+                                               source: :layer
 
-  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy
+  # autosave must be explicitly disabled due to https://github.com/rails/rails/issues/9336
+  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy, autosave: false
 
   belongs_to :user
 
-  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map
+  # Autosave disabled because this caused the `inverse_of` to break (visualization.map != self) until `reload`
+  # Fixed in Rails 5 https://github.com/rails/rails/pull/23197
+  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map, autosave: false
 
   # bounding_box_sw, bounding_box_new and center should probably be JSON serialized fields
   # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters
@@ -45,6 +45,7 @@ class Carto::Map < ActiveRecord::Base
 
   after_initialize :ensure_options
   after_save :notify_map_change
+  after_save :save_table # Manual save, since autosave is disabled
 
   def data_layers
     layers.select(&:data_layer?)
@@ -169,6 +170,13 @@ class Carto::Map < ActiveRecord::Base
   end
 
   private
+
+  def save_table
+    if user_table && !user_table.persisted?
+      user_table.map = self
+      user_table.save!
+    end
+  end
 
   def admits_more_data_layers?
     !visualization.canonical? || data_layers.empty?

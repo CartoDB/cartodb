@@ -44,8 +44,8 @@ class Carto::User < ActiveRecord::Base
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
-                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host, " \
-                   "users.industry, users.company, users.phone, users.job_role".freeze
+                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
+                   "users.no_map_logo, users.industry, users.company, users.phone, users.job_role".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -99,6 +99,9 @@ class Carto::User < ActiveRecord::Base
   before_create :generate_api_key
 
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
+  after_destroy :invalidate_varnish_cache
+
+  include ::VarnishCacheHandler
 
   # Auto creates notifications on first access
   def static_notifications_with_creation
@@ -220,11 +223,12 @@ class Carto::User < ActiveRecord::Base
   end
 
   def twitter_datasource_enabled
-    if has_organization?
-      organization.twitter_datasource_enabled || read_attribute(:twitter_datasource_enabled)
-    else
-      read_attribute(:twitter_datasource_enabled)
-    end
+    (read_attribute(:twitter_datasource_enabled) || organization.try(&:twitter_datasource_enabled)) && twitter_configured?
+  end
+
+  def twitter_configured?
+    # DatasourcesFactory.config_for takes configuration from organization if user is an organization user
+    CartoDB::Datasources::DatasourcesFactory.customized_config?(Search::Twitter::DATASOURCE_NAME, self)
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name

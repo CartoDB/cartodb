@@ -1,3 +1,5 @@
+require 'resque'
+
 module CartoDB
   class Logger
     def self.log(level, exception: nil, message: nil, user: nil, **additional_data)

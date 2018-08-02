@@ -15,7 +15,7 @@ describe Carto::Api::GrantablesController do
   describe 'Grantables', :order => :defined do
 
     before(:all) do
-      @headers = {'CONTENT_TYPE'  => 'application/json', :format => "json" }
+      @headers = { 'CONTENT_TYPE' => 'application/json', :format => "json", 'Accept' => 'application/json' }
     end
 
     it "Throws 401 error without http auth" do
@@ -30,8 +30,8 @@ describe Carto::Api::GrantablesController do
           response.status.should == 200
           grantables = response.body[:grantables]
           grantables.length.should == @carto_organization.users.length
-          grantables.map { |g| g['id'] }.should include(@org_user_1.id)
-          grantables.map { |g| g['avatar_url'] }.should include(@org_user_1.avatar_url)
+          grantables.map { |g| g[:id] }.should include(@org_user_1.id)
+          grantables.map { |g| g[:avatar_url] }.should include(@org_user_1.avatar_url)
           response.body[:total_entries].should == @carto_organization.users.length
         end
       end
@@ -47,19 +47,19 @@ describe Carto::Api::GrantablesController do
           response.body[:total_entries].should == count_grantables(@carto_organization)
 
           response.body[:grantables].each { |g|
-            g['id'].should == g['model']['id']
-            case g['type']
+            g[:id].should == g[:model][:id]
+            case g[:type]
             when 'user'
-              g['name'].should == g['model']['username']
-              user = Carto::User.find_by_username(g['model']['username'])
-              g['model']['groups'].should == user.groups.map { |group| Carto::Api::GroupPresenter.new(group).to_poro }
+              g[:name].should == g[:model][:username]
+              user = Carto::User.find_by_username(g[:model][:username])
+              g[:model][:groups].should == user.groups.map { |group| Carto::Api::GroupPresenter.new(group).to_poro }
             when 'group'
-              g['name'].should == g['model']['display_name']
-              users = g['model']['users']
-              group = @carto_organization.groups.find_by_display_name(g['name'])
+              g[:name].should == g[:model][:display_name]
+              users = g[:model][:users]
+              group = @carto_organization.groups.find_by_display_name(g[:name])
               users.should == group.users.map { |u| Carto::UserPresenter.new(u).to_poro }
             else
-              raise "Unknown type #{g['type']}"
+              raise "Unknown type #{g[:type]}"
             end
           }
         end
@@ -79,7 +79,7 @@ describe Carto::Api::GrantablesController do
 
           get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { page: page, per_page: per_page, order: 'name' }, @headers do |response|
             response.status.should == 200
-            response.body[:grantables][0]['id'].should eq(expected_id), "#{response.body[:grantables][0]['id']} != #{expected_id}. Failing page: #{page}"
+            response.body[:grantables][0][:id].should eq(expected_id), "#{response.body[:grantables][0][:id]} != #{expected_id}. Failing page: #{page}"
             response.body[:grantables].length.should == per_page
             response.body[:total_entries].should == count_grantables(@carto_organization)
           end
@@ -91,7 +91,7 @@ describe Carto::Api::GrantablesController do
 
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), { order: 'type' }, @headers do |response|
           response.status.should == 200
-          response.body[:grantables].map { |g| g['type'] }.should == expected_types
+          response.body[:grantables].map { |g| g[:type] }.should == expected_types
         end
       end
 
@@ -102,7 +102,7 @@ describe Carto::Api::GrantablesController do
           response.status.should == 200
           response.body[:grantables].length.should == 1
           response.body[:total_entries].should == 1
-          response.body[:grantables][0]['id'].should == group.id
+          response.body[:grantables][0][:id].should == group.id
         end
       end
 

@@ -85,6 +85,8 @@ describe Carto::UserMetadataExportService do
   end
 
   def destroy_user(user = @user)
+    user.update_attributes!(viewer: false) unless user.destroyed?
+
     gum = CartoDB::GeocoderUsageMetrics.new(user.username)
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
 
@@ -271,7 +273,7 @@ describe Carto::UserMetadataExportService do
         create_user_with_basemaps_assets_visualizations
 
         @user.update_attributes(private_maps_enabled: true, private_tables_enabled: true)
-        v = @user.visualizations.first
+        v = @user.visualizations.where(type: 'derived').first
         v.password = 'dont_tell_anyone'
         v.privacy = 'password'
         v.save!
@@ -285,8 +287,8 @@ describe Carto::UserMetadataExportService do
     end
   end
 
-  EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at'].freeze
-  EXCLUDED_USER_META_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags', 'auth_token'].freeze
+  EXCLUDED_USER_META_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date', 'auth_token'].freeze
+  EXCLUDED_USER_META_ID_FIELDS = ['map_id', 'permission_id', 'active_layer_id', 'tags'].freeze
 
   def compare_excluding_dates_and_ids(v1, v2)
     filtered1 = v1.reject { |k, _| EXCLUDED_USER_META_ID_FIELDS.include?(k) }
@@ -298,6 +300,7 @@ describe Carto::UserMetadataExportService do
     filtered1 = u1.reject { |k, _| EXCLUDED_USER_META_DATE_FIELDS.include?(k) }
     filtered2 = u2.reject { |k, _| EXCLUDED_USER_META_DATE_FIELDS.include?(k) }
     expect(filtered1).to eq filtered2
+    expect(u1['period_end_date'].try(:round)).to eq(u2['period_end_date'].try(:round)) # Ignore microseconds
   end
 
   def expect_export_matches_user(export, user)

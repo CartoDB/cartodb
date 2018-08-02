@@ -63,7 +63,7 @@ class Geocoding < Sequel::Model
   end
 
   def geocoding_logger
-    @@geocoding_logger ||= Logger.new(log_file_path('geocodings.log'))
+    @@geocoding_logger ||= CartoDB.unformatted_logger(log_file_path('geocodings.log'))
   end
 
   def error

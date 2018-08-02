@@ -3,6 +3,6 @@ FactoryGirl.define do
     to_create(&:save!)
 
     name { unique_name('Oauth application') }
-    redirect_uri 'https://redirect.uri'
+    redirect_uris ['https://redirect.uri']
   end
 end

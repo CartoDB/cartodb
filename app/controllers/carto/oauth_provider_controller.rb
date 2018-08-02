@@ -19,7 +19,8 @@ module Carto
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
-    before_action :validate_grant_type, :verify_client_secret, :load_authorization, only: [:token]
+    before_action :validate_grant_type, :verify_client_secret, only: [:token]
+    before_action :load_authorization, :verify_authorization_redirect_uri, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
@@ -56,12 +57,12 @@ module Carto
     private
 
     def create_authorization
-      authorization = @oauth_app_user.oauth_authorizations.create_with_code!
+      authorization = @oauth_app_user.oauth_authorizations.create_with_code!(@redirect_uri)
       redirect_to_oauth_app(code: authorization.code, state: @state)
     end
 
     def redirect_to_oauth_app(parameters)
-      redirect_uri = Addressable::URI.parse(@oauth_app.redirect_uri)
+      redirect_uri = Addressable::URI.parse(@redirect_uri || @oauth_app.redirect_uris.first)
       query = redirect_uri.query_values || {}
       redirect_uri.query_values = query.merge(parameters)
 
@@ -79,7 +80,7 @@ module Carto
                             oauth_app: @oauth_app)
 
       if @redirect_on_error && @oauth_app
-        redirect_to_oauth_app(exception.parameters)
+        redirect_to_oauth_app(exception.parameters.merge(state: @state))
       elsif @redirect_on_error
         render_404
       else
@@ -112,8 +113,10 @@ module Carto
     end
 
     def verify_redirect_uri
-      redirect_uri = params[:redirect_uri]
-      if redirect_uri.present? && redirect_uri != @oauth_app.redirect_uri
+      # Redirect URI is optional but, if present, must match a registered URI
+      @redirect_uri = params[:redirect_uri].presence
+      if @redirect_uri.present? && !@oauth_app.redirect_uris.include?(@redirect_uri)
+        @redirect_uri = nil
         raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri is not authorized for this application')
       end
     end
@@ -141,6 +144,13 @@ module Carto
 
     def verify_client_secret
       raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
+    end
+
+    def verify_authorization_redirect_uri
+      # Redirect URI must match what was specified during authorization
+      if (@redirect_uri || @authorization.redirect_uri) && @redirect_uri != @authorization.redirect_uri
+        raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri must match the authorization request')
+      end
     end
   end
 end

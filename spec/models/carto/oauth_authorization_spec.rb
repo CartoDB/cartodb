@@ -22,6 +22,12 @@ module Carto
         expect(authorization.errors[:api_key]).to(include("must be present if code is missing"))
       end
 
+      it 'redirect_uri cannot be set if api_key is' do
+        authorization = OauthAuthorization.new(api_key: @api_key, redirect_uri: '')
+        expect(authorization).to_not(be_valid)
+        expect(authorization.errors[:redirect_uri]).to(include("must be nil if api_key is present"))
+      end
+
       it 'validates with api_key' do
         authorization = OauthAuthorization.new(oauth_app_user: @app_user, api_key: @api_key)
         expect(authorization).to(be_valid)
@@ -47,7 +53,7 @@ module Carto
       end
 
       before(:each) do
-        @authorization = @app_user.oauth_authorizations.create_with_code!
+        @authorization = @app_user.oauth_authorizations.create_with_code!(nil)
       end
 
       after(:each) do

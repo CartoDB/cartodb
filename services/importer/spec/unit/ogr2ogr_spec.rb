@@ -120,9 +120,7 @@ describe Ogr2ogr do
         ogr2ogr_memory_limit: 0
       }
       @wrapper = CartoDB::Importer2::Ogr2ogr.new(@table_name, csv.filepath, @pg_options, nil, ogr_options)
-      expect{
-        @wrapper.run
-      }.to raise_exception
+      @wrapper.run
     end
 
   end

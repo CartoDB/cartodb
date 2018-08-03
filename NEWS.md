@@ -21,6 +21,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancements
+* Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
 * Update googlemaps api version to v3.32 (https://github.com/CartoDB/cartodb/issues/13902)
 * Fix wrong position for color dialog and sticky popups when styling analysis (https://github.com/CartoDB/support/issues/1649 and https://github.com/CartoDB/support/issues/1673)
 * Fix incorrect metric event styling a layer (https://github.com/CartoDB/cartodb/issues/14183)

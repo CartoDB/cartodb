@@ -93,7 +93,7 @@ describe Carto::Builder::DatasetsController do
       get builder_dataset_url(id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include("maps.googleapis.com/maps/api/js?v=3.30&client=wadus_cid")
+      response.body.should include("maps.googleapis.com/maps/api/js?v=3.32&client=wadus_cid")
     end
 
     it 'does not include google maps if the map does not need it' do

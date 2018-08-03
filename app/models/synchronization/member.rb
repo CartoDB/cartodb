@@ -507,7 +507,7 @@ module CartoDB
             ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
             quoted_fields_guessing: @quoted_fields_guessing,
           }
-          unless options['memory_limit'].nil?
+          if options['memory_limit'].present?
             ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit'])
           end
           return ogr_options

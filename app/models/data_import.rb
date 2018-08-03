@@ -622,7 +622,7 @@ class DataImport < Sequel::Model
         ogr2ogr_csv_guessing:   options['csv_guessing'] && self.type_guessing,
         quoted_fields_guessing: self.quoted_fields_guessing
       }
-      unless options['memory_limit'].nil?
+      if options['memory_limit'].present?
         ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit'])
       end
       return ogr_options

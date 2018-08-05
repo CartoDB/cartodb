@@ -273,7 +273,7 @@ describe Carto::UserMetadataExportService do
         create_user_with_basemaps_assets_visualizations
 
         @user.update_attributes(private_maps_enabled: true, private_tables_enabled: true)
-        v = @user.visualizations.first
+        v = @user.visualizations.where(type: 'derived').first
         v.password = 'dont_tell_anyone'
         v.privacy = 'password'
         v.save!

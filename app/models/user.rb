@@ -149,6 +149,8 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  include VarnishCacheHandler
+
   def db_service
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
@@ -339,11 +341,12 @@ class User < Sequel::Model
   end
 
   def twitter_datasource_enabled
-    if has_organization?
-      organization.twitter_datasource_enabled || super
-    else
-      super
-    end
+    (super || organization.try(&:twitter_datasource_enabled)) && twitter_configured?
+  end
+
+  def twitter_configured?
+    # DatasourcesFactory.config_for takes configuration from organization if user is an organization user
+    CartoDB::Datasources::DatasourcesFactory.customized_config?(Search::Twitter::DATASOURCE_NAME, self)
   end
 
   def after_create
@@ -573,11 +576,6 @@ class User < Sequel::Model
         CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
       end
     end
-  end
-
-  def invalidate_varnish_cache(options = {})
-    options[:regex] ||= '.*'
-    CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
   end
 
   # allow extra vars for auth

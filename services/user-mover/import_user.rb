@@ -669,7 +669,7 @@ module CartoDB
       end
 
       def importjob_logger
-        @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
+        @@importjob_logger ||= CartoDB.unformatted_logger("#{Rails.root}/log/datamover.log")
       end
 
       def log_error(e)

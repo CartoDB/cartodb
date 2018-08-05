@@ -1,11 +1,11 @@
 {
   "name": "cartodb-ui",
-  "version": "4.12.60",
+  "version": "4.12.65",
   "dependencies": {
     "@carto/carto.js": {
-      "version": "4.1.1",
-      "from": "@carto/carto.js@>=4.1.1 <5.0.0",
-      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.1.1.tgz"
+      "version": "4.1.2",
+      "from": "@carto/carto.js@>=4.1.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.1.2.tgz"
     },
     "@carto/zera": {
       "version": "1.0.6",
@@ -536,9 +536,9 @@
       }
     },
     "buffer-from": {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "from": "buffer-from@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.1.tgz"
     },
     "buffer-xor": {
       "version": "1.0.3",
@@ -891,9 +891,9 @@
       "resolved": "https://registry.npmjs.org/debug/-/debug-2.2.0.tgz"
     },
     "decamelize": {
-      "version": "1.2.0",
-      "from": "decamelize@>=1.1.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/decamelize/-/decamelize-1.2.0.tgz"
+      "version": "2.0.0",
+      "from": "decamelize@>=2.0.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/decamelize/-/decamelize-2.0.0.tgz"
     },
     "decode-uri-component": {
       "version": "0.2.0",
@@ -1442,9 +1442,9 @@
       }
     },
     "global-modules-path": {
-      "version": "2.1.0",
+      "version": "2.3.0",
       "from": "global-modules-path@>=2.1.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/global-modules-path/-/global-modules-path-2.1.0.tgz"
+      "resolved": "https://registry.npmjs.org/global-modules-path/-/global-modules-path-2.3.0.tgz"
     },
     "globo": {
       "version": "1.0.2",
@@ -1665,9 +1665,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.1.1",
-      "from": "cartodb/carto.js#v4.1.1",
-      "resolved": "git://github.com/cartodb/carto.js.git#655a301ae6d1422273cfcf7c391d52bcb6c49f55"
+      "version": "4.1.2",
+      "from": "cartodb/carto.js#v4.1.2",
+      "resolved": "git://github.com/cartodb/carto.js.git#8f7c2121107e7f41a1d80d8930e3160ac64a3021"
     },
     "interpret": {
       "version": "1.1.0",
@@ -1823,9 +1823,9 @@
       "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz"
     },
     "js-base64": {
-      "version": "2.4.6",
+      "version": "2.4.8",
       "from": "js-base64@>=2.1.9 <3.0.0",
-      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.6.tgz"
+      "resolved": "https://registry.npmjs.org/js-base64/-/js-base64-2.4.8.tgz"
     },
     "json-parse-better-errors": {
       "version": "1.0.2",
@@ -3009,9 +3009,9 @@
       }
     },
     "stream-each": {
-      "version": "1.2.2",
+      "version": "1.2.3",
       "from": "stream-each@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/stream-each/-/stream-each-1.2.2.tgz"
+      "resolved": "https://registry.npmjs.org/stream-each/-/stream-each-1.2.3.tgz"
     },
     "stream-http": {
       "version": "2.8.3",
@@ -3238,9 +3238,9 @@
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
     "uglify-js": {
-      "version": "3.4.5",
+      "version": "3.4.6",
       "from": "uglify-js@>=3.4.0 <3.5.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.5.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.6.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.6.1",
@@ -3387,9 +3387,9 @@
       }
     },
     "url-parse": {
-      "version": "1.4.1",
+      "version": "1.4.3",
       "from": "url-parse@>=1.4.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/url-parse/-/url-parse-1.4.1.tgz"
+      "resolved": "https://registry.npmjs.org/url-parse/-/url-parse-1.4.3.tgz"
     },
     "use": {
       "version": "3.1.1",
@@ -3444,9 +3444,9 @@
       }
     },
     "webpack-cli": {
-      "version": "3.0.8",
+      "version": "3.1.0",
       "from": "webpack-cli@>=3.0.4 <4.0.0",
-      "resolved": "https://registry.npmjs.org/webpack-cli/-/webpack-cli-3.0.8.tgz",
+      "resolved": "https://registry.npmjs.org/webpack-cli/-/webpack-cli-3.1.0.tgz",
       "dependencies": {
         "ansi-styles": {
           "version": "3.2.1",
@@ -3534,6 +3534,11 @@
       "from": "wrappy@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
     },
+    "xregexp": {
+      "version": "4.0.0",
+      "from": "xregexp@4.0.0",
+      "resolved": "https://registry.npmjs.org/xregexp/-/xregexp-4.0.0.tgz"
+    },
     "xtend": {
       "version": "4.0.1",
       "from": "xtend@>=4.0.0 <4.1.0",
@@ -3550,21 +3555,41 @@
       "resolved": "https://registry.npmjs.org/yallist/-/yallist-2.1.2.tgz"
     },
     "yargs": {
-      "version": "11.1.0",
-      "from": "yargs@>=11.1.0 <12.0.0",
-      "resolved": "https://registry.npmjs.org/yargs/-/yargs-11.1.0.tgz",
+      "version": "12.0.1",
+      "from": "yargs@>=12.0.1 <13.0.0",
+      "resolved": "https://registry.npmjs.org/yargs/-/yargs-12.0.1.tgz",
       "dependencies": {
-        "y18n": {
-          "version": "3.2.1",
-          "from": "y18n@>=3.2.1 <4.0.0",
-          "resolved": "https://registry.npmjs.org/y18n/-/y18n-3.2.1.tgz"
+        "find-up": {
+          "version": "3.0.0",
+          "from": "find-up@>=3.0.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/find-up/-/find-up-3.0.0.tgz"
+        },
+        "locate-path": {
+          "version": "3.0.0",
+          "from": "locate-path@>=3.0.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/locate-path/-/locate-path-3.0.0.tgz"
+        },
+        "p-limit": {
+          "version": "2.0.0",
+          "from": "p-limit@>=2.0.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/p-limit/-/p-limit-2.0.0.tgz"
+        },
+        "p-locate": {
+          "version": "3.0.0",
+          "from": "p-locate@>=3.0.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/p-locate/-/p-locate-3.0.0.tgz"
+        },
+        "p-try": {
+          "version": "2.0.0",
+          "from": "p-try@>=2.0.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/p-try/-/p-try-2.0.0.tgz"
         }
       }
     },
     "yargs-parser": {
-      "version": "9.0.2",
-      "from": "yargs-parser@>=9.0.2 <10.0.0",
-      "resolved": "https://registry.npmjs.org/yargs-parser/-/yargs-parser-9.0.2.tgz"
+      "version": "10.1.0",
+      "from": "yargs-parser@>=10.1.0 <11.0.0",
+      "resolved": "https://registry.npmjs.org/yargs-parser/-/yargs-parser-10.1.0.tgz"
     }
   }
 }

@@ -70,10 +70,12 @@ module Carto
 
     after_create :setup_db_role, if: ->(k) { k.regular? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
+    after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
 
     after_destroy :drop_db_role, if: :regular?
     after_destroy :remove_from_redis
+    after_destroy :invalidate_cache
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -239,6 +241,11 @@ module Carto
     PASSWORD_LENGTH = 40
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
+    def invalidate_cache
+      return unless user
+      user.invalidate_varnish_cache
+    end
 
     def create_token
       begin

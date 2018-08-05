@@ -21,12 +21,19 @@ This release introduces a new API Key system. In order to migrate existing users
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancements
+* Update googlemaps api version to v3.32 (https://github.com/CartoDB/cartodb/issues/13902)
+* Fix wrong position for color dialog and sticky popups when styling analysis (https://github.com/CartoDB/support/issues/1649 and https://github.com/CartoDB/support/issues/1673)
+* Fix incorrect metric event styling a layer (https://github.com/CartoDB/cartodb/issues/14183)
+* Fix legend for style by boolean field (https://github.com/CartoDB/support/issues/1647)
+* Fix disconnect from external data sources (gdrive, box and dropbox) for organization users (https://github.com/CartoDB/support/issues/1671)
 * Fix broken data tab when analyses or custom SQL are present (https://github.com/CartoDB/cartodb/issues/14169)
+* Don't render geometry columns that are not the_geom (https://github.com/CartoDB/support/issues/1404)
 * Use setView instead of flyTo to improve zoom transitions (https://github.com/CartoDB/carto.js/pull/2178)
 * Fix torque layers when filter analysis is added (https://github.com/CartoDB/support/issues/1038)
 * Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)
 * Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
 * Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
+* Twitter import only if enabled and with user/org configuration (https://github.com/CartoDB/support/issues/1612).
 * Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
 * Improve input image when color changes (https://github.com/CartoDB/cartodb/issues/11326)
 * Fix pagination buttons style (https://github.com/CartoDB/cartodb/issues/13456)
@@ -561,6 +568,7 @@ ion for time-series (#12670)
 * Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)
 * Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
+* Fix problem with visualization search when a visualization is shared with a user from multiple entities (Support #1451)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)
 * Fix random timeout in specs (#12625)
@@ -738,6 +746,7 @@ ion for time-series (#12670)
 * Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
 * Do not allow empty password in LDAP logins
 * Disable syncs for locked users (https://github.com/CartoDB/cartodb/issues/13832)
+* Invalidate varnish cache on api key changes
 * Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
@@ -763,6 +772,7 @@ ion for time-series (#12670)
 * Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
 * Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
 * Merge Deep-insights project in Cartodb (#13284)
+* Add caching headers for emebeds
 * Affected specs tasks now take into account multiple specs folders [PR #13295](https://github.com/CartoDB/cartodb/pull/13295)
 * Updated to Rails 4.2.10 (#11735)
 

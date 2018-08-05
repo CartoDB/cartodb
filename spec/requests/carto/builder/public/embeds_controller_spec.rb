@@ -92,6 +92,15 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.include?(@visualization.name).should be true
     end
 
+    it 'sends caching headers' do
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 200
+      response.headers['X-Cache-Channel'].should eq "#{@visualization.varnish_key}:vizjson"
+      response.headers['Surrogate-Key'].should eq "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+      response.headers['Cache-Control'].should eq "no-cache,max-age=86400,must-revalidate,public"
+    end
+
     describe 'connectivity issues' do
       it 'does not need connection to the user db' do
         @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user)
@@ -144,7 +153,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include("maps.googleapis.com/maps/api/js?v=3.30&client=wadus_cid")
+      response.body.should include("maps.googleapis.com/maps/api/js?v=3.32&client=wadus_cid")
     end
 
     it 'does not includes google maps if the maps does not need it' do
@@ -345,7 +354,7 @@ describe Carto::Builder::Public::EmbedsController do
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 200
-        response.body.should include("maps.googleapis.com/maps/api/js?v=3.30&client=wadus_org_cid")
+        response.body.should include("maps.googleapis.com/maps/api/js?v=3.32&client=wadus_org_cid")
       end
     end
   end

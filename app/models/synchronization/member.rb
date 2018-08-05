@@ -98,7 +98,7 @@ module CartoDB
       end
 
       def synchronizations_logger
-        @@synchronizations_logger ||= ::Logger.new(log_file_path("synchronizations.log"))
+        @@synchronizations_logger ||= CartoDB.unformatted_logger(log_file_path("synchronizations.log"))
       end
 
       def interval=(seconds=3600)

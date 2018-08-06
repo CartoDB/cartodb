@@ -1,15 +1,15 @@
 <div class="ApiKeysCTA-container">
   <div class="u-flex u-justifySpace">
     <div class="ApiKeysCTA-leftBox">
-      <p class="CDB-Text CDB-Size-large">Unlock the potential in your applications</p>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m">Create solutions using different add-ons and APIs.</p>
+      <p class="CDB-Text CDB-Size-large"><% t('admin.client_apps.api_keys_cta.unlock') %></p>
+      <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m"><% t('admin.client_apps.api_keys_cta.create') %></p>
     </div>
 
     <div class="ApiKeysCTA-rightBox">
       <div class="u-flex u-justifySpace u-alignCenter">
         <div>
-          <p class="CDB-Text CDB-Size-large">Engine</p>
-          <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m">Free for internal and non-commercial applications</p>
+          <p class="CDB-Text CDB-Size-large"><% t('admin.client_apps.api_keys_cta.engine') %></p>
+          <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m"><% t('admin.client_apps.api_keys_cta.free') %></p>
         </div>
 
         <a href="<%= current_user.upgrade_url(request.protocol) %>" class="CDB-Text CDB-Size-small is-semibold CDB-Button CDB-Button--primary u-upperCase">Discover</a>

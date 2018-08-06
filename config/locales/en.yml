@@ -11,3 +11,47 @@ en:
     title: 'Email or username'
     placeholder: 'email or username'
   password: 'password'
+  carto: 'CARTO'
+  sessions:
+    new:
+      login: 'Log in'
+      or_login_with: 'OR LOG IN WITH:'
+      dont_have_account: 'Don't have an account yet?'
+    account_error:
+      user: 'User '
+      auth_error: ' authentication error'
+      validate_account: 'You must validate your email account'
+      check_email: 'Please check your email inbox and click the "Activate your account" button in the welcome mail.'
+      resent_valid_part1: 'If you didn't receive your validation email, click <a href="'
+      resent_valid_part2: '">here</a> and a new email will be sent directly to you.'
+  admin:
+    client_apps:
+      api_key:
+        your_api_keys: 'Your API keys |'
+      api_keys_cta:
+        unlock: 'Unlock the potential in your applications'
+        create: 'Create solutions using different add-ons and APIs.'
+        engine: 'Engine'
+        free: 'Free for internal and non-commercial applications'
+      api_keys_form:
+        your_api: 'Your API Key'
+        no_api_key: 'No API key'
+        request_new: 'Request a new API key'
+        example_read: 'Example read private'
+        config_api: 'Configure API keys from external providers'
+        google_maps: 'Google Maps'
+        google_maps_query: 'This is your Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.'
+        google_maps_query_org_1: 'This is the '
+        google_maps_query_org_2: ' Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.'
+        google_maps_org_api: 'This is the organization Google Maps API key'
+        learn_more: 'Learn more about location app authorization and API key management '
+      oauth:
+        your_oauth: 'Your OAuth credentials |'
+        approve: 'Approve applications to act on their behalf without sharing your password'
+        consumer_key: 'Consumer key'
+        learn_more: 'Learn more about '
+        consumer_secret: 'Consumer secret'
+        request_token: 'Request token URL'
+        access_token: 'Access token URL'
+        learn_more: 'Learn more about location app authorization and API key management '
+        gen_keys: 'Generate new keys'

@@ -1677,6 +1677,12 @@
       "label": "Fix them"
     },
     "messages": {
+      "deleting-analysis": {
+        "title": "Delete nested analysis",
+        "body": "The selected analysis has one or more nested analysis that would be removed once this analysis is deleted. Proceed?",
+        "delete": "Delete",
+        "cancel": "Cancel"
+      },
       "layer-hidden": {
         "title": "Layer hidden",
         "body": "This layer is hidden. Changes won't be shown until you make it visible.",

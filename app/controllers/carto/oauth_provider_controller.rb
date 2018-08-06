@@ -20,13 +20,13 @@ module Carto
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
-    before_action :load_authorization, :verify_authorization_redirect_uri, only: [:token]
+    before_action :load_authorization_code, :verify_authorization_code_redirect_uri, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
-      return create_authorization if @oauth_app_user.try(:authorized?, @scopes)
+      return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
     end
 
     def authorize
@@ -38,14 +38,14 @@ module Carto
         @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_user.id, scopes: @scopes)
       end
 
-      create_authorization
+      create_authorization_code
     end
 
     def token
-      @authorization.exchange!
+      access_token = @authorization_code.exchange!
 
       response = {
-        access_token: @authorization.api_key.token,
+        access_token: access_token.api_key.token,
         token_type: 'bearer'
         # expires_in: seconds
         # refresh_token:
@@ -56,9 +56,9 @@ module Carto
 
     private
 
-    def create_authorization
-      authorization = @oauth_app_user.oauth_authorizations.create_with_code!(@redirect_uri)
-      redirect_to_oauth_app(code: authorization.code, state: @state)
+    def create_authorization_code
+      authorization_code = @oauth_app_user.oauth_authorization_codes.create!(redirect_uri: @redirect_uri)
+      redirect_to_oauth_app(code: authorization_code.code, state: @state)
     end
 
     def redirect_to_oauth_app(parameters)
@@ -135,9 +135,9 @@ module Carto
       @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_user.id)
     end
 
-    def load_authorization
-      @authorization = OauthAuthorization.find_by_code!(params[:code])
-      raise OauthProvider::Errors::InvalidGrant.new unless @authorization.oauth_app_user.oauth_app == @oauth_app
+    def load_authorization_code
+      @authorization_code = OauthAuthorizationCode.find_by_code!(params[:code])
+      raise OauthProvider::Errors::InvalidGrant.new unless @authorization_code.oauth_app_user.oauth_app == @oauth_app
     rescue ActiveRecord::RecordNotFound
       raise OauthProvider::Errors::InvalidGrant.new
     end
@@ -146,9 +146,9 @@ module Carto
       raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
     end
 
-    def verify_authorization_redirect_uri
+    def verify_authorization_code_redirect_uri
       # Redirect URI must match what was specified during authorization
-      if (@redirect_uri || @authorization.redirect_uri) && @redirect_uri != @authorization.redirect_uri
+      if (@redirect_uri || @authorization_code.redirect_uri) && @redirect_uri != @authorization_code.redirect_uri
         raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri must match the authorization request')
       end
     end

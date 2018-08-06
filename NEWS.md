@@ -22,6 +22,10 @@ This release introduces a new API Key system. In order to migrate existing users
 
 ### Bug fixes / enhancement
 * Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)
+### Bug fixes / enhancements
+* Update googlemaps api version to v3.32 (https://github.com/CartoDB/cartodb/issues/13902)
+* Fix wrong position for color dialog and sticky popups when styling analysis (https://github.com/CartoDB/support/issues/1649 and https://github.com/CartoDB/support/issues/1673)
+* Fix incorrect metric event styling a layer (https://github.com/CartoDB/cartodb/issues/14183)
 * Fix legend for style by boolean field (https://github.com/CartoDB/support/issues/1647)
 * Fix disconnect from external data sources (gdrive, box and dropbox) for organization users (https://github.com/CartoDB/support/issues/1671)
 * Fix broken data tab when analyses or custom SQL are present (https://github.com/CartoDB/cartodb/issues/14169)

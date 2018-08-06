@@ -4,9 +4,6 @@ require_dependency 'carto/oauth_provider/errors'
 
 module Carto
   class OauthAccessToken < ActiveRecord::Base
-    # Multiple of 3 for pretty base64
-    CODE_RANDOM_BYTES = 12
-
     belongs_to :oauth_app_user, inverse_of: :oauth_access_tokens
     belongs_to :api_key, inverse_of: :oauth_access_token, dependent: :destroy
 

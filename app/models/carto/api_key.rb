@@ -52,6 +52,7 @@ module Carto
     self.inheritance_column = :_type
 
     belongs_to :user
+    has_one :oauth_app_user, inverse_of: :api_key, dependent: :restrict_with_exception
 
     before_create :create_token, if: ->(k) { k.regular? && !k.token }
     before_create :create_db_config, if: ->(k) { k.regular? && !(k.db_role && k.db_password) }

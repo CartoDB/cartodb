@@ -54,7 +54,7 @@ module Carto
     self.inheritance_column = :_type
 
     belongs_to :user
-    has_one :oauth_authorization, inverse_of: :api_key, dependent: :restrict_with_exception
+    has_one :oauth_access_token, inverse_of: :api_key, dependent: :restrict_with_exception
 
     before_create :create_token, if: ->(k) { k.needs_setup? && !k.token }
     before_create :create_db_config, if: ->(k) { k.needs_setup? && !(k.db_role && k.db_password) }
@@ -121,7 +121,7 @@ module Carto
     end
 
     def self.build_oauth_key(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
-      create!(
+      new(
         user: user,
         type: TYPE_OAUTH,
         name: name,

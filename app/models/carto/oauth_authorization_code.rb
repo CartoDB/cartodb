@@ -3,7 +3,7 @@
 require_dependency 'carto/oauth_provider/errors'
 
 module Carto
-  class OauthAuthorization < ActiveRecord::Base
+  class OauthAuthorizationCode < ActiveRecord::Base
     # Multiple of 3 for pretty base64
     CODE_RANDOM_BYTES = 12
 
@@ -12,19 +12,24 @@ module Carto
     belongs_to :oauth_app_user, inverse_of: :oauth_authorization_codes
 
     validates :oauth_app_user, presence: true
+    validates :code, presence: true
 
-    def self.create_with_code!(redirect_uri)
-      create!(code: SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES), redirect_uri: redirect_uri)
-    end
+    before_validation :ensure_code_generated
 
     def exchange!
+      raise OauthProvider::Errors::InvalidGrant.new if expired?
+
       ActiveRecord::Base.transaction do
-        oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
         destroy!
+        oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
       end
     end
 
     private
+
+    def ensure_code_generated
+      self.code ||= SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES)
+    end
 
     def expired?
       created_at < Time.now - CODE_EXPIRATION_TIME

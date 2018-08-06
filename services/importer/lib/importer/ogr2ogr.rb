@@ -132,7 +132,8 @@ module CartoDB
 
       def file_too_big?
         (exit_code == 256 && command_output =~ /calloc failed/i) ||
-          (exit_code == 134 && command_output =~ /failed to acquire mutex/i) ||
+          (exit_code == 134) ||
+          (exit_code == 139) ||
           (exit_code == 35072 && command_output =~ /Killed/i) ||
           (exit_code == 32512 && command_output =~ /Cannot allocate memory/i)
       end

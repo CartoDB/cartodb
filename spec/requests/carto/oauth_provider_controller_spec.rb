@@ -16,7 +16,7 @@ describe Carto::OauthProviderController do
   end
 
   after(:each) do
-    @oauth_app.destroy
+    @oauth_app.reload.destroy
   end
 
   after(:all) do
@@ -113,13 +113,12 @@ describe Carto::OauthProviderController do
       oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload)
 
-      authorization = oau.oauth_authorizations.first
-      expect(authorization).to(be)
-      expect(authorization.code).to(be_present)
-      expect(authorization.api_key).not_to(be)
+      authorization_code = oau.oauth_authorization_codes.first
+      expect(authorization_code).to(be)
+      expect(authorization_code.code).to(be_present)
 
       expect(response.status).to(eq(302))
-      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
+      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
     end
 
     # TODO: Do not auto-consent if requesting more scopes
@@ -148,13 +147,12 @@ describe Carto::OauthProviderController do
     it 'with valid payload, creates an authorization and redirects back to the application with a code' do
       post oauth_provider_authorize_url(valid_payload)
 
-      authorization = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorizations.first
-      expect(authorization).to(be)
-      expect(authorization.code).to(be_present)
-      expect(authorization.api_key).not_to(be)
+      authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
+      expect(authorization_code).to(be)
+      expect(authorization_code.code).to(be_present)
 
       expect(response.status).to(eq(302))
-      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
+      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
     end
 
     it 'with valid payload and redirect URIs, creates an authorization and redirects back to the requested URI' do
@@ -162,14 +160,13 @@ describe Carto::OauthProviderController do
 
       post oauth_provider_authorize_url(valid_payload.merge(redirect_uri: 'https://domain3'))
 
-      authorization = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorizations.first
-      expect(authorization).to(be)
-      expect(authorization.code).to(be_present)
-      expect(authorization.redirect_uri).to(eq('https://domain3'))
-      expect(authorization.api_key).not_to(be)
+      authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
+      expect(authorization_code).to(be)
+      expect(authorization_code.code).to(be_present)
+      expect(authorization_code.redirect_uri).to(eq('https://domain3'))
 
       expect(response.status).to(eq(302))
-      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization.code))
+      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
       expect(response.location).to(start_with('https://domain3'))
     end
 
@@ -179,7 +176,8 @@ describe Carto::OauthProviderController do
   describe '#token' do
     before(:each) do
       @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-      @authorization = @oauth_app_user.oauth_authorizations.create_with_code!(nil)
+      @authorization_code = @oauth_app_user.oauth_authorization_codes.create!
+      @oauth_app_user.oauth_access_tokens.each(&:destroy)
     end
 
     let (:token_payload) do
@@ -187,32 +185,32 @@ describe Carto::OauthProviderController do
         client_id: @oauth_app.client_id,
         client_secret: @oauth_app.client_secret,
         grant_type: 'authorization_code',
-        code: @authorization.code
+        code: @authorization_code.code
       }
     end
 
     it 'with valid code returns an api key' do
       post_json oauth_provider_token_url(token_payload) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be_nil)
-        expect(@authorization.api_key).to(be)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_false)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be)
 
         expect(response.status).to(eq(200))
-        expect(response.body).to(eq(access_token: @authorization.api_key.token, token_type: "bearer"))
+        expect(response.body).to(eq(access_token: access_token.api_key.token, token_type: "bearer"))
       end
     end
 
     it 'with valid code and redirect uri returns an api key' do
       @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
-      @authorization.update!(redirect_uri: 'https://domain3')
+      @authorization_code.update!(redirect_uri: 'https://domain3')
 
       post_json oauth_provider_token_url(token_payload.merge(redirect_uri: 'https://domain3')) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be_nil)
-        expect(@authorization.api_key).to(be)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_false)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be)
 
         expect(response.status).to(eq(200))
-        expect(response.body).to(eq(access_token: @authorization.api_key.token, token_type: "bearer"))
+        expect(response.body).to(eq(access_token: access_token.api_key.token, token_type: "bearer"))
       end
     end
 
@@ -220,9 +218,9 @@ describe Carto::OauthProviderController do
       Delorean.jump(2.minutes)
 
       post_json oauth_provider_token_url(token_payload) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be)
-        expect(@authorization.api_key).to(be_nil)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_true)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be_nil)
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('invalid_grant'))
@@ -231,9 +229,9 @@ describe Carto::OauthProviderController do
 
     it 'with invalid code, returns error without creating the api key' do
       post_json oauth_provider_token_url(token_payload.merge(code: 'invalid')) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be)
-        expect(@authorization.api_key).to(be_nil)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_true)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be_nil)
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('invalid_grant'))
@@ -242,9 +240,9 @@ describe Carto::OauthProviderController do
 
     it 'with invalid client_id, returns error without creating the api key' do
       post_json oauth_provider_token_url(token_payload.merge(client_id: 'invalid')) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be)
-        expect(@authorization.api_key).to(be_nil)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_true)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be_nil)
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('invalid_client'))
@@ -253,9 +251,9 @@ describe Carto::OauthProviderController do
 
     it 'with invalid client_secret, returns error without creating the api key' do
       post_json oauth_provider_token_url(token_payload.merge(client_secret: 'invalid')) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be)
-        expect(@authorization.api_key).to(be_nil)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_true)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be_nil)
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('invalid_client'))
@@ -264,9 +262,9 @@ describe Carto::OauthProviderController do
 
     it 'with invalid grant_type, returns error without creating the api key' do
       post_json oauth_provider_token_url(token_payload.merge(grant_type: 'invalid')) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be)
-        expect(@authorization.api_key).to(be_nil)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_true)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be_nil)
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('unsupported_grant_type'))
@@ -275,9 +273,9 @@ describe Carto::OauthProviderController do
 
     it 'with invalid redirect_uri, returns error without creating the api key' do
       post_json oauth_provider_token_url(token_payload.merge(redirect_uri: 'invalid')) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be)
-        expect(@authorization.api_key).to(be_nil)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_true)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be_nil)
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('invalid_request'))
@@ -285,12 +283,12 @@ describe Carto::OauthProviderController do
     end
 
     it 'without redirect_uri, returns error without creating the api key' do
-      @authorization.update!(redirect_uri: @oauth_app.redirect_uris.first)
+      @authorization_code.update!(redirect_uri: @oauth_app.redirect_uris.first)
 
       post_json oauth_provider_token_url(token_payload) do |response|
-        @authorization.reload
-        expect(@authorization.code).to(be)
-        expect(@authorization.api_key).to(be_nil)
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_true)
+        access_token = @oauth_app_user.oauth_access_tokens.reload.first
+        expect(access_token).to(be_nil)
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('invalid_request'))

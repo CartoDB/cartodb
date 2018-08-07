@@ -491,7 +491,7 @@ module CartoDB
       end
 
       def grant_user_api_key_roles(user_id)
-        Carto::User.find(user_id).api_keys.select(&:regular?).each do |k|
+        Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
           k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
         end
       end

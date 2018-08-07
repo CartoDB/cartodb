@@ -2411,7 +2411,7 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
+          "body": "You just applied custom html with HTML editor. You can continue or clear all custom HTML.",
           "accept": "Clear custom html"
         }
       }
@@ -2568,14 +2568,12 @@
         "cartocss-applied": {
           "title": "CARTOCSS APPLIED",
           "body": "You just applied styles with CartoCSS. You can continue or clear all styles.",
-          "continue": "CONTINUE",
           "clear": "CLEAR"
         },
         "torque-exists": {
           "title": "TORQUE LAYER",
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will use the default style.",
-          "continue": "CONTINUE",
-          "cancel": "CANCEL"
+          "continue": "CONTINUE"
         }
       },
       "tooltips": {

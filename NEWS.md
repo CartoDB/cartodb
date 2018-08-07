@@ -25,7 +25,6 @@ This release introduces a new API Key system. In order to migrate existing users
 
 ### Bug fixes / enhancement
 * Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)
-### Bug fixes / enhancements
 * Fix histogram tooltips not being updated after column change (https://github.com/CartoDB/cartodb/issues/14155)
 * Update googlemaps api version to v3.32 (https://github.com/CartoDB/cartodb/issues/13902)
 * Fix wrong position for color dialog and sticky popups when styling analysis (https://github.com/CartoDB/support/issues/1649 and https://github.com/CartoDB/support/issues/1673)
@@ -101,6 +100,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
+* Added format option to load datasets into the data library (#14216)
 
 ### Internals
 * Re-enable sourcemaps in production, they were broken since the move to webpack v4 (https://github.com/CartoDB/cartodb/pull/14150)

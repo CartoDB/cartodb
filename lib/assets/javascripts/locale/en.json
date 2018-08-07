@@ -2412,7 +2412,7 @@
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
           "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
-          "accept": "CONTINUE"
+          "accept": "CLEAR"
         }
       }
     },

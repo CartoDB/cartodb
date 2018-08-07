@@ -94,7 +94,7 @@ namespace :cartodb do
     # Example: rake cartodb:remotes:load_in_data_library[https,carto.com,80,s_data,s_user,s_user_key,t_user,g_key, source_dataset, [format]]
     desc 'Loads a dataset in a Data Library. `granted_api_key` is the key that will be stored for importing.'
     task :load_in_data_library, load_in_data_library_args => [:environment] do |_, args|
-      raise "All arguments are mandatory" unless load_in_data_library_mandatory_with_source_args.all? { |a| args[a].present? }
+      raise "All arguments except format are mandatory" unless load_in_data_library_mandatory_with_source_args.all? { |a| args[a].present? }
       format_arg = args[:format] || 'gpkg'
 
       client = CartoAPI::JsonClient.new(
@@ -112,7 +112,7 @@ namespace :cartodb do
     task :remove_from_data_library, [:username, :visualization_name] => [:environment] do |_, args|
       username = args['username']
       name = args['visualization_name']
-      raise 'All Arguments are mandatory' unless username.present? && name.present?
+      raise 'All Arguments except format are mandatory' unless username.present? && name.present?
 
       user = Carto::User.find_by_username(username)
       raise 'User not found' unless user

@@ -7,7 +7,7 @@ module Carto
     # - granted_api_key is stored as the one to use for the importing
     def load_dataset!(carto_api_client,
                       source_dataset:, source_username:, source_api_key:,
-                      target_username:, granted_api_key:, format:)
+                      target_username:, granted_api_key:, format: 'gpkg')
       target_user = Carto::User.find_by_username(target_username)
       raise Carto::LoadError.new("User not found: #{target_username}") unless target_user
 
@@ -43,7 +43,7 @@ module Carto
 
     def load_datasets!(carto_api_client,
                        source_username:, source_api_key:,
-                       target_username:, granted_api_key:, format:)
+                       target_username:, granted_api_key:, format: 'gpkg')
       api_keys = carto_api_client.get_api_keys_v3(username: source_username, params: { api_key: granted_api_key })
       api_key = api_keys[:result].find { |key| key[:token] == granted_api_key }
 

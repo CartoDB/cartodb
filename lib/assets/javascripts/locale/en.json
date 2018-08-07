@@ -1677,6 +1677,9 @@
       "label": "Fix them"
     },
     "messages": {
+      "common": {
+        "cancel": "Cancel"
+      },
       "deleting-analysis": {
         "title": "Delete nested analysis",
         "body": "The selected analysis has one or more nested analysis that would be removed once this analysis is deleted. Proceed?",

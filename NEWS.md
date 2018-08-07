@@ -101,6 +101,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
+* Now you can limit the amount of memory used by ogr2ogr adding the `memory_limit` option in bytes to the ogr2ogr section of the `app_config.yml`
 
 ### Internals
 * Re-enable sourcemaps in production, they were broken since the move to webpack v4 (https://github.com/CartoDB/cartodb/pull/14150)

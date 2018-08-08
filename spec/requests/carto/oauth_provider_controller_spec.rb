@@ -196,7 +196,9 @@ describe Carto::OauthProviderController do
         expect(access_token).to(be)
 
         expect(response.status).to(eq(200))
-        expect(response.body).to(eq(access_token: access_token.api_key.token, token_type: "bearer"))
+        expect(response.body[:access_token]).to(eq(access_token.api_key.token))
+        expect(response.body[:token_type]).to(eq('bearer'))
+        expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
       end
     end
 
@@ -210,7 +212,9 @@ describe Carto::OauthProviderController do
         expect(access_token).to(be)
 
         expect(response.status).to(eq(200))
-        expect(response.body).to(eq(access_token: access_token.api_key.token, token_type: "bearer"))
+        expect(response.body[:access_token]).to(eq(access_token.api_key.token))
+        expect(response.body[:token_type]).to(eq('bearer'))
+        expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
       end
     end
 

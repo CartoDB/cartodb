@@ -1,6 +1,6 @@
 module MapsApiHelper
   def maps_api_template(privacy = 'private')
-    maps_api_url('{user}', privacty)
+    maps_api_url('{user}', privacy)
   end
 
   def maps_api_url(username, privacy = "private")

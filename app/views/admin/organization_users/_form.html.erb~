@@ -288,13 +288,13 @@
         </button>
 
         <button type="submit" class="CDB-Button CDB-Button--primary js-save">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><% t('admin.org_users.form.save') %></span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
         </button>
       </div>
     <% else %>
       <div class="FormAccount-footer u-justifyEnd">
         <button class="CDB-Button CDB-Button--primary js-save">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><% t('admin.org_users.form.save') %></span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
         </button>
       </div>
     <% end %>

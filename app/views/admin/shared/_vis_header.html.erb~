@@ -24,7 +24,7 @@
       <div class="right">
         <ul class="options">
           <li><%= link_to "Edit", "#/options", :class => "dropdown options" %></li>
-          <li><a class="rounded share" href="#/visualize"><span><% t('admin.shared.vis_head.visual') %></span></a></li>
+          <li><a class="rounded share" href="#/visualize"><span>VISUALIZE</span></a></li>
         </ul>
       </div>
     </div>

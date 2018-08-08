@@ -7,6 +7,6 @@
     <p class="CDB-Text CDB-Size-medium u-altTextColor"><% t('admin.shared.nores.try_the') %><%= link_to 'first page', @first_page_url %><% t('admin.shared.nores.instead') %></p>
   <% else  %>
     <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl"><%= @name %><% t('admin.shared.nores.no_public') %><%= @content_type === 'maps' ? t('maps') : t('datasets') %><% t('admin.shared.nores.yet') %></h3>
-    <p class="CDB-Text CDB-Size-medium u-altTextColor"><% t('admin.shared.nores.maybe') %><%= link_to @content_type === 'maps' ? t('datasets') : t('maps'), alt_url %></p>
+    <p class="CDB-Text CDB-Size-medium u-altTextColor">But maybe they have some very interesting <%= link_to @content_type === 'maps' ? t('datasets') : t('maps'), alt_url %></p>
   <% end %>
 </div>

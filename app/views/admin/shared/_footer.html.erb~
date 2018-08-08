@@ -14,11 +14,11 @@
 
     <ul class="Footer-list Footer-list--secondary">
       <% unless cartodb_com_hosted? %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="mailto:support@carto.com"><% t('admin.shared.footer.support') %></a></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="mailto:support@carto.com">Support</a></li>
       <% else %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="mailto:onpremise-support@carto.com"><% t('admin.shared.footer.support') %></a></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="mailto:onpremise-support@carto.com">Support</a></li>
       <% end %>
-      <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="mailto:contact@carto.com"><% t('admin.shared.footer.contact') %></a></li>
+      <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="mailto:contact@carto.com">Contact</a></li>
     </ul>
   </div>
 </div>

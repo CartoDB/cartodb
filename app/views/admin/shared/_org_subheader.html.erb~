@@ -32,7 +32,7 @@
         </li>
         <% if show_billing  %>
           <li class="Filters-typeItem">
-            <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink"><% t('admin.shared.org_subhead.billing') %></a>
+            <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a>
           </li>
         <% end %>
       </ul>

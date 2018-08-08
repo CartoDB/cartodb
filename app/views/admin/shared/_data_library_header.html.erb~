@@ -28,7 +28,7 @@
           </li>
 
           <li class="Header-navigationItem u-hideOnTablet">
-            <a href="https://carto.com/blog/" class="Header-navigationLink"><% t('blog') %></a>
+            <a href="https://carto.com/blog/" class="Header-navigationLink"><% t('admin.shared.data_lib.blog') %></a>
           </li>
         <% end %>
       </ul>

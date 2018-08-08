@@ -235,7 +235,7 @@
               <dd class="Footer-item"><a class="Footer-link" href="mailto:sales@carto.com"><% t('admin.shared.pub_footer.contact') %></a></dd>
               <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/request-live-demo/"><% t('admin.shared.pub_footer.demo') %></a></dd>
               <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/terms/"><% t('admin.shared.pub_footer.terms') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/legal/"><% t('admin.shared.pub_footer.legal') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/legal/">Legal</a></dd>
             </dl>
           </li>
         </ul>

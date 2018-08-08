@@ -92,6 +92,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 * Update extension to 0.22.2 to fix hyphenates usernames (cartodb-postgresql#331)
 * Update extension to 0.23.0 to add a new helper function `_CDB_Table_Exists(table_name_with_optional_schema TEXT)` (cartodb-postgresql#332)
+* Added format option to load datasets into the data library (#14216)
 * Log Resque errors (#14116)
 * Avoid creating double indices on sync (#14157)
 * Do not crash when checking nil password (#14099)

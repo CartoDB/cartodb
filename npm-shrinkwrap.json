@@ -1596,9 +1596,9 @@
       "resolved": "https://registry.npmjs.org/inline-source-map/-/inline-source-map-0.6.2.tgz"
     },
     "inquirer": {
-      "version": "6.0.0",
+      "version": "6.1.0",
       "from": "inquirer@>=6.0.0 <7.0.0",
-      "resolved": "https://registry.npmjs.org/inquirer/-/inquirer-6.0.0.tgz",
+      "resolved": "https://registry.npmjs.org/inquirer/-/inquirer-6.1.0.tgz",
       "dependencies": {
         "ansi-regex": {
           "version": "3.0.0",
@@ -1666,8 +1666,15 @@
     },
     "internal-carto.js": {
       "version": "4.1.2",
-      "from": "cartodb/carto.js#v4.1.2",
-      "resolved": "git://github.com/cartodb/carto.js.git#8f7c2121107e7f41a1d80d8930e3160ac64a3021"
+      "from": "cartodb/carto.js#fix-safari-drag",
+      "resolved": "git://github.com/cartodb/carto.js.git#31b5ea1a11fd2249ec57360a2aeb184bb463b4af",
+      "dependencies": {
+        "@carto/zera": {
+          "version": "1.0.6-staging.2",
+          "from": "@carto/zera@1.0.6-staging.2",
+          "resolved": "https://registry.npmjs.org/@carto/zera/-/zera-1.0.6-staging.2.tgz"
+        }
+      }
     },
     "interpret": {
       "version": "1.1.0",
@@ -2426,9 +2433,9 @@
       "resolved": "https://registry.npmjs.org/path-key/-/path-key-2.0.1.tgz"
     },
     "path-parse": {
-      "version": "1.0.5",
+      "version": "1.0.6",
       "from": "path-parse@>=1.0.5 <2.0.0",
-      "resolved": "https://registry.npmjs.org/path-parse/-/path-parse-1.0.5.tgz"
+      "resolved": "https://registry.npmjs.org/path-parse/-/path-parse-1.0.6.tgz"
     },
     "path-platform": {
       "version": "0.11.15",
@@ -2780,9 +2787,9 @@
       "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz"
     },
     "schema-utils": {
-      "version": "0.4.5",
+      "version": "0.4.7",
       "from": "schema-utils@>=0.4.4 <0.5.0",
-      "resolved": "https://registry.npmjs.org/schema-utils/-/schema-utils-0.4.5.tgz"
+      "resolved": "https://registry.npmjs.org/schema-utils/-/schema-utils-0.4.7.tgz"
     },
     "select": {
       "version": "1.1.2",
@@ -3417,9 +3424,9 @@
       "resolved": "https://registry.npmjs.org/utila/-/utila-0.4.0.tgz"
     },
     "v8-compile-cache": {
-      "version": "2.0.0",
+      "version": "2.0.2",
       "from": "v8-compile-cache@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/v8-compile-cache/-/v8-compile-cache-2.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/v8-compile-cache/-/v8-compile-cache-2.0.2.tgz"
     },
     "vm-browserify": {
       "version": "0.0.4",

@@ -5,6 +5,7 @@
     "required": [
       "type"
     ],
+    "additionalProperties": false,
     "properties": {
       "type": {
         "type": "string",
@@ -33,6 +34,7 @@
             "name",
             "permissions"
           ],
+          "additionalProperties": false,
           "properties": {
             "schema": {
               "type": "string"
@@ -52,11 +54,9 @@
                 ]
               }
             }
-          },
-          "additionalProperties": false
+          }
         }
       }
-    },
-    "additionalProperties": false
+    }
   }
 }

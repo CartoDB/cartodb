@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require 'byebug'
 
 require_relative '../../models/carto/shared_entity'
 require_dependency 'carto/bounding_box_utils'
@@ -35,6 +36,8 @@ class Carto::VisualizationQueryBuilder
     ) @@ plainto_tsquery('english', ?)
     OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
   }
+
+  PATTERN_ESCAPE_CHARS = ['_'].freeze
 
   def initialize
     @include_associations = []
@@ -174,8 +177,12 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_partial_match(tainted_search_pattern)
-    @tainted_search_pattern = tainted_search_pattern
+    @tainted_search_pattern = escape_characters_from_pattern(tainted_search_pattern)
     self
+  end
+
+  def escape_characters_from_pattern(pattern)
+    pattern.scan(/\w/).map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)

@@ -1,7 +1,6 @@
 # encoding: UTF-8
 
 require 'active_record'
-require 'byebug'
 
 require_relative '../../models/carto/shared_entity'
 require_dependency 'carto/bounding_box_utils'

@@ -51,7 +51,11 @@ var Vis = View.extend({
     this.$el.html(this.mapView.el);
 
     // Bind events before the view is rendered and layer views are added to the map
-    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
+    this.listenTo(this.mapView, 'newLayerView', this._bindLayerViewToLoader);
+    // Trigger click event in map model
+    this.listenTo(this.mapView, 'click', function () {
+      this.model.trigger('click');
+    });
     this.mapView.render();
   },
 

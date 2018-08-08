@@ -36,7 +36,11 @@ class ApplicationController < ActionController::Base
 
   def self.ssl_required(*splat)
     if Rails.env.production? || Rails.env.staging?
-      force_ssl only: splat
+      if splat.any?
+        force_ssl only: splat
+      else
+        force_ssl
+      end
     end
   end
 

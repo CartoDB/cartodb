@@ -80,6 +80,11 @@ CartoDB::Application.routes.draw do
     get '/github' => 'oauth_login#github', as: :github
     get '/google/oauth' => 'oauth_login#google', as: :google_oauth
     get '/saml/metadata' => 'saml#metadata'
+
+    # Oauth2 provider
+    get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
+    post '/oauth2/authorize', to: 'oauth_provider#authorize'
+    post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization

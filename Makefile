@@ -254,6 +254,10 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/layer_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/notification_spec.rb \
+	spec/models/carto/oauth_access_token_spec.rb \
+	spec/models/carto/oauth_app_spec.rb \
+	spec/models/carto/oauth_app_user_spec.rb \
+	spec/models/carto/oauth_authorization_code_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/carto/rate_limit_spec.rb \
 	spec/models/carto/received_notification_spec.rb \
@@ -271,6 +275,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/users_controller_spec.rb \
 	spec/requests/carto/api/table_presenter_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/oauth_provider_controller_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \

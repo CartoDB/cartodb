@@ -7,6 +7,7 @@ defaults: &defaults
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     true
+    memory_limit:
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'

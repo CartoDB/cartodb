@@ -75,10 +75,24 @@ module Carto
 
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.scopes).to(eq(refresh_token.scopes))
 
         expect(refresh_token).to(eq(@refresh_token))
         expect(refresh_token.token).to_not(eq(prev_token))
         expect(refresh_token.updated_at).to_not(eq(prev_updated_at))
+      end
+
+      it 'creates a new access token with reduced scopes if asked to' do
+        access_token, refresh_token = @refresh_token.exchange!(requested_scopes: [])
+
+        expect(access_token.scopes).to(eq([]))
+        expect(refresh_token.scopes).to(eq(['offline']))
+      end
+
+      it 'throws an error if requesting more scopes than available' do
+        expect { @refresh_token.exchange!(requested_scopes: ['not_there']) }.to(
+          raise_error(OauthProvider::Errors::InvalidScope)
+        )
       end
     end
   end

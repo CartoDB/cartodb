@@ -21,13 +21,15 @@ module Carto
 
     scope :expired, -> { where('updated_at < ?', Time.now - REFRESH_TOKEN_EXPIRATION_TIME) }
 
-    def exchange!
+    def exchange!(requested_scopes: scopes)
       raise OauthProvider::Errors::InvalidGrant.new if expired?
+      invalid_scopes = requested_scopes - scopes
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
 
       ActiveRecord::Base.transaction do
         regenerate_token
         save!
-        [oauth_app_user.oauth_access_tokens.create!(scopes: scopes), self]
+        [oauth_app_user.oauth_access_tokens.create!(scopes: requested_scopes), self]
       end
     end
 

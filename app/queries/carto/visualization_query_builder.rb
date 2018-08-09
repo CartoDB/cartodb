@@ -36,7 +36,7 @@ class Carto::VisualizationQueryBuilder
     OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
   }
 
-  PATTERN_ESCAPE_CHARS = ['_'].freeze
+  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
 
   def initialize
     @include_associations = []

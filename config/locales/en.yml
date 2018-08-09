@@ -21,6 +21,13 @@ en:
   pricing: 'Pricing'
   solutions: 'Solutions'
   blog: 'Blog'
+  safari: 'Safari'
+  chrome: 'Chrome'
+  firefox: 'Firefox'
+  name: 'Name'
+  description: 'Description'
+  platform: 'Platform'
+  here: 'here'
   day:
     one: 'day'
     other: 'days'
@@ -109,7 +116,6 @@ en:
         check_your: 'Check your '
         public_page: 'public page'
         website: 'Website'
-        desc: 'Description'
         twitter_name: 'Twitter username'
         disqus_name: 'Disqus shortname'
         be_notif: 'Be notified by new comments in your pages'
@@ -278,3 +284,120 @@ en:
         contact: 'CONTACT SALES'
         payment: 'ADD PAYMENT METHOD'
         delete: 'DELETE ACCOUNT'
+    visual:
+      public:
+        old_public:
+          create: 'Create your own maps'
+          terms: 'Terms of Service'
+          privacy: 'Privacy policy'
+      embed_map:
+        map_created: 'Map created by #{@name} in CARTO'
+        upgrade_browser: 'This visualization only works in modern browsers. Upgrade yours and enjoy.'
+      embed_error:
+        private: 'Looks like this map is set as private or no longer exists'
+      embed_pwd:
+        protected: 'Protected embed'
+        passwd: 'This embed is protected with password'
+      public_data:
+        maps: 'Maps using this dataset'
+      public_map:
+        datasets: 'Datasets in use'
+        more: 'More from '
+      public_pwd:
+        protected: 'Protected map'
+        passwd: 'This map is protected with password'
+  carto:
+    admin:
+      mobile:
+        form:
+          icon: 'App icon'
+          recommended: 'Recommended images should be 128x128 pixels of size'
+          type: 'App type'
+          license: 'License key'
+          api: 'Your API Key'
+          quota: 'Application quota'
+          monthly: ' monthly users'
+          delete: 'Delete application'
+          sure: 'Are you sure?'
+          this: 'Delete this application'
+        mobile:
+          expand: 'Expand quota'
+          open: ' monthly open users'
+          private: ' monthly private users'
+        new:
+          new_mobile: 'New mobile application |'
+          new_app: 'New application'
+        no_mobile:
+          no_app: 'You have not added any application yet.'
+          learn: 'Learn more about the power of our mobile SDK '
+    builder:
+      public:
+        embeds:
+          show:
+            untitled: 'Untitled map'
+            created: 'Map created by '
+            in_carto: ' in CARTO'
+          protected:
+            map: 'Protected map — CARTO'
+            passwd: 'This map is protected with password'
+            contact: 'Contact with the owner in case you want access to it.'
+  datalib:
+    index:
+      datalib: 'CARTO · Data Library'
+      incorporate: 'Incorporate your data with datasets from CARTO and create insightful visualizations that leverage big data and location intelligence.'
+      keywords: 'location intelligence, dataset, big data, location services, CARTO'
+      information: 'From our Data Library or your dashboard you can access through a single click a collection of datasets that contain a wide variety of information. Explore within our data library: World Borders, European Countries, Urban Areas, and Populated Places.'
+      disparate: 'From your dashboard access an abundance of datasets from our data library. We have data for your disparate&nbsp;needs.'
+      aggregated: "We’ve aggregated many different data sources to make it easy for you to search and uncover the datasets that are right for&nbsp;you."
+      seamless: 'With open data you can start mapping the world around you seamlessly and with a few clicks directly from your&nbsp;dashboard.'
+  explore:
+    index:
+      explore: 'CARTO &mdash; Explore'
+      discover: 'Discover insights through maps, data visualizations, and datasets. Everything related to big data and location intelligence is just one click away.'
+  geocoder:
+    finished:
+      msg1: 'We've successfully geocoded '
+      msg2: ' out of '
+      msg3: ' points from '
+      errors: "Rows that are not geocoded could have errors on their column values, or just doesn't exist in our data. "
+      try_again: 'To try again set "Override all values" checkbox for those rows you want to geocode try again.'
+  home:
+    app_diag:
+      diag: 'CARTO Diagnosis'
+      dependencies: 'This page displays information about your installation of CARTO and dependencies. If any of the checks displays an error please follow instructions and install supported versions.'
+      problem: 'If you have any problem with your installation please write to '
+      google: 'CARTO Google Group'
+      include: ' including this information.'
+  import:
+    data:
+      msg1: 'Your dataset '
+      msg2: ' was successfully imported'
+      error: 'There was some error while importing your dataset '
+      out: ' out of '
+      imported: ' were successfully imported'
+  layouts:
+    app_passwd:
+      title: ' | CARTO'
+      contact: 'Contact with the owner in case you want access to it.'
+    app_public:
+      keywords: ', datasets, maps, data visualization, spatial data, geospatial, CARTO'
+    app_table:
+      keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
+    frontend:
+      desc: 'Create dynamic maps, analyze and build location-aware and geospatial applications with your data using the power of PostGIS in the cloud.'
+  mailer:
+    footer:
+      msg: 'CARTO · Made in Madrid & New York City since 2012'
+  oauth:
+    author:
+      msg1: ' wants to connect to your CARTO database. This means that '
+      msg2: ' will be able to modify, create and delete fields from your database.'
+      authorize: 'Authorize access'
+    failure:
+      msg1: 'You have denied the oauth access for '
+      msg2: '. You can change this setting later if you reconsider.'
+    success:
+      msg: 'You have allowed this request'
+  org_mailer:
+    invite:
+      hello: 'Hello and welcome!'

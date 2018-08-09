@@ -1,8 +1,8 @@
 
 <section class="sessions shadow">
   <div class="content">
-    <h2><%= @token.client_application.user.username %> CARTO</h2>
-    <p class="margin15 light"><%= @token.client_application.user.username %> wants to connect to your CARTO database. This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
+    <h2><%= @token.client_application.user.username t('carto')%></h2>
+    <p class="margin15 light"><%= @token.client_application.user.username %><% t('oauth.author.msg1') %><%= @token.client_application.user.username %><% t('oauth.author.msg2') %></p>
 
     <%= form_tag authorize_url do %>
       <%= hidden_field_tag "oauth_token", @token.token %>
@@ -10,7 +10,7 @@
         <%= hidden_field_tag "oauth_callback", params[:oauth_callback] %>
       <%- end -%>
       <div class="field border margin20">
-        <p class="light center margin10"><%= check_box_tag 'authorize' %>Authorize access</p>
+        <p class="light center margin10"><%= check_box_tag 'authorize' %><% t('oauth.author.authorize') %></p>
       </div>
       <%= submit_tag 'Allow connection', :class => "button green border sessions margin20" %>
     <% end %>

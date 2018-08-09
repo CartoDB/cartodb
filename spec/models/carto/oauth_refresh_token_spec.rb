@@ -71,13 +71,14 @@ module Carto
         prev_token = @refresh_token.token
         prev_updated_at = @refresh_token.updated_at
 
-        access_token = @refresh_token.exchange!
+        access_token, refresh_token = @refresh_token.exchange!
 
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
 
-        expect(@refresh_token.token).to_not(eq(prev_token))
-        expect(@refresh_token.updated_at).to_not(eq(prev_updated_at))
+        expect(refresh_token).to(eq(@refresh_token))
+        expect(refresh_token.token).to_not(eq(prev_token))
+        expect(refresh_token.updated_at).to_not(eq(prev_updated_at))
       end
     end
   end

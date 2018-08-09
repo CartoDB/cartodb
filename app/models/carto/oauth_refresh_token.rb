@@ -27,7 +27,7 @@ module Carto
       ActiveRecord::Base.transaction do
         regenerate_token
         save!
-        oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
+        [oauth_app_user.oauth_access_tokens.create!(scopes: scopes), self]
       end
     end
 

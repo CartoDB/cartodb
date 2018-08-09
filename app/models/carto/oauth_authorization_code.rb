@@ -24,7 +24,11 @@ module Carto
 
       ActiveRecord::Base.transaction do
         destroy!
-        oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
+        access_token = oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
+        if scopes.include?(SCOPE_OFFLINE)
+          refresh_token = oauth_app_user.oauth_refresh_tokens.create!(scopes: scopes)
+        end
+        [access_token, refresh_token]
       end
     end
 

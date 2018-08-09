@@ -45,14 +45,15 @@ module Carto
     end
 
     def token
-      access_token = token_strategy.authorize!(@oauth_app, params)
+      access_token, refresh_token = token_strategy.authorize!(@oauth_app, params)
 
       response = {
         access_token: access_token.api_key.token,
         token_type: 'bearer',
         expires_in: access_token.expires_in
-        # refresh_token:
       }
+
+      response[:refresh_token] = refresh_token.token if refresh_token
 
       render(json: response)
     end

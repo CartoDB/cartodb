@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/scopes'
 
 module Carto
@@ -21,6 +22,8 @@ module Carto
     scope :expired, -> { where('updated_at < ?', Time.now - REFRESH_TOKEN_EXPIRATION_TIME) }
 
     def exchange!
+      raise OauthProvider::Errors::InvalidGrant.new if expired?
+
       ActiveRecord::Base.transaction do
         regenerate_token
         save!
@@ -29,6 +32,10 @@ module Carto
     end
 
     private
+
+    def expired?
+      updated_at < Time.now - REFRESH_TOKEN_EXPIRATION_TIME
+    end
 
     def check_offline_scope
       errors.add(:scopes, "must contain `#{SCOPE_OFFLINE}`") unless scopes.include?(SCOPE_OFFLINE)

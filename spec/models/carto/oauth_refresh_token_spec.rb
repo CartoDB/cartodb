@@ -50,6 +50,13 @@ module Carto
         @refresh_token.destroy
       end
 
+      it 'fails if the token is expired' do
+        @refresh_token.updated_at -= 1.year
+        @refresh_token.save!
+
+        expect { @refresh_token.exchange! }.to(raise_error(OauthProvider::Errors::InvalidGrant))
+      end
+
       it 'creates a new access token and regenerated the code and updated_at' do
         prev_token = @refresh_token.token
         prev_updated_at = @refresh_token.updated_at

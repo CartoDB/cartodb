@@ -294,6 +294,18 @@ describe Carto::OauthProviderController do
         end
       end
 
+      it 'with expired token, returns error without creating the api key' do
+        Delorean.jump 1.year
+
+        post_json oauth_provider_token_url(refresh_token_payload) do |response|
+          access_token = @oauth_app_user.oauth_access_tokens.reload.first
+          expect(access_token).to(be_nil)
+
+          expect(response.status).to(eq(400))
+          expect(response.body[:error]).to(eq('invalid_grant'))
+        end
+      end
+
       it 'with invalid code, returns error without creating the api key' do
         post_json oauth_provider_token_url(refresh_token_payload.merge(refresh_token: 'invalid')) do |response|
           access_token = @oauth_app_user.oauth_access_tokens.reload.first

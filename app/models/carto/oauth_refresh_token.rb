@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_dependency 'carto/oauth_provider/errors'
+require_dependency 'carto/oauth_provider/scopes'
 
 module Carto
   class OauthRefreshToken < ActiveRecord::Base
@@ -35,7 +35,7 @@ module Carto
     end
 
     def regenerate_token
-      self.token = SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES)
+      self.token = SecureRandom.urlsafe_base64(TOKEN_RANDOM_BYTES)
     end
   end
 end

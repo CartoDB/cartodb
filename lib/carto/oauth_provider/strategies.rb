@@ -16,6 +16,17 @@ module Carto
           raise OauthProvider::Errors::InvalidGrant.new
         end
       end
+
+      module RefreshTokenStrategy
+        def self.authorize!(oauth_app, params)
+          refresh_token = OauthRefreshToken.find_by_token!(params[:refresh_token])
+          raise OauthProvider::Errors::InvalidGrant.new unless refresh_token.oauth_app_user.oauth_app == oauth_app
+
+          refresh_token.exchange!
+        rescue ActiveRecord::RecordNotFound
+          raise OauthProvider::Errors::InvalidGrant.new
+        end
+      end
     end
   end
 end

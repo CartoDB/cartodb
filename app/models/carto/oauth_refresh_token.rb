@@ -18,6 +18,14 @@ module Carto
 
     scope :expired, -> { where('updated_at < ?', Time.now - REFRESH_TOKEN_EXPIRATION_TIME) }
 
+    def exchange!
+      ActiveRecord::Base.transaction do
+        regenerate_token
+        save!
+        oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
+      end
+    end
+
     private
 
     def check_offline_scope

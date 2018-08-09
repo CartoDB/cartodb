@@ -19,6 +19,8 @@ module Carto
 
     before_validation :ensure_code_generated
 
+    scope :expired, -> { where('created_at < ?', Time.now - CODE_EXPIRATION_TIME) }
+
     def exchange!
       raise OauthProvider::Errors::InvalidGrant.new if expired?
 

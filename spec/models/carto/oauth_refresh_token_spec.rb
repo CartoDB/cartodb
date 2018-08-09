@@ -57,6 +57,16 @@ module Carto
         expect { @refresh_token.exchange! }.to(raise_error(OauthProvider::Errors::InvalidGrant))
       end
 
+      it 'can exchange multiple times while it has been used in the last 6 months' do
+        @refresh_token.exchange!
+        Delorean.jump(4.months)
+        @refresh_token.exchange!
+        Delorean.jump(4.months)
+        @refresh_token.exchange!
+        Delorean.jump(7.months)
+        expect { @refresh_token.exchange! }.to(raise_error(OauthProvider::Errors::InvalidGrant))
+      end
+
       it 'creates a new access token and regenerated the code and updated_at' do
         prev_token = @refresh_token.token
         prev_updated_at = @refresh_token.updated_at

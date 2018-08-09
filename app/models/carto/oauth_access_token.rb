@@ -13,10 +13,11 @@ module Carto
     belongs_to :api_key, inverse_of: :oauth_access_token, dependent: :destroy
 
     validates :oauth_app_user, presence: true
-    validates :api_key, presence: true
+
     validates :scopes, scopes: true
 
     before_validation :ensure_api_key
+    after_create :rename_api_key
 
     scope :expired, -> { where('created_at < ?', Time.now - ACCESS_TOKEN_EXPIRATION_TIME) }
 
@@ -28,9 +29,14 @@ module Carto
 
     def ensure_api_key
       self.api_key ||= oauth_app_user.user.api_keys.build_oauth_key(
-        name: "oauth_authorization #{id}",
+        name: "oauth_authorization #{SecureRandom.uuid}",
         grants: [{ type: 'apis', apis: [] }]
       )
+    end
+
+    def rename_api_key
+      # Rename after creation so we have the ID
+      api_key.update!(name: "oauth_authorization #{id}")
     end
   end
 end

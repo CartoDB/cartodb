@@ -14,6 +14,8 @@ module Carto
 
     before_validation :ensure_api_key
 
+    scope :expired, -> { where('created_at < ?', Time.now - ACCESS_TOKEN_EXPIRATION_TIME) }
+
     def expires_in
       created_at + ACCESS_TOKEN_EXPIRATION_TIME - Time.now
     end

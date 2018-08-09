@@ -199,6 +199,7 @@ describe Carto::OauthProviderController do
           expect(response.body[:access_token]).to(eq(access_token.api_key.token))
           expect(response.body[:token_type]).to(eq('bearer'))
           expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
+          expect(response.body[:refresh_token]).to(be_nil)
         end
       end
 
@@ -392,7 +393,7 @@ describe Carto::OauthProviderController do
       # Request authorization
       state = '123qweasdzxc'
       visit "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=#{state}" \
-            "&response_type=code&redirect_uri=#{redirect_uri}"
+            "&response_type=code&scope=offline&redirect_uri=#{redirect_uri}"
 
       begin
         click_on 'Accept'
@@ -422,11 +423,46 @@ describe Carto::OauthProviderController do
 
       api_key = token_response[:access_token]
       me_url = token_response[:user_info_url]
+      refresh_token = token_response[:refresh_token]
 
       expect(api_key).to(be)
       expect(me_url).to(be)
+      expect(refresh_token).to(be)
 
+      # Try to use the access token
       # TODO: use bearer auth
+      get_json "#{me_url}?api_key=#{api_key}" do |response|
+        expect(response.status).to(eq(200))
+
+        expect(response.body[:username]).to(eq(@user.username))
+      end
+
+      # Access token expiration, should no longer work
+      Delorean.jump(2.hours)
+      Rake.application.rake_require('tasks/oauth')
+      Rake::Task.define_task(:environment)
+      Rake::Task['cartodb:oauth:destroy_expired_access_tokens'].invoke
+
+      get_json "#{me_url}?api_key=#{api_key}" do |response|
+        expect(response.status).to(eq(401))
+      end
+
+      # Get a new acess token using refresh token
+      payload = {
+        client_id: @oauth_app.client_id,
+        client_secret: @oauth_app.client_secret,
+        grant_type: 'refresh_token',
+        refresh_token: refresh_token
+      }
+      token_response = post_json oauth_provider_token_url(payload) do |response|
+        expect(response.status).to(eq(200))
+
+        response.body
+      end
+
+      api_key = token_response[:access_token]
+      expect(api_key).to(be)
+
       get_json "#{me_url}?api_key=#{api_key}" do |response|
         expect(response.status).to(eq(200))
 

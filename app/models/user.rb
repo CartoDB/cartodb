@@ -191,6 +191,8 @@ class User < Sequel::Model
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
 
+    validates_presence :job_role
+
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?

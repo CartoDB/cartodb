@@ -202,6 +202,24 @@ describe Carto::OauthProviderController do
         end
       end
 
+      it 'with valid code and offline scope returns an api key and refresh token' do
+        @authorization_code.update!(scopes: ['offline'])
+
+        post_json oauth_provider_token_url(auth_code_token_payload) do |response|
+          expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_false)
+          access_token = @oauth_app_user.oauth_access_tokens.reload.first
+          expect(access_token).to(be)
+
+          expect(response.status).to(eq(200))
+          expect(response.body[:access_token]).to(eq(access_token.api_key.token))
+          expect(response.body[:token_type]).to(eq('bearer'))
+          expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
+
+          refresh_token = @oauth_app_user.oauth_refresh_tokens.find_by_token(response.body[:refresh_token])
+          expect(refresh_token).to(be)
+        end
+      end
+
       it 'with valid code and redirect uri returns an api key' do
         @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
         @authorization_code.update!(redirect_uri: 'https://domain3')
@@ -291,6 +309,7 @@ describe Carto::OauthProviderController do
           expect(response.body[:access_token]).to(eq(access_token.api_key.token))
           expect(response.body[:token_type]).to(eq('bearer'))
           expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
+          expect(response.body[:refresh_token]).to(eq(@refresh_token.token))
         end
       end
 

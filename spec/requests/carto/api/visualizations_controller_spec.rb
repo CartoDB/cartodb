@@ -378,8 +378,8 @@ describe Carto::Api::VisualizationsController do
       body['total_entries'].should == 2
       body['total_user_entries'].should == 4
 
-      body = response_body(q: '_patata', type: CartoDB::Visualization::Member::TYPE_DERIVED)
-      body['total_entries'].should == 2
+      body = response_body(q: '_atata', type: CartoDB::Visualization::Member::TYPE_DERIVED)
+      body['total_entries'].should == 0
       body['total_user_entries'].should == 4
     end
 

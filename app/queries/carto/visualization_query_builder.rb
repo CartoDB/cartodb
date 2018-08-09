@@ -181,7 +181,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def escape_characters_from_pattern(pattern)
-    pattern.scan(/\w/).map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
+    pattern.chars.map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)

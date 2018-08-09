@@ -121,7 +121,14 @@ describe Carto::OauthProviderController do
       expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
     end
 
-    # TODO: Do not auto-consent if requesting more scopes
+    it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
+      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+      get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+
+      expect(response.status).to(eq(200))
+      expect(response.body).to(include(valid_payload[:client_id]))
+      expect(response.body).to(include(valid_payload[:state]))
+    end
   end
 
   describe '#authorize' do
@@ -170,7 +177,21 @@ describe Carto::OauthProviderController do
       expect(response.location).to(start_with('https://domain3'))
     end
 
-    # TODO: Upgrade oauth_app_user if requesting more scopes
+    it 'with valid payload, and a pre-existing grant, upgrades it adding more scopes' do
+      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+      post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+
+      expect(oau.scopes).to(eq([]))
+      oau.reload
+      expect(oau.scopes).to(eq(['offline']))
+
+      authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
+      expect(authorization_code).to(be)
+      expect(authorization_code.code).to(be_present)
+
+      expect(response.status).to(eq(302))
+      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
+    end
   end
 
   describe '#token' do

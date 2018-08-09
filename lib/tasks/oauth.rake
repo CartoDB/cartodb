@@ -8,7 +8,7 @@ namespace :cartodb do
       Carto::OauthAccessToken.expired.find_each do |token|
         begin
           token.destroy!
-        rescue => e
+        rescue StandardError => e
           CartoDB::Logger.error(message: 'Could not destroy expired access token', exception: e)
         end
       end
@@ -19,7 +19,7 @@ namespace :cartodb do
       Carto::OauthAuthorizationCode.expired.find_each do |code|
         begin
           code.destroy!
-        rescue => e
+        rescue StandardError => e
           CartoDB::Logger.error(message: 'Could not destroy expired authorization code', exception: e)
         end
       end
@@ -30,7 +30,7 @@ namespace :cartodb do
       Carto::OauthRefreshToken.expired.find_each do |code|
         begin
           code.destroy!
-        rescue => e
+        rescue StandardError => e
           CartoDB::Logger.error(message: 'Could not destroy expired refresh token', exception: e)
         end
       end

@@ -122,7 +122,7 @@ describe Carto::OauthProviderController do
     end
 
     it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
-      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+      @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
 
       expect(response.status).to(eq(200))

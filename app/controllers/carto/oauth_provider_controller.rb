@@ -8,7 +8,7 @@ module Carto
     TOKEN_STRATEGIES = {
       'authorization_code' => OauthProvider::Strategies::AuthorizationCodeStrategy,
       'refresh_token' => OauthProvider::Strategies::RefreshTokenStrategy
-    }
+    }.freeze
     SUPPORTED_RESPONSE_TYPES = ['code'].freeze
 
     ssl_required

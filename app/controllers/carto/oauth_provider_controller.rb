@@ -46,8 +46,8 @@ module Carto
 
       response = {
         access_token: access_token.api_key.token,
-        token_type: 'bearer'
-        # expires_in: seconds
+        token_type: 'bearer',
+        expires_in: access_token.expires_in
         # refresh_token:
       }
 

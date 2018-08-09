@@ -22,7 +22,11 @@ module Carto
           refresh_token = OauthRefreshToken.find_by_token!(params[:refresh_token])
           raise OauthProvider::Errors::InvalidGrant.new unless refresh_token.oauth_app_user.oauth_app == oauth_app
 
-          refresh_token.exchange!
+          if params[:scope]
+            refresh_token.exchange!(requested_scopes: params[:scope].split(' '))
+          else
+            refresh_token.exchange!
+          end
         rescue ActiveRecord::RecordNotFound
           raise OauthProvider::Errors::InvalidGrant.new
         end

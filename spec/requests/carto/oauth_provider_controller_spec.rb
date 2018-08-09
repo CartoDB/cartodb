@@ -328,6 +328,22 @@ describe Carto::OauthProviderController do
           access_token = @oauth_app_user.oauth_access_tokens.reload.first
           expect(access_token).to(be)
           expect { @refresh_token.reload }.to(change { @refresh_token.token })
+          expect(access_token.scopes).to(eq(@refresh_token.scopes))
+
+          expect(response.status).to(eq(200))
+          expect(response.body[:access_token]).to(eq(access_token.api_key.token))
+          expect(response.body[:token_type]).to(eq('bearer'))
+          expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
+          expect(response.body[:refresh_token]).to(eq(@refresh_token.token))
+        end
+      end
+
+      it 'with valid token and explicit scopes returns a restricted api key' do
+        post_json oauth_provider_token_url(refresh_token_payload.merge(scope: '')) do |response|
+          access_token = @oauth_app_user.oauth_access_tokens.reload.first
+          expect(access_token).to(be)
+          expect { @refresh_token.reload }.to(change { @refresh_token.token })
+          expect(access_token.scopes).to(eq([]))
 
           expect(response.status).to(eq(200))
           expect(response.body[:access_token]).to(eq(access_token.api_key.token))

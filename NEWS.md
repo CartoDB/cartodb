@@ -18,9 +18,10 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
-* Oauth provider (WIP)
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
   * Data model (#14163)
   * Consent screen backend (#14164)
+  * New endpoint for user information, `/api/v4/me` (#14229)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement

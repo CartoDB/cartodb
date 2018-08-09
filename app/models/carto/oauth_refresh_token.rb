@@ -4,6 +4,8 @@ require_dependency 'carto/oauth_provider/scopes'
 
 module Carto
   class OauthRefreshToken < ActiveRecord::Base
+    include OauthProvider::Scopes
+
     # Multiple of 3 for pretty base64
     TOKEN_RANDOM_BYTES = 15
     REFRESH_TOKEN_EXPIRATION_TIME = 6.months
@@ -11,7 +13,7 @@ module Carto
     belongs_to :oauth_app_user, inverse_of: :oauth_refresh_tokens
 
     validates :oauth_app_user, presence: true
-    validates :scopes, presence: true
+    validates :scopes, scopes: true
     validate  :check_offline_scope
 
     before_create :regenerate_token
@@ -29,9 +31,7 @@ module Carto
     private
 
     def check_offline_scope
-      unless scopes.include?(OauthProvider::Scopes::OFFLINE)
-        errors.add(:scopes, "must contain `#{OauthProvider::Scopes::OFFLINE}`")
-      end
+      errors.add(:scopes, "must contain `#{SCOPE_OFFLINE}`") unless scopes.include?(SCOPE_OFFLINE)
     end
 
     def regenerate_token

@@ -1,9 +1,11 @@
 # encoding: utf-8
 
 require_dependency 'carto/oauth_provider/errors'
+require_dependency 'carto/oauth_provider/scopes'
 
 module Carto
   class OauthAuthorizationCode < ActiveRecord::Base
+    include OauthProvider::Scopes
     # Multiple of 3 for pretty base64
     CODE_RANDOM_BYTES = 12
 
@@ -13,6 +15,7 @@ module Carto
 
     validates :oauth_app_user, presence: true
     validates :code, presence: true
+    validates :scopes, scopes: true
 
     before_validation :ensure_code_generated
 

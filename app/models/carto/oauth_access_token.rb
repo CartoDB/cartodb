@@ -1,9 +1,12 @@
 # encoding: utf-8
 
 require_dependency 'carto/oauth_provider/errors'
+require_dependency 'carto/oauth_provider/scopes'
 
 module Carto
   class OauthAccessToken < ActiveRecord::Base
+    include OauthProvider::Scopes
+
     ACCESS_TOKEN_EXPIRATION_TIME = 1.hour
 
     belongs_to :oauth_app_user, inverse_of: :oauth_access_tokens
@@ -11,6 +14,7 @@ module Carto
 
     validates :oauth_app_user, presence: true
     validates :api_key, presence: true
+    validates :scopes, scopes: true
 
     before_validation :ensure_api_key
 

@@ -1,7 +1,10 @@
 # encoding: utf-8
 
+require_dependency 'carto/oauth_provider/scopes'
+
 module Carto
   class OauthAppUser < ActiveRecord::Base
+    include OauthProvider::Scopes
     belongs_to :user, inverse_of: :oauth_app_users
     belongs_to :oauth_app, inverse_of: :oauth_app_users
     belongs_to :api_key, inverse_of: :oauth_app_user
@@ -11,6 +14,7 @@ module Carto
 
     validates :user, presence: true, uniqueness: { scope: :oauth_app }
     validates :oauth_app, presence: true
+    validates :scopes, scopes: true
 
     def authorized?(requested_scopes)
       (requested_scopes - scopes).empty?

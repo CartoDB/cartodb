@@ -11,6 +11,12 @@ module Carto
         @app_user = OauthAppUser.new(user: @user, oauth_app: @app)
       end
 
+      it 'does not accept invalid scopes' do
+        authorization = OauthAuthorizationCode.new(scopes: ['wadus'])
+        expect(authorization).to_not(be_valid)
+        expect(authorization.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+      end
+
       it 'validates without redirect_uri and autogenerates code' do
         authorization = OauthAuthorizationCode.new(oauth_app_user: @app_user)
         expect(authorization).to(be_valid)

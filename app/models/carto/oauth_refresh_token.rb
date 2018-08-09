@@ -1,0 +1,33 @@
+# encoding: utf-8
+
+require_dependency 'carto/oauth_provider/errors'
+
+module Carto
+  class OauthRefreshToken < ActiveRecord::Base
+    # Multiple of 3 for pretty base64
+    TOKEN_RANDOM_BYTES = 15
+    REFRESH_TOKEN_EXPIRATION_TIME = 6.months
+
+    belongs_to :oauth_app_user, inverse_of: :oauth_refresh_tokens
+
+    validates :oauth_app_user, presence: true
+    validates :scopes, presence: true
+    validate  :check_offline_scope
+
+    before_create :regenerate_token
+
+    scope :expired, -> { where('updated_at < ?', Time.now - REFRESH_TOKEN_EXPIRATION_TIME) }
+
+    private
+
+    def check_offline_scope
+      unless scopes.include?(OauthProvider::Scopes::OFFLINE)
+        errors.add(:scopes, "must contain `#{OauthProvider::Scopes::OFFLINE}`")
+      end
+    end
+
+    def regenerate_token
+      self.token = SecureRandom.urlsafe_base64(CODE_RANDOM_BYTES)
+    end
+  end
+end

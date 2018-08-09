@@ -1,22 +1,19 @@
 module Carto
   module Api
-    class RestrictedUserPresenter
+    class UserPublicPresenter
       include SqlApiHelper
       include MapsApiHelper
 
-      def initialize(user, api_key)
+      def initialize(user)
         @user = user
-        @api_key = api_key
       end
 
       def to_hash
-        return unless @user
-
         base_rails_url = CartoDB.base_url(@user.username)
 
         {
           username: @user.username,
-          organization: RestrictedOrganizationPresenter.new(@user.organization, @api_key).to_hash,
+          organization: @user.has_organization? ? OrganizationPublicPresenter.new(@user.organization).to_hash : nil,
           api_endpoints: {
             sql: sql_api_url(@user.username),
             maps: maps_api_url(@user.username),

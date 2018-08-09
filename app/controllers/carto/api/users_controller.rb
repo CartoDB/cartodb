@@ -37,7 +37,7 @@ module Carto
       end
 
       def me_public
-        render(json: RestrictedUserPresenter.new(request_api_key.user, request_api_key).to_hash)
+        render(json: UserPublicPresenter.new(request_api_key.user).to_hash)
       end
 
       def me

@@ -1,14 +1,11 @@
 module Carto
   module Api
-    class RestrictedOrganizationPresenter
-      def initialize(organization, api_key)
+    class OrganizationPublicPresenter
+      def initialize(organization)
         @organization = organization
-        @api_key = api_key
       end
 
       def to_hash
-        return unless @organization
-
         {
           name: @organization.name
         }

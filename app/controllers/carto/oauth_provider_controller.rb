@@ -46,11 +46,13 @@ module Carto
 
     def token
       access_token, refresh_token = token_strategy.authorize!(@oauth_app, params)
+      user = access_token.oauth_app_user.user
 
       response = {
         access_token: access_token.api_key.token,
         token_type: 'bearer',
-        expires_in: access_token.expires_in
+        expires_in: access_token.expires_in,
+        user_info_url: CartoDB.url(self, :api_v4_users_me, {}, user)
       }
 
       response[:refresh_token] = refresh_token.token if refresh_token

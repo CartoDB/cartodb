@@ -24,6 +24,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement
+* Fix panning and interactivity in Safari (https://github.com/CartoDB/cartodb/issues/14115)
 * Add a warning when the user is about to delete multiple analyses at once (https://github.com/CartoDB/cartodb/pull/14222)
 * Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)
 * Fix histogram tooltips not being updated after column change (https://github.com/CartoDB/cartodb/issues/14155)

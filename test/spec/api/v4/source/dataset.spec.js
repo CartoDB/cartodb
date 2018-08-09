@@ -2,6 +2,17 @@ const Base = require('../../../../../src/api/v4/source/base');
 const carto = require('../../../../../src/api/v4');
 
 describe('api/v4/source/dataset', function () {
+  var originalTimeout;
+
+  beforeEach(function () {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+  });
+
+  afterEach(function () {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  });
+
   describe('constructor', function () {
     it('should return a new Dataset object', function () {
       var populatedPlacesDataset = new carto.source.Dataset('ne_10m_populated_places_simple');

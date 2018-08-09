@@ -63,7 +63,9 @@ module Carto
     private
 
     def create_authorization_code
-      authorization_code = @oauth_app_user.oauth_authorization_codes.create!(redirect_uri: @redirect_uri)
+      authorization_code = @oauth_app_user.oauth_authorization_codes.create!(
+        redirect_uri: @redirect_uri, scopes: @scopes
+      )
       redirect_to_oauth_app(code: authorization_code.code, state: @state)
     end
 
@@ -127,7 +129,9 @@ module Carto
 
     def validate_scopes
       @scopes = (params[:scope] || '').split(' ')
-      raise OauthProvider::Errors::InvalidScope.new(@scopes) if @scopes.any?
+
+      invalid_scopes = OauthProvider::Scopes.invalid_scopes(@scopes)
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
     end
 
     def ensure_state

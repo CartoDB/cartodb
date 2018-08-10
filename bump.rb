@@ -6,7 +6,7 @@ Dir.chdir(File.dirname(__FILE__))
 
 NEWS_HEADER_REGEX = /^(\d+)\.(\d+)\.(\d+) \(\d{4}-\d{2}-\d{2}\)$\n-+/
 PARTS = ['major', 'minor', 'patch'].freeze
-NEWS_HEADER = <<-EOF
+NEWS_HEADER = <<-NEWS
 Development
 -----------
 
@@ -19,7 +19,7 @@ Development
 ### Bug fixes / enhancements
 - None yet
 
-EOF
+NEWS
 
 class Version < Array
   def initialize(parts)
@@ -29,7 +29,7 @@ class Version < Array
 
   def bump(pos)
     self[pos] += 1
-    (pos+1..2).each { |p| self[p] = 0 }
+    (pos + 1..2).each { |p| self[p] = 0 }
   end
 
   def to_s
@@ -87,7 +87,7 @@ def news_sections(lines)
       section_name = line[4..-1]
     elsif line != '- None yet'
       # Replace initial `-` for `*`
-      section_lines << "#{line.sub(/^(\s)*-/, '\1*')}"
+      section_lines << line.sub(/^(\s)*-/, '\1*')
     end
   end
   sections << [section_name, section_lines] if section_name

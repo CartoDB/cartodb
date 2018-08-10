@@ -36,6 +36,8 @@ class Carto::VisualizationQueryBuilder
     OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
   }
 
+  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
+
   def initialize
     @include_associations = []
     @eager_load_associations = []
@@ -174,8 +176,12 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_partial_match(tainted_search_pattern)
-    @tainted_search_pattern = tainted_search_pattern
+    @tainted_search_pattern = escape_characters_from_pattern(tainted_search_pattern)
     self
+  end
+
+  def escape_characters_from_pattern(pattern)
+    pattern.chars.map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)

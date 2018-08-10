@@ -27,6 +27,8 @@ This release introduces a new API Key system. In order to migrate existing users
 ### Bug fixes / enhancement
 * Add link to `datasets/shared/locked` (https://github.com/CartoDB/cartodb/issues/14188)
 * Don't show "- Rows" instead of 0 if the dataset has been updated recently (https://github.com/CartoDB/cartodb/pull/14228)
+* Use input instead of select for `job_profile` (https://github.com/CartoDB/cartodb/pull/14227)
+* Don't show "- Rows" instead of 0 if the dataset has been updated recently ()
 * Fix panning and interactivity in Safari (https://github.com/CartoDB/cartodb/issues/14115)
 * Add a warning when the user is about to delete multiple analyses at once (https://github.com/CartoDB/cartodb/pull/14222)
 * Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)
@@ -103,6 +105,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Do not crash when saving WMS layers with long metadata (Suppoer#1643)
 * Remove Auth API FF, enable it by default (#13857)
 * Fix table sharing from users with hyphens in their name (quoting) (support#1635)
+* Datasets search now is working as intendended with special characters like "_"
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)

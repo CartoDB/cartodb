@@ -18,9 +18,10 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
-* Oauth provider (WIP)
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
   * Data model (#14163)
   * Consent screen backend (#14164)
+  * New endpoint for user information, `/api/v4/me` (#14229)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement
@@ -102,6 +103,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Do not crash when saving WMS layers with long metadata (Suppoer#1643)
 * Remove Auth API FF, enable it by default (#13857)
 * Fix table sharing from users with hyphens in their name (quoting) (support#1635)
+* Datasets search now is working as intendended with special characters like "_"
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)

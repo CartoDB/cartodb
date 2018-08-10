@@ -196,7 +196,9 @@ describe Carto::OauthProviderController do
         expect(access_token).to(be)
 
         expect(response.status).to(eq(200))
-        expect(response.body).to(eq(access_token: access_token.api_key.token, token_type: "bearer"))
+        expect(response.body[:access_token]).to(eq(access_token.api_key.token))
+        expect(response.body[:token_type]).to(eq('bearer'))
+        expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
       end
     end
 
@@ -210,7 +212,9 @@ describe Carto::OauthProviderController do
         expect(access_token).to(be)
 
         expect(response.status).to(eq(200))
-        expect(response.body).to(eq(access_token: access_token.api_key.token, token_type: "bearer"))
+        expect(response.body[:access_token]).to(eq(access_token.api_key.token))
+        expect(response.body[:token_type]).to(eq('bearer'))
+        expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
       end
     end
 
@@ -330,6 +334,7 @@ describe Carto::OauthProviderController do
       code = response_parameters['code']
 
       # Exchange token for API Key
+      logout
       payload = {
         client_id: @oauth_app.client_id,
         client_secret: @oauth_app.client_secret,
@@ -337,13 +342,24 @@ describe Carto::OauthProviderController do
         code: code,
         redirect_uri: redirect_uri
       }
-      api_key = post_json oauth_provider_token_url(payload) do |response|
+      token_response = post_json oauth_provider_token_url(payload) do |response|
         expect(response.status).to(eq(200))
-        response.body[:access_token]
+
+        response.body
       end
 
+      api_key = token_response[:access_token]
+      me_url = token_response[:user_info_url]
+
       expect(api_key).to(be)
-      # TODO: Try to use API Key, must implement some scopes first
+      expect(me_url).to(be)
+
+      # TODO: use bearer auth
+      get_json "#{me_url}?api_key=#{api_key}" do |response|
+        expect(response.status).to(eq(200))
+
+        expect(response.body[:username]).to(eq(@user.username))
+      end
     end
   end
 end

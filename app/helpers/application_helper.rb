@@ -62,7 +62,7 @@ module ApplicationHelper
     end
   end
 
-  module_function :maps_api_template
+  module_function :maps_api_template, :maps_api_url
   module_function :sql_api_template, :sql_api_url
   module_function :app_assets_base_url
 

@@ -18,12 +18,16 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
-* Oauth provider (WIP)
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
   * Data model (#14163)
   * Consent screen backend (#14164)
+  * New endpoint for user information, `/api/v4/me` (#14229)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement
+* Use input instead of select for `job_profile` (https://github.com/CartoDB/cartodb/pull/14227)
+* Don't show "- Rows" instead of 0 if the dataset has been updated recently ()
+* Fix panning and interactivity in Safari (https://github.com/CartoDB/cartodb/issues/14115)
 * Add a warning when the user is about to delete multiple analyses at once (https://github.com/CartoDB/cartodb/pull/14222)
 * Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)
 * Fix histogram tooltips not being updated after column change (https://github.com/CartoDB/cartodb/issues/14155)
@@ -92,12 +96,14 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 * Update extension to 0.22.2 to fix hyphenates usernames (cartodb-postgresql#331)
 * Update extension to 0.23.0 to add a new helper function `_CDB_Table_Exists(table_name_with_optional_schema TEXT)` (cartodb-postgresql#332)
+* Added format option to load datasets into the data library (#14216)
 * Log Resque errors (#14116)
 * Avoid creating double indices on sync (#14157)
 * Do not crash when checking nil password (#14099)
 * Do not crash when saving WMS layers with long metadata (Suppoer#1643)
 * Remove Auth API FF, enable it by default (#13857)
 * Fix table sharing from users with hyphens in their name (quoting) (support#1635)
+* Datasets search now is working as intendended with special characters like "_"
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)

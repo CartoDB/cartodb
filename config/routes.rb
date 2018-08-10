@@ -573,6 +573,10 @@ CartoDB::Application.routes.draw do
   UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
+    scope 'v4/' do
+      get 'me', to: 'users#me_public', as: :api_v4_users_me
+    end
+
     scope 'v3/' do
       # Front/back split
       get 'me' => 'users#me', as: :api_v3_users_me

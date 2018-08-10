@@ -518,3 +518,19 @@ en:
       shared: ' has shared a new map called '
       with: ' with you.'
       view: 'View your map'
+    ltable:
+      like: ' likes your dataset '
+      view: 'View your dataset'
+    trending:
+      your: ' Your '
+      received: ' has received more than '
+      map: ' map views'
+      view: 'View your map'
+    utable:
+      colleague: 'Your colleague '
+      stopped: ' has stopped sharing the dataset '
+      with: ' with you so it may disappear from your dashboard and from the maps where it was being used.'
+    uvisual:
+      colleague: 'Your colleague '
+      stopped: ' has stopped sharing the map '
+      with: ' with you so it may dissapear from your dashboard.'

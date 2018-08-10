@@ -102,6 +102,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Do not crash when saving WMS layers with long metadata (Suppoer#1643)
 * Remove Auth API FF, enable it by default (#13857)
 * Fix table sharing from users with hyphens in their name (quoting) (support#1635)
+* Datasets search now is working as intendended with special characters like "_"
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Triggering ghost tables and common data when visiting the dashboard (#14010)

@@ -128,5 +128,10 @@ next_version.bump(part)
 puts "Bumping from #{tag_version} to #{next_version}. Enter to confirm, Ctrl+C to cancel"
 STDIN.getc
 
-puts "Updating NEWS..."
+puts 'Updating NEWS...'
 File.write('NEWS.md', updated_news(news_content, next_version))
+
+puts 'Committing, tagging and pushing...'
+`git commit -m "Bump to #{next_version}"`
+`git tag -a v#{next_version} -m "Version #{next_version}"`
+`git push origin master --follow-tags`

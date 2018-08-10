@@ -43,6 +43,8 @@ en:
       check_email: 'Please check your email inbox and click the "Activate your account" button in the welcome mail.'
       resent_valid_part1: 'If you didn't receive your validation email, click <a href="'
       resent_valid_part2: '">here</a> and a new email will be sent directly to you.'
+    password:
+      submit: 'Submit'
   admin:
     client_apps:
       api_key:
@@ -401,3 +403,118 @@ en:
   org_mailer:
     invite:
       hello: 'Hello and welcome!'
+      join: 'Join the '
+      org: ' organization in CARTO. Just '
+      create: 'create your account'
+      carto: 'CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.'
+      resources: 'Here are some resources to get you up and running:'
+      devcenter: 'Developer Center'
+      guides: ': Guides, FAQs and tutorials'
+      rescenter: 'Resource Center'
+      case: ': Case studies and white papers for inspiration'
+      videos: 'Builder training videos: '
+      analysis: 'Analysis'
+      widgets: 'Widgets'
+      publishing: 'Publishing'
+      message: 'Below is a personalised message from your account administrator:'
+    quota:
+      title: 'You are over quota!'
+      hey: 'Hey there,'
+      growing: "It looks like your team is growing fast and you’ve run out of space."
+      reminder: 'This is a friendly reminder that your organization <strong>is over quota</strong>. You can upgrade your account and/or purchase more space to continue working at the capacity you need.'
+      upgrade: 'Upgrading your account is really simple just '
+      contact: 'contact one of our account experts'
+      meantime: "In the meantime, take a look at some of the amazing things we’ve been up to at "
+      thanks: 'Thanks and Happy Mapping'
+    seat:
+      title: 'No more seats left!'
+      hey: 'Hey there,'
+      growing: "It looks like your team is growing fast and you’ve run out of space."
+      reminder: 'This is a friendly reminder that your organization has <strong>no more seats left</strong>. You can purchase more seats to continue working at the capacity you need.'
+      obtain: 'Obtaning more seats is really simple: just '
+      contact: 'contact one of our account experts'
+      meantime: "In the meantime, take a look at some of the amazing things we’ve been up to at "
+      thanks: 'Thanks and Happy Mapping'
+  password:
+    edit:
+      reset: 'Reset your password'
+      current: 'Type your current password'
+      new: 'Type your new password'
+      retype: 'Retype your new password'
+      noaccount: 'Don't have an account yet? '
+  shared:
+    signup:
+      sign: ' sign up'
+      account: 'Your account is being created'
+      time: 'It will take us some time, just a few seconds.'
+    sign_issue:
+      issue: ' signup issue'
+      please: 'Please, '
+      contact: 'contact the administrator of '
+      process: ' to begin your signup process.'
+      admin: 'Please, contact the administrator of '
+  signup:
+    already:
+      enabled: 'Account already enabled'
+      active: 'Your account is already active'
+      login: 'Login'
+      enjoy: ' and start enjoying your CARTO account.'
+    account:
+      enabled: ' account enabled'
+      active: 'Your account is active!'
+      goto: 'Go to '
+      enjoy: ' and start enjoying your CARTO account.'
+    resend:
+      valid: ' email validation'
+      new: 'New validation email sent'
+      sent: 'We have just sent a new account validation email, please check your inbox.'
+    signup:
+      sign: ' sign up'
+      datagov: 'Transform this dataset from Data.gov into an incredible map in seconds.'
+      provider1: 'Transform this dataset from '
+      provider2: ' into an incredible map in seconds.'
+      dataset: 'Transform this dataset into an incredible map in seconds.'
+      email: 'email'
+      passwd: 'Password'
+      org: 'Please, use an email address belonging to this organization.'
+      clicking: 'By clicking in "sign up" you accept the '
+      service: ' of the service and the '
+  sync:
+    max:
+      automatic: 'The automatic synchronization of your dataset '
+      maximum: ' has reached the maximum number of synchronization attempts and it's still failing to sync.'
+      continue: "If you'd like to continue trying, log in to your account and manually reactivate synching by clicking “Sync now”"
+      info: 'For more information about error messages and possible solution, '
+      click: 'click here'
+  user:
+    new:
+      invited: 'You have been invited to CARTO as part of the '
+      login: ' organization. Please login to your dashboard with your organization username '
+      passwd: ' and the password '
+      provided: 'provided by your administrator'
+      entered: 'you entered'
+      soon: ' as soon as you activate your account'
+      resources: 'Here are some resources to get you up and running:'
+      devcenter: 'Developer Center'
+      guides: ': Guides, FAQs and tutorials'
+      rescenter: 'Resource Center'
+      case: ': Case studies and white papers for inspiration'
+      videos: 'Builder training videos: '
+      analysis: 'Analysis'
+      widgets: 'Widgets'
+      publishing: 'Publishing'
+      contact: 'If you have not received your password, contact your administrator at '
+      goto: 'Go to your dashboard'
+      activate: 'Activate your account'
+    stable:
+      dataset: 'Dataset shared with you'
+      colleague: 'Your colleague '
+      shared: ' has shared a new dataset called '
+      with: ' with you.'
+      view: 'View your dataset'
+    svisual:
+      map: 'Map shared with you'
+      colleague: 'Your colleague '
+      shared: ' has shared a new map called '
+      with: ' with you.'
+      view: 'View your map'

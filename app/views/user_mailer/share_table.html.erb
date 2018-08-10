@@ -1,5 +1,5 @@
-<%- message = "<p style='font-size: 24px; color: #ffffff;'><strong>Dataset shared with you</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'>Your colleague #{@table_visualization.user.username} has shared a new dataset called <strong>#{@table_visualization.name}</strong> with you.</p>" %>
+<%- message = "<p style='font-size: 24px; color: #ffffff;'><strong>t('user.stable.dataset')</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'> t('user.stable.colleague')#{@table_visualization.user.username}t('user.stable.shared')<strong>#{@table_visualization.name}</strong>t('user.stable.with')</p>" %>
 
 <%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
 
-<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: 'View your dataset' } %>
+<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: t('user.stable.view') } %>

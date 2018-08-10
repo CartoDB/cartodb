@@ -25,7 +25,8 @@ This release introduces a new API Key system. In order to migrate existing users
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement
-* Don't show "- Rows" instead of 0 if the dataset has been updated recently ()
+* Add link to `datasets/shared/locked` (https://github.com/CartoDB/cartodb/issues/14188)
+* Don't show "- Rows" instead of 0 if the dataset has been updated recently (https://github.com/CartoDB/cartodb/pull/14228)
 * Fix panning and interactivity in Safari (https://github.com/CartoDB/cartodb/issues/14115)
 * Add a warning when the user is about to delete multiple analyses at once (https://github.com/CartoDB/cartodb/pull/14222)
 * Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)

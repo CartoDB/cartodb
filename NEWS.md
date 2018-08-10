@@ -1,17 +1,29 @@
 Development
 -----------
 
-### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
+### NOTICES
+- None yet
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.20.0 (2018-08-13)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
-New database configuration is required. Please add `prepared_statements: false` to `database.yml`
+* New database configuration is required. Please add `prepared_statements: false` to `database.yml`
 (check `database.yml.sample` for an example)
 
-This release introduces a new API Key system. In order to migrate existing users, run the following command:
+* This release introduces a new API Key system. In order to migrate existing users, run the following command:
 `bundle exec rake carto:api_key:create_default`
 
 ### Features

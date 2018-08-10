@@ -458,24 +458,6 @@ describe User do
     user.destroy
   end
 
-  it "should validate job_role and deprecated_job_roles" do
-    user = ::User.new
-    user.username = "adminipop"
-    user.email = "adminipop@example.com"
-    user.password = 'admin123'
-    user.password_confirmation = 'admin123'
-
-    user.job_role = "Developer"
-    user.valid?.should be_true
-
-    user.job_role = "Researcher"
-    user.valid?.should be_true
-
-    user.job_role = "whatever"
-    user.valid?.should be_false
-    user.errors[:job_role].should be_present
-  end
-
   it "should validate password presence and length" do
     user = ::User.new
     user.username = "adminipop"

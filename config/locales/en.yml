@@ -32,17 +32,17 @@ en:
     one: 'day'
     other: 'days'
   sessions:
-    new:
+    new1:
       login: 'Log in'
       or_login_with: 'OR LOG IN WITH:'
-      dont_have_account: 'Don't have an account yet?'
+      dont_have_account: "Don't have an account yet?"
     account_error:
       user: 'User '
       auth_error: ' authentication error'
       validate_account: 'You must validate your email account'
       check_email: 'Please check your email inbox and click the "Activate your account" button in the welcome mail.'
-      resent_valid_part1: 'If you didn't receive your validation email, click <a href="'
-      resent_valid_part2: '">here</a> and a new email will be sent directly to you.'
+      resent_valid_part1: "If you didn't receive your validation email, click <a href="
+      resent_valid_part2: '>here</a> and a new email will be sent directly to you.'
     password:
       submit: 'Submit'
   admin:
@@ -140,7 +140,7 @@ en:
         del_org_data: 'Delete organization, including all users and data'
     org_users:
       form:
-        user_once: 'Once you choose the username, you won't be able to change it'
+        user_once: "Once you choose the username, you won't be able to change it"
         invalid_eml: 'Email not valid'
         choose_eml: 'We encourage you to choose an email from your organization'
         new_pwd: 'New password'
@@ -194,10 +194,10 @@ en:
         support: 'Support'
         contact: 'Contact'
       nores:
-        no_items: ' doesn't have any items on this page'
+        no_items: " doesn't have any items on this page"
         try_the: 'Try the '
         instead: ' instead'
-        no_public: ' doesn't have any public '
+        no_public: " doesn't have any public "
         yet: ' yet'
         maybe: 'But maybe they have some very interesting '
       org_subhead:
@@ -268,7 +268,7 @@ en:
         not_part: 'Not part of '
         goto: ' Go to '
       trial:
-        period: 'You're currently under your 30-day Trial Period. Add your billing info to keep using our platform.'
+        period: "You're currently under your 30-day Trial Period. Add your billing info to keep using our platform."
         method: 'Add payment method'
       vis_head:
         edit: 'Edit metadata…'
@@ -280,7 +280,7 @@ en:
         upgrade: "By upgrading, you'll be able to continue using CARTO. Our Professional plan is a great fit for occasional use, and our Enterprise plans offer access to the Data Observatory, private sharing, custom connectors, and business-strength data services."
         preserve_1: 'Your account and data will be preserved for '
         preserve_2: ', so that upon upgrade you will regain access to the data and maps.'
-        student: 'If you're a student or an ambassador, remember you can also qualify for our '
+        student: "If you're a student or an ambassador, remember you can also qualify for our "
         community: 'Community Program'
         preserve_2: 'Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.'
         contact: 'CONTACT SALES'
@@ -358,7 +358,7 @@ en:
       discover: 'Discover insights through maps, data visualizations, and datasets. Everything related to big data and location intelligence is just one click away.'
   geocoder:
     finished:
-      msg1: 'We've successfully geocoded '
+      msg1: "We've successfully geocoded "
       msg2: ' out of '
       msg3: ' points from '
       errors: "Rows that are not geocoded could have errors on their column values, or just doesn't exist in our data. "
@@ -441,7 +441,7 @@ en:
       current: 'Type your current password'
       new: 'Type your new password'
       retype: 'Retype your new password'
-      noaccount: 'Don't have an account yet? '
+      noaccount: "Don't have an account yet? "
   shared:
     signup:
       sign: ' sign up'
@@ -482,7 +482,7 @@ en:
   sync:
     max:
       automatic: 'The automatic synchronization of your dataset '
-      maximum: ' has reached the maximum number of synchronization attempts and it's still failing to sync.'
+      maximum: " has reached the maximum number of synchronization attempts and it's still failing to sync."
       continue: "If you'd like to continue trying, log in to your account and manually reactivate synching by clicking “Sync now”"
       info: 'For more information about error messages and possible solution, '
       click: 'click here'

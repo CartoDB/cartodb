@@ -1,11 +1,11 @@
-Development
+4.21.0 (2018-08-13)
 -----------
 
 ### NOTICES
 - None yet
 
 ### Features
-- None yet
+* None yet
 
 ### Bug fixes / enhancements
 - None yet

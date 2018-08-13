@@ -4,7 +4,7 @@ module Carto
       module AuthorizationCodeStrategy
         def self.authorize!(oauth_app, params)
           authorization_code = OauthAuthorizationCode.find_by_code!(params[:code])
-          raise OauthProvider::Errors::InvalidGrant.new unless authorization_code.oauth_app_user.oauth_app == oauth_app
+          raise OauthProvider::Errors::InvalidGrant.new unless authorization_code.oauth_app == oauth_app
 
           redirect_uri = params[:redirect_uri]
           if (redirect_uri || authorization_code.redirect_uri) && redirect_uri != authorization_code.redirect_uri
@@ -20,7 +20,7 @@ module Carto
       module RefreshTokenStrategy
         def self.authorize!(oauth_app, params)
           refresh_token = OauthRefreshToken.find_by_token!(params[:refresh_token])
-          raise OauthProvider::Errors::InvalidGrant.new unless refresh_token.oauth_app_user.oauth_app == oauth_app
+          raise OauthProvider::Errors::InvalidGrant.new unless refresh_token.oauth_app == oauth_app
 
           if params[:scope]
             refresh_token.exchange!(requested_scopes: params[:scope].split(' '))

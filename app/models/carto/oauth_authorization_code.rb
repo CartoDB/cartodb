@@ -34,6 +34,10 @@ module Carto
       end
     end
 
+    def oauth_app
+      oauth_app_user.oauth_app
+    end
+
     private
 
     def ensure_code_generated

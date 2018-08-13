@@ -5,7 +5,7 @@ require_dependency 'carto/oauth_provider/strategies'
 
 module Carto
   class OauthProviderController < ApplicationController
-    TOKEN_STRATEGIES = {
+    GRANT_STRATEGIES = {
       'authorization_code' => OauthProvider::Strategies::AuthorizationCodeStrategy,
       'refresh_token' => OauthProvider::Strategies::RefreshTokenStrategy
     }.freeze
@@ -45,7 +45,7 @@ module Carto
     end
 
     def token
-      access_token, refresh_token = token_strategy.authorize!(@oauth_app, params)
+      access_token, refresh_token = grant_strategy.authorize!(@oauth_app, params)
       user = access_token.oauth_app_user.user
 
       response = {
@@ -109,7 +109,7 @@ module Carto
     end
 
     def validate_grant_type
-      raise OauthProvider::Errors::UnsupportedGrantType.new(TOKEN_STRATEGIES.keys) unless token_strategy
+      raise OauthProvider::Errors::UnsupportedGrantType.new(GRANT_STRATEGIES.keys) unless grant_strategy
     end
 
     def load_oauth_app
@@ -147,8 +147,8 @@ module Carto
       raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
     end
 
-    def token_strategy
-      TOKEN_STRATEGIES[params[:grant_type]]
+    def grant_strategy
+      GRANT_STRATEGIES[params[:grant_type]]
     end
   end
 end

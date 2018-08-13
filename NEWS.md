@@ -25,6 +25,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement
+* Use a SVG icon instead of a simple `+` sign in the `Add {layer|analysis|widget}` buttons. (https://github.com/CartoDB/cartodb/issues/#14234)
 * Use input instead of select for `job_profile` (https://github.com/CartoDB/cartodb/pull/14227)
 * Don't show "- Rows" instead of 0 if the dataset has been updated recently ()
 * Fix panning and interactivity in Safari (https://github.com/CartoDB/cartodb/issues/14115)

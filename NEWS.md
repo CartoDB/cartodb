@@ -87,6 +87,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Fix table sharing from users with hyphens in their name (quoting) (support#1635)
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
+* Update odbc_fdw extension to `0.3.0`
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 
 ### Internals

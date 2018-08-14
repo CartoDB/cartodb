@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 require 'carto/oauth_provider_controller'
 require 'support/helpers'
+require 'helpers/subdomainless_helper'
 
 describe Carto::OauthProviderController do
   include HelperMethods
@@ -90,6 +91,23 @@ describe Carto::OauthProviderController do
     it_behaves_like 'authorization parameter validation' do
       def request_endpoint(parameters)
         get oauth_provider_authorize_url(parameters)
+      end
+    end
+
+    describe 'domains and authentication' do
+      it 'works with a URL for another username/org' do
+        # e.g: org.carto.com/oauth2 should work, even if the correct one is org.carto.com/u/username/oauth2
+        stub_domainful('wadus')
+        expect(oauth_provider_authorize_url).not_to(include(@user.username))
+        get oauth_provider_authorize_url(valid_payload)
+        expect(response.status).to(eq(200))
+      end
+
+      it 'in subdomainless, should not require username at all' do
+        stub_subdomainless
+        expect(oauth_provider_authorize_url).not_to(include(@user.username))
+        get oauth_provider_authorize_url(valid_payload)
+        expect(response.status).to(eq(200))
       end
     end
 

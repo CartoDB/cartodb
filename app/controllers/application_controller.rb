@@ -242,7 +242,7 @@ class ApplicationController < ActionController::Base
   end
 
   def any_login_required
-    validate_session(current_viewer)
+    current_viewer ? validate_session(current_viewer) : not_authorized
   end
 
   def api_authorization_required

@@ -1,11 +1,195 @@
-Authorize?
+<%= content_for(:title) do %>CARTO · OAuth Authentication<% end %>
 
-<%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_user), method: :post) do %>
-<%= hidden_field_tag 'response_type', @response_type %>
-<%= hidden_field_tag 'client_id', @oauth_app.client_id %>
-<%= hidden_field_tag 'scope', @scopes.join(' ') %>
-<%= hidden_field_tag 'state', @state %>
-<%= hidden_field_tag 'redirect_uri', @redirect_uri %>
-<%= submit_tag 'Cancel' %>
-<%= submit_tag 'Accept', name: 'accept' %>
+<%= content_for(:css) do %>
+  <style type="text/css">
+    .oauth-page {
+      display: flex; 
+      height: 100%;  
+      flex-direction: column;
+      justify-content: center;
+      align-items: center; 
+      background-color: #BABEC0;
+    }
+    
+    /* oauth-form */
+    .oauth-form {
+      background-color: #FFFFFF;
+      border: 1px solid #979797;
+      border-radius: 4px;
+      width: 380px;
+      padding: 40px;
+    }
+
+    .oauth-form__header {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      width: 300px;
+    }
+
+    .oauth-form__avatars {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .oauth-form__avatar-image {
+      width: 48px;
+      height: 48px;
+      border-radius: 24px;
+    }
+
+    .oauth-form__title {
+      font-family: 'Montserrat-SemiBold';
+      font-size: 16px;
+      color: #2E3C43;
+      letter-spacing: 0;
+      line-height: 24px;
+    }
+
+    .oauth-form__subtitle {
+      font-family: 'Open Sans';
+      font-size: 12px;
+      line-height: 16px;
+      padding: 0px 8px 8px 8px;
+      color: #2E3C43;
+    }
+  
+    .oauth-form__footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    .oauth-form__powered-by {
+      font-family: 'Open Sans';
+      font-size: 10px;
+      color: #828A8F;  
+    }
+
+    .oauth-form__button {
+      font-family: 'Montserrat';
+      font-weight: 600;
+      font-size: 12px;
+      display: inline-block;
+      border-radius: 4px;
+      background-color: #FFFFFF;
+      border: 2px solid #828A8F;
+      color: #828A8F;  
+      height: 32px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      padding: 0px 10px;
+      margin-left: 14px;
+    }
+
+    .oauth-form__button-primary {
+      background-color: #1785FB;
+      border-style: none;
+      color: #FFFFFF;
+    }
+
+    /* oauth-permission */
+    .oauth-permission {
+      background-color: #F9F9F9;
+      border-radius: 4px;
+      padding: 16px;
+      margin-top: 8px;
+    }
+
+    .oauth-permission__title {
+      font-family: 'Montserrat';
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      color: #2E3C43;
+    }
+
+    .oauth-permission__list {
+      font-family: 'Open Sans';
+      border-top:  1px solid #EEEEEE;
+      margin-top: 8px;
+      padding-top: 4px;
+      font-size: 12px;
+      list-style-type: none;
+    }
+  </style>
 <% end %>
+
+<div class='oauth-page'>
+  <div class='oauth-form'>
+    <header class='oauth-form__header'>
+
+        <div class='oauth-form__avatars'>
+          <img class='oauth-form__avatar-image' src="<%= current_user.avatar %>" alt="<%= current_user.username %>" />
+
+          <svg width="20px" height="24px" viewBox="0 0 20 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+              <g id="Header" transform="translate(-140.000000, -12.000000)">
+                  <g id="Avatars">
+                      <g transform="translate(82.000000, 0.000000)">
+                          <g id="Icon" transform="translate(56.000000, 12.000000)">
+                              <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>
+                              <g id="Group" transform="translate(2.000000, 0.000000)" fill="#757575" fill-rule="nonzero">
+                                  <polygon id="Shape" points="15.707 0.294 14.293 1.708 15.586 3 7 3 7 5 15.586 5 14.293 6.294 15.707 7.708 19.414 4"></polygon>
+                                  <polygon id="Shape" points="5.707 17.708 4.293 16.294 0.586 20 4.293 23.708 5.707 22.294 4.414 21 13 21 13 19 4.414 19"></polygon>
+                              </g>
+                          </g>
+                      </g>
+                  </g>
+              </g>
+          </g>
+          </svg>
+          <img class='oauth-form__avatar-image' src="<%= current_user.avatar %>" alt="<%= current_user.username %>" />
+        </div>
+        <h1 class='oauth-form__title'>Request for permission</h1>
+        <h2 class='oauth-form__subtitle'>
+          <strong>Reveal</strong> by <strong>CARTO</strong> 
+          would like permission to access your account</p>
+    </header>
+
+    <div>
+      <div class='oauth-permission'>
+        <h3 class='oauth-permission__title'>Personal user data</h3>
+        <ul class='oauth-permission__list'>
+          <li>Username</li>
+          <li>Email adresses</li>
+          <li>Organization name</li>
+        </ul>
+      </div>
+
+      <div class='oauth-permission'>
+        <h3 class='oauth-permission__title'>Access to list your datasets</h3>
+        <ul class='oauth-permission__list'>
+          <li>reqs_per_tile</li>
+          <li>twitter_theforcewakens</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer class='oauth-form__footer'>
+      <div class='oauth-form__powered-by'>Powered by CARTO</div>
+      <div class='oauth-form__buttons'>
+        <!-- Form Post -->
+        <%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_user), method: :post) do %>
+          <%= hidden_field_tag 'response_type', @response_type %>
+          <%= hidden_field_tag 'client_id', @oauth_app.client_id %>
+          <%= hidden_field_tag 'scope', @scopes.join(' ') %>
+          <%= hidden_field_tag 'state', @state %>
+          <%= hidden_field_tag 'redirect_uri', @redirect_uri %>
+
+          <%= submit_tag 'Reject', class: 'oauth-form__button' %>
+          <%= submit_tag 'Accept', name: 'accept', class: 'oauth-form__button oauth-form__button-primary' %>
+        <% end %>
+      </div>
+    </footer>
+
+  </div>
+</div>

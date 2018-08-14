@@ -320,6 +320,7 @@ describe Carto::OauthProviderController do
 
   describe '#acceptance' do
     include Capybara::DSL
+    include_context 'organization with users helper'
 
     it 'following the oauth flow produces a valid API Key' do
       # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
@@ -327,8 +328,8 @@ describe Carto::OauthProviderController do
       @oauth_app.update!(redirect_uris: ['https://fake_uri', redirect_uri])
 
       # Login
-      login_as(@user, scope: @user.username)
-      base_uri = "http://#{@user.username}.localhost.lan"
+      login_as(@org_user_1, scope: @org_user_1.username)
+      base_uri = "http://#{@organization.name}.localhost.lan"
       begin
         visit "#{base_uri}/login"
       rescue ActionView::MissingTemplate
@@ -376,8 +377,20 @@ describe Carto::OauthProviderController do
       get_json "#{me_url}?api_key=#{api_key}" do |response|
         expect(response.status).to(eq(200))
 
-        expect(response.body[:username]).to(eq(@user.username))
+        expect(response.body[:username]).to(eq(@org_user_1.username))
       end
+    end
+
+    it 'will return to oauth flow after login' do
+      base_uri = "http://#{@organization.name}.localhost.lan"
+      oauth_url = "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=123&response_type=code"
+
+      visit oauth_url
+      fill_in 'email', with: @org_user_1.email
+      fill_in 'password', with: @org_user_1.password
+      click_on 'Log in'
+
+      expect(current_url).to(eq(oauth_url))
     end
   end
 end

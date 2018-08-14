@@ -22,6 +22,7 @@ This release introduces a new API Key system. In order to migrate existing users
   * Data model (#14163)
   * Consent screen backend (#14164)
   * New endpoint for user information, `/api/v4/me` (#14229)
+  * Redirect back to OAuth flow after login (#14236)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement

@@ -43,6 +43,35 @@ class ApplicationController < ActionController::Base
     # noop
   end
 
+  # current_user relies on request subdomain ALWAYS, so current_viewer will always return:
+  # - If subdomain is present in the sessions: subdomain-based session (aka current_user)
+  # - Else: the first session found at request.session that comes from warden
+  def current_viewer
+    if @current_viewer.nil?
+      if current_user && env["warden"].authenticated?(current_user.username)
+        @current_viewer = current_user if validate_session(current_user)
+      else
+        authenticated_usernames = request.session.to_hash.select { |k, _|
+          k.start_with?("warden.user") && !k.end_with?(".session")
+        }.values
+        # See if there's a session of the viewed subdomain corresponding user
+        current_user_present = authenticated_usernames.select { |username|
+          CartoDB.extract_subdomain(request) == username
+        }.first
+
+        # If current user session was there, do nothing; else, retrieve first available
+        if current_user_present.nil?
+          unless authenticated_usernames.first.nil?
+            user = ::User.where(username: authenticated_usernames.first).first
+            validate_session(user, reset_session = false) unless user.nil?
+            @current_viewer = user
+          end
+        end
+      end
+    end
+    @current_viewer
+  end
+
   protected
 
   Warden::Manager.after_authentication do |user, auth, _opts|
@@ -371,35 +400,6 @@ class ApplicationController < ActionController::Base
 
   def current_user
     super(CartoDB.extract_subdomain(request))
-  end
-
-  # current_user relies on request subdomain ALWAYS, so current_viewer will always return:
-  # - If subdomain is present in the sessions: subdomain-based session (aka current_user)
-  # - Else: the first session found at request.session that comes from warden
-  def current_viewer
-    if @current_viewer.nil?
-      if current_user && env["warden"].authenticated?(current_user.username)
-        @current_viewer = current_user if validate_session(current_user)
-      else
-        authenticated_usernames = request.session.to_hash.select { |k, _|
-          k.start_with?("warden.user") && !k.end_with?(".session")
-        }.values
-        # See if there's a session of the viewed subdomain corresponding user
-        current_user_present = authenticated_usernames.select { |username|
-          CartoDB.extract_subdomain(request) == username
-        }.first
-
-        # If current user session was there, do nothing; else, retrieve first available
-        if current_user_present.nil?
-          unless authenticated_usernames.first.nil?
-            user = ::User.where(username: authenticated_usernames.first).first
-            validate_session(user, reset_session = false) unless user.nil?
-            @current_viewer = user
-          end
-        end
-      end
-    end
-    @current_viewer
   end
 
   def update_user_last_activity

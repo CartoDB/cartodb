@@ -212,6 +212,10 @@ class ApplicationController < ActionController::Base
     is_auth ? validate_session(current_user) : not_authorized
   end
 
+  def any_login_required
+    validate_session(current_viewer)
+  end
+
   def api_authorization_required
     authenticate!(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
     validate_session(current_user)

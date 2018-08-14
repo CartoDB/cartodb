@@ -1,0 +1,9 @@
+<% if current_user %> <!-- #TODO variable like 'is_good_request' -->
+  <h1 class='oauth-form__title'>Request for permission</h1>
+  <h2 class='oauth-form__subtitle'>
+    <strong>Reveal</strong> by <strong>CARTO</strong> would like permission to access your account
+  </h2>
+<% else %>
+  <h1 class='oauth-form__title'>Something went wrong</h1>
+  <h2 class='oauth-form__subtitle'>An external application failed to connect with CARTO. The application may be incorrectly configured, please contact the application developer for help.</h2>
+<% end %>

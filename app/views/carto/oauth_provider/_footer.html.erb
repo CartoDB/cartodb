@@ -1,0 +1,19 @@
+<div class='oauth-form__powered-by'>Powered by CARTO</div>
+<div class='oauth-form__buttons'>
+  <% if current_user %> <!-- #TODO use variable like 'is_good_request' -->
+    <%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_user), method: :post) do %>
+        <%= hidden_field_tag 'response_type', @response_type %>
+        <%= hidden_field_tag 'client_id', @oauth_app.client_id %>
+        <%= hidden_field_tag 'scope', @scopes.join(' ') %>
+        <%= hidden_field_tag 'state', @state %>
+        <%= hidden_field_tag 'redirect_uri', @redirect_uri %>
+
+        <%= submit_tag 'Reject', class: 'oauth-form__button' %>
+        <%= submit_tag 'Accept', name: 'accept', class: 'oauth-form__button oauth-form__button-primary' %>
+    <% end %>
+  <% else %>
+    <%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_user), method: :post) do %>
+    <%= submit_tag 'Go to dashboard', name: 'accept', class: 'oauth-form__button oauth-form__button-primary' %>
+    <% end %>
+  <% end %>
+</div>

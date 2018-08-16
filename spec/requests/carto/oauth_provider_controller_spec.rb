@@ -37,6 +37,26 @@ describe Carto::OauthProviderController do
     }
   end
 
+  def parse_fragment_parameters(uri)
+    URI.decode_www_form(Addressable::URI.parse(uri).fragment).to_h
+  end
+
+  def parse_query_parameters(uri)
+    Addressable::URI.parse(uri).query_values
+  end
+
+  def validate_token_response(parameters, access_token, refresh_token = nil)
+    expect(parameters[:access_token]).to(eq(access_token.api_key.token))
+    expect(parameters[:token_type]).to(eq('Bearer'))
+    expect(parameters[:expires_in].to_i).to(be_between(3595, 3600)) # Little margin for slowness
+    if refresh_token
+      expect(parameters[:refresh_token]).to(eq(refresh_token.token))
+    else
+      expect(parameters[:refresh_token]).to(be_nil)
+    end
+    expect(parameters[:user_info_url]).to(include(api_v4_users_me_path, access_token.oauth_app_user.user.username))
+  end
+
   shared_examples_for 'authorization parameter validation' do
     it 'returns a 404 error if application cannot be found' do
       request_endpoint(valid_payload.merge(client_id: 'e'))
@@ -84,7 +104,7 @@ describe Carto::OauthProviderController do
     describe 'with code response' do
       it_behaves_like 'invalid parameter redirections' do
         def parse_uri_parameters(uri)
-          Addressable::URI.parse(uri).query_values
+          parse_query_parameters(uri)
         end
       end
     end
@@ -96,7 +116,7 @@ describe Carto::OauthProviderController do
         end
 
         def parse_uri_parameters(uri)
-          URI.decode_www_form(Addressable::URI.parse(uri).fragment).to_h
+          parse_fragment_parameters(uri)
         end
       end
     end
@@ -139,7 +159,7 @@ describe Carto::OauthProviderController do
       expect(authorization_code.code).to(be_present)
 
       expect(response.status).to(eq(302))
-      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
+      expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
     end
 
     it 'with valid payload, and pre-authorized, redirects back to the application (implicit flow)' do
@@ -151,12 +171,8 @@ describe Carto::OauthProviderController do
       expect(access_token.api_key).to(be_present)
 
       expect(response.status).to(eq(302))
-      response_parameters = URI.decode_www_form(Addressable::URI.parse(response.location).fragment).to_h
-      expect(response_parameters['access_token']).to(eq(access_token.api_key.token))
-      expect(response_parameters['token_type']).to(eq('Bearer'))
-      expect(response_parameters['expires_in'].to_i).to(be_between(3595, 3600)) # Little margin for slowness
-      expect(response_parameters['refresh_token']).to(be_nil)
-      expect(response_parameters['user_info_url']).to(include(api_v4_users_me_path, @user.username))
+      response_parameters = parse_fragment_parameters(response.location)
+      validate_token_response(response_parameters.symbolize_keys, access_token)
     end
 
     it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
@@ -255,11 +271,7 @@ describe Carto::OauthProviderController do
           expect(access_token).to(be)
 
           expect(response.status).to(eq(200))
-          expect(response.body[:access_token]).to(eq(access_token.api_key.token))
-          expect(response.body[:token_type]).to(eq('bearer'))
-          expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
-          expect(response.body[:refresh_token]).to(be_nil)
-          expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
+          validate_token_response(response.body, access_token)
         end
       end
 
@@ -270,15 +282,11 @@ describe Carto::OauthProviderController do
           expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_false)
           access_token = @oauth_app_user.oauth_access_tokens.reload.first
           expect(access_token).to(be)
-
-          expect(response.status).to(eq(200))
-          expect(response.body[:access_token]).to(eq(access_token.api_key.token))
-          expect(response.body[:token_type]).to(eq('bearer'))
-          expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
-          expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
-
           refresh_token = @oauth_app_user.oauth_refresh_tokens.find_by_token(response.body[:refresh_token])
           expect(refresh_token).to(be)
+
+          expect(response.status).to(eq(200))
+          validate_token_response(response.body, access_token, refresh_token)
         end
       end
 
@@ -292,11 +300,7 @@ describe Carto::OauthProviderController do
           expect(access_token).to(be)
 
           expect(response.status).to(eq(200))
-          expect(response.body[:access_token]).to(eq(access_token.api_key.token))
-          expect(response.body[:token_type]).to(eq('bearer'))
-          expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
-          expect(response.body[:refresh_token]).to(be_nil)
-          expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
+          validate_token_response(response.body, access_token)
         end
       end
 
@@ -371,10 +375,7 @@ describe Carto::OauthProviderController do
           expect(access_token.scopes).to(eq(@refresh_token.scopes))
 
           expect(response.status).to(eq(200))
-          expect(response.body[:access_token]).to(eq(access_token.api_key.token))
-          expect(response.body[:token_type]).to(eq('bearer'))
-          expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
-          expect(response.body[:refresh_token]).to(eq(@refresh_token.token))
+          validate_token_response(response.body, access_token, @refresh_token)
         end
       end
 
@@ -386,10 +387,7 @@ describe Carto::OauthProviderController do
           expect(access_token.scopes).to(eq([]))
 
           expect(response.status).to(eq(200))
-          expect(response.body[:access_token]).to(eq(access_token.api_key.token))
-          expect(response.body[:token_type]).to(eq('bearer'))
-          expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
-          expect(response.body[:refresh_token]).to(eq(@refresh_token.token))
+          validate_token_response(response.body, access_token, @refresh_token)
         end
       end
 

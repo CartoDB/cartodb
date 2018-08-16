@@ -3,6 +3,7 @@
 require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/grant_strategies'
 require_dependency 'carto/oauth_provider/response_strategies'
+require_dependency 'carto/oauth_provider/token_presenter.rb'
 
 module Carto
   class OauthProviderController < ApplicationController
@@ -50,25 +51,15 @@ module Carto
 
     def token
       access_token, refresh_token = grant_strategy.authorize!(@oauth_app, params)
-      user = access_token.oauth_app_user.user
 
-      response = {
-        access_token: access_token.api_key.token,
-        token_type: 'Bearer',
-        expires_in: access_token.expires_in,
-        user_info_url: CartoDB.url(self, :api_v4_users_me, {}, user)
-      }
-
-      response[:refresh_token] = refresh_token.token if refresh_token
-
-      render(json: response)
+      render(json: OauthProvider::TokenPresenter.new(access_token, refresh_token: refresh_token).to_hash)
     end
 
     private
 
     def create_authorization_code
       response = response_strategy.authorize!(
-        @oauth_app_user, redirect_uri: @redirect_uri, scopes: @scopes, state: @state, context: self
+        @oauth_app_user, redirect_uri: @redirect_uri, scopes: @scopes, state: @state
       )
       redirect_to_oauth_app(response)
     end

@@ -205,46 +205,62 @@ describe Carto::OauthProviderController do
       expect(response.location).to(include('/login'))
     end
 
-    it 'with valid payload, creates an authorization and redirects back to the application with a code' do
-      post oauth_provider_authorize_url(valid_payload)
+    shared_examples_for 'successfully authorizes' do
+      it 'with valid payload, creates an authorization and redirects back to the application with a code' do
+        post oauth_provider_authorize_url(valid_payload)
 
-      authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
-      expect(authorization_code).to(be)
-      expect(authorization_code.code).to(be_present)
+        validate_response(response)
+      end
 
-      expect(response.status).to(eq(302))
-      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
+      it 'with valid payload and redirect URIs, creates an authorization and redirects back to the requested URI' do
+        @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
+
+        post oauth_provider_authorize_url(valid_payload.merge(redirect_uri: 'https://domain3'))
+
+        validate_response(response)
+        expect(response.location).to(start_with('https://domain3'))
+      end
+
+      it 'with valid payload, and a pre-existing grant, upgrades it adding more scopes' do
+        oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+        post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+
+        expect(oau.scopes).to(eq([]))
+        oau.reload
+        expect(oau.scopes).to(eq(['offline']))
+
+        validate_response(response)
+      end
     end
 
-    it 'with valid payload and redirect URIs, creates an authorization and redirects back to the requested URI' do
-      @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
+    describe 'with code response' do
+      it_behaves_like 'successfully authorizes' do
+        def validate_response(response)
+          authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
+          expect(authorization_code).to(be)
+          expect(authorization_code.code).to(be_present)
 
-      post oauth_provider_authorize_url(valid_payload.merge(redirect_uri: 'https://domain3'))
-
-      authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
-      expect(authorization_code).to(be)
-      expect(authorization_code.code).to(be_present)
-      expect(authorization_code.redirect_uri).to(eq('https://domain3'))
-
-      expect(response.status).to(eq(302))
-      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
-      expect(response.location).to(start_with('https://domain3'))
+          expect(response.status).to(eq(302))
+          expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
+        end
+      end
     end
 
-    it 'with valid payload, and a pre-existing grant, upgrades it adding more scopes' do
-      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-      post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+    describe 'with token response' do
+      it_behaves_like 'successfully authorizes' do
+        before(:each) do
+          valid_payload[:response_type] = 'token'
+        end
 
-      expect(oau.scopes).to(eq([]))
-      oau.reload
-      expect(oau.scopes).to(eq(['offline']))
+        def validate_response(response)
+          access_token = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_access_tokens.first
+          expect(access_token).to(be)
+          expect(access_token.api_key).to(be_present)
 
-      authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
-      expect(authorization_code).to(be)
-      expect(authorization_code.code).to(be_present)
-
-      expect(response.status).to(eq(302))
-      expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
+          expect(response.status).to(eq(302))
+          validate_token_response(parse_fragment_parameters(response.location).symbolize_keys, access_token)
+        end
+      end
     end
   end
 

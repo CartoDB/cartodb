@@ -1,7 +1,8 @@
 # encoding: UTF-8
 
 require_dependency 'carto/oauth_provider/errors'
-require_dependency 'carto/oauth_provider/strategies'
+require_dependency 'carto/oauth_provider/grant_strategies'
+require_dependency 'carto/oauth_provider/response_strategies'
 
 module Carto
   class OauthProviderController < ApplicationController
@@ -9,7 +10,9 @@ module Carto
       'authorization_code' => OauthProvider::GrantStrategies::AuthorizationCodeStrategy,
       'refresh_token' => OauthProvider::GrantStrategies::RefreshTokenStrategy
     }.freeze
-    SUPPORTED_RESPONSE_TYPES = ['code'].freeze
+    RESPONSE_STRATEGIES = {
+      'code' => OauthProvider::ResponseStrategies::CodeStrategy
+    }.freeze
 
     ssl_required
 
@@ -70,11 +73,7 @@ module Carto
     end
 
     def redirect_to_oauth_app(parameters)
-      redirect_uri = Addressable::URI.parse(@redirect_uri || @oauth_app.redirect_uris.first)
-      query = redirect_uri.query_values || {}
-      redirect_uri.query_values = query.merge(parameters)
-
-      redirect_to redirect_uri.to_s
+      redirect_to response_strategy.build_redirect_uri(@redirect_uri || @oauth_app.redirect_uris.first, parameters)
     end
 
     def set_redirection_error_handling
@@ -87,7 +86,7 @@ module Carto
                             redirect_on_error: @redirect_on_error,
                             oauth_app: @oauth_app)
 
-      if @redirect_on_error && @oauth_app
+      if @redirect_on_error && @oauth_app && response_strategy
         redirect_to_oauth_app(exception.parameters.merge(state: @state))
       elsif @redirect_on_error
         render_404
@@ -103,9 +102,8 @@ module Carto
 
     def validate_response_type
       @response_type = params[:response_type]
-      unless SUPPORTED_RESPONSE_TYPES.include?(@response_type)
-        raise OauthProvider::Errors::UnsupportedResponseType.new(SUPPORTED_RESPONSE_TYPES)
-      end
+
+      raise OauthProvider::Errors::UnsupportedResponseType.new(RESPONSE_STRATEGIES.keys) unless response_strategy
     end
 
     def validate_grant_type
@@ -149,6 +147,10 @@ module Carto
 
     def grant_strategy
       GRANT_STRATEGIES[params[:grant_type]]
+    end
+
+    def response_strategy
+      RESPONSE_STRATEGIES[params[:response_type]]
     end
   end
 end

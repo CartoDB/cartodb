@@ -19,28 +19,24 @@
       width: 380px;
       padding: 40px;
     }
-
     .oauth-form__header {
       display: flex;
       flex-direction: column;
       text-align: center;
       width: 300px;
     }
-
     .oauth-form__avatars {
       display: flex;
       flex-direction: row;
       justify-content: center;
       align-items: center;
     }
-
     .oauth-form__avatar-image {
       width: 48px;
       height: 48px;
       border-radius: 24px;
       margin: 8px;
     }
-
     .oauth-form__title {
       font-family: 'Montserrat-SemiBold';
       font-size: 16px;
@@ -48,19 +44,20 @@
       letter-spacing: 0;
       line-height: 24px;
     }
-
     .oauth-form__subtitle {
       font-family: 'Open Sans';
       font-size: 12px;
       line-height: 16px;
       margin-bottom: 8px;
       color: #2E3C43;
+      width: 220px;
+      margin-left: auto;
+      margin-right: auto;
     }
-
     .oauth-form__subtitle--error {
       text-align: left;
+      width: 300px;
     }
-
     .oauth-form__footer {
       display: flex;
       flex-direction: row;
@@ -68,13 +65,11 @@
       align-items: center;
       margin-top: 24px;
     }
-
     .oauth-form__powered-by {
       font-family: 'Open Sans';
       font-size: 10px;
       color: #828A8F;
     }
-
     .oauth-form__button {
       font-family: 'Montserrat';
       font-weight: 600;
@@ -94,8 +89,7 @@
       padding: 0px 10px;
       margin-left: 14px;
     }
-
-    .oauth-form__button-primary {
+    .oauth-form__button--primary {
       background-color: #1785FB;
       border-style: none;
       color: #FFFFFF;
@@ -108,7 +102,6 @@
       padding: 16px;
       margin-top: 8px;
     }
-
     .oauth-permission__title {
       font-family: 'Montserrat';
       font-weight: 600;
@@ -116,7 +109,6 @@
       line-height: 16px;
       color: #2E3C43;
     }
-
     .oauth-permission__list {
       font-family: 'Open Sans';
       border-top:  1px solid #EEEEEE;
@@ -127,17 +119,43 @@
       max-height: 120px;
       overflow-y: scroll;
     }
-
     .oauth-permission__item::before {
       content: url("<%= image_path "oauth_provider/enabled_check.svg" %>");
       margin-right: 6px;
     }
-
     .oauth-permission__item--disabled {
       color: #828A8F;
     }
     .oauth-permission__item--disabled::before {
       content: url("<%= image_path "oauth_provider/disabled_check.svg" %>");
+    }
+
+    /* oauth-error */
+    .oauth-error {
+      font-size: 12px;
+      color: #2E3C43;
+      line-height: 16px;
+    }
+
+    .oauth-error__title {
+      font-family: 'Open Sans';
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .oauth-error__list {
+      font-family: 'Montserrat';
+      font-weight: 600;
+      list-style-type: none;
+      max-height: 120px;
+      overflow-y: scroll;
+    }
+
+    .oauth-error__item {
+      background-color: #F9F9F9;
+      border-radius: 4px;
+      margin-top: 8px;
+      padding: 16px;
     }
 
   </style>

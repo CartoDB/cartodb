@@ -1,0 +1,15 @@
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="unknown-app-avatar" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g transform="translate(-3962.000000, -220.000000)" fill="#F2F6F9" fill-rule="nonzero" id="#8">
+          <g transform="translate(3840.000000, 180.000000)">
+              <g id="Header" transform="translate(40.000000, 40.000000)">
+                  <g id="Avatars" transform="translate(82.000000, 0.000000)">
+                      <g id="Icono_App">
+                          <circle id="Oval" cx="24" cy="24" r="24"></circle>
+                      </g>
+                  </g>
+              </g>
+          </g>
+      </g>
+  </g>
+</svg>

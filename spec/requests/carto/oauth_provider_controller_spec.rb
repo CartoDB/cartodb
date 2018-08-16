@@ -150,7 +150,7 @@ describe Carto::OauthProviderController do
       expect(response.body).to(include(valid_payload[:state]))
     end
 
-    it 'with valid payload, and pre-authorized, redirects back to the application' do
+    it 'with valid payload and code response, pre-authorized, redirects back to the application' do
       oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload)
 
@@ -162,7 +162,7 @@ describe Carto::OauthProviderController do
       expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
     end
 
-    it 'with valid payload, and pre-authorized, redirects back to the application (implicit flow)' do
+    it 'with valid payload and token response, pre-authorized, redirects back to the application' do
       oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token'))
 
@@ -222,6 +222,9 @@ describe Carto::OauthProviderController do
       end
 
       it 'with valid payload, and a pre-existing grant, upgrades it adding more scopes' do
+         # TODO: We only have one scope and is unsupported in token response
+        pending if valid_payload[:response_type] == 'token'
+
         oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
         post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
 
@@ -247,11 +250,11 @@ describe Carto::OauthProviderController do
     end
 
     describe 'with token response' do
-      it_behaves_like 'successfully authorizes' do
-        before(:each) do
-          valid_payload[:response_type] = 'token'
-        end
+      before(:each) do
+        valid_payload[:response_type] = 'token'
+      end
 
+      it_behaves_like 'successfully authorizes' do
         def validate_response(response)
           access_token = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_access_tokens.first
           expect(access_token).to(be)
@@ -260,6 +263,15 @@ describe Carto::OauthProviderController do
           expect(response.status).to(eq(302))
           validate_token_response(parse_fragment_parameters(response.location).symbolize_keys, access_token)
         end
+      end
+
+      it 'redirects with an error if requesting offline scope' do
+        post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_fragment_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
       end
     end
   end
@@ -487,9 +499,9 @@ describe Carto::OauthProviderController do
       end
     end
 
-    def request_authorization(response_type)
+    def request_authorization(response_type, scope)
       visit "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=#{state}" \
-            "&response_type=#{response_type}&scope=offline&redirect_uri=#{redirect_uri}"
+            "&response_type=#{response_type}&scope=#{scope}&redirect_uri=#{redirect_uri}"
 
       begin
         click_on 'Accept'
@@ -513,7 +525,7 @@ describe Carto::OauthProviderController do
     it 'following the code flow produces a valid API Key and refresh token to renew it' do
       login
 
-      request_authorization('code')
+      request_authorization('code', 'offline')
 
       expect(current_url).to(start_with(redirect_uri))
       response_parameters = parse_query_parameters(current_url)
@@ -568,7 +580,7 @@ describe Carto::OauthProviderController do
     it 'following the implicit flow produces a valid API Key' do
       login
 
-      request_authorization('token')
+      request_authorization('token', '')
 
       # Capybara driver eats the fragment part of the URL to emulate browsers but we can recover it with some trickery
       redirected_url = Capybara.current_session.driver.response.location

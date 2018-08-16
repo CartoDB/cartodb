@@ -95,21 +95,21 @@
       color: #FFFFFF;
     }
 
-    /* oauth-permission */
-    .oauth-permission {
+    /* oauth-scope */
+    .oauth-scope {
       background-color: #F9F9F9;
       border-radius: 4px;
       padding: 16px;
       margin-top: 8px;
     }
-    .oauth-permission__title {
+    .oauth-scope__title {
       font-family: 'Montserrat';
       font-weight: 600;
       font-size: 12px;
       line-height: 16px;
       color: #2E3C43;
     }
-    .oauth-permission__list {
+    .oauth-scope__list {
       font-family: 'Open Sans';
       border-top:  1px solid #EEEEEE;
       margin-top: 8px;
@@ -119,14 +119,14 @@
       max-height: 120px;
       overflow-y: scroll;
     }
-    .oauth-permission__item::before {
+    .oauth-scope__item::before {
       content: url("<%= image_path "oauth_provider/enabled_check.svg" %>");
       margin-right: 6px;
     }
-    .oauth-permission__item--disabled {
+    .oauth-scope__item--disabled {
       color: #828A8F;
     }
-    .oauth-permission__item--disabled::before {
+    .oauth-scope__item--disabled::before {
       content: url("<%= image_path "oauth_provider/disabled_check.svg" %>");
     }
 
@@ -162,7 +162,7 @@
 <% end %>
 
 <!-- TODO back & front -->
-<% permissions = [] %> <!-- 'permissions' or 'scopes' -->
+<% scopes = [] %>
 <% if false %>
   <% errors = [] %> <!-- #TODO create variable like 'errors' -->
 <% end %>
@@ -173,8 +173,8 @@
       <%= render :partial => 'header' %>
     </header>
 
-    <% if permissions %>
-      <%= render :partial => 'permissions' %>
+    <% if scopes %>
+      <%= render :partial => 'scopes' %>
     <% end %>
 
     <% if errors %>

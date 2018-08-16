@@ -66,10 +66,10 @@ module Carto
     private
 
     def create_authorization_code
-      authorization_code = @oauth_app_user.oauth_authorization_codes.create!(
-        redirect_uri: @redirect_uri, scopes: @scopes
+      response = response_strategy.authorize!(
+        @oauth_app_user, redirect_uri: @redirect_uri, scopes: @scopes, state: @state
       )
-      redirect_to_oauth_app(code: authorization_code.code, state: @state)
+      redirect_to_oauth_app(response)
     end
 
     def redirect_to_oauth_app(parameters)

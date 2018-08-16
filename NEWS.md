@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
+- Fix OAuth login for the organizations (#14238)
 
 4.20.0 (2018-08-13)
 -------------------
@@ -125,7 +126,6 @@ sudo make install
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
 * Update odbc_fdw extension to `0.3.0`
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
-* Fix OAuth login for the organizations
 * Now you can limit the amount of memory used by ogr2ogr adding the `memory_limit` option in bytes to the ogr2ogr section of the `app_config.yml`
 
 ### Internals

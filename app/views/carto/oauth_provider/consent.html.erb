@@ -162,10 +162,8 @@
 <% end %>
 
 <!-- TODO back & front -->
-<% scopes = [] %>
-<% if false %>
-  <% errors = [] %> <!-- #TODO create variable like 'errors' -->
-<% end %>
+<% has_scopes = true %>
+<% has_errors = false %>
 
 <div class='oauth-page'>
   <div class='oauth-form'>
@@ -173,11 +171,11 @@
       <%= render :partial => 'header' %>
     </header>
 
-    <% if scopes %>
+    <% if has_scopes %>
       <%= render :partial => 'scopes' %>
     <% end %>
 
-    <% if errors %>
+    <% if has_errors %>
       <%= render :partial => 'errors' %>
     <% end %>
 

@@ -11,7 +11,8 @@ module Carto
       'refresh_token' => OauthProvider::GrantStrategies::RefreshTokenStrategy
     }.freeze
     RESPONSE_STRATEGIES = {
-      'code' => OauthProvider::ResponseStrategies::CodeStrategy
+      'code' => OauthProvider::ResponseStrategies::CodeStrategy,
+      'token' => OauthProvider::ResponseStrategies::TokenStrategy
     }.freeze
 
     ssl_required

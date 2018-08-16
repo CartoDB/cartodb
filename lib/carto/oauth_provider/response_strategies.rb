@@ -30,7 +30,7 @@ module Carto
             access_token: access_token.api_key.token,
             token_type: 'Bearer',
             expires_in: access_token.expires_in,
-            user_info_url: CartoDB.url(context, :api_v4_users_me, {}, user),
+            user_info_url: CartoDB.url(context, :api_v4_users_me, {}, oauth_app_user.user),
             state: state
           }
         end

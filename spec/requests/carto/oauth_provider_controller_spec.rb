@@ -119,6 +119,23 @@ describe Carto::OauthProviderController do
       expect(Addressable::URI.parse(response.location).query_values['code']).to(eq(authorization_code.code))
     end
 
+    it 'with valid payload, and pre-authorized, redirects back to the application (implicit flow)' do
+      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+      get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token'))
+
+      access_token = oau.oauth_access_tokens.first
+      expect(access_token).to(be)
+      expect(access_token.api_key).to(be_present)
+
+      expect(response.status).to(eq(302))
+      response_parameters = URI.decode_www_form(Addressable::URI.parse(response.location).fragment).to_h
+      expect(response_parameters['access_token']).to(eq(access_token.api_key.token))
+      expect(response_parameters['token_type']).to(eq('Bearer'))
+      expect(response_parameters['expires_in'].to_i).to(be_between(3595, 3600)) # Little margin for slowness
+      expect(response_parameters['refresh_token']).to(be_nil)
+      expect(response_parameters['user_info_url']).to(include(api_v4_users_me_path, @user.username))
+    end
+
     it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
       @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
@@ -219,6 +236,7 @@ describe Carto::OauthProviderController do
           expect(response.body[:token_type]).to(eq('bearer'))
           expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
           expect(response.body[:refresh_token]).to(be_nil)
+          expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
         end
       end
 
@@ -254,6 +272,7 @@ describe Carto::OauthProviderController do
           expect(response.body[:access_token]).to(eq(access_token.api_key.token))
           expect(response.body[:token_type]).to(eq('bearer'))
           expect(response.body[:expires_in]).to(be_between(3595, 3600)) # Little margin for slowness
+          expect(response.body[:refresh_token]).to(be_nil)
           expect(response.body[:user_info_url]).to(include(api_v4_users_me_path, @user.username))
         end
       end

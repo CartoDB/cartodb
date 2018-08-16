@@ -1,6 +1,6 @@
 module Carto
   module OauthProvider
-    module Strategies
+    module GrantStrategies
       module AuthorizationCodeStrategy
         def self.authorize!(oauth_app, params)
           authorization_code = OauthAuthorizationCode.find_by_code!(params[:code])

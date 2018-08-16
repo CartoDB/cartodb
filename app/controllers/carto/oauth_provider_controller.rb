@@ -6,8 +6,8 @@ require_dependency 'carto/oauth_provider/strategies'
 module Carto
   class OauthProviderController < ApplicationController
     GRANT_STRATEGIES = {
-      'authorization_code' => OauthProvider::Strategies::AuthorizationCodeStrategy,
-      'refresh_token' => OauthProvider::Strategies::RefreshTokenStrategy
+      'authorization_code' => OauthProvider::GrantStrategies::AuthorizationCodeStrategy,
+      'refresh_token' => OauthProvider::GrantStrategies::RefreshTokenStrategy
     }.freeze
     SUPPORTED_RESPONSE_TYPES = ['code'].freeze
 

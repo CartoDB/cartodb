@@ -50,32 +50,55 @@ describe Carto::OauthProviderController do
       expect(response.status).to(eq(404))
     end
 
-    it 'redirects with an error if missing state' do
-      request_endpoint(valid_payload.merge(state: ''))
+    shared_examples_for 'invalid parameter redirections' do
+      it 'redirects with an error if missing state' do
+        request_endpoint(valid_payload.merge(state: ''))
 
-      expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
-      qs = Addressable::URI.parse(response.location).query_values
-      expect(qs['error']).to(eq('invalid_request'))
-      expect(qs['error_description']).to(eq('state is mandatory'))
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_request'))
+        expect(qs['error_description']).to(eq('state is mandatory'))
+      end
+
+      it 'redirects with an error if requesting unknown scopes' do
+        request_endpoint(valid_payload.merge(scope: 'invalid wadus'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
+      end
+
+      it 'redirects with an error if requesting with an invalid redirect_uri' do
+        request_endpoint(valid_payload.merge(redirect_uri: 'invalid'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_request'))
+        expect(qs['error_description']).to(eq('The redirect_uri is not authorized for this application'))
+      end
     end
 
-    it 'redirects with an error if requesting unknown scopes' do
-      request_endpoint(valid_payload.merge(scope: 'invalid wadus'))
-
-      expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
-      expect(Addressable::URI.parse(response.location).query_values['error']).to(eq('invalid_scope'))
+    describe 'with code response' do
+      it_behaves_like 'invalid parameter redirections' do
+        def parse_uri_parameters(uri)
+          Addressable::URI.parse(uri).query_values
+        end
+      end
     end
 
-    it 'redirects with an error if requesting with an invalid redirect_uri' do
-      request_endpoint(valid_payload.merge(redirect_uri: 'invalid'))
+    describe 'with token response' do
+      it_behaves_like 'invalid parameter redirections' do
+        before(:each) do
+          valid_payload[:response_type] = 'token'
+        end
 
-      expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
-      qs = Addressable::URI.parse(response.location).query_values
-      expect(qs['error']).to(eq('invalid_request'))
-      expect(qs['error_description']).to(eq('The redirect_uri is not authorized for this application'))
+        def parse_uri_parameters(uri)
+          URI.decode_www_form(Addressable::URI.parse(uri).fragment).to_h
+        end
+      end
     end
   end
 

@@ -34,6 +34,7 @@ sudo make install
   * Data model (#14163)
   * Consent screen backend (#14164)
   * New endpoint for user information, `/api/v4/me` (#14229)
+  * Access_token expiration and refresh_tokens (#14230)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement

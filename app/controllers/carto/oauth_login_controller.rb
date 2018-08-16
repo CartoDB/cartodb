@@ -48,7 +48,7 @@ module Carto
       @organization_name = state[:organization_name]
       @invitation_token = state[:invitation_token]
 
-      return render_403 unless params[:code] && valid_authenticity_token?(state[:csrf])
+      return render_403 unless params[:code] && valid_authenticity_token?(session, state[:csrf])
     end
 
     def initialize_github_config

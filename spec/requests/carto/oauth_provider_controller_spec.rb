@@ -44,12 +44,10 @@ describe Carto::OauthProviderController do
       expect(response.status).to(eq(404))
     end
 
-    it 'redirects with an error if invalid response_type' do
+    it 'shows an error if invalid response_type' do
       request_endpoint(valid_payload.merge(response_type: 'err'))
 
-      expect(response.status).to(eq(302))
-      expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
-      expect(Addressable::URI.parse(response.location).query_values['error']).to(eq('unsupported_response_type'))
+      expect(response.status).to(eq(404))
     end
 
     it 'redirects with an error if missing state' do

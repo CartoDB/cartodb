@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
 
 4.20.0 (2018-08-13)
 -------------------

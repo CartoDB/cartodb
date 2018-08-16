@@ -11,6 +11,12 @@ module Carto
         @app_user = OauthAppUser.new(user: @user, oauth_app: @app)
       end
 
+      it 'does not accept invalid scopes' do
+        authorization = OauthAuthorizationCode.new(scopes: ['wadus'])
+        expect(authorization).to_not(be_valid)
+        expect(authorization.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+      end
+
       it 'validates without redirect_uri and autogenerates code' do
         authorization = OauthAuthorizationCode.new(oauth_app_user: @app_user)
         expect(authorization).to(be_valid)
@@ -52,10 +58,23 @@ module Carto
       end
 
       it 'creates a new api key and blanks the code' do
-        access_token = @authorization_code.exchange!
+        access_token, refresh_token = @authorization_code.exchange!
+
         expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_false)
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
+        expect(refresh_token).to(be_nil)
+      end
+
+      it 'with offline scope creates a new access token and refresh token' do
+        @authorization_code.update!(scopes: ['offline'])
+
+        access_token, refresh_token = @authorization_code.exchange!
+
+        expect(Carto::OauthAuthorizationCode.exists?(@authorization_code.id)).to(be_false)
+        expect(access_token.api_key).to(be)
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(refresh_token).to(be)
       end
     end
   end

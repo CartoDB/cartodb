@@ -467,33 +467,56 @@ describe Carto::OauthProviderController do
   describe '#acceptance' do
     include Capybara::DSL
 
-    it 'following the oauth flow produces a valid API Key and refresh token to renew it' do
-      # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
-      redirect_uri = "https://#{@user.username}.localhost.lan/redirect"
-      @oauth_app.update!(redirect_uris: ['https://fake_uri', redirect_uri])
+    # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
+    let(:redirect_uri) { "https://#{@user.username}.localhost.lan/redirect" }
 
-      # Login
+    let(:state) { SecureRandom.hex(16) }
+
+    let(:base_uri) { "http://#{@user.username}.localhost.lan" }
+
+    before(:each) do
+      @oauth_app.update!(redirect_uris: ['https://fake_uri', redirect_uri])
+    end
+
+    def login
       login_as(@user, scope: @user.username)
-      base_uri = "http://#{@user.username}.localhost.lan"
       begin
         visit "#{base_uri}/login"
       rescue ActionView::MissingTemplate
         # Expected error trying to load dashboard statics
       end
+    end
 
-      # Request authorization
-      state = '123qweasdzxc'
+    def request_authorization(response_type)
       visit "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=#{state}" \
-            "&response_type=code&scope=offline&redirect_uri=#{redirect_uri}"
+            "&response_type=#{response_type}&scope=offline&redirect_uri=#{redirect_uri}"
 
       begin
         click_on 'Accept'
       rescue ActionController::RoutingError
         # Expected error since /redirect is a made up URL
       end
+    end
+
+    def test_access_token(token_response, expect_success:)
+      # TODO: use bearer auth
+      get_json "#{token_response[:user_info_url]}?api_key=#{token_response[:access_token]}" do |response|
+        if expect_success
+          expect(response.status).to(eq(200))
+          expect(response.body[:username]).to(eq(@user.username))
+        else
+          expect(response.status).to(eq(401))
+        end
+      end
+    end
+
+    it 'following the code flow produces a valid API Key and refresh token to renew it' do
+      login
+
+      request_authorization('code')
 
       expect(current_url).to(start_with(redirect_uri))
-      response_parameters = Addressable::URI.parse(current_url).query_values
+      response_parameters = parse_query_parameters(current_url)
       expect(response_parameters['state']).to(eq(state))
       code = response_parameters['code']
 
@@ -512,21 +535,11 @@ describe Carto::OauthProviderController do
         response.body
       end
 
-      api_key = token_response[:access_token]
-      me_url = token_response[:user_info_url]
       refresh_token = token_response[:refresh_token]
-
-      expect(api_key).to(be)
-      expect(me_url).to(be)
       expect(refresh_token).to(be)
 
       # Try to use the access token
-      # TODO: use bearer auth
-      get_json "#{me_url}?api_key=#{api_key}" do |response|
-        expect(response.status).to(eq(200))
-
-        expect(response.body[:username]).to(eq(@user.username))
-      end
+      test_access_token(token_response, expect_success: true)
 
       # Access token expiration, should no longer work
       Delorean.jump(2.hours)
@@ -534,9 +547,7 @@ describe Carto::OauthProviderController do
       Rake::Task.define_task(:environment)
       Rake::Task['cartodb:oauth:destroy_expired_access_tokens'].invoke
 
-      get_json "#{me_url}?api_key=#{api_key}" do |response|
-        expect(response.status).to(eq(401))
-      end
+      test_access_token(token_response, expect_success: false)
 
       # Get a new acess token using refresh token
       payload = {
@@ -551,14 +562,22 @@ describe Carto::OauthProviderController do
         response.body
       end
 
-      api_key = token_response[:access_token]
-      expect(api_key).to(be)
+      test_access_token(token_response, expect_success: true)
+    end
 
-      get_json "#{me_url}?api_key=#{api_key}" do |response|
-        expect(response.status).to(eq(200))
+    it 'following the implicit flow produces a valid API Key' do
+      login
 
-        expect(response.body[:username]).to(eq(@user.username))
-      end
+      request_authorization('token')
+
+      # Capybara driver eats the fragment part of the URL to emulate browsers but we can recover it with some trickery
+      redirected_url = Capybara.current_session.driver.response.location
+      expect(redirected_url).to(start_with(redirect_uri))
+      response_parameters = parse_fragment_parameters(redirected_url)
+      expect(response_parameters['state']).to(eq(state))
+      expect(response_parameters['refresh_token']).to(be_nil)
+
+      test_access_token(response_parameters.symbolize_keys, expect_success: true)
     end
   end
 end

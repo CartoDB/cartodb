@@ -1,4 +1,4 @@
-<% scopes_by_category = [
+<% my_test_scopes_by_category = [
   {
     description: "Personal user data",
     scopes: [
@@ -22,7 +22,8 @@
   },
 ] %>
 
-<% scopes_by_category.each do |category| %>
+
+<% @scopes_by_category.each do |category| %>
   <div class='oauth-scopes-category'>
   <% if category[:icon]%>
     <img src="<%= image_path "oauth_provider/category_#{category[:icon]}.svg" %>">
@@ -31,7 +32,7 @@
   <ul class='oauth-scopes-category__list'>
     <% category[:scopes].each do |scope| %>
       <li class='oauth-scopes-category__scope <%= "oauth-scopes-category__scope--disabled" unless scope[:new] %>'>
-        <%= scope[:name] %>
+        <%= scope[:description] %>
       </li>
     <% end %>
   </ul>

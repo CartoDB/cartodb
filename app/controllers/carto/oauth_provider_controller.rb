@@ -3,7 +3,7 @@
 require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/grant_strategies'
 require_dependency 'carto/oauth_provider/response_strategies'
-require_dependency 'carto/oauth_provider/token_presenter.rb'
+require_dependency 'carto/oauth_provider/token_presenter'
 
 module Carto
   class OauthProviderController < ApplicationController

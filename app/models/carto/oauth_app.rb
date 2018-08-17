@@ -14,6 +14,7 @@ module Carto
     validates :client_id, presence: true
     validates :client_secret, presence: true
     validates :redirect_uris, presence: true
+    validates :icon_url, presence: true
     validate :validate_uris
 
     before_validation :ensure_keys_generated

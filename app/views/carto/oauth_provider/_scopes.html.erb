@@ -22,11 +22,11 @@
 ] %>
 
 <% scopes_by_category.each do |category| %>
-  <div class='oauth-scope'>
-  <h3 class='oauth-scope__title'><%= category[:description] %></h3>
-  <ul class='oauth-scope__list'>
+  <div class='oauth-scopes-category'>
+  <h3 class='oauth-scopes-category__title'><%= category[:description] %></h3>
+  <ul class='oauth-scopes-category__list'>
     <% category[:scopes].each do |scope| %>
-      <li class='oauth-scope__item <%= "oauth-scope__item--disabled" unless scope[:new] %>'>
+      <li class='oauth-scopes-category__scope <%= "oauth-scopes-category__scope--disabled" unless scope[:new] %>'>
         <%= scope[:name] %>
       </li>
     <% end %>

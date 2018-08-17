@@ -1,7 +1,23 @@
+<% my_test_scopes_by_category = [
+  {
+    description: "Access to list your datasets",
+    icon: "money",
+    scopes: [
+      {description: "reqs_per_tile", new: false},
+      {description: "twitter_theforcewakens", new: false},
+      {description: "omg", new: true},
+      {description: "omg 2", new: true},
+      {description: "omg 3", new: true},
+      {description: "omg 4", new: true},
+      {description: "omg 5", new: true}
+    ]
+  },
+] %>
+
 <% @scopes_by_category.each do |category| %>
   <div class='oauth-scopes-category'>
   <% if category[:icon]%>
-    <img src="<%= image_path "oauth_provider/category_#{category[:icon]}.svg" %>">
+    <img class='oauth-scopes-category__icon' src="<%= image_path "oauth_provider/category_#{category[:icon]}.svg" %>">
   <% end %>
   <h3 class='oauth-scopes-category__title'><%= category[:description] %></h3>
   <ul class='oauth-scopes-category__list'>

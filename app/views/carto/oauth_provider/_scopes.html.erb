@@ -1,28 +1,3 @@
-<% my_test_scopes_by_category = [
-  {
-    description: "Personal user data",
-    scopes: [
-      {name: "Username", new: true},
-      {name: "Email addreses", new: true},
-      {name: "Organization name", new: true}
-    ]
-  },
-  {
-    description: "Access to list your datasets",
-    icon: "money",
-    scopes: [
-      {name: "reqs_per_tile", new: false},
-      {name: "twitter_theforcewakens", new: false},
-      {name: "omg", new: true},
-      {name: "omg 2", new: true},
-      {name: "omg 3", new: true},
-      {name: "omg 4", new: true},
-      {name: "omg 5", new: true}
-    ]
-  },
-] %>
-
-
 <% @scopes_by_category.each do |category| %>
   <div class='oauth-scopes-category'>
   <% if category[:icon]%>

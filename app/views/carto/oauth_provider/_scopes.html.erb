@@ -1,23 +1,35 @@
-<div class='oauth-scope'>
-    <h3 class='oauth-scope__title'>Personal user data</h3>
-    <ul class='oauth-scope__list'>
-        <li class='oauth-scope__item'>Username</li>
-        <li class='oauth-scope__item'>Email adresses</li>
-        <li class='oauth-scope__item'>Organization name</li>
-    </ul>
+<% scopes = [
+  {
+    "description" => "Personal user data",
+    "items" => [
+      {"name" => "Username", "isNew" => true},
+      {"name" => "Email addreses", "isNew" => true},
+      {"name" => "Organization name", "isNew" => true}
+    ]
+  },
+  {
+    "description" => "Access to list your datasets",
+    "items" => [
+      {"name" => "reqs_per_tile", "isNew" => false},
+      {"name" => "twitter_theforcewakens", "isNew" => false},
+      {"name" => "omg", "isNew" => true},
+      {"name" => "omg 2", "isNew" => true},
+      {"name" => "omg 3", "isNew" => true},
+      {"name" => "omg 4", "isNew" => true},
+      {"name" => "omg 5", "isNew" => true}
+    ]
+  },
+] %>
+
+<% scopes.each do |scope| %>
+  <div class='oauth-scope'>
+  <h3 class='oauth-scope__title'><%= scope["description"] %></h3>
+  <ul class='oauth-scope__list'>
+    <% scope["items"].each do |item| %>
+      <li class='oauth-scope__item <%= "oauth-scope__item--disabled" if item["isNew"] == false %>'>
+        <%= item["name"] %>
+      </li>
+    <% end %>
+  </ul>
 </div>
-<!--
-<div class='oauth-scope'>
-    <h3 class='oauth-scope__title'>Access to list your datasets</h3>
-    <ul class='oauth-scope__list'>
-        <li class='oauth-scope__item oauth-scope__item--disabled'>reqs_per_tile</li>
-        <li class='oauth-scope__item oauth-scope__item--disabled'>twitter_theforcewakens</li>
-        <li class='oauth-scope__item'>reqs_per_tile 2</li>
-        <li class='oauth-scope__item'>twitter_theforcewakens 2</li>
-        <li class='oauth-scope__item'>reqs_per_tile 3</li>
-        <li class='oauth-scope__item'>twitter_theforcewakens 3</li>
-        <li class='oauth-scope__item'>reqs_per_tile 4</li>
-        <li class='oauth-scope__item'>twitter_theforcewakens 4</li>
-    </ul>
-</div>
--->
+<% end %>

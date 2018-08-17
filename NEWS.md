@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  - Implicit flow (#14167)
 
 ### Bug fixes / enhancements
 - Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)

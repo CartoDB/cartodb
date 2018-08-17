@@ -31,7 +31,7 @@ module Carto
     def consent
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
 
-      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes) || [])
+      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes))
     end
 
     def authorize

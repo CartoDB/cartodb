@@ -56,7 +56,7 @@ CartoDB::Application.configure do
   # Check your `config/database.yml` has `pool: 50` or higher for `development`.
   # The condition excludes this from resque, since it won't work with it and it doesn't need it.
   # config.threadsafe! unless $rails_rake_task
-  config.eager_load = true
+  config.eager_load = false
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found)

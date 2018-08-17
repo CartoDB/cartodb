@@ -1,5 +1,5 @@
 <%= render :partial => 'avatars' %>
-<% if !@error %> <!-- #TODO use something like '!errors' -->
+<% if !@error %>
   <h1 class='oauth-form__title'>Request for permission</h1>
   <h2 class='oauth-form__subtitle'>
     <strong><%= @oauth_app.name %></strong> by <strong><%= @oauth_app.user.name_or_username %></strong> would like permission to access your account

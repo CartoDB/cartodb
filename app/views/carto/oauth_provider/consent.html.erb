@@ -4,7 +4,7 @@
   <style type="text/css">
     .oauth-page {
       display: flex;
-      height: 100%;
+      min-height: 100%;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -95,21 +95,21 @@
       color: #FFFFFF;
     }
 
-    /* oauth-scope */
-    .oauth-scope {
+    /* oauth-scopes-category */
+    .oauth-scopes-category {
       background-color: #F9F9F9;
       border-radius: 4px;
       padding: 16px;
       margin-top: 8px;
     }
-    .oauth-scope__title {
+    .oauth-scopes-category__title {
       font-family: 'Montserrat';
       font-weight: 600;
       font-size: 12px;
       line-height: 16px;
       color: #2E3C43;
     }
-    .oauth-scope__list {
+    .oauth-scopes-category__list {
       font-family: 'Open Sans';
       border-top:  1px solid #EEEEEE;
       margin-top: 8px;
@@ -119,14 +119,14 @@
       max-height: 120px;
       overflow-y: auto;
     }
-    .oauth-scope__item::before {
+    .oauth-scopes-category__scope::before {
       content: url("<%= image_path "oauth_provider/enabled_check.svg" %>");
       margin-right: 6px;
     }
-    .oauth-scope__item--disabled {
+    .oauth-scopes-category__scope--disabled {
       color: #828A8F;
     }
-    .oauth-scope__item--disabled::before {
+    .oauth-scopes-category__scope--disabled::before {
       content: url("<%= image_path "oauth_provider/disabled_check.svg" %>");
     }
 

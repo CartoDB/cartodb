@@ -43,6 +43,18 @@ class ApplicationController < ActionController::Base
     # noop
   end
 
+  def self.use_public_endpoint_cors(only: nil)
+    params = {}
+    params[:only] = only unless only.nil?
+
+    # Disables normal CORS handling
+    skip_before_action :cors_preflight_check, **params
+    skip_after_action :allow_cross_domain_access, **params
+
+    # Enables CORS from all origins
+    before_action :allow_full_cross_domain_access, **params
+  end
+
   protected
 
   Warden::Manager.after_authentication do |user, auth, _opts|
@@ -140,6 +152,12 @@ class ApplicationController < ActionController::Base
     elsif !Rails.env.production? && !Rails.env.staging?
       development_cors_headers
     end
+  end
+
+  def allow_full_cross_domain_access
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization'
   end
 
   def common_cors_headers

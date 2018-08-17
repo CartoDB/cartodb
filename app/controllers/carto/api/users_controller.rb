@@ -32,6 +32,8 @@ module Carto
       skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
       skip_before_action :check_user_state, only: [:me, :delete_me]
 
+      use_public_endpoint_cors only: [:me_public]
+
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
       end

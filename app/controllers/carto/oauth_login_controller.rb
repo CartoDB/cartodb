@@ -48,7 +48,7 @@ module Carto
       @organization_name = state[:organization_name]
       @invitation_token = state[:invitation_token]
 
-      return render_403 unless params[:code] && state[:csrf] == form_authenticity_token
+      return render_403 unless params[:code] && valid_authenticity_token?(session, state[:csrf])
     end
 
     def initialize_github_config
@@ -67,7 +67,7 @@ module Carto
       user = api.user
       return false unless user
 
-      params[:oauth_api] = api
+      env[:oauth_api] = api
       authenticate!(:oauth, scope: user.username)
 
       CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)

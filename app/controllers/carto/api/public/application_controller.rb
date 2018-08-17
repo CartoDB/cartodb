@@ -1,12 +1,17 @@
 class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
   include Carto::Api::AuthApiAuthentication
 
-  skip_before_action :cors_preflight_check, :allow_cross_domain_access
+  # Override all CORS settings
+  skip_before_action :cors_preflight_check
+  skip_after_action :allow_cross_domain_access
   before_action :allow_full_cross_domain_access
 
-  skip_before_action :http_header_authentication
-  skip_before_action :api_authorization_required
-  before_action :only_api_key_authorization
+  # Only allow API Key authorization
+  skip_before_action :http_header_authentication, :api_authorization_required
+  prepend_before_action :only_api_key_authorization
+
+  # Disable all checks for OPTIONS
+  skip_before_action :only_api_key_authorization
 
   WARDEN_SCOPE = :public_api_scope
 
@@ -16,8 +21,13 @@ class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
     response.headers['Access-Control-Allow-Headers'] = 'Authorization'
   end
 
+  def options
+    head :ok
+  end
+
+  # Override current_user and current_viewer so they only return the user authenticated via API Key (ignore session)
   def current_user
-    request_api_key.user
+    warden.user(WARDEN_SCOPE)
   end
 
   def current_viewer

@@ -9,6 +9,7 @@
   },
   {
     description: "Access to list your datasets",
+    icon: "money",
     scopes: [
       {name: "reqs_per_tile", new: false},
       {name: "twitter_theforcewakens", new: false},
@@ -23,6 +24,9 @@
 
 <% scopes_by_category.each do |category| %>
   <div class='oauth-scopes-category'>
+  <% if category[:icon]%>
+    <img src="<%= image_path "oauth_provider/category_#{category[:icon]}.svg" %>">
+  <% end %>
   <h3 class='oauth-scopes-category__title'><%= category[:description] %></h3>
   <ul class='oauth-scopes-category__list'>
     <% category[:scopes].each do |scope| %>

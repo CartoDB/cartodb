@@ -1,33 +1,10 @@
-<% scopes_by_category = [
-  {
-    description: "Personal user data",
-    scopes: [
-      {name: "Username", new: true},
-      {name: "Email addreses", new: true},
-      {name: "Organization name", new: true}
-    ]
-  },
-  {
-    description: "Access to list your datasets",
-    scopes: [
-      {name: "reqs_per_tile", new: false},
-      {name: "twitter_theforcewakens", new: false},
-      {name: "omg", new: true},
-      {name: "omg 2", new: true},
-      {name: "omg 3", new: true},
-      {name: "omg 4", new: true},
-      {name: "omg 5", new: true}
-    ]
-  },
-] %>
-
-<% scopes_by_category.each do |category| %>
+<% @scopes_by_category.each do |category| %>
   <div class='oauth-scope'>
   <h3 class='oauth-scope__title'><%= category[:description] %></h3>
   <ul class='oauth-scope__list'>
     <% category[:scopes].each do |scope| %>
       <li class='oauth-scope__item <%= "oauth-scope__item--disabled" unless scope[:new] %>'>
-        <%= scope[:name] %>
+        <%= scope[:description] %>
       </li>
     <% end %>
   </ul>

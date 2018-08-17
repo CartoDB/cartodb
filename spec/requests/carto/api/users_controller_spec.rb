@@ -19,30 +19,6 @@ describe Carto::Api::UsersController do
     ::User.any_instance.stubs(:update_in_central).returns(true)
   end
 
-  describe '#public_me' do
-    it 'works with master api_key' do
-      get_json api_v4_users_me_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key) do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:username]).to eq(@org_user_1.username)
-      end
-    end
-
-    it 'works with regular api_key' do
-      api_key = FactoryGirl.create(:oauth_api_key, user: @carto_org_user_1)
-
-      get_json api_v4_users_me_url(user_domain: @org_user_1.username, api_key: api_key.token) do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:username]).to eq(@org_user_1.username)
-      end
-    end
-
-    it 'return 401 without api_key' do
-      get_json api_v4_users_me_url(user_domain: @org_user_1.username) do |response|
-        expect(response.status).to eq(401)
-      end
-    end
-  end
-
   describe 'me' do
     it 'contains hubspot_form_ids in config' do
       CartoDB::Hubspot.any_instance.stubs(:enabled?).returns(true)

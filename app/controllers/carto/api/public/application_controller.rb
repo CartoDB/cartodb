@@ -10,8 +10,8 @@ class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
   skip_before_action :http_header_authentication, :api_authorization_required
   prepend_before_action :only_api_key_authorization
 
-  # Disable all checks for OPTIONS
-  skip_before_action :only_api_key_authorization
+  # Disable authorization check for OPTIONS
+  skip_before_action :only_api_key_authorization, only: [:options]
 
   WARDEN_SCOPE = :public_api_scope
 
@@ -38,6 +38,5 @@ class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
 
   def only_api_key_authorization
     authenticate!(:any_auth_api, :api_authentication, scope: WARDEN_SCOPE)
-    validate_session(current_user)
   end
 end

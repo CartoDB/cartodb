@@ -171,12 +171,10 @@
       <%= render :partial => 'header' %>
     </header>
 
-    <% if has_scopes %>
-      <%= render :partial => 'scopes' %>
-    <% end %>
-
-    <% if has_errors %>
+    <% if @error.present? %>
       <%= render :partial => 'errors' %>
+    <% else %>
+      <%= render :partial => 'scopes' %>
     <% end %>
 
     <footer class='oauth-form__footer'>

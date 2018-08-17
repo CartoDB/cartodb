@@ -15,6 +15,10 @@ module Carto
 
           params
         end
+
+        def error_message
+          "#{@code}: #{@description}"
+        end
       end
 
       class InvalidRequest < BaseError

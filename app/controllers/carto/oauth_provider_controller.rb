@@ -93,7 +93,7 @@ module Carto
         redirect_to_oauth_app(exception.parameters.merge(state: @state))
       elsif @redirect_on_error
         @error = exception.error_message
-        render 'consent.html'
+        render 'consent.html', status: 400
       else
         render json: exception.parameters, status: 400
       end

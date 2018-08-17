@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
     } if opts[:store]
 
     # Do not even send the Set-Cookie header if the strategy did not store anything in the session
-    auth.request.session_options[:skip] = true unless opts[:store]
+    auth.request.session_options[:skip] = true if opts[:store] == false
   end
 
   Warden::Manager.before_logout do |_user, auth, _opts|

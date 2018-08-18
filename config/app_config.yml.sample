@@ -327,7 +327,7 @@ defaults: &defaults
     #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
     #   location: 'organization_assets' # Optional subdirectory for local assets, default is 'organization_assets'
   app_assets:
-    asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
+    asset_host: "//cartodb-libs.freetls.fastly.net/cartodbui"
   avatars:
     gravatar_enabled: true
     base_url: '/assets/unversioned/images/avatars'
@@ -506,7 +506,7 @@ defaults: &defaults
         className: 'dark_matter_lite_rainbow'
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       eco_cartodb:
-        urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png'
+        urlTemplate: 'https://cartocdn_{s}.freetls.fastly.net/base-eco/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '10'
@@ -514,7 +514,7 @@ defaults: &defaults
         className: 'eco_cartodb'
         attribution: ''
       flat_blue:
-        urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-flatblue/{z}/{x}/{y}.png'
+        urlTemplate: 'https://cartocdn_{s}.freetls.fastly.net/base-flatblue/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '10'
@@ -522,7 +522,7 @@ defaults: &defaults
         className: 'flat_blue'
         attribution: ''
       midnight_cartodb:
-        urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-midnight/{z}/{x}/{y}.png'
+        urlTemplate: 'https://cartocdn_{s}.freetls.fastly.net/base-midnight/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '10'
@@ -530,7 +530,7 @@ defaults: &defaults
         className: 'midnight_cartodb'
         attribution: ''
       antique_cartodb:
-        urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
+        urlTemplate: 'https://cartocdn_{s}.freetls.fastly.net/base-antique/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: 0
         maxZoom: 10
@@ -539,7 +539,7 @@ defaults: &defaults
         attribution: ''
     Stamen:
       toner_stamen_labels:
-        urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png'
+        urlTemplate: 'https://stamen-tiles-{s}.freetls.fastly.net/toner-background/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '18'
@@ -549,7 +549,7 @@ defaults: &defaults
         labels:
           urlTemplate: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png'
       toner_stamen:
-        urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+        urlTemplate: 'https://stamen-tiles-{s}.freetls.fastly.net/toner/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '18'
@@ -557,7 +557,7 @@ defaults: &defaults
         className: 'toner_stamen'
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_background_stamen:
-        urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png'
+        urlTemplate: 'https://stamen-tiles-{s}.freetls.fastly.net/toner-background/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '18'
@@ -565,7 +565,7 @@ defaults: &defaults
         className: 'toner_background_stamen'
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_lite_stamen:
-        urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png'
+        urlTemplate: 'https://stamen-tiles-{s}.freetls.fastly.net/toner-lite/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '18'
@@ -573,7 +573,7 @@ defaults: &defaults
         className: 'toner_lite_stamen'
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_lines_stamen:
-        urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lines/{z}/{x}/{y}.png'
+        urlTemplate: 'https://stamen-tiles-{s}.freetls.fastly.net/toner-lines/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '18'
@@ -581,7 +581,7 @@ defaults: &defaults
         className: 'toner_lines_stamen'
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       toner_hybrid_stamen:
-        urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png'
+        urlTemplate: 'https://stamen-tiles-{s}.freetls.fastly.net/toner-hybrid/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '18'
@@ -589,7 +589,7 @@ defaults: &defaults
         className: 'toner_hybrid_stamen'
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
       watercolor_stamen:
-        urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'
+        urlTemplate: 'https://stamen-tiles-{s}.freetls.fastly.net/watercolor/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '18'

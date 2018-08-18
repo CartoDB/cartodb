@@ -23,8 +23,8 @@ Unless you plan to develop frontend code you can serve assets from our CDN inste
 the `config/app_config.yml`:
 
 ```ruby
-app_assets: 
-  asset_host: '//cartodb-libs.global.ssl.fastly.net/cartodbui'
+app_assets:
+  asset_host: '//cartodb-libs.freetls.fastly.net/cartodbui'
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._

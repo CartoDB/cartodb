@@ -56,7 +56,7 @@ Here is an example config.yml:
 
       stamen:
         toner_stamen:
-          url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+          url: 'https://stamen-tiles-{s}.freetls.fastly.net/toner/{z}/{x}/{y}.png'
           subdomains: 'abcd'
           minZoom: '0'
           maxZoom: '18'

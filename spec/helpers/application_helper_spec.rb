@@ -9,15 +9,15 @@ describe ApplicationHelper do
 
     describe 'with asset_host (SaaS)' do
       it 'returns asset_host' do
-        Cartodb.stubs(:get_config).with(:app_assets, 'asset_host').returns('https://carto.global.ssl.fastly.net/cartodbui')
+        Cartodb.stubs(:get_config).with(:app_assets, 'asset_host').returns('https://carto.freetls.fastly.net/cartodbui')
 
-        ApplicationHelper.app_assets_base_url.should eq 'https://carto.global.ssl.fastly.net/cartodbui/assets'
+        ApplicationHelper.app_assets_base_url.should eq 'https://carto.freetls.fastly.net/cartodbui/assets'
       end
 
       it 'returns asset_host and adds the protocol if needed' do
-        Cartodb.stubs(:get_config).with(:app_assets, 'asset_host').returns('//carto.global.ssl.fastly.net/cartodbui')
+        Cartodb.stubs(:get_config).with(:app_assets, 'asset_host').returns('//carto.freetls.fastly.net/cartodbui')
 
-        ApplicationHelper.app_assets_base_url.should eq 'http://carto.global.ssl.fastly.net/cartodbui/assets'
+        ApplicationHelper.app_assets_base_url.should eq 'http://carto.freetls.fastly.net/cartodbui/assets'
       end
     end
 

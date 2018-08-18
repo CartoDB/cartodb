@@ -29,8 +29,8 @@ That enables CSS and JS watchers for rebuilding bundles automatically upon chang
 
 ```ruby
 # Make sure the following lines are removed, or commented like this:
-# app_assets: 
-#   asset_host: '//cartodb-libs.global.ssl.fastly.net/cartodbui'
+# app_assets:
+#   asset_host: '//cartodb-libs.freetls.fastly.net/cartodbui'
 ```
 
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._

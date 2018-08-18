@@ -45,8 +45,8 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from the URL for S3 actual paths' do
-      url = 'http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv' +
-            '?AWSAccessKeyId=XXXXXXXXXXXXXXXXXXXX&Expires=1461934764&Signature=XXXXXXXXXXXXXXXXXXXXXXXXXXM%3D'
+      url = 'http://s3.dualstack.us-east-1.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_' +
+            'lakes.csv?AWSAccessKeyId=XXXXXXXXXXXXXXXXXXXX&Expires=1461934764&Signature=XXXXXXXXXXXXXXXXXXXXXXXXXXM%3D'
       stub_download(url: url, filepath: @file_filepath, content_disposition: false)
 
       downloader = Downloader.new(@user.id, url)
@@ -55,7 +55,8 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from the URL for S3 paths without extra parameters' do
-      url = "http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv"
+      url = "http://s3.dualstack.us-east-1.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/" +
+            "ne_110m_lakes.csv"
       stub_download(url: url, filepath: @file_filepath, content_disposition: false)
 
       downloader = Downloader.new(@user.id, url)
@@ -64,7 +65,7 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from the URL for FGDB ZIP files' do
-      url = "http://s3.amazonaws.com/filegeodatabase.gdb.zip"
+      url = "http://s3.dualstack.us-east-1.amazonaws.com/filegeodatabase.gdb.zip"
       stub_download(url: url, filepath: @file_filepath, content_disposition: false)
 
       downloader = Downloader.new(@user.id, url)
@@ -209,7 +210,7 @@ describe Downloader do
 
     it 'does not break urls with % on it' do
       # INFO: notice this URL is fake
-      url_with_percentage = 'https://s3.amazonaws.com/com.cartodb.imports.staging/03b0c2199fc814ceeb75/a_file.zip?AWSAccessKeyId=AKIAIUI5FFFJIRAMEEMA&Expires=1433349484&Signature=t6m%2Bji%2BlKsnrOVqPsptXajPiozw%3D'
+      url_with_percentage = 'https://s3.dualstack.us-east-1.amazonaws.com/com.cartodb.imports.staging/03b0c2199fc814ceeb75/a_file.zip?AWSAccessKeyId=AKIAIUI5FFFJIRAMEEMA&Expires=1433349484&Signature=t6m%2Bji%2BlKsnrOVqPsptXajPiozw%3D'
       downloader = Downloader.new(@user.id, url_with_percentage)
       downloader.instance_variable_get("@translated_url").should == url_with_percentage
     end

@@ -90,7 +90,8 @@ module Carto
       static_assets_match = STATIC_ASSETS_REGEX.match(value)
 
       if static_assets_match
-        value = "https://s3.amazonaws.com/com.cartodb.users-assets.production#{static_assets_match[1]}"
+        value = "https://s3.dualstack.us-east-1.amazonaws.com/com.cartodb.users-assets.production" \
+                "#{static_assets_match[1]}"
       end
 
       value

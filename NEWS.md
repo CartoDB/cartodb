@@ -12,6 +12,7 @@ Development
 - Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
 - Fix OAuth login for the organizations (#14238)
 - Use newer Fastly CDN endpoints, which support IPv6 and HTTP/2 (https://github.com/CartoDB/cartodb/issues/13159)
+- Use newer IPv6-capable S3 domains
 
 4.20.0 (2018-08-13)
 -------------------

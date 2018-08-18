@@ -73,7 +73,8 @@ namespace :carto do
 
                     static_assets_match = icon && STATIC_ASSETS_REGEX.match(icon)
                     if static_assets_match
-                      icon = "https://s3.amazonaws.com/com.cartodb.users-assets.production#{static_assets_match[1]}"
+                      icon = "https://s3.dualstack.us-east-1.amazonaws.com/com.cartodb.users-assets.production" \
+                             "#{static_assets_match[1]}"
 
                       category[:icon] = icon
                     end

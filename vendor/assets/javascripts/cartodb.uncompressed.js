@@ -34546,7 +34546,7 @@ cdb.geo.common.CartoDBLogo = {
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
         var link = cdb.config.get('cartodb_logo_link');
-        cartodb_link.innerHTML = "<a href='" + link + "' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+        cartodb_link.innerHTML = "<a href='" + link + "' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.dualstack.us-east-1.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CARTO' title='CARTO' />";
         container.appendChild(cartodb_link);
       }

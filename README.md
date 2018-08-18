@@ -16,8 +16,8 @@ If you would like to see some live demos, check out our
 [videos](http://www.vimeo.com/channels/carto) on Vimeo.
 We hope you like it!
 
-![Map view](http://cartodb.s3.amazonaws.com/github/map.png)
-![Data View](http://cartodb.s3.amazonaws.com/github/dataset.png)
+![Map view](http://cartodb.s3.dualstack.us-east-1.amazonaws.com/github/map.png)
+![Data View](http://cartodb.s3.dualstack.us-east-1.amazonaws.com/github/dataset.png)
 
 ## What can I do with CARTO?
 

@@ -134,7 +134,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def default_avatar
-    return "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
+    "cartodb.s3.dualstack.us-east-1.amazonaws.com/static/public_dashboard_default_avatar.png"
   end
 
   def feature_flag_names

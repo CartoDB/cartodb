@@ -998,7 +998,8 @@ describe Carto::Api::LayerPresenter do
             {
               "marker-width" => 35,
               "layer-type" => "torque",
-              "marker-file" => "url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png)",
+              "marker-file" => "url(http://s3.dualstack.us-east-1.amazonaws.com/com.cartodb.assets.static/" \
+                               "alphamarker.png)",
               "image-filters" => "colorize-alpha(blue, cyan, lightgreen, yellow , orange, red)",
               "marker-opacity" => marker_opacity,
               "heat-animated" => animated,

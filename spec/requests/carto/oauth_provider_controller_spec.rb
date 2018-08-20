@@ -522,7 +522,7 @@ describe Carto::OauthProviderController do
       get_json "#{me_url}?api_key=#{api_key}" do |response|
         expect(response.status).to(eq(200))
 
-        expect(response.body[:username]).to(eq(@user.username))
+        expect(response.body[:username]).to(eq(@org_user_1.username))
       end
     end
 

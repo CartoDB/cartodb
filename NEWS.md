@@ -10,6 +10,7 @@ Development
 ### Bug fixes / enhancements
 - Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
 - Fix OAuth login for the organizations (#14238)
+- Add new design for OAuth consent screen (#14237)
 
 4.20.0 (2018-08-13)
 -------------------

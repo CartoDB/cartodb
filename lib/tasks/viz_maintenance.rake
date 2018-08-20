@@ -234,7 +234,7 @@ namespace :cartodb do
     end
 
     def inconsistent_table?(viz)
-      (viz.table? && viz.related_tables.empty?)
+      (viz.user_table? && viz.related_tables.empty?)
     end
 
     def delete_with_confirmation(viz)

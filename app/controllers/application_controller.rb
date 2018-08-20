@@ -63,7 +63,7 @@ class ApplicationController < ActionController::Base
         if current_user_present.nil?
           unless authenticated_usernames.first.nil?
             user = ::User.where(username: authenticated_usernames.first).first
-            validate_session(user, reset_session = false) unless user.nil?
+            validate_session(user, false) unless user.nil?
             @current_viewer = user
           end
         end

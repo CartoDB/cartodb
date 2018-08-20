@@ -1,10 +1,14 @@
 # encoding: UTF-8
 
 require_dependency 'carto/oauth_provider/errors'
+require_dependency 'carto/oauth_provider/strategies'
 
 module Carto
   class OauthProviderController < ApplicationController
-    SUPPORTED_GRANT_TYPES = ['authorization_code'].freeze
+    GRANT_STRATEGIES = {
+      'authorization_code' => OauthProvider::Strategies::AuthorizationCodeStrategy,
+      'refresh_token' => OauthProvider::Strategies::RefreshTokenStrategy
+    }.freeze
     SUPPORTED_RESPONSE_TYPES = ['code'].freeze
 
     ssl_required
@@ -20,7 +24,6 @@ module Carto
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
-    before_action :load_authorization_code, :verify_authorization_code_redirect_uri, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
@@ -42,16 +45,17 @@ module Carto
     end
 
     def token
-      user = @authorization_code.oauth_app_user.user
-      access_token = @authorization_code.exchange!
+      access_token, refresh_token = grant_strategy.authorize!(@oauth_app, params)
+      user = access_token.oauth_app_user.user
 
       response = {
         access_token: access_token.api_key.token,
         token_type: 'bearer',
+        expires_in: access_token.expires_in,
         user_info_url: CartoDB.url(self, :api_v4_users_me, {}, user)
-        # expires_in: seconds
-        # refresh_token:
       }
+
+      response[:refresh_token] = refresh_token.token if refresh_token
 
       render(json: response)
     end
@@ -59,7 +63,9 @@ module Carto
     private
 
     def create_authorization_code
-      authorization_code = @oauth_app_user.oauth_authorization_codes.create!(redirect_uri: @redirect_uri)
+      authorization_code = @oauth_app_user.oauth_authorization_codes.create!(
+        redirect_uri: @redirect_uri, scopes: @scopes
+      )
       redirect_to_oauth_app(code: authorization_code.code, state: @state)
     end
 
@@ -103,9 +109,7 @@ module Carto
     end
 
     def validate_grant_type
-      unless SUPPORTED_GRANT_TYPES.include?(params[:grant_type])
-        raise OauthProvider::Errors::UnsupportedGrantType.new(SUPPORTED_GRANT_TYPES)
-      end
+      raise OauthProvider::Errors::UnsupportedGrantType.new(GRANT_STRATEGIES.keys) unless grant_strategy
     end
 
     def load_oauth_app
@@ -125,7 +129,9 @@ module Carto
 
     def validate_scopes
       @scopes = (params[:scope] || '').split(' ')
-      raise OauthProvider::Errors::InvalidScope.new(@scopes) if @scopes.any?
+
+      invalid_scopes = OauthProvider::Scopes.invalid_scopes(@scopes)
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
     end
 
     def ensure_state
@@ -137,22 +143,12 @@ module Carto
       @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.id)
     end
 
-    def load_authorization_code
-      @authorization_code = OauthAuthorizationCode.find_by_code!(params[:code])
-      raise OauthProvider::Errors::InvalidGrant.new unless @authorization_code.oauth_app_user.oauth_app == @oauth_app
-    rescue ActiveRecord::RecordNotFound
-      raise OauthProvider::Errors::InvalidGrant.new
-    end
-
     def verify_client_secret
       raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
     end
 
-    def verify_authorization_code_redirect_uri
-      # Redirect URI must match what was specified during authorization
-      if (@redirect_uri || @authorization_code.redirect_uri) && @redirect_uri != @authorization_code.redirect_uri
-        raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri must match the authorization request')
-      end
+    def grant_strategy
+      GRANT_STRATEGIES[params[:grant_type]]
     end
   end
 end

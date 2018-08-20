@@ -1,17 +1,31 @@
 Development
 -----------
 
-### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
+### NOTICES
+- None yet
+
+### Features
+- OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  - Redirect back to OAuth flow after login (#14236)
+
+### Bug fixes / enhancements
+- Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
+- Fix OAuth login for the organizations (#14238)
+
+4.20.0 (2018-08-13)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
-New database configuration is required. Please add `prepared_statements: false` to `database.yml`
+* New database configuration is required. Please add `prepared_statements: false` to `database.yml`
 (check `database.yml.sample` for an example)
 
-This release introduces a new API Key system. In order to migrate existing users, run the following command:
+* This release introduces a new API Key system. In order to migrate existing users, run the following command:
 `bundle exec rake carto:api_key:create_default`
 
 ### Features
@@ -22,7 +36,7 @@ This release introduces a new API Key system. In order to migrate existing users
   * Data model (#14163)
   * Consent screen backend (#14164)
   * New endpoint for user information, `/api/v4/me` (#14229)
-  * Redirect back to OAuth flow after login (#14236)
+  * Access_token expiration and refresh_tokens (#14230)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
 ### Bug fixes / enhancement
@@ -111,6 +125,7 @@ This release introduces a new API Key system. In order to migrate existing users
 * Datasets search now is working as intendended with special characters like "_"
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
+* Update odbc_fdw extension to `0.3.0`
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
 * Now you can limit the amount of memory used by ogr2ogr adding the `memory_limit` option in bytes to the ogr2ogr section of the `app_config.yml`
 

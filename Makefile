@@ -258,6 +258,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/oauth_app_spec.rb \
 	spec/models/carto/oauth_app_user_spec.rb \
 	spec/models/carto/oauth_authorization_code_spec.rb \
+	spec/models/carto/oauth_refresh_token_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/carto/rate_limit_spec.rb \
 	spec/models/carto/received_notification_spec.rb \
@@ -325,6 +326,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/lib/tasks/layers_rake_spec.rb \
 	spec/lib/tasks/fix_unique_legends_spec.rb \
+	spec/lib/tasks/oauth_rake_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \

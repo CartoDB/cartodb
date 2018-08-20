@@ -38,6 +38,12 @@ module Carto
         end
       end
 
+      it 'does not accept invalid scopes' do
+        app_user = OauthAppUser.new(scopes: ['wadus'])
+        expect(app_user).to_not(be_valid)
+        expect(app_user.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+      end
+
       it 'validates' do
         app_user = OauthAppUser.new(user: @user, oauth_app: @app)
         expect(app_user).to(be_valid)
@@ -69,6 +75,7 @@ module Carto
       end
 
       it 'grants all new scopes without duplicates' do
+        OauthAppUser::ScopesValidator.any_instance.stubs(:validate_each)
         oau = OauthAppUser.create!(user: @user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
 
         oau.upgrade!([])

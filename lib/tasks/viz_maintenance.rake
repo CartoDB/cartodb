@@ -19,15 +19,17 @@ namespace :cartodb do
       end
     end
 
-    desc "Purges broken table visualizations"
-    task :delete_inconsistent_tables => :environment do |t, args|
-      collection = Carto::Visualization.joins("left join user_tables ut on visualizations.map_id = ut.map_id").where("visualizations.type = 'table' and ut.id is null")
-
-      collection.each do |viz|
-        puts "Checking for deletion --> User: #{viz.user.username} | Viz name: #{viz.name}"
+    desc "Purges broken canonical visualizations without related tables"
+    task :delete_inconsistent_canonical_viz_without_tables => :environment do |_|
+      Carto::Visualization.joins("left join user_tables ut on visualizations.map_id = ut.map_id").where("visualizations.type = 'table' and ut.id is null").find_each do |viz|
+        puts "Checking for deletion --> User: #{viz.user.username} | Viz id: #{viz.id}"
         if inconsistent_table?(viz)
-          puts "Deleting viz --> User: #{viz.user.username} | Viz name: #{viz.name}"
-          viz.delete
+          puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
+          begin
+            viz.destroy
+          rescue => e
+            puts "Error deleting viz #{viz.id}: #{e}"
+          end
         end
       end
     end

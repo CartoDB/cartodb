@@ -241,7 +241,7 @@ class ApplicationController < ActionController::Base
     is_auth ? validate_session(current_user) : not_authorized
   end
 
-  def any_login_required
+  def login_required_any_user
     current_viewer ? validate_session(current_viewer) : not_authorized
   end
 

@@ -18,7 +18,7 @@ module SignupHelper
     @user.github_user_id && @organization.auth_github_enabled
   end
 
-  def signup_url
+  def organization_signup_url
     subdomain = CartoDB.subdomain_from_request(request)
 
     CartoDB.base_url(subdomain) + signup_path if Carto::Organization.where(name: subdomain).any?

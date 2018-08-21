@@ -29,6 +29,8 @@ module Carto
     private
 
     def validate_user_authorizable
+      return unless oauth_app.try(:restricted?)
+
       organization = user.organization
       return errors.add(:user, 'is not part of an organization') unless user.organization
 

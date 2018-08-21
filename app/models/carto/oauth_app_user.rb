@@ -35,7 +35,7 @@ module Carto
       return errors.add(:user, 'is not part of an organization') unless user.organization
 
       org_authorization = oauth_app.oauth_app_organizations.where(organization: organization).first
-      unless user.organization
+      unless org_authorization
         return errors.add(:user, 'is part of an organization which is not allowed access to this application')
       end
 

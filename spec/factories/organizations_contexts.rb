@@ -60,6 +60,7 @@ shared_context 'organization with users helper' do
     @organization.reload
 
     @carto_organization = Carto::Organization.find(@organization.id)
+    @carto_organization_2 = Carto::Organization.find(@organization_2.id)
     @carto_org_user_owner = Carto::User.find(@org_user_owner.id)
     @carto_org_user_1 = Carto::User.find(@org_user_1.id)
     @carto_org_user_2 = Carto::User.find(@org_user_2.id)

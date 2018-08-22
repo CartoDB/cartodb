@@ -180,6 +180,7 @@ module CartoDB
       mobile_apps.css
       api_keys.css
       api_keys_new.css
+      oauth.css
 
       plugins/tipsy.css
 

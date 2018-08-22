@@ -1,0 +1,226 @@
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: font-files('Montserrat-Regular.woff');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  src: font-files('Montserrat-Semibold.woff');
+}
+
+.oauth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  background-color: #BABEC0;
+}
+
+/* oauth-form */
+.oauth-form {
+  width: 380px;
+  padding: 40px;
+  border: 1px solid #979797;
+  border-radius: 4px;
+  background-color: #FFF;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    text-align: center;
+  }
+
+  &__avatars {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__avatar-image {
+    width: 48px;
+    height: 48px;
+    margin: 8px;
+    border-radius: 24px;
+  }
+
+  &__title {
+    color: #2E3C43;
+    font-family: 'Montserrat';
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 24px;
+  }
+
+  &__subtitle {
+    width: 220px;
+    margin-right: auto;
+    margin-bottom: 8px;
+    margin-left: auto;
+    color: #2E3C43;
+    font-family: 'Open Sans';
+    font-size: 12px;
+    line-height: 16px;
+
+    &--error {
+      width: 300px;
+      text-align: left;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+  }
+
+  &__powered-by {
+    color: #828A8F;
+    font-family: 'Open Sans';
+    font-size: 10px;
+  }
+
+  &__button {
+    display: inline-block;
+    height: 32px;
+    margin-left: 14px;
+    padding: 0 10px;
+    border: 2px solid #828A8F;
+    border-radius: 4px;
+    background-color: #FFF;
+    color: #828A8F;
+    font-family: 'Montserrat';
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    text-transform: uppercase;
+
+    &--primary {
+      border-style: none;
+      background-color: #1785FB;
+      color: #FFF;
+    }
+
+    &--is-link {
+      padding: 3px 10px;
+      text-decoration: none !important;
+    }
+  }
+}
+
+/* oauth-scopes-category */
+.oauth-scopes-category {
+  margin-top: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: #F9F9F9;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    display: inline;
+    color: #2E3C43;
+    font-family: 'Montserrat';
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    vertical-align: text-top;
+  }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  &__list {
+    max-height: 120px;
+    margin-top: 8px;
+    padding-top: 4px;
+    overflow-y: auto;
+    list-style-type: none;
+    border-top: 1px solid #EEE;
+    font-family: 'Open Sans';
+    font-size: 12px;
+
+    &--hidden {
+      display: none;
+    }
+  }
+
+  &__scope::before {
+    content: url($assetsDir + "/images/oauth_provider/enabled_check.svg");
+    margin-right: 6px;
+  }
+
+  &__scope--disabled {
+    color: #828A8F;
+
+    &::before {
+      content: url($assetsDir + "/images/oauth_provider/disabled_check.svg");
+    }
+  }
+}
+
+/* oauth-error */
+.oauth-error {
+  color: #2E3C43;
+  font-size: 12px;
+  line-height: 16px;
+
+  &__title {
+    margin-top: 8px;
+    font-family: 'Open Sans';
+    font-weight: 600;
+  }
+
+  &__list {
+    max-height: 120px;
+    overflow-y: auto;
+    list-style-type: none;
+    font-family: 'Montserrat';
+    font-weight: 600;
+  }
+
+  &__item {
+    margin-top: 8px;
+    padding: 16px;
+    border-radius: 4px;
+    background-color: #F9F9F9;
+  }
+}
+
+/* chevrons */
+.chevron::before {
+  content: '';
+  display: inline-block;
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-width: 0.025em 0.025em 0 0;
+  border-style: solid;
+  cursor: pointer;
+}
+
+.chevron-up::before {
+  transform: rotate(-45deg);
+}
+
+.chevron-down::before {
+  top: -5px;
+  transform: rotate(135deg);
+}

@@ -14,7 +14,6 @@ module Carto
       include FrontendConfigHelper
       include AccountTypeHelper
       include AvatarHelper
-      include Carto::Api::AuthApiAuthentication
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -34,10 +33,6 @@ module Carto
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
-      end
-
-      def me_public
-        render(json: UserPublicPresenter.new(request_api_key.user).to_hash)
       end
 
       def me

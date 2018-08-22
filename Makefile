@@ -276,6 +276,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/users_controller_spec.rb \
 	spec/requests/carto/api/table_presenter_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/api/public/users_controller_spec.rb \
 	spec/requests/carto/oauth_provider_controller_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \

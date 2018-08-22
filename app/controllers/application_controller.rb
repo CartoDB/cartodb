@@ -74,11 +74,14 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  Warden::Manager.after_authentication do |user, auth, _opts|
+  Warden::Manager.after_authentication do |user, auth, opts|
     auth.cookies.permanent[ME_ENDPOINT_COOKIE] = {
       value: CartoDB.base_url(user.username),
       domain: Cartodb.config[:session_domain]
-    }
+    } if opts[:store]
+
+    # Do not even send the Set-Cookie header if the strategy did not store anything in the session
+    auth.request.session_options[:skip] = true if opts[:store] == false
   end
 
   Warden::Manager.before_logout do |_user, auth, _opts|

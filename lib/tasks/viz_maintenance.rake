@@ -22,14 +22,14 @@ namespace :cartodb do
     desc "Purges broken canonical visualizations without related tables"
     task :delete_inconsistent_canonical_viz_without_tables => :environment do |_|
       Carto::Visualization.joins("left join user_tables ut on visualizations.map_id = ut.map_id").where("visualizations.type = 'table' and ut.id is null").find_each do |viz|
-        puts "Checking for deletion --> User: #{viz.user.username} | Viz id: #{viz.id}"
-        if inconsistent_table?(viz)
-          puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
-          begin
+        begin
+          puts "Checking for deletion --> User: #{viz.user.username} | Viz id: #{viz.id}"
+          if inconsistent_table?(viz)
+            puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
             viz.destroy!
-          rescue => e
-            puts "Error deleting viz #{viz.id}: #{e}"
           end
+        rescue => e
+          puts "Error deleting viz #{viz.id}: #{e}"
         end
       end
     end

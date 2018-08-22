@@ -411,6 +411,21 @@ class ApplicationController < ActionController::Base
     current_user.set_last_ip_address request.remote_ip
   end
 
+  def ensure_required_params(required_params)
+    missing_params = []
+    required_params.each_with_object(params) do |key, obj|
+      begin
+        obj.require(key)
+      rescue ActionController::ParameterMissing => e
+        missing_params << e.param
+      end
+    end
+
+    unless missing_params.empty?
+      raise ActionController::BadRequest.new, "The following required params are missing: #{missing_params.join(', ')}"
+    end
+  end
+
   protected :current_user
 
   def json_formatted_request?

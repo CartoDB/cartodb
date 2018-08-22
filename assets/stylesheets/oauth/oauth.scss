@@ -48,7 +48,7 @@
   &__subtitle {
     width: 220px;
     margin-right: auto;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     margin-left: auto;
     color: #2E3C43;
     font-family: 'Open Sans';
@@ -88,6 +88,7 @@
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 1px;
+    line-height: 16px;
     text-align: center;
     text-transform: uppercase;
 
@@ -107,7 +108,7 @@
 /* oauth-scopes-category */
 .oauth-scopes-category {
   margin-top: 8px;
-  padding: 8px 16px;
+  padding: 16px;
   border-radius: 4px;
   background-color: #F9F9F9;
 
@@ -148,16 +149,20 @@
     }
   }
 
-  &__scope::before {
-    content: url($assetsDir + "/images/oauth_provider/enabled_check.svg");
-    margin-right: 6px;
-  }
-
-  &__scope--disabled {
-    color: #828A8F;
+  &__scope {
+    padding-top: 12px;
 
     &::before {
-      content: url($assetsDir + "/images/oauth_provider/disabled_check.svg");
+      content: url($assetsDir + "/images/oauth_provider/enabled_check.svg");
+      margin-right: 6px;
+    }
+
+    &--disabled {
+      color: #828A8F;
+
+      &::before {
+        content: url($assetsDir + "/images/oauth_provider/disabled_check.svg");
+      }
     }
   }
 }

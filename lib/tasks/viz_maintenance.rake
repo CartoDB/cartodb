@@ -26,7 +26,7 @@ namespace :cartodb do
         if inconsistent_table?(viz)
           puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
           begin
-            viz.destroy
+            viz.destroy!
           rescue => e
             puts "Error deleting viz #{viz.id}: #{e}"
           end

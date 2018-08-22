@@ -1,5 +1,5 @@
 {
-    "name": "builder",
+    "name": "carto_builder",
     "current_version": {
         "requires": {
             "gdal": "2.2.2",
@@ -12,9 +12,9 @@
         },
         "works_with": {
             "dataservices-api-client-extension": "0.25.0",
-            "cartodb-extension": "0.23.2",
+            "carto_postgresql_ext": "0.23.2",
             "odbc_fdw": "0.2.0",
-            "windshaft": ">=6.2.0",
+            "carto_windshaft": ">=6.2.0",
             "carto_sql_api": ">=2.1.0",
             "postgresql": ">=9.5.0",
             "postgis": ">=2.2.0",

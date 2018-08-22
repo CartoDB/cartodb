@@ -112,11 +112,11 @@
     </div>
   </div>
 
-  <% unless cartodb_com_hosted? %>
+  <% if organization_signup_url.present? && !cartodb_com_hosted? %>
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', "https://carto.com/signup" %></p>
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', organization_signup_url %></p>
         </div>
       </div>
     </footer>

@@ -21,6 +21,10 @@ module ApplicationHelper
     super(CartoDB.extract_subdomain(request))
   end
 
+  def current_viewer
+    controller.current_viewer
+  end
+
   def show_footer?
     (controller_name == 'tables' && action_name != 'show') ||
     (controller_name == 'client_applications') || (controller_name == 'users')

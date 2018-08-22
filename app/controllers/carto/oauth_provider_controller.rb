@@ -1,15 +1,20 @@
 # encoding: UTF-8
 
 require_dependency 'carto/oauth_provider/errors'
-require_dependency 'carto/oauth_provider/strategies'
+require_dependency 'carto/oauth_provider/grant_strategies'
+require_dependency 'carto/oauth_provider/response_strategies'
+require_dependency 'carto/oauth_provider/token_presenter'
 
 module Carto
   class OauthProviderController < ApplicationController
     GRANT_STRATEGIES = {
-      'authorization_code' => OauthProvider::Strategies::AuthorizationCodeStrategy,
-      'refresh_token' => OauthProvider::Strategies::RefreshTokenStrategy
+      'authorization_code' => OauthProvider::GrantStrategies::AuthorizationCodeStrategy,
+      'refresh_token' => OauthProvider::GrantStrategies::RefreshTokenStrategy
     }.freeze
-    SUPPORTED_RESPONSE_TYPES = ['code'].freeze
+    RESPONSE_STRATEGIES = {
+      'code' => OauthProvider::ResponseStrategies::CodeStrategy,
+      'token' => OauthProvider::ResponseStrategies::TokenStrategy
+    }.freeze
 
     ssl_required
 
@@ -18,7 +23,7 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
-    before_action :login_required, only: [:consent, :authorize]
+    before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
@@ -40,7 +45,7 @@ module Carto
       if @oauth_app_user
         @oauth_app_user.upgrade!(@scopes)
       else
-        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_user.id, scopes: @scopes)
+        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_viewer.id, scopes: @scopes)
       end
 
       create_authorization_code
@@ -48,35 +53,21 @@ module Carto
 
     def token
       access_token, refresh_token = grant_strategy.authorize!(@oauth_app, params)
-      user = access_token.oauth_app_user.user
 
-      response = {
-        access_token: access_token.api_key.token,
-        token_type: 'bearer',
-        expires_in: access_token.expires_in,
-        user_info_url: CartoDB.url(self, :api_v4_users_me, {}, user)
-      }
-
-      response[:refresh_token] = refresh_token.token if refresh_token
-
-      render(json: response)
+      render(json: OauthProvider::TokenPresenter.new(access_token, refresh_token: refresh_token).to_hash)
     end
 
     private
 
     def create_authorization_code
-      authorization_code = @oauth_app_user.oauth_authorization_codes.create!(
-        redirect_uri: @redirect_uri, scopes: @scopes
+      response = response_strategy.authorize!(
+        @oauth_app_user, redirect_uri: @redirect_uri, scopes: @scopes, state: @state
       )
-      redirect_to_oauth_app(code: authorization_code.code, state: @state)
+      redirect_to_oauth_app(response)
     end
 
     def redirect_to_oauth_app(parameters)
-      redirect_uri = Addressable::URI.parse(@redirect_uri || @oauth_app.redirect_uris.first)
-      query = redirect_uri.query_values || {}
-      redirect_uri.query_values = query.merge(parameters)
-
-      redirect_to redirect_uri.to_s
+      redirect_to response_strategy.build_redirect_uri(@redirect_uri || @oauth_app.redirect_uris.first, parameters)
     end
 
     def set_redirection_error_handling
@@ -89,7 +80,7 @@ module Carto
                             redirect_on_error: @redirect_on_error,
                             oauth_app: @oauth_app)
 
-      if @redirect_on_error && @oauth_app
+      if @redirect_on_error && @oauth_app && response_strategy
         redirect_to_oauth_app(exception.parameters.merge(state: @state))
       elsif @redirect_on_error
         @error = exception.error_message
@@ -106,9 +97,8 @@ module Carto
 
     def validate_response_type
       @response_type = params[:response_type]
-      unless SUPPORTED_RESPONSE_TYPES.include?(@response_type)
-        raise OauthProvider::Errors::UnsupportedResponseType.new(SUPPORTED_RESPONSE_TYPES)
-      end
+
+      raise OauthProvider::Errors::UnsupportedResponseType.new(RESPONSE_STRATEGIES.keys) unless response_strategy
     end
 
     def validate_grant_type
@@ -143,7 +133,7 @@ module Carto
     end
 
     def load_oauth_app_user
-      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_user.id)
+      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.id)
     end
 
     def verify_client_secret
@@ -152,6 +142,10 @@ module Carto
 
     def grant_strategy
       GRANT_STRATEGIES[params[:grant_type]]
+    end
+
+    def response_strategy
+      RESPONSE_STRATEGIES[params[:response_type]]
     end
   end
 end

@@ -34,8 +34,8 @@ module Carto
       end
 
       class InvalidScope < BaseError
-        def initialize(scopes)
-          super('invalid_scope', "Unsupported scopes: #{scopes.join(', ')}")
+        def initialize(scopes, message: nil)
+          super('invalid_scope', message || "Unsupported scopes: #{scopes.join(', ')}")
         end
       end
 

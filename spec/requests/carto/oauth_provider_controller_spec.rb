@@ -623,6 +623,7 @@ describe Carto::OauthProviderController do
       Delorean.jump(2.hours)
       Rake.application.rake_require('tasks/oauth')
       Rake::Task.define_task(:environment)
+      Rake::Task['cartodb:oauth:destroy_expired_access_tokens'].reenable
       Rake::Task['cartodb:oauth:destroy_expired_access_tokens'].invoke
 
       test_access_token(token_response, expect_success: false)

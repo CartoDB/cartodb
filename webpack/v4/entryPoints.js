@@ -162,6 +162,7 @@ module.exports = {
   builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js'),
 
   oauth: [
-    rootDir('assets/stylesheets/oauth/oauth.scss')
+    rootDir('assets/stylesheets/oauth/oauth.scss'),
+    rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ]
 };

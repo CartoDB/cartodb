@@ -1,17 +1,3 @@
-@font-face {
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 400;
-  src: font-files('Montserrat-Regular.woff');
-}
-
-@font-face {
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 600;
-  src: font-files('Montserrat-Semibold.woff');
-}
-
 .oauth-page {
   display: flex;
   flex-direction: column;

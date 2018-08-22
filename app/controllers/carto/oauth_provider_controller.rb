@@ -23,7 +23,7 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
-    before_action :login_required, only: [:consent, :authorize]
+    before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
@@ -43,7 +43,7 @@ module Carto
       if @oauth_app_user
         @oauth_app_user.upgrade!(@scopes)
       else
-        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_user.id, scopes: @scopes)
+        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_viewer.id, scopes: @scopes)
       end
 
       create_authorization_code
@@ -130,7 +130,7 @@ module Carto
     end
 
     def load_oauth_app_user
-      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_user.id)
+      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.id)
     end
 
     def verify_client_secret

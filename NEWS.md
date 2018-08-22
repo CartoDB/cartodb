@@ -6,6 +6,7 @@ Development
 
 ### Features
 - OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  - Redirect back to OAuth flow after login (#14236)
   - Implicit flow (#14167)
 
 ### Bug fixes / enhancements

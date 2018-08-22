@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 require 'carto/oauth_provider_controller'
 require 'support/helpers'
+require 'helpers/subdomainless_helper'
 
 describe Carto::OauthProviderController do
   include HelperMethods
@@ -131,6 +132,23 @@ describe Carto::OauthProviderController do
     it_behaves_like 'authorization parameter validation' do
       def request_endpoint(parameters)
         get oauth_provider_authorize_url(parameters)
+      end
+    end
+
+    describe 'domains and authentication' do
+      it 'works with a URL for another username/org' do
+        # e.g: org.carto.com/oauth2 should work, even if the correct one is org.carto.com/u/username/oauth2
+        stub_domainful('wadus')
+        expect(oauth_provider_authorize_url).not_to(include(@user.username))
+        get oauth_provider_authorize_url(valid_payload)
+        expect(response.status).to(eq(200))
+      end
+
+      it 'in subdomainless, should not require username at all' do
+        stub_subdomainless
+        expect(oauth_provider_authorize_url).not_to(include(@user.username))
+        get oauth_provider_authorize_url(valid_payload)
+        expect(response.status).to(eq(200))
       end
     end
 
@@ -478,6 +496,7 @@ describe Carto::OauthProviderController do
 
   describe '#acceptance' do
     include Capybara::DSL
+    include_context 'organization with users helper'
 
     # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
     let(:redirect_uri) { "https://#{@user.username}.localhost.lan/redirect" }
@@ -590,6 +609,18 @@ describe Carto::OauthProviderController do
       expect(response_parameters['refresh_token']).to(be_nil)
 
       test_access_token(response_parameters.symbolize_keys, expect_success: true)
+    end
+
+    it 'will return to oauth flow after login' do
+      base_uri = "http://#{@organization.name}.localhost.lan"
+      oauth_url = "#{base_uri}/oauth2/authorize?client_id=#{@oauth_app.client_id}&state=123&response_type=code"
+
+      visit oauth_url
+      fill_in 'email', with: @org_user_1.email
+      fill_in 'password', with: @org_user_1.password
+      click_on 'Log in'
+
+      expect(current_url).to(eq(oauth_url))
     end
   end
 end

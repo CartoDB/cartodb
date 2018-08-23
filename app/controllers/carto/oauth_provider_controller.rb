@@ -167,7 +167,7 @@ module Carto
     def reject_client_secret
       raise OauthProvider::Errors::InvalidRequest.new("The client_secret param must not be sent in the authorize request") if params[:client_secret].present?
     end
-    
+
     def validate_oauth_app_user(oauth_app_user)
       unless oauth_app_user.valid?
         errors = oauth_app_user.errors.full_messages_for(:user)

@@ -8,6 +8,7 @@ Development
 - OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
   - Redirect back to OAuth flow after login (#14236)
   - Implicit flow (#14167)
+  - Allow restricting application to only a set of organizations (#14180)
 
 ### Bug fixes / enhancements
 - Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)

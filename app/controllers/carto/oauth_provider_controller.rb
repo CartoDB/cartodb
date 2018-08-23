@@ -34,7 +34,12 @@ module Carto
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
-      return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
+      if @oauth_app_user
+        return create_authorization_code if @oauth_app_user.authorized?(@scopes)
+      elsif @oauth_app
+        oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
+        validate_oauth_app_user(oauth_app_user)
+      end
     end
 
     def authorize
@@ -43,7 +48,9 @@ module Carto
       if @oauth_app_user
         @oauth_app_user.upgrade!(@scopes)
       else
-        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_viewer.id, scopes: @scopes)
+        @oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
+        validate_oauth_app_user(@oauth_app_user)
+        @oauth_app_user.save!
       end
 
       create_authorization_code
@@ -135,6 +142,13 @@ module Carto
 
     def verify_client_secret
       raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
+    end
+
+    def validate_oauth_app_user(oauth_app_user)
+      unless oauth_app_user.valid?
+        errors = oauth_app_user.errors.full_messages_for(:user)
+        raise OauthProvider::Errors::AccessDenied.new(errors.join(', ')) if errors.present?
+      end
     end
 
     def grant_strategy

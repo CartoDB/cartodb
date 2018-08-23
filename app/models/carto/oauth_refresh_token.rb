@@ -17,6 +17,7 @@ module Carto
     validates :scopes, scopes: true
     validate  :check_offline_scope
 
+    before_create :remove_oldest_one
     before_create :regenerate_token
 
     scope :expired, -> { where('updated_at < ?', Time.now - REFRESH_TOKEN_EXPIRATION_TIME) }
@@ -38,6 +39,11 @@ module Carto
     end
 
     private
+
+    def remove_oldest_one
+      oldest_token = OauthRefreshToken.where(oauth_app_user: oauth_app_user).order(updated_at: :desc).first
+      oldest_token.destroy if oldest_token
+    end
 
     def expired?
       updated_at < Time.now - REFRESH_TOKEN_EXPIRATION_TIME

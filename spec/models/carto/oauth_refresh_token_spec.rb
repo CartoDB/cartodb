@@ -95,5 +95,25 @@ module Carto
         )
       end
     end
+
+    describe '#create!' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @app_user = OauthAppUser.create(user: @user, oauth_app: @app)
+      end
+
+      after(:all) do
+        @refresh_token.destroy
+      end
+
+      it 'keeps one and only one refresh token per OauthAppUser' do
+        @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
+        expect(OauthRefreshToken.where(oauth_app_user: @app_user).count).to(eq(1))
+
+        @refresh_token = @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
+        expect(OauthRefreshToken.where(oauth_app_user: @app_user).count).to(eq(1))
+      end
+    end
   end
 end

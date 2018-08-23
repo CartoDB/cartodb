@@ -32,21 +32,23 @@
   &__avatar-image {
     width: 48px;
     height: 48px;
-    margin: 8px;
+    margin: 0 8px;
     border-radius: 24px;
   }
 
   &__title {
+    margin-top: 24px;
+    margin-bottom: 0;
     color: #2E3C43;
     font-family: 'Montserrat';
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0;
-    line-height: 24px;
   }
 
   &__subtitle {
     width: 220px;
+    margin-top: 8px;
     margin-right: auto;
     margin-bottom: 16px;
     margin-left: auto;
@@ -70,9 +72,18 @@
   }
 
   &__powered-by {
-    color: #828A8F;
     font-family: 'Open Sans';
     font-size: 10px;
+
+    a {
+      color: #828A8F;
+      text-decoration: none;
+
+      &:hover {
+        transition: color 300ms ease-in;
+        color: #1785FB;
+      }
+    }
   }
 
   &__button {
@@ -99,7 +110,7 @@
     }
 
     &--is-link {
-      padding: 10px;
+      padding: 9px;
       text-decoration: none !important;
     }
   }
@@ -108,7 +119,10 @@
 /* oauth-scopes-category */
 .oauth-scopes-category {
   margin-top: 8px;
-  padding: 16px;
+  padding-top: 8px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  padding-left: 16px;
   border-radius: 4px;
   background-color: #F9F9F9;
 
@@ -126,7 +140,6 @@
     font-size: 12px;
     font-weight: 600;
     line-height: 16px;
-    vertical-align: text-top;
   }
 
   &__icon {
@@ -137,7 +150,7 @@
   &__list {
     max-height: 120px;
     margin-top: 8px;
-    padding-top: 4px;
+    padding-top: 8px;
     overflow-y: auto;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     list-style-type: none;
@@ -151,11 +164,9 @@
   }
 
   &__scope {
-    padding-top: 12px;
-
     &::before {
       content: url($assetsDir + "/images/oauth_provider/enabled_check.svg");
-      margin-right: 6px;
+      margin-right: 3px;
     }
 
     &--disabled {
@@ -197,22 +208,27 @@
 }
 
 /* chevrons */
-.chevron::before {
-  content: '';
-  display: inline-block;
-  position: relative;
-  width: 10px;
-  height: 10px;
-  border-width: 0.025em 0.025em 0 0;
-  border-style: solid;
-  cursor: pointer;
-}
+.chevron {
+  padding-top: 8px;
 
-.chevron-up::before {
-  transform: rotate(-45deg);
-}
+  &::before {
+    content: '';
+    display: inline-block;
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-width: 0.025em 0.025em 0 0;
+    border-style: solid;
+    cursor: pointer;
+  }
 
-.chevron-down::before {
-  top: -5px;
-  transform: rotate(135deg);
+  &--up::before {
+    top: 5px;
+    transform: rotate(-45deg);
+  }
+
+  &--down::before {
+    top: -5px;
+    transform: rotate(135deg);
+  }
 }

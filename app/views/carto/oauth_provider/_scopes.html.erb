@@ -23,7 +23,7 @@
         <% end %>
         <h3 class='oauth-scopes-category__title'><%= category[:description] %></h3>
       </div>
-      <span class='chevron chevron-up' data-scopes-category="<%=index%>"></span>
+      <span class='chevron chevron--up' data-scopes-category="<%=index%>"></span>
     </div>
     <ul id='oauth-scopes-category-<%=index%>' class='oauth-scopes-category__list'>
       <% category[:scopes].each do |scope| %>
@@ -44,8 +44,8 @@
         var toggler = event.target;
         var categoryList = '#oauth-scopes-category-' + toggler.dataset.scopesCategory;
         document.querySelector(categoryList).classList.toggle('oauth-scopes-category__list--hidden');
-        toggler.classList.toggle('chevron-up');
-        toggler.classList.toggle('chevron-down');
+        toggler.classList.toggle('chevron--up');
+        toggler.classList.toggle('chevron--down');
       });
     };
 

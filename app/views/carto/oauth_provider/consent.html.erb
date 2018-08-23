@@ -1,5 +1,10 @@
 <%= content_for(:title) do %>CARTO · OAuth Authentication<% end %>
 
+<%= content_for(:head) do %>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:600" rel="stylesheet">
+<% end %>
+
+
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'oauth', :media => 'all' %>
 <% end %>

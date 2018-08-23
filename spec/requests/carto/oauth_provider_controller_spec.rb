@@ -5,6 +5,7 @@ require 'helpers/subdomainless_helper'
 
 describe Carto::OauthProviderController do
   include HelperMethods
+  include_context 'organization with users helper'
 
   before(:all) do
     @sequel_developer = FactoryGirl.create(:valid_user)
@@ -100,6 +101,44 @@ describe Carto::OauthProviderController do
         expect(qs['error']).to(eq('invalid_request'))
         expect(qs['error_description']).to(eq('The redirect_uri must match the redirect_uri param used in the authorization request'))
       end
+
+      describe 'with restricted app' do
+        before(:each) do
+          @oauth_app.update!(restricted: true)
+          @org_authorization = @oauth_app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
+        end
+
+        it 'redirects with an error if the user is not an organization member' do
+          request_endpoint(valid_payload)
+
+          expect(response.status).to(eq(302))
+          expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+          qs = parse_uri_parameters(response.location)
+          expect(qs['error']).to(eq('access_denied'))
+          expect(qs['error_description']).to(eq('User is not part of an organization'))
+        end
+
+        it 'succeeds if logged in as a member of an allowed organization' do
+          logout
+          login_as(@org_user_1, scope: @org_user_1.username)
+          request_endpoint(valid_payload)
+
+          expect_success(response)
+        end
+
+        it 'redirects with an error if the organization is out of seats for the application' do
+          @oauth_app.oauth_app_users.create!(user: @carto_org_user_2)
+          logout
+          login_as(@org_user_1, scope: @org_user_1.username)
+          request_endpoint(valid_payload)
+
+          expect(response.status).to(eq(302))
+          expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+          qs = parse_uri_parameters(response.location)
+          expect(qs['error']).to(eq('access_denied'))
+          expect(qs['error_description']).to(eq('User does not have an available seat to use this application'))
+        end
+      end
     end
 
     describe 'with code response' do
@@ -132,6 +171,10 @@ describe Carto::OauthProviderController do
     it_behaves_like 'authorization parameter validation' do
       def request_endpoint(parameters)
         get oauth_provider_authorize_url(parameters)
+      end
+
+      def expect_success(response)
+        expect(response.status).to(eq(200))
       end
     end
 
@@ -212,6 +255,11 @@ describe Carto::OauthProviderController do
     it_behaves_like 'authorization parameter validation' do
       def request_endpoint(parameters)
         post oauth_provider_authorize_url(parameters)
+      end
+
+      def expect_success(response)
+        expect(response.status).to(eq(302))
+        expect(response.location).not_to(include('error'))
       end
     end
 
@@ -525,7 +573,6 @@ describe Carto::OauthProviderController do
 
   describe '#acceptance' do
     include Capybara::DSL
-    include_context 'organization with users helper'
 
     # Since Capybara+rack passes all requests to the local server, we set a redirect URI inside localhost
     let(:redirect_uri) { "https://#{@user.username}.localhost.lan/redirect" }
@@ -605,6 +652,7 @@ describe Carto::OauthProviderController do
       Delorean.jump(2.hours)
       Rake.application.rake_require('tasks/oauth')
       Rake::Task.define_task(:environment)
+      Rake::Task['cartodb:oauth:destroy_expired_access_tokens'].reenable
       Rake::Task['cartodb:oauth:destroy_expired_access_tokens'].invoke
 
       test_access_token(token_response, expect_success: false)

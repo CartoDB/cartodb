@@ -80,6 +80,11 @@ CartoDB::Application.routes.draw do
     get '/github' => 'oauth_login#github', as: :github
     get '/google/oauth' => 'oauth_login#google', as: :google_oauth
     get '/saml/metadata' => 'saml#metadata'
+
+    # Oauth2 provider
+    get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
+    post '/oauth2/authorize', to: 'oauth_provider#authorize'
+    post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -568,6 +573,13 @@ CartoDB::Application.routes.draw do
   UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
+    scope 'v4/', module: 'public' do
+      # This scope is intended for public APIs that only authenticate via API Key and have CORS enabled
+      match '*path', via: [:OPTIONS], to: 'application#options'
+
+      get 'me', to: 'users#me_public', as: :api_v4_users_me
+    end
+
     scope 'v3/' do
       # Front/back split
       get 'me' => 'users#me', as: :api_v3_users_me

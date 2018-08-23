@@ -1,27 +1,59 @@
 Development
 -----------
 
-### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
+### NOTICES
+- None yet
+
+### Features
+- OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  - Redirect back to OAuth flow after login (#14236)
+  - Implicit flow (#14167)
+
+### Bug fixes / enhancements
+- Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
+- Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
+- Fix OAuth login for the organizations (#14238)
+- Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+
+
+4.20.0 (2018-08-13)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
-New database configuration is required. Please add `prepared_statements: false` to `database.yml`
+* New database configuration is required. Please add `prepared_statements: false` to `database.yml`
 (check `database.yml.sample` for an example)
 
-This release introduces a new API Key system. In order to migrate existing users, run the following command:
+* This release introduces a new API Key system. In order to migrate existing users, run the following command:
 `bundle exec rake carto:api_key:create_default`
 
 ### Features
 * Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
 * Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  * Data model (#14163)
+  * Consent screen backend (#14164)
+  * New endpoint for user information, `/api/v4/me` (#14229)
+  * Access_token expiration and refresh_tokens (#14230)
 * Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
 
-### Bug fixes / enhancements
-* Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+### Bug fixes / enhancement
+* Use a SVG icon instead of a simple `+` sign in the `Add {layer|analysis|widget}` buttons. (https://github.com/CartoDB/cartodb/issues/#14234)
+* Remove options from empty layers' contextual menu (#13451)
+* Add link to `datasets/shared/locked` (https://github.com/CartoDB/cartodb/issues/14188)
+* Don't show "- Rows" instead of 0 if the dataset has been updated recently (https://github.com/CartoDB/cartodb/pull/14228)
+* Use input instead of select for `job_profile` (https://github.com/CartoDB/cartodb/pull/14227)
+* Don't show "- Rows" instead of 0 if the dataset has been updated recently ()
+* Fix panning and interactivity in Safari (https://github.com/CartoDB/cartodb/issues/14115)
+* Add a warning when the user is about to delete multiple analyses at once (https://github.com/CartoDB/cartodb/pull/14222)
+* Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)
+* Fix histogram tooltips not being updated after column change (https://github.com/CartoDB/cartodb/issues/14155)
 * Update googlemaps api version to v3.32 (https://github.com/CartoDB/cartodb/issues/13902)
 * Fix wrong position for color dialog and sticky popups when styling analysis (https://github.com/CartoDB/support/issues/1649 and https://github.com/CartoDB/support/issues/1673)
 * Fix incorrect metric event styling a layer (https://github.com/CartoDB/cartodb/issues/14183)
@@ -87,15 +119,19 @@ This release introduces a new API Key system. In order to migrate existing users
 * Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
 * Update extension to 0.22.2 to fix hyphenates usernames (cartodb-postgresql#331)
 * Update extension to 0.23.0 to add a new helper function `_CDB_Table_Exists(table_name_with_optional_schema TEXT)` (cartodb-postgresql#332)
+* Added format option to load datasets into the data library (#14216)
 * Log Resque errors (#14116)
 * Avoid creating double indices on sync (#14157)
 * Do not crash when checking nil password (#14099)
 * Do not crash when saving WMS layers with long metadata (Suppoer#1643)
 * Remove Auth API FF, enable it by default (#13857)
 * Fix table sharing from users with hyphens in their name (quoting) (support#1635)
+* Datasets search now is working as intendended with special characters like "_"
 * User mover does not export user metadata if org metadata is not exported
 * Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
+* Update odbc_fdw extension to `0.3.0`
 * Triggering ghost tables and common data when visiting the dashboard (#14010)
+* Now you can limit the amount of memory used by ogr2ogr adding the `memory_limit` option in bytes to the ogr2ogr section of the `app_config.yml`
 
 ### Internals
 * Re-enable sourcemaps in production, they were broken since the move to webpack v4 (https://github.com/CartoDB/cartodb/pull/14150)

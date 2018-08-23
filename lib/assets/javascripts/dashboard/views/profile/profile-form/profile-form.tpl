@@ -86,17 +86,9 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.role') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <select class="CDB-SelectFake CDB-Text FormAccount-input FormAccount-input--med is-cursor" id="user_job_role" name="user[job_role]">
-        <option value="">Select one</option>
-
-        <% jobRoles.forEach(function (role) { %>
-          <option<% if (role === user.job_role) { %> selected<% } %>><%= role %></option>
-        <% }); %>
-
-        <% if (!_.contains(jobRoles, user.job_role) && !_.isEmpty(user.job_role)) { %>
-          <option selected><%= user.job_role %></option>
-        <% } %>
-      </select>
+      <div class="FormAccount-rowData">
+        <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" id="user_job_role" name="user[job_role]" size="30" type="text" value="<%= user.job_role %>">
+      </div>
     </div>
   </div>
 

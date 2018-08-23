@@ -151,6 +151,9 @@ module CartoDB
         unless options[:quoted_fields_guessing].nil?
           ogr_options.merge!(quoted_fields_guessing: options[:quoted_fields_guessing])
         end
+        unless options[:ogr2ogr_memory_limit].nil?
+          ogr_options.merge!(ogr2ogr_memory_limit: options[:ogr2ogr_memory_limit])
+        end
 
         if source_file.extension == '.shp'
           ogr_options.merge!(shape_encoding: shape_encoding)

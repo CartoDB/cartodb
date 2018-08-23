@@ -31,7 +31,11 @@ class ApplicationController < ActionController::Base
 
   def self.ssl_required(*splat)
     if Rails.env.production? || Rails.env.staging?
-      force_ssl only: splat
+      if splat.any?
+        force_ssl only: splat
+      else
+        force_ssl
+      end
     end
   end
 
@@ -39,13 +43,45 @@ class ApplicationController < ActionController::Base
     # noop
   end
 
+  # current_user relies on request subdomain ALWAYS, so current_viewer will always return:
+  # - If subdomain is present in the sessions: subdomain-based session (aka current_user)
+  # - Else: the first session found at request.session that comes from warden
+  def current_viewer
+    if @current_viewer.nil?
+      if current_user && env["warden"].authenticated?(current_user.username)
+        @current_viewer = current_user if validate_session(current_user)
+      else
+        authenticated_usernames = request.session.to_hash.select { |k, _|
+          k.start_with?("warden.user") && !k.end_with?(".session")
+        }.values
+        # See if there's a session of the viewed subdomain corresponding user
+        current_user_present = authenticated_usernames.select { |username|
+          CartoDB.extract_subdomain(request) == username
+        }.first
+
+        # If current user session was there, do nothing; else, retrieve first available
+        if current_user_present.nil?
+          unless authenticated_usernames.first.nil?
+            user = ::User.where(username: authenticated_usernames.first).first
+            validate_session(user, false) unless user.nil?
+            @current_viewer = user
+          end
+        end
+      end
+    end
+    @current_viewer
+  end
+
   protected
 
-  Warden::Manager.after_authentication do |user, auth, _opts|
+  Warden::Manager.after_authentication do |user, auth, opts|
     auth.cookies.permanent[ME_ENDPOINT_COOKIE] = {
       value: CartoDB.base_url(user.username),
       domain: Cartodb.config[:session_domain]
-    }
+    } if opts[:store]
+
+    # Do not even send the Set-Cookie header if the strategy did not store anything in the session
+    auth.request.session_options[:skip] = true if opts[:store] == false
   end
 
   Warden::Manager.before_logout do |_user, auth, _opts|
@@ -208,6 +244,10 @@ class ApplicationController < ActionController::Base
     is_auth ? validate_session(current_user) : not_authorized
   end
 
+  def login_required_any_user
+    current_viewer ? validate_session(current_viewer) : not_authorized
+  end
+
   def api_authorization_required
     authenticate!(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
     validate_session(current_user)
@@ -363,35 +403,6 @@ class ApplicationController < ActionController::Base
 
   def current_user
     super(CartoDB.extract_subdomain(request))
-  end
-
-  # current_user relies on request subdomain ALWAYS, so current_viewer will always return:
-  # - If subdomain is present in the sessions: subdomain-based session (aka current_user)
-  # - Else: the first session found at request.session that comes from warden
-  def current_viewer
-    if @current_viewer.nil?
-      if current_user && env["warden"].authenticated?(current_user.username)
-        @current_viewer = current_user if validate_session(current_user)
-      else
-        authenticated_usernames = request.session.to_hash.select { |k, _|
-          k.start_with?("warden.user") && !k.end_with?(".session")
-        }.values
-        # See if there's a session of the viewed subdomain corresponding user
-        current_user_present = authenticated_usernames.select { |username|
-          CartoDB.extract_subdomain(request) == username
-        }.first
-
-        # If current user session was there, do nothing; else, retrieve first available
-        if current_user_present.nil?
-          unless authenticated_usernames.first.nil?
-            user = ::User.where(username: authenticated_usernames.first).first
-            validate_session(user, reset_session = false) unless user.nil?
-            @current_viewer = user
-          end
-        end
-      end
-    end
-    @current_viewer
   end
 
   def update_user_last_activity

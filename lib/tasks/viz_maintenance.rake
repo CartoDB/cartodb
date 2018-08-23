@@ -19,6 +19,21 @@ namespace :cartodb do
       end
     end
 
+    desc "Purges broken canonical visualizations without related tables"
+    task :delete_inconsistent_canonical_viz_without_tables => :environment do |_|
+      Carto::Visualization.joins("left join user_tables ut on visualizations.map_id = ut.map_id").where("visualizations.type = 'table' and ut.id is null").find_each do |viz|
+        begin
+          puts "Checking for deletion --> User: #{viz.user.username} | Viz id: #{viz.id}"
+          if inconsistent_table?(viz)
+            puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
+            viz.destroy!
+          end
+        rescue => e
+          puts "Error deleting viz #{viz.id}: #{e}"
+        end
+      end
+    end
+
     desc "Create named maps for all eligible existing visualizations"
     task :create_named_maps, [:order] => :environment do |t, args|
       sort_order = args[:order] == ':desc' ? :desc : :asc
@@ -216,6 +231,10 @@ namespace :cartodb do
 
     def inconsistent?(viz)
       (viz.table? && viz.related_tables.empty?) || (viz.derived? && viz.map.nil?)
+    end
+
+    def inconsistent_table?(viz)
+      (viz.user_table.nil? && viz.related_tables.empty?)
     end
 
     def delete_with_confirmation(viz)

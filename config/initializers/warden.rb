@@ -106,8 +106,8 @@ Warden::Strategies.add(:oauth) do
   end
 
   def authenticate!
-    fail! unless params[:oauth_api]
-    oauth_api = params[:oauth_api]
+    fail! unless env[:oauth_api]
+    oauth_api = env[:oauth_api]
     user = oauth_api.user
     if user && oauth_api.config.valid_method_for?(user)
       trigger_login_event(user)

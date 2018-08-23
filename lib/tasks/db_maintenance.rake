@@ -1395,12 +1395,7 @@ namespace :cartodb do
         begin
           user.in_database do |db|
             db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns WHERE f_table_name LIKE 'analysis%' AND type = 'MULTIPOLYGON'").map { |r| { schema: r[:f_table_schema], table: r[:f_table_name] } }.each do |entry|
-              geom_types = db.fetch("SELECT DISTINCT ST_GeometryType(the_geom) AS geom_type FROM \"#{entry[:schema]}\".\"#{entry[:table]}\"").map { |r| r[:geom_type] }
-              if geom_types.size == 2 && geom_types.include?('ST_Polygon') && geom_types.include?('ST_MultiPolygon')
-                db.execute("UPDATE \"#{entry[:schema]}\".\"#{entry[:table]}\" SET the_geom = ST_Multi(the_geom) where ST_GeometryType(the_geom) = 'ST_Polygon'")
-              elsif geom_types.size >= 2
-                puts "Unexpected type of geometries found for user #{user.username}. Table \"#{entry[:schema]}\".\"#{entry[:table]}\": #{geom_types.join(', ')}"
-              end
+              db.execute("UPDATE \"#{entry[:schema]}\".\"#{entry[:table]}\" SET the_geom = ST_Multi(the_geom) where ST_GeometryType(the_geom) = 'ST_Polygon'")
             end
           end
         rescue => e

@@ -1,0 +1,11 @@
+Authorize?
+
+<%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_viewer), method: :post) do %>
+<%= hidden_field_tag 'response_type', @response_type %>
+<%= hidden_field_tag 'client_id', @oauth_app.client_id %>
+<%= hidden_field_tag 'scope', @scopes.join(' ') %>
+<%= hidden_field_tag 'state', @state %>
+<%= hidden_field_tag 'redirect_uri', @redirect_uri %>
+<%= submit_tag 'Cancel' %>
+<%= submit_tag 'Accept', name: 'accept' %>
+<% end %>

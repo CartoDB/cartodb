@@ -66,16 +66,14 @@
 .Infobox-buttons {
   display: flex;
   flex: 10;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .Infobox-buttons--quota {
   flex: 1;
 }
 
-.Infobox-button {
-  flex: 1;
-
-  &.Infobox-button--right {
-    text-align: right;
-  }
+.Infobox-button + .Infobox-button {
+  margin-left: 16px;
 }

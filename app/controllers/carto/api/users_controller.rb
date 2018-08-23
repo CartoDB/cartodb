@@ -22,13 +22,14 @@ module Carto
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
-      ssl_required :show, :me, :update_me, :delete_me, :get_authenticated_users
+      ssl_required
 
-      before_filter :initialize_google_plus_config, only: [:me]
-      before_filter :optional_api_authorization, only: [:me]
-      before_filter :recalculate_user_db_size, only: [:me]
-      skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
-      skip_before_filter :check_user_state, only: [:me, :delete_me]
+      before_action :initialize_google_plus_config, only: [:me]
+      before_action :optional_api_authorization, only: [:me]
+      before_action :any_api_authorization_required, only: [:me_public]
+      before_action :recalculate_user_db_size, only: [:me]
+      skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
+      skip_before_action :check_user_state, only: [:me, :delete_me]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data

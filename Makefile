@@ -254,6 +254,11 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/layer_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/notification_spec.rb \
+	spec/models/carto/oauth_access_token_spec.rb \
+	spec/models/carto/oauth_app_spec.rb \
+	spec/models/carto/oauth_app_user_spec.rb \
+	spec/models/carto/oauth_authorization_code_spec.rb \
+	spec/models/carto/oauth_refresh_token_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/carto/rate_limit_spec.rb \
 	spec/models/carto/received_notification_spec.rb \
@@ -271,6 +276,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/users_controller_spec.rb \
 	spec/requests/carto/api/table_presenter_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/api/public/users_controller_spec.rb \
+	spec/requests/carto/oauth_provider_controller_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
@@ -320,6 +327,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/lib/tasks/layers_rake_spec.rb \
 	spec/lib/tasks/fix_unique_legends_spec.rb \
+	spec/lib/tasks/oauth_rake_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \

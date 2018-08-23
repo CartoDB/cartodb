@@ -502,11 +502,15 @@ module CartoDB
         if options['binary'].nil? || options['csv_guessing'].nil?
           {}
         else
-          {
+          ogr_options = {
             ogr2ogr_binary:         options['binary'],
             ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
-            quoted_fields_guessing: @quoted_fields_guessing
+            quoted_fields_guessing: @quoted_fields_guessing,
           }
+          if options['memory_limit'].present?
+            ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit'])
+          end
+          return ogr_options
         end
       end
 

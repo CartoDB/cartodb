@@ -1677,6 +1677,15 @@
       "label": "Fix them"
     },
     "messages": {
+      "common": {
+        "cancel": "Cancel"
+      },
+      "deleting-analysis": {
+        "title": "Delete nested analysis",
+        "body": "The selected analysis has one or more nested analysis that would be removed once this analysis is deleted. Proceed?",
+        "delete": "Delete",
+        "cancel": "Cancel"
+      },
       "layer-hidden": {
         "title": "Layer hidden",
         "body": "This layer is hidden. Changes won't be shown until you make it visible.",
@@ -2402,8 +2411,8 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
-          "accept": "CONTINUE"
+          "body": "You just applied custom html with HTML editor. You can continue or clear all custom HTML.",
+          "accept": "Clear custom html"
         }
       }
     },
@@ -2443,8 +2452,8 @@
       "messages": {
         "custom-legend": {
           "title": "CUSTOM LEGEND APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
-          "accept": "Delete custom html"
+          "body": "You just applied custom html with HTML editor. You can continue or clear all custom HTML.",
+          "accept": "Clear custom html"
         },
         "legends-disabled": {
           "title": "LEGENDS DISABLED",
@@ -2559,14 +2568,12 @@
         "cartocss-applied": {
           "title": "CARTOCSS APPLIED",
           "body": "You just applied styles with CartoCSS. You can continue or clear all styles.",
-          "continue": "CONTINUE",
           "clear": "CLEAR"
         },
         "torque-exists": {
           "title": "TORQUE LAYER",
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will use the default style.",
-          "continue": "CONTINUE",
-          "cancel": "CANCEL"
+          "continue": "CONTINUE"
         }
       },
       "tooltips": {

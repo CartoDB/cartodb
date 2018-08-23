@@ -88,7 +88,7 @@ For these changes to take effect, you'll need to restart postgres:
     sudo createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres
     sudo createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres
 
-* Install CartoDB postgresql extension. This extension contains functions that are used by different parts of the CartoDB platform, included the Editor and the SQL and Maps API.
+* Install CartoDB postgresql extension. This extension contains functions that are used by different parts of the CartoDB platform, included Builder and the SQL and Maps API.
 
   .. code-block:: bash
 
@@ -169,7 +169,7 @@ Redis
 Node.js
 ------
 
-Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of the editor.
+Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of Builder.
 
 
 * Add the PPA
@@ -293,15 +293,15 @@ Ruby
     sudo apt-get install ruby-bundler
 
 
-* Install compass. It will be needed later on by CARTO's editor
+* Install compass. It will be needed later on by CARTO's Builder
 
   .. code-block:: bash
 
     sudo gem install compass
 
 
-Editor
-------
+Builder
+-------
 
 .. note::
   CARTO users Python 2.7+. Python 3 will not work correctly.
@@ -392,7 +392,7 @@ Editor
     RAILS_ENV=development bundle exec rake db:create
     RAILS_ENV=development bundle exec rake db:migrate
 
-* Start the editor HTTP server
+* Start Builder's HTTP server
 
   .. code-block:: bash
 

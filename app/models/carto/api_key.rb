@@ -1,4 +1,6 @@
 require 'securerandom'
+require_dependency 'carto/errors'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
@@ -37,7 +39,8 @@ module Carto
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
-    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC].freeze
+    TYPE_OAUTH = 'oauth'.freeze
+    VALID_TYPES = [TYPE_REGULAR, TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_OAUTH].freeze
 
     NAME_MASTER = 'Master'.freeze
     NAME_DEFAULT_PUBLIC = 'Default public'.freeze
@@ -52,15 +55,16 @@ module Carto
     self.inheritance_column = :_type
 
     belongs_to :user
+    has_one :oauth_access_token, inverse_of: :api_key
 
-    before_create :create_token, if: ->(k) { k.regular? && !k.token }
-    before_create :create_db_config, if: ->(k) { k.regular? && !(k.db_role && k.db_password) }
+    before_create :create_token, if: ->(k) { k.needs_setup? && !k.token }
+    before_create :create_db_config, if: ->(k) { k.needs_setup? && !(k.db_role && k.db_password) }
 
     serialize :grants, Carto::CartoJsonSymbolizerSerializer
 
     validates :grants, carto_json_symbolizer: true, api_key_grants: true, json_schema: true
     validates :type, inclusion: { in: VALID_TYPES }
-    validates :type, uniqueness: { scope: :user_id }, unless: :regular?
+    validates :type, uniqueness: { scope: :user_id }, unless: :needs_setup?
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
@@ -68,18 +72,19 @@ module Carto
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
-    after_create :setup_db_role, if: ->(k) { k.regular? && !k.skip_role_setup }
+    after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
 
-    after_destroy :drop_db_role, if: :regular?
+    after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
     scope :regular, -> { where(type: TYPE_REGULAR) }
+    scope :user_visible, -> { where(type: [TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_REGULAR]) }
 
     attr_accessor :skip_role_setup
 
@@ -118,18 +123,13 @@ module Carto
       )
     end
 
-    def self.create_in_memory_master(user: Carto::User.find(scope_attributes['user_id']))
-      api_key = new(
+    def self.build_oauth_key(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+      new(
         user: user,
-        type: TYPE_MASTER,
-        name: NAME_MASTER,
-        token: user.api_key,
-        grants: GRANTS_ALL_APIS,
-        db_role: user.database_username,
-        db_password: user.database_password
+        type: TYPE_OAUTH,
+        name: name,
+        grants: grants
       )
-      api_key.readonly!
-      api_key
     end
 
     def self.new_from_hash(api_key_hash)
@@ -198,6 +198,14 @@ module Carto
 
     def regular?
       type == TYPE_REGULAR
+    end
+
+    def oauth?
+      type == TYPE_OAUTH
+    end
+
+    def needs_setup?
+      regular? || oauth?
     end
 
     def valid_name_for_type

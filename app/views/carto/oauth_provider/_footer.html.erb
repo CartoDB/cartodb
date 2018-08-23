@@ -1,4 +1,6 @@
-<div class='oauth-form__powered-by'>Powered by CARTO</div>
+<div class='oauth-form__powered-by'>
+  <a href='https://carto.com/' title='Visit CARTO!'>Powered by CARTO</a>
+</div>
 <div class='oauth-form__buttons'>
   <% if @error.blank? %>
     <%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_user), method: :post) do %>

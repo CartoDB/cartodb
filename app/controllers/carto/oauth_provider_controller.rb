@@ -17,8 +17,8 @@ module Carto
       'token' => OauthProvider::ResponseStrategies::TokenStrategy
     }.freeze
 
-    REQUIRED_TOKEN_PARAMS = [:client_id, :client_secret, :grant_type].freeze
-    REQUIRED_AUTHORIZE_PARAMS = [:client_id, :state, :response_type].freeze
+    REQUIRED_TOKEN_PARAMS = ['client_id', 'client_secret', 'grant_type'].freeze
+    REQUIRED_AUTHORIZE_PARAMS = ['client_id', 'state', 'response_type'].freeze
 
     ssl_required
 
@@ -38,6 +38,7 @@ module Carto
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
+    rescue_from Carto::MissingParamsError, with: :rescue_missing_params_error
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
@@ -99,6 +100,10 @@ module Carto
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 
+    def rescue_missing_params_error(exception)
+      rescue_oauth_errors(OauthProvider::Errors::InvalidRequest.new(exception.message))
+    end
+
     def validate_response_type
       @response_type = params[:response_type]
 
@@ -144,18 +149,12 @@ module Carto
     end
 
     def ensure_required_token_params
-      grant_params = []
-      grant_params << :code if params[:grant_type] == 'authorization_code'
-      grant_params << :refresh_token if params[:grant_type] == 'refresh_token'
+      grant_params = grant_strategy.try(:required_params) || []
       ensure_required_params(REQUIRED_TOKEN_PARAMS + grant_params)
-    rescue ActionController::BadRequest => e
-      raise OauthProvider::Errors::InvalidRequest.new(e.message)
     end
 
     def ensure_required_authorize_params
       ensure_required_params(REQUIRED_AUTHORIZE_PARAMS)
-    rescue ActionController::BadRequest => e
-      raise OauthProvider::Errors::InvalidRequest.new(e.message)
     end
 
     def reject_client_secret

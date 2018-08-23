@@ -13,7 +13,7 @@ Development
 - Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
 - Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
 - Fix OAuth login for the organizations (#14238)
-- Better OAuth management (#14214)
+- Better OAuth error management (#14214)
 
 4.20.0 (2018-08-13)
 -------------------

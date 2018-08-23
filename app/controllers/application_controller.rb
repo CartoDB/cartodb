@@ -412,18 +412,9 @@ class ApplicationController < ActionController::Base
   end
 
   def ensure_required_params(required_params)
-    missing_params = []
-    required_params.each_with_object(params) do |key, obj|
-      begin
-        obj.require(key)
-      rescue ActionController::ParameterMissing => e
-        missing_params << e.param
-      end
-    end
-
-    unless missing_params.empty?
-      raise ActionController::BadRequest.new, "The following required params are missing: #{missing_params.join(', ')}"
-    end
+    params_with_value = params.reject { |_, v| v.empty? }
+    missing_params = required_params - params_with_value.keys
+    raise Carto::MissingParamsError.new(missing_params) unless missing_params.empty?
   end
 
   protected :current_user

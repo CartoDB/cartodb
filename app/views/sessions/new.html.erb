@@ -112,7 +112,7 @@
     </div>
   </div>
 
-  <% unless cartodb_com_hosted? %>
+  <% if organization_signup_url.present? && !cartodb_com_hosted? %>
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin is-active">

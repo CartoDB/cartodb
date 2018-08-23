@@ -1,6 +1,6 @@
 Authorize?
 
-<%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_user), method: :post) do %>
+<%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_viewer), method: :post) do %>
 <%= hidden_field_tag 'response_type', @response_type %>
 <%= hidden_field_tag 'client_id', @oauth_app.client_id %>
 <%= hidden_field_tag 'scope', @scopes.join(' ') %>

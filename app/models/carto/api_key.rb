@@ -1,5 +1,6 @@
 require 'securerandom'
 require_dependency 'carto/errors'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)

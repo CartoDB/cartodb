@@ -14,6 +14,7 @@ Development
 - Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
 - Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
 - Fix OAuth login for the organizations (#14238)
+- Limit the number of simultaneous refersh tokens (#14243)
 
 4.20.0 (2018-08-13)
 -------------------

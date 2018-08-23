@@ -31,6 +31,7 @@ module Carto
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
+    before_action :reject_client_secret, only: [:consent, :authorize]
     before_action :ensure_required_authorize_params, only: [:consent, :authorize]
     before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
@@ -155,6 +156,10 @@ module Carto
       ensure_required_params(REQUIRED_AUTHORIZE_PARAMS)
     rescue ActionController::BadRequest => e
       raise OauthProvider::Errors::InvalidRequest.new(e.message)
+    end
+
+    def reject_client_secret
+      raise OauthProvider::Errors::InvalidRequest.new("The client_secret param must not be sent in the authorize request") if params[:client_secret].present?
     end
 
     def grant_strategy

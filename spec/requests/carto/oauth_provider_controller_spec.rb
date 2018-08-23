@@ -252,6 +252,15 @@ describe Carto::OauthProviderController do
 
         validate_response(response)
       end
+
+      it 'with client_secret in the payload throws an error' do
+        payload = valid_payload.merge(client_secret: 'abcdefgh')
+        post oauth_provider_authorize_url(payload)
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include('invalid_request'))
+        expect(response.body).to(include('client_secret'))
+      end
     end
 
     describe 'with code response' do

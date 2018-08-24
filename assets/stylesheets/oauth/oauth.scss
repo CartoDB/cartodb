@@ -209,26 +209,13 @@
 
 /* chevrons */
 .chevron {
-  padding-top: 8px;
-
-  &::before {
-    content: '';
-    display: inline-block;
-    position: relative;
-    width: 10px;
-    height: 10px;
-    border-width: 0.025em 0.025em 0 0;
-    border-style: solid;
-    cursor: pointer;
-  }
+  cursor: pointer;
 
   &--up::before {
-    top: 5px;
-    transform: rotate(-45deg);
+    content: url($assetsDir + "/images/oauth_provider/chevron_up.svg");
   }
 
   &--down::before {
-    top: -5px;
-    transform: rotate(135deg);
+    content: url($assetsDir + "/images/oauth_provider/chevron_down.svg");
   }
 }

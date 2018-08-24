@@ -49,8 +49,9 @@ module Carto
       elsif @oauth_app
         oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(oauth_app_user)
-        @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes))
       end
+
+      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes))
     end
 
     def authorize
@@ -108,6 +109,7 @@ module Carto
 
     def rescue_generic_errors(exception)
       CartoDB::Logger.error(exception: exception)
+      byebug
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 

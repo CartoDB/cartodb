@@ -40,8 +40,8 @@ module Carto
       end
 
       class AccessDenied < BaseError
-        def initialize
-          super('access_denied', 'The user rejected the authentication request')
+        def initialize(message = 'The user rejected the authentication request')
+          super('access_denied', message)
         end
       end
 

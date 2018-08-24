@@ -8,6 +8,7 @@ module Carto
 
     belongs_to :user, inverse_of: :oauth_apps
     has_many :oauth_app_users, inverse_of: :oauth_app, dependent: :destroy
+    has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy
 
     validates :user, presence: true
     validates :name, presence: true
@@ -15,6 +16,7 @@ module Carto
     validates :client_secret, presence: true
     validates :redirect_uris, presence: true
     validates :icon_url, presence: true
+    validates :oauth_app_organizations, absence: true, unless: :restricted?
     validate :validate_uris
 
     before_validation :ensure_keys_generated

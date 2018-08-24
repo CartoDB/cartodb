@@ -411,6 +411,12 @@ class ApplicationController < ActionController::Base
     current_user.set_last_ip_address request.remote_ip
   end
 
+  def ensure_required_params(required_params)
+    params_with_value = params.reject { |_, v| v.empty? }
+    missing_params = required_params - params_with_value.keys
+    raise Carto::MissingParamsError.new(missing_params) unless missing_params.empty?
+  end
+
   protected :current_user
 
   def json_formatted_request?

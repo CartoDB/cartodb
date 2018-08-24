@@ -15,6 +15,10 @@ module Carto
         rescue ActiveRecord::RecordNotFound
           raise OauthProvider::Errors::InvalidGrant.new
         end
+
+        def self.required_params
+          ['code']
+        end
       end
 
       module RefreshTokenStrategy
@@ -29,6 +33,10 @@ module Carto
           end
         rescue ActiveRecord::RecordNotFound
           raise OauthProvider::Errors::InvalidGrant.new
+        end
+
+        def self.required_params
+          ['refresh_token']
         end
       end
     end

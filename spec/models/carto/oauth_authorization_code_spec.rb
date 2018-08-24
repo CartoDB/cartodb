@@ -76,20 +76,6 @@ module Carto
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(refresh_token).to(be)
       end
-
-      it 'keep only one refresh token by oauth_app_user' do
-        @authorization_code.update!(scopes: ['offline'])
-
-        @authorization_code.exchange!
-        expect(OauthRefreshToken.where(oauth_app_user: @app_user).count).to(eq(1))
-        old_token = OauthRefreshToken.where(oauth_app_user: @app_user).first
-
-        @authorization_code.exchange!
-        expect(OauthRefreshToken.where(oauth_app_user: @app_user).count).to(eq(1))
-        new_token = OauthRefreshToken.where(oauth_app_user: @app_user).first
-
-        expect(old_token.created_at).not_to(eq(new_token.created_at))
-      end
     end
   end
 end

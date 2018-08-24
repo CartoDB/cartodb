@@ -107,12 +107,35 @@ module Carto
         @refresh_token.destroy
       end
 
-      it 'keeps one and only one refresh token per OauthAppUser' do
-        @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
-        expect(OauthRefreshToken.where(oauth_app_user: @app_user).count).to(eq(1))
+      before(:each) do
+        OauthRefreshToken.send(:remove_const, 'MAX_TOKENS_PER_OAUTH_APP_USER')
+        OauthRefreshToken::MAX_TOKENS_PER_OAUTH_APP_USER = 3
+        create_tokens
+      end
 
-        @refresh_token = @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
-        expect(OauthRefreshToken.where(oauth_app_user: @app_user).count).to(eq(1))
+      def create_tokens
+        Delorean.jump(1.month) do
+          5.times do
+            @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
+          end
+        end
+
+        Delorean.back_to_the_present
+        3.times do
+          @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
+        end
+      end
+
+      it 'keeps only most recent refresh tokens per OauthAppUser' do
+        expect(
+          OauthRefreshToken.where('oauth_app_user_id = ? and updated_at < ?', @app_user.id, Time.now - 1.month).count
+        ).to(eq(0))
+      end
+
+      it 'keeps a maximum number of refresh tokens per OauthAppuser' do
+        expect(
+          OauthRefreshToken.where(oauth_app_user: @app_user).count
+        ).to(eq(OauthRefreshToken::MAX_TOKENS_PER_OAUTH_APP_USER))
       end
     end
   end

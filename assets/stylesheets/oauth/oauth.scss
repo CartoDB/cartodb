@@ -104,13 +104,16 @@
     text-transform: uppercase;
 
     &--primary {
-      border-style: none;
+      border: 2px solid #1785FB;
       background-color: #1785FB;
       color: #FFF;
     }
 
     &--is-link {
-      padding: 9px;
+      padding-top: 6px;
+      padding-right: 6px;
+      padding-bottom: 6px;
+      padding-left: 8px;
       text-decoration: none !important;
     }
   }
@@ -186,7 +189,7 @@
   line-height: 16px;
 
   &__title {
-    margin-top: 8px;
+    margin-bottom: 8px;
     font-family: 'Open Sans';
     font-weight: 600;
   }

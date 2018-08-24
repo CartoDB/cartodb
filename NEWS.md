@@ -5,16 +5,25 @@ Development
 - None yet
 
 ### Features
-- OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
-  - Redirect back to OAuth flow after login (#14236)
-  - Implicit flow (#14167)
-  - Allow restricting application to only a set of organizations (#14180)
+- None yet
 
 ### Bug fixes / enhancements
-- Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
-- Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
-- Fix OAuth login for the organizations (#14238)
-- Better OAuth error management (#14214)
+- None yet
+
+4.20.1 (2018-08-24)
+-------------------
+
+### Features
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+ * Redirect back to OAuth flow after login (#14236)
+ * Implicit flow (#14167)
+ * Allow restricting application to only a set of organizations (#14180)
+
+### Bug fixes / enhancements
+* Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
+* Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
+* Fix OAuth login for the organizations (#14238)
+* Better OAuth error management (#14214)
 
 4.20.0 (2018-08-13)
 -------------------

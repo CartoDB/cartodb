@@ -5,5 +5,5 @@
     <img class='oauth-form__avatar-image' src="<%= image_path "oauth_provider/unknown_app_avatar.svg" %>" alt="Unknown app avatar">
   <% end %>
   <img src="<%= image_path "oauth_provider/arrows_connect.svg" %>" alt="Arrows connect">
-  <img class='oauth-form__avatar-image' src="<%= current_user.avatar %>" alt="<%= current_user.username %>" />
+  <img class='oauth-form__avatar-image' src="<%= current_viewer.avatar %>" alt="<%= current_viewer.username %>" />
 </div>

@@ -109,7 +109,6 @@ module Carto
 
     def rescue_generic_errors(exception)
       CartoDB::Logger.error(exception: exception)
-      byebug
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 

@@ -70,7 +70,8 @@ describe Carto::OauthProviderController do
     it 'shows an error if invalid response_type' do
       request_endpoint(valid_payload.merge(response_type: 'err'))
 
-      expect(response.status).to(eq(404))
+      expect(response.status).to(eq(400))
+      expect(response.body).to(include('unsupported_response_type'))
     end
 
     shared_examples_for 'invalid parameter redirections' do

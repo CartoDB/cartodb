@@ -20,6 +20,7 @@ module Carto
     has_many :assets, class_name: Carto::Asset, dependent: :destroy, inverse_of: :organization
     has_many :notifications, -> { order('created_at DESC') }, dependent: :destroy
     has_many :connector_configurations, inverse_of: :organization, dependent: :destroy
+    has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy
 
     before_destroy :destroy_groups_with_extension
 

@@ -11,6 +11,7 @@
   <%= yield :css %>
   <%= csrf_meta_tag %>
   <%= insert_google_tag_manager('primary') %>
+  <%= yield :head %>
 </head>
 <body class="frontend">
   <%= insert_google_tag_manager_no_script('primary') %>

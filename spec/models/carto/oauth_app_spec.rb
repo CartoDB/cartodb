@@ -25,6 +25,16 @@ module Carto
         expect(app.errors[:name]).to(include("can't be blank"))
       end
 
+      it 'requires icon_url' do
+        app = OauthApp.new
+        expect(app).to_not(be_valid)
+        expect(app.errors[:icon_url]).to(include("can't be blank"))
+
+        app.icon_url = ''
+        expect(app).to_not(be_valid)
+        expect(app.errors[:icon_url]).to(include("can't be blank"))
+      end
+
       describe 'redirection uri' do
         it 'rejected if empty' do
           app = OauthApp.new
@@ -72,7 +82,7 @@ module Carto
       end
 
       it 'accepts if valid' do
-        app = OauthApp.new(user: @user, name: 'name', redirect_uris: ['https://re.dir'])
+        app = OauthApp.new(user: @user, name: 'name', redirect_uris: ['https://re.dir'], icon_url: 'some.png')
         expect(app).to(be_valid)
       end
     end

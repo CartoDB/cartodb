@@ -156,7 +156,7 @@ GeoPackage (GPKG) files are an [open standard format](https://www.geopackage.org
 
 File Geodatabase (GDB) is a proprietary [Esri format](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/administer-file-gdbs/file-geodatabases.htm) for spatial data. The GDB format is a directory with a `.gdb` extension containing the data files, so for download and upload a zip file containing the directory is used, either with a `.zip` or a `.gdb.zip` extension. Each layer (up to 50) in the GDB file will be imported as a separate CARTO table.
 
-**Important note:** The "[personal geodatabase](http://desktop.arcgis.com/en/arcmap/latest/manage-data/administer-file-gdbs/personal-geodatabases.htm)" (having a `.mdb` extension) format used by ArcGIS 8 and ArcGIS 9 is not supported by CARTO. 
+**Note:** The "[personal geodatabase](http://desktop.arcgis.com/en/arcmap/latest/manage-data/administer-file-gdbs/personal-geodatabases.htm)" (having a `.mdb` extension) format used by ArcGIS 8 and ArcGIS 9 is not supported by CARTO. 
 
 ### Multilayer Uploads
 

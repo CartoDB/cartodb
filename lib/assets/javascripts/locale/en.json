@@ -2943,5 +2943,71 @@
       },
       "adding": "Adding geometry…"
     }
+  },
+  "cartodb": {
+    "common": {
+      "views": {
+        "dashboard_header": {
+          "notifications": {
+            "templates": {
+              "no_notif": "There are no notifications :)"
+            }
+          }
+        }
+      }
+    },
+    "dashboard": {
+      "views": {
+        "hello": "Hello, ",
+        "welcome": "Welcome to CARTO!",
+        "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map."
+      }
+    }
+  },
+  "dashboard": {
+    "views": {
+      "dashboard": {
+        "onboarding": {
+          "hello": "Hello, ",
+          "welcome": "Welcome to CARTO!",
+          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map."
+        }
+      }
+    },
+    "components": {
+      "dashboard-header": {
+        "breadcrumbs": {
+          "dropdown": {
+            "maps": "Your maps",
+            "datasets": "Your datasets",
+            "lck_maps": "Your locked maps",
+            "lck_datasets": "Your locked datasets"
+          }
+        },
+        "settings-dropdown": {
+          "viewer": "VIEWER",
+          "become": "Become a Builder",
+          "builder": "BUILDER",
+          "of": " of ",
+          "used": " used",
+          "upgrade": "Upgrade",
+          "pub_profile": "View your public profile",
+          "account": "Your account",
+          "org": "Your organization",
+          "api_keys": "Your API keys",
+          "close": "Close session"
+        },
+        "user-support": {
+          "support": "Support"
+        },
+        "notifications": {
+          "templates": {
+            "dropdown_content": {
+              "no_notif": "There are no notifications :)"
+            }
+          }
+        }
+      }
+    }
   }
 }

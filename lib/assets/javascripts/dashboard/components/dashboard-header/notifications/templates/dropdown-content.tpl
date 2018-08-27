@@ -20,7 +20,7 @@
 
   <% } else { %>
     <li class="u-flex u-alignCenter NotificationsDropdown-item NotificationsDropdown-item--no-notifications CDB-Text CDB-Size-medium">
-      <p class="NotificationsDropdown-text u-altTextColor">There are no notifications :)</p>
+      <p class="NotificationsDropdown-text u-altTextColor"><%= _t('dashboard.components.dashboard-header.notifications.templates.dropdown_content.no_notif') %></p>
     </li>
   <% } %>
 </ul>

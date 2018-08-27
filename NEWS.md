@@ -9,7 +9,7 @@ Development
   - Add new design for OAuth consent screen (#14237)
 
 ### Bug fixes / enhancements
-- None yet
+- Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
 
 4.20.1 (2018-08-24)
 -------------------

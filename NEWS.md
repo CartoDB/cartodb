@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  - Add new design for OAuth consent screen (#14237)
 
 ### Bug fixes / enhancements
 - Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)

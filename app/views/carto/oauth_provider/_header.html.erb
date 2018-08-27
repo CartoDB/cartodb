@@ -1,0 +1,10 @@
+<%= render :partial => 'avatars' %>
+<% if @error.blank? %>
+  <h1 class='oauth-form__title'>Request for permission</h1>
+  <h2 class='oauth-form__subtitle'>
+    <strong><%= @oauth_app.name %></strong> by <strong><%= @oauth_app.user.name_or_username %></strong> would like permission to access your account
+  </h2>
+<% else %>
+  <h1 class='oauth-form__title'>Something went wrong</h1>
+  <h2 class='oauth-form__subtitle oauth-form__subtitle--error'>An external application failed to connect with CARTO. The application may be incorrectly configured, please contact the application developer for help.</h2>
+<% end %>

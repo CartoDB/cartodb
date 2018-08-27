@@ -1,0 +1,17 @@
+  <svg width="20px" height="24px" viewBox="0 0 20 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="arrows-connect" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g id="Header" transform="translate(-140.000000, -12.000000)">
+          <g id="Avatars">
+              <g transform="translate(82.000000, 0.000000)">
+                  <g id="Icon" transform="translate(56.000000, 12.000000)">
+                      <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>
+                      <g id="Group" transform="translate(2.000000, 0.000000)" fill="#757575" fill-rule="nonzero">
+                          <polygon id="Shape" points="15.707 0.294 14.293 1.708 15.586 3 7 3 7 5 15.586 5 14.293 6.294 15.707 7.708 19.414 4"></polygon>
+                          <polygon id="Shape" points="5.707 17.708 4.293 16.294 0.586 20 4.293 23.708 5.707 22.294 4.414 21 13 21 13 19 4.414 19"></polygon>
+                      </g>
+                  </g>
+              </g>
+          </g>
+      </g>
+  </g>
+  </svg>

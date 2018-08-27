@@ -60,16 +60,18 @@ describe Carto::OauthProviderController do
   end
 
   shared_examples_for 'authorization parameter validation' do
-    it 'returns a 404 error if application cannot be found' do
+    it 'returns a 400 error if application cannot be found' do
       request_endpoint(valid_payload.merge(client_id: 'e'))
 
-      expect(response.status).to(eq(404))
+      expect(response.status).to(eq(400))
+      expect(response.body).to(include('invalid_client'))
     end
 
     it 'shows an error if invalid response_type' do
       request_endpoint(valid_payload.merge(response_type: 'err'))
 
-      expect(response.status).to(eq(404))
+      expect(response.status).to(eq(400))
+      expect(response.body).to(include('unsupported_response_type'))
     end
 
     shared_examples_for 'invalid parameter redirections' do

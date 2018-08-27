@@ -11,10 +11,14 @@ module Carto
       'authorization_code' => OauthProvider::GrantStrategies::AuthorizationCodeStrategy,
       'refresh_token' => OauthProvider::GrantStrategies::RefreshTokenStrategy
     }.freeze
+
     RESPONSE_STRATEGIES = {
       'code' => OauthProvider::ResponseStrategies::CodeStrategy,
       'token' => OauthProvider::ResponseStrategies::TokenStrategy
     }.freeze
+
+    REQUIRED_TOKEN_PARAMS = ['client_id', 'client_secret', 'grant_type'].freeze
+    REQUIRED_AUTHORIZE_PARAMS = ['client_id', 'state', 'response_type'].freeze
 
     ssl_required
 
@@ -25,16 +29,25 @@ module Carto
 
     before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
+    before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
-    before_action :validate_response_type, :validate_scopes, :ensure_state, only: [:consent, :authorize]
+    before_action :reject_client_secret, only: [:consent, :authorize]
+    before_action :ensure_required_authorize_params, only: [:consent, :authorize]
+    before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
+    rescue_from Carto::MissingParamsError, with: :rescue_missing_params_error
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
-      return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
+      if @oauth_app_user
+        return create_authorization_code if @oauth_app_user.authorized?(@scopes)
+      elsif @oauth_app
+        oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
+        validate_oauth_app_user(oauth_app_user)
+      end
     end
 
     def authorize
@@ -43,7 +56,9 @@ module Carto
       if @oauth_app_user
         @oauth_app_user.upgrade!(@scopes)
       else
-        @oauth_app_user = @oauth_app.oauth_app_users.create!(user_id: current_viewer.id, scopes: @scopes)
+        @oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
+        validate_oauth_app_user(@oauth_app_user)
+        @oauth_app_user.save!
       end
 
       create_authorization_code
@@ -92,6 +107,10 @@ module Carto
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 
+    def rescue_missing_params_error(exception)
+      rescue_oauth_errors(OauthProvider::Errors::InvalidRequest.new(exception.message))
+    end
+
     def validate_response_type
       @response_type = params[:response_type]
 
@@ -113,7 +132,7 @@ module Carto
       @redirect_uri = params[:redirect_uri].presence
       if @redirect_uri.present? && !@oauth_app.redirect_uris.include?(@redirect_uri)
         @redirect_uri = nil
-        raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri is not authorized for this application')
+        raise OauthProvider::Errors::InvalidRequest.new('The redirect_uri must match the redirect_uri param used in the authorization request')
       end
     end
 
@@ -124,9 +143,8 @@ module Carto
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
     end
 
-    def ensure_state
+    def set_state
       @state = params[:state]
-      raise OauthProvider::Errors::InvalidRequest.new('state is mandatory') unless @state.present?
     end
 
     def load_oauth_app_user
@@ -135,6 +153,26 @@ module Carto
 
     def verify_client_secret
       raise OauthProvider::Errors::InvalidClient.new unless params[:client_secret] == @oauth_app.client_secret
+    end
+
+    def ensure_required_token_params
+      grant_params = grant_strategy.try(:required_params) || []
+      ensure_required_params(REQUIRED_TOKEN_PARAMS + grant_params)
+    end
+
+    def ensure_required_authorize_params
+      ensure_required_params(REQUIRED_AUTHORIZE_PARAMS)
+    end
+
+    def reject_client_secret
+      raise OauthProvider::Errors::InvalidRequest.new("The client_secret param must not be sent in the authorize request") if params[:client_secret].present?
+    end
+
+    def validate_oauth_app_user(oauth_app_user)
+      unless oauth_app_user.valid?
+        errors = oauth_app_user.errors.full_messages_for(:user)
+        raise OauthProvider::Errors::AccessDenied.new(errors.join(', ')) if errors.present?
+      end
     end
 
     def grant_strategy

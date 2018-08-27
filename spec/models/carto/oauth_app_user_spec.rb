@@ -48,6 +48,50 @@ module Carto
         app_user = OauthAppUser.new(user: @user, oauth_app: @app)
         expect(app_user).to(be_valid)
       end
+
+      describe 'restricted app' do
+        include_context 'organization with users helper'
+
+        before(:all) do
+          @app.update!(restricted: true)
+        end
+
+        before(:each) do
+          @app.oauth_app_organizations.each(&:destroy!)
+          @app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
+        end
+
+        after(:all) do
+          @app.update!(restricted: false)
+        end
+
+        it 'does not accept non-organization users' do
+          app_user = OauthAppUser.new(user: @user, oauth_app: @app)
+          expect(app_user).not_to(be_valid)
+          expect(app_user.errors[:user]).to(include("is not part of an organization"))
+        end
+
+        it 'does not accept users from unknown organizations' do
+          @app.oauth_app_organizations.each(&:destroy!)
+          @app.oauth_app_organizations.create!(organization: @carto_organization_2, seats: 1)
+
+          app_user = OauthAppUser.new(user: @carto_org_user_1, oauth_app: @app)
+          expect(app_user).not_to(be_valid)
+          expect(app_user.errors[:user]).to(include("is part of an organization which is not allowed access to this application"))
+        end
+
+        it 'accepts users from the authorized organization' do
+          app_user = OauthAppUser.new(user: @carto_org_user_1, oauth_app: @app)
+          expect(app_user).to(be_valid)
+        end
+
+        it 'does not accepts users over the seat limit' do
+          OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
+          app_user = OauthAppUser.new(user: @carto_org_user_2, oauth_app: @app)
+          expect(app_user).not_to(be_valid)
+          expect(app_user.errors[:user]).to(include("does not have an available seat to use this application"))
+        end
+      end
     end
 
     describe '#authorized?' do

@@ -18,9 +18,9 @@
                   <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
                 <% else %>
                   <% if @organization.present? %>
-                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto')) %>
+                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
                   <% else %>
-                    <%= image_tag("layout/carto-logo.svg", :alt => t('carto')) %>
+                    <%= image_tag("layout/carto-logo.svg", :alt => t('carto_name')) %>
                   <% end %>
                 <% end %>
               </picture>
@@ -61,7 +61,7 @@
                   <div class="Sessions-field">
                     <p>
                       <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
-                        <span class="js-Loading-text"><% t('sessions.new.login') %></span>
+                        <span class="js-Loading-text">Log in</span>
                         <span class="js-Loading-anim" style="display: none;">
                           <span class="Loading-item">
                             <span class="Loading-itemInner Loading-itemInner--01"></span>
@@ -94,11 +94,11 @@
 
               <% if @user_login_url %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  Not a member of the <%= @organization.name %> organization? Try the <a href="<%= @user_login_url %>"> general login</a> instead.
+                  <% t('sessions.new.not_member') %><%= @organization.name %><% t('sessions.new.org') %><a href="<%= @user_login_url %>"><% t('sessions.new.general') %>
                 </p>
               <% elsif @organization.try(:auth_username_password_enabled) %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  Please, remember to use an email address belonging to this organization to login to your account.
+                  <% t('sessions.new.use_email') %>
                 </p>
               <% end %>
             </div>

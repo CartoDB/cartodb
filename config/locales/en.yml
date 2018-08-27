@@ -11,7 +11,7 @@ en:
     title: 'Email or username'
     placeholder: 'email or username'
   password: 'password'
-  carto: 'CARTO'
+  carto_name: 'CARTO'
   maps: 'maps'
   datasets: 'datasets'
   builder: 'Builder'
@@ -32,10 +32,14 @@ en:
     one: 'day'
     other: 'days'
   sessions:
-    new1:
+    new:
       login: 'Log in'
       or_login_with: 'OR LOG IN WITH:'
       dont_have_account: "Don't have an account yet?"
+      not_member: "Not a member of the "
+      org: " organization? Try the "
+      general: " general login</a> instead."
+      use_email: "Please, remember to use an email address belonging to this organization to login to your account."
     account_error:
       user: 'User '
       auth_error: ' authentication error'
@@ -435,7 +439,7 @@ en:
       contact: 'contact one of our account experts'
       meantime: "In the meantime, take a look at some of the amazing things we’ve been up to at "
       thanks: 'Thanks and Happy Mapping'
-  password:
+  password_change:
     edit:
       reset: 'Reset your password'
       current: 'Type your current password'

@@ -1,7 +1,7 @@
 
 <section class="sessions shadow">
   <div class="content">
-    <h2><%= @token.client_application.user.username t('carto')%></h2>
+    <h2><%= @token.client_application.user.username t('carto_name')%></h2>
     <p class="margin15 light"><%= @token.client_application.user.username %><% t('oauth.author.msg1') %><%= @token.client_application.user.username %><% t('oauth.author.msg2') %></p>
 
     <%= form_tag authorize_url do %>

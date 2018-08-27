@@ -144,9 +144,19 @@ CARTO supports importing Open Street Map dumps (.osm files). These files are XML
 
 The MapInfo file format is geospatial vector data developed by MapInfo, which supports grids based multiple files. MapInfo files (.DAT, .ID, .MAP, .TAB) must be imported as a single compressed file, in the .zip or .gz format. 
 
-#### CARTO
+##### CARTO
 
 CARTO files are CARTO generated map visualization files. This .carto file includes the dataset and visualization definition, which contains any SQL queries, CartoCSS, basemaps, attributions, metadata, and styling that was applied to a map. This is useful for downloading complete CARTO visualizations that you can share or import.
+
+#### GeoPackage
+
+GeoPackage (GPKG) files are an [open standard format](https://www.geopackage.org/) for spatial data. The format supports multiple layers, and all the geometry types used by CARTO: Points, (Multi)Polygons and and (Multi)Lines. GeoPackage files can be imported as an uncompressed .GPKG file or as a compressed .ZIP file. Each layer (up to 50) in the GeoPackage file will be imported as a separate CARTO table.
+
+### FileGeodatabase
+
+File Geodatabase (GDB) is a proprietary [Esri format](http://desktop.arcgis.com/en/arcmap/10.3/manage-data/administer-file-gdbs/file-geodatabases.htm) for spatial data. The GDB format is a directory with a `.gdb` extension containing the data files, so for download and upload a zip file containing the directory is used, either with a `.zip` or a `.gdb.zip` extension. Each layer (up to 50) in the GDB file will be imported as a separate CARTO table.
+
+**Important note:** The "[personal geodatabase](http://desktop.arcgis.com/en/arcmap/latest/manage-data/administer-file-gdbs/personal-geodatabases.htm)" (having a `.mdb` extension) format used by ArcGIS 8 and ArcGIS 9 is not supported by CARTO. 
 
 ### Multilayer Uploads
 
@@ -171,6 +181,14 @@ GPX files that contain more than one type of elements (waypoints, tracks, and/or
 #### OSM Files
 
 OSM files generate a different layer, per each type of geometry that their nodes, ways, or relations represent (points, polygons or lines).
+
+#### GeoPackage
+
+GPKG files generate a different dataset for each layer in the file, up to 50.
+
+#### File Geodatabase
+
+GDB files generate a different dataset for each layer in the file, up to 50.
 
 ### Multiple File Uploads
 

@@ -7,7 +7,7 @@
       <% if(hasCreateMapsFeature) { %>
         <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin"><%= _t('dashboard.views.dashboard.onboarding.drag_your_data') %></p>
         <button class="CDB-Button CDB-Button--primary u-tSpace-xl js-createMap track-onboarding--newMap">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">New map</span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.onboarding.new_map') %></span>
         </button>
       <% } %>
     </div>

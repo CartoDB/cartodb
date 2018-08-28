@@ -2958,15 +2958,56 @@
     },
     "dashboard": {
       "views": {
-        "hello": "Hello, ",
-        "welcome": "Welcome to CARTO!",
-        "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map."
+        "filters": {
+          "shared": "Shared with you",
+          "liked": "Liked",
+          "data_lib": "Data library",
+          "new_map": "New Map",
+          "new_dataset": "New dataset",
+          "selected": " selected",
+          "yours": "yours",
+          "select_all": "Select all ",
+          "deselect_all": "Deselect all ",
+          "connect_data": "Connect dataset",
+          "duplicate_data": "Duplicate dataset",
+          "create_map": "Create map",
+          "max_map_layers": "Max map layers selected (%{maxLayersByMap} max)",
+          "change_privacy": "Change privacy...",
+          "duplicate_map": "Duplicate map",
+          "delete": "Delete ",
+          "your": "your"
+        },
+        "onboarding": {
+          "hello": "Hello, ",
+          "welcome": "Welcome to CARTO!",
+          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map.",
+          "new_map": "New map"
+        }
       }
     }
   },
   "dashboard": {
     "views": {
       "dashboard": {
+        "filters": {
+          "shared": "Shared with you",
+          "liked": "Liked",
+          "data_lib": "Data library",
+          "new_map": "New Map",
+          "new_dataset": "New dataset",
+          "selected": " selected",
+          "yours": "yours",
+          "select_all": "Select all ",
+          "deselect_all": "Deselect all ",
+          "connect_data": "Connect dataset",
+          "duplicate_data": "Duplicate dataset",
+          "create_map": "Create map",
+          "max_map_layers": "Max map layers selected (%{maxLayersByMap} max)",
+          "change_privacy": "Change privacy...",
+          "duplicate_map": "Duplicate map",
+          "delete": "Delete ",
+          "your": "your"
+        },
         "onboarding": {
           "hello": "Hello, ",
           "welcome": "Welcome to CARTO!",
@@ -3006,6 +3047,12 @@
               "no_notif": "There are no notifications :)"
             }
           }
+        }
+      },
+      "table_grants": {
+        "table_grants_view": {
+          "zero_data": "0 datasets found",
+          "no_data": "There are no datasets"
         }
       }
     }

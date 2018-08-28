@@ -26,7 +26,7 @@
             <% if (totalShared) { %>
               <strong><%- totalShared %></strong>
             <% } %>
-            Shared with you
+            <%= _t('dashboard.views.dashboard.filters.shared') %>
           </a>
         </li>
       <% } %>
@@ -35,13 +35,13 @@
           <% if (totalLiked) { %>
             <strong><%- totalLiked %></strong>
           <% } %>
-          Liked
+          <%= _t('dashboard.views.dashboard.filters.liked') %>
         </a>
       </li>
       <% if (hasCreateMapsFeature && !isMaps && isDataLibraryEnabled) { %>
         <li class="Filters-typeItem CDB-Text CDB-Size-medium is-semibold u-upperCase">
           <a class="Filters-typeLink js-link <%- library ? 'is-selected' : '' %>" href="<%- currentDashboardUrl.dataLibrary() %>">
-            Data library
+            <%= _t('dashboard.views.dashboard.filters.data_lib') %>
           </a>
         </li>
       <% } %>
@@ -96,55 +96,55 @@
           fs-new_map_onboarding
         <% } %>
         ">
-        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- isMaps ? 'New Map' : 'New dataset' %></span>
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- isMaps ? _t('dashboard.views.dashboard.filters.new_map') : _t('dashboard.views.dashboard.filters.new_dataset') %></span>
       </button>
     <% } %>
   </div>
 </div>
 
 <div class="Filters-row">
-  <label class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- selectedItemsCount %> <%- pluralizedContentTypeSelected %> selected</label>
+  <label class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- selectedItemsCount %> <%- pluralizedContentTypeSelected %><%= _t('dashboard.views.dashboard.filters.selected') %></label>
   <div class="Filters-actions">
     <ul class="Filters-actionsList">
       <% if (shared !== "only" && shared !== "yes" && !library && !liked) { %>
         <li class="CDB-Text CDB-Size-medium u-altTextColor">
           <% if (selectedItemsCount < pageItems) { %>
-            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-select_all" href="#/select-all">Select all <%- tag || q ? 'yours' : '' %></a>
+            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-select_all" href="#/select-all"><%= _t('dashboard.views.dashboard.filters.select_all') %><%- tag || q ? _t('dashboard.views.dashboard.filters.yours') : '' %></a>
           <% }%>
           <% if (selectedItemsCount > 1) { %>
-            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-deselect_all" href="#/deselect-all">Deselect all <%- tag || q ? 'yours' : '' %></a>
+            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-deselect_all" href="#/deselect-all"><%= _t('dashboard.views.dashboard.filters.deselect_all') %><%- tag || q ? _t('dashboard.views.dashboard.filters.yours') : '' %></a>
           <% } %>
         </li>
       <% } %>
       <% if (!isMaps && canCreateDatasets && hasCreateDatasetsFeature && selectedItemsCount === 1 ) { %>
         <% if (isSelectedItemLibrary) { %>
           <li class="Filters-actionsItem">
-            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-import_remote" href="#/connect-dataset">Connect dataset</a>
+            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-import_remote" href="#/connect-dataset"><%= _t('dashboard.views.dashboard.filters.connect_data') %></a>
           </li>
         <% } %>
       <% } %>
       <% if (!isMaps && canCreateDatasets && hasCreateDatasetsFeature && selectedItemsCount === 1 && !library && !liked && !isSelectedItemLibrary) { %>
         <li class="Filters-actionsItem">
-          <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-duplicate_dataset" href="#/duplicate-dataset">Duplicate dataset</a>
+          <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-duplicate_dataset" href="#/duplicate-dataset"><%= _t('dashboard.views.dashboard.filters.duplicate_data') %></a>
         </li>
       <% } %>
       <% if (!isMaps && !liked && hasCreateMapsFeature && hasCreateDatasetsFeature) { %>
         <li class="Filters-actionsItem">
           <% if (selectedItemsCount <= maxLayersByMap) { %>
-            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-create_map" href="#/create-map">Create map</a>
+            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-create_map" href="#/create-map"><%= _t('dashboard.views.dashboard.filters.create_map') %></a>
           <% } else { %>
-            <span class="Filters-actionsText CDB-Text CDB-Size-medium u-secondaryTextColor">Max map layers selected (<%- maxLayersByMap %> max)</span>
+            <span class="Filters-actionsText CDB-Text CDB-Size-medium u-secondaryTextColor"><%= _t('dashboard.views.dashboard.filters.max_map_layers', {maxLayersByMap: maxLayersByMap}) %></span>
           <% } %>
         </li>
       <% } %>
       <% if (!library && hasCreateDatasetsFeature) { %>
         <% if (selectedItemsCount === 1 && !liked) { %>
           <li class="Filters-actionsItem">
-            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-privacy" href="#/change-privacy">Change privacy...</a>
+            <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-privacy" href="#/change-privacy"><%= _t('dashboard.views.dashboard.filters.change_privacy') %></a>
           </li>
           <% if (isMaps) { %>
             <li class="Filters-actionsItem">
-              <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-duplicate_map" href="#/duplicate-map">Duplicate map</a>
+              <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-duplicate_map" href="#/duplicate-map"><%= _t('dashboard.views.dashboard.filters.duplicate_map') %></a>
             </li>
           <% } %>
         <% } %>
@@ -158,7 +158,7 @@
       <% } %>
       <% if (canDeleteItems && hasCreateDatasetsFeature) { %>
         <li class="Filters-actionsItem">
-          <a class="Filters-actionsLink CDB-Text CDB-Size-medium is--critical js-delete" href="#/delete">Delete <%- tag || q ? 'your' : '' %> <%- pluralizedContentTypeSelected %>&hellip;</a>
+          <a class="Filters-actionsLink CDB-Text CDB-Size-medium is--critical js-delete" href="#/delete"><%= _t('dashboard.views.dashboard.filters.delete') %><%- tag || q ? _t('dashboard.views.dashboard.filters.your') : '' %> <%- pluralizedContentTypeSelected %>&hellip;</a>
         </li>
       <% } %>
     </ul>

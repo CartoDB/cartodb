@@ -9,6 +9,7 @@ Development
   - Add new design for OAuth consent screen (#14237)
 
 ### Bug fixes / enhancements
+- Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
 - Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
 
 4.20.1 (2018-08-24)

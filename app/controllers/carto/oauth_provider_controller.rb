@@ -27,14 +27,17 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
+    before_action :silent_login_required, only: [:silent]
     before_action :login_required_any_user, only: [:consent, :authorize]
-    before_action :set_redirection_error_handling, only: [:consent, :authorize]
+    before_action :set_redirection_error_handling, only: [:consent, :authorize, :silent]
     before_action :ensure_required_token_params, only: [:token]
+    before_action :ensure_response_type_token, only: [:silent]
     before_action :load_oauth_app, :verify_redirect_uri
-    before_action :reject_client_secret, only: [:consent, :authorize]
-    before_action :ensure_required_authorize_params, only: [:consent, :authorize]
-    before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
-    before_action :load_oauth_app_user, only: [:consent, :authorize]
+    before_action :reject_client_secret, only: [:consent, :authorize, :silent]
+    before_action :ensure_required_authorize_params, only: [:consent, :authorize, :silent]
+    before_action :validate_response_type, only: [:consent, :authorize]
+    before_action :validate_scopes, :set_state, only: [:consent, :authorize, :silent]
+    before_action :load_oauth_app_user, only: [:consent, :authorize, :silent]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
@@ -62,6 +65,23 @@ module Carto
       end
 
       create_authorization_code
+    end
+
+    def silent
+      params[:accept] = "true"
+      authorize
+    end
+
+    def ensure_response_type_token
+      raise OauthProvider::Errors::UnsupportedResponseType.new(["token"]) unless params[:response_type] == "token"
+    end
+
+    def silent_login_required
+      if current_viewer
+        validate_session(current_viewer)
+      else
+        raise OauthProvider::Errors::LoginRequired.new
+      end
     end
 
     def token

@@ -82,6 +82,7 @@ CartoDB::Application.routes.draw do
     get '/saml/metadata' => 'saml#metadata'
 
     # Oauth2 provider
+    get  '/oauth2/authorize', to: 'oauth_provider#silent', constraints: lambda { |request| request.params[:prompt] == "none" }, as: :oauth_provider_silent
     get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
     post '/oauth2/authorize', to: 'oauth_provider#authorize'
     post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token

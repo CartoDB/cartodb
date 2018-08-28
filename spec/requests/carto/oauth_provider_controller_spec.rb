@@ -160,6 +160,19 @@ describe Carto::OauthProviderController do
         end
       end
     end
+
+    describe 'with token response and silent flow' do
+      it_behaves_like 'invalid parameter redirections' do
+        before(:each) do
+          valid_payload[:response_type] = 'token'
+          valid_payload[:prompt] = 'none'
+        end
+
+        def parse_uri_parameters(uri)
+          parse_fragment_parameters(uri)
+        end
+      end
+    end
   end
 
   describe '#consent' do
@@ -272,8 +285,17 @@ describe Carto::OauthProviderController do
     end
 
     shared_examples_for 'successfully authorizes' do
+      def validate_response(response)
+        access_token = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_access_tokens.first
+        expect(access_token).to(be)
+        expect(access_token.api_key).to(be_present)
+
+        expect(response.status).to(eq(302))
+        validate_token_response(parse_fragment_parameters(response.location).symbolize_keys, access_token)
+      end
+
       it 'with valid payload, creates an authorization and redirects back to the application with a code' do
-        post oauth_provider_authorize_url(valid_payload)
+        request_endpoint(valid_payload)
 
         validate_response(response)
       end
@@ -281,7 +303,7 @@ describe Carto::OauthProviderController do
       it 'with valid payload and redirect URIs, creates an authorization and redirects back to the requested URI' do
         @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
 
-        post oauth_provider_authorize_url(valid_payload.merge(redirect_uri: 'https://domain3'))
+        request_endpoint(valid_payload.merge(redirect_uri: 'https://domain3'))
 
         validate_response(response)
         expect(response.location).to(start_with('https://domain3'))
@@ -292,7 +314,7 @@ describe Carto::OauthProviderController do
         pending if valid_payload[:response_type] == 'token'
 
         oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-        post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+        request_endpoint(valid_payload.merge(scope: 'offline'))
 
         expect(oau.scopes).to(eq([]))
         oau.reload
@@ -303,7 +325,7 @@ describe Carto::OauthProviderController do
 
       it 'with client_secret in the payload throws an error' do
         payload = valid_payload.merge(client_secret: 'abcdefgh')
-        post oauth_provider_authorize_url(payload)
+        request_endpoint(payload)
 
         expect(response.status).to(eq(302))
         expect(response.body).to(include('invalid_request'))
@@ -311,8 +333,23 @@ describe Carto::OauthProviderController do
       end
     end
 
+    shared_examples_for 'with token response offline scope' do
+      it 'redirects with an error if requesting offline scope' do
+        request_endpoint(valid_payload.merge(scope: 'offline'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_fragment_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
+      end
+    end
+
     describe 'with code response' do
       it_behaves_like 'successfully authorizes' do
+        def request_endpoint(parameters)
+          post oauth_provider_authorize_url(parameters)
+        end
+
         def validate_response(response)
           authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
           expect(authorization_code).to(be)
@@ -330,23 +367,28 @@ describe Carto::OauthProviderController do
       end
 
       it_behaves_like 'successfully authorizes' do
-        def validate_response(response)
-          access_token = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_access_tokens.first
-          expect(access_token).to(be)
-          expect(access_token.api_key).to(be_present)
-
-          expect(response.status).to(eq(302))
-          validate_token_response(parse_fragment_parameters(response.location).symbolize_keys, access_token)
+        def request_endpoint(parameters)
+          post oauth_provider_authorize_url(parameters)
         end
       end
 
-      it 'redirects with an error if requesting offline scope' do
-        post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+      it_behaves_like 'with token response offline scope' do
+        def request_endpoint(parameters)
+          post oauth_provider_authorize_url(parameters)
+        end
+      end
+    end
 
-        expect(response.status).to(eq(302))
-        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
-        qs = parse_fragment_parameters(response.location)
-        expect(qs['error']).to(eq('invalid_scope'))
+    describe 'with silent flow' do
+      before(:each) do
+        valid_payload[:response_type] = 'token'
+        valid_payload[:prompt] = 'none'
+      end
+
+      it_behaves_like 'successfully authorizes' do
+        def request_endpoint(parameters)
+          get oauth_provider_authorize_url(parameters)
+        end
       end
     end
   end
@@ -567,6 +609,47 @@ describe Carto::OauthProviderController do
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('unsupported_grant_type'))
+      end
+    end
+  end
+
+  describe '#silent' do
+    before(:each) do
+      login_as(@user, scope: @user.username)
+      host!("#{@user.username}.localhost.lan")
+    end
+
+    it_behaves_like 'authorization parameter validation' do
+      def request_endpoint(parameters)
+        get oauth_provider_authorize_url(parameters)
+      end
+
+      def expect_success(response)
+        expect(response.status).to(eq(302))
+        expect(response.location).not_to(include('error'))
+      end
+    end
+
+    describe 'with prompt none' do
+      before(:each) do
+        valid_payload[:response_type] = 'token'
+        valid_payload[:prompt] = 'none'
+      end
+
+      it 'raises invalid request if response_type is not token' do
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'code'))
+
+        expect(response.status).to(eq(400))
+        expect(response.body).to(include("unsupported_response_type"))
+        expect(response.body).to(include("Only the following response types are supported: token"))
+      end
+
+      it 'raises login_required if not logged in' do
+        logout
+        get oauth_provider_authorize_url(valid_payload)
+
+        expect(response.status).to(eq(400))
+        expect(response.body).to(include('login_required'))
       end
     end
   end

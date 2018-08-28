@@ -60,16 +60,18 @@ describe Carto::OauthProviderController do
   end
 
   shared_examples_for 'authorization parameter validation' do
-    it 'returns a 404 error if application cannot be found' do
+    it 'returns a 400 error if application cannot be found' do
       request_endpoint(valid_payload.merge(client_id: 'e'))
 
-      expect(response.status).to(eq(404))
+      expect(response.status).to(eq(400))
+      expect(response.body).to(include('invalid_client'))
     end
 
     it 'shows an error if invalid response_type' do
       request_endpoint(valid_payload.merge(response_type: 'err'))
 
-      expect(response.status).to(eq(404))
+      expect(response.status).to(eq(400))
+      expect(response.body).to(include('unsupported_response_type'))
     end
 
     shared_examples_for 'invalid parameter redirections' do
@@ -80,7 +82,7 @@ describe Carto::OauthProviderController do
         expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
         qs = parse_uri_parameters(response.location)
         expect(qs['error']).to(eq('invalid_request'))
-        expect(qs['error_description']).to(eq('state is mandatory'))
+        expect(qs['error_description']).to(eq('The following required params are missing: state'))
       end
 
       it 'redirects with an error if requesting unknown scopes' do
@@ -99,7 +101,7 @@ describe Carto::OauthProviderController do
         expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
         qs = parse_uri_parameters(response.location)
         expect(qs['error']).to(eq('invalid_request'))
-        expect(qs['error_description']).to(eq('The redirect_uri is not authorized for this application'))
+        expect(qs['error_description']).to(eq('The redirect_uri must match the redirect_uri param used in the authorization request'))
       end
 
       describe 'with restricted app' do
@@ -299,6 +301,15 @@ describe Carto::OauthProviderController do
         expect(oau.scopes).to(eq(['offline']))
 
         validate_response(response)
+      end
+
+      it 'with client_secret in the payload throws an error' do
+        payload = valid_payload.merge(client_secret: 'abcdefgh')
+        post oauth_provider_authorize_url(payload)
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include('invalid_request'))
+        expect(response.body).to(include('client_secret'))
       end
     end
 
@@ -505,6 +516,26 @@ describe Carto::OauthProviderController do
           expect(response.status).to(eq(400))
           expect(response.body[:error]).to(eq('invalid_grant'))
         end
+      end
+
+      it 'with missing refresh_token parameter returns an informative error' do
+        payload = refresh_token_payload.except(:refresh_token)
+        post_json oauth_provider_token_url(payload) do |response|
+          expect(response.status).to(eq(400))
+          expect(response.body[:error]).to(eq('invalid_request'))
+          expect(response.body[:error_description]).to(include('refresh_token'))
+        end
+      end
+    end
+
+    it 'with missing required parameters returns an informative error' do
+      payload = auth_code_token_payload.except(:client_secret).except(:client_id).except(:code)
+      post_json oauth_provider_token_url(payload) do |response|
+        expect(response.status).to(eq(400))
+        expect(response.body[:error]).to(eq('invalid_request'))
+        expect(response.body[:error_description]).to(include('client_secret'))
+        expect(response.body[:error_description]).to(include('client_id'))
+        expect(response.body[:error_description]).to(include('code'))
       end
     end
 

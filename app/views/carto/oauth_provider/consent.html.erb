@@ -1,11 +1,28 @@
-Authorize?
+<%= content_for(:title) do %>CARTO · OAuth Authentication<% end %>
 
-<%= form_tag(CartoDB.url(self, :oauth2_authorize, {}, current_viewer), method: :post) do %>
-<%= hidden_field_tag 'response_type', @response_type %>
-<%= hidden_field_tag 'client_id', @oauth_app.client_id %>
-<%= hidden_field_tag 'scope', @scopes.join(' ') %>
-<%= hidden_field_tag 'state', @state %>
-<%= hidden_field_tag 'redirect_uri', @redirect_uri %>
-<%= submit_tag 'Cancel' %>
-<%= submit_tag 'Accept', name: 'accept' %>
+<%= content_for(:head) do %>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:600" rel="stylesheet">
 <% end %>
+
+
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'oauth', :media => 'all' %>
+<% end %>
+
+<div class='oauth-page'>
+  <div class='oauth-form'>
+    <header class='oauth-form__header'>
+      <%= render :partial => 'header' %>
+    </header>
+
+    <% if @error.present? %>
+      <%= render :partial => 'errors' %>
+    <% else %>
+      <%= render :partial => 'scopes' %>
+    <% end %>
+
+    <footer class='oauth-form__footer'>
+      <%= render :partial => 'footer' %>
+    </footer>
+  </div>
+</div>

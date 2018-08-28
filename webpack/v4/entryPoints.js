@@ -159,5 +159,9 @@ module.exports = {
 
   dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/dataset.js'),
 
-  builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js')
+  builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js'),
+
+  oauth: [
+    rootDir('assets/stylesheets/oauth/oauth.scss')
+  ]
 };

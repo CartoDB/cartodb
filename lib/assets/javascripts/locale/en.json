@@ -89,6 +89,7 @@
         "title": "Your profile information"
       },
       "form": {
+        "asterisk": "* Fields marked with an asterisk are visible on your public profile,",
         "first_name": "First name",
         "last_name": "Last name",
         "email": "Email",
@@ -122,6 +123,7 @@
       }
     }
   },
+  "carto_name": "CARTO",
   "feedback": "Give us feedback!",
   "back": "Back",
   "back-to-dashboard": "Back to the dashboard",
@@ -134,6 +136,8 @@
   "edit-analysis": "Edit analysis",
   "add-analysis": "Add new analysis node",
   "back-layers": "Back to the Layers list",
+  "configuration": "Configuration",
+  "choose_image": "Choose image",
   "user": {
     "you": "You"
   },
@@ -2947,17 +2951,51 @@
   "cartodb": {
     "common": {
       "views": {
+        "avatar_selector_view": {
+          "avatar": "Avatar",
+          "org_logo": "Organization logo",
+          "err_load": "There was an error uploading your avatar. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
+        },
         "dashboard_header": {
           "notifications": {
             "templates": {
               "no_notif": "There are no notifications :)"
             }
           }
+        },
+        "icon_selector_view": {
+          "app_icon": "App icon",
+          "no_icon": "No icon",
+          "err_upload": "There was an error uploading the icon. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
         }
       }
     },
     "dashboard": {
+      "header": {
+        "breadcrumb": {
+          "data": "Datasets",
+          "lck_data": "Locked datasets",
+          "maps": "Maps",
+          "lck_maps": "Locked maps"
+        }
+      },
       "views": {
+        "content_no_data": {
+          "no_data_yet": "You have not connected any datasets yet",
+          "can_connect": "You can <button class=\"Button--link js-connect\">connect datasets</button> or <strong>search</strong> our data library."
+        },
+        "content_no_results": {
+          "no_results": "There are no results in this page",
+          "no_liked": "You haven't liked any %{type} yet",
+          "zero_found": "0 %{tag} || q %{type} found",
+          "there_are_no": "There are no ",
+          "back_to_first": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">first page</a>",
+          "back_to": "Back to your ",
+          "no_fun": "No %{type}, no fun",
+          "fill_this": "Fill this section up by clicking the heart on CARTO %{type} published on the web or on user profile pages"
+        },
         "filters": {
           "shared": "Shared with you",
           "liked": "Liked",
@@ -2989,6 +3027,24 @@
   "dashboard": {
     "views": {
       "dashboard": {
+        "content_controller": {
+          "templates": {
+            "content_no_data": {
+              "no_data_yet": "You have not connected any datasets yet",
+              "can_connect": "You can <button class=\"Button--link js-connect\">connect datasets</button> or <strong>search</strong> our data library."
+            },
+            "content_no_results": {
+              "no_results": "There are no results in this page",
+              "no_liked": "You haven't liked any %{type} yet",
+              "zero_found": "0 %{tag} || q %{type} found",
+              "there_are_no": "There are no ",
+              "back_to_first": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">first page</a>",
+              "back_to": "Back to your ",
+              "no_fun": "No %{type}, no fun",
+              "fill_this": "Fill this section up by clicking the heart on CARTO %{type} published on the web or on user profile pages"
+            }
+          }
+        },
         "filters": {
           "shared": "Shared with you",
           "liked": "Liked",
@@ -3016,6 +3072,14 @@
       }
     },
     "components": {
+      "avatar_selector": {
+        "avatar_selector": {
+          "avatar": "Avatar*",
+          "org_logo": "Organization logo",
+          "err_load": "There was an error uploading your avatar. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
+        }
+      },
       "dashboard-header": {
         "breadcrumbs": {
           "dropdown": {
@@ -3047,6 +3111,14 @@
               "no_notif": "There are no notifications :)"
             }
           }
+        }
+      },
+      "icon_selector": {
+        "icon_selector": {
+          "app_icon": "App icon",
+          "no_icon": "No icon",
+          "err_upload": "There was an error uploading the icon. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
         }
       },
       "table_grants": {

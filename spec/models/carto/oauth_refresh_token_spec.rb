@@ -95,5 +95,48 @@ module Carto
         )
       end
     end
+
+    describe '#create!' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @app_user = OauthAppUser.create(user: @user, oauth_app: @app)
+      end
+
+      after(:all) do
+        @refresh_token.destroy
+      end
+
+      before(:each) do
+        OauthRefreshToken.send(:remove_const, 'MAX_TOKENS_PER_OAUTH_APP_USER')
+        OauthRefreshToken::MAX_TOKENS_PER_OAUTH_APP_USER = 3
+        create_tokens
+      end
+
+      def create_tokens
+        Delorean.jump(1.month) do
+          5.times do
+            @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
+          end
+        end
+
+        Delorean.back_to_the_present
+        3.times do
+          @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
+        end
+      end
+
+      it 'keeps only most recent refresh tokens per OauthAppUser' do
+        expect(
+          OauthRefreshToken.where('oauth_app_user_id = ? and updated_at < ?', @app_user.id, Time.now - 1.month).count
+        ).to(eq(0))
+      end
+
+      it 'keeps a maximum number of refresh tokens per OauthAppuser' do
+        expect(
+          OauthRefreshToken.where(oauth_app_user: @app_user).count
+        ).to(eq(OauthRefreshToken::MAX_TOKENS_PER_OAUTH_APP_USER))
+      end
+    end
   end
 end

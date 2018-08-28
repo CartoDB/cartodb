@@ -45,12 +45,16 @@ module Carto
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
+      return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
+
       if @oauth_app_user
         return create_authorization_code if @oauth_app_user.authorized?(@scopes)
       elsif @oauth_app
         oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(oauth_app_user)
       end
+
+      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes))
     end
 
     def authorize
@@ -116,7 +120,8 @@ module Carto
       if @redirect_on_error && @oauth_app && response_strategy
         redirect_to_oauth_app(exception.parameters.merge(state: @state))
       elsif @redirect_on_error
-        render_404
+        @error = exception.error_message
+        render 'consent.html', status: 400
       else
         render json: exception.parameters, status: 400
       end

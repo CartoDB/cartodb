@@ -1,0 +1,25 @@
+
+<svg width="16px" height="8px" viewBox="0 0 16 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path d="M8.30988427,4.87628835 L7.69011573,4.87628835 L15.2195214,11.8762883 C15.415115,12.0581294 15.7124148,12.0370706 15.8835591,11.8292523 C16.0547035,11.621434 16.0348835,11.3055527 15.83929,11.1237117 L8.30988427,4.12371165 C8.13246042,3.95876278 7.86753958,3.95876278 7.69011573,4.12371165 L0.160710032,11.1237117 C-0.034883519,11.3055527 -0.0547035068,11.621434 0.116440851,11.8292523 C0.287585208,12.0370706 0.584885024,12.0581294 0.780478575,11.8762883 L8.30988427,4.87628835 Z" id="path-1"></path>
+    </defs>
+    <g id="chevron-up" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.900000036">
+        <g transform="translate(-1028.000000, -400.000000)" id="#2">
+            <g transform="translate(720.000000, 180.000000)">
+                <g id="#1-Block" transform="translate(40.000000, 200.000000)">
+                    <g id="Title" transform="translate(16.000000, 16.000000)">
+                        <g id="Icon-/-16-/-Chevron-Up" transform="translate(252.000000, 0.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="Shape" fill="#2E3C43" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            <g id="Tint-/-Type-1" mask="url(#mask-2)" fill="#2D3C43" fill-rule="evenodd">
+                                <rect id="Rectangle-3" x="0" y="0" width="16" height="16"></rect>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

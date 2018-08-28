@@ -162,19 +162,6 @@ describe Carto::OauthProviderController do
         end
       end
     end
-
-    describe 'with token response and silent flow' do
-      it_behaves_like 'invalid parameter redirections' do
-        before(:each) do
-          valid_payload[:response_type] = 'token'
-          valid_payload[:prompt] = 'none'
-        end
-
-        def parse_uri_parameters(uri)
-          parse_fragment_parameters(uri)
-        end
-      end
-    end
   end
 
   describe '#consent' do
@@ -190,6 +177,21 @@ describe Carto::OauthProviderController do
 
       def expect_success(response)
         expect(response.status).to(eq(200))
+      end
+    end
+
+    shared_examples_for 'success with token response pre-authorized' do
+      it 'with valid payload and token response, pre-authorized, redirects back to the application' do
+        oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token'))
+
+        access_token = oau.oauth_access_tokens.first
+        expect(access_token).to(be)
+        expect(access_token.api_key).to(be_present)
+
+        expect(response.status).to(eq(302))
+        response_parameters = parse_fragment_parameters(response.location)
+        validate_token_response(response_parameters.symbolize_keys, access_token)
       end
     end
 
@@ -238,19 +240,6 @@ describe Carto::OauthProviderController do
       expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
     end
 
-    it 'with valid payload and token response, pre-authorized, redirects back to the application' do
-      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-      get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token'))
-
-      access_token = oau.oauth_access_tokens.first
-      expect(access_token).to(be)
-      expect(access_token.api_key).to(be_present)
-
-      expect(response.status).to(eq(302))
-      response_parameters = parse_fragment_parameters(response.location)
-      validate_token_response(response_parameters.symbolize_keys, access_token)
-    end
-
     it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
       @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
@@ -258,6 +247,48 @@ describe Carto::OauthProviderController do
       expect(response.status).to(eq(200))
       expect(response.body).to(include(valid_payload[:client_id]))
       expect(response.body).to(include(valid_payload[:state]))
+    end
+
+    describe 'with token' do
+      it_behaves_like 'success with token response pre-authorized'
+    end
+
+    describe 'with silent flow' do
+      before(:each) do
+        valid_payload[:response_type] = 'token'
+        valid_payload[:prompt] = 'none'
+      end
+
+      it_behaves_like 'success with token response pre-authorized'
+
+      it 'redirects with unsupported response type if response_type is not token' do
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'code'))
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include("unsupported_response_type"))
+      end
+
+      it 'redirects with invalid request if prompt is not none' do
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token', prompt: "wat"))
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include("invalid_request"))
+      end
+
+      it 'raises login_required if not logged in' do
+        logout
+        get oauth_provider_authorize_url(valid_payload)
+
+        expect(response.status).to(eq(400))
+        expect(response.body).to(include('login_required'))
+      end
+
+      it 'redirects with access_denied if not authorized' do
+        get oauth_provider_authorize_url(valid_payload)
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include("access_denied"))
+      end
     end
   end
 
@@ -377,19 +408,6 @@ describe Carto::OauthProviderController do
       it_behaves_like 'with token response offline scope' do
         def request_endpoint(parameters)
           post oauth_provider_authorize_url(parameters)
-        end
-      end
-    end
-
-    describe 'with silent flow' do
-      before(:each) do
-        valid_payload[:response_type] = 'token'
-        valid_payload[:prompt] = 'none'
-      end
-
-      it_behaves_like 'successfully authorizes' do
-        def request_endpoint(parameters)
-          get oauth_provider_authorize_url(parameters)
         end
       end
     end
@@ -611,47 +629,6 @@ describe Carto::OauthProviderController do
 
         expect(response.status).to(eq(400))
         expect(response.body[:error]).to(eq('unsupported_grant_type'))
-      end
-    end
-  end
-
-  describe '#silent' do
-    before(:each) do
-      login_as(@user, scope: @user.username)
-      host!("#{@user.username}.localhost.lan")
-    end
-
-    it_behaves_like 'authorization parameter validation' do
-      def request_endpoint(parameters)
-        get oauth_provider_authorize_url(parameters)
-      end
-
-      def expect_success(response)
-        expect(response.status).to(eq(302))
-        expect(response.location).not_to(include('error'))
-      end
-    end
-
-    describe 'with prompt none' do
-      before(:each) do
-        valid_payload[:response_type] = 'token'
-        valid_payload[:prompt] = 'none'
-      end
-
-      it 'raises invalid request if response_type is not token' do
-        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'code'))
-
-        expect(response.status).to(eq(400))
-        expect(response.body).to(include("unsupported_response_type"))
-        expect(response.body).to(include("Only the following response types are supported: token"))
-      end
-
-      it 'raises login_required if not logged in' do
-        logout
-        get oauth_provider_authorize_url(valid_payload)
-
-        expect(response.status).to(eq(400))
-        expect(response.body).to(include('login_required'))
       end
     end
   end

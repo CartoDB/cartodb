@@ -279,7 +279,7 @@ describe Carto::OauthProviderController do
         logout
         get oauth_provider_authorize_url(valid_payload)
 
-        expect(response.status).to(eq(400))
+        expect(response.status).to(eq(302))
         expect(response.body).to(include('login_required'))
       end
 

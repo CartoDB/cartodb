@@ -43,10 +43,11 @@ module Carto
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
+      raise OauthProvider::Errors::LoginRequired.new if @login_required_error
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
       raise OauthProvider::Errors::AccessDenied.new if silent_flow?
 
-      if @oauth_app
+      if @oauth_app && !@oauth_app_user
         oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(oauth_app_user)
       end
@@ -75,7 +76,10 @@ module Carto
     end
 
     def not_authorized
-      raise OauthProvider::Errors::LoginRequired.new if silent_flow?
+      if silent_flow?
+        @login_required_error = true
+        return
+      end
       super
     end
 
@@ -158,7 +162,7 @@ module Carto
     end
 
     def load_oauth_app_user
-      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.id)
+      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.id) unless @login_required_error
     end
 
     def verify_client_secret

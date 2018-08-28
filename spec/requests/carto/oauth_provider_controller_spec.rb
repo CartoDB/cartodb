@@ -318,17 +318,8 @@ describe Carto::OauthProviderController do
     end
 
     shared_examples_for 'successfully authorizes' do
-      def validate_response(response)
-        access_token = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_access_tokens.first
-        expect(access_token).to(be)
-        expect(access_token.api_key).to(be_present)
-
-        expect(response.status).to(eq(302))
-        validate_token_response(parse_fragment_parameters(response.location).symbolize_keys, access_token)
-      end
-
       it 'with valid payload, creates an authorization and redirects back to the application with a code' do
-        request_endpoint(valid_payload)
+        post oauth_provider_authorize_url(valid_payload)
 
         validate_response(response)
       end
@@ -336,7 +327,7 @@ describe Carto::OauthProviderController do
       it 'with valid payload and redirect URIs, creates an authorization and redirects back to the requested URI' do
         @oauth_app.update!(redirect_uris: ['https://domain1', 'https://domain2', 'https://domain3'])
 
-        request_endpoint(valid_payload.merge(redirect_uri: 'https://domain3'))
+        post oauth_provider_authorize_url(valid_payload.merge(redirect_uri: 'https://domain3'))
 
         validate_response(response)
         expect(response.location).to(start_with('https://domain3'))
@@ -347,7 +338,7 @@ describe Carto::OauthProviderController do
         pending if valid_payload[:response_type] == 'token'
 
         oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-        request_endpoint(valid_payload.merge(scope: 'offline'))
+        post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
 
         expect(oau.scopes).to(eq([]))
         oau.reload
@@ -358,7 +349,7 @@ describe Carto::OauthProviderController do
 
       it 'with client_secret in the payload throws an error' do
         payload = valid_payload.merge(client_secret: 'abcdefgh')
-        request_endpoint(payload)
+        post oauth_provider_authorize_url(payload)
 
         expect(response.status).to(eq(302))
         expect(response.body).to(include('invalid_request'))
@@ -366,23 +357,8 @@ describe Carto::OauthProviderController do
       end
     end
 
-    shared_examples_for 'with token response offline scope' do
-      it 'redirects with an error if requesting offline scope' do
-        request_endpoint(valid_payload.merge(scope: 'offline'))
-
-        expect(response.status).to(eq(302))
-        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
-        qs = parse_fragment_parameters(response.location)
-        expect(qs['error']).to(eq('invalid_scope'))
-      end
-    end
-
     describe 'with code response' do
       it_behaves_like 'successfully authorizes' do
-        def request_endpoint(parameters)
-          post oauth_provider_authorize_url(parameters)
-        end
-
         def validate_response(response)
           authorization_code = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_authorization_codes.first
           expect(authorization_code).to(be)
@@ -400,15 +376,23 @@ describe Carto::OauthProviderController do
       end
 
       it_behaves_like 'successfully authorizes' do
-        def request_endpoint(parameters)
-          post oauth_provider_authorize_url(parameters)
+        def validate_response(response)
+          access_token = @oauth_app.oauth_app_users.find_by_user_id!(@user.id).oauth_access_tokens.first
+          expect(access_token).to(be)
+          expect(access_token.api_key).to(be_present)
+
+          expect(response.status).to(eq(302))
+          validate_token_response(parse_fragment_parameters(response.location).symbolize_keys, access_token)
         end
       end
 
-      it_behaves_like 'with token response offline scope' do
-        def request_endpoint(parameters)
-          post oauth_provider_authorize_url(parameters)
-        end
+      it 'redirects with an error if requesting offline scope' do
+        post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_fragment_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
       end
     end
   end

@@ -27,17 +27,15 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
-    before_action :silent_login_required, only: [:silent]
     before_action :login_required_any_user, only: [:consent, :authorize]
-    before_action :set_redirection_error_handling, only: [:consent, :authorize, :silent]
+    before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
-    before_action :ensure_response_type_token, only: [:silent]
     before_action :load_oauth_app, :verify_redirect_uri
-    before_action :reject_client_secret, only: [:consent, :authorize, :silent]
-    before_action :ensure_required_authorize_params, only: [:consent, :authorize, :silent]
-    before_action :validate_response_type, only: [:consent, :authorize]
-    before_action :validate_scopes, :set_state, only: [:consent, :authorize, :silent]
-    before_action :load_oauth_app_user, only: [:consent, :authorize, :silent]
+    before_action :validate_prompt_request, only: [:consent]
+    before_action :reject_client_secret, only: [:consent, :authorize]
+    before_action :ensure_required_authorize_params, only: [:consent, :authorize]
+    before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
+    before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
 
     rescue_from StandardError, with: :rescue_generic_errors
@@ -46,10 +44,9 @@ module Carto
 
     def consent
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
+      raise OauthProvider::Errors::AccessDenied.new if silent_flow?
 
-      if @oauth_app_user
-        return create_authorization_code if @oauth_app_user.authorized?(@scopes)
-      elsif @oauth_app
+      if @oauth_app
         oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(oauth_app_user)
       end
@@ -71,27 +68,15 @@ module Carto
       create_authorization_code
     end
 
-    def silent
-      params[:accept] = "true"
-      authorize
-    end
-
-    def ensure_response_type_token
-      raise OauthProvider::Errors::UnsupportedResponseType.new(["token"]) unless params[:response_type] == "token"
-    end
-
-    def silent_login_required
-      if current_viewer
-        validate_session(current_viewer)
-      else
-        raise OauthProvider::Errors::LoginRequired.new
-      end
-    end
-
     def token
       access_token, refresh_token = grant_strategy.authorize!(@oauth_app, params)
 
       render(json: OauthProvider::TokenPresenter.new(access_token, refresh_token: refresh_token).to_hash)
+    end
+
+    def not_authorized
+      raise OauthProvider::Errors::LoginRequired.new if silent_flow?
+      super
     end
 
     private
@@ -198,6 +183,18 @@ module Carto
         errors = oauth_app_user.errors.full_messages_for(:user)
         raise OauthProvider::Errors::AccessDenied.new(errors.join(', ')) if errors.present?
       end
+    end
+
+    def validate_prompt_request
+      prompt = params[:prompt]
+      if prompt.present?
+        raise OauthProvider::Errors::InvalidRequest.new("Only 'prompt=none' is supported") unless prompt == "none"
+        raise OauthProvider::Errors::UnsupportedResponseType.new(["token"]) unless params[:response_type] == "token"
+      end
+    end
+
+    def silent_flow?
+      params[:prompt] == "none" && params[:response_type] == "token"
     end
 
     def grant_strategy

@@ -20,8 +20,10 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  *
  * @param {string} column - The column which the filter will be performed against
  * @param {object} filters - The filters you want to apply to the table rows
- * @param {string[]} filters.in - Return rows whose column value is included within the provided values
- * @param {string[]} filters.notIn - Return rows whose column value is included within the provided values
+ * @param {string[]|string|object} filters.in - Return rows whose column value is included within the provided values
+ * @param {string} filters.in.query - Return rows whose column value is included within query results
+ * @param {string[]|string|object} filters.notIn - Return rows whose column value is included within the provided values
+ * @param {string} filters.notIn.query - Return rows whose column value is not included within query results
  * @param {(string|number|Date)} filters.eq - Return rows whose column value is equal to the provided value
  * @param {(string|number|Date)} filters.notEq - Return rows whose column value is not equal to the provided value
  * @param {string} filters.like - Return rows whose column value is like the provided value
@@ -31,7 +33,17 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  *
  * @example
  * // Create a filter by room type, showing only private rooms
- * const roomTypeFilter = new carto.filter.Category('room_type', { eq: 'Entire home/apt' });
+ * const roomTypeFilter = new carto.filter.Category('room_type', { eq: 'Private Room' });
+ * airbnbDataset.addFilter(roomTypeFilter);
+ *
+ * @example
+ * // Create a filter by room type, showing only private rooms and entire apartments
+ * const roomTypeFilter = new carto.filter.Category('room_type', { in: ['Private Room', 'Entire home/apt'] });
+ * airbnbDataset.addFilter(roomTypeFilter);
+ *
+ * @example
+ * // Create a filter by room type, showing results included in subquery
+ * const roomTypeFilter = new carto.filter.Category('room_type', { in: { query: 'SELECT distinct(type) FROM rooms' } });
  * airbnbDataset.addFilter(roomTypeFilter);
  *
  * @class Category

@@ -1,8 +1,8 @@
 const SQLBase = require('./base-sql');
 
 const CATEGORY_COMPARISON_OPERATORS = {
-  in: { parameters: [{ name: 'in', allowedTypes: ['Array', 'String'] }] },
-  notIn: { parameters: [{ name: 'notIn', allowedTypes: ['Array', 'String'] }] },
+  in: { parameters: [{ name: 'in', allowedTypes: ['Array', 'String', 'Object'] }] },
+  notIn: { parameters: [{ name: 'notIn', allowedTypes: ['Array', 'String', 'Object'] }] },
   eq: { parameters: [{ name: 'eq', allowedTypes: ['String', 'Number', 'Date'] }] },
   notEq: { parameters: [{ name: 'notEq', allowedTypes: ['String', 'Number', 'Date'] }] },
   like: { parameters: [{ name: 'like', allowedTypes: ['String'] }] },
@@ -52,8 +52,8 @@ class Category extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      in: '<% if (value) { %><%= column %> IN (<%= value %>)<% } else { %>true = false<% } %>',
-      notIn: '<% if (value) { %><%= column %> NOT IN (<%= value %>)<% } %>',
+      in: '<% if (value) { %><%= column %> IN (<%= value.query || value %>)<% } else { %>true = false<% } %>',
+      notIn: '<% if (value) { %><%= column %> NOT IN (<%= value.query || value %>)<% } %>',
       eq: '<%= column %> = <%= value %>',
       notEq: '<%= column %> != <%= value %>',
       like: '<%= column %> LIKE <%= value %>',

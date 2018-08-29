@@ -10,6 +10,7 @@ Development
   - Limit the number of simultaneous refersh tokens (#14243)
 
 ### Bug fixes / enhancements
+- Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
 - Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
 - Add another error to OOM detection in imports (#14259)
 

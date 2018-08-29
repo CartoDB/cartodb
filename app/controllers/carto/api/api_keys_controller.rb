@@ -43,7 +43,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def index
     page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
 
-    api_keys = Carto::User.find(current_viewer.id).api_keys.user_visible
+    api_keys = Carto::User.find(current_user.id).api_keys.user_visible.order_weighted_by_type
     api_keys = request_api_key.master? ? api_keys : api_keys.where(id: request_api_key.id)
     filtered_api_keys = Carto::PagedModel.paged_association(api_keys, page, per_page, order)
 

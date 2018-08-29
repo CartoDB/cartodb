@@ -484,6 +484,26 @@ describe Carto::Api::ApiKeysController do
         end
       end
 
+      it 'should come master first, default type second and then regular' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(per_page: 20), auth_headers do |response|
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'default'
+          response.body[:result][2][:type].should eq 'regular'
+        end
+
+        master_key = @apikeys.select { |key| key.type == 'master' }.first
+        master_key.updated_at = Time.now
+        master_key.save
+
+        get_json api_keys_url, auth_params.merge(per_page: 20), auth_headers do |response|
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'default'
+          response.body[:result][2][:type].should eq 'regular'
+        end
+
+      end
+
       it 'paginates correctly' do
         auth_user(@carto_user_index)
         get_json api_keys_url, auth_params.merge(per_page: 2), auth_headers do |response|

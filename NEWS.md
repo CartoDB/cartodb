@@ -11,6 +11,7 @@ Development
 
 ### Bug fixes / enhancements
 - Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+- Add another error to OOM detection in imports (#14259)
 
 4.20.1 (2018-08-24)
 -------------------

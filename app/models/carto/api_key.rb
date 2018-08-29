@@ -52,10 +52,10 @@ module Carto
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
-    WEIGHTED_ORDER = "CASE WHEN type = '#{TYPE_MASTER}' THEN 3 " \
-                     "WHEN type = '#{TYPE_DEFAULT_PUBLIC}' THEN 2 " \
-                     "WHEN type = '#{TYPE_REGULAR}' THEN 1 " \
-                     "ELSE 0 END DESC".freeze
+    TYPE_WEIGHTED_ORDER = "CASE WHEN type = '#{TYPE_MASTER}' THEN 3 " \
+                          "WHEN type = '#{TYPE_DEFAULT_PUBLIC}' THEN 2 " \
+                          "WHEN type = '#{TYPE_REGULAR}' THEN 1 " \
+                          "ELSE 0 END DESC".freeze
 
     self.inheritance_column = :_type
 
@@ -90,6 +90,7 @@ module Carto
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
     scope :regular, -> { where(type: TYPE_REGULAR) }
     scope :user_visible, -> { where(type: [TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_REGULAR]) }
+    scope :order_weighted_by_type, -> { order(TYPE_WEIGHTED_ORDER) }
 
     attr_accessor :skip_role_setup
 
@@ -150,10 +151,6 @@ module Carto
         user_id: api_key_hash[:user_id],
         skip_role_setup: true
       )
-    end
-
-    def self.query_order_by_type_weighted
-      WEIGHTED_ORDER
     end
 
     def granted_apis

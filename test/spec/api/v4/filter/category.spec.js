@@ -15,9 +15,19 @@ describe('api/v4/filter/category', function () {
       expect(categoryFilter.$getSQL()).toBe("fake_column IN ('Category 1')");
     });
 
+    it('IN with subquery', function () {
+      const categoryFilter = new carto.filter.Category('fake_column', { in: { query: 'SELECT name FROM neighbourhoods' } });
+      expect(categoryFilter.$getSQL()).toBe('fake_column IN (SELECT name FROM neighbourhoods)');
+    });
+
     it('NOT IN', function () {
       const categoryFilter = new carto.filter.Category('fake_column', { notIn: ['Category 1'] });
       expect(categoryFilter.$getSQL()).toBe("fake_column NOT IN ('Category 1')");
+    });
+
+    it('NOT IN with subquery', function () {
+      const categoryFilter = new carto.filter.Category('fake_column', { notIn: { query: 'SELECT name FROM neighbourhoods' } });
+      expect(categoryFilter.$getSQL()).toBe('fake_column NOT IN (SELECT name FROM neighbourhoods)');
     });
 
     it('EQ', function () {

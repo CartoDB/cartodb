@@ -115,6 +115,14 @@ class Range extends SQLBase {
    * @method setFilters
    * @api
    */
+
+  /**
+   * Set filter conditions, overriding all the previous ones.
+   *
+   * @memberof Category
+   * @method resetFilters
+   * @api
+   */
 }
 
 module.exports = Range;

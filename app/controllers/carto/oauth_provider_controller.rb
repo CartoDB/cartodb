@@ -48,7 +48,7 @@ module Carto
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
       raise OauthProvider::Errors::AccessDenied.new if silent_flow?
 
-      if @oauth_app && !@oauth_app_user
+      unless @oauth_app_user
         oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(oauth_app_user)
       end

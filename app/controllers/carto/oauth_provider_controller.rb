@@ -20,7 +20,7 @@ module Carto
     REQUIRED_TOKEN_PARAMS = ['client_id', 'client_secret', 'grant_type'].freeze
     REQUIRED_AUTHORIZE_PARAMS = ['client_id', 'state', 'response_type'].freeze
 
-    SILENT_PROMPT_VALUE = 'none'
+    SILENT_PROMPT_VALUE = 'none'.freeze
 
     ssl_required
 

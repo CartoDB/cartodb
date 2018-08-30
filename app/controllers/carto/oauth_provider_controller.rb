@@ -29,10 +29,10 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
-    before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
+    before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :validate_prompt_request, only: [:consent]
     before_action :reject_client_secret, only: [:consent, :authorize]
     before_action :ensure_required_authorize_params, only: [:consent, :authorize]
@@ -45,7 +45,6 @@ module Carto
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
-      raise OauthProvider::Errors::LoginRequired.new if @login_required_error
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
       raise OauthProvider::Errors::AccessDenied.new if silent_flow?
 
@@ -78,10 +77,7 @@ module Carto
     end
 
     def not_authorized
-      if silent_flow?
-        @login_required_error = true
-        return
-      end
+      raise OauthProvider::Errors::LoginRequired.new if silent_flow?
       super
     end
 

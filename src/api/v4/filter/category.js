@@ -47,6 +47,7 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  * airbnbDataset.addFilter(roomTypeFilter);
  *
  * @class Category
+ * @extends carto.filter.SQLBase
  * @memberof carto.filter
  * @api
  */
@@ -93,7 +94,7 @@ class Category extends SQLBase {
    */
 
   /**
-   * Set filter conditions, overriding all the previous ones.
+   * Remove all conditions from current filter
    *
    * @memberof Category
    * @method resetFilters

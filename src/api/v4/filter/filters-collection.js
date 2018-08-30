@@ -12,6 +12,8 @@ const DEFAULT_JOIN_OPERATOR = 'AND';
  * **This object should not be used directly.**
  *
  * @class FiltersCollection
+ * @abstract
+ * @extends carto.filter.Base
  * @memberof carto.filter
  * @api
  */

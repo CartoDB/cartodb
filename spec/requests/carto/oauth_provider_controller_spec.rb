@@ -180,7 +180,19 @@ describe Carto::OauthProviderController do
       end
     end
 
-    shared_examples_for 'success with token response pre-authorized' do
+    shared_examples_for 'success with response pre-authorized' do
+      it 'with valid payload and code response, pre-authorized, redirects back to the application' do
+        oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'code'))
+
+        authorization_code = oau.oauth_authorization_codes.first
+        expect(authorization_code).to(be)
+        expect(authorization_code.code).to(be_present)
+
+        expect(response.status).to(eq(302))
+        expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
+      end
+
       it 'with valid payload and token response, pre-authorized, redirects back to the application' do
         oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
         get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token'))
@@ -228,18 +240,6 @@ describe Carto::OauthProviderController do
       expect(response.body).to(include(valid_payload[:state]))
     end
 
-    it 'with valid payload and code response, pre-authorized, redirects back to the application' do
-      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-      get oauth_provider_authorize_url(valid_payload)
-
-      authorization_code = oau.oauth_authorization_codes.first
-      expect(authorization_code).to(be)
-      expect(authorization_code.code).to(be_present)
-
-      expect(response.status).to(eq(302))
-      expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
-    end
-
     it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
       @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
@@ -249,8 +249,8 @@ describe Carto::OauthProviderController do
       expect(response.body).to(include(valid_payload[:state]))
     end
 
-    describe 'with token' do
-      it_behaves_like 'success with token response pre-authorized'
+    describe 'with code or token' do
+      it_behaves_like 'success with response pre-authorized'
     end
 
     describe 'with silent flow' do
@@ -259,23 +259,16 @@ describe Carto::OauthProviderController do
         valid_payload[:prompt] = 'none'
       end
 
-      it_behaves_like 'success with token response pre-authorized'
-
-      it 'redirects with unsupported response type if response_type is not token' do
-        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'code'))
-
-        expect(response.status).to(eq(302))
-        expect(response.body).to(include("unsupported_response_type"))
-      end
+      it_behaves_like 'success with response pre-authorized'
 
       it 'redirects with invalid request if prompt is not none' do
         get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token', prompt: "wat"))
 
         expect(response.status).to(eq(302))
-        expect(response.body).to(include("invalid_request"))
+        expect(response.body).to(include('invalid_request'))
       end
 
-      it 'raises login_required if not logged in' do
+      it 'redirects with login_required if not logged in' do
         logout
         get oauth_provider_authorize_url(valid_payload)
 
@@ -287,7 +280,15 @@ describe Carto::OauthProviderController do
         get oauth_provider_authorize_url(valid_payload)
 
         expect(response.status).to(eq(302))
-        expect(response.body).to(include("access_denied"))
+        expect(response.body).to(include('access_denied'))
+      end
+
+      it 'with valid payload, pre-authorized and requesting more scopes redirects with access_denied' do
+        @oauth_app.oauth_app_users.create!(user_id: @user.id)
+        get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include('access_denied'))
       end
     end
   end

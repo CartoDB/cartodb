@@ -20,6 +20,8 @@ module Carto
     REQUIRED_TOKEN_PARAMS = ['client_id', 'client_secret', 'grant_type'].freeze
     REQUIRED_AUTHORIZE_PARAMS = ['client_id', 'state', 'response_type'].freeze
 
+    SILENT_PROMPT_VALUE = 'none'
+
     ssl_required
 
     layout 'frontend'
@@ -162,7 +164,7 @@ module Carto
     end
 
     def load_oauth_app_user
-      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.id) unless @login_required_error
+      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.try(:id))
     end
 
     def verify_client_secret
@@ -190,15 +192,13 @@ module Carto
     end
 
     def validate_prompt_request
-      prompt = params[:prompt]
-      if prompt.present?
-        raise OauthProvider::Errors::InvalidRequest.new("Only 'prompt=none' is supported") unless prompt == "none"
-        raise OauthProvider::Errors::UnsupportedResponseType.new(["token"]) unless params[:response_type] == "token"
+      if params[:prompt].present?
+        raise OauthProvider::Errors::InvalidRequest.new("Only 'prompt=none' is supported") unless silent_flow?
       end
     end
 
     def silent_flow?
-      params[:prompt] == "none" && params[:response_type] == "token"
+      params[:prompt] == SILENT_PROMPT_VALUE
     end
 
     def grant_strategy

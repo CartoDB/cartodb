@@ -40,6 +40,8 @@ module Carto
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
 
+    after_action :allow_silent_flow_iframe, only: :consent
+
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from Carto::MissingParamsError, with: :rescue_missing_params_error
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
@@ -203,6 +205,10 @@ module Carto
 
     def response_strategy
       RESPONSE_STRATEGIES[params[:response_type]]
+    end
+
+    def allow_silent_flow_iframe
+      response.headers.except! 'X-Frame-Options' if silent_flow?
     end
   end
 end

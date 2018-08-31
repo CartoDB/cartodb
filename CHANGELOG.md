@@ -7,75 +7,122 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+
+## 4.1.3 - 2018-08-09
+### Fixed
+- Fix safari drag problem. [#2184](https://github.com/CartoDB/carto.js/pull/2184)
+
+## 4.1.2 - 2018-07-31
+### Fixed
+- Fix `Promise is undefined` in IE11. [#2180](https://github.com/CartoDB/carto.js/issues/2180)
+
+## 4.1.1 - 2018-07-17
+### Fixed
+- Fix popups/featureClick positions when scrolled. [#2179](https://github.com/CartoDB/carto.js/pull/2179)
+
+### Changed
+- Improve examples. [#2177](https://github.com/CartoDB/carto.js/pull/2177)
 
 ## 4.1.0 - 2018-07-13
+### Added
+- Docs: Add performance tips guide. [#2168](https://github.com/CartoDB/carto.js/issues/2168)
 
+## 4.0.18 - 2018-07-12
 ### Added
 - Histogram: added `start` and `end` options to modify the histogram range. [#2142](https://github.com/CartoDB/carto.js/issues/2142)
-- Time-series: added century and millennium aggregations [#2162](https://github.com/CartoDB/carto.js/issues/2162)
-- Layers: added `visible` to options. [#2004](https://github.com/CartoDB/carto.js/issues/2004)
-- Source filters: added new feature for filtering sources. [#2141](https://github.com/CartoDB/carto.js/issues/2141)
-- Added options as input argument to the getLeafletLayer() method. [#2125](https://github.com/CartoDB/carto.js/issues/2125)
-- Docs:
-    - added performance tips guide. [#2168](https://github.com/CartoDB/carto.js/issues/2168)
-    - added hexagon aggregation example. [#2151](https://github.com/CartoDB/carto.js/pull/2151)
-    - improved structure of contents. [#2137](https://github.com/CartoDB/carto.js/pull/2137)
 
+## 4.0.17 - 2018-07-12
+### Added
+- Layers: added `visible` to options. [#2004](https://github.com/CartoDB/carto.js/issues/2004)
+
+### Changed
+- Docs: Update 01-quickstart.md. [#2133](https://github.com/CartoDB/carto.js/pull/2133)
+
+### Fixed
+- Fix API key in quickstart example. [#2171](https://github.com/CartoDB/carto.js/pull/2171)
+
+### Removed
+- Remove Gemfile (compass). [#1909](https://github.com/CartoDB/carto.js/issues/1909)
+
+## 4.0.16 - 2018-07-10
+### Added
+- Source filters: added new feature for filtering sources. [#2141](https://github.com/CartoDB/carto.js/issues/2141)
+
+## 4.0.15 - 2018-07-06
 ### Fixed
 - Allow multiple CARTO.js clients using Google Maps. [#2132](https://github.com/CartoDB/carto.js/issues/2132)
-- Dataviews:
-    - fix removeDataview not stopping fetching data [#2119](https://github.com/CartoDB/carto.js/issues/2119)
-- Debounced map instantiation. [#2140](https://github.com/CartoDB/carto.js/issues/2140)
-- Fix interactivity when only 'cartodb_id' is selected [#2089](https://github.com/CartoDB/carto.js/issues/2089)
-- Docs:
-    - fixed Getting Started links. [#2144](https://github.com/CartoDB/carto.js/pull/2144)
-    - replaced 'YOUR_API_KEY' with 'default_public' in examples. [#2136](https://github.com/CartoDB/carto.js/pull/2136)
-    - Updated CDN URL in reference documentation. [#2128](https://github.com/CartoDB/carto.js/pull/2128)
 
-## 4.0.8 - 2018-06-04
+## 4.0.14 - 2018-07-06
+### Fixed
+- Dataviews: fix removeDataview not stopping fetching data [#2119](https://github.com/CartoDB/carto.js/issues/2119)
+
+## 4.0.13 - 2018-07-06
+### Added
+- Add metrics to map instantiation. [#2139](https://github.com/CartoDB/carto.js/issues/2139)
+
+## 4.0.12 - 2018-07-05
+### Changed
+- Debounced map instantiation. [#2140](https://github.com/CartoDB/carto.js/issues/2140)
+
+## 4.0.11 - 2018-07-05
+### Fixed
+- Fix interactivity when only 'cartodb_id' is selected. [#2089](https://github.com/CartoDB/carto.js/issues/2089)
+
+## 4.0.10 - 2018-07-04
+### Added
+- Dataviews: added century and millennium aggregations. [#2162](https://github.com/CartoDB/carto.js/issues/2162)
+- Document new time series aggregations. [#2163](https://github.com/CartoDB/carto.js/issues/2163)
+
+## 4.0.9 - 2018-07-02
+### Added
+- Add options as input argument to the getLeafletLayer() method. [#2125](https://github.com/CartoDB/carto.js/issues/2125)
+- Add hexagon aggregation example. [#2151](https://github.com/CartoDB/carto.js/pull/2151)
+- Improve structure of contents. [#2137](https://github.com/CartoDB/carto.js/pull/2137)
 
 ### Fixed
+- Docs: fix Getting Started links. [#2144](https://github.com/CartoDB/carto.js/pull/2144)
+- Docs: replace 'YOUR_API_KEY' with 'default_public' in examples. [#2136](https://github.com/CartoDB/carto.js/pull/2136)
+- Docs: update CDN URL in reference documentation. [#2128](https://github.com/CartoDB/carto.js/pull/2128)
 
-- Google Maps examples were not working on iOS [#1995](https://github.com/CartoDB/carto.js/issues/1995)
+## 4.0.8 - 2018-06-04
+### Fixed
+- Google Maps examples were not working on iOS. [#1995](https://github.com/CartoDB/carto.js/issues/1995)
 
 ## 4.0.7 - 2018-06-04
+### Changed
+- Update gmaps to v3.32 in v4. [#2126](https://github.com/CartoDB/carto.js/pull/2126)
 
 ### Fixed
 - Remove upper limit on Google Maps dependency.
+- Small typo fixes for dev center docs. [#2124](https://github.com/CartoDB/carto.js/pull/2124)
 
 ## 4.0.6 - 2018-05-11
-
 ### Fixed
-- Fix remove layers
+- Fix remove layers. [#2116](https://github.com/CartoDB/carto.js/pull/2116)
 
 ## 4.0.5 - 2018-05-10
-
-- Internal fixes
+- Internal fixes.
 
 ## 4.0.4 - 2018-05-09
-
-- Internal fixes
-
-## 4.0.3 - 2018-05-09
-
-- Internal fixes
+- Internal fixes.
 
 ## 4.0.3 - 2018-05-04
-
-- Update zera version
+### Changed
+- Update zera version. [#2109](https://github.com/CartoDB/carto.js/pull/2109)
 
 ## 4.0.2 - 2018-04-27
-
-- Internal fixes
+### Fixed
+- Add missing dependencies to release package. [#2108](https://github.com/CartoDB/carto.js/pull/2108)
+- Ugrade zera to fix fractional zoom levels. [#2104](https://github.com/CartoDB/carto.js/pull/2104)
 
 ## 4.0.1 - 2018-04-25
-
-- Upgrading carto.js to gmaps v3.31
+### Changed
+- Upgrading carto.js to gmaps v3.31. [#2067](https://github.com/CartoDB/carto.js/issues/2067)
 
 ## 4.0.0 - 2018-04-17
-
 First public release of CARTO.js library
-
 ### Added
 - New programmatic API
 - New sources: Dataset, SQL
@@ -91,4 +138,4 @@ First public release of CARTO.js library
 - Granular error management
 - Publish to npm and CDN
 - Public documentation within the repo
-- Examples
+- Examples and documentation

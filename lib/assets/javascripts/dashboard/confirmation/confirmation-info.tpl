@@ -1,26 +1,26 @@
 <div class="js-info">
   <h1 class="Sessions-title u-tspace-m">
     <% if (state === "success") { %>
-      Your account is ready
+      <%- _t('dashboard.confirmation.confirm_info.account_ready') %>
     <% } else if (state === "failure") { %>
-      Oops! There was a problem
+      <%- _t('dashboard.confirmation.confirm_info.problem') %>
     <% } else { %>
-      Your account is being created
+      <%- _t('dashboard.confirmation.confirm_info.account_created') %>
     <% } %>
   </h1>
   <p class="Sessions-description">
     <% if (state === "success") { %>
       <% if (googleSignup) { %>
-        You will be redirected to your dashboard in a moment...
+        <%- _t('dashboard.confirmation.confirm_info.redir_dashboard') %>
       <% } else if (!requiresValidationEmail) { %>
-        You will be redirected to the login page in a moment...
+        <%- _t('dashboard.confirmation.confirm_info.redir_login') %>
       <% } else { %>
-        Check your email inbox and validate your email.
+        <%- _t('dashboard.confirmation.confirm_info.check_email') %>
       <% }%>
     <% } else if (state === "failure") { %>
-      Unfortunately there was a problem creating your account. <% if (!customHosted) { %>Please, <a href="mailto:support@carto.com?subject=User creation error: <%- userCreationId %>">contact us</a><% } %>.
+      <%- _t('dashboard.confirmation.confirm_info.problem_contact') %>
     <% } else { %>
-      It will take us some time, just a few seconds.
+      <%- _t('dashboard.confirmation.confirm_info.take_time') %>
     <% } %>
   </p>
 </div>

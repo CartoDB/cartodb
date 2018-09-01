@@ -124,6 +124,9 @@
     }
   },
   "carto_name": "CARTO",
+  "email_enterprise": "enterprise-support@carto.com",
+  "email_support": "support@carto.com",
+  "community_link": "http://gis.stackexchange.com/questions/tagged/carto",
   "feedback": "Give us feedback!",
   "back": "Back",
   "back-to-dashboard": "Back to the dashboard",
@@ -2962,13 +2965,41 @@
             "templates": {
               "no_notif": "There are no notifications :)"
             }
+          },
+          "user_support_template": {
+            "enterprise": "<a href=\"mailto:enterprise-support@carto.com\" class=\"Header-navigationLink u-hideOnMobile\">Support</a>",
+            "support": "<a href=\"mailto:support@carto.com\" class=\"Header-navigationLink u-hideOnMobile\">Support</a>",
+            "forum": "<a href=\"http://gis.stackexchange.com/questions/tagged/carto\" class=\"Header-navigationLink u-hideOnMobile\">Support</a>"
           }
+        },
+        "footer_static": {
+          "guides": "<a href=\"https://carto.com/learn/guides/\">Guides</a>",
+          "developers": "<a href=\"https://carto.com/developers\">Developers</a>",
+          "version": "Version: %{onpremiseVersion}",
+          "onpremise": "<a href=\"mailto:onpremise-support@carto.com\">Support</a>",
+          "support": "<a href=\"mailto:support@carto.com\">Support</a>",
+          "contact": "<a href=\"mailto:contact@carto.com\">Contact</a>"
         },
         "icon_selector_view": {
           "app_icon": "App icon",
           "no_icon": "No icon",
           "err_upload": "There was an error uploading the icon. Check the height and size (max 1MB) of the image",
           "rec_size": "Recommended images should be 128x128 pixels of size"
+        },
+        "support_banner": {
+          "dedicated_support": "As a paying customer, you have access to our dedicated support.",
+          "become_builder": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> to become a builder.",
+          "contact_org_admin": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> for support.",
+          "outstanding": "You are part of CARTO, you deserve outstanding support.",
+          "contact_community": "For all technical questions, contact our community support forum.",
+          "create_maps": "You will be able to create your own maps!",
+          "info_on_community": "Remember that there is a lot of information in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "internal": "Don't forget to share your knowledge in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "problem": "If you experience any problems with the CARTO service, feel free to <a href=\"mailto:support@carto.com\">contact us</a>.",
+          "contact_support": "Contact support",
+          "contact_admin": "Contact administrator",
+          "contact_us": "Contact us",
+          "community": "Community support"
         }
       }
     },
@@ -3025,52 +3056,6 @@
     }
   },
   "dashboard": {
-    "views": {
-      "dashboard": {
-        "content_controller": {
-          "templates": {
-            "content_no_data": {
-              "no_data_yet": "You have not connected any datasets yet",
-              "can_connect": "You can <button class=\"Button--link js-connect\">connect datasets</button> or <strong>search</strong> our data library."
-            },
-            "content_no_results": {
-              "no_results": "There are no results in this page",
-              "no_liked": "You haven't liked any %{type} yet",
-              "zero_found": "0 %{tag} || q %{type} found",
-              "there_are_no": "There are no ",
-              "back_to_first": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">first page</a>",
-              "back_to": "Back to your ",
-              "no_fun": "No %{type}, no fun",
-              "fill_this": "Fill this section up by clicking the heart on CARTO %{type} published on the web or on user profile pages"
-            }
-          }
-        },
-        "filters": {
-          "shared": "Shared with you",
-          "liked": "Liked",
-          "data_lib": "Data library",
-          "new_map": "New Map",
-          "new_dataset": "New dataset",
-          "selected": " selected",
-          "yours": "yours",
-          "select_all": "Select all ",
-          "deselect_all": "Deselect all ",
-          "connect_data": "Connect dataset",
-          "duplicate_data": "Duplicate dataset",
-          "create_map": "Create map",
-          "max_map_layers": "Max map layers selected (%{maxLayersByMap} max)",
-          "change_privacy": "Change privacy...",
-          "duplicate_map": "Duplicate map",
-          "delete": "Delete ",
-          "your": "your"
-        },
-        "onboarding": {
-          "hello": "Hello, ",
-          "welcome": "Welcome to CARTO!",
-          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map."
-        }
-      }
-    },
     "components": {
       "avatar_selector": {
         "avatar_selector": {
@@ -3113,6 +3098,17 @@
           }
         }
       },
+      "footer":
+      {
+        "footer": {
+          "guides": "<a href=\"https://carto.com/learn/guides/\">Guides</a>",
+          "developers": "<a href=\"https://carto.com/developers\">Developers</a>",
+          "version": "Version: %{onpremiseVersion}",
+          "onpremise": "<a href=\"mailto:onpremise-support@carto.com\">Support</a>",
+          "support": "<a href=\"mailto:support@carto.com\">Support</a>",
+          "contact": "<a href=\"mailto:contact@carto.com\">Contact</a>"
+        }
+      },
       "icon_selector": {
         "icon_selector": {
           "app_icon": "App icon",
@@ -3121,10 +3117,117 @@
           "rec_size": "Recommended images should be 128x128 pixels of size"
         }
       },
+      "support_view": {
+        "support_banner": {
+          "dedicated_support": "As a paying customer, you have access to our dedicated support.",
+          "become_builder": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> to become a builder.",
+          "contact_org_admin": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> for support.",
+          "outstanding": "You are part of CARTO, you deserve outstanding support.",
+          "contact_community": "For all technical questions, contact our community support forum.",
+          "create_maps": "You will be able to create your own maps!",
+          "info_on_community": "Remember that there is a lot of information in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "internal": "Don't forget to share your knowledge in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "problem": "If you experience any problems with the CARTO service, feel free to <a href=\"mailto:support@carto.com\">contact us</a>.",
+          "contact_support": "Contact support",
+          "contact_admin": "Contact administrator",
+          "contact_us": "Contact us",
+          "community": "Community support"
+        }
+      },
       "table_grants": {
         "table_grants_view": {
           "zero_data": "0 datasets found",
           "no_data": "There are no datasets"
+        }
+      }
+    },
+    "confirmation": {
+      "confirm_info": {
+        "account_ready": "Your account is ready",
+        "problem": "Oops! There was a problem",
+        "account_created": "Your account is being created",
+        "redir_dashboard": "You will be redirected to your dashboard in a moment...",
+        "redir_login": "You will be redirected to the login page in a moment...",
+        "check_email": "Check your email inbox and validate your email.",
+        "problem_contact": "Unfortunately there was a problem creating your account. <% if (!customHosted) { %>Please, <a href=\"mailto:support@carto.com?subject=User creation error: <%- userCreationId %>\">contact us</a><% } %>.",
+        "take_time": "It will take us some time, just a few seconds."
+      }
+    },
+    "views": {
+      "api_keys": {
+        "api_key_list": {
+          "your_api": "Your API keys",
+          "new_api": "New API key",
+          "configure": "Configure API keys from external providers",
+          "google": "Google Maps",
+          "your_google": "This is your Google Maps query string, contact with <a href=\"mailto:support@carto.com\">support@carto.com</a> to change it.",
+          "google_query": "This is the %{organizationName} Google Maps query string, contact with <a href=\"mailto:support@carto.com\">support@carto.com</a> to change it.",
+          "google_api": "This is the organization Google Maps API key",
+          "learn_more": "Learn more about location app authorization and API key management <a href=\"https://carto.com/developers/fundamentals/authorization/\" target=\"_blank\">here</a>"
+        }
+      },
+      "dashboard": {
+        "content_controller": {
+          "templates": {
+            "content_error": {
+              "error": "Oouch! There has been an error",
+              "contact": "Try viewing <a class=\"ContentResult-urlLink js-link\" href=\"%{defaultUrl}\">your %{type}</a> or if the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+            },
+            "content_no_data": {
+              "no_data_yet": "You have not connected any datasets yet",
+              "can_connect": "You can <button class=\"Button--link js-connect\">connect datasets</button> or <strong>search</strong> our data library."
+            },
+            "content_no_results": {
+              "no_results": "There are no results in this page",
+              "no_liked": "You haven't liked any %{type} yet",
+              "zero_found": "0 %{tag} || q %{type} found",
+              "there_are_no": "There are no ",
+              "back_to_first": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">first page</a>",
+              "back_to": "Back to your ",
+              "no_fun": "No %{type}, no fun",
+              "fill_this": "Fill this section up by clicking the heart on CARTO %{type} published on the web or on user profile pages"
+            }
+          }
+        },
+        "filters": {
+          "shared": "Shared with you",
+          "liked": "Liked",
+          "data_lib": "Data library",
+          "new_map": "New Map",
+          "new_dataset": "New dataset",
+          "selected": " selected",
+          "yours": "yours",
+          "select_all": "Select all ",
+          "deselect_all": "Deselect all ",
+          "connect_data": "Connect dataset",
+          "duplicate_data": "Duplicate dataset",
+          "create_map": "Create map",
+          "max_map_layers": "Max map layers selected (%{maxLayersByMap} max)",
+          "change_privacy": "Change privacy...",
+          "duplicate_map": "Duplicate map",
+          "delete": "Delete ",
+          "your": "your"
+        },
+        "onboarding": {
+          "hello": "Hello, ",
+          "welcome": "Welcome to CARTO!",
+          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map."
+        }
+      },
+      "data_library": {
+        "content": {
+          "error_template": {
+            "error": "Oouch! There has been an error",
+            "contact": "If the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+          }
+        }
+      },
+      "public_profile": {
+        "user_feed": {
+          "error": {
+            "retrieve_maps": "We couldn't retrieve the maps :(",
+            "reload": "Reload the page again. If the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+          }
         }
       }
     }

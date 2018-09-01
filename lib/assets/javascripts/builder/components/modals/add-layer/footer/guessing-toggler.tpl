@@ -14,7 +14,7 @@
 <% } else if (!customHosted) { %>
   <span class="CDB-Text CDB-Size-medium">
     <%- _t('components.modals.add-layer.footer.twitter-how-to-historical') %>
-    <a href="mailto:support@carto.com">
+    <a href="mailto:<%- _t('email_support') %>">
       <%- _t('components.modals.add-layer.footer.contact-team') %>
     </a>
   </span>

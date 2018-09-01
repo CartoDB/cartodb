@@ -192,11 +192,13 @@ en:
         solutions: 'Solutions '
         signup: 'Sign up'
       footer:
-        guides: 'Guides'
-        developers: 'Developers'
-        version: 'Version: '
-        support: 'Support'
-        contact: 'Contact'
+        footer: ' Footer '
+        guides: '<a href="https://carto.com/learn/guides/">Guides</a>'
+        developers: '<a href="https://carto.com/developers">Developers</a>'
+        version: 'Version: %{version}'
+        support: '<a href="mailto:support@carto.com">Support</a>'
+        onpremise: '<a href="mailto:onpremise-support@carto.com">Support</a>'
+        contact: '<a href="mailto:contact@carto.com">Contact</a>'
       nores:
         no_items: " doesn't have any items on this page"
         try_the: 'Try the '

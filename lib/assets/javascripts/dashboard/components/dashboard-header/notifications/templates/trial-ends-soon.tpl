@@ -1,1 +1,2 @@
-Just a reminder, your <strong><%- accountType %></strong> trial will finish the next <%- trialEnd %>. Happy mapping!
+<%= _t('dashboard.components.dashboard-header.notifications.templates.trial_ends_soon.reminder', {accountType: accountType, trialEnd: trialEnd}) %>
+

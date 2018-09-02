@@ -126,6 +126,11 @@
   "carto_name": "CARTO",
   "email_enterprise": "enterprise-support@carto.com",
   "email_support": "support@carto.com",
+  "email_sales": "sales@carto.com",
+  "guides_link": "https://carto.com/learn/guides",
+  "guides_name": "Guides",
+  "dev_link": "https://carto.com/developers",
+  "dev_name": "Developers",
   "community_link": "http://gis.stackexchange.com/questions/tagged/carto",
   "feedback": "Give us feedback!",
   "back": "Back",
@@ -3092,11 +3097,63 @@
         },
         "notifications": {
           "templates": {
+            "close_limits": {
+              "reaching_limit": "Hey <strong>%{userName}</strong>, looks like you're about to reach your account limit.",
+              "contact_us": "<a href=\"mailto:%{upgradeContactEmail}\">Contact us</a> for upgrading your account.",
+              "contact_admin": "Start thinking about <a href=\"mailto:%{upgradeContactEmail}\">contacting your admin</a>.",
+              "start_thinking": "Start thinking about ",
+              "upgrade_plan": "upgrading your plan",
+              "feel_free": "Feel free to <a href=\"mailto:%{upgradeContactEmail}\">contact us</a> for more resources."
+            },
             "dropdown_content": {
               "no_notif": "There are no notifications :)"
+            },
+            "limits_exceeded": {
+              "over_limits": "Hey <strong>%{userName}</strong>, you're over your disk limits.",
+              "contact_us": "<a href=\"mailto:%{upgradeContactEmail}\">Contact us</a> for upgrading your account.",
+              "contact_admin": "Start thinking about <a href=\"mailto:%{upgradeContactEmail}\">contacting your admin</a>.",
+              "start_thinking": "Start thinking about ",
+              "upgrade_plan": "upgrading your plan",
+              "feel_free": "Feel free to <a href=\"mailto:%{upgradeContactEmail}\">contact us</a> for more resources."
+            },
+            "trial_ends_soon": {
+              "reminder": "Just a reminder, your <strong>%{accountType}</strong> trial will finish the next %{trialEnd}. Happy mapping!"
+            },
+            "try_trial": {
+              "start_14": "Start your 14-day trial to experience the full CARTO.",
+              "start_now": "Start now"
+            },
+            "upgraded_message": {
+              "welcome": "Welcome to your brand new <strong>%{accountType}</strong> CARTO. Now we love you even more than before ;)"
             }
           }
         }
+      },
+      "delete_account": {
+        "delete_account": {
+          "about_delete": "You are about to delete your account.",
+          "remember": "Remember, once you delete your account there is no going back.",
+          "are_you_sure": "All your maps, data and work will be lost. Are you sure you want to proceed?",
+          "provide_password": "In any case, you need to type your password.",
+          "your_password": "Your password",
+          "cancel": "Cancel",
+          "delete_account": "Yes, delete my account"
+        }
+      },
+      "editable_fields": {
+        "editable_description": {
+          "add_desc": "Add description...",
+          "no_desc": "No description"
+        },
+        "editable_tags": {
+          "and_3_more": "and %{tagsCount} more",
+          "add_tags": "Add tags...",
+          "no_tags": "No tags"
+        }
+      },
+      "fail": {
+        "error": "Oouch! There has been an error",
+        "contact": "If the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
       },
       "footer":
       {
@@ -3115,6 +3172,26 @@
           "no_icon": "No icon",
           "err_upload": "There was an error uploading the icon. Check the height and size (max 1MB) of the image",
           "rec_size": "Recommended images should be 128x128 pixels of size"
+        }
+      },
+      "mamufas_import": {
+        "mamufas_import_dialog": {
+          "drag_and_drop": "Drag and drop your data to this window",
+          "drop_to_connect": "Drop your file to connect a new dataset.",
+          "files_supported": "Files like CSV, GPX, XLS and many more are supported"
+        }
+      },
+      "maps_item": {
+        "maps_item": {
+          "read": "READ",
+          "by": "by"
+        }
+      },
+      "mapviews_graph": {
+        "mapviews_graph_view": {
+          "mapview_count": "%{smart_count} mapview |||| %{smart_count} mapviews",
+          "today": " today",
+          "on": " on "
         }
       },
       "support_view": {
@@ -3139,6 +3216,14 @@
           "zero_data": "0 datasets found",
           "no_data": "There are no datasets"
         }
+      },
+      "upgrade_messages": {
+        "limit_reached": "You have reached your limits.",
+        "limit_reaching": "You're reaching your account limits.",
+        "upgrade": "Upgrade your account to boost your quota.",
+        "free_trial": "14 days Free trial",
+        "upgrade_plan": "upgrade your plan",
+        "contact_sales": "Contact Sales"
       }
     },
     "confirmation": {
@@ -3152,6 +3237,9 @@
         "problem_contact": "Unfortunately there was a problem creating your account. <% if (!customHosted) { %>Please, <a href=\"mailto:support@carto.com?subject=User creation error: <%- userCreationId %>\">contact us</a><% } %>.",
         "take_time": "It will take us some time, just a few seconds."
       }
+    },
+    "profile": {
+      "your_profile": "Your profile | "
     },
     "views": {
       "api_keys": {

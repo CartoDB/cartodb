@@ -1,3 +1,3 @@
-Start your 14-day trial to experience the full CARTO.
+<%= _t('dashboard.components.dashboard-header.notifications.templates.try_trial.start_14') %>
 <br/>
-<a href="<%- upgradeUrl %>">Start now</a>
+<a href="<%- upgradeUrl %>"><%= _t('dashboard.components.dashboard-header.notifications.templates.try_trial.start_now') %></a>

@@ -12,7 +12,7 @@
         </h3>
         <a href="<%- url %>" class="MapCard-editButton CDB-IconFont CDB-IconFont-pencil" title="<%- name %>"></a>
         <% if (showPermissionIndicator) { %>
-          <span class="CDB-Text PermissionIndicator MapCard-itemTitlePermission">READ</span>
+          <span class="CDB-Text PermissionIndicator MapCard-itemTitlePermission"><%= _t('dashboard.components.maps_item.maps_item.read') %></span>
         <% } %>
       </div>
 
@@ -28,7 +28,7 @@
         <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
           <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
           <span class="CDB-Text CDB-Size-small u-altTextColor">
-            <%- timeDiff %> <% if (!isOwner) { %>by<% } %>
+            <%- timeDiff %> <% if (!isOwner) { %><%= _t('dashboard.components.maps_item.maps_item.by') %><% } %>
           </span>
           <% if (!isOwner) { %>
             <span class="UserAvatar" data-tooltip="<%- owner.name || owner.username  %>">

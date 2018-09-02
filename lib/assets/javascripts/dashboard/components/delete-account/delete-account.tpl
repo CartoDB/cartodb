@@ -3,12 +3,12 @@
     <div class="Dialog-headerIcon Dialog-headerIcon--negative">
       <i class="CDB-IconFont CDB-IconFont-defaultUser"></i>
     </div>
-    <p class="Dialog-headerTitle">You are about to delete your account.</p>
+    <p class="Dialog-headerTitle"><%= _t('dashboard.components.delete_account.delete_account.about_delete') %></p>
     <p class="Dialog-headerText">
-      Remember, once you delete your account there is no going back.<br/>
-      All your maps, data and work will be lost. Are you sure you want to proceed?<br/>
+      <%= _t('dashboard.components.delete_account.delete_account.remember') %><br/>
+      <%= _t('dashboard.components.delete_account.delete_account.are_you_sure') %><br/>
       <% if (passwordNeeded) { %>
-        In any case, you need to type your password.
+        <%= _t('dashboard.components.delete_account.delete_account.provide_password') %>
       <% } %>
     </p>
   </div>
@@ -17,7 +17,7 @@
     <div class="CDB-Text Dialog-body">
       <div class="Form-row Form-row--centered has-label">
         <div class="Form-rowLabel">
-          <label class="Form-label">Your password</label>
+          <label class="Form-label"><%= _t('dashboard.components.delete_account.delete_account.your_password') %></label>
         </div>
         <div class="Form-rowData">
           <input
@@ -38,7 +38,7 @@
 
   <div class="Dialog-footer u-inner">
     <button type="button" class="CDB-Button CDB-Button--secondary js-cancel">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.components.delete_account.delete_account.cancel') %></span>
     </button>
     <button type="submit" class="CDB-Button CDB-Button--error js-ok">
       <% if (isLoading) { %>
@@ -48,7 +48,7 @@
           </svg>
         </div>
       <% } else { %>
-        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Yes, delete my account</span>
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.components.delete_account.delete_account.delete_account') %></span>
       <% } %>
     </button>
   </div>

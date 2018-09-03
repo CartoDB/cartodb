@@ -6,10 +6,10 @@
     <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled" readonly value="Connected" />
   <% } else { %>
     <% if (state === "loading") { %>
-      <button type="button" class="CDB-Size-medium FormAccount-link is-disabled">Connecting...</button>
+      <button type="button" class="CDB-Size-medium FormAccount-link is-disabled"><%= _t('dashboard.components.service_item.service_item.connecting') %></button>
     <% } else { %>
       <button type="button" class="CDB-Size-medium FormAccount-link js-connect">
-        <i class="ServiceIcon ServiceIcon--<%- name %>"></i>Connect
+        <i class="ServiceIcon ServiceIcon--<%- name %>"></i><%= _t('dashboard.components.service_item.service_item.connect') %>
       </button>
     <% } %>
   <% } %>
@@ -18,17 +18,15 @@
     <p class="FormAccount-rowInfoText <%- state === "error" ? 'FormAccount-rowInfoText--error' : '' %>">
     <% if (connected) { %>
       <% if (state === "error") { %>
-        Ooops! There was an error, please <button type="button" class="FormAccount-link js-disconnect">try it again</button>
-        or <a class="FormAccount-link" href="mailto:support@carto.com">contact us</a> if the problem persists
+        <%= _t('dashboard.components.service_item.service_item.error') %>
       <% } else if (state === "loading") { %>
-        Disconnecting...
+        <%= _t('dashboard.components.service_item.service_item.disconneting') %>
       <% } else { %>
-        <button type="button" class="CDB-Size-medium FormAccount-link js-disconnect">Disconnect</button>
+        <button type="button" class="CDB-Size-medium FormAccount-link js-disconnect"><%= _t('dashboard.components.service_item.service_item.disconnet') %></button>
       <% } %>
     <% } else { %>
       <% if (state === "error") { %>
-        There was an error, please be sure your pop-up blocker is disabled and try again or
-        <a class="FormAccount-link" href="mailto:support@carto.com">contact us</a> if the problem persists
+        <%= _t('dashboard.components.service_item.service_item.disable_popup') %>
       <% } %>
     <% } %>
     </p>

@@ -3194,6 +3194,47 @@
           "on": " on "
         }
       },
+      "navbar": {
+        "user_settings": {
+          "maps": "Maps",
+          "datasets": "Datasets"
+        }
+      },
+      "paged_search": {
+        "paged_search": {
+          "search": " Search",
+          "placeholder": "Search by username or email"
+        },
+        "paged_search_view": {
+          "no_results": "Oh! No results",
+          "nothing_found": "Unfortunately we could not find anything with these parameters",
+          "searching": "Searching"
+        }
+      },
+      "pages_subheader": {
+        "pages_subheader": {
+          "used_of_avail": "%{usedDataStr} of %{availableDataStr}",
+          "profile": "Profile",
+          "account": "Account",
+          "api_keys": "API keys",
+          "billing": "Billing",
+          "org_settings": "Organization settings",
+          "issues": "Having issues?",
+          "cont_support": "Contact support",
+          "cont_admin": "Contact your org. admin",
+          "cont_vip": "Contact your VIP support"
+        }
+      },
+      "service_item": {
+        "service_item": {
+          "connecting": "Connecting...",
+          "connect": "Connect",
+          "error": "Ooops! There was an error, please <button type=\"button\" class=\"FormAccount-link js-disconnect\">try it again</button> or <a class=\"FormAccount-link\" href=\"mailto:support@carto.com\">contact us</a> if the problem persists",
+          "disconneting": "Disconnecting...",
+          "disconnet": "Disconnect",
+          "disable_popup": "There was an error, please be sure your pop-up blocker is disabled and try again or <a class=\"FormAccount-link\" href=\"mailto:support@carto.com\">contact us</a> if the problem persists"
+        }
+      },
       "support_view": {
         "support_banner": {
           "dedicated_support": "As a paying customer, you have access to our dedicated support.",
@@ -3212,6 +3253,10 @@
         }
       },
       "table_grants": {
+        "table_grants": {
+          "datasets": "Datasets",
+          "placeholder": "Search by name"
+        },
         "table_grants_view": {
           "zero_data": "0 datasets found",
           "no_data": "There are no datasets"
@@ -3224,6 +3269,11 @@
         "free_trial": "14 days Free trial",
         "upgrade_plan": "upgrade your plan",
         "contact_sales": "Contact Sales"
+      },
+      "user_notification": {
+        "user_notification": {
+          "activated": "CARTO Builder has been activated in your account. <a href=\"https://carto.com/learn/guides\" class=\"onboardingNotification-link\">Learn more</a> about it and let us know what you think or <a href=\"mailto:builder-support@carto.com\" class=\"onboardingNotification-link\">contact us</a>. Happy mapping!"
+        }
       }
     },
     "confirmation": {
@@ -3238,11 +3288,61 @@
         "take_time": "It will take us some time, just a few seconds."
       }
     },
+    "data": {
+      "table": {
+        "row_added": "Row added correctly",
+        "row_adding": "Adding a new row",
+        "updated": "Table geometry updated"
+      }
+    },
     "profile": {
       "your_profile": "Your profile | "
     },
     "views": {
+      "account": {
+        "serv_disc_dlg": {
+          "serv_disc_dlg": {
+            "disconnect": "Disconnect your %{title} account",
+            "revoke": "Revoke the access to CARTO",
+            "sure": "Are you sure you want to revoke the CARTO access to your %{title} account?",
+            "revoke_auto": "We cant revoke the access for your %{title} account automatically.",
+            "security": "For your own security, we are unable to disconnect your %{title} account from CARTO. You can revoke access yourself by manually editing your %{title} authorized applications.",
+            "goto": "go to %{title}",
+            "cancel": "cancel",
+            "revoke2": "Revoke access"
+          }
+        }
+      },
       "api_keys": {
+        "alert_delete_key": {
+          "about_del": "You are about to delete your API key",
+          "sure": "All deployed apps with this API key will stop working. Are you sure you want to continue?",
+          "cancel": "Cancel",
+          "delete": "Delete API key"
+        },
+        "alert_regen_key": {
+          "about_regen": "You are about to regenerate your API key",
+          "sure": "You will need to update all deployed apps with the new API key. Are you sure you want to continue?",
+          "cancel": "Cancel",
+          "regen": "Regenerate API key"
+        },
+        "api_key_form": {
+          "configure": "Configure your key",
+          "details": "Your API key details",
+          "permissions": "Changes to the key permissions are not possible once key is generated",
+          "save": "Save changes"
+        },
+        "api_key_form_view": {
+          "maps": "maps",
+          "sql": "sql",
+          "name": "Name",
+          "name_place": "Your API key name",
+          "token": "API Key",
+          "apis": "APIs",
+          "input_sql": "SQL",
+          "input_maps": "MAPS",
+          "required": "Name, Type and Datasets fields are required"
+        },
         "api_key_list": {
           "your_api": "Your API keys",
           "new_api": "New API key",
@@ -3251,11 +3351,17 @@
           "your_google": "This is your Google Maps query string, contact with <a href=\"mailto:support@carto.com\">support@carto.com</a> to change it.",
           "google_query": "This is the %{organizationName} Google Maps query string, contact with <a href=\"mailto:support@carto.com\">support@carto.com</a> to change it.",
           "google_api": "This is the organization Google Maps API key",
-          "learn_more": "Learn more about location app authorization and API key management <a href=\"https://carto.com/developers/fundamentals/authorization/\" target=\"_blank\">here</a>"
+          "learn_more": "Learn more about location app authorization and API key management <a href=\"https://carto.com/developers/fundamentals/authorization/\" target=\"_blank\">here</a>",
+          "regen": "Regenerate",
+          "delete": "Delete"
         }
       },
       "dashboard": {
         "content_controller": {
+          "loading_library_view": {
+            "title": "Your Data library is being stocked up",
+            "desc": "Please wait while we load the list of Datasets in the Data library for you."
+          },
           "templates": {
             "content_error": {
               "error": "Oouch! There has been an error",
@@ -3277,6 +3383,9 @@
             }
           }
         },
+        "create_map_model": {
+          "untitled_map": "Untitled Map"
+        },
         "filters": {
           "shared": "Shared with you",
           "liked": "Liked",
@@ -3295,6 +3404,13 @@
           "duplicate_map": "Duplicate map",
           "delete": "Delete ",
           "your": "your"
+        },
+        "header_view_model": {
+          "insight": "Deep insights"
+        },
+        "map_templates": {
+          "merge": "Merge your current dataset with another, existing dataset.",
+          "style": "Style your layer based on column values."
         },
         "onboarding": {
           "hello": "Hello, ",

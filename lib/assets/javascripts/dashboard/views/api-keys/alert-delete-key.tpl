@@ -3,18 +3,18 @@
     <i class="CDB-IconFont CDB-IconFont-keys"></i>
   </div>
   <p class="Dialog-headerTitle u-ellipsLongText">
-    You are about to delete your API key
+    <%= _t('dashboard.views.api_keys.alert_delete_key.about_del') %>
   </p>
   <p class="Dialog-headerText">
-    All deployed apps with this API key will stop working. Are you sure you want to continue?
+    <%= _t('dashboard.views.api_keys.alert_delete_key.sure') %>
   </p>
 </div>
 
 <div class="Dialog-footer u-inner">
   <button type="button" class="CDB-Button CDB-Button--secondary js-cancel">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.api_keys.alert_delete_key.cancel') %></span>
   </button>
   <button type="button" class="CDB-Button CDB-Button--error js-submit">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete API key</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.api_keys.alert_delete_key.delete') %></span>
   </button>
 </div>

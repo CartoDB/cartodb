@@ -18,9 +18,9 @@
 
 <ul class="u-flex">
   <li>
-    <button class="CDB-Text CDB-Size-medium u-actionTextColor u-rSpace--m js-regenerate">Regenerate</button>
+    <button class="CDB-Text CDB-Size-medium u-actionTextColor u-rSpace--m js-regenerate"><%= _t('dashboard.views.api_keys.api_key_list.regen') %></button>
   </li>
   <li>
-    <button class="CDB-Text CDB-Size-medium u-errorTextColor js-delete">Delete</button>
+    <button class="CDB-Text CDB-Size-medium u-errorTextColor js-delete"><%= _t('dashboard.views.api_keys.api_key_list.delete') %></button>
   </li>
 </ul>

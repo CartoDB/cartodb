@@ -7,6 +7,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 4.1.4 - 2018-09-03
+
+### Added
+- Source Filters:
+    - Allow to filter category columns by subquery. [#2186](https://github.com/CartoDB/carto.js/issues/2186)
+    - Reset filter conditions with .resetFilters() [#2186](https://github.com/CartoDB/carto.js/issues/2186)
+
+### Fixed
+- Source Filters: Allow combining empty filters.  [#2186](https://github.com/CartoDB/carto.js/issues/2186)
 
 ## 4.1.0 - 2018-07-13
 

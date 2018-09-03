@@ -142,6 +142,17 @@ describe('api/v4/filter/filters-collection', function () {
     it('should build the SQL string and join filters', function () {
       expect(filtersCollection.$getSQL()).toEqual("(fake_column < 1 AND fake_column IN ('category'))");
     });
+
+    it('should not take empty filters into account', function () {
+      let customRangeFilter = new carto.filter.Range(column, { lt: 1 });
+      let emptyFilter = new carto.filter.Category(column, {});
+
+      filtersCollection = new FiltersCollection();
+      filtersCollection.addFilter(customRangeFilter);
+      filtersCollection.addFilter(emptyFilter);
+
+      expect(filtersCollection.$getSQL()).toEqual('fake_column < 1');
+    });
   });
 
   describe('._triggerFilterChange', function () {

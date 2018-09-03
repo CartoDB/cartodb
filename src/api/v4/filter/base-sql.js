@@ -53,7 +53,7 @@ class SQLBase extends Base {
    * @param {object} filters - The object containing all the new filters to apply.
    */
   setFilters (filters) {
-    if (!filters || !_.isObject(filters) || _.isEmpty(filters)) {
+    if (!filters || !_.isObject(filters)) {
       return;
     }
 
@@ -61,6 +61,13 @@ class SQLBase extends Base {
     this._filters = filters;
 
     this.trigger('change:filters', filters);
+  }
+
+  /**
+   * Remove all conditions from current filter
+   */
+  resetFilters () {
+    this.setFilters({});
   }
 
   $getSQL () {

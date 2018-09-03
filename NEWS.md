@@ -8,6 +8,7 @@ Development
 - OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
   - Add new design for OAuth consent screen (#14237)
   - Limit the number of simultaneous refersh tokens (#14243)
+  - Silent flow (#14244)
 
 ### Bug fixes / enhancements
 - Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)

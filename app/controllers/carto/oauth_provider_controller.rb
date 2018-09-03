@@ -1,5 +1,6 @@
 # encoding: UTF-8
 
+require_dependency 'carto/errors'
 require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/grant_strategies'
 require_dependency 'carto/oauth_provider/response_strategies'
@@ -20,6 +21,8 @@ module Carto
     REQUIRED_TOKEN_PARAMS = ['client_id', 'client_secret', 'grant_type'].freeze
     REQUIRED_AUTHORIZE_PARAMS = ['client_id', 'state', 'response_type'].freeze
 
+    SILENT_PROMPT_VALUE = 'none'.freeze
+
     ssl_required
 
     layout 'frontend'
@@ -27,15 +30,18 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
-    before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
+    before_action :login_required_any_user, only: [:consent, :authorize]
+    before_action :validate_prompt_request, only: [:consent]
     before_action :reject_client_secret, only: [:consent, :authorize]
     before_action :ensure_required_authorize_params, only: [:consent, :authorize]
     before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
+
+    after_action :allow_silent_flow_iframe, only: :consent
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from Carto::MissingParamsError, with: :rescue_missing_params_error
@@ -43,10 +49,9 @@ module Carto
 
     def consent
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
+      raise OauthProvider::Errors::AccessDenied.new if silent_flow?
 
-      if @oauth_app_user
-        return create_authorization_code if @oauth_app_user.authorized?(@scopes)
-      elsif @oauth_app
+      unless @oauth_app_user
         oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(oauth_app_user)
       end
@@ -72,6 +77,11 @@ module Carto
       access_token, refresh_token = grant_strategy.authorize!(@oauth_app, params)
 
       render(json: OauthProvider::TokenPresenter.new(access_token, refresh_token: refresh_token).to_hash)
+    end
+
+    def not_authorized
+      raise OauthProvider::Errors::LoginRequired.new if silent_flow?
+      super
     end
 
     private
@@ -153,7 +163,7 @@ module Carto
     end
 
     def load_oauth_app_user
-      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.id)
+      @oauth_app_user = @oauth_app.oauth_app_users.find_by_user_id(current_viewer.try(:id))
     end
 
     def verify_client_secret
@@ -180,12 +190,26 @@ module Carto
       end
     end
 
+    def validate_prompt_request
+      if params[:prompt].present?
+        raise OauthProvider::Errors::InvalidRequest.new("Only 'prompt=none' is supported") unless silent_flow?
+      end
+    end
+
+    def silent_flow?
+      params[:prompt] == SILENT_PROMPT_VALUE
+    end
+
     def grant_strategy
       GRANT_STRATEGIES[params[:grant_type]]
     end
 
     def response_strategy
       RESPONSE_STRATEGIES[params[:response_type]]
+    end
+
+    def allow_silent_flow_iframe
+      response.headers.except! 'X-Frame-Options' if silent_flow?
     end
   end
 end

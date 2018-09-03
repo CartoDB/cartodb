@@ -2,8 +2,8 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
     <i class="CDB-IconFont CDB-IconFont-add"></i>
   </div>
-  <h2 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace">Add datasets</h2>
-  <h3 class="CDB-Text CDB-Size-medium u-altTextColor">Select your datasets</h3>
+  <h2 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace"><%= _t('dashboard.views.dashboard.dialogs.create_dialog.add_datasets') %></h2>
+  <h3 class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('dashboard.views.dashboard.dialogs.create_dialog.select_datasets') %></h3>
 </div>
 <div class="Filters Filters--navListing Filters--static js-navigation"></div>
 <div class="js-content-container Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder"></div>

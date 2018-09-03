@@ -6,21 +6,23 @@
     <% } %>
   </div>
   <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl">
-    You are about to <%- lockOrUnlockStr %> <%- itemsCount %> <%- contentTypePluralized %>.
+    <%= _t('dashboard.views.dashboard.dialogs.change_lock.about_' + contentType, {lockOrUnlockStr: lockOrUnlockStr, smart_count: itemsCount})}) %>
   </h3>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
     <% if (areLocked) { %>
-      Unlocking <%- thisOrTheseStr %> <%- contentTypePluralized %> will show <%- itOrThemStr %> on the dashboard again.
+      <%= _t('dashboard.views.dashboard.dialogs.change_lock.unlock_' + contentType, {smart_count: itemsCount}) %>
+      <%= _t('dashboard.views.dashboard.dialogs.change_lock.reveal', {smart_count: itemsCount}) %>
     <% } else { %>
-      Locking <%- thisOrTheseStr %> <%- contentTypePluralized %> will hide <%- itOrThemStr %> from the dashboard. Reveal <%- itOrThemStr %> using the header menu or the bottom link.
+      <%= _t('dashboard.views.dashboard.dialogs.change_lock.lock_' + contentType, {smart_count: itemsCount}) %>
+      <%= _t('dashboard.views.dashboard.dialogs.change_lock.reveal', {smart_count: itemsCount}) %>
     <% } %>
   </p>
 </div>
 <div class="Dialog-footer Dialog-footer--simple u-inner">
   <button class="CDB-Button CDB-Button--secondary js-cancel">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">cancel</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.dialogs.change_lock.cancel') %></span>
   </button>
   <button class="CDB-Button CDB-Button--primary CDB-Button--<%- positiveOrNegativeStr %> u-lSpace--xl js-ok">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Ok, <%- lockOrUnlockStr %></span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.dialogs.change_lock.ok') %><%- lockOrUnlockStr %></span>
   </button>
 </div>

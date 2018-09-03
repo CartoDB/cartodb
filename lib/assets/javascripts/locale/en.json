@@ -3386,6 +3386,82 @@
         "create_map_model": {
           "untitled_map": "Untitled Map"
         },
+        "dialogs": {
+          "change_lock": {
+            "about_maps": "You are about to %{lockOrUnlockStr} %{smart_count} map. |||| You are about to %{lockOrUnlockStr} %{smart_count} maps.",
+            "about_datasets": "You are about to %{lockOrUnlockStr} %{smart_count} dataset. |||| You are about to %{lockOrUnlockStr} %{smart_count} datasets.",
+            "unlock_maps": "Unlocking this map will show it on the dashboard again. |||| Unlocking these %{smart_count} maps will show them on the dashboard again.",
+            "unlock_datasets": "Unlocking this dataset will show it on the dashboard again. |||| Unlocking these %{smart_count} datasets will show them on the dashboard again.",
+            "lock_maps": "Locking this map will hide it from the dashboard. |||| Locking these %{smart_count} maps will hide them from the dashboard.",
+            "lock_datasets": "Locking this dataset will hide it from the dashboard. |||| Locking these %{smart_count} datasets will hide them from the dashboard.",
+            "reveal": " Reveal it using the header menu or the bottom link. |||| Reveal them using the header menu or the bottom link.",
+            "cancel": "cancel",
+            "ok": "Ok, ",
+            "locking_maps": "Locking %{smart_count} map… |||| Locking %{smart_count} maps…",
+            "locking_datasets": "Locking %{smart_count} dataset… |||| Locking %{smart_count} datasets…",
+            "unlocking_maps": "Unlocking %{smart_count} map… |||| Unlocking %{smart_count} maps…",
+            "unlocking_datasets": "Unlocking %{smart_count} dataset… |||| Unlocking %{smart_count} datasets…",
+            "failed_lock": "Failed to lock all items",
+            "failed_unlock": "Failed to unlock all items",
+            "lock": "lock",
+            "unlock": "unlock"
+          },
+          "change_privacy": {
+            "privacy": " privacy",
+            "protect_map": "Although we believe in the power of open data, you can also protect your map.",
+            "protect_dataset": "Although we believe in the power of open data, you can also protect your dataset.",
+            "placeholder": "Type your password here",
+            "advantage": "To get advantage of all the privacy options you should upgrade your plan",
+            "trial": "14 days Free trial",
+            "upgrade": "upgrade",
+            "shared_with_org": "Shared with your whole organization.",
+            "shared_with": "Shared with %{smart_count} person. |||| Shared with %{smart_count} people.",
+            "open_sharing": "Open sharing settings",
+            "team_work": "Team work is always better. <a href=\"#\" class=\"js-share\">Share it with your colleagues</a>",
+            "cancel": "Cancel",
+            "save": "Save settings",
+            "option": "Option can not be disabled and selected at the same time",
+            "public_desc": "Anyone can find and view.",
+            "link_desc": "Anyone with the link can view, no password needed.",
+            "passwd_desc": "Anyone with the password can view.",
+            "private_desc": "Only you can access."
+          },
+          "create_dialog": {
+            "add_datasets": "Add datasets",
+            "select_datasets": "Select your datasets",
+            "click_import": " Once you click over one of these items it will be imported to your account.",
+            "data_selected": "%{smart_count} dataset selected |||| %{smart_count} datasets selected",
+            "max_layers": "You have reached the max layers for a new map (%{maxSelectedDatasets} max)",
+            "upgrade": "upgrade",
+            "create_map": "create map",
+            "start_template": "New on CARTO? Start with one of <a href=\"#/templates\" class=\"js-templates\">our templates</a>.",
+            "connect": "connect dataset"
+          },
+          "delete_items": {
+            "about_map": "You are about to delete %{smart_count} map. |||| You are about to delete %{smart_count} maps.",
+            "about_dataset": "You are about to delete %{smart_count} dataset. |||| You are about to delete %{smart_count} datasets.",
+            "about_named_map": "You are about to delete the %{firstItemName} map.",
+            "about_named_dataset": "You are about to delete the %{firstItemName} dataset.",
+            "affected_maps": "Doing so will imply changes in <strong>%{smart_count} affected map</strong>. |||| Doing so will imply changes in <strong>%{smart_count} affected maps</strong>.",
+            "recover_map": "The deleted map cannot be recovered, be sure before proceeding. |||| The deleted maps cannot be recovered, be sure before proceeding.",
+            "recover_dataset": "The deleted dataset cannot be recovered, be sure before proceeding. |||| The deleted datasets cannot be recovered, be sure before proceeding.",
+            "export": "We recommend you to export your dataset before deleting it.",
+            "lost_map": "Some users will lose access to your map |||| Some users will lose access to your maps",
+            "lost_datase": "Some users will lose access to your dataset |||| Some users will lose access to your datasets",
+            "cancel": "Cancel",
+            "delete": "Ok, delete"
+          },
+          "duplicate_vis": {
+            "duplicating": "Duplicating your map",
+            "error": "Sorry, something went wrong, but we're not sure why."
+          },
+          "share": {
+            "cancel": "cancel",
+            "save": "Save settings",
+            "privacy": " privacy",
+            "sel_colleagues": "Select your colleagues you want to give access in the list below"
+          }
+        },
         "filters": {
           "shared": "Shared with you",
           "liked": "Liked",
@@ -3408,6 +3484,18 @@
         "header_view_model": {
           "insight": "Deep insights"
         },
+        "imports": {
+          "show": "SHOW",
+          "completed": " completed!",
+          "warnings": "Some warnings were produced for ",
+          "from": " from "
+        },
+        "list_view": {
+          "read": "READ",
+          "learn": "Learn more",
+          "and_more": "and %{smart_count} more",
+          "no_tags": "No tags"
+        },
         "map_templates": {
           "merge": "Merge your current dataset with another, existing dataset.",
           "style": "Style your layer based on column values."
@@ -3416,6 +3504,10 @@
           "hello": "Hello, ",
           "welcome": "Welcome to CARTO!",
           "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map."
+        },
+        "sync_dataset": {
+          "check_sync": "Checking synchronization",
+          "saving": "Saving…"
         }
       },
       "data_library": {

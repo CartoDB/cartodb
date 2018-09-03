@@ -2,20 +2,20 @@
   <div class="ImportItem-text is-failed" title="<%- name %>">
     Ouch! Error connecting <%- name %> <% if (service) { %> from <%- service %> <% } %>
   </div>
-  <button class="CDB-Button CDB-Button--secondary CDB-Button--small js-show_error"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small">SHOW</span></button>
+  <button class="CDB-Button CDB-Button--secondary CDB-Button--small js-show_error"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%= _t('dashboard.views.dashboard.imports.show') %></span></button>
   <button class="CDB-Shape js-close">
     <div class="CDB-Shape-close is-blue is-large"></div>
   </button>
 <% } else if (completed && !warnings) { %>
   <div class="ImportItem-text is-completed" title="<%- name %>">
-    <%- name %> <% if (service && service != "twitter_search") { %> from <%- service %> <% } %> completed!
+    <%- name %> <% if (service && service != "twitter_search") { %> from <%- service %> <% } %><%= _t('dashboard.views.dashboard.imports.completed') %>
   </div>
   <% if (showSuccessDetailsButton) { %>
     <% if (service && service === "twitter_search") { %>
-      <button class="CDB-Button CDB-Button--secondary CDB-Button--small js-show_stats"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small">SHOW</span></button>
+      <button class="CDB-Button CDB-Button--secondary CDB-Button--small js-show_stats"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%= _t('dashboard.views.dashboard.imports.show') %></span></button>
     <% } else if (tables_created_count === 1) { %>
 
-      <a href="<%- url %>" class="CDB-Button CDB-Button--secondary CDB-Button--small js-show"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small">SHOW</span></a>
+      <a href="<%- url %>" class="CDB-Button CDB-Button--secondary CDB-Button--small js-show"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%= _t('dashboard.views.dashboard.imports.show') %></span></a>
     <% } %>
   <% } %>
   <button class="CDB-Shape js-close">
@@ -23,9 +23,9 @@
   </button>
 <% } else if (completed && warnings) { %>
   <div class="ImportItem-text has-warnings" title="<%- name %>">
-    Some warnings were produced for <%- name %> <% if (service) { %> from <%- service %> <% } %>
+    <%= _t('dashboard.views.dashboard.imports.warnings') %><%- name %> <% if (service) { %><%= _t('dashboard.views.dashboard.imports.from') %><%- service %> <% } %>
   </div>
-  <button class="CDB-Button CDB-Button--secondary CDB-Button--small js-show_warnings"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small">SHOW</span></button>
+  <button class="CDB-Button CDB-Button--secondary CDB-Button--small js-show_warnings"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%= _t('dashboard.views.dashboard.imports.show') %></span></button>
   <button class="CDB-Shape js-close">
     <div class="CDB-Shape-close is-blue is-large"></div>
   </button>

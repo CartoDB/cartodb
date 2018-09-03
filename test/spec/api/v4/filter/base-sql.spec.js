@@ -122,6 +122,19 @@ describe('api/v4/filter/base-sql', function () {
     });
   });
 
+  describe('.resetFilters', function () {
+    it('should reset applied filters', function () {
+      const sqlFilter = new SQLBase(column);
+      sqlFilter.ALLOWED_FILTERS = ['in'];
+      sqlFilter.PARAMETER_SPECIFICATION = { in: PARAMETER_SPECIFICATION.in };
+      sqlFilter.set('in', ['test_filter']);
+
+      sqlFilter.resetFilters();
+
+      expect(sqlFilter._filters).toEqual({});
+    });
+  });
+
   describe('.$getSQL', function () {
     it('should return SQL string containing all the filters joined by AND clause', function () {
       const sqlFilter = new SQLBase(column);

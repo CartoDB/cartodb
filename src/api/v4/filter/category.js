@@ -1,8 +1,8 @@
 const SQLBase = require('./base-sql');
 
 const CATEGORY_COMPARISON_OPERATORS = {
-  in: { parameters: [{ name: 'in', allowedTypes: ['Array', 'String'] }] },
-  notIn: { parameters: [{ name: 'notIn', allowedTypes: ['Array', 'String'] }] },
+  in: { parameters: [{ name: 'in', allowedTypes: ['Array', 'String', 'Object'] }] },
+  notIn: { parameters: [{ name: 'notIn', allowedTypes: ['Array', 'String', 'Object'] }] },
   eq: { parameters: [{ name: 'eq', allowedTypes: ['String', 'Number', 'Date'] }] },
   notEq: { parameters: [{ name: 'notEq', allowedTypes: ['String', 'Number', 'Date'] }] },
   like: { parameters: [{ name: 'like', allowedTypes: ['String'] }] },
@@ -20,8 +20,10 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  *
  * @param {string} column - The column which the filter will be performed against
  * @param {object} filters - The filters you want to apply to the table rows
- * @param {string[]} filters.in - Return rows whose column value is included within the provided values
- * @param {string[]} filters.notIn - Return rows whose column value is included within the provided values
+ * @param {(string[]|object)} filters.in - Return rows whose column value is included within the provided values
+ * @param {string} filters.in.query - Return rows whose column value is included within query results
+ * @param {(string[]|object)} filters.notIn - Return rows whose column value is included within the provided values
+ * @param {string} filters.notIn.query - Return rows whose column value is not included within query results
  * @param {(string|number|Date)} filters.eq - Return rows whose column value is equal to the provided value
  * @param {(string|number|Date)} filters.notEq - Return rows whose column value is not equal to the provided value
  * @param {string} filters.like - Return rows whose column value is like the provided value
@@ -31,10 +33,21 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  *
  * @example
  * // Create a filter by room type, showing only private rooms
- * const roomTypeFilter = new carto.filter.Category('room_type', { eq: 'Entire home/apt' });
+ * const roomTypeFilter = new carto.filter.Category('room_type', { eq: 'Private Room' });
+ * airbnbDataset.addFilter(roomTypeFilter);
+ *
+ * @example
+ * // Create a filter by room type, showing only private rooms and entire apartments
+ * const roomTypeFilter = new carto.filter.Category('room_type', { in: ['Private Room', 'Entire home/apt'] });
+ * airbnbDataset.addFilter(roomTypeFilter);
+ *
+ * @example
+ * // Create a filter by room type, showing results included in subquery
+ * const roomTypeFilter = new carto.filter.Category('room_type', { in: { query: 'SELECT distinct(type) FROM rooms' } });
  * airbnbDataset.addFilter(roomTypeFilter);
  *
  * @class Category
+ * @extends carto.filter.Base
  * @memberof carto.filter
  * @api
  */
@@ -52,8 +65,8 @@ class Category extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      in: '<% if (value) { %><%= column %> IN (<%= value %>)<% } else { %>true = false<% } %>',
-      notIn: '<% if (value) { %><%= column %> NOT IN (<%= value %>)<% } %>',
+      in: '<% if (value) { %><%= column %> IN (<%= value.query || value %>)<% } else { %>true = false<% } %>',
+      notIn: '<% if (value) { %><%= column %> NOT IN (<%= value.query || value %>)<% } %>',
       eq: '<%= column %> = <%= value %>',
       notEq: '<%= column %> != <%= value %>',
       like: '<%= column %> LIKE <%= value %>',
@@ -77,6 +90,14 @@ class Category extends SQLBase {
    *
    * @memberof Category
    * @method setFilters
+   * @api
+   */
+
+  /**
+   * Remove all conditions from current filter
+   *
+   * @memberof Category
+   * @method resetFilters
    * @api
    */
 }

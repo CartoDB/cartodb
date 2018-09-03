@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 4.1.4 - 2018-09-03
+### Added
+- Source Filters: allow to filter category columns by subquery. [#2186](https://github.com/CartoDB/carto.js/issues/2186)
+- Source Filters: reset filter conditions with .resetFilters(). [#2186](https://github.com/CartoDB/carto.js/issues/2186)
+
+### Fixed
+- Source Filters: allow to combine empty filters. [#2186](https://github.com/CartoDB/carto.js/issues/2186)
 
 ## 4.1.3 - 2018-08-09
 ### Fixed

@@ -12,6 +12,8 @@ const DEFAULT_JOIN_OPERATOR = 'AND';
  * **This object should not be used directly.**
  *
  * @class FiltersCollection
+ * @abstract
+ * @extends carto.filter.Base
  * @memberof carto.filter
  * @api
  */
@@ -90,14 +92,16 @@ class FiltersCollection extends Base {
   }
 
   $getSQL () {
-    const sql = this._filters.map(filter => filter.$getSQL())
-      .join(` ${this.JOIN_OPERATOR || DEFAULT_JOIN_OPERATOR} `);
+    const sqlFilters = this._filters.map(filter => filter.$getSQL())
+      .filter(sqlString => Boolean(sqlString));
 
-    if (this.count() > 1) {
-      return `(${sql})`;
+    const joinedFilters = sqlFilters.join(` ${this.JOIN_OPERATOR || DEFAULT_JOIN_OPERATOR} `);
+
+    if (sqlFilters.length > 1) {
+      return `(${joinedFilters})`;
     }
 
-    return sql;
+    return joinedFilters;
   }
 
   _triggerFilterChange (filters) {

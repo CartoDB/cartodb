@@ -21,6 +21,8 @@ echo "Uploading to npm..."
 
 node scripts/generate-package-json.js
 cp README.md dist/public
+cp CHANGELOG.md dist/public
+cp LICENSE dist/public
 
 cd dist/public
 

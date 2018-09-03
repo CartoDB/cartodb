@@ -400,9 +400,7 @@ class User < Sequel::Model
        changes.include?(:twitter_username) || changes.include?(:location)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
-    if changes.include?(:database_host)
-      CartoDB::UserModule::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
-    elsif changes.include?(:database_schema)
+    if changes.include?(:database_schema)
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 

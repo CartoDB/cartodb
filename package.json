@@ -58,7 +58,6 @@
     "babel-preset-es2015": "~6.24.1",
     "babelify": "^7.3.0",
     "browserify": "13.0.0",
-    "carto-devlog": "^1.0.4",
     "cartoassets": "CartoDB/CartoAssets#master",
     "eslint": "~4.8.0",
     "eslint-config-semistandard": "~11.0.0",
@@ -163,9 +162,7 @@
     "bump": "npm version prerelease",
     "bump:minor": "npm version minor",
     "bump:patch": "npm version patch",
-    "xversion": "npm run devlog && git add DEVLOG.md",
     "postversion": "git push origin HEAD --follow-tags",
-    "devlog": "carto-devlog -s d58f78f54 -b 'Bump version to' -m 'Merge pull request' > DEVLOG.md",
     "release": "./scripts/release.sh"
   },
   "watch": {

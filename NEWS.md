@@ -25,6 +25,7 @@ Development
   * Allow restricting application to only a set of organizations (#14180)
 
 ### Bug fixes / enhancements
+* Update content of twitter:site meta tag (https://github.com/CartoDB/cartodb/issues/14264)
 * Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
 * Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
 * Fix OAuth login for the organizations (#14238)

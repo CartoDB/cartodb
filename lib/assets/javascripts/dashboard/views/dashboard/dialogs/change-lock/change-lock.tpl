@@ -6,7 +6,7 @@
     <% } %>
   </div>
   <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl">
-    <%= _t('dashboard.views.dashboard.dialogs.change_lock.about_' + contentType, {lockOrUnlockStr: lockOrUnlockStr, smart_count: itemsCount})}) %>
+    <%= _t('dashboard.views.dashboard.dialogs.change_lock.about_' + contentType, {lockOrUnlockStr: lockOrUnlockStr, smart_count: itemsCount}) %>
   </h3>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
     <% if (areLocked) { %>

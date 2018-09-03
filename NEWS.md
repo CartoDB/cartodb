@@ -14,6 +14,7 @@ Development
 - Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
 - Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
 - Add another error to OOM detection in imports (#14259)
+- Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
 
 4.20.1 (2018-08-24)
 -------------------

@@ -1,10 +1,10 @@
 <div class="FormAccount-rowLabel IconActions">
   <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor u-rSpace--xl js-iconMainLabel is-hidden"></label>
-  <label class="CDB-Text CDB-Size-small u-rSpace--xl u-altTextColor js-iconsInfo">These icons can be used as markers.</label>
+  <label class="CDB-Text CDB-Size-small u-rSpace--xl u-altTextColor js-iconsInfo"><%= _t('dashboard.views.organization.icon_picker.use_as_markers') %></label>
   <label class="CDB-Text CDB-Size-small u-rSpace--xl u-altTextColor js-runningInfo is-hidden"></label>
-  <label class="CDB-Text CDB-Size-medium u-rSpace--xl js-selectAllIcons is-hidden"><a href="#/select_all">Select all</a></label>
-  <label class="CDB-Text CDB-Size-medium u-rSpace--xl js-deselectAllIcons is-hidden"><a href="#/deselect_all">Deselect all</a></label>
-  <label class="CDB-Text CDB-Size-medium js-deleteIcons is-hidden"><a class="IconText is--critical" href="#/delete_icons">Delete icons...</a></label>
+  <label class="CDB-Text CDB-Size-medium u-rSpace--xl js-selectAllIcons is-hidden"><a href="#/select_all"><%= _t('dashboard.views.organization.icon_picker.sel_all') %></a></label>
+  <label class="CDB-Text CDB-Size-medium u-rSpace--xl js-deselectAllIcons is-hidden"><a href="#/deselect_all"><%= _t('dashboard.views.organization.icon_picker.desel_all') %></a></label>
+  <label class="CDB-Text CDB-Size-medium js-deleteIcons is-hidden"><a class="IconText is--critical" href="#/delete_icons"><%= _t('dashboard.views.organization.icon_picker.del_icons') %></a></label>
 </div>
 <div class="FormAccount-rowData js-asset-icons">
   <ul class="IconList js-items">

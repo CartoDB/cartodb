@@ -7,16 +7,16 @@
     <div class="Dialog-headerIcon Dialog-headerIcon--negative">
       <i class="CDB-IconFont CDB-IconFont-keys"></i>
     </div>
-    <p class="Dialog-headerTitle">You are about to delete your application</p>
-    <p class="Dialog-headerText">Remember, once you delete it there is no going back</p>
+    <p class="Dialog-headerTitle"><%- _t('dashboard.views.mobile_maps.about_del') %></p>
+    <p class="Dialog-headerText"><%- _t('dashboard.views.mobile_maps.remember') %></p>
   </div>
 
   <div class="Dialog-footer u-inner">
     <button type="button" class="CDB-Button CDB-Button--secondary cancel">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('dashboard.views.mobile_maps.cancel') %></span>
     </button>
     <button type="submit" class="CDB-Button CDB-Button--error js-ok">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete this application</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('dashboard.views.mobile_maps.delete') %></span>
     </button>
   </div>
 </form>

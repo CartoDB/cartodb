@@ -7,12 +7,11 @@
     <div class="Dialog-headerIcon Dialog-headerIcon--negative">
       <i class="CDB-IconFont CDB-IconFont-defaultUser"></i>
     </div>
-    <p class="Dialog-headerTitle">You are about to delete <%- username %>'s account.</p>
+    <p class="Dialog-headerTitle"><%= _t('dashboard.views.organization.about_del_usr', {username: username}) %></p>
     <p class="Dialog-headerText">
-      By deleting this account all <%- username %>'s maps and datasets will be lost,
-      but extra credits will be reassigned to your user.
+      <%= _t('dashboard.views.organization.all_lost', {username: username}) %>
       <% if (passwordNeeded) { %>
-        Type your password, please.
+        <%= _t('dashboard.views.organization.type_passwd') %>
       <% } %>
     </p>
   </div>
@@ -21,7 +20,7 @@
     <div class="CDB-Text Dialog-body">
       <div class="Form-row Form-row--centered has-label">
         <div class="Form-rowLabel">
-          <label class="Form-label">Your password</label>
+          <label class="Form-label"><%- _t('dashboard.views.organization.your_passwd') %></label>
         </div>
         <div class="Form-rowData">
           <input type="password" id="deletion_password_confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
@@ -32,10 +31,10 @@
 
   <div class="CDB-Text Dialog-footer u-inner">
     <button class="CDB-Button CDB-Button--secondary Dialog-footerBtn js-cancel" type="button">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('dashboard.views.organization.cancel') %></span>
     </button>
     <button type="submit" class="CDB-Button CDB-Button--error js-ok">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Yes, delete <%- username %> account</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('dashboard.views.organization.delete_usr', {username: username}) %></span>
     </button>
   </div>
 </form>

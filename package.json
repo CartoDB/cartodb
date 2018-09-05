@@ -1,6 +1,6 @@
 {
   "name": "internal-carto.js",
-  "version": "4.1.5-0",
+  "version": "4.1.5",
   "description": "CARTO javascript library",
   "repository": {
     "type": "git",

@@ -91,10 +91,10 @@ class Range extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      lt: '<%= column %> < <%= value.query || value %>',
-      lte: '<%= column %> <= <%= value.query || value %>',
-      gt: '<%= column %> > <%= value.query || value %>',
-      gte: '<%= column %> >= <%= value.query || value %>',
+      lt: '<%= column %> < <%= value.query ? "(" + value.query + ")" : value %>',
+      lte: '<%= column %> <= <%= value.query ? "(" + value.query + ")" : value %>',
+      gt: '<%= column %> > <%= value.query ? "(" + value.query + ")" : value %>',
+      gte: '<%= column %> >= <%= value.query ? "(" + value.query + ")" : value %>',
       between: '<%= column %> BETWEEN <%= value.min %> AND <%= value.max %>',
       notBetween: '<%= column %> NOT BETWEEN <%= value.min %> AND <%= value.max %>',
       betweenSymmetric: '<%= column %> BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>',

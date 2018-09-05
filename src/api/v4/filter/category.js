@@ -69,8 +69,8 @@ class Category extends SQLBase {
     return {
       in: '<% if (value) { %><%= column %> IN (<%= value.query || value %>)<% } else { %>true = false<% } %>',
       notIn: '<% if (value) { %><%= column %> NOT IN (<%= value.query || value %>)<% } %>',
-      eq: '<%= column %> = <%= value.query || value %>',
-      notEq: '<%= column %> != <%= value.query || value %>',
+      eq: '<%= column %> = <%= value.query ? "(" + value.query + ")" : value %>',
+      notEq: '<%= column %> != <%= value.query ? "(" + value.query + ")" : value %>',
       like: '<%= column %> LIKE <%= value %>',
       similarTo: '<%= column %> SIMILAR TO <%= value %>'
     };

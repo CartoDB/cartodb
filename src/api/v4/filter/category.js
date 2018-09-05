@@ -3,8 +3,8 @@ const SQLBase = require('./base-sql');
 const CATEGORY_COMPARISON_OPERATORS = {
   in: { parameters: [{ name: 'in', allowedTypes: ['Array', 'String', 'Object'] }] },
   notIn: { parameters: [{ name: 'notIn', allowedTypes: ['Array', 'String', 'Object'] }] },
-  eq: { parameters: [{ name: 'eq', allowedTypes: ['String', 'Number', 'Date'] }] },
-  notEq: { parameters: [{ name: 'notEq', allowedTypes: ['String', 'Number', 'Date'] }] },
+  eq: { parameters: [{ name: 'eq', allowedTypes: ['String', 'Number', 'Date', 'Object'] }] },
+  notEq: { parameters: [{ name: 'notEq', allowedTypes: ['String', 'Number', 'Date', 'Object'] }] },
   like: { parameters: [{ name: 'like', allowedTypes: ['String'] }] },
   similarTo: { parameters: [{ name: 'similarTo', allowedTypes: ['String'] }] }
 };
@@ -24,8 +24,10 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(CATEGORY_COMPARISON_OPERATORS)
  * @param {string} filters.in.query - Return rows whose column value is included within query results
  * @param {(string[]|object)} filters.notIn - Return rows whose column value is included within the provided values
  * @param {string} filters.notIn.query - Return rows whose column value is not included within query results
- * @param {(string|number|Date)} filters.eq - Return rows whose column value is equal to the provided value
- * @param {(string|number|Date)} filters.notEq - Return rows whose column value is not equal to the provided value
+ * @param {(string|number|Date|object)} filters.eq - Return rows whose column value is equal to the provided value
+ * @param {string} filters.eq.query - Return rows whose column value is equal to the value returned by query
+ * @param {(string|number|Date|object)} filters.notEq - Return rows whose column value is not equal to the provided value
+ * @param {string} filters.notEq.query - Return rows whose column value is not equal to the value returned by query
  * @param {string} filters.like - Return rows whose column value is like the provided value
  * @param {string} filters.similarTo - Return rows whose column value is similar to the provided values
  * @param {object} [options]
@@ -67,8 +69,8 @@ class Category extends SQLBase {
     return {
       in: '<% if (value) { %><%= column %> IN (<%= value.query || value %>)<% } else { %>true = false<% } %>',
       notIn: '<% if (value) { %><%= column %> NOT IN (<%= value.query || value %>)<% } %>',
-      eq: '<%= column %> = <%= value %>',
-      notEq: '<%= column %> != <%= value %>',
+      eq: '<%= column %> = <%= value.query ? "(" + value.query + ")" : value %>',
+      notEq: '<%= column %> != <%= value.query ? "(" + value.query + ")" : value %>',
       like: '<%= column %> LIKE <%= value %>',
       similarTo: '<%= column %> SIMILAR TO <%= value %>'
     };

@@ -35,9 +35,19 @@ describe('api/v4/filter/category', function () {
       expect(categoryFilter.$getSQL()).toBe("fake_column = 'Category 1'");
     });
 
+    it('EQ with subquery', function () {
+      const categoryFilter = new carto.filter.Category('fake_column', { eq: { query: 'SELECT avg(price) FROM neighbourhoods' } });
+      expect(categoryFilter.$getSQL()).toBe('fake_column = (SELECT avg(price) FROM neighbourhoods)');
+    });
+
     it('NOT EQ', function () {
       const categoryFilter = new carto.filter.Category('fake_column', { notEq: 'Category 1' });
       expect(categoryFilter.$getSQL()).toBe("fake_column != 'Category 1'");
+    });
+
+    it('NOT EQ with subquery', function () {
+      const categoryFilter = new carto.filter.Category('fake_column', { notEq: { query: 'SELECT avg(price) FROM neighbourhoods' } });
+      expect(categoryFilter.$getSQL()).toBe('fake_column != (SELECT avg(price) FROM neighbourhoods)');
     });
 
     it('LIKE', function () {

@@ -1,10 +1,10 @@
 const SQLBase = require('./base-sql');
 
 const RANGE_COMPARISON_OPERATORS = {
-  lt: { parameters: [{ name: 'lt', allowedTypes: ['Number', 'Date'] }] },
-  lte: { parameters: [{ name: 'lte', allowedTypes: ['Number', 'Date'] }] },
-  gt: { parameters: [{ name: 'gt', allowedTypes: ['Number', 'Date'] }] },
-  gte: { parameters: [{ name: 'gte', allowedTypes: ['Number', 'Date'] }] },
+  lt: { parameters: [{ name: 'lt', allowedTypes: ['Number', 'Date', 'Object'] }] },
+  lte: { parameters: [{ name: 'lte', allowedTypes: ['Number', 'Date', 'Object'] }] },
+  gt: { parameters: [{ name: 'gt', allowedTypes: ['Number', 'Date', 'Object'] }] },
+  gte: { parameters: [{ name: 'gte', allowedTypes: ['Number', 'Date', 'Object'] }] },
   between: {
     parameters: [
       { name: 'between.min', allowedTypes: ['Number', 'Date'] },
@@ -42,10 +42,14 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(RANGE_COMPARISON_OPERATORS));
  *
  * @param {string} column - The column to filter rows
  * @param {object} filters - The filters you want to apply to the column
- * @param {(number|Date)} filters.lt - Return rows whose column value is less than the provided value
- * @param {(number|Date)} filters.lte - Return rows whose column value is less than or equal to the provided value
- * @param {(number|Date)} filters.gt - Return rows whose column value is greater than to the provided value
- * @param {(number|Date)} filters.gte - Return rows whose column value is greater than or equal to the provided value
+ * @param {(number|Date|object)} filters.lt - Return rows whose column value is less than the provided value
+ * @param {string} filters.lt.query - Return rows whose column value is less than the value returned by query
+ * @param {(number|Date|object)} filters.lte - Return rows whose column value is less than or equal to the provided value
+ * @param {string} filters.lte.query - Return rows whose column value is less than or equal to the value returned by query
+ * @param {(number|Date|object)} filters.gt - Return rows whose column value is greater than the provided value
+ * @param {string} filters.gt.query - Return rows whose column value is greater than the value returned by query
+ * @param {(number|Date|object)} filters.gte - Return rows whose column value is greater than or equal to the provided value
+ * @param {string} filters.gte.query - Return rows whose column value is greater than or equal to the value returned by query
  * @param {(number|Date)} filters.between - Return rows whose column value is between the provided values
  * @param {(number|Date)} filters.between.min - Lower value of the comparison range
  * @param {(number|Date)} filters.between.max - Upper value of the comparison range
@@ -87,10 +91,10 @@ class Range extends SQLBase {
 
   _getSQLTemplates () {
     return {
-      lt: '<%= column %> < <%= value %>',
-      lte: '<%= column %> <= <%= value %>',
-      gt: '<%= column %> > <%= value %>',
-      gte: '<%= column %> >= <%= value %>',
+      lt: '<%= column %> < <%= value.query || value %>',
+      lte: '<%= column %> <= <%= value.query || value %>',
+      gt: '<%= column %> > <%= value.query || value %>',
+      gte: '<%= column %> >= <%= value.query || value %>',
       between: '<%= column %> BETWEEN <%= value.min %> AND <%= value.max %>',
       notBetween: '<%= column %> NOT BETWEEN <%= value.min %> AND <%= value.max %>',
       betweenSymmetric: '<%= column %> BETWEEN SYMMETRIC <%= value.min %> AND <%= value.max %>',

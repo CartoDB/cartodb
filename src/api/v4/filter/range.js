@@ -72,6 +72,13 @@ const ALLOWED_FILTERS = Object.freeze(Object.keys(RANGE_COMPARISON_OPERATORS));
  * // Add filter to the existing source
  * airbnbDataset.addFilter(priceFilter);
  *
+ * @example
+ * // Create a filter by price, showing only listings greater than or equal to the average price
+ * const priceFilter = new carto.filter.Range('price', { gte: { query: 'SELECT avg(price) FROM listings' } });
+ *
+ * // Add filter to the existing source
+ * airbnbDataset.addFilter(priceFilter);
+ *
  * @class Range
  * @extends carto.filter.Base
  * @memberof carto.filter

@@ -7,6 +7,7 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
     record.errors[attribute] << 'only one database section is allowed' if value.count { |v| v[:type] == 'database' } > 1
+    record.errors[attribute] << 'only one dataservices section is allowed' if value.count { |v| v[:type] == 'dataservices' } > 1
   end
 end
 
@@ -183,6 +184,10 @@ module Carto
       end
     end
 
+    def data_services
+      @data_services ||= process_data_services
+    end
+
     def regenerate_token!
       if master?
         # Send all master key updates through the user model, avoid circular updates
@@ -290,6 +295,13 @@ module Carto
       end
 
       table_permissions
+    end
+
+    def process_data_services
+      data_services_grants = grants.find { |v| v[:type] == 'dataservices' }
+      return nil unless data_services_grants.present?
+
+      grants.find { |v| v[:type] == 'dataservices' }[:apis]
     end
 
     def check_owned_table_permissions

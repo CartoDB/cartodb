@@ -301,7 +301,7 @@ module Carto
       data_services_grants = grants.find { |v| v[:type] == 'dataservices' }
       return nil unless data_services_grants.present?
 
-      grants.find { |v| v[:type] == 'dataservices' }[:apis]
+      grants.find { |v| v[:type] == 'dataservices' }[:services]
     end
 
     def check_owned_table_permissions

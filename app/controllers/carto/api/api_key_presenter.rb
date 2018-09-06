@@ -24,7 +24,7 @@ module Carto
         if @api_key.data_services.present?
           grants << {
             type: 'dataservices',
-            apis: @api_key.data_services
+            services: @api_key.data_services
           }
         end
 

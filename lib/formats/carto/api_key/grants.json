@@ -11,7 +11,8 @@
         "type": "string",
         "enum": [
           "apis",
-          "database"
+          "database",
+          "dataservices"
         ]
       },
       "apis": {
@@ -55,6 +56,17 @@
               }
             }
           }
+        }
+      },
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "geocoding",
+            "routing",
+            "isolines"
+          ]
         }
       }
     }

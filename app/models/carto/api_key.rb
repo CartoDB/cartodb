@@ -84,6 +84,7 @@ module Carto
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
+    after_save :save_dataserices_cdb_conf
 
     after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
@@ -255,6 +256,14 @@ module Carto
     def set_enabled_for_engine
       # We enable/disable API keys for engine usage by adding/removing them from Redis
       valid_user? ? add_to_redis : remove_from_redis
+    end
+
+    def save_dataserices_cdb_conf
+      info = {
+        "application": '',
+        "permissions": data_services
+      }
+      db_run("SELECT cartodb.cdb_conf_setconf('#{db_role}', '#{info}');")
     end
 
     private

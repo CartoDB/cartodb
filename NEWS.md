@@ -8,9 +8,13 @@ Development
 - OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
   - Add new design for OAuth consent screen (#14237)
   - Limit the number of simultaneous refersh tokens (#14243)
+  - Silent flow (#14244)
 
 ### Bug fixes / enhancements
+- Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
 - Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+- Add another error to OOM detection in imports (#14259)
+- Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
 
 4.20.1 (2018-08-24)
 -------------------
@@ -22,6 +26,7 @@ Development
   * Allow restricting application to only a set of organizations (#14180)
 
 ### Bug fixes / enhancements
+* Update content of twitter:site meta tag (https://github.com/CartoDB/cartodb/issues/14264)
 * Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
 * Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
 * Fix OAuth login for the organizations (#14238)

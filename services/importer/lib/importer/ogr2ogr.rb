@@ -132,6 +132,7 @@ module CartoDB
 
       def file_too_big?
         (exit_code == 256 && command_output =~ /calloc failed/i) ||
+          (exit_code == 256 && command_output =~ /out of memory/i) ||
           (exit_code == 134) ||
           (exit_code == 139) ||
           (exit_code == 35072 && command_output =~ /Killed/i) ||

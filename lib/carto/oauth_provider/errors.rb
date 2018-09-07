@@ -68,6 +68,12 @@ module Carto
           super('invalid_client', 'Invalid client ID or secret')
         end
       end
+
+      class LoginRequired < BaseError
+        def initialize
+          super('login_required', 'The user must be logged in')
+        end
+      end
     end
   end
 end

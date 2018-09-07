@@ -1,3 +1,5 @@
+const _ = require('underscore');
+
 /**
   * Gets the value at path of object. If the resolved value is undefined, the defaultValue is returned in its place.
   * @param {Object} object The object to query.
@@ -11,5 +13,5 @@ module.exports = function (object, path, defaultValue) {
     return (a || {})[b];
   }, object);
 
-  return value || defaultValue;
+  return _.isUndefined(value) ? defaultValue : value;
 };

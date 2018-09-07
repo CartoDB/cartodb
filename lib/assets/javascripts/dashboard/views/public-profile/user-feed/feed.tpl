@@ -5,4 +5,4 @@
   </div>
   <ul class="js-items"></ul>
 </div>
-<button class="Button Button--gray Button--centered is-hidden js-more">View more</button>
+<button class="Button Button--gray Button--centered is-hidden js-more"><%= _t('dashboard.views.public_profile.user_feed.view_more') %></button>

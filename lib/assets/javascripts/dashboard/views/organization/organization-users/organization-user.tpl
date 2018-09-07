@@ -11,15 +11,15 @@
         <div class="u-flex u-alignCenter">
           <h3 class="CDB-Text u-ellipsLongText CDB-Size-medium is-semibold u-rSpace" title="<%- username %>"><%- username %></h3>
           <% if (isOwner) { %>
-            <span class="UserRoleIndicator UserRoleIndicator--filled is-green u-lSpace">OWNER</span>
+            <span class="UserRoleIndicator UserRoleIndicator--filled is-green u-lSpace"><%= _t('dashboard.views.organization.org_users.owner') %></span>
           <% } else if (isAdmin) { %>
-            <span class="UserRoleIndicator UserRoleIndicator--filled is-grey u-lSpace">ADMIN</span>
+            <span class="UserRoleIndicator UserRoleIndicator--filled is-grey u-lSpace"><%= _t('dashboard.views.organization.org_users.admin') %></span>
           <% } %>
           <span class="UserRoleIndicator u-altTextColor u-lSpace">
             <% if (isViewer) { %>
-              VIEWER
+              <%= _t('dashboard.views.organization.org_users.viewer') %>
             <% } else { %>
-              BUILDER
+              <%= _t('dashboard.views.organization.org_users.viewer') %>
             <% } %>
           </span>
         </div>

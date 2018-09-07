@@ -1,15 +1,15 @@
 <div class='inner'>
-  <h1><a href='https://carto.com' class='logo' id='the_logo'>CARTO</a></h1>
+  <h1><a href='https://carto.com' class='logo' id='the_logo'><%= _t('carto_name') %></a></h1>
   <ul class='options'>
     <% if (!username && !isMobileDevice) { %>
-      <li><a href='https://carto.com/learn/guides' class='guides'>Guides</a></li>
+      <li><%= _t('dashboard.views.public_dataset.public_header.guides') %></li>
     <% } %>
 
     <% if (!username) { %>
       <% if ( !isCartoDBHosted ) { %>
-        <li><a class='signup' href='https://carto.com/signup'>Sign up</a><li>
+        <li><%= _t('dashboard.views.public_dataset.public_header.signup') %><li>
       <% } %>
-      <li><a href='https://carto.com/login' class='border login'>Login</a></li>
+      <li><%= _t('dashboard.views.public_dataset.public_header.login') %></li>
     <% } else { %>
       <li>
         <a class='editor dropdown account' href='<%- urls[0] %>'>

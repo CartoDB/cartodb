@@ -8,9 +8,9 @@
           <circle class="CDB-LoaderIcon-path" cx="25" cy="25" r="20" fill="none"></circle>
         </svg>
       </div>
-      Sending
+      <%= _t('dashboard.views.organization.org_notif.sending') %>
     <% } else { %>
-      Send
+      <%= _t('dashboard.views.organization.org_notif.send') %>
     <% } %>
   </div>
 </button>

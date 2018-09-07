@@ -3,10 +3,10 @@
     <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
       <i class="CDB-IconFont CDB-IconFont-cloudDownArrow"></i>
     </div>
-    <p class="Dialog-headerTitle">Export dataset</p>
-    <p class="Dialog-headerText">Select the preferred file format.</p>
+    <p class="Dialog-headerTitle"><%= _t('dashboard.views.public_dataset.dialogs.export') %></p>
+    <p class="Dialog-headerText"><%= _t('dashboard.views.public_dataset.dialogs.sel_format') %></p>
     <% if (!isGeoreferenced) { %>
-      <p class="Dialog-headerText">To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.</p>
+      <p class="Dialog-headerText"><%= _t('dashboard.views.public_dataset.dialogs.sel_the_geom') %></p>
     <% } %>
   </div>
 
@@ -15,7 +15,7 @@
       <div class="OptionCheck">
         <div class="Checkbox js-bounds">
           <button class="Checkbox-input is-checked"></button>
-          <label class="Checkbox-label"><strong class="Checkbox-strong">Match rows with the map view.</strong> This option reduces file size.</label>
+          <label class="Checkbox-label"><%= _t('dashboard.views.public_dataset.dialogs.match_rows') %></label>
         </div>
       </div>
     <% } %>
@@ -36,7 +36,7 @@
 
   <div class="Dialog-footer Dialog-footer--simple u-inner">
     <button class="CDB-Text CDB-Button CDB-Button--secondary CDB-Size-medium u-upperCase cancel js-close">
-      <span>Cancel</span>
+      <span><%= _t('dashboard.views.public_dataset.dialogs.cancel') %></span>
     </button>
   </div>
 </div>

@@ -2,8 +2,8 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral Dialog-headerIcon--small">
     <i class="CDB-IconFont CDB-IconFont-markup"></i>
   </div>
-  <p class="Dialog-headerTitle">Query this table</p>
-  <p class="Dialog-headerText">Using the <a href="https://docs.carto.com/cartodb-platform/sql-api.html" target="_blank">CARTO SQL API</a> you can perform any SQL query to either yours or other users tables.</p>
+  <p class="Dialog-headerTitle"><%= _t('dashboard.views.public_dataset.dialogs.query') %></p>
+  <p class="Dialog-headerText"><%= _t('dashboard.views.public_dataset.dialogs.sql_api') %></p>
 </div>
 
 <div class="Dialog-body Dialog-body--tall u-inner OptionCards">
@@ -29,6 +29,6 @@
 
 <div class="Dialog-footer Dialog-footer--simple u-inner">
   <button class="CDB-Text CDB-Button CDB-Button--secondary u-upperCase CDB-Size-medium cancel js-close">
-    <span>Close</span>
+    <span><%= _t('dashboard.views.public_dataset.dialogs.close') %></span>
   </button>
 </div>

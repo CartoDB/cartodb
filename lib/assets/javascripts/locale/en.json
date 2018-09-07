@@ -3621,10 +3621,96 @@
           "no_viewers": "You can't send viewer invitations because you don't have viewer seats",
           "read_only": "Viewer users can only read, not write, data and maps",
           "invite_users": "Invite users"
+        },
+        "org_notif": {
+          "about_remove": "You are about to remove a notification",
+          "sure": "Are you sure you want to remove it?",
+          "cancel": "Cancel",
+          "ok": "Ok, remove it",
+          "sending": "Sending",
+          "send": "Send"
+        },
+        "org_users": {
+          "create": "Create User",
+          "invite": "Invite User",
+          "owner": "OWNER",
+          "admin": "ADMIN",
+          "viewer": "VIEWER",
+          "builder": "BUILDER",
+          "search": "Search",
+          "placeholder": "Search by username or email",
+          "seats": "Builder (%{assigned_seats}/%{seats}) - Viewer (%{assigned_viewer_seats}/%{viewer_seats})",
+          "add_usr": "Add users",
+          "near_limit": "You are near your seats limit. Consider to <a href=\"%{upgradeUrl}\">upgrade your account</a>.",
+          "contact": "<a href=\"mailto:sales@carto.com\">Contact us</a> if you have any questions.",
+          "upgrade": "Upgrade account",
+          "no_user_found": "Unfortunately we haven't found any user with these parameters",
+          "getting_users": "Getting users..."
+        }
+      },
+      "profile": {
+        "success": "Your changes have been saved correctly.",
+        "error": "Could not save profile, please try again."
+      },
+      "public_dataset": {
+        "col_deleted": "Your column has been deleted",
+        "col_deleting": "Deleting your column",
+        "col_added": "Your column has been added",
+        "col_adding": "Adding new column",
+        "col_renaming": "renaming column",
+        "col_renamed": "Column has been renamed",
+        "col_changing": "Changing column type",
+        "col_changed": "Column type has been changed",
+        "tbl_loading": "loading table",
+        "tbl_loaded": "loaded",
+        "dialogs": {
+          "query": "Query this table",
+          "sql_api": "Using the <a href=\"https://docs.carto.com/cartodb-platform/sql-api.html\" target=\"_blank\">CARTO SQL API</a> you can perform any SQL query to either yours or other users tables.",
+          "close": "Close",
+          "export": "Export dataset",
+          "sel_format": "Select the preferred file format.",
+          "sel_the_geom": "To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.",
+          "match_rows": "<strong class=\"Checkbox-strong\">Match rows with the map view.</strong> This option reduces file size.",
+          "cancel": "Cancel",
+          "preparing": "We are preparing your download. Depending on the size, it could take some time.",
+          "checking": "Checking georeferences…"
+        },
+        "map_view": {
+          "match": "Match rows with the map view."
+        },
+        "public_header": {
+          "guides": "<a href='https://carto.com/learn/guides' class='guides'>Guides</a>",
+          "signup": "<a class='signup' href='https://carto.com/signup'>Sign up</a>",
+          "login": "<a href='https://carto.com/login' class='border login'>Login</a>"
+        },
+        "public_table": {
+          "data_empty": "This dataset is empty",
+          "owner": "If you are the owner of this dataset remember to login and add your desired rows.",
+          "otherwise": "If not, you can't do anything interesting here."
+        },
+        "table_view": {
+          "no_result": "No results on this query",
+          "try_again": "Try with a different one or just <a href=\"#\" class=\"clearview\">clear this view</a>",
+          "loading": "Loading results",
+          "dataset_from": "<a href=\"#/export-query\" class=\"export_query\">create dataset from query</a> or <a href=\"#/clear-view\" class=\"clearview\">clear view</a>",
+          "clear": "No resulting rows for this query, <a href=\"#/clear-view\" class=\"clearview\">clear this sql view</a>",
+          "scroll_down": "Scroll down and then up",
+          "scroll_up": "Scroll up and then down",
+          "pagination": "It will fire the pagination.",
+          "loading_rows": "Loading more rows...",
+          "moment": "Just a few seconds.",
+          "saving": "Saving your edit",
+          "saved": "Sucessfully saved",
+          "error": "Oops, there has been an error saving your changes.",
+          "row_deleting": "Deleting row",
+          "row_deleted": "Sucessfully deleted"
         }
       },
       "public_profile": {
+        "load_title": "Loading visualizations",
         "user_feed": {
+          "no_public_data": "%{name} doesn't have any public data yet",
+          "view_more": "View more",
           "error": {
             "retrieve_maps": "We couldn't retrieve the maps :(",
             "reload": "Reload the page again. If the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."

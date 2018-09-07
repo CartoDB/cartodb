@@ -705,6 +705,7 @@
       "background-importer-item": {
         "completed": "completed",
         "error-connecting": "<span class='u-errorTextColor'>Error connecting</span> %{name}",
+        "warnings": "Some warnings were produced for %{name} ",
         "from": "from",
         "show": "show"
       },

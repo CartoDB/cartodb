@@ -89,6 +89,7 @@ module Carto
     after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
+    after_destroy :remove_dataserices_cdb_conf
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -264,6 +265,10 @@ module Carto
         "permissions": data_services
       }
       db_run("SELECT cartodb.cdb_conf_setconf('#{db_role}', '#{info}');")
+    end
+
+    def remove_dataserices_cdb_conf
+      db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{db_role}');")
     end
 
     private

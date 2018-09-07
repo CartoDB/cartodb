@@ -9,6 +9,7 @@ Development
   - Add new design for OAuth consent screen (#14237)
   - Limit the number of simultaneous refersh tokens (#14243)
   - Silent flow (#14244)
+- Add dataservices permissions to Auth API (#14263)
 
 ### Bug fixes / enhancements
 - Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)

@@ -3198,7 +3198,11 @@
       "navbar": {
         "user_settings": {
           "maps": "Maps",
-          "datasets": "Datasets"
+          "datasets": "Datasets",
+          "your_dashboard": "Your dashboard",
+          "your_profile": "Your public profile",
+          "account": "Account settings",
+          "close": "Close session"
         }
       },
       "paged_search": {
@@ -3664,6 +3668,9 @@
         "col_changed": "Column type has been changed",
         "tbl_loading": "loading table",
         "tbl_loaded": "loaded",
+        "view_datasets": "View your datasets",
+        "view_maps": "View your maps",
+        "close": "Close session",
         "dialogs": {
           "query": "Query this table",
           "sql_api": "Using the <a href=\"https://docs.carto.com/cartodb-platform/sql-api.html\" target=\"_blank\">CARTO SQL API</a> you can perform any SQL query to either yours or other users tables.",

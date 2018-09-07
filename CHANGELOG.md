@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 4.1.6 - 2018-09-07
+### Fixed
+- Source Filters: Fix return in get-object-value that was causing unintended behaviours in parameters validation.
+
 ## 4.1.5 - 2018-09-05
 ### Added
 - Source Filters: allow subqueries in `eq`, `notEq` in Category filter, and `lt`, `lte`, `gt`, `gte` in Range Filter.

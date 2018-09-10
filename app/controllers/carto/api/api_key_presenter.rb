@@ -10,6 +10,20 @@ module Carto
       def to_poro
         return {} unless @api_key
 
+        {
+          name: @api_key.name,
+          user: { username: @api_key.user.username },
+          type: @api_key.type,
+          token: @api_key.token,
+          grants: get_grants,
+          created_at: @api_key.created_at.to_s,
+          updated_at: @api_key.updated_at.to_s
+        }
+      end
+
+      private
+
+      def get_grants
         grants = [
           {
             type: 'apis',
@@ -28,18 +42,8 @@ module Carto
           }
         end
 
-        {
-          name: @api_key.name,
-          user: { username: @api_key.user.username },
-          type: @api_key.type,
-          token: @api_key.token,
-          grants: grants,
-          created_at: @api_key.created_at.to_s,
-          updated_at: @api_key.updated_at.to_s
-        }
+        grants
       end
-
-      private
 
       def table_permissions_for_api_key
         return [] if @api_key.master? || @api_key.default_public?

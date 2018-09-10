@@ -85,12 +85,12 @@ module Carto
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
-    after_save :save_dataservices_cdb_conf, if: :has_dataservices_permissions?
+    after_save :save_dataservices_cdb_conf, if: :data_services?
 
     after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
-    after_destroy :remove_dataservices_cdb_conf, if: :has_dataservices_permissions?
+    after_destroy :remove_dataservices_cdb_conf, if: :data_services?
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -224,7 +224,7 @@ module Carto
       regular? || oauth?
     end
 
-    def has_dataservices_permissions?
+    def data_services?
       self.data_services.present?
     end
 

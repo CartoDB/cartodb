@@ -1,6 +1,7 @@
 require 'securerandom'
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
+require 'json'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
@@ -84,12 +85,12 @@ module Carto
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
-    after_save :save_dataserices_cdb_conf
+    after_save :save_dataservices_cdb_conf, if: :has_dataservices_permissions?
 
     after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
-    after_destroy :remove_dataserices_cdb_conf
+    after_destroy :remove_dataservices_cdb_conf, if: :has_dataservices_permissions?
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -223,6 +224,10 @@ module Carto
       regular? || oauth?
     end
 
+    def has_dataservices_permissions?
+      self.data_services.present?
+    end
+
     def valid_name_for_type
       if !master? && name == NAME_MASTER || !default_public? && name == NAME_DEFAULT_PUBLIC
         errors.add(:name, "api_key name cannot be #{NAME_MASTER} nor #{NAME_DEFAULT_PUBLIC}")
@@ -259,15 +264,18 @@ module Carto
       valid_user? ? add_to_redis : remove_from_redis
     end
 
-    def save_dataserices_cdb_conf
+    def save_dataservices_cdb_conf
+      CartoDB::Logger.debug(message: 'save_dataservices_cdb_conf')
+
       info = {
         "application": '',
         "permissions": data_services
       }
-      db_run("SELECT cartodb.cdb_conf_setconf('#{db_role}', '#{info}');")
+
+      db_run("SELECT cartodb.cdb_conf_setconf('#{db_role}', '#{info.to_json}');")
     end
 
-    def remove_dataserices_cdb_conf
+    def remove_dataservices_cdb_conf
       db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{db_role}');")
     end
 

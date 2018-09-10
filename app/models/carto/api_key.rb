@@ -265,10 +265,7 @@ module Carto
     end
 
     def save_dataservices_cdb_conf
-      CartoDB::Logger.debug(message: 'save_dataservices_cdb_conf')
-
       info = {
-        "application": '',
         "permissions": data_services
       }
 

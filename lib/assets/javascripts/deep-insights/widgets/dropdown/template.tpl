@@ -50,10 +50,10 @@
 
   <% if (show_options) { %>
     <li class="CDB-Dropdown-item">
-      <button type="button" class="CDB-Dropdown-link u-ellipsis u-actionTextColor js-editWidget" title="Edit">Edit</button>
+      <button type="button" class="CDB-Dropdown-link u-ellipsis u-actionTextColor js-editWidget" title="Edit"><%= _t('deep_insights.widgets.edit') %></button>
     </li>
     <li class="CDB-Dropdown-item">
-      <button type="button" class="CDB-Dropdown-link u-ellipsis u-errorTextColor js-removeWidget" title="Delete...">Delete...</button>
+      <button type="button" class="CDB-Dropdown-link u-ellipsis u-errorTextColor js-removeWidget" title="Delete..."><%= _t('deep_insights.widgets.delete') %></button>
     </li>
   <% } %>
 </ul>

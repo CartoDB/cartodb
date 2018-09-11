@@ -214,12 +214,15 @@ en:
         notif: 'Notifications'
         billing: 'Billing'
       pages_subhead:
+        profile: 'Profile'
+        account: 'Account'
         api_keys: 'API keys'
         billing: 'Billing'
         settings: 'Organization settings'
         support: 'Contact support'
         admin: 'Contact your org. admin'
         vip: 'Contact your VIP support'
+        issues: 'Having issues?'
       pub_footer:
         subscribe: 'Subscribe'
         keepup: 'Keep up with CARTO announcements'

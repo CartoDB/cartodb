@@ -2,7 +2,7 @@
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
     <h3 class="CDB-Text CDB-Size-large u-ellipsis js-title <%- isCollapsed ? 'is-collapsed' : '' %>"><%- title %></h3>
     <div class="CDB-Widget-options">
-      <button class="CDB-Shape CDB-Widget-actions js-actions" data-tooltip="More options">
+      <button class="CDB-Shape CDB-Widget-actions js-actions" data-tooltip="<%= _t('deep_insights.widgets.tooltip') %>">
         <div class="CDB-Shape-threePoints is-blue is-small">
           <div class="CDB-Shape-threePointsItem"></div>
           <div class="CDB-Shape-threePointsItem"></div>
@@ -36,7 +36,7 @@
   <% } %>
   <% if (showStats) { %>
     <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-tSpace">
-      <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>
+      <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription"><%= _t('deep_insights.widgets.null_rows_2') %></dd>
     </dl>
   <% } %>
 </div>

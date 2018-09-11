@@ -23,14 +23,14 @@
 
   <div class="SideMenu-type">
     <ul class="SideMenu-list">
-      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'profile_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
-      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'account_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
-      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}" == "admin/client_applications" || "#{params[:controller]}" == "carto/admin/mobile_apps" %>"><% t('admin.shared.pages_subhead.api_keys') %></a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'profile_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>"><%= t('admin.shared.pages_subhead.profile') %></a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'account_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>"><%= t('admin.shared.pages_subhead.account') %></a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}" == "admin/client_applications" || "#{params[:controller]}" == "carto/admin/mobile_apps" %>"><%= t('admin.shared.pages_subhead.api_keys') %></a></li>
       <% if !Cartodb.config[:cartodb_com_hosted].present? && !current_user.organization.present? %>
-        <li class="SideMenu-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="SideMenu-typeLink"><% t('admin.shared.pages_subhead.billing') %></a></li>
+        <li class="SideMenu-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="SideMenu-typeLink"><%= t('admin.shared.pages_subhead.billing') %></a></li>
       <% end %>
       <% if current_user.organization_admin? %>
-        <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, current_user.organization_owner? ? 'organization_settings' : 'organization', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink"><% t('admin.shared.pages_subhead.settings') %></a></li>
+        <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, current_user.organization_owner? ? 'organization_settings' : 'organization', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink"><%= t('admin.shared.pages_subhead.settings') %></a></li>
       <% end %>
       <% pages_subheader_instance.links(self).each do |link| %>
           <li class="SideMenu-typeItem"><a href="<%= link.path %>" class="SideMenu-typeLink <%= 'is-selected' if [link.controller].include?("#{params[:controller]}") %>" class="SideMenu-typeLink"><%= link.text %></a></li>
@@ -43,14 +43,14 @@
       <i class="CDB-IconFont CDB-IconFont-boss"></i>
     </div>
     <div class="SideMenu-helpSegment--paragraph">
-      <p>Having issues?</p>
+      <p><%= t('admin.shared.pages_subhead.issues') %></p>
       <p>
         <% if !current_user.organization.present? %>
-          <a href="mailto:support@carto.com"><% t('admin.shared.pages_subhead.support') %></a>
+          <a href="mailto:support@carto.com"><%= t('admin.shared.pages_subhead.support') %></a>
         <% elsif !current_user.organization_owner? %>
-          <a href="mailto:<%= current_user.organization.admin_email%>"><% t('admin.shared.pages_subhead.admin') %></a>
+          <a href="mailto:<%= current_user.organization.admin_email%>"><%= t('admin.shared.pages_subhead.admin') %></a>
         <% else %>
-          <a href="mailto:enterprise-support@carto.com"><% t('admin.shared.pages_subhead.vip') %></a>
+          <a href="mailto:enterprise-support@carto.com"><%= t('admin.shared.pages_subhead.vip') %></a>
         <% end %>
       </p>
     </div>

@@ -2992,6 +2992,23 @@
           "err_upload": "There was an error uploading the icon. Check the height and size (max 1MB) of the image",
           "rec_size": "Recommended images should be 128x128 pixels of size"
         },
+        "pages_subheader": {
+          "profile": "Profile",
+          "account": "Account",
+          "api_keys": "API keys",
+          "billing": "Billing",
+          "org_settings": "Organization settings",
+          "support": "Contact support",
+          "admin": "Contact your org. admin",
+          "vip": "Contact your VIP support",
+          "issues": "Having issues?"
+        },
+        "public_common": {
+          "dashboard": "Your dashboard",
+          "profile": "Your public profile",
+          "account": "Account settings",
+          "logout": "Close session"
+        },
         "support_banner": {
           "dedicated_support": "As a paying customer, you have access to our dedicated support.",
           "become_builder": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> to become a builder.",
@@ -3508,7 +3525,8 @@
         "onboarding": {
           "hello": "Hello, ",
           "welcome": "Welcome to CARTO!",
-          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map."
+          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map.",
+          "new_map": "New map"
         },
         "sync_dataset": {
           "check_sync": "Checking synchronization",
@@ -3725,6 +3743,39 @@
           }
         }
       }
+    }
+  },
+  "deep_insights": {
+    "widgets": {
+      "refresh": "REFRESH",
+      "no_results": "No results",
+      "no_match": "Your search \"%{query}\" didn't match<br/>with any value.",
+      "try_again": "Try searching again.",
+      "selected": " selected",
+      "unlock": "unlock",
+      "no_selected": "None selected",
+      "lock": "lock",
+      "all": "all",
+      "srch_categ": "search in %{smart_count} category |||| search in %{smart_count} categories",
+      "cancel": "cancel",
+      "found": "found",
+      "null_rows": " null rows",
+      "of_total": "of total",
+      "placeholder": "Search by %{columnName}",
+      "apply": "apply",
+      "tooltip": "More options",
+      "edit": "Edit",
+      "delete": "Delete...",
+      "null_rows_2": "null rows",
+      "null_rows_3": "NULL ROWS",
+      "min": "MIN",
+      "avg": "AVG",
+      "max": "MAX",
+      "zoom": "zoom",
+      "clear": "clear",
+      "to": "to",
+      "clear2": "Clear",
+      "sel_from": "Selected from"
     }
   }
 }

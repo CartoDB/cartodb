@@ -351,19 +351,19 @@ describe Carto::ApiKey do
       it 'success creation' do
         grants = [apis_grant, data_services_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'dataservices', grants: grants)
+        expected = {username: @carto_user1.username, permissions: ['geocoding', 'routing', 'isolines']}
 
         @user1.in_database(as: :superuser) do |db|
-          config = db.fetch("SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')").first[:cdb_conf_getconf]
-          expect(JSON.parse(config, symbolize_names: true)).to eql({
-            username: @carto_user1.username,
-            permissions: ['geocoding', 'routing', 'isolines']
-          })
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          config = db.fetch(query).first[:cdb_conf_getconf]
+          expect(JSON.parse(config, symbolize_names: true)).to eql(expected)
         end
 
         api_key.destroy
 
         @user1.in_database(as: :superuser) do |db|
-          db.fetch("SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')").first[:cdb_conf_getconf].should be_nil
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          db.fetch(query).first[:cdb_conf_getconf].should be_nil
         end
       end
 
@@ -376,7 +376,7 @@ describe Carto::ApiKey do
       end
 
       it 'fails with valid and invalid data services' do
-        grants = [apis_grant, data_services_grant(services:['geocoding', 'invalid-service'])]
+        grants = [apis_grant, data_services_grant(services: ['geocoding', 'invalid-service'])]
 
         expect {
           @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
@@ -388,7 +388,7 @@ describe Carto::ApiKey do
           apis_grant,
           {
             type: 'dataservices',
-            invalid:['geocoding']
+            invalid: ['geocoding']
           }
         ]
 

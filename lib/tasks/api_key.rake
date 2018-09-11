@@ -92,7 +92,7 @@ namespace :carto do
           end
 
           api_key.save_dataservices_cdb_conf
-        rescue => e
+        rescue Exception => e
           puts "ERROR - API Key #{api_key.id}: #{e}"
         end
       end

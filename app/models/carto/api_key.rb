@@ -53,7 +53,8 @@ module Carto
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
 
-    GRANTS_ALL_APIS = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
+    GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
+    GRANTS_ALL_DATA_SERVICES = { type: 'dataservices', services: ['geocoding', 'routing', 'isolines', 'geocoding'] }.freeze
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
@@ -111,7 +112,7 @@ module Carto
         type: TYPE_MASTER,
         name: NAME_MASTER,
         token: user.api_key,
-        grants: GRANTS_ALL_APIS,
+        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES],
         db_role: user.database_username,
         db_password: user.database_password
       )
@@ -123,7 +124,7 @@ module Carto
         type: TYPE_DEFAULT_PUBLIC,
         name: NAME_DEFAULT_PUBLIC,
         token: TOKEN_DEFAULT_PUBLIC,
-        grants: GRANTS_ALL_APIS,
+        grants: [GRANTS_ALL_APIS],
         db_role: user.database_public_username,
         db_password: CartoDB::PUBLIC_DB_USER_PASSWORD
       )
@@ -437,13 +438,13 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES]
       errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 
     def valid_default_public_key
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
-      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS]
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
 

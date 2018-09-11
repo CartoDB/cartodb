@@ -56,6 +56,39 @@ namespace :carto do
       raise "ERROR: Organization not found" unless org
       org.users.each { |u| create_api_keys_for_user(u) }
     end
+
+    desc 'Creates dataservices permissions for every Master API Key'
+      task create_ds_permissions_for_master: :environment do
+        puts "Creating dataservices permissions for every Master API Key"
+
+        all_count = Carto::ApiKey.count
+        current_count = 0
+        reflection_seconds = ENV['ENABLE_FF_REFLECTION_SECONDS'] || 10
+
+        puts "############################"
+        puts "#"
+        puts "# Creating dataservices permissions for every Master API Key"
+        puts "#"
+        puts "# #{all_count} api keys will be processed"
+        puts "#"
+        puts "# You have #{reflection_seconds} seconds to cancel "
+        puts "# the task before it starts"
+        puts "#"
+        puts "############################"
+
+        sleep reflection_seconds.to_i
+
+        Carto::ApiKey.master.find_each do |apikey|
+          begin
+            current_count += 1
+            puts "#{current_count} of #{all_count}"
+            apikey.save_dataservices_cdb_conf
+          rescue => e
+            puts "ERROR - API Key #{apikey.id}: #{e}"
+          end
+        end
+      end
+    end
   end
 
   def create_api_keys_for_user(carto_user)

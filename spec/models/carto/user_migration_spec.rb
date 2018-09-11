@@ -581,6 +581,12 @@ describe 'UserMigration' do
       end
       line = '1880; 1255 5950507 FUNCTION asbinary("geometry", "pg_catalog"."text") postgres'
       DummyTester.new.remove_line?(line).should be true
+      line2 = '8506; 2753 18284 OPERATOR FAMILY public btree_geography_ops postgres'
+      DummyTester.new.remove_line?(line2).should be true
+      line3 = '18333; 0 0 ACL public st_countagg("raster", integer, boolean, double precision) postgres'
+      DummyTester.new.remove_line?(line3).should be true
+      line4 = '541; 1259 735510 FOREIGN TABLE aggregation agg_admin1 postgres'
+      DummyTester.new.remove_line?(line4).should be false
     end
 
     it 'skips importing legacy functions using fixture' do

@@ -33,6 +33,13 @@ describe Carto::ApiKey do
     }
   end
 
+  def data_services_grant(services = ['geocoding', 'routing', 'isolines'])
+    {
+      type: 'dataservices',
+      services: services
+    }
+  end
+
   def with_connection_from_api_key(api_key)
     user = api_key.user
 
@@ -337,6 +344,57 @@ describe Carto::ApiKey do
         api_key.token = 'wadus'
         api_key.save.should be_false
         api_key.errors.full_messages.should include "Token must be default_public for default public keys"
+      end
+    end
+
+    describe 'data servicesc api key' do
+      it 'success creation' do
+        grants = [apis_grant, data_services_grant]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'dataservices', grants: grants)
+
+        @user1.in_database(as: :superuser) do |db|
+          config = db.fetch("SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')").first[:cdb_conf_getconf]
+          expect(JSON.parse(config, symbolize_names: true)).to eql({
+            username: @carto_user1.username,
+            permissions: ['geocoding', 'routing', 'isolines']
+          })
+        end
+
+        api_key.destroy
+
+        @user1.in_database(as: :superuser) do |db|
+          db.fetch("SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')").first[:cdb_conf_getconf].should be_nil
+        end
+      end
+
+      it 'fails with invalid data services' do
+        grants = [apis_grant, data_services_grant(['invalid-service'])]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'fails with valid and invalid data services' do
+        grants = [apis_grant, data_services_grant(services:['geocoding', 'invalid-service'])]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'fails with invalid data services key' do
+        grants = [
+          apis_grant,
+          {
+            type: 'dataservices',
+            invalid:['geocoding']
+          }
+        ]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end

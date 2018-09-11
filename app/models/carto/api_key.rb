@@ -1,7 +1,6 @@
 require 'securerandom'
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
-require 'json'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
@@ -60,6 +59,8 @@ module Carto
                           "WHEN type = '#{TYPE_DEFAULT_PUBLIC}' THEN 2 " \
                           "WHEN type = '#{TYPE_REGULAR}' THEN 1 " \
                           "ELSE 0 END DESC".freeze
+
+    CDB_CONF_KEY_PREFIX = 'api_keys_'.freeze
 
     self.inheritance_column = :_type
 
@@ -225,7 +226,7 @@ module Carto
     end
 
     def data_services?
-      self.data_services.present?
+      data_services.present?
     end
 
     def valid_name_for_type
@@ -266,14 +267,14 @@ module Carto
 
     def save_dataservices_cdb_conf
       info = {
-        "permissions": data_services
+        permissions: data_services
       }
 
-      db_run("SELECT cartodb.cdb_conf_setconf('#{db_role}', '#{info.to_json}');")
+      db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{info.to_json}');")
     end
 
     def remove_dataservices_cdb_conf
-      db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{db_role}');")
+      db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{CDB_CONF_KEY_PREFIX}#{db_role}');")
     end
 
     private
@@ -322,7 +323,7 @@ module Carto
       data_services_grants = grants.find { |v| v[:type] == 'dataservices' }
       return nil unless data_services_grants.present?
 
-      grants.find { |v| v[:type] == 'dataservices' }[:services]
+      data_services_grants[:services]
     end
 
     def check_owned_table_permissions

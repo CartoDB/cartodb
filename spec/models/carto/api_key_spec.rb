@@ -33,7 +33,7 @@ describe Carto::ApiKey do
     }
   end
 
-  def data_services_grant(services = ['geocoding', 'routing', 'isolines'])
+  def data_services_grant(services = ['geocoding', 'routing', 'isolines', 'observatory'])
     {
       type: 'dataservices',
       services: services
@@ -351,7 +351,7 @@ describe Carto::ApiKey do
       it 'success creation' do
         grants = [apis_grant, data_services_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'dataservices', grants: grants)
-        expected = { username: @carto_user1.username, permissions: ['geocoding', 'routing', 'isolines'] }
+        expected = { username: @carto_user1.username, permissions: ['geocoding', 'routing', 'isolines', 'observatory'] }
 
         @user1.in_database(as: :superuser) do |db|
           query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"

@@ -65,7 +65,8 @@
           "enum": [
             "geocoding",
             "routing",
-            "isolines"
+            "isolines",
+            "observatory"
           ]
         }
       }

@@ -15,6 +15,10 @@ module Carto
           {
             username: @user.username,
             organization: @user.has_organization? ? OrganizationPublicPresenter.new(@user.organization).to_hash : nil,
+            org_admin: @user.organization_admin?,
+            avatar_url: @user.avatar_url,
+            name: @user.name,
+            last_name: @user.last_name,
             api_endpoints: {
               sql: sql_api_url(@user.username),
               maps: maps_api_url(@user.username),

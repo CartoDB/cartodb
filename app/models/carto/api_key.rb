@@ -267,6 +267,7 @@ module Carto
 
     def save_dataservices_cdb_conf
       info = {
+        username: user.username,
         permissions: data_services
       }
 

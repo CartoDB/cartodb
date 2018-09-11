@@ -2,7 +2,7 @@ module CartoDB
   module DataMover
     module LegacyFunctions
       # functions taken from https://github.com/postgis/postgis/blob/svn-trunk/utils/postgis_restore.pl.in#L473
-      SIGNATURE_RE = /[\d\s;]*(?<type>(?:[^\s])+)\s+(?:[^\s]\s+)?(?<name>[^\(]+)\s*(?:\((?<arguments>.*)\))?/
+      SIGNATURE_RE = /[\d\s;]*(?<type>(?:\S+\s?['class'|'family'|'aggregate'|'domain'|'function'|'cast'|'type']*))\s+(?:[^\s]\s+)?(?<name>[^\(]+)\s*(?:\((?<arguments>.*)\))?/i
       LEGACY_FUNCTIONS = [
         'AGGREGATE accum(geometry)',
         'AGGREGATE accum_old(geometry)',
@@ -2406,6 +2406,12 @@ module CartoDB
         'OPERATOR CLASS gist_geometry_ops',
         'OPERATOR CLASS gist_geometry_ops_2d',
         'OPERATOR CLASS gist_geometry_ops_nd',
+        'OPERATOR FAMILY btree_geography_ops',
+        'OPERATOR FAMILY btree_geometry_ops',
+        'OPERATOR FAMILY gist_geography_ops',
+        'OPERATOR FAMILY gist_geometry_ops_2d',
+        'OPERATOR FAMILY gist_geometry_ops_nd',
+        'OPERATOR FAMILY hash_raster_ops',
         'OPERATOR ~=(geography,geography)',
         'OPERATOR ~(geography,geography)',
         'OPERATOR <<|(geography,geography)',
@@ -2504,7 +2510,11 @@ module CartoDB
         return true if type == 'ACL' && legacy_functions.flat_map { |_, v| v[name] }.compact.include?(arguments)
         return false unless legacy_functions[type]
         return false unless legacy_functions[type][name]
-        legacy_functions[type][name].include?(arguments)
+        if arguments.blank?
+          legacy_functions[type][name].blank?
+        else
+          legacy_functions[type][name].include?(arguments)
+        end
       end
 
       def legacy_functions

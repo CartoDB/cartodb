@@ -2511,7 +2511,7 @@ module CartoDB
         return false unless legacy_functions[type]
         return false unless legacy_functions[type][name]
         if arguments.blank?
-          legacy_functions[type][name].blank?
+          legacy_functions[type].include?(name)
         else
           legacy_functions[type][name].include?(arguments)
         end

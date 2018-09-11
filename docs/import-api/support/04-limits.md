@@ -5,7 +5,7 @@ Limits ensure that CARTO platform is not flooded with so many requests it does n
 Currently, Import API is affected by a number of limits.
 
 
-### Timeout Limits Chart
+### Limits Chart
 
 Below, you can find the values of the timeout limit by user account type. 
 

@@ -270,7 +270,7 @@ module Carto
     def save_dataservices_cdb_conf
       info = {
         username: user.username,
-        permissions: data_services
+        permissions: data_services || []
       }
 
       db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{info.to_json}');")

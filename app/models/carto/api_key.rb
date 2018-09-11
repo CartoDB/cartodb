@@ -54,7 +54,10 @@ module Carto
     API_MAPS      = 'maps'.freeze
 
     GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
-    GRANTS_ALL_DATA_SERVICES = { type: 'dataservices', services: ['geocoding', 'routing', 'isolines', 'geocoding'] }.freeze
+    GRANTS_ALL_DATA_SERVICES = {
+      type: 'dataservices',
+      services: ['geocoding', 'routing', 'isolines', 'observatory']
+    }.freeze
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 

@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix legacy functions in the data mover that doesn't process multiword type functions
 
 4.20.2 (2018-09-10)
 -------------------

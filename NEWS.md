@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix legacy functions in the data mover that doesn't process multiword type functions
 
 4.20.2 (2018-09-10)
 -------------------
@@ -20,11 +20,10 @@ Development
  * Silent flow (#14244)
 
 ### Bug fixes / enhancements
-- Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
-- Fix legacy functions in the data mover that doesn't process multiword type functions
-- Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
-- Add another error to OOM detection in imports (#14259)
-- Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
+* Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
+* Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+* Add another error to OOM detection in imports (#14259)
+* Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
 
 4.20.1 (2018-08-24)
 -------------------

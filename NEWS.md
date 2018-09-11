@@ -5,17 +5,25 @@ Development
 - None yet
 
 ### Features
-- OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
-  - Add new design for OAuth consent screen (#14237)
-  - Limit the number of simultaneous refersh tokens (#14243)
-  - Silent flow (#14244)
-- Add dataservices permissions to Auth API (#14263)
+- Add dataservices permissions in Auth API (#14263)
 
 ### Bug fixes / enhancements
-- Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
-- Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
-- Add another error to OOM detection in imports (#14259)
-- Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
+- None yet
+
+4.20.2 (2018-09-10)
+-------------------
+
+### Features
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+ * Add new design for OAuth consent screen (#14237)
+ * Limit the number of simultaneous refersh tokens (#14243)
+ * Silent flow (#14244)
+
+### Bug fixes / enhancements
+* Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
+* Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+* Add another error to OOM detection in imports (#14259)
+* Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
 
 4.20.1 (2018-08-24)
 -------------------

@@ -92,12 +92,12 @@ module Carto
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
-    after_save :save_cdb_conf_info
+    after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
 
     after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
-    after_destroy :remove_cdb_conf_info
+    after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -106,6 +106,7 @@ module Carto
     scope :order_weighted_by_type, -> { order(TYPE_WEIGHTED_ORDER) }
 
     attr_accessor :skip_role_setup
+    attr_writer :skip_cdb_conf_info
 
     private_class_method :new, :create, :create!
 
@@ -282,6 +283,14 @@ module Carto
 
     def remove_cdb_conf_info
       db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{CDB_CONF_KEY_PREFIX}#{db_role}');")
+    end
+
+    def skip_cdb_conf_info
+      @skip_cdb_conf_info || false
+    end
+
+    def skip_cdb_conf_info?
+      skip_cdb_conf_info.present?
     end
 
     private

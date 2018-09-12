@@ -135,6 +135,13 @@
   "feedback": "Give us feedback!",
   "back": "Back",
   "back-to-dashboard": "Back to the dashboard",
+  "map_pl": "map |||| maps",
+  "dataset_pl": "dataset |||| datasets",
+  "map_nr": "%{smart_count} map |||| %{smart_count} maps",
+  "dataset_nr": "%{smart_count} dataset |||| %{smart_count} datasets",
+  "like_pl": "like |||| likes",
+  "view_pl": "view |||| views",
+  "row_pl": "row |||| rows",
   "edit-map": "Edit map",
   "map-settings": "Map options",
   "more-options": "More options",
@@ -3076,6 +3083,14 @@
           "new_map": "New map"
         }
       }
+    },
+    "explore": {
+      "title": "Exploring",
+      "maps_data": "Maps and datasets",
+      "datasets": "Datasets",
+      "maps": "Maps",
+      "activity": "Recent activity by",
+      "view_more": "View more"
     }
   },
   "dashboard": {
@@ -3380,6 +3395,12 @@
       },
       "dashboard": {
         "content_controller": {
+          "content_footer": {
+            "show_lock_maps": "Show your %{smart_count} locked map |||| Show your %{smart_count} locked maps",
+            "show_lock_datasets": "Show your %{smart_count} locked map |||| Show your %{smart_count} locked maps",
+            "show_unlock_maps": "Show your %{smart_count} non-locked map |||| Show your %{smart_count} non-locked maps",
+            "show_unlock_datasets": "Show your %{smart_count} non-locked map |||| Show your %{smart_count} non-locked maps"
+          },
           "loading_library_view": {
             "title": "Your Data library is being stocked up",
             "desc": "Please wait while we load the list of Datasets in the Data library for you."
@@ -3395,13 +3416,23 @@
             },
             "content_no_results": {
               "no_results": "There are no results in this page",
-              "no_liked": "You haven't liked any %{type} yet",
-              "zero_found": "0 %{tag} || q %{type} found",
-              "there_are_no": "There are no ",
+              "no_liked_maps": "You haven't liked any map yet",
+              "no_liked_datasets": "You haven't liked any dataset yet",
+              "zero_found_maps": "0 %{tag} || q maps found",
+              "zero_found_datasets": "0 %{tag} || q datasets found",
+              "there_are_no_shared_maps": "There are no shared maps",
+              "there_are_no_locked_maps": "There are no locked maps",
+              "there_are_no_maps": "There are no maps",
+              "there_are_no_shared_datasets": "There are no shared datasets",
+              "there_are_no_locked_datasets": "There are no locked datasets",
+              "there_are_no_datasets": "There are no datasets",
               "back_to_first": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">first page</a>",
-              "back_to": "Back to your ",
-              "no_fun": "No %{type}, no fun",
-              "fill_this": "Fill this section up by clicking the heart on CARTO %{type} published on the web or on user profile pages"
+              "back_to_maps": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\"> maps</a>",
+              "back_to_datasets": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\"> datasets</a>",
+              "no_fun_maps": "No maps, no fun",
+              "no_fun_datasets": "No datasets, no fun",
+              "fill_this_maps": "Fill this section up by clicking the heart on CARTO maps published on the web or on user profile pages",
+              "fill_this_datasets": "Fill this section up by clicking the heart on CARTO datasets published on the web or on user profile pages"
             }
           }
         },
@@ -3485,11 +3516,19 @@
           }
         },
         "filters": {
+          "search": "Search",
+          "zero_map": "Maps",
+          "zero_dataset": "Datasets",
+          "zero_dashboard": "Dashboard",
+          "number_map": "<strong>%{smart_count}</strong> Map |||| <strong>%{smart_count}</strong> Maps",
+          "number_dataset": "<strong>%{smart_count}</strong> Dataset |||| <strong>%{smart_count}</strong> Datasets",
+          "number_dashboard": "Dashboard",
           "shared": "Shared with you",
           "liked": "Liked",
           "data_lib": "Data library",
           "new_map": "New Map",
           "new_dataset": "New dataset",
+          "new_dashboard": "Dashboard",
           "selected": " selected",
           "yours": "yours",
           "select_all": "Select all ",
@@ -3500,11 +3539,25 @@
           "max_map_layers": "Max map layers selected (%{maxLayersByMap} max)",
           "change_privacy": "Change privacy...",
           "duplicate_map": "Duplicate map",
-          "delete": "Delete ",
-          "your": "your"
+          "lock_map": "Lock map |||| Lock maps",
+          "lock_dataset": "Lock dataset |||| Lock datasets",
+          "lock_dashboard": "Dashboard",
+          "unlock_map": "Unlock map |||| Unlock maps",
+          "unlock_dataset": "Unlock dataset |||| Unlock datasets",
+          "unlock_dashboard": "Dashboard",
+          "delete_your_map": "Delete your map |||| Delete your maps",
+          "delete_your_dataset": "Delete your dataset |||| Delete your datasets",
+          "delete_your_dashboard": "Dashboard",
+          "delete_map": "Delete map |||| Delete maps",
+          "delete_dataset": "Delete dataset |||| Delete datasets",
+          "delete_dashboard": "Dashboard"
         },
         "header_view_model": {
-          "insight": "Deep insights"
+          "locked_maps": "Locked maps",
+          "locked_datasets": "Locked datasets",
+          "insight": "Deep insights",
+          "title_maps": "Maps",
+          "title_datasets": "Datasets"
         },
         "imports": {
           "show": "SHOW",

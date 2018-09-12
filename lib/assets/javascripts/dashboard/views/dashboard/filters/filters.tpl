@@ -7,7 +7,7 @@
         <div class="CDB-Shape u-rSpace">
           <div class="CDB-Shape-magnify is-small is-blue"></div>
         </div>
-        Search
+        <%= _t('dashboard.views.dashboard.filters.search') %>
       </a>
     </div>
 
@@ -15,9 +15,10 @@
       <li class="Filters-typeItem">
         <a href="<%- currentDashboardUrl %>" class="Filters-typeLink CDB-Text CDB-Size-medium is-semibold u-upperCase js-link <%- shared === "no" && !liked && !library ? 'is-selected' : '' %>">
           <% if (totalItems) { %>
-            <strong><%- totalItems %></strong>
+            <%= _t('dashboard.views.dashboard.filters.number_' + contentType, {smart_count: totalItems}) %>
+          <% } else { %>
+            <%= _t('dashboard.views.dashboard.filters.zero_' + contentType) %>
           <% } %>
-          <%- pluralizedContentType.charAt(0).toUpperCase() + pluralizedContentType.substring(1) %>
         </a>
       </li>
       <% if (isInsideOrg) { %>
@@ -96,7 +97,7 @@
           fs-new_map_onboarding
         <% } %>
         ">
-        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- isMaps ? _t('dashboard.views.dashboard.filters.new_map') : _t('dashboard.views.dashboard.filters.new_dataset') %></span>
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.filters.new_' + contentType) %></span>
       </button>
     <% } %>
   </div>
@@ -151,14 +152,22 @@
         <% if (!q && !tag && !liked) { %>
           <li class="Filters-actionsItem">
             <a class="Filters-actionsLink CDB-Text CDB-Size-medium js-lock" href="#/lock">
-              <%- locked ? 'Unlock' : 'Lock' %> <%- pluralizedContentTypeSelected %>&hellip;
+              <% if (locked) { %>
+                <%= _t('dashboard.views.dashboard.filters.unlock_' + contentType, {smart_count: selectedItemsCount}) %>
+              <% } else { %>
+                <%= _t('dashboard.views.dashboard.filters.lock_' + contentType, {smart_count: selectedItemsCount}) %>
+              <% } %>
             </a>
           </li>
         <% } %>
       <% } %>
       <% if (canDeleteItems && hasCreateDatasetsFeature) { %>
         <li class="Filters-actionsItem">
-          <a class="Filters-actionsLink CDB-Text CDB-Size-medium is--critical js-delete" href="#/delete"><%= _t('dashboard.views.dashboard.filters.delete') %><%- tag || q ? _t('dashboard.views.dashboard.filters.your') : '' %> <%- pluralizedContentTypeSelected %>&hellip;</a>
+          <% if (tag || q) { %>
+            <a class="Filters-actionsLink CDB-Text CDB-Size-medium is--critical js-delete" href="#/delete"><%= _t('dashboard.views.dashboard.filters.delete_your_' + contentType, {smart_count: selectedItemsCount}) %>&hellip;</a>
+          <% } else { %>
+            <a class="Filters-actionsLink CDB-Text CDB-Size-medium is--critical js-delete" href="#/delete"><%= _t('dashboard.views.dashboard.filters.delete_' + contentType, {smart_count: selectedItemsCount}) %>&hellip;</a>
+          <% } %>
         </li>
       <% } %>
     </ul>

@@ -12,15 +12,21 @@
     <% } %>
 
     <% if (liked && totalEntries === 0 ) { %>
-      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.no_liked', {type: type}) %>
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.no_liked_' + type) %>
     <% } %>
 
     <% if (isSearching && totalItems === 0 && totalEntries === 0) { %>
-      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.zero_found', {tag: tag, type: type}) %>
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.zero_found_' + type, {tag: tag}) %>
     <% } %>
 
     <% if (page === 1 && !isSearching && !liked && totalItems === 0 && totalEntries === 0) { %>
-      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.there_are_no') %><%- shared === "only" ? 'shared' : '' %> <%- locked ? 'locked' : '' %> <%- type %>
+      <% if (shared === "only") { %>
+        <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.there_are_no_shared_' + type) %>
+      <% } else if (locked) { %>
+        <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.there_are_no_locked_' + type) %>
+      <% } else if (locked) { %>
+        <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.there_are_no_' + type) %>
+      <% } %>
     <% } %>
   </h4>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
@@ -29,15 +35,15 @@
     <% } %>
 
     <% if (isSearching && totalItems === 0 && totalEntries === 0) { %>
-      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.back_to') %><a class="ContentResult-urlLink" href="<%- defaultUrl %>"><%- type %></a>
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.back_to_' + type, {defaultUrl: defaultUrl}) %>
     <% } %>
 
     <% if (!liked && !isSearching && totalItems === 0 && totalEntries === 0) { %>
-      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.no_fun', {type: type}) %>
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.no_fun_' + type) %>
     <% } %>
 
     <% if (liked && totalEntries === 0 ) { %>
-      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.fill_this', {type: type}) %>
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.fill_this_' + type) %>
     <% } %>
   </p>
 </div>

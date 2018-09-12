@@ -445,6 +445,7 @@ describe Admin::VisualizationsController do
 
   describe 'org user visualization redirection' do
     it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
+      Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
@@ -551,6 +552,7 @@ describe Admin::VisualizationsController do
 
     # @see https://github.com/CartoDB/cartodb/issues/6081
     it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
+      Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
         set_from_table_privacy: nil,

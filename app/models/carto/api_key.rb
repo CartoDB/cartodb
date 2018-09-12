@@ -92,12 +92,12 @@ module Carto
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
-    after_save :save_dataservices_cdb_conf, if: :data_services?
+    after_save :save_cdb_conf_info
 
     after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
-    after_destroy :remove_dataservices_cdb_conf, if: :data_services?
+    after_destroy :remove_cdb_conf_info
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -271,7 +271,7 @@ module Carto
       valid_user? ? add_to_redis : remove_from_redis
     end
 
-    def save_dataservices_cdb_conf
+    def save_cdb_conf_info
       info = {
         username: user.username,
         permissions: data_services || []
@@ -280,7 +280,7 @@ module Carto
       db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{info.to_json}');")
     end
 
-    def remove_dataservices_cdb_conf
+    def remove_cdb_conf_info
       db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{CDB_CONF_KEY_PREFIX}#{db_role}');")
     end
 

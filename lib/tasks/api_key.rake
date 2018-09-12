@@ -86,12 +86,13 @@ namespace :carto do
           current_count += 1
           puts "#{current_count} of #{all_count}"
 
-          if api_key.master?
+          if api_key.master? && !api_key.data_services?
             api_key.grants << grants_data_services
             api_key.save!
+          elsif
+            api_key.save_cdb_conf_info
           end
 
-          api_key.save_dataservices_cdb_conf
         rescue Exception => e
           puts "ERROR - API Key #{api_key.id}: #{e}"
         end

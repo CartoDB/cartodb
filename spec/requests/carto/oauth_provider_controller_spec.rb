@@ -180,6 +180,33 @@ describe Carto::OauthProviderController do
       end
     end
 
+    shared_examples_for 'success with response pre-authorized' do
+      it 'with valid payload and code response, pre-authorized, redirects back to the application' do
+        oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'code'))
+
+        authorization_code = oau.oauth_authorization_codes.first
+        expect(authorization_code).to(be)
+        expect(authorization_code.code).to(be_present)
+
+        expect(response.status).to(eq(302))
+        expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
+      end
+
+      it 'with valid payload and token response, pre-authorized, redirects back to the application' do
+        oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token'))
+
+        access_token = oau.oauth_access_tokens.first
+        expect(access_token).to(be)
+        expect(access_token.api_key).to(be_present)
+
+        expect(response.status).to(eq(302))
+        response_parameters = parse_fragment_parameters(response.location)
+        validate_token_response(response_parameters.symbolize_keys, access_token)
+      end
+    end
+
     describe 'domains and authentication' do
       it 'works with a URL for another username/org' do
         # e.g: org.carto.com/oauth2 should work, even if the correct one is org.carto.com/u/username/oauth2
@@ -213,31 +240,6 @@ describe Carto::OauthProviderController do
       expect(response.body).to(include(valid_payload[:state]))
     end
 
-    it 'with valid payload and code response, pre-authorized, redirects back to the application' do
-      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-      get oauth_provider_authorize_url(valid_payload)
-
-      authorization_code = oau.oauth_authorization_codes.first
-      expect(authorization_code).to(be)
-      expect(authorization_code.code).to(be_present)
-
-      expect(response.status).to(eq(302))
-      expect(parse_query_parameters(response.location)['code']).to(eq(authorization_code.code))
-    end
-
-    it 'with valid payload and token response, pre-authorized, redirects back to the application' do
-      oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-      get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token'))
-
-      access_token = oau.oauth_access_tokens.first
-      expect(access_token).to(be)
-      expect(access_token.api_key).to(be_present)
-
-      expect(response.status).to(eq(302))
-      response_parameters = parse_fragment_parameters(response.location)
-      validate_token_response(response_parameters.symbolize_keys, access_token)
-    end
-
     it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
       @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
@@ -245,6 +247,49 @@ describe Carto::OauthProviderController do
       expect(response.status).to(eq(200))
       expect(response.body).to(include(valid_payload[:client_id]))
       expect(response.body).to(include(valid_payload[:state]))
+    end
+
+    describe 'with code or token' do
+      it_behaves_like 'success with response pre-authorized'
+    end
+
+    describe 'with silent flow' do
+      before(:each) do
+        valid_payload[:response_type] = 'token'
+        valid_payload[:prompt] = 'none'
+      end
+
+      it_behaves_like 'success with response pre-authorized'
+
+      it 'redirects with invalid request if prompt is not none' do
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token', prompt: "wat"))
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include('invalid_request'))
+      end
+
+      it 'redirects with login_required if not logged in' do
+        logout
+        get oauth_provider_authorize_url(valid_payload)
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include('login_required'))
+      end
+
+      it 'redirects with access_denied if not authorized' do
+        get oauth_provider_authorize_url(valid_payload)
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include('access_denied'))
+      end
+
+      it 'with valid payload, pre-authorized and requesting more scopes redirects with access_denied' do
+        @oauth_app.oauth_app_users.create!(user_id: @user.id)
+        get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+
+        expect(response.status).to(eq(302))
+        expect(response.body).to(include('access_denied'))
+      end
     end
   end
 

@@ -13,7 +13,7 @@ class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
   # Disable authorization check for OPTIONS
   skip_before_action :only_api_key_authorization, only: [:options]
 
-  WARDEN_SCOPE = :public_api_scope
+  WARDEN_SCOPE = :$public_api_scope
 
   def allow_full_cross_domain_access
     response.headers['Access-Control-Allow-Origin'] = '*'

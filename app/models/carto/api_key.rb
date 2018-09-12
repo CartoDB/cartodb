@@ -163,7 +163,8 @@ module Carto
         updated_at: api_key_hash[:updated_at],
         grants: api_key_hash[:grants],
         user_id: api_key_hash[:user_id],
-        skip_role_setup: true
+        skip_role_setup: true,
+        skip_cdb_conf_info: true
       )
     end
 

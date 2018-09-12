@@ -359,11 +359,30 @@ describe Carto::ApiKey do
       end
     end
 
-    describe 'data servicesc api key' do
-      it 'success creation' do
+    describe 'data services api key' do
+      it 'cdb_conf info with dataservices' do
         grants = [apis_grant, data_services_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'dataservices', grants: grants)
         expected = { username: @carto_user1.username, permissions: ['geocoding', 'routing', 'isolines', 'observatory'] }
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          config = db.fetch(query).first[:cdb_conf_getconf]
+          expect(JSON.parse(config, symbolize_names: true)).to eql(expected)
+        end
+
+        api_key.destroy
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          db.fetch(query).first[:cdb_conf_getconf].should be_nil
+        end
+      end
+
+      it 'cdb_conf info without dataservices' do
+        grants = [apis_grant]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'testname', grants: grants)
+        expected = { username: @carto_user1.username, permissions: [] }
 
         @user1.in_database(as: :superuser) do |db|
           query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"

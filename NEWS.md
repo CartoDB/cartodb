@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Add dataservices permissions in Auth API (#14263)
 
 ### Bug fixes / enhancements
 - Fix legacy functions in the data mover that doesn't process multiword type functions

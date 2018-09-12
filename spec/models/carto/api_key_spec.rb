@@ -305,6 +305,18 @@ describe Carto::ApiKey do
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
+      it 'create master api key works' do
+        api_key = @carto_user1.api_keys.master.first
+        api_key.destroy
+
+        @carto_user1.api_keys.create_master_key!
+
+        api_key = @carto_user1.api_keys.master.first
+        api_key.should be
+        api_key.db_role.should eq @carto_user1.database_username
+        api_key.db_password.should eq @carto_user1.database_password
+      end
+
       it 'cannot create a non master api_key with master as the name' do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_MASTER, grants: [apis_grant])

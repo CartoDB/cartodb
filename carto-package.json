@@ -11,7 +11,7 @@
             "imagemagick": ">=6.9.0"
         },
         "works_with": {
-            "dataservices-api-client-extension": "0.25.0",
+            "dataservices-api-client-extension": "0.26.0",
             "carto_postgresql_ext": "0.23.2",
             "odbc_fdw": "0.2.0",
             "carto_windshaft": ">=6.2.0",

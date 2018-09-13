@@ -27,8 +27,8 @@ module Carto
         access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['dataservices:geocoding'])
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
-        expect(access_token.api_key.grants).to(include({ type: 'apis', apis: ['sql'] }))
-        expect(access_token.api_key.grants).to(include({ type: 'dataservices', services: ['geocoding'] }))
+        expect(access_token.api_key.grants).to(include(type: 'apis', apis: ['sql']))
+        expect(access_token.api_key.grants).to(include(type: 'dataservices', services: ['geocoding']))
       end
     end
   end

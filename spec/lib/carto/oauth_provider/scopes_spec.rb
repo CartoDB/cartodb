@@ -7,15 +7,15 @@ describe Carto::OauthProvider::Scopes do
       let(:scope) { Carto::OauthProvider::Scopes::DataservicesScope.new('geocoding', 'GC') }
 
       it 'adds SQL api and dataservice' do
-        grants = [{ type: 'apis', apis: []}]
+        grants = [{ type: 'apis', apis: [] }]
         scope.add_to_api_key_grants(grants)
-        expect(grants).to(eq([{ type: 'apis', apis: ['sql']}, { type: 'dataservices', services: ['geocoding']}]))
+        expect(grants).to(eq([{ type: 'apis', apis: ['sql'] }, { type: 'dataservices', services: ['geocoding'] }]))
       end
 
       it 'does not add duplicate SQL api' do
-        grants = [{ type: 'apis', apis: ['sql']}]
+        grants = [{ type: 'apis', apis: ['sql'] }]
         scope.add_to_api_key_grants(grants)
-        expect(grants).to(include({ type: 'apis', apis: ['sql']}))
+        expect(grants).to(include(type: 'apis', apis: ['sql']))
       end
     end
   end

@@ -57,7 +57,7 @@ module Carto
         DataservicesScope.new('geocoding', 'Geocoding').freeze,
         DataservicesScope.new('isolines', 'Isochrones').freeze,
         DataservicesScope.new('routing', 'Routing').freeze,
-        DataservicesScope.new('observatory', 'Data Observatory').freeze,
+        DataservicesScope.new('observatory', 'Data Observatory').freeze
       ].freeze
 
       SCOPES_BY_NAME = SCOPES.map { |s| [s.name, s] }.to_h.freeze

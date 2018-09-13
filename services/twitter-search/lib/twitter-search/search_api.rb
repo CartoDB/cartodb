@@ -94,17 +94,8 @@ module CartoDB
                                                         : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
 
         if @config[CONFIG_REDIS_RL_ACTIVE]
-          key = REDIS_KEY
-          rl_value = @redis.keys(key)
-          # wait until semaphore open
-          while !rl_value.nil? && rl_value.count >= @config[CONFIG_REDIS_RL_MAX_CONCURRENCY] do
-            sleep(@config[CONFIG_REDIS_RL_WAIT_SECS])
-            rl_value = @redis.keys(key)
-          end
-          @redis.multi do
-            @redis.set(key, 1)  # Value is not important, only number of keys
-            @redis.expire(key, @config[CONFIG_REDIS_RL_TTL])
-          end
+          # TODO: proper rate limiting (previous one was broken)
+          sleep(@config[CONFIG_REDIS_RL_WAIT_SECS])
         end
 
         http_client = Carto::Http::Client.get('search_api')

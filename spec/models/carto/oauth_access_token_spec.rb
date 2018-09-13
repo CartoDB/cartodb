@@ -18,7 +18,7 @@ module Carto
       end
 
       it 'auto generates api_key' do
-        access_token = OauthAccessToken.new(oauth_app_user: @app_user)
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user)
         expect(access_token).to(be_valid)
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))

@@ -19,9 +19,16 @@ module Carto
 
       it 'auto generates api_key' do
         access_token = OauthAccessToken.create!(oauth_app_user: @app_user)
-        expect(access_token).to(be_valid)
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
+      end
+
+      it 'api key includes permissions for requested scopes' do
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['dataservices:geocoding'])
+        expect(access_token.api_key).to(be)
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(include({ type: 'apis', apis: ['sql'] }))
+        expect(access_token.api_key.grants).to(include({ type: 'dataservices', services: ['geocoding'] }))
       end
     end
   end

@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_ds_permissions`
 
 ### Features
 - Add dataservices permissions in Auth API (#14263)

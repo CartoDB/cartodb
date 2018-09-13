@@ -3,6 +3,11 @@ Development
 
 ### NOTICES
 - Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_ds_permissions`
+- This release upgrades the CartoDB PostgreSQL extension to `0.24.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - Add dataservices permissions in Auth API (#14263)

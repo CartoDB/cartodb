@@ -27,7 +27,7 @@ module Carto
 
       CATEGORY_OFFLINE = Category.new('Offline access').freeze
       CATEGORY_USER = Category.new('User and personal data').freeze
-      CATEGORY_MONEY = Category.new('Features that may cost you money', 'money')
+      CATEGORY_MONEY = Category.new('Features that consume credits', 'money')
 
       class DataservicesScope < Scope
         def initialize(service, description)

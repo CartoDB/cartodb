@@ -7,6 +7,8 @@ describe Carto::Api::Public::UsersController do
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
+    @org = FactoryGirl.create(:organization_with_users)
+    @org_user = FactoryGirl.create(:valid_user, name: 'wa', last_name: 'dus', organization: @org)
   end
 
   before(:each) do
@@ -15,6 +17,8 @@ describe Carto::Api::Public::UsersController do
 
   after(:all) do
     @user.destroy
+    @org_user.destroy
+    @org.destroy
   end
 
   describe '#me_public' do
@@ -44,6 +48,21 @@ describe Carto::Api::Public::UsersController do
       login_as(@user, scope: @user.username)
       get_json api_v4_users_me_url do |response|
         expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns user public profile with user:profile grants' do
+      host! "#{@org_user.username}.localhost.lan"
+      api_key = FactoryGirl.create(:oauth_api_key_user_profile_grant, user_id: @org_user.id)
+
+      get_json api_v4_users_me_url(api_key: api_key.token) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:username]).to eq(@org_user.username)
+        expect(response.body[:name]).to eq(@org_user.name)
+        expect(response.body[:last_name]).to eq(@org_user.last_name)
+        expect(response.body[:avatar_url]).to eq(@org_user.avatar_url)
+        expect(response.body[:organization][:owner]).to eq(@org_user.organization.owner.username)
+        expect(response.body[:organization][:name]).to eq(@org_user.organization.name)
       end
     end
   end

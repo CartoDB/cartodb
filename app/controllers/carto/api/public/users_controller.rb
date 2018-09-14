@@ -5,7 +5,14 @@ module Carto
         ssl_required
 
         def me_public
-          render(json: UserPublicPresenter.new(request_api_key.user).to_hash)
+          presentation = UserPublicPresenter.new(request_api_key.user).to_hash
+
+          if request_api_key.user_data.try(:include?, 'profile')
+            presentation.deep_merge!(UserPublicProfilePresenter.new(request_api_key.user).to_hash)
+          end
+
+          byebug
+          render(json: presentation)
         end
       end
     end

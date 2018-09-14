@@ -202,6 +202,10 @@ module Carto
       @data_services ||= process_data_services
     end
 
+    def user_data
+      @user_data ||= process_user_data_grants
+    end
+
     def regenerate_token!
       if master?
         # Send all master key updates through the user model, avoid circular updates
@@ -341,6 +345,13 @@ module Carto
       return nil unless data_services_grants.present?
 
       data_services_grants[:services]
+    end
+
+    def process_user_data_grants
+      user_data_grants = grants.find { |v| v[:type] == 'user' }
+      return nil unless user_data_grants.present?
+
+      user_data_grants[:data]
     end
 
     def check_owned_table_permissions

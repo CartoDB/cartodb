@@ -24,11 +24,12 @@ module Carto
       end
 
       it 'api key includes permissions for requested scopes' do
-        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['dataservices:geocoding'])
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['dataservices:geocoding', 'user:profile'])
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(include(type: 'apis', apis: ['sql']))
         expect(access_token.api_key.grants).to(include(type: 'dataservices', services: ['geocoding']))
+        expect(access_token.api_key.grants).to(include(type: 'user', data: ['profile']))
       end
     end
   end

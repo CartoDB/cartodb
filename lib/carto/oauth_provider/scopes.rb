@@ -49,6 +49,23 @@ module Carto
         end
       end
 
+      class UserScope < Scope
+        def initialize(subset, description)
+          super("user:#{subset}", CATEGORY_USER, description)
+          @subset = subset
+        end
+
+        def add_to_api_key_grants(grants)
+          section = grants.find { |i| i[:type] == 'user' }
+          unless section
+            section = { type: 'user', data: [] }
+            grants << section
+          end
+
+          section[:data] << @subset
+        end
+      end
+
       SCOPES = [
         Scope.new(SCOPE_DEFAULT, CATEGORY_USER, 'Username and organization name').freeze,
         Scope.new(SCOPE_OFFLINE, CATEGORY_OFFLINE, 'Access CARTO in the background').freeze,
@@ -57,7 +74,10 @@ module Carto
         DataservicesScope.new('geocoding', 'Geocoding').freeze,
         DataservicesScope.new('isolines', 'Isochrones').freeze,
         DataservicesScope.new('routing', 'Routing').freeze,
-        DataservicesScope.new('observatory', 'Data Observatory').freeze
+        DataservicesScope.new('observatory', 'Data Observatory').freeze,
+
+        # User data
+        UserScope.new('profile', 'User profile (avatar, name, org. owner)').freeze
       ].freeze
 
       SCOPES_BY_NAME = SCOPES.map { |s| [s.name, s] }.to_h.freeze

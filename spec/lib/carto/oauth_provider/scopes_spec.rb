@@ -19,4 +19,16 @@ describe Carto::OauthProvider::Scopes do
       end
     end
   end
+
+  describe Carto::OauthProvider::Scopes::UserScope do
+    describe '#add_to_api_key_grants' do
+      let(:scope) { Carto::OauthProvider::Scopes::UserScope.new('profile', 'User public profile') }
+
+      it 'adds user scope with profile subset' do
+        grants = [{ type: 'apis', apis: [] }]
+        scope.add_to_api_key_grants(grants)
+        expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['profile'] }]))
+      end
+    end
+  end
 end

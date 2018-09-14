@@ -11,7 +11,6 @@ module Carto
             presentation.deep_merge!(UserPublicProfilePresenter.new(request_api_key.user).to_hash)
           end
 
-          byebug
           render(json: presentation)
         end
       end

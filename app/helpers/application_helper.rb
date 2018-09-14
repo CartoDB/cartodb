@@ -169,6 +169,10 @@ module ApplicationHelper
     end
   end
 
+  def image_tag(source, options={})
+    super "/#{frontend_version}/images/#{source}", options
+  end
+
   def editor_image_path(source)
     image_path(source, true)
   end

@@ -16,6 +16,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Fix legacy functions in the data mover that doesn't process multiword type functions
+- Fix `image_tag` function to include the assets versioning (#14266)
 - Fix broken tests due to time stubbing (#14287)
 - Remove username from Postgres roles
 

@@ -2973,6 +2973,16 @@
           "err_load": "There was an error uploading your avatar. Check the height and size (max 1MB) of the image",
           "rec_size": "Recommended images should be 128x128 pixels of size"
         },
+        "create": {
+          "listing": {
+            "search": "Search",
+            "placeholder": "by name, description or :tag",
+            "connect_data": "Connect dataset",
+            "your_data": "Your datasets",
+            "shared": "Shared with you",
+            "data_lib": "Data library"
+          }
+        },
         "dashboard_header": {
           "notifications": {
             "templates": {
@@ -3529,7 +3539,8 @@
           "new_map": "New Map",
           "new_dataset": "New dataset",
           "new_dashboard": "Dashboard",
-          "selected": " selected",
+          "selected_map": "%{smart_count} map selected |||| %{smart_count} maps selected",
+          "selected_dataset": "%{smart_count} dataset selected |||| %{smart_count} datasets selected",
           "yours": "yours",
           "select_all": "Select all ",
           "deselect_all": "Deselect all ",
@@ -3550,7 +3561,8 @@
           "delete_your_dashboard": "Dashboard",
           "delete_map": "Delete map |||| Delete maps",
           "delete_dataset": "Delete dataset |||| Delete datasets",
-          "delete_dashboard": "Dashboard"
+          "delete_dashboard": "Dashboard",
+          "placeholder": "by name, description or :tag"
         },
         "header_view_model": {
           "locked_maps": "Locked maps",

@@ -51,7 +51,7 @@
 
   <div class="Filters-typeItem Filters-typeItem--searchField js-search-field">
     <form class="Filters-searchForm js-search-form" action="<%- router.currentUrl({ search: '', shared: 'yes', locked: false, liked: false  }) %>">
-      <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- ( tag && (':' + tag) ) || q %>" placeholder="by name, description or :tag" />
+      <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- ( tag && (':' + tag) ) || q %>" placeholder="<%= _t('dashboard.views.dashboard.filters.placeholder') %>" />
       <% if (tag || q) { %>
         <a href="<%- router.currentUrl({ search: '', tag: '', shared: 'no' }) %>" class="Filters-cleanSearch js-clean-search">
           <div class="CDB-Shape">
@@ -104,7 +104,7 @@
 </div>
 
 <div class="Filters-row">
-  <label class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- selectedItemsCount %> <%- pluralizedContentTypeSelected %><%= _t('dashboard.views.dashboard.filters.selected') %></label>
+  <label class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%= _t('dashboard.views.dashboard.filters.selected_' + contentType, {smart_count: selectedItemsCount}) %></label>
   <div class="Filters-actions">
     <ul class="Filters-actionsList">
       <% if (shared !== "only" && shared !== "yes" && !library && !liked) { %>

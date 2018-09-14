@@ -143,8 +143,8 @@ module Carto
       )
     end
 
-    def self.build_oauth_key(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
-      new(
+    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+      create!(
         user: user,
         type: TYPE_OAUTH,
         name: name,

@@ -2,22 +2,23 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_ds_permissions`
 
 ### Features
-- None yet
+- Add dataservices permissions in Auth API (#14263)
 
 ### Bug fixes / enhancements
 - Fix legacy functions in the data mover that doesn't process multiword type functions
+- Fix broken tests due to time stubbing (#14287)
 
 4.20.2 (2018-09-10)
 -------------------
 
 ### Features
 * OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
- * Add new design for OAuth consent screen (#14237)
- * Limit the number of simultaneous refersh tokens (#14243)
- * Silent flow (#14244)
+  * Add new design for OAuth consent screen (#14237)
+  * Limit the number of simultaneous refersh tokens (#14243)
+  * Silent flow (#14244)
 
 ### Bug fixes / enhancements
 * Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)

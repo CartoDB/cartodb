@@ -13,8 +13,8 @@ FactoryGirl.define do
 
     type Carto::ApiKey::TYPE_MASTER
     name Carto::ApiKey::NAME_MASTER
-    grants [{ type: "apis",
-              apis: ["sql", "maps"] }]
+    grants [{ type: "apis", apis: ["sql", "maps"] },
+            { type: 'dataservices', services: ['geocoding', 'routing', 'isolines', 'observatory']}]
   end
 
   factory :oauth_api_key, class: Carto::ApiKey do

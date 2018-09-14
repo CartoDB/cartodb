@@ -8,7 +8,9 @@ module Carto
 
         def to_hash
           {
-            owner: @organization.owner.username
+            owner: {
+              username: @organization.owner.username
+            }
           }
         end
       end

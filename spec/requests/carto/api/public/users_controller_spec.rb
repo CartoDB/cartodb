@@ -61,7 +61,7 @@ describe Carto::Api::Public::UsersController do
         expect(response.body[:name]).to eq(@org_user.name)
         expect(response.body[:last_name]).to eq(@org_user.last_name)
         expect(response.body[:avatar_url]).to eq(@org_user.avatar_url)
-        expect(response.body[:organization][:owner]).to eq(@org_user.organization.owner.username)
+        expect(response.body[:organization][:owner][:username]).to eq(@org_user.organization.owner.username)
         expect(response.body[:organization][:name]).to eq(@org_user.organization.name)
       end
     end

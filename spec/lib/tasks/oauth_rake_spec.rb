@@ -18,6 +18,7 @@ describe 'oauth.rake' do
 
   after(:each) do
     @oauth_app_user.reload.destroy!
+    Delorean.back_to_the_present
   end
 
   after(:all) do

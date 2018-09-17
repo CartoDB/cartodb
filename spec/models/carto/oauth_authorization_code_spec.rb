@@ -14,7 +14,7 @@ module Carto
       it 'does not accept invalid scopes' do
         authorization = OauthAuthorizationCode.new(scopes: ['wadus'])
         expect(authorization).to_not(be_valid)
-        expect(authorization.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+        expect(authorization.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end
 
       it 'validates without redirect_uri and autogenerates code' do

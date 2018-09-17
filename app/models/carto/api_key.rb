@@ -58,6 +58,10 @@ module Carto
       type: 'dataservices',
       services: ['geocoding', 'routing', 'isolines', 'observatory']
     }.freeze
+    GRANTS_ALL_USER_DATA = {
+      type: 'user',
+      DATA: ['profile']
+    }.freeze
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
@@ -116,7 +120,7 @@ module Carto
         type: TYPE_MASTER,
         name: NAME_MASTER,
         token: user.api_key,
-        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES],
+        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA],
         db_role: user.database_username,
         db_password: user.database_password
       )
@@ -462,7 +466,7 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES]
+      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA]
       errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 

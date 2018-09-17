@@ -14,7 +14,7 @@ module Carto
       it 'does not accept invalid scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['wadus'])
         expect(access_token).to_not(be_valid)
-        expect(access_token.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+        expect(access_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end
 
       it 'auto generates api_key' do

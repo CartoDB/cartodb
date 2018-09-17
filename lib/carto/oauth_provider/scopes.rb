@@ -31,8 +31,8 @@ module Carto
 
       class DataservicesScope < Scope
         def initialize(service, description)
-          @service = service
           super("dataservices:#{service}", CATEGORY_MONEY, description)
+          @service = service
         end
 
         def add_to_api_key_grants(grants)
@@ -55,7 +55,7 @@ module Carto
 
         # Dataservices
         DataservicesScope.new('geocoding', 'Geocoding').freeze,
-        DataservicesScope.new('isolines', 'Isochrones').freeze,
+        DataservicesScope.new('isolines', 'Isolines').freeze,
         DataservicesScope.new('routing', 'Routing').freeze,
         DataservicesScope.new('observatory', 'Data Observatory').freeze
       ].freeze
@@ -74,7 +74,7 @@ module Carto
           return record.errors[attribute] = ['has to be an array'] unless value && value.is_a?(Array)
 
           invalid_scopes = Scopes.invalid_scopes(value)
-          record.errors[attribute] << "contains unsuported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
+          record.errors[attribute] << "contains unsupported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
         end
       end
 

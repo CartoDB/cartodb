@@ -20,7 +20,7 @@ module Carto
       it 'does not accept invalid scopes' do
         refresh_token = OauthRefreshToken.new(scopes: ['wadus'])
         expect(refresh_token).to_not(be_valid)
-        expect(refresh_token.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+        expect(refresh_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end
 
       it 'validates with offline scope' do

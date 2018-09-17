@@ -41,7 +41,7 @@ module Carto
       it 'does not accept invalid scopes' do
         app_user = OauthAppUser.new(scopes: ['wadus'])
         expect(app_user).to_not(be_valid)
-        expect(app_user.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+        expect(app_user.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end
 
       it 'validates' do

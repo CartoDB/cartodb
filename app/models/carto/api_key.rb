@@ -60,7 +60,7 @@ module Carto
     }.freeze
     GRANTS_ALL_USER_DATA = {
       type: 'user',
-      DATA: ['profile']
+      data: ['profile']
     }.freeze
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze

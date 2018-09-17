@@ -43,7 +43,7 @@ info:
                         "sql",
                         "maps"
                     ]
-                }
+              }
         ```
         - `database`: Describes to which tables and which privleges on each table this API Key grants access to though `tables` attribute:
         ```{
@@ -60,7 +60,19 @@ info:
                             ]
                         }
                     ]
-                }
+              }
+        ```
+        - `data services`: Describes to which data services this API Key grants access to though `services` attribute:
+        ```{
+              {
+                    "type": "dataservices",
+                    "services": [
+                        "geocoding",
+                        "routing",
+                        "isolines",
+                        "observatory"
+                    ]
+              }
         ```
 
     # Authentication
@@ -279,6 +291,12 @@ components:
                   - maps
               - type: database
                 tables: []
+              - type: dataservices
+                services:
+                  - geocoding
+                  - routing
+                  - isolines
+                  - observatory
             created_at: '2018-02-08 14:24:41 +0000'
             updated_at: '2018-02-08 14:24:41 +0000'
             _links:
@@ -300,6 +318,10 @@ components:
                       - insert
                       - select
                       - update
+              - type: dataservices
+                services:
+                  - geocoding
+                  - observatory
             created_at: '2018-02-14 13:23:12 +0000'
             updated_at: '2018-02-14 13:23:12 +0000'
             _links:
@@ -346,6 +368,7 @@ components:
                 oneOf:
                   - $ref: '#/components/schemas/ApisGrant'
                   - $ref: '#/components/schemas/GrantDatabase'
+                  - $ref: '#/components/schemas/GrantDataservices'
             _links:
               type: object
               properties:
@@ -375,6 +398,10 @@ components:
                   - insert
                   - select
                   - update
+          - type: dataservices
+            services:
+              - geocoding
+              - observatory
         created_at: '2018-02-14 13:23:12 +0000'
         updated_at: '2018-02-14 13:23:12 +0000'
         _links:
@@ -393,6 +420,7 @@ components:
             oneOf:
               - $ref: '#/components/schemas/GrantDatabase'
               - $ref: '#/components/schemas/ApisGrant'
+              - $ref: '#/components/schemas/GrantDataservices'
             discriminator:
               propertyName: type
       required:
@@ -412,6 +440,32 @@ components:
                   - select
                   - update
                   - insert
+          - type: dataservices
+            services:
+              - geocoding
+              - observatory
+    GrantDataservices:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - dataservices
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dataservices'
+          uniqueItems: true
+      required:
+        - type
+        - services
+    Dataservices:
+      type: string
+      enum:
+        - geocoding
+        - routing
+        - isolines
+        - observatory
 
     GrantDatabase:
       type: object
@@ -515,4 +569,4 @@ components:
       description: Forbidden. The API key does not authorize this request.
     BadInput:
       description: Request's parameters error
-      
+

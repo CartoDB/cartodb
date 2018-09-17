@@ -335,15 +335,12 @@ describe Carto::OauthProviderController do
       end
 
       it 'with valid payload, and a pre-existing grant, upgrades it adding more scopes' do
-        # TODO: We only have one scope and is unsupported in token response
-        pending if valid_payload[:response_type] == 'token'
-
         oau = @oauth_app.oauth_app_users.create!(user_id: @user.id)
-        post oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
+        post oauth_provider_authorize_url(valid_payload.merge(scope: 'dataservices:geocoding'))
 
         expect(oau.scopes).to(eq([]))
         oau.reload
-        expect(oau.scopes).to(eq(['offline']))
+        expect(oau.scopes).to(eq(['dataservices:geocoding']))
 
         validate_response(response)
       end

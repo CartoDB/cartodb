@@ -40,6 +40,13 @@ describe Carto::ApiKey do
     }
   end
 
+  def user_grant(data = ['profile'])
+    {
+      type: 'user',
+      data: data
+    }
+  end
+
   def with_connection_from_api_key(api_key)
     user = api_key.user
 
@@ -238,6 +245,20 @@ describe Carto::ApiKey do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
         }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
+      end
+
+      it 'fails with several dataservices sections' do
+        two_apis_grant = [apis_grant, data_services_grant, data_services_grant]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one dataservices section is allowed/)
+      end
+
+      it 'fails with several user sections' do
+        two_apis_grant = [apis_grant, user_grant, user_grant]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one user section is allowed/)
       end
     end
 

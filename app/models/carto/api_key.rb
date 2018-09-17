@@ -6,11 +6,12 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
-    if value.count { |v| v[:type] == 'database' } > 1
-      record.errors[attribute] << 'only one database section is allowed'
-    end
-    if value.count { |v| v[:type] == 'dataservices' } > 1
-      record.errors[attribute] << 'only one dataservices section is allowed'
+
+    max_one_sections = ['database', 'dataservices', 'user']
+    max_one_sections.each do |section|
+      if value.count { |v| v[:type] == section } > 1
+        record.errors[attribute] << "only one #{section} section is allowed"
+      end
     end
   end
 end

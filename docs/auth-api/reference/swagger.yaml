@@ -33,7 +33,7 @@ info:
 
     1. **token**: It will be used for authenticating your requests.
 
-    1. **grants**: Describes which APIs this API Key provides access to and to which tables. It consists on an array of two JSON objects. This object's `type` attribute can be `apis` or `database`:
+    1. **grants**: Describes which APIs this API Key provides access to and to which tables. It consists on an array of two JSON objects. This object's `type` attribute can be `apis`, `database` or `dataservices`:
 
         - `apis`: Describes which APIs does this API Key provide access to through `apis` attribute:
         ```{
@@ -62,7 +62,7 @@ info:
                     ]
               }
         ```
-        - `data services`: Describes to which data services this API Key grants access to though `services` attribute:
+        - `dataservices`: Describes to which data services this API Key grants access to though `services` attribute:
         ```{
               {
                     "type": "dataservices",

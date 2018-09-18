@@ -18,7 +18,7 @@ describe('api/v4/client', function () {
     });
   });
 
-  describe('constructor', function () {
+ describe('constructor', function () {
     it('should build a new client', function () {
       expect(client).toBeDefined();
       expect(client.getLayers()).toEqual([]);
@@ -31,6 +31,46 @@ describe('api/v4/client', function () {
       });
 
       expect(client._engine._windshaftSettings.urlTemplate).toEqual('https://cartojs-test.carto.com');
+    });
+
+    it('should accept a ipv4/user/{username} as a valid serverURL', function () {
+      expect(function () {
+        client = new carto.Client({
+          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+          username: 'cartojs-test',
+          serverUrl: '192.168.0.1/user/cartojs-test'
+        });
+      }).not.toThrow();
+    });
+
+    it('should throw when serverURL is an ip adress with no /user/{username}', function () {
+      expect(function () {
+        client = new carto.Client({
+          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+          username: 'cartojs-test',
+          serverUrl: '192.168.0.1'
+        });
+      }).toThrow();
+    });
+
+    it('should throw when serverURL is an invalid ip adress with no /user/{username}', function () {
+      expect(function () {
+        client = new carto.Client({
+          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+          username: 'cartojs-test',
+          serverUrl: '192.168.1/user/cartojs-test'
+        });
+      }).toThrow();
+    });
+
+    it('should throw when serverURL is an ip adress with no /user/{username}', function () {
+      expect(function () {
+        client = new carto.Client({
+          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+          username: 'cartojs-test',
+          serverUrl: '192.168.1'
+        });
+      }).toThrow();
     });
 
     describe('error handling', function () {

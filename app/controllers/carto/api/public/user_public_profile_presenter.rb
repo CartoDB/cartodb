@@ -9,10 +9,10 @@ module Carto
         def to_hash
           org_hash = OrganizationPublicProfilePresenter.new(@user.organization).to_hash if @user.has_organization?
 
-          super.deep_merge!(
+          super.deep_merge(
             organization: org_hash,
             avatar_url: @user.avatar_url,
-            name: @user.name,
+            first_name: @user.name,
             last_name: @user.last_name
           )
         end

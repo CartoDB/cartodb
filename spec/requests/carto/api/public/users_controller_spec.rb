@@ -58,11 +58,26 @@ describe Carto::Api::Public::UsersController do
       get_json api_v4_users_me_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:username]).to eq(@org_user.username)
+        expect(response.body[:organization][:name]).to eq(@org_user.organization.name)
         expect(response.body[:name]).to eq(@org_user.name)
         expect(response.body[:last_name]).to eq(@org_user.last_name)
         expect(response.body[:avatar_url]).to eq(@org_user.avatar_url)
         expect(response.body[:organization][:owner][:username]).to eq(@org_user.organization.owner.username)
+      end
+    end
+
+    it 'does not return user public profile without user:profile grants' do
+      host! "#{@org_user.username}.localhost.lan"
+      api_key = FactoryGirl.create(:oauth_api_key, user_id: @org_user.id)
+
+      get_json api_v4_users_me_url(api_key: api_key.token) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:username]).to eq(@org_user.username)
         expect(response.body[:organization][:name]).to eq(@org_user.organization.name)
+        expect(response.body[:name]).to be_nil
+        expect(response.body[:last_name]).to be_nil
+        expect(response.body[:avatar_url]).to be_nil
+        expect(response.body[:organization][:owner]).to be_nil
       end
     end
   end

@@ -467,7 +467,9 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA]
+      unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA]
+        errors.add(:grants, "must grant all apis")
+      end
       errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 

@@ -7,8 +7,10 @@ module Carto
         end
 
         def to_hash
+          org_hash = OrganizationPublicProfilePresenter.new(@user.organization).to_hash if @user.has_organization?
+
           {
-            organization: @user.has_organization? ? OrganizationPublicProfilePresenter.new(@user.organization).to_hash : nil,
+            organization: org_hash,
             avatar_url: @user.avatar_url,
             name: @user.name,
             last_name: @user.last_name

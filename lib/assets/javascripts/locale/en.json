@@ -3101,6 +3101,80 @@
       "maps": "Maps",
       "activity": "Recent activity by",
       "view_more": "View more"
+    },
+    "public": {
+      "views": {
+        "public_footer": {
+          "product": "Product",
+          "builder": "<a class=\"Footer-link\" href=\"https://carto.com/builder/\">Builder</a>",
+          "engine": "<a class=\"Footer-link\" href=\"https://carto.com/engine/\">Engine</a>",
+          "mobile": "<a class=\"Footer-link\" href=\"https://carto.com/mobile/\">Mobile</a>",
+          "location_services": "<a class=\"Footer-link\" href=\"https://carto.com/location-data-services/\">Location Data Services</a>",
+          "data_observatory": "<a class=\"Footer-link\" href=\"https://carto.com/data-observatory/\">Data Observatory</a>",
+          "source_code": "<a class=\"Footer-link\" href=\"https://github.com/CartoDB/cartodb\">Source Code</a>",
+          "pricing": "<a class=\"Footer-link\" href=\"https://carto.com/pricing/\" class=\"Footer-link\">Pricing</a>",
+          "solutions": "Solutions",
+          "banking": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/banking-and-finance/\">Banking & Finance</a>",
+          "analytics": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/business-intelligence-and-analytics/\">BI & Analytics</a>",
+          "government": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/government/\">Government</a>",
+          "estate": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/real-estate/\">Real Estate</a>",
+          "web": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/web-mobile/\">Web Development</a>",
+          "journal": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/journalism/\">Journalism</a>",
+          "nature": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/natural-resources/\">Natural Resources</a>",
+          "earth": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/earth-observation-and-space/\">Earth Observation</a>",
+          "non_profit": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/non-profits/\">Non-profits</a>",
+          "education": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/education-and-research/\">Education</a>",
+          "connectors": "Connectors",
+          "dropbox": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/dropbox/\">Dropbox</a>",
+          "google": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/google-drive/\">Google Drive</a>",
+          "twitter": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/twitter-maps/\">Twitter Maps</a>",
+          "mailchimp": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/mailchimp/\">MailChimp</a>",
+          "excel": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/excel-data/\">Excel Data</a>",
+          "arcgis": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/arcgis/\">ArcGIS™</a>",
+          "satellite": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/satellite-imagery/\">Satellite Imagery</a>",
+          "qlik": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/qlik/\">Qlik</a>",
+          "splunk": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/splunk/\">Splunk</a>",
+          "alteryx": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/alteryx/\">Alteryx</a>",
+          "discover": "Discover",
+          "gallery": "<a class=\"Footer-link\" href=\"https://carto.com/gallery/\">Map Gallery</a>",
+          "explore": "<a class=\"Footer-link\" href=\"https://carto.com/explore\">Explore</a>",
+          "ambassadors": "<a class=\"Footer-link\" href=\"https://carto.com/ambassadors/\">Ambassadors</a>",
+          "learn": "Learn",
+          "guides": "<a class=\"Footer-link\" href=\"https://carto.com/learn/guides\">Guides</a>",
+          "developers": "<a class=\"Footer-link\" href=\"https://carto.com/developers\">Developers</a>",
+          "academy": "<a class=\"Footer-link\" href=\"https://carto.com/academy\">The Map Academy</a>",
+          "resources": "<a class=\"Footer-link\" href=\"https://carto.com/resources/\">Resources Center</a>",
+          "webinars": "<a class=\"Footer-link\" href=\"https://carto.com/webinars/\">Webinars</a>",
+          "blog": "<a class=\"Footer-link\" href=\"https://carto.com/blog\">Blog</a>",
+          "about": "About us",
+          "team": "<a class=\"Footer-link\" href=\"https://carto.com/team/\">Team</a>",
+          "jobs": "<a class=\"Footer-link\" href=\"https://carto.com/jobs/\">Jobs</a>",
+          "press": "<a class=\"Footer-link\" href=\"https://carto.com/press/\">Press</a>",
+          "partners": "<a class=\"Footer-link\" href=\"https://carto.com/partners/\">Partners</a>",
+          "attributions": "<a class=\"Footer-link\" href=\"https://carto.com/attributions\">Attributions</a>",
+          "contributions": "<a class=\"Footer-link\" href=\"https://carto.com/contributing/\">Contributions</a>",
+          "contact": "<a class=\"Footer-link\" href=\"mailto:sales@carto.com\">Contact us</a>",
+          "demo": "<a class=\"Footer-link\" href=\"https://carto.com/request-live-demo/\">Request a Live Demo</a>",
+          "terms": "<a class=\"Footer-link\" href=\"https://carto.com/terms/\">Terms of Service</a>",
+          "legal": "<a class=\"Footer-link\" href=\"https://carto.com/legal/\">Legal</a>"
+        }
+      }
+    },
+    "table": {
+      "default_layers": {
+        "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "attr_stamen": "Map tiles by <a href=\"http://stamen.com\">Stamen Design</a>, under <a href=\"http://creativecommons.org/licenses/by/3.0\">CC BY 3.0</a>. Data by <a href=\"http://openstreetmap.org\">OpenStreetMap</a>, under <a href=\"http://www.openstreetmap.org/copyright\">ODbL</a>."
+      }
+    }
+  },
+  "cdb": {
+    "src": {
+      "core": {
+        "config": {
+          "attributions": "© <a href=\"https://carto.com/attributions\" target=\"_blank\">CARTO</a>",
+          "logo_link": "http://www.carto.com"
+        }
+      }
     }
   },
   "dashboard": {

@@ -265,7 +265,7 @@ en:
         jobs: 'Jobs'
         press: 'Press'
         partners: 'Partners'
-        attr: 'Attributions'
+        attr: '<a class="Footer-link" href="https://carto.com/attributions">Attributions</a>'
         contrib: 'Contributions'
         contact: 'Contact us'
         demo: 'Request a Live Demo'
@@ -304,6 +304,8 @@ en:
       embed_map:
         map_created: 'Map created by #{@name} in CARTO'
         upgrade_browser: 'This visualization only works in modern browsers. Upgrade yours and enjoy.'
+        attributions: "CARTO <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>"
+        logo_link: "https://carto.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
       embed_error:
         private: 'Looks like this map is set as private or no longer exists'
       embed_pwd:

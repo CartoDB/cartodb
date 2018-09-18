@@ -2,19 +2,38 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_ds_permissions`
+- This release upgrades the CartoDB PostgreSQL extension to `0.24.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
-- OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
-  - Add new design for OAuth consent screen (#14237)
-  - Limit the number of simultaneous refersh tokens (#14243)
-  - Silent flow (#14244)
+- Add dataservices permissions in Auth API (#14263)
+- OAuth provider (WIP):
+  - Add scopes for accessing dataservices
 
 ### Bug fixes / enhancements
-- Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
-- Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
-- Add another error to OOM detection in imports (#14259)
-- Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
+- Fix legacy functions in the data mover that doesn't process multiword type functions
+- Fix `image_tag` function to include the assets versioning (#14266)
+- Fix broken tests due to time stubbing (#14287)
+- Remove username from Postgres roles
+
+4.20.2 (2018-09-10)
+-------------------
+
+### Features
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  * Add new design for OAuth consent screen (#14237)
+  * Limit the number of simultaneous refersh tokens (#14243)
+  * Silent flow (#14244)
+
+### Bug fixes / enhancements
+* Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
+* Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+* Add another error to OOM detection in imports (#14259)
+* Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
 
 4.20.1 (2018-08-24)
 -------------------

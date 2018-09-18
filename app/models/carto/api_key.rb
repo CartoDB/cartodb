@@ -6,7 +6,12 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
-    record.errors[attribute] << 'only one database section is allowed' if value.count { |v| v[:type] == 'database' } > 1
+    if value.count { |v| v[:type] == 'database' } > 1
+      record.errors[attribute] << 'only one database section is allowed'
+    end
+    if value.count { |v| v[:type] == 'dataservices' } > 1
+      record.errors[attribute] << 'only one dataservices section is allowed'
+    end
   end
 end
 
@@ -48,7 +53,11 @@ module Carto
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
 
-    GRANTS_ALL_APIS = [{ type: "apis", apis: [API_SQL, API_MAPS] }].freeze
+    GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
+    GRANTS_ALL_DATA_SERVICES = {
+      type: 'dataservices',
+      services: ['geocoding', 'routing', 'isolines', 'observatory']
+    }.freeze
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
@@ -56,6 +65,8 @@ module Carto
                           "WHEN type = '#{TYPE_DEFAULT_PUBLIC}' THEN 2 " \
                           "WHEN type = '#{TYPE_REGULAR}' THEN 1 " \
                           "ELSE 0 END DESC".freeze
+
+    CDB_CONF_KEY_PREFIX = 'api_keys_'.freeze
 
     self.inheritance_column = :_type
 
@@ -81,10 +92,12 @@ module Carto
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
+    after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
 
     after_destroy :drop_db_role, if: :needs_setup?
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
+    after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -93,6 +106,7 @@ module Carto
     scope :order_weighted_by_type, -> { order(TYPE_WEIGHTED_ORDER) }
 
     attr_accessor :skip_role_setup
+    attr_writer :skip_cdb_conf_info
 
     private_class_method :new, :create, :create!
 
@@ -102,7 +116,7 @@ module Carto
         type: TYPE_MASTER,
         name: NAME_MASTER,
         token: user.api_key,
-        grants: GRANTS_ALL_APIS,
+        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES],
         db_role: user.database_username,
         db_password: user.database_password
       )
@@ -114,7 +128,7 @@ module Carto
         type: TYPE_DEFAULT_PUBLIC,
         name: NAME_DEFAULT_PUBLIC,
         token: TOKEN_DEFAULT_PUBLIC,
-        grants: GRANTS_ALL_APIS,
+        grants: [GRANTS_ALL_APIS],
         db_role: user.database_public_username,
         db_password: CartoDB::PUBLIC_DB_USER_PASSWORD
       )
@@ -129,8 +143,8 @@ module Carto
       )
     end
 
-    def self.build_oauth_key(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
-      new(
+    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+      create!(
         user: user,
         type: TYPE_OAUTH,
         name: name,
@@ -149,7 +163,8 @@ module Carto
         updated_at: api_key_hash[:updated_at],
         grants: api_key_hash[:grants],
         user_id: api_key_hash[:user_id],
-        skip_role_setup: true
+        skip_role_setup: true,
+        skip_cdb_conf_info: true
       )
     end
 
@@ -183,6 +198,10 @@ module Carto
       end
     end
 
+    def data_services
+      @data_services ||= process_data_services
+    end
+
     def regenerate_token!
       if master?
         # Send all master key updates through the user model, avoid circular updates
@@ -212,6 +231,10 @@ module Carto
 
     def needs_setup?
       regular? || oauth?
+    end
+
+    def data_services?
+      data_services.present?
     end
 
     def valid_name_for_type
@@ -248,6 +271,27 @@ module Carto
     def set_enabled_for_engine
       # We enable/disable API keys for engine usage by adding/removing them from Redis
       valid_user? ? add_to_redis : remove_from_redis
+    end
+
+    def save_cdb_conf_info
+      info = {
+        username: user.username,
+        permissions: data_services || []
+      }
+
+      db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{info.to_json}');")
+    end
+
+    def remove_cdb_conf_info
+      db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{CDB_CONF_KEY_PREFIX}#{db_role}');")
+    end
+
+    def skip_cdb_conf_info
+      @skip_cdb_conf_info || false
+    end
+
+    def skip_cdb_conf_info?
+      skip_cdb_conf_info.present?
     end
 
     private
@@ -292,6 +336,13 @@ module Carto
       table_permissions
     end
 
+    def process_data_services
+      data_services_grants = grants.find { |v| v[:type] == 'dataservices' }
+      return nil unless data_services_grants.present?
+
+      data_services_grants[:services]
+    end
+
     def check_owned_table_permissions
       # Only checks if no previous errors in JSON definition
       if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
@@ -301,7 +352,7 @@ module Carto
 
     def create_db_config
       begin
-        self.db_role = Carto::DB::Sanitize.sanitize_identifier("#{user.username}_role_#{SecureRandom.hex}")
+        self.db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
       end while self.class.exists?(user_id: user_id, db_role: db_role)
       self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
     end
@@ -400,13 +451,13 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES]
       errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 
     def valid_default_public_key
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
-      errors.add(:grants, "must grant all apis") unless grants == GRANTS_ALL_APIS
+      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS]
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
 

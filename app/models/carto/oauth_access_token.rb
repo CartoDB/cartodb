@@ -16,7 +16,7 @@ module Carto
 
     validates :scopes, scopes: true
 
-    before_validation :ensure_api_key
+    before_create :create_api_key
     after_create :rename_api_key
 
     scope :expired, -> { where('created_at < ?', Time.now - ACCESS_TOKEN_EXPIRATION_TIME) }
@@ -27,10 +27,13 @@ module Carto
 
     private
 
-    def ensure_api_key
-      self.api_key ||= oauth_app_user.user.api_keys.build_oauth_key(
+    def create_api_key
+      grants = [{ type: 'apis', apis: [] }]
+      scopes.each { |s| SCOPES_BY_NAME[s].add_to_api_key_grants(grants) }
+
+      self.api_key = oauth_app_user.user.api_keys.create_oauth_key!(
         name: "oauth_authorization #{SecureRandom.uuid}",
-        grants: [{ type: 'apis', apis: [] }]
+        grants: grants
       )
     end
 

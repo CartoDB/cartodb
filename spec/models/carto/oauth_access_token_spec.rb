@@ -14,14 +14,21 @@ module Carto
       it 'does not accept invalid scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['wadus'])
         expect(access_token).to_not(be_valid)
-        expect(access_token.errors[:scopes]).to(include("contains unsuported scopes: wadus"))
+        expect(access_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end
 
       it 'auto generates api_key' do
-        access_token = OauthAccessToken.new(oauth_app_user: @app_user)
-        expect(access_token).to(be_valid)
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user)
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
+      end
+
+      it 'api key includes permissions for requested scopes' do
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['dataservices:geocoding'])
+        expect(access_token.api_key).to(be)
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(include(type: 'apis', apis: ['sql']))
+        expect(access_token.api_key.grants).to(include(type: 'dataservices', services: ['geocoding']))
       end
     end
   end

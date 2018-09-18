@@ -33,6 +33,13 @@ describe Carto::ApiKey do
     }
   end
 
+  def data_services_grant(services = ['geocoding', 'routing', 'isolines', 'observatory'])
+    {
+      type: 'dataservices',
+      services: services
+    }
+  end
+
   def with_connection_from_api_key(api_key)
     user = api_key.user
 
@@ -298,6 +305,18 @@ describe Carto::ApiKey do
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
+      it 'create master api key works' do
+        api_key = @carto_user1.api_keys.master.first
+        api_key.destroy
+
+        @carto_user1.api_keys.create_master_key!
+
+        api_key = @carto_user1.api_keys.master.first
+        api_key.should be
+        api_key.db_role.should eq @carto_user1.database_username
+        api_key.db_password.should eq @carto_user1.database_password
+      end
+
       it 'cannot create a non master api_key with master as the name' do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_MASTER, grants: [apis_grant])
@@ -337,6 +356,76 @@ describe Carto::ApiKey do
         api_key.token = 'wadus'
         api_key.save.should be_false
         api_key.errors.full_messages.should include "Token must be default_public for default public keys"
+      end
+    end
+
+    describe 'data services api key' do
+      it 'cdb_conf info with dataservices' do
+        grants = [apis_grant, data_services_grant]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'dataservices', grants: grants)
+        expected = { username: @carto_user1.username, permissions: ['geocoding', 'routing', 'isolines', 'observatory'] }
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          config = db.fetch(query).first[:cdb_conf_getconf]
+          expect(JSON.parse(config, symbolize_names: true)).to eql(expected)
+        end
+
+        api_key.destroy
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          db.fetch(query).first[:cdb_conf_getconf].should be_nil
+        end
+      end
+
+      it 'cdb_conf info without dataservices' do
+        grants = [apis_grant]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'testname', grants: grants)
+        expected = { username: @carto_user1.username, permissions: [] }
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          config = db.fetch(query).first[:cdb_conf_getconf]
+          expect(JSON.parse(config, symbolize_names: true)).to eql(expected)
+        end
+
+        api_key.destroy
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          db.fetch(query).first[:cdb_conf_getconf].should be_nil
+        end
+      end
+
+      it 'fails with invalid data services' do
+        grants = [apis_grant, data_services_grant(['invalid-service'])]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'fails with valid and invalid data services' do
+        grants = [apis_grant, data_services_grant(services: ['geocoding', 'invalid-service'])]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'fails with invalid data services key' do
+        grants = [
+          apis_grant,
+          {
+            type: 'dataservices',
+            invalid: ['geocoding']
+          }
+        ]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end

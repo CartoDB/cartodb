@@ -18,7 +18,7 @@ describe('api/v4/client', function () {
     });
   });
 
- describe('constructor', function () {
+  describe('constructor', function () {
     it('should build a new client', function () {
       expect(client).toBeDefined();
       expect(client.getLayers()).toEqual([]);
@@ -69,6 +69,26 @@ describe('api/v4/client', function () {
           apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
           username: 'cartojs-test',
           serverUrl: '192.168.1'
+        });
+      }).toThrow();
+    });
+
+    it('should allow http protocol', function () {
+      expect(function () {
+        client = new carto.Client({
+          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+          username: 'cartojs-test',
+          serverUrl: 'http://192.168.0.1/user/cartojs-test'
+        });
+      }).toThrow();
+    });
+
+    it('should allow https protocol', function () {
+      expect(function () {
+        client = new carto.Client({
+          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+          username: 'cartojs-test',
+          serverUrl: 'https://192.168.0.1/user/cartojs-test'
         });
       }).toThrow();
     });

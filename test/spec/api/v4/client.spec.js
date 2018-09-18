@@ -38,57 +38,37 @@ describe('api/v4/client', function () {
         client = new carto.Client({
           apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
           username: 'cartojs-test',
-          serverUrl: '192.168.0.1/user/cartojs-test'
+          serverUrl: 'https://192.168.0.1/user/cartojs-test'
         });
       }).not.toThrow();
     });
 
-    it('should throw when serverURL is an ip adress with no /user/{username}', function () {
+    it('should reject a valid ip adress with no /user/{username} as serverURL', function () {
       expect(function () {
         client = new carto.Client({
           apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
           username: 'cartojs-test',
-          serverUrl: '192.168.0.1'
+          serverUrl: 'https://10.10.0.1'
         });
       }).toThrow();
     });
 
-    it('should throw when serverURL is an invalid ip adress followed by /user/{username}', function () {
+    it('should reject an invalid ip adress followed by /user/{username}', function () {
       expect(function () {
         client = new carto.Client({
           apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
           username: 'cartojs-test',
-          serverUrl: '192.168.1/user/cartojs-test'
+          serverUrl: 'https://192.168.1/user/cartojs-test'
         });
       }).toThrow();
     });
 
-    it('should throw when serverURL is an invalid ip adress with no /user/{username}', function () {
+    it('should reject an invalid ip adress with no /user/{username}', function () {
       expect(function () {
         client = new carto.Client({
           apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
           username: 'cartojs-test',
-          serverUrl: '192.168.1'
-        });
-      }).toThrow();
-    });
-
-    it('should allow http protocol', function () {
-      expect(function () {
-        client = new carto.Client({
-          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-          username: 'cartojs-test',
-          serverUrl: 'http://192.168.0.1/user/cartojs-test'
-        });
-      }).toThrow();
-    });
-
-    it('should allow https protocol', function () {
-      expect(function () {
-        client = new carto.Client({
-          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-          username: 'cartojs-test',
-          serverUrl: 'https://192.168.0.1/user/cartojs-test'
+          serverUrl: 'https://192.168.1'
         });
       }).toThrow();
     });

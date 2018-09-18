@@ -6,11 +6,12 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
-    if value.count { |v| v[:type] == 'database' } > 1
-      record.errors[attribute] << 'only one database section is allowed'
-    end
-    if value.count { |v| v[:type] == 'dataservices' } > 1
-      record.errors[attribute] << 'only one dataservices section is allowed'
+
+    max_one_sections = ['database', 'dataservices', 'user']
+    max_one_sections.each do |section|
+      if value.count { |v| v[:type] == section } > 1
+        record.errors[attribute] << "only one #{section} section is allowed"
+      end
     end
   end
 end
@@ -57,6 +58,10 @@ module Carto
     GRANTS_ALL_DATA_SERVICES = {
       type: 'dataservices',
       services: ['geocoding', 'routing', 'isolines', 'observatory']
+    }.freeze
+    GRANTS_ALL_USER_DATA = {
+      type: 'user',
+      data: ['profile']
     }.freeze
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
@@ -116,7 +121,7 @@ module Carto
         type: TYPE_MASTER,
         name: NAME_MASTER,
         token: user.api_key,
-        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES],
+        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA],
         db_role: user.database_username,
         db_password: user.database_password
       )
@@ -200,6 +205,10 @@ module Carto
 
     def data_services
       @data_services ||= process_data_services
+    end
+
+    def user_data
+      @user_data ||= process_user_data_grants
     end
 
     def regenerate_token!
@@ -343,6 +352,13 @@ module Carto
       data_services_grants[:services]
     end
 
+    def process_user_data_grants
+      user_data_grants = grants.find { |v| v[:type] == 'user' }
+      return nil unless user_data_grants.present?
+
+      user_data_grants[:data]
+    end
+
     def check_owned_table_permissions
       # Only checks if no previous errors in JSON definition
       if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
@@ -451,7 +467,9 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES]
+      unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA]
+        errors.add(:grants, "must grant all apis")
+      end
       errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 

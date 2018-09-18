@@ -5,7 +5,13 @@ module Carto
         ssl_required
 
         def me_public
-          render(json: UserPublicPresenter.new(request_api_key.user).to_hash)
+          presentation = if request_api_key.user_data.try(:include?, 'profile')
+                           UserPublicProfilePresenter.new(request_api_key.user).to_hash
+                         else
+                           UserPublicPresenter.new(request_api_key.user).to_hash
+                         end
+
+          render(json: presentation)
         end
       end
     end

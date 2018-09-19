@@ -64,6 +64,8 @@ module Carto
       data: ['profile']
     }.freeze
 
+    MASTER_API_KEY_GRANTS = [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA].freeze
+
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
     TYPE_WEIGHTED_ORDER = "CASE WHEN type = '#{TYPE_MASTER}' THEN 3 " \
@@ -121,7 +123,7 @@ module Carto
         type: TYPE_MASTER,
         name: NAME_MASTER,
         token: user.api_key,
-        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA],
+        grants: MASTER_API_KEY_GRANTS,
         db_role: user.database_username,
         db_password: user.database_password
       )
@@ -467,7 +469,7 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA]
+      unless grants == MASTER_API_KEY_GRANTS
         errors.add(:grants, "must grant all apis")
       end
       errors.add(:token, "must match user model for master keys") unless token == user.api_key

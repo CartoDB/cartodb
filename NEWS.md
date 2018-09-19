@@ -14,12 +14,14 @@ sudo make install
 - OAuth provider (WIP):
   - Add scopes for accessing dataservices
   - Add scopes for accessing user public profile
+  - Add scopes for granting permissions on user datasets
 
 ### Bug fixes / enhancements
 - Fix legacy functions in the data mover that doesn't process multiword type functions
 - Fix `image_tag` function to include the assets versioning (#14266)
 - Fix broken tests due to time stubbing (#14287)
 - Remove username from Postgres roles
+- Add `create_master_api_key_grants` rake (https://github.com/CartoDB/support/issues/1748)
 
 4.20.2 (2018-09-10)
 -------------------

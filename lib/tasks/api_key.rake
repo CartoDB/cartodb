@@ -59,43 +59,59 @@ namespace :carto do
 
     desc 'Creates dataservices permissions for every API Key'
     task create_ds_permissions: :environment do
-      all_count = Carto::ApiKey.count
-      current_count = 0
-      reflection_seconds = ENV['ENABLE_FF_REFLECTION_SECONDS'] || 10
-
-      puts "############################"
-      puts "#"
-      puts "# Creating dataservices permissions for every API Key"
-      puts "#"
-      puts "# #{all_count} api keys will be processed"
-      puts "#"
-      puts "# You have #{reflection_seconds} seconds to cancel "
-      puts "# the task before it starts"
-      puts "#"
-      puts "############################"
-
-      sleep reflection_seconds.to_i
-
       grants_data_services = {
         type: 'dataservices',
         services: ['geocoding', 'routing', 'isolines', 'observatory']
       }
 
-      Carto::ApiKey.find_each do |api_key|
-        begin
-          current_count += 1
-          puts "#{current_count} of #{all_count}"
-
-          if api_key.master? && !api_key.data_services?
-            api_key.grants << grants_data_services
-            api_key.save!
-          elsif
-            api_key.save_cdb_conf_info
-          end
-
-        rescue Exception => e
-          puts "ERROR - API Key #{api_key.id}: #{e}"
+      for_each_api_key("Creating dataservices permissions for every API Key") do |api_key|
+        if api_key.master? && !api_key.data_services?
+          api_key.grants << grants_data_services
+          api_key.save!
+        elsif
+          api_key.save_cdb_conf_info
         end
+      end
+    end
+
+    desc 'Creates grants for every master API Key'
+    task create_master_api_key_grants: :environment do
+      for_each_api_key("Creating permissions for every master API Key") do |api_key|
+        if api_key.master?
+          byebug
+          api_key.grants = Carto::ApiKey::MASTER_API_KEY_GRANTS
+          api_key.save!
+        end
+      end
+    end
+  end
+
+  def for_each_api_key(description)
+    all_count = Carto::ApiKey.count
+    current_count = 0
+    reflection_seconds = ENV['ENABLE_FF_REFLECTION_SECONDS'] || 10
+
+    puts "############################"
+    puts "#"
+    puts "# #{description}"
+    puts "#"
+    puts "# #{all_count} api keys will be processed"
+    puts "#"
+    puts "# You have #{reflection_seconds} seconds to cancel "
+    puts "# the task before it starts"
+    puts "#"
+    puts "############################"
+
+    sleep reflection_seconds.to_i
+
+    Carto::ApiKey.find_each do |api_key|
+      begin
+        current_count += 1
+        puts "#{current_count} of #{all_count}"
+
+        yield api_key
+      rescue Exception => e
+        puts "ERROR - API Key #{api_key.id}: #{e}"
       end
     end
   end

@@ -59,12 +59,13 @@ namespace :carto do
 
     desc 'Creates dataservices permissions for every API Key'
     task create_ds_permissions: :environment do
+      MESSAGE = "Creating dataservices permissions for every API Key".freeze
       grants_data_services = {
         type: 'dataservices',
         services: ['geocoding', 'routing', 'isolines', 'observatory']
       }
 
-      for_each_api_key("Creating dataservices permissions for every API Key") do |api_key|
+      for_each_api_key(Carto::ApiKey, MESSAGE) do |api_key|
         if api_key.master? && !api_key.data_services?
           api_key.grants << grants_data_services
           api_key.save!
@@ -76,17 +77,16 @@ namespace :carto do
 
     desc 'Creates grants for every master API Key'
     task create_master_api_key_grants: :environment do
-      for_each_api_key("Creating permissions for every master API Key") do |api_key|
-        if api_key.master?
-          api_key.grants = Carto::ApiKey::MASTER_API_KEY_GRANTS
-          api_key.save!
-        end
+      MESSAGE = "Creating permissions for every master API Key".freeze
+      for_each_api_key(Carto::ApiKey.where(type: 'master'), MESSAGE) do |api_key|
+        api_key.grants = Carto::ApiKey::MASTER_API_KEY_GRANTS
+        api_key.save!
       end
     end
   end
 
-  def for_each_api_key(description)
-    all_count = Carto::ApiKey.count
+  def for_each_api_key(query, description)
+    all_count = query.count
     current_count = 0
     reflection_seconds = ENV['ENABLE_FF_REFLECTION_SECONDS'] || 10
 
@@ -103,13 +103,13 @@ namespace :carto do
 
     sleep reflection_seconds.to_i
 
-    Carto::ApiKey.find_each do |api_key|
+    query.find_each do |api_key|
       begin
         current_count += 1
         puts "#{current_count} of #{all_count}"
 
         yield api_key
-      rescue Exception => e
+      rescue StandardError => e
         puts "ERROR - API Key #{api_key.id}: #{e}"
       end
     end

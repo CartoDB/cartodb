@@ -506,8 +506,9 @@ function _checkUsername (username) {
 }
 
 function _checkServerUrl (serverUrl, username) {
+  var ipRegex = /https?:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
   var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
-  if (!serverUrl.match(urlregex)) {
+  if (!serverUrl.match(urlregex) && !serverUrl.match(ipRegex)) {
     throw getValidationError('nonValidServerURL');
   }
   if (serverUrl.indexOf(username) < 0) {

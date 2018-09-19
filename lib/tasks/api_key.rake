@@ -78,7 +78,6 @@ namespace :carto do
     task create_master_api_key_grants: :environment do
       for_each_api_key("Creating permissions for every master API Key") do |api_key|
         if api_key.master?
-          byebug
           api_key.grants = Carto::ApiKey::MASTER_API_KEY_GRANTS
           api_key.save!
         end

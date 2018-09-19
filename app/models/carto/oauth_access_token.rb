@@ -29,7 +29,11 @@ module Carto
 
     def create_api_key
       grants = [{ type: 'apis', apis: [] }]
-      scopes.each { |s| SCOPES_BY_NAME[s].add_to_api_key_grants(grants) }
+      scopes.each do |i|
+        scope = SCOPES_BY_NAME[i] || OauthProvider::Scopes.build(i)
+        next unless scope
+        scope.add_to_api_key_grants(grants, oauth_app_user.user.database_schema)
+      end
 
       self.api_key = oauth_app_user.user.api_keys.create_oauth_key!(
         name: "oauth_authorization #{SecureRandom.uuid}",

@@ -10,7 +10,15 @@ module Carto
           @description = description
         end
 
-        def add_to_api_key_grants(grants); end
+        def add_to_api_key_grants(grants, schema = nil); end
+
+        def ensure_includes_apis(grants, apis)
+          return if apis.blank?
+          apis_section = grants.find { |i| i[:type] == 'apis' }
+          apis.each do |api|
+            apis_section[:apis] << api unless apis_section[:apis].include?(api)
+          end
+        end
       end
 
       class Category
@@ -22,12 +30,41 @@ module Carto
         end
       end
 
+      class Permission
+
+        DESCRIPTIONS = {
+          r: "Read access to #{@table_name}",
+          w: "Write access to #{@table_name}",
+          rw: "Full access to #{@table_name}"
+        }.freeze
+
+        PERMISSIONS = {
+          r: ['select'],
+          w: Carto::TablePermissions::WRITE_PERMISSIONS,
+          rw: ['select'] + Carto::TablePermissions::WRITE_PERMISSIONS
+        }.freeze
+
+        def initialize(permission, table_name)
+          @permission = permission.to_sym
+          @table_name = table_name
+        end
+
+        def description
+          DESCRIPTIONS[@permission]
+        end
+
+        def to_a
+          PERMISSIONS[@permission]
+        end
+      end
+
       SCOPE_DEFAULT = '_default'.freeze
       SCOPE_OFFLINE = 'offline'.freeze
 
       CATEGORY_OFFLINE = Category.new('Offline access').freeze
       CATEGORY_USER = Category.new('User and personal data').freeze
       CATEGORY_MONEY = Category.new('Features that consume credits', 'money')
+      CATEGORY_DATASETS = Category.new('Access to user datasets')
 
       class DefaultScope < Scope
         def initialize(type, service, category, description)
@@ -36,14 +73,17 @@ module Carto
           @service = service
         end
 
-        def add_to_api_key_grants(grants)
-          grant_section = grants.find { |i| i[:type] == @type }
-          unless grant_section
-            grant_section = { type: @type, @grant_key => [] }
-            grants << grant_section
+        def grant_section(grants)
+          section = grants.find { |i| i[:type] == @type }
+          unless section
+            section = { type: @type, @grant_key => [] }
+            grants << section
           end
+          section
+        end
 
-          grant_section[@grant_key] << @service
+        def add_to_api_key_grants(grants, schema = nil)
+          grant_section(grants)[@grant_key] << @service
         end
       end
 
@@ -53,10 +93,9 @@ module Carto
           @grant_key = :services
         end
 
-        def add_to_api_key_grants(grants)
+        def add_to_api_key_grants(grants, schema = nil)
           super(grants)
-          apis_section = grants.find { |i| i[:type] == 'apis' }
-          apis_section[:apis] << 'sql' unless apis_section[:apis].include?('sql')
+          ensure_includes_apis(grants, ['sql'])
         end
       end
 
@@ -64,6 +103,28 @@ module Carto
         def initialize(service, description)
           super('user', service, CATEGORY_USER, description)
           @grant_key = :data
+        end
+      end
+
+      class DatasetsScope < DefaultScope
+        def initialize(scope)
+          _, permission, @table = scope.split(':')
+          @permission = Permission.new(permission, @table)
+          super('database', permission, CATEGORY_DATASETS, @permission.description)
+          @grant_key = :tables
+        end
+
+        def add_to_api_key_grants(grants, schema = nil)
+          ensure_includes_apis(grants, ['maps', 'sql'])
+          database_section = grant_section(grants)
+
+          table_section = {
+            name: @table,
+            permissions: @permission.to_a,
+            schema: schema
+          }
+
+          database_section[@grant_key] << table_section
         end
       end
 
@@ -87,7 +148,15 @@ module Carto
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
       def self.invalid_scopes(scopes)
-        scopes - SUPPORTED_SCOPES
+        (scopes - SUPPORTED_SCOPES).reject { |scope| datasets?(scope) }
+      end
+
+      def self.datasets?(scope)
+        scope =~ /datasets:(?:rw|w|r):\w+/
+      end
+
+      def self.build(scope)
+        DatasetsScope.new(scope) if Scopes.datasets?(scope)
       end
 
       class ScopesValidator < ActiveModel::EachValidator
@@ -104,7 +173,7 @@ module Carto
         previous_scopes = previous_scopes.nil? ? [] : previous_scopes + [SCOPE_DEFAULT]
 
         all_scopes = ([SCOPE_DEFAULT] + new_scopes + previous_scopes).uniq
-        scopes_by_category = all_scopes.map { |s| SCOPES_BY_NAME[s] }.group_by(&:category)
+        scopes_by_category = all_scopes.map { |s| SCOPES_BY_NAME[s] || build(s) }.group_by(&:category)
         scopes_by_category.map do |category, scopes|
           {
             description: category.description,

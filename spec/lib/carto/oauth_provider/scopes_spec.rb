@@ -31,4 +31,106 @@ describe Carto::OauthProvider::Scopes do
       end
     end
   end
+
+  describe Carto::OauthProvider::Scopes::DatasetsScope do
+    describe '#add_to_api_key_grants' do
+      let(:full_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:rw:untitled_table') }
+      let(:read_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:r:untitled_table') }
+      let(:write_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:w:untitled_table') }
+      let(:full_table_grants) do
+        [
+          {
+            apis: [
+              'maps',
+              'sql'
+            ],
+            type: 'apis'
+          },
+          {
+            tables: [
+              {
+                name: 'untitled_table',
+                permissions: [
+                  'select',
+                  'insert',
+                  'update',
+                  'delete',
+                  'truncate'
+                ],
+                schema: 'wadus'
+              }
+            ],
+            type: 'database'
+          }
+        ]
+      end
+      let(:read_table_grants) do
+        [
+          {
+            apis: [
+              'maps',
+              'sql'
+            ],
+            type: 'apis'
+          },
+          {
+            tables: [
+              {
+                name: 'untitled_table',
+                permissions: [
+                  'select'
+                ],
+                schema: 'wadus'
+              }
+            ],
+            type: 'database'
+          }
+        ]
+      end
+      let(:write_table_grants) do
+        [
+          {
+            apis: [
+              'maps',
+              'sql'
+            ],
+            type: 'apis'
+          },
+          {
+            tables: [
+              {
+                name: 'untitled_table',
+                permissions: [
+                  'insert',
+                  'update',
+                  'delete',
+                  'truncate'
+                ],
+                schema: 'wadus'
+              }
+            ],
+            type: 'database'
+          }
+        ]
+      end
+
+      it 'adds full access permissions' do
+        grants = [{ type: 'apis', apis: [] }]
+        full_scope.add_to_api_key_grants(grants, 'wadus')
+        expect(grants).to(eq(full_table_grants))
+      end
+
+      it 'does not add write permissions' do
+        grants = [{ type: 'apis', apis: [] }]
+        read_scope.add_to_api_key_grants(grants, 'wadus')
+        expect(grants).to(eq(read_table_grants))
+      end
+
+      it 'does not add read permissions' do
+        grants = [{ type: 'apis', apis: [] }]
+        write_scope.add_to_api_key_grants(grants, 'wadus')
+        expect(grants).to(eq(write_table_grants))
+      end
+    end
+  end
 end

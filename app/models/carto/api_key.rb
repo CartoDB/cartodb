@@ -376,16 +376,26 @@ module Carto
     def setup_db_role
       create_role
 
+      exceptions = []
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
-            db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
-            sequences_for_table(schema, table_name).each do |seq|
-              db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+          begin
+            # here we catch exceptions to show a proper error to the user request
+            # this is because we allow OAuth requests to include a `datasets` scope with a user defined table
+            # which may or may not exists
+            Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
+              db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+              sequences_for_table(schema, table_name).each do |seq|
+                db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+              end
             end
+          rescue Carto::UnprocesableEntityError => e
+            exceptions << /".*?"/.match(e.message).to_s if e.message =~ /does not exist/
           end
         end
       end
+
+      raise Carto::RelationDoesNotExistError.new(exceptions) unless exceptions.empty?
 
       affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
     end

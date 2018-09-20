@@ -10,7 +10,7 @@ module Carto
           @description = description
         end
 
-        def add_to_api_key_grants(grants, schema = nil); end
+        def add_to_api_key_grants(grants, _schema = nil); end
 
         def ensure_includes_apis(grants, apis)
           return if apis.blank?
@@ -27,34 +27,6 @@ module Carto
         def initialize(description, icon = nil)
           @description = description
           @icon = icon
-        end
-      end
-
-      class Permission
-
-        DESCRIPTIONS = {
-          r: "Read access to #{@table_name}",
-          w: "Write access to #{@table_name}",
-          rw: "Full access to #{@table_name}"
-        }.freeze
-
-        PERMISSIONS = {
-          r: ['select'],
-          w: Carto::TablePermissions::WRITE_PERMISSIONS,
-          rw: ['select'] + Carto::TablePermissions::WRITE_PERMISSIONS
-        }.freeze
-
-        def initialize(permission, table_name)
-          @permission = permission.to_sym
-          @table_name = table_name
-        end
-
-        def description
-          DESCRIPTIONS[@permission]
-        end
-
-        def to_a
-          PERMISSIONS[@permission]
         end
       end
 
@@ -82,7 +54,7 @@ module Carto
           section
         end
 
-        def add_to_api_key_grants(grants, schema = nil)
+        def add_to_api_key_grants(grants, _schema = nil)
           grant_section(grants)[@grant_key] << @service
         end
       end
@@ -93,7 +65,7 @@ module Carto
           @grant_key = :services
         end
 
-        def add_to_api_key_grants(grants, schema = nil)
+        def add_to_api_key_grants(grants, _schema = nil)
           super(grants)
           ensure_includes_apis(grants, ['sql'])
         end
@@ -107,11 +79,32 @@ module Carto
       end
 
       class DatasetsScope < DefaultScope
-        def initialize(scope)
-          _, permission, @table = scope.split(':')
-          @permission = Permission.new(permission, @table)
-          super('database', permission, CATEGORY_DATASETS, @permission.description)
+
+        PERMISSIONS = {
+          r: ['select'],
+          w: ['insert', 'update', 'delete', 'truncate'],
+          rw: ['select'] + ['insert', 'update', 'delete', 'truncate']
+        }.freeze
+
+        DESCRIPTIONS = {
+          r: "Read access to %<table_name>s",
+          w: "Write access to %<table_name>s",
+          rw: "Full access to %<table_name>s"
+        }.freeze
+
+        def initialize(permission, table)
+          super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, table))
           @grant_key = :tables
+          @permission = permission.to_sym
+          @table = table
+        end
+
+        def description(permission = @permission, table = @table)
+          DESCRIPTIONS[permission] % { table_name: table }
+        end
+
+        def permission
+          PERMISSIONS[@permission]
         end
 
         def add_to_api_key_grants(grants, schema = nil)
@@ -120,7 +113,7 @@ module Carto
 
           table_section = {
             name: @table,
-            permissions: @permission.to_a,
+            permissions: permission,
             schema: schema
           }
 
@@ -156,7 +149,8 @@ module Carto
       end
 
       def self.build(scope)
-        DatasetsScope.new(scope) if Scopes.datasets?(scope)
+        _, permission, table = scope.split(':')
+        DatasetsScope.new(permission, table) if Scopes.datasets?(scope)
       end
 
       class ScopesValidator < ActiveModel::EachValidator

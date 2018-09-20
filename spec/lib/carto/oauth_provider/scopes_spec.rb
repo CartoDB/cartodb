@@ -34,9 +34,9 @@ describe Carto::OauthProvider::Scopes do
 
   describe Carto::OauthProvider::Scopes::DatasetsScope do
     describe '#add_to_api_key_grants' do
-      let(:full_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:rw:untitled_table') }
-      let(:read_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:r:untitled_table') }
-      let(:write_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:w:untitled_table') }
+      let(:full_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('rw', 'untitled_table') }
+      let(:read_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('r', 'untitled_table') }
+      let(:write_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('w', 'untitled_table') }
       let(:full_table_grants) do
         [
           {

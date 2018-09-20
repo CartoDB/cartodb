@@ -59,6 +59,18 @@ module Carto
     end
   end
 
+  class RelationDoesNotExistError < CartoError
+    def initialize(relations, status = 404)
+      relations.map! { |relation| sanitize(relation) }
+      super(relations.join(', '), status)
+    end
+
+    def sanitize(relation)
+      relation_name = relation.split('.')[-1]
+      relation_name.gsub!(/^"|"?$/, '')
+    end
+  end
+
   class MissingParamsError < CartoError
     def initialize(missing_params, status: 400)
       super("The following required params are missing: #{missing_params.join(', ')}", status)

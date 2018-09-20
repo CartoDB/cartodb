@@ -14,6 +14,7 @@ sudo make install
 - OAuth provider (WIP):
   - Add scopes for accessing dataservices
   - Add scopes for accessing user public profile
+  - Add scopes for accessing datasets
 
 ### Bug fixes / enhancements
 - Fix legacy functions in the data mover that doesn't process multiword type functions

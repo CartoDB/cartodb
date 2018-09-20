@@ -119,7 +119,7 @@ describe Carto::ApiKey do
       expect {
         grants = [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception Carto::RelationDoesNotExistError
+      }.to raise_exception Carto::UnprocesableEntityError
     end
 
     it 'fails to grant to system table' do

@@ -55,27 +55,23 @@ module Carto
 
       it 'api key includes permissions for datasets scopes' do
         user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-        expected_grants = [
-                            {
-                              type: 'apis',
-                              apis: [
-                                'maps',
-                                'sql'
-                              ]
-                            },
-                            {
-                              type: 'database',
-                              tables: [
-                                {
-                                  name: user_table.name,
-                                  permissions: [
-                                    'select'
-                                  ],
-                                  schema: 'public'
-                                }
-                              ]
-                            }
-                          ]
+        expected_grants =
+          [
+            {
+              type: 'apis',
+              apis: ['maps', 'sql']
+            },
+            {
+              type: 'database',
+              tables: [
+                {
+                  name: user_table.name,
+                  permissions: ['select'],
+                  schema: 'public'
+                }
+              ]
+            }
+          ]
 
         access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
                                                 scopes: ["datasets:r:#{user_table.name}"])

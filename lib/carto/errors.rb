@@ -59,13 +59,14 @@ module Carto
     end
   end
 
-  class RelationDoesNotExistError < CartoError
-    def initialize(relations, status = 404)
-      relations.map! { |relation| sanitize(relation) }
-      super(relations.join(', '), status)
+  class RelationDoesNotExistError < UnprocesableEntityError
+    def initialize(error_relations)
+      super(error_relations.join(', '))
+      @user_message = error_relations.map! { |relation| sanitize(relation) }.join(', ')
     end
 
     def sanitize(relation)
+      relation = /".*?"/.match(relation).to_s
       relation_name = relation.split('.')[-1]
       relation_name.gsub!(/^"|"?$/, '')
     end

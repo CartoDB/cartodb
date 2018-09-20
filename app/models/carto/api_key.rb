@@ -390,7 +390,8 @@ module Carto
               end
             end
           rescue Carto::UnprocesableEntityError => e
-            exceptions << /".*?"/.match(e.message).to_s if e.message =~ /does not exist/
+            raise e unless e.message =~ /does not exist/
+            exceptions << e.message
           end
         end
       end

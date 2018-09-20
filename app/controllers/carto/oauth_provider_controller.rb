@@ -120,8 +120,7 @@ module Carto
     def rescue_generic_errors(exception)
       CartoDB::Logger.error(exception: exception)
       if exception.is_a?(Carto::RelationDoesNotExistError)
-        message = "'#{exception.message}' dataset(s) don't exist and cannot be used as a scope"
-        return rescue_oauth_errors(OauthProvider::Errors::InvalidScope.new(nil, message: message))
+        return rescue_oauth_errors(OauthProvider::Errors::InvalidScope.new(nil, message: exception.user_message))
       end
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end

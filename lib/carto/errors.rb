@@ -62,7 +62,8 @@ module Carto
   class RelationDoesNotExistError < UnprocesableEntityError
     def initialize(error_relations)
       super(error_relations.join(', '))
-      @user_message = error_relations.map! { |relation| sanitize(relation) }.join(', ')
+      non_existent_relations = error_relations.map! { |relation| sanitize(relation) }.join(', ')
+      @user_message = "The following datasets: #{non_existent_relations} don't exist"
     end
 
     def sanitize(relation)

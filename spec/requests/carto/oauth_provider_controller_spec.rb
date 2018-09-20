@@ -94,6 +94,15 @@ describe Carto::OauthProviderController do
         expect(qs['error']).to(eq('invalid_scope'))
       end
 
+      it 'redirects with an error if requesting invalid dataset scopes' do
+        request_endpoint(valid_payload.merge(scope: 'datasets:wtf:table_name'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
+      end
+
       it 'redirects with an error if requesting with an invalid redirect_uri' do
         request_endpoint(valid_payload.merge(redirect_uri: 'invalid'))
 

@@ -80,10 +80,13 @@ module Carto
 
       class DatasetsScope < DefaultScope
 
+        READ_PERMISSIONS = ['select'].freeze
+        WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
+
         PERMISSIONS = {
-          r: ['select'],
-          w: ['insert', 'update', 'delete', 'truncate'],
-          rw: ['select'] + ['insert', 'update', 'delete', 'truncate']
+          r: READ_PERMISSIONS,
+          w: WRITE_PERMISSIONS,
+          rw: READ_PERMISSIONS + WRITE_PERMISSIONS
         }.freeze
 
         DESCRIPTIONS = {
@@ -149,8 +152,10 @@ module Carto
       end
 
       def self.build(scope)
-        _, permission, table = scope.split(':')
-        DatasetsScope.new(permission, table) if Scopes.datasets?(scope)
+        if Scopes.datasets?(scope)
+          _, permission, table = scope.split(':')
+          DatasetsScope.new(permission, table)
+        end
       end
 
       class ScopesValidator < ActiveModel::EachValidator

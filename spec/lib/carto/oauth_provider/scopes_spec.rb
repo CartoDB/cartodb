@@ -54,8 +54,7 @@ describe Carto::OauthProvider::Scopes do
                   'select',
                   'insert',
                   'update',
-                  'delete',
-                  'truncate'
+                  'delete'
                 ],
                 schema: 'wadus'
               }
@@ -103,8 +102,7 @@ describe Carto::OauthProvider::Scopes do
                 permissions: [
                   'insert',
                   'update',
-                  'delete',
-                  'truncate'
+                  'delete'
                 ],
                 schema: 'wadus'
               }

@@ -122,6 +122,10 @@ module Carto
 
           database_section[@grant_key] << table_section
         end
+
+        def self.is_a?(scope)
+          scope =~ /datasets:(?:rw|w|r):\w+/
+        end
       end
 
       SCOPES = [
@@ -147,8 +151,8 @@ module Carto
         (scopes - SUPPORTED_SCOPES).reject { |scope| datasets?(scope) }
       end
 
-      def self.datasets?(scope)
-        scope =~ /datasets:(?:rw|w|r):\w+/
+      def self.valid?(scope)
+        DatasetsScope.is_a?(scope)
       end
 
       def self.build(scope)

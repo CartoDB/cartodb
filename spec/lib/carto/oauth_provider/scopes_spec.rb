@@ -2,6 +2,35 @@ require 'spec_helper_min'
 require 'carto/oauth_provider/scopes'
 
 describe Carto::OauthProvider::Scopes do
+
+  describe '#invalid_scopes' do
+    include Carto::OauthProvider::Scopes
+    before :all do
+      @user = FactoryGirl.create(:carto_user)
+    end
+
+    after :all do
+      @user.destroy
+    end
+
+    it 'validates supported scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(Carto::OauthProvider::Scopes::SUPPORTED_SCOPES, @user)
+      expect(scopes).to be_empty
+    end
+
+    it 'returns non existent datasets scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(['datasets:r:wtf'], @user)
+      expect(scopes).to eq(['datasets:r:wtf'])
+    end
+
+    it 'validates existing datasets scopes' do
+      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(["datasets:r:#{user_table.name}"], @user)
+      expect(scopes).to be_empty
+      user_table.destroy
+    end
+  end
+
   describe Carto::OauthProvider::Scopes::DataservicesScope do
     describe '#add_to_api_key_grants' do
       let(:scope) { Carto::OauthProvider::Scopes::DataservicesScope.new('geocoding', 'GC') }

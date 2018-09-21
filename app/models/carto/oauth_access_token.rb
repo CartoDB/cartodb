@@ -25,6 +25,10 @@ module Carto
       created_at + ACCESS_TOKEN_EXPIRATION_TIME - Time.now
     end
 
+    def user
+      oauth_app_user.user
+    end
+
     private
 
     def create_api_key

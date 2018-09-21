@@ -126,6 +126,10 @@ module Carto
         def self.is_a?(scope)
           scope =~ /datasets:(?:rw|w|r):\w+/
         end
+
+        def self.table(scope)
+          scope.split(':')[-1]
+        end
       end
 
       SCOPES = [
@@ -147,16 +151,25 @@ module Carto
       # The default scope is always granted but cannot be explicitly requested
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
-      def self.invalid_scopes(scopes)
-        (scopes - SUPPORTED_SCOPES).reject { |scope| datasets?(scope) }
-      end
-
-      def self.valid?(scope)
-        DatasetsScope.is_a?(scope)
+      def self.invalid_scopes(scopes, user)
+        unsupported_scopes = (scopes - SUPPORTED_SCOPES).reject { |scope| DatasetsScope.is_a?(scope) }
+        u = ::User.where(id: user.id).first
+        datasets_scopes = scopes.select { |scope| DatasetsScope.is_a?(scope) }
+        if datasets_scopes.any?
+          datasets_scopes.each do |dataset_scope|
+            found = false
+            u.db_service.tables_effective(user.database_schema).each do |table|
+              found = true if DatasetsScope.table(dataset_scope) == table
+              next unless found
+            end
+            unsupported_scopes << dataset_scope unless found || unsupported_scopes.include?(dataset_scope)
+          end
+        end
+        unsupported_scopes
       end
 
       def self.build(scope)
-        if Scopes.datasets?(scope)
+        if DatasetsScope.is_a?(scope)
           _, permission, table = scope.split(':')
           DatasetsScope.new(permission, table)
         end
@@ -166,7 +179,7 @@ module Carto
         def validate_each(record, attribute, value)
           return record.errors[attribute] = ['has to be an array'] unless value && value.is_a?(Array)
 
-          invalid_scopes = Scopes.invalid_scopes(value)
+          invalid_scopes = Scopes.invalid_scopes(value, record.user)
           record.errors[attribute] << "contains unsupported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
         end
       end

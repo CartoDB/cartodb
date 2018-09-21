@@ -376,7 +376,8 @@ module Carto
     def setup_db_role
       create_role
 
-      exceptions = []
+      non_existent_tables = []
+      errors = []
       table_permissions.each do |tp|
         unless tp.permissions.empty?
           begin
@@ -391,12 +392,13 @@ module Carto
             end
           rescue Carto::UnprocesableEntityError => e
             raise e unless e.message =~ /does not exist/
-            exceptions << e.message
+            non_existent_tables << tp.name
+            errors << e.message
           end
         end
       end
 
-      raise Carto::RelationDoesNotExistError.new(exceptions) unless exceptions.empty?
+      raise Carto::RelationDoesNotExistError.new(errors, non_existent_tables) unless non_existent_tables.empty?
 
       affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
     end

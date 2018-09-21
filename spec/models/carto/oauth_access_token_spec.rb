@@ -9,6 +9,13 @@ module Carto
         @user = FactoryGirl.create(:carto_user)
         @app = FactoryGirl.create(:oauth_app, user: @user)
         @app_user = OauthAppUser.create!(user: @user, oauth_app: @app)
+        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+      end
+
+      after(:all) do
+        @user.destroy
+        @app.destroy
+        @user_table.destroy
       end
 
       it 'does not accept invalid scopes' do
@@ -18,22 +25,27 @@ module Carto
       end
 
       it 'it does accept read datasets scopes' do
-        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:r:wadus'])
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:r:#{@user_table.name}"])
         expect(access_token).to(be_valid)
       end
 
       it 'it does accept write datasets scopes' do
-        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:w:wadus'])
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:w:#{@user_table.name}"])
         expect(access_token).to(be_valid)
       end
 
       it 'it does accept read and write datasets scopes' do
-        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:rw:wadus'])
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:rw:#{@user_table.name}"])
         expect(access_token).to(be_valid)
       end
 
       it 'it does not accept invalid permission in datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:f:wadus'])
+        expect(access_token).to_not(be_valid)
+      end
+
+      it 'it does not accept datasets scopes for unexistent tables' do
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:r:wadus'])
         expect(access_token).to_not(be_valid)
       end
 

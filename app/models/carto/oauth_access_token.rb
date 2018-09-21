@@ -33,10 +33,9 @@ module Carto
 
     def create_api_key
       grants = [{ type: 'apis', apis: [] }]
-      scopes.each do |i|
-        scope = SCOPES_BY_NAME[i] || OauthProvider::Scopes.build(i)
-        next unless scope
-        scope.add_to_api_key_grants(grants, oauth_app_user.user.database_schema)
+      scopes.each do |s|
+        scope = OauthProvider::Scopes.build(s)
+        scope.add_to_api_key_grants(grants, user)
       end
 
       self.api_key = oauth_app_user.user.api_keys.create_oauth_key!(

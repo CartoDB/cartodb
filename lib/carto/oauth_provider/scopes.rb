@@ -10,7 +10,7 @@ module Carto
           @description = description
         end
 
-        def add_to_api_key_grants(grants, _schema = nil); end
+        def add_to_api_key_grants(grants, user = nil); end
 
         def ensure_includes_apis(grants, apis)
           return if apis.blank?
@@ -54,7 +54,7 @@ module Carto
           section
         end
 
-        def add_to_api_key_grants(grants, _schema = nil)
+        def add_to_api_key_grants(grants, _user = nil)
           grant_section(grants)[@grant_key] << @service
         end
       end
@@ -65,7 +65,7 @@ module Carto
           @grant_key = :services
         end
 
-        def add_to_api_key_grants(grants, _schema = nil)
+        def add_to_api_key_grants(grants, _user = nil)
           super(grants)
           ensure_includes_apis(grants, ['sql'])
         end
@@ -110,14 +110,14 @@ module Carto
           PERMISSIONS[@permission]
         end
 
-        def add_to_api_key_grants(grants, schema = nil)
+        def add_to_api_key_grants(grants, user = nil)
           ensure_includes_apis(grants, ['maps', 'sql'])
           database_section = grant_section(grants)
 
           table_section = {
             name: @table,
             permissions: permission,
-            schema: schema
+            schema: user.database_schema
           }
 
           database_section[@grant_key] << table_section
@@ -169,10 +169,12 @@ module Carto
       end
 
       def self.build(scope)
-        if DatasetsScope.is_a?(scope)
+        result = SCOPES_BY_NAME[scope]
+        if !result && DatasetsScope.is_a?(scope)
           _, permission, table = scope.split(':')
-          DatasetsScope.new(permission, table)
+          result = DatasetsScope.new(permission, table)
         end
+        result
       end
 
       class ScopesValidator < ActiveModel::EachValidator
@@ -189,7 +191,7 @@ module Carto
         previous_scopes = previous_scopes.nil? ? [] : previous_scopes + [SCOPE_DEFAULT]
 
         all_scopes = ([SCOPE_DEFAULT] + new_scopes + previous_scopes).uniq
-        scopes_by_category = all_scopes.map { |s| SCOPES_BY_NAME[s] || build(s) }.group_by(&:category)
+        scopes_by_category = all_scopes.map { |s| build(s) }.group_by(&:category)
         scopes_by_category.map do |category, scopes|
           {
             description: category.description,

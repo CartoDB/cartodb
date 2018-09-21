@@ -141,21 +141,26 @@ describe Carto::OauthProvider::Scopes do
         ]
       end
 
+      before(:all) do
+        @user = mock
+        @user.stubs(:database_schema).returns('wadus')
+      end
+
       it 'adds full access permissions' do
         grants = [{ type: 'apis', apis: [] }]
-        full_scope.add_to_api_key_grants(grants, 'wadus')
+        full_scope.add_to_api_key_grants(grants, @user)
         expect(grants).to(eq(full_table_grants))
       end
 
       it 'does not add write permissions' do
         grants = [{ type: 'apis', apis: [] }]
-        read_scope.add_to_api_key_grants(grants, 'wadus')
+        read_scope.add_to_api_key_grants(grants, @user)
         expect(grants).to(eq(read_table_grants))
       end
 
       it 'does not add read permissions' do
         grants = [{ type: 'apis', apis: [] }]
-        write_scope.add_to_api_key_grants(grants, 'wadus')
+        write_scope.add_to_api_key_grants(grants, @user)
         expect(grants).to(eq(write_table_grants))
       end
     end

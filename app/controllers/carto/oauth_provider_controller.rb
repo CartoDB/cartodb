@@ -157,7 +157,7 @@ module Carto
     def validate_scopes
       @scopes = (params[:scope] || '').split(' ')
 
-      invalid_scopes = OauthProvider::Scopes.invalid_scopes(@scopes, current_viewer)
+      invalid_scopes = OauthProvider::Scopes.invalid_scopes_and_tables(@scopes, current_viewer)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
     end
 

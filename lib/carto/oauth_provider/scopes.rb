@@ -127,11 +127,14 @@ module Carto
           scope.split(':')[-1]
         end
 
-        def self.valid_scopes(scopes, user)
-          datasets_scopes = scopes.select { |scope| DatasetsScope.is_a?(scope) }.map { |scope| [table(scope), scope] }
+        def self.valid_scopes(scopes)
+          scopes.select { |scope| DatasetsScope.is_a?(scope) }
+        end
+
+        def self.valid_scopes_with_table(scopes, user)
+          datasets_scopes = valid_scopes(scopes).map { |scope| [table(scope), scope] }
 
           return [] unless datasets_scopes.any?
-          return datasets_scopes.to_h.values unless user
 
           user_tables = user.db_service.tables_effective(user.database_schema)
           datasets_scopes.to_h.select { |table, _| user_tables.include?(table) }.values
@@ -157,8 +160,12 @@ module Carto
       # The default scope is always granted but cannot be explicitly requested
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
-      def self.invalid_scopes(scopes, user = nil)
-        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes, ::User[user.try(:id)])
+      def self.invalid_scopes(scopes)
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes)
+      end
+
+      def self.invalid_scopes_and_tables(scopes, user)
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes_with_table(scopes, ::User[user.id])
       end
 
       def self.build(scope)

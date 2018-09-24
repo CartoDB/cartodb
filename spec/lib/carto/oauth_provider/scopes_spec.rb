@@ -14,12 +14,12 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'validates supported scopes' do
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes(Carto::OauthProvider::Scopes::SUPPORTED_SCOPES, @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(Carto::OauthProvider::Scopes::SUPPORTED_SCOPES, @user)
       expect(scopes).to be_empty
     end
 
     it 'returns non existent datasets scopes' do
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes(['datasets:r:wtf'], @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(['datasets:r:wtf'], @user)
       expect(scopes).to eq(['datasets:r:wtf'])
     end
 
@@ -30,20 +30,20 @@ describe Carto::OauthProvider::Scopes do
 
     it 'validates existing datasets scopes' do
       user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes(["datasets:r:#{user_table.name}"], @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{user_table.name}"], @user)
       expect(scopes).to be_empty
       user_table.destroy
     end
 
     it 'returns datasets scopes with non existent permissions' do
       user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes(["datasets:f:#{user_table.name}"], @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:f:#{user_table.name}"], @user)
       expect(scopes).to eq(["datasets:f:#{user_table.name}"])
     end
 
     it 'returns invalid datasets scopes' do
       user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes(["wadusdatasets:r:#{user_table.name}"], @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["wadusdatasets:r:#{user_table.name}"], @user)
       expect(scopes).to eq(["wadusdatasets:r:#{user_table.name}"])
     end
   end

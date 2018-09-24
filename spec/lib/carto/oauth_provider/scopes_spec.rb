@@ -29,6 +29,18 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes).to be_empty
       user_table.destroy
     end
+
+    it 'returns datasets scopes with non existent permissions' do
+      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(["datasets:f:#{user_table.name}"], @user)
+      expect(scopes).to eq(["datasets:f:#{user_table.name}"])
+    end
+
+    it 'returns invalid datasets scopes' do
+      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(["wadusdatasets:r:#{user_table.name}"], @user)
+      expect(scopes).to eq(["wadusdatasets:r:#{user_table.name}"])
+    end
   end
 
   describe Carto::OauthProvider::Scopes::DataservicesScope do
@@ -37,13 +49,13 @@ describe Carto::OauthProvider::Scopes do
 
       it 'adds SQL api and dataservice' do
         grants = [{ type: 'apis', apis: [] }]
-        scope.add_to_api_key_grants(grants)
+        scope.add_to_api_key_grants(grants, nil)
         expect(grants).to(eq([{ type: 'apis', apis: ['sql'] }, { type: 'dataservices', services: ['geocoding'] }]))
       end
 
       it 'does not add duplicate SQL api' do
         grants = [{ type: 'apis', apis: ['sql'] }]
-        scope.add_to_api_key_grants(grants)
+        scope.add_to_api_key_grants(grants, nil)
         expect(grants).to(include(type: 'apis', apis: ['sql']))
       end
     end
@@ -55,7 +67,7 @@ describe Carto::OauthProvider::Scopes do
 
       it 'adds user scope with profile subset' do
         grants = [{ type: 'apis', apis: [] }]
-        scope.add_to_api_key_grants(grants)
+        scope.add_to_api_key_grants(grants, nil)
         expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['profile'] }]))
       end
     end
@@ -65,7 +77,6 @@ describe Carto::OauthProvider::Scopes do
     describe '#add_to_api_key_grants' do
       let(:full_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('rw', 'untitled_table') }
       let(:read_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('r', 'untitled_table') }
-      let(:write_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('w', 'untitled_table') }
       let(:full_table_grants) do
         [
           {
@@ -115,31 +126,6 @@ describe Carto::OauthProvider::Scopes do
           }
         ]
       end
-      let(:write_table_grants) do
-        [
-          {
-            apis: [
-              'maps',
-              'sql'
-            ],
-            type: 'apis'
-          },
-          {
-            tables: [
-              {
-                name: 'untitled_table',
-                permissions: [
-                  'insert',
-                  'update',
-                  'delete'
-                ],
-                schema: 'wadus'
-              }
-            ],
-            type: 'database'
-          }
-        ]
-      end
 
       before(:all) do
         @user = mock
@@ -156,12 +142,6 @@ describe Carto::OauthProvider::Scopes do
         grants = [{ type: 'apis', apis: [] }]
         read_scope.add_to_api_key_grants(grants, @user)
         expect(grants).to(eq(read_table_grants))
-      end
-
-      it 'does not add read permissions' do
-        grants = [{ type: 'apis', apis: [] }]
-        write_scope.add_to_api_key_grants(grants, @user)
-        expect(grants).to(eq(write_table_grants))
       end
     end
   end

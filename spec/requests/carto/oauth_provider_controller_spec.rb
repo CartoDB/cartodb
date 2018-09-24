@@ -104,7 +104,8 @@ describe Carto::OauthProviderController do
       end
 
       it 'redirects with an error if requesting invalid dataset scopes' do
-        request_endpoint(valid_payload.merge(scope: 'datasets:wtf:table_name'))
+        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
+        request_endpoint(valid_payload.merge(scope: "datasets:wtf:#{user_table.name}"))
 
         expect(response.status).to(eq(302))
         expect(response.location).to(start_with(@oauth_app.redirect_uris.first))

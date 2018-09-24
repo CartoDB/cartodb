@@ -62,7 +62,7 @@ module Carto
   class RelationDoesNotExistError < UnprocesableEntityError
     def initialize(error_messages, error_relations)
       super(error_messages.join(', '))
-      @user_message = "The following datasets: \"#{error_relations.join(', ')}\" don't exist"
+      @user_message = "The following datasets don't exist: #{error_relations.join(', ')} don't exist"
     end
   end
 

@@ -29,11 +29,6 @@ module Carto
         expect(access_token).to(be_valid)
       end
 
-      it 'it does accept write datasets scopes' do
-        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:w:#{@user_table.name}"])
-        expect(access_token).to(be_valid)
-      end
-
       it 'it does accept read and write datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:rw:#{@user_table.name}"])
         expect(access_token).to(be_valid)
@@ -97,33 +92,6 @@ module Carto
         expect(access_token.api_key.grants).to(eq(expected_grants))
       end
 
-      it 'api key includes write permissions for datasets scopes' do
-        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-        expected_grants =
-          [
-            {
-              type: 'apis',
-              apis: ['maps', 'sql']
-            },
-            {
-              type: 'database',
-              tables: [
-                {
-                  name: user_table.name,
-                  permissions: ['insert', 'update', 'delete'],
-                  schema: 'public'
-                }
-              ]
-            }
-          ]
-
-        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
-                                                scopes: ["datasets:w:#{user_table.name}"])
-        expect(access_token.api_key).to(be)
-        expect(access_token.api_key.type).to(eq('oauth'))
-        expect(access_token.api_key.grants).to(eq(expected_grants))
-      end
-
       it 'api key includes read-write permissions for datasets scopes' do
         user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
@@ -170,7 +138,7 @@ module Carto
                 },
                 {
                   name: user_table2.name,
-                  permissions: ['insert', 'update', 'delete'],
+                  permissions: ['select', 'insert', 'update', 'delete'],
                   schema: 'public'
                 }
               ]
@@ -180,7 +148,7 @@ module Carto
         access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
                                                 scopes: [
                                                   "datasets:r:#{user_table.name}",
-                                                  "datasets:w:#{user_table2.name}"
+                                                  "datasets:rw:#{user_table2.name}"
                                                 ])
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))

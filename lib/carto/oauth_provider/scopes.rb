@@ -10,14 +10,12 @@ module Carto
           @description = description
         end
 
-        def add_to_api_key_grants(grants, user = nil); end
+        def add_to_api_key_grants(grants, user); end
 
         def ensure_includes_apis(grants, apis)
           return if apis.blank?
           apis_section = grants.find { |i| i[:type] == 'apis' }
-          apis.each do |api|
-            apis_section[:apis] << api unless apis_section[:apis].include?(api)
-          end
+          apis_section[:apis] = (apis_section[:apis] + apis).uniq
         end
       end
 
@@ -36,7 +34,7 @@ module Carto
       CATEGORY_OFFLINE = Category.new('Offline access').freeze
       CATEGORY_USER = Category.new('User and personal data').freeze
       CATEGORY_MONEY = Category.new('Features that consume credits', 'money')
-      CATEGORY_DATASETS = Category.new('Access to user datasets')
+      CATEGORY_DATASETS = Category.new('Access to your datasets')
 
       class DefaultScope < Scope
         def initialize(type, service, category, description)
@@ -85,14 +83,12 @@ module Carto
 
         PERMISSIONS = {
           r: READ_PERMISSIONS,
-          w: WRITE_PERMISSIONS,
           rw: READ_PERMISSIONS + WRITE_PERMISSIONS
         }.freeze
 
         DESCRIPTIONS = {
-          r: "Read access to %<table_name>s",
-          w: "Write access to %<table_name>s",
-          rw: "Full access to %<table_name>s"
+          r: "%<table_name>s (read access)",
+          rw: "%<table_name>s (read/write access)"
         }.freeze
 
         def initialize(permission, table)
@@ -110,7 +106,7 @@ module Carto
           PERMISSIONS[@permission]
         end
 
-        def add_to_api_key_grants(grants, user = nil)
+        def add_to_api_key_grants(grants, user)
           ensure_includes_apis(grants, ['maps', 'sql'])
           database_section = grant_section(grants)
 
@@ -124,7 +120,7 @@ module Carto
         end
 
         def self.is_a?(scope)
-          scope =~ /datasets:(?:rw|w|r):\w+/
+          scope =~ /^datasets:(?:rw|r):\w+/
         end
 
         def self.table(scope)
@@ -137,6 +133,8 @@ module Carto
           end
 
           return [] unless datasets_scopes.any?
+          return datasets_scopes.to_h.values unless user
+
           user_tables = user.db_service.tables_effective(user.database_schema)
           datasets_scopes.to_h.select { |table, _| user_tables.include?(table) }.values
         end
@@ -161,9 +159,8 @@ module Carto
       # The default scope is always granted but cannot be explicitly requested
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
-      def self.invalid_scopes(scopes, user)
-        return scopes - SUPPORTED_SCOPES unless user
-        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes, ::User[user.id])
+      def self.invalid_scopes(scopes, user = nil)
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes, ::User[user.try(:id)])
       end
 
       def self.build(scope)

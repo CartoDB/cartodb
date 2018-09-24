@@ -130,6 +130,16 @@ module Carto
         def self.table(scope)
           scope.split(':')[-1]
         end
+
+        def self.valid_scopes(scopes, user)
+          scopes.select! { |scope| DatasetsScope.is_a?(scope) }.map do |scope|
+            [table(scope), scope]
+          end
+
+          return [] unless scopes.any?
+          user_tables = user.db_service.tables_effective(user.database_schema)
+          scopes.to_h.select { |table, _| user_tables.include?(table) }.values
+        end
       end
 
       SCOPES = [
@@ -152,20 +162,7 @@ module Carto
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
       def self.invalid_scopes(scopes, user)
-        unsupported_scopes = (scopes - SUPPORTED_SCOPES).reject { |scope| DatasetsScope.is_a?(scope) }
-        u = ::User.where(id: user.id).first
-        datasets_scopes = scopes.select { |scope| DatasetsScope.is_a?(scope) }
-        if datasets_scopes.any?
-          datasets_scopes.each do |dataset_scope|
-            found = false
-            u.db_service.tables_effective(user.database_schema).each do |table|
-              found = true if DatasetsScope.table(dataset_scope) == table
-              next unless found
-            end
-            unsupported_scopes << dataset_scope unless found || unsupported_scopes.include?(dataset_scope)
-          end
-        end
-        unsupported_scopes
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes, ::User[user.id])
       end
 
       def self.build(scope)

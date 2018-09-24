@@ -104,32 +104,18 @@ namespace :carto do
       org.users.each { |u| create_api_keys_for_user(u) }
     end
 
-    desc 'Creates dataservices permissions for every API Key'
-    task create_ds_permissions: :environment do
+    desc 'Creates grants for every API Key'
+    task create_api_key_grants: :environment do
       include ApiKeyRake
-      MESSAGE = "Creating dataservices permissions for every API Key".freeze
-      grants_data_services = {
-        type: 'dataservices',
-        services: ['geocoding', 'routing', 'isolines', 'observatory']
-      }
+      MESSAGE = "Creating permissions for every API Key".freeze
 
       for_each_api_key(Carto::ApiKey, MESSAGE) do |api_key|
-        if api_key.master? && !api_key.data_services?
-          api_key.grants << grants_data_services
+        if api_key.master?
+          api_key.grants = Carto::ApiKey::MASTER_API_KEY_GRANTS
           api_key.save!
-        elsif
+        else
           api_key.save_cdb_conf_info
         end
-      end
-    end
-
-    desc 'Creates grants for every master API Key'
-    task create_master_api_key_grants: :environment do
-      include ApiKeyRake
-      MESSAGE = "Creating permissions for every master API Key".freeze
-      for_each_api_key(Carto::ApiKey.where(type: 'master'), MESSAGE) do |api_key|
-        api_key.grants = Carto::ApiKey::MASTER_API_KEY_GRANTS
-        api_key.save!
       end
     end
   end

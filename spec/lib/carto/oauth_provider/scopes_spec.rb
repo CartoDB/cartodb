@@ -14,7 +14,10 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'validates supported scopes' do
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(Carto::OauthProvider::Scopes::SUPPORTED_SCOPES, @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+        Carto::OauthProvider::Scopes::SUPPORTED_SCOPES,
+        @user
+      )
       expect(scopes).to be_empty
     end
 

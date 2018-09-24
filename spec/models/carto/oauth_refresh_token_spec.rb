@@ -12,13 +12,13 @@ module Carto
       end
 
       it 'requires offline scope' do
-        refresh_token = OauthRefreshToken.new
+        refresh_token = OauthRefreshToken.new(oauth_app_user: @app_user)
         expect(refresh_token).not_to(be_valid)
         expect(refresh_token.errors[:scopes]).to(include("must contain `offline`"))
       end
 
       it 'does not accept invalid scopes' do
-        refresh_token = OauthRefreshToken.new(scopes: ['wadus'])
+        refresh_token = OauthRefreshToken.new(oauth_app_user: @app_user, scopes: ['wadus'])
         expect(refresh_token).to_not(be_valid)
         expect(refresh_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end

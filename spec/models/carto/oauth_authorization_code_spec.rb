@@ -12,7 +12,7 @@ module Carto
       end
 
       it 'does not accept invalid scopes' do
-        authorization = OauthAuthorizationCode.new(scopes: ['wadus'])
+        authorization = OauthAuthorizationCode.new(oauth_app_user: @app_user, scopes: ['wadus'])
         expect(authorization).to_not(be_valid)
         expect(authorization.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end

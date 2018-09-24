@@ -132,13 +132,13 @@ module Carto
         end
 
         def self.valid_scopes(scopes, user)
-          scopes.select! { |scope| DatasetsScope.is_a?(scope) }.map do |scope|
+          datasets_scopes = scopes.select { |scope| DatasetsScope.is_a?(scope) }.map do |scope|
             [table(scope), scope]
           end
 
-          return [] unless scopes.any?
+          return [] unless datasets_scopes.any?
           user_tables = user.db_service.tables_effective(user.database_schema)
-          scopes.to_h.select { |table, _| user_tables.include?(table) }.values
+          datasets_scopes.to_h.select { |table, _| user_tables.include?(table) }.values
         end
       end
 
@@ -162,6 +162,7 @@ module Carto
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
       def self.invalid_scopes(scopes, user)
+        return scopes - SUPPORTED_SCOPES unless user
         scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes, ::User[user.id])
       end
 

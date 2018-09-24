@@ -128,9 +128,7 @@ module Carto
         end
 
         def self.valid_scopes(scopes, user)
-          datasets_scopes = scopes.select { |scope| DatasetsScope.is_a?(scope) }.map do |scope|
-            [table(scope), scope]
-          end
+          datasets_scopes = scopes.select { |scope| DatasetsScope.is_a?(scope) }.map { |scope| [table(scope), scope] }
 
           return [] unless datasets_scopes.any?
           return datasets_scopes.to_h.values unless user
@@ -176,7 +174,7 @@ module Carto
         def validate_each(record, attribute, value)
           return record.errors[attribute] = ['has to be an array'] unless value && value.is_a?(Array)
 
-          invalid_scopes = Scopes.invalid_scopes(value, record.user)
+          invalid_scopes = Scopes.invalid_scopes(value)
           record.errors[attribute] << "contains unsupported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
         end
       end

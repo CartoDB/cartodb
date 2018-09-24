@@ -23,6 +23,11 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes).to eq(['datasets:r:wtf'])
     end
 
+    it 'validaes non existent datasets scopes if not user is present' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(['datasets:r:wtf'])
+      expect(scopes).to be_empty
+    end
+
     it 'validates existing datasets scopes' do
       user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
       scopes = Carto::OauthProvider::Scopes.invalid_scopes(["datasets:r:#{user_table.name}"], @user)

@@ -24,27 +24,27 @@ module Carto
         expect(access_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end
 
-      it 'it does accept read datasets scopes' do
+      it 'does accept read datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:r:#{@user_table.name}"])
         expect(access_token).to(be_valid)
       end
 
-      it 'it does accept read and write datasets scopes' do
+      it 'does accept read and write datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:rw:#{@user_table.name}"])
         expect(access_token).to(be_valid)
       end
 
-      it 'it does not accept invalid permission in datasets scopes' do
+      it 'does not accept invalid permission in datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:f:wadus'])
         expect(access_token).to_not(be_valid)
       end
 
-      it 'it does not accept datasets scopes for unexistent tables' do
+      it 'does not validate tables existence on datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:r:wadus'])
-        expect(access_token).to_not(be_valid)
+        expect(access_token).to(be_valid)
       end
 
-      it 'it does not accept invalid datasets scopes' do
+      it 'does not accept invalid datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:f'])
         expect(access_token).to_not(be_valid)
       end
@@ -63,6 +63,13 @@ module Carto
         expect(access_token.api_key.grants).to(include(type: 'apis', apis: ['sql']))
         expect(access_token.api_key.grants).to(include(type: 'dataservices', services: ['geocoding']))
         expect(access_token.api_key.grants).to(include(type: 'user', data: ['profile']))
+      end
+
+      it 'raises an error when creating an api key for an unexistent dataset' do
+        expect {
+          OauthAccessToken.create!(oauth_app_user: @app_user,
+                                   scopes: ['datasets:r:wadus'])
+        }.to raise_error(Carto::RelationDoesNotExistError, 'relation "public.wadus" does not exist')
       end
 
       it 'api key includes read permissions for datasets scopes' do

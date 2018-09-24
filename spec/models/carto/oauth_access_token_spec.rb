@@ -65,7 +65,7 @@ module Carto
         expect(access_token.api_key.grants).to(include(type: 'user', data: ['profile']))
       end
 
-      it 'raises an error when creating an api key for an unexistent dataset' do
+      it 'raises an error when creating an api key for an non-existent dataset' do
         expect {
           OauthAccessToken.create!(oauth_app_user: @app_user,
                                    scopes: ['datasets:r:wadus'])

@@ -1,12 +1,14 @@
 require 'spec_helper_min'
 require 'carto/oauth_provider/scopes'
+require_relative '../../../factories/organizations_contexts'
 
 describe Carto::OauthProvider::Scopes do
+  include_context 'organization with users helper'
 
   describe '#invalid_scopes' do
     include Carto::OauthProvider::Scopes
     before :all do
-      @user = FactoryGirl.create(:carto_user)
+      @user = Carto::User.find(create_user.id)
     end
 
     after :all do
@@ -26,7 +28,7 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes).to eq(['datasets:r:wtf'])
     end
 
-    it 'validaes non existent datasets scopes if not user is present' do
+    it 'validates non existent datasets scopes' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes(['datasets:r:wtf'])
       expect(scopes).to be_empty
     end
@@ -83,8 +85,8 @@ describe Carto::OauthProvider::Scopes do
 
   describe Carto::OauthProvider::Scopes::DatasetsScope do
     describe '#add_to_api_key_grants' do
-      let(:full_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('rw', 'untitled_table') }
-      let(:read_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('r', 'untitled_table') }
+      let(:full_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:rw:untitled_table') }
+      let(:read_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:r:untitled_table') }
       let(:full_table_grants) do
         [
           {

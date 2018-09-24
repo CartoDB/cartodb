@@ -39,5 +39,10 @@ module Carto
     rescue ActiveRecord::StatementInvalid => exception
       raise exception.cause
     end
+
+    def tables_effective(schema = 'public')
+      query = "select table_name::text from information_schema.tables where table_schema = '#{schema}'"
+      execute_in_user_database(query).map { |i| i['table_name'] }
+    end
   end
 end

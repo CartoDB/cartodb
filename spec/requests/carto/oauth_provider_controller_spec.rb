@@ -94,7 +94,7 @@ describe Carto::OauthProviderController do
         expect(qs['error']).to(eq('invalid_scope'))
       end
 
-      it 'redirects with an error if requesting unexistent datasets' do
+      it 'redirects with an error if requesting non-existent datasets' do
         request_endpoint(valid_payload.merge(scope: 'datasets:r:blabla'))
 
         expect(response.status).to(eq(302))

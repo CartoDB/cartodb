@@ -91,11 +91,11 @@ module Carto
           rw: "%<table_name>s (read/write access)"
         }.freeze
 
-        def initialize(permission, table)
-          super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, table))
+        def initialize(scope)
+          _, permission, @table = scope.split(':')
+          super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, @table))
           @grant_key = :tables
           @permission = permission.to_sym
-          @table = table
         end
 
         def description(permission = @permission, table = @table)
@@ -165,14 +165,13 @@ module Carto
       end
 
       def self.invalid_scopes_and_tables(scopes, user)
-        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes_with_table(scopes, ::User[user.id])
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes_with_table(scopes, user)
       end
 
       def self.build(scope)
         result = SCOPES_BY_NAME[scope]
         if !result && DatasetsScope.is_a?(scope)
-          _, permission, table = scope.split(':')
-          result = DatasetsScope.new(permission, table)
+          result = DatasetsScope.new(scope)
         end
         result
       end

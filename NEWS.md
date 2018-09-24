@@ -24,8 +24,8 @@ sudo make install
 ### Features
 * Add dataservices permissions in Auth API (#14263)
 * OAuth provider (WIP):
- * Add scopes for accessing dataservices
- * Add scopes for accessing user public profile
+  * Add scopes for accessing dataservices
+  * Add scopes for accessing user public profile
 
 ### Bug fixes / enhancements
 * Fix legacy functions in the data mover that doesn't process multiword type functions

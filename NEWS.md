@@ -11,6 +11,7 @@ sudo make install
 
 ### Features
 - Add dataservices permissions in Auth API (#14263)
+- Support forcing password change upon first login in EUMAPI (#14295)
 - OAuth provider (WIP):
   - Add scopes for accessing dataservices
   - Add scopes for accessing user public profile

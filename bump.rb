@@ -87,7 +87,7 @@ def news_sections(lines)
       section_name = line[4..-1]
     elsif line != '- None yet'
       # Replace initial `-` for `*`
-      section_lines << line.sub(/^(\s)*-/, '\1*')
+      section_lines << line.sub(/^(\s*)-/, '\1*')
     end
   end
   sections << [section_name, section_lines] if section_name

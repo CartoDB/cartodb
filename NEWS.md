@@ -2,8 +2,20 @@ Development
 -----------
 
 ### NOTICES
-- Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_ds_permissions`
-- This release upgrades the CartoDB PostgreSQL extension to `0.24.0`. Run the following to have it available:
+- None yet
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.21.0 (2018-09-24)
+-------------------
+
+### NOTICES
+* Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_api_key_grants`
+* This release upgrades the CartoDB PostgreSQL extension to `0.24.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -17,10 +29,11 @@ sudo make install
   - Add scopes for accessing datasets (#14292)
 
 ### Bug fixes / enhancements
-- Fix legacy functions in the data mover that doesn't process multiword type functions
-- Fix `image_tag` function to include the assets versioning (#14266)
-- Fix broken tests due to time stubbing (#14287)
-- Remove username from Postgres roles
+* Fix legacy functions in the data mover that doesn't process multiword type functions
+* Fix `image_tag` function to include the assets versioning (#14266)
+* Fix broken tests due to time stubbing (#14287)
+* Remove username from Postgres roles
+* Add `create_api_key_grants` rake (https://github.com/CartoDB/support/issues/1748)
 
 4.20.2 (2018-09-10)
 -------------------

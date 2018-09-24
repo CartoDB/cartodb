@@ -54,7 +54,8 @@ describe Carto::Api::OrganizationUsersController do
                   soft_obs_general_limit: nil,
                   viewer: nil,
                   org_admin: nil,
-                  email: "#{username}@carto.com")
+                  email: "#{username}@carto.com",
+                  force_password_change: false)
 
     params = {
       password: '2{Patrañas}',
@@ -71,6 +72,7 @@ describe Carto::Api::OrganizationUsersController do
     params[:soft_obs_general_limit] = soft_obs_general_limit unless soft_obs_general_limit.nil?
     params[:viewer] = viewer if viewer
     params[:org_admin] = org_admin if org_admin
+    params[:force_password_change] = force_password_change
 
     params.except!(:password) unless with_password
     params
@@ -348,6 +350,32 @@ describe Carto::Api::OrganizationUsersController do
 
       @organization.reload
       @organization.users.find { |u| u.username == username }.should be_nil
+    end
+
+    describe 'with password expiration' do
+      before(:all) do
+        @organization.password_expiration_in_d = 10
+        @organization.save
+      end
+
+      after(:all) do
+        @organization.password_expiration_in_d = nil
+        @organization.save
+      end
+
+      it 'can create users with expired passwords' do
+        login(@organization.owner)
+        username = unique_name('user')
+        params = user_params(username, org_admin: true, with_password: true, force_password_change: true)
+        post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+        last_response.status.should eq 200
+
+        @organization.reload
+        last_user_created = @organization.users.find { |u| u.username == username }
+        expect(last_user_created.password_expired?).to(be(true))
+        last_user_created.destroy
+      end
     end
   end
 

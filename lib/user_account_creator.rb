@@ -162,6 +162,10 @@ module CartoDB
         end
       end
 
+      if @force_password_change && @user.password_expiration_in_d.nil?
+        @custom_errors[:force_password_change] = ['Cannot be set if password expiration is not configured']
+      end
+
       @custom_errors[:oauth] = 'Invalid oauth' if @oauth_api && !@oauth_api.valid?(@user)
 
       @user.created_via = @created_via
@@ -239,8 +243,7 @@ module CartoDB
       @user.viewer = @user_params[PARAM_VIEWER] if @user_params[PARAM_VIEWER]
       @user.org_admin = @user_params[PARAM_ORG_ADMIN] if @user_params[PARAM_ORG_ADMIN]
 
-      if @force_password_change
-        raise 'Password expiration is not configured' unless @user.password_expiration_in_d
+      if @force_password_change && @user.password_expiration_in_d.present?
         @user.last_password_change_date = Date.today - @user.password_expiration_in_d - 1
       end
 

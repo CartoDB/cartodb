@@ -20,6 +20,7 @@ sudo make install
 - Fix `image_tag` function to include the assets versioning (#14266)
 - Fix broken tests due to time stubbing (#14287)
 - Remove username from Postgres roles
+- Style password change form with organization colors (#14296)
 
 4.20.2 (2018-09-10)
 -------------------

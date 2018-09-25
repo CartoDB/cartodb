@@ -8,7 +8,8 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Update legends for heatmap aggregation when the colors change from the style editor (#13763)
+- Update legends for color ranges when the color list order changes
 
 4.21.0 (2018-09-24)
 -------------------

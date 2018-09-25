@@ -367,9 +367,9 @@ describe Carto::Api::OrganizationUsersController do
         login(@organization.owner)
         username = unique_name('user')
         params = user_params(username, org_admin: true, with_password: true, force_password_change: true)
-        post api_v2_organization_users_create_url(id_or_name: @organization.name), params
-
-        last_response.status.should eq 200
+        post_json api_v2_organization_users_create_url(id_or_name: @organization.name), params do |response|
+          response.status.should eq 200
+        end
 
         @organization.reload
         last_user_created = @organization.users.find { |u| u.username == username }

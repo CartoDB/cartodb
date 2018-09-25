@@ -68,7 +68,7 @@ module Carto
           account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
         end
 
-        if create_params[:force_password_change] == 'true'
+        if create_params[:force_password_change] == true
           account_creator.with_force_password_change
         end
 

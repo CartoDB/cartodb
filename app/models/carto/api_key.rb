@@ -311,19 +311,30 @@ module Carto
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
+    def raise_unprocessable_entity_error(error)
+      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')
+    end
+
     def check_table_exists(table)
-      connection = db_connection
-      result = db_run(%{
-                 SELECT *
-                 FROM
-                   pg_tables
-                 WHERE
-                   schemaname = #{connection.quote(table[:schema])} AND
-                   tablename = #{connection.quote(table[:name])}
-               })
-      raise Carto::UnprocesableEntityError.new('') unless result.count > 0
-    rescue Carto::UnprocesableEntityError
-      raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
+      begin
+        connection = db_connection
+        result = db_run(%{
+                   SELECT *
+                   FROM
+                     pg_tables
+                   WHERE
+                     schemaname = #{connection.quote(table[:schema])} AND
+                     tablename = #{connection.quote(table[:name])}
+                 })
+      rescue StandardError => e
+        # when migrating a user, metadata is restored before user data
+        # so we assume this error is happening and omit it
+        raise_unprocessable_entity_error(e) unless e.message =~ /invalid encoding name: unicode/
+      end
+
+      if result && result.count.zero?
+        raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
+      end
     end
 
     def invalidate_cache
@@ -450,7 +461,7 @@ module Carto
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
-      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
+      raise_unprocessable_entity_error(e)
     end
 
     def user_db_run(query)

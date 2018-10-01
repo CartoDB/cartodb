@@ -141,6 +141,13 @@ describe Carto::ApiKey do
       end
     end
 
+    it 'fails to grant to an invalid table name' do
+      expect {
+        grants = [database_grant(@carto_user1.database_schema, "\"#{@table1.name}\""), apis_grant]
+        @carto_user1.api_keys.create_regular_key!(name: 'invalid_table_name', grants: grants)
+      }.to raise_exception(Carto::UnprocesableEntityError, /table name is not valid/)
+    end
+
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
 
     describe '#destroy' do

@@ -311,6 +311,20 @@ module Carto
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
+    def check_table_exists(table)
+      result = db_run(%{
+                 SELECT *
+                 FROM
+                   pg_tables
+                 WHERE
+                   schemaname = '#{table[:schema]}' AND
+                   tablename = '#{table[:name]}'
+               })
+      raise Carto::UnprocesableEntityError.new('') unless result.count > 0
+    rescue Carto::UnprocesableEntityError
+      raise Carto::UnprocesableEntityError.new("'#{table[:name]}' table name is not valid")
+    end
+
     def invalidate_cache
       return unless user
       user.invalidate_varnish_cache
@@ -339,6 +353,7 @@ module Carto
       return table_permissions unless databases.present?
 
       databases[:tables].each do |table|
+        check_table_exists(table)
         table_id = "#{table[:schema]}.#{table[:name]}"
         table_permissions[table_id] ||= Carto::TablePermissions.new(schema: table[:schema], name: table[:name])
         table_permissions[table_id].merge!(table[:permissions])
@@ -380,10 +395,10 @@ module Carto
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
-            db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+          Carto::TableAndFriends.apply(user_db_connection, tp.schema, tp.name) do |schema, table_name|
+            user_db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
             sequences_for_table(schema, table_name).each do |seq|
-              db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+              user_db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
             end
           end
         end
@@ -430,15 +445,23 @@ module Carto
       }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 
-    def db_run(query)
-      db_connection.execute(query)
+    def db_run(query, connection = db_connection)
+      connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
       raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
     end
 
+    def user_db_run(query)
+      db_run(query, user_db_connection)
+    end
+
     def db_connection
-      @user_db_connection ||= user.in_database(as: :superuser)
+      @db_connection ||= user.in_database(as: :superuser)
+    end
+
+    def user_db_connection
+      @user_db_connection ||= user.in_database
     end
 
     def redis_hash_as_array

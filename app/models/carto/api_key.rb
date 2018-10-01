@@ -312,17 +312,18 @@ module Carto
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def check_table_exists(table)
+      connection = db_connection
       result = db_run(%{
                  SELECT *
                  FROM
                    pg_tables
                  WHERE
-                   schemaname = '#{table[:schema]}' AND
-                   tablename = '#{table[:name]}'
+                   schemaname = #{connection.quote(table[:schema])} AND
+                   tablename = #{connection.quote(table[:name])}
                })
       raise Carto::UnprocesableEntityError.new('') unless result.count > 0
     rescue Carto::UnprocesableEntityError
-      raise Carto::UnprocesableEntityError.new("'#{table[:name]}' table name is not valid")
+      raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
     end
 
     def invalidate_cache

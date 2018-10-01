@@ -145,7 +145,7 @@ describe Carto::ApiKey do
       expect {
         grants = [database_grant(@carto_user1.database_schema, "\"#{@table1.name}\""), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'invalid_table_name', grants: grants)
-      }.to raise_exception(Carto::UnprocesableEntityError, /table name is not valid/)
+      }.to raise_exception(Carto::UnprocesableEntityError, /does not exist/)
     end
 
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }

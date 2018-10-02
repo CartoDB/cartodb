@@ -326,14 +326,13 @@ module Carto
 
     def check_table(table)
       begin
-        connection = db_connection
         result = db_run(%{
                    SELECT *
                    FROM
                      pg_tables
                    WHERE
-                     schemaname = #{connection.quote(table[:schema])} AND
-                     tablename = #{connection.quote(table[:name])}
+                     schemaname = #{db_connection.quote(table[:schema])} AND
+                     tablename = #{db_connection.quote(table[:name])}
                  })
       rescue StandardError => e
         raise_unprocessable_entity_error(e)
@@ -414,7 +413,9 @@ module Carto
       table_permissions.each do |tp|
         unless tp.permissions.empty?
           Carto::TableAndFriends.apply(user_db_connection, tp.schema, tp.name) do |schema, table_name|
-            user_db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+            user_db_run("GRANT #{tp.permissions.join(', ')}
+                         ON TABLE \"#{schema.gsub('"', '""')}\".\"#{table_name.gsub('"', '""')}\"
+                         TO \"#{db_role}\"")
             sequences_for_table(schema, table_name).each do |seq|
               user_db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
             end
@@ -459,7 +460,11 @@ module Carto
           d.refobjsubid > 0 AND
           d.classid = 'pg_class'::regclass AND
           c.relkind = 'S'::"char" AND
-          d.refobjid = '#{schema}.#{table}'::regclass;
+          d.refobjid = (
+            QUOTE_IDENT(#{db_connection.quote(schema)}) ||
+            '.' ||
+            QUOTE_IDENT(#{db_connection.quote(table)})
+          )::regclass;
       }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 

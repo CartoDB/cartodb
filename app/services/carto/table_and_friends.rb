@@ -5,9 +5,9 @@ module Carto
   # the tables than comprise the dataset.
   module TableAndFriends
     def self.apply(db_connection, schema, table_name, &block)
-      block[schema, table_name]
-      overviews_service = Carto::OverviewsService.new(db_connection)
       qualified_name = %{"#{schema.gsub('"', '""')}"."#{table_name.gsub('"', '""')}"}
+      block[schema, table_name, qualified_name]
+      overviews_service = Carto::OverviewsService.new(db_connection)
       overviews_service.overview_tables(qualified_name).each do |overview_table|
         block[schema, overview_table]
       end

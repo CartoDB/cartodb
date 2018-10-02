@@ -95,7 +95,7 @@ module Carto
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
-    after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_create :check_tables_exist, :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
@@ -315,7 +315,16 @@ module Carto
       raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')
     end
 
-    def check_table_exists(table)
+    def check_tables_exist
+      databases = grants.find { |v| v[:type] == 'database' }
+      return unless databases.present?
+
+      databases[:tables].each do |table|
+        check_table(table)
+      end
+    end
+
+    def check_table(table)
       begin
         connection = db_connection
         result = db_run(%{
@@ -327,9 +336,7 @@ module Carto
                      tablename = #{connection.quote(table[:name])}
                  })
       rescue StandardError => e
-        # when migrating a user, metadata is restored before user data
-        # so we assume this error is happening and omit it
-        raise_unprocessable_entity_error(e) unless e.message =~ /invalid encoding name: unicode/
+        raise_unprocessable_entity_error(e)
       end
 
       if result && result.count.zero?
@@ -365,7 +372,6 @@ module Carto
       return table_permissions unless databases.present?
 
       databases[:tables].each do |table|
-        check_table_exists(table)
         table_id = "#{table[:schema]}.#{table[:name]}"
         table_permissions[table_id] ||= Carto::TablePermissions.new(schema: table[:schema], name: table[:name])
         table_permissions[table_id].merge!(table[:permissions])

@@ -71,6 +71,7 @@ class PasswordChangeController < ApplicationController
   def set_user
     username = params[:id].strip.downcase
     @user = User.where("email = ? OR username = ?", username, username).first
+    @organization = @user.organization
   end
 
   def set_errors

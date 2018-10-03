@@ -8,7 +8,10 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Correctly set the logger level, instead of log rotation
+- Correctly set the logger level, instead of log rotation (#14302)
+- Update legends for heatmap aggregation when the colors change from the style editor (#13763)
+- Update legends for color ranges when the color list order changes
+
 
 4.21.0 (2018-09-24)
 -------------------
@@ -32,6 +35,7 @@ sudo make install
 * Fix `image_tag` function to include the assets versioning (#14266)
 * Fix broken tests due to time stubbing (#14287)
 * Remove username from Postgres roles
+* Style password change form with organization colors (#14296)
 * Add `create_api_key_grants` rake (https://github.com/CartoDB/support/issues/1748)
 
 4.20.2 (2018-09-10)

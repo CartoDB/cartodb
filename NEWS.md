@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Correctly set the logger level, instead of log rotation
 
 4.21.0 (2018-09-24)
 -------------------

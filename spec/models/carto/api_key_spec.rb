@@ -68,12 +68,14 @@ describe Carto::ApiKey do
     before(:all) do
       @table1 = create_table(user_id: @carto_user1.id)
       @table2 = create_table(user_id: @carto_user1.id)
+      @table3 = create_table(user_id: @carto_user1.id)
     end
 
     after(:all) do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
+      @table3.destroy
     end
 
     after(:each) do
@@ -119,7 +121,7 @@ describe Carto::ApiKey do
       expect {
         grants = [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception Carto::UnprocesableEntityError
+      }.to raise_exception(Carto::UnprocesableEntityError, /does not exist/)
     end
 
     it 'fails to grant to system table' do
@@ -141,11 +143,20 @@ describe Carto::ApiKey do
       end
     end
 
-    it 'fails to grant to an invalid table name' do
-      expect {
-        grants = [database_grant(@carto_user1.database_schema, "\"#{@table1.name}\""), apis_grant]
-        @carto_user1.api_keys.create_regular_key!(name: 'invalid_table_name', grants: grants)
-      }.to raise_exception(Carto::UnprocesableEntityError, /does not exist/)
+    it 'grants to a double quoted table name' do
+      old_name = @table3.name
+      @user1.in_database.run("ALTER TABLE #{old_name} RENAME TO \"wadus\"\"wadus\"")
+      grants = [database_grant(@carto_user1.database_schema, 'wadus"wadus'), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'valid_table_name', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from \"wadus\"\"wadus\"") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+
+      api_key.destroy
+      @user1.in_database.run("ALTER TABLE \"wadus\"\"wadus\" RENAME TO #{old_name}")
     end
 
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }

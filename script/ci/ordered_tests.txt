@@ -28,7 +28,6 @@ services/importer/spec/acceptance/shp_spec.rb
 spec/requests/carto/api/api_keys_controller_spec.rb
 spec/requests/signup_controller_spec.rb
 spec/requests/sessions_spec.rb
-spec/connectors/importer_overviews_spec.rb
 spec/models/visualization/collection_spec.rb
 spec/requests/admin/visualizations_spec.rb
 spec/requests/carto/api/organization_users_controller_spec.rb
@@ -83,7 +82,6 @@ spec/requests/superadmin/platform_controller_spec.rb
 spec/requests/carto/api/user_creations_controller_spec.rb
 spec/requests/carto/api/templates_controller_spec.rb
 spec/requests/carto/api/overlays_controller_spec.rb
-spec/models/synchronization/member_overviews_spec.rb
 spec/models/carto/user_table_spec.rb
 spec/requests/carto/superadmin/users_controller_spec.rb
 spec/requests/carto/api/vizjson3_presenter_spec.rb

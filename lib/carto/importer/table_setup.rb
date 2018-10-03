@@ -3,9 +3,8 @@ module Carto
     class TableSetup
       STATEMENT_TIMEOUT = 1.hour * 1000
 
-      def initialize(user:, overviews_creator:, log:, statement_timeout: STATEMENT_TIMEOUT)
+      def initialize(user:, log:, statement_timeout: STATEMENT_TIMEOUT)
         @user = user
-        @overviews_creator = overviews_creator
         @log = log
         @statement_timeout = statement_timeout
       end
@@ -97,25 +96,6 @@ module Carto
                               origin_table_name: origin_table_name,
                               destination_schema: destination_schema,
                               destination_table_name: destination_table_name)
-      end
-
-      def recreate_overviews(table_name)
-        dataset = @overviews_creator.dataset(table_name)
-        dataset.update_overviews!
-      rescue => exception
-        # In case of overview creation failure we'll just omit the
-        # overviews creation and continue with the process.
-        # Since the actual creation is handled by a single SQL
-        # function, and thus executed in a transaction, we shouldn't
-        # need any clean up here. (Either all overviews were created
-        # or nothing changed)
-        @log.append("Overviews recreation failed: #{exception.message}")
-        CartoDB::Logger.error(
-          message:    "Overviews recreation failed:  #{exception}",
-          exception:  exception,
-          user:       @user,
-          table_name: table_name
-        )
       end
 
       def fix_oid(table_name)

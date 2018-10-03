@@ -8,7 +8,6 @@ require_relative '../../../services/datasources/lib/datasources'
 require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
-require_relative '../../../services/importer/lib/importer/overviews'
 require_relative '../../../lib/cartodb/errors'
 require_relative '../../../lib/cartodb/import_error_codes'
 require_relative '../../../services/platform-limits/platform_limits'
@@ -191,8 +190,7 @@ module CartoDB
         runner = service_name == 'connector' ? get_connector : get_runner
 
         database = user.in_database
-        overviews_creator = CartoDB::Importer2::Overviews.new(runner, user)
-        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user, overviews_creator)
+        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
 
         importer.run
         self.ran_at   = Time.now

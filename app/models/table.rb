@@ -458,7 +458,6 @@ class Table
       user_database.transaction do
         # Give up if it cannot get ExclusiveLocks for DDL operations in a reasonable time
         user_database.run(%{SET LOCAL lock_timeout = '1s'})
-        Carto::OverviewsService.new(user_database).delete_overviews qualified_table_name
         user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
       end
     end
@@ -1034,7 +1033,6 @@ class Table
       unless register_table_only
         begin
           #  Underscore prefixes have a special meaning in PostgreSQL, hence the ugly hack
-          Carto::OverviewsService.new(owner.in_database).rename_overviews @name_changed_from, name
           if name.start_with?('_')
             temp_name = "t" + "#{9.times.map { rand(9) }.join}" + name
             owner.in_database.rename_table(@name_changed_from, temp_name)

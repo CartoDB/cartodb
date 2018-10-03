@@ -12,16 +12,14 @@ module CartoDB
 
       attr_accessor :table
 
-      def initialize(table_name, runner, database, user, overviews_creator)
+      def initialize(table_name, runner, database, user)
         @table_name   = table_name
         @runner       = runner
         @database     = database
         @user         = user
-        @overviews_creator = overviews_creator
         @failed       = false
         @table_setup = ::Carto::Importer::TableSetup.new(
           user: user,
-          overviews_creator: overviews_creator,
           log: runner.log
         )
         @error_code = nil
@@ -46,7 +44,6 @@ module CartoDB
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
           @table_setup.run_index_statements(index_statements, @database)
-          @table_setup.recreate_overviews(table_name)
         end
         self
       rescue => exception

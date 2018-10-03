@@ -27,7 +27,7 @@ module CartoDB
       # @param data_import_id String UUID
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
-      def initialize(runner:, table_registrar:, quota_checker:, database:, data_import_id:, overviews_creator: nil,
+      def initialize(runner:, table_registrar:, quota_checker:, database:, data_import_id:,
                      destination_schema: DESTINATION_SCHEMA, public_user_roles: [CartoDB::PUBLIC_DB_USER],
                      collision_strategy: nil)
         @aborted                = false
@@ -36,7 +36,6 @@ module CartoDB
         @quota_checker          = quota_checker
         @database               = database
         @data_import_id         = data_import_id
-        @overviews_creator      = overviews_creator
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
@@ -46,7 +45,6 @@ module CartoDB
         @collision_strategy = collision_strategy
         @table_setup = ::Carto::Importer::TableSetup.new(
           user: user,
-          overviews_creator: overviews_creator,
           log: runner.log
         )
       end
@@ -64,9 +62,6 @@ module CartoDB
           log('Proceeding to register')
           results.select(&:success?).each { |result|
             register(result)
-          }
-          results.select(&:success?).each { |result|
-            create_overviews(result)
           }
 
           create_visualization if data_import.create_visualization
@@ -113,25 +108,6 @@ module CartoDB
         end
       end
 
-      def create_overviews(result)
-        dataset = @overviews_creator.dataset(result.name)
-        dataset.create_overviews!
-      rescue => exception
-        # In case of overview creation failure we'll just omit the
-        # overviews creation and continue with the process.
-        # Since the actual creation is handled by a single SQL
-        # function, and thus executed in a transaction, we shouldn't
-        # need any clean up here. (Either all overviews were created
-        # or nothing changed)
-        log("Overviews creation failed: #{exception.message}")
-        CartoDB::Logger.error(
-          message:    "Overviews creation failed",
-          exception:  exception,
-          user:       Carto::User.find(data_import.user_id),
-          table_name: result.name
-        )
-      end
-
       def create_visualization
         if runner.visualizations.empty?
           create_default_visualization
@@ -176,7 +152,6 @@ module CartoDB
       end
 
       def drop(table_name)
-        Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))
       rescue => exception
         log("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
@@ -288,7 +263,6 @@ module CartoDB
         @table_setup.cartodbfy(name)
         @table_setup.fix_oid(name)
         @table_setup.run_index_statements(index_statements, @database)
-        @table_setup.recreate_overviews(name)
         @table_setup.update_cdb_tablemetadata(name)
       end
 

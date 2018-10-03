@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Overviews has been deprecated and removed completely. Overviews were created while importing a big datasets in order to speed up visualizations. Since `dynamic aggregation` were implemented in Maps API, we can skip of pre-processing overviews so your big datasets will be imported faster than ever.
 
 ### Features
 - None yet

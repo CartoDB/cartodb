@@ -8,8 +8,18 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Update legends for heatmap aggregation when the colors change from the style editor (#13763)
-- Update legends for color ranges when the color list order changes
+- None yet
+
+4.22.0 (2018-10-04)
+-------------------
+
+### Features
+* Support forcing password change upon first login in EUMAPI (#14295)
+
+### Bug fixes / enhancements
+* Correctly set the logger level, instead of log rotation (#14302)
+* Update legends for heatmap aggregation when the colors change from the style editor (#13763)
+* Update legends for color ranges when the color list order changes
 
 4.21.0 (2018-09-24)
 -------------------

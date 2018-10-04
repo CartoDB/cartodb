@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Support forcing password change upon first login in EUMAPI (#14295)
 
 ### Bug fixes / enhancements
 - Correctly set the logger level, instead of log rotation (#14302)

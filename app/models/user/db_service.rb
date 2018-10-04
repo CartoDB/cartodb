@@ -467,9 +467,7 @@ module CartoDB
               db.run(build_geocoder_server_config_sql(geocoder_api_config))
               db.run(build_entity_config_sql)
               db.run("ALTER USER \"#{@user.database_username}\" SET search_path TO #{build_search_path}")
-              if @user.organization_user?
-                db.run("ALTER USER \"#{@user.database_public_username}\" SET search_path TO #{build_search_path}")
-              end
+              db.run("ALTER USER \"#{@user.database_public_username}\" SET search_path TO #{build_search_path}")
             end
           end
           return true

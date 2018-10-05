@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Improve dropping db role of an API key
 
 ### Bug fixes / enhancements
 - None yet

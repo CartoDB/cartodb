@@ -519,7 +519,7 @@ describe Carto::ApiKey do
 
       user2.in_database.run("GRANT SELECT ON #{schema_and_table_user2} TO \"#{api_key.db_role}\"")
 
-      api_key.destroy
+      expect { api_key.destroy! }.to_not raise_error
 
       table_user1.destroy
       table_user2.destroy

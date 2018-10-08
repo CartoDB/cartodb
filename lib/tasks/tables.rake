@@ -71,5 +71,40 @@ namespace :cartodb do
         end
       end
     end
+
+    desc "Remove overview tables"
+    task :remove_overview_tables => :environment do
+      users_length = ::User.all.length
+      cu = 1
+      task_errors = []
+      ::User.all.each do |u|
+        puts "#{u.username} (#{cu}/#{users_length})"
+        user_tables = u.real_tables.collect {|rt| rt[:relname]}
+        user_tables.each do |ut|
+          next if ut.start_with?("_vovw_")
+          drop_overviews_sql = "select CDB_DropOverviews('#{ut}'::regclass)"
+          puts drop_overviews_sql
+          begin
+            u.in_database.run(drop_overviews_sql)
+          rescue => e
+            puts "FAIL in #{drop_overviews_sql}"
+            puts "REASON: #{e.message}"
+            task_errors << {:user => u.username, :drop => drop_overviews_sql, :error => e.message}
+          end
+        end
+        cu = cu + 1
+      end
+      if task_errors.empty?
+        puts "All changes succeded"
+      else
+        puts "Some fails during the process"
+        task_errors.each do |value|
+          puts "User:  #{value[:user]}"
+          puts "Task:  #{value[:drop]}"
+          puts "Error: #{value[:error]}"
+          puts ""
+        end
+      end
+    end
   end
 end

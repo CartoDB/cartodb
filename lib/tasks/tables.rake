@@ -83,7 +83,7 @@ namespace :cartodb do
         user_tables.each do |ut|
           next if ut.start_with?("_vovw_")
           drop_overviews_sql = "select CDB_DropOverviews('#{ut}'::regclass)"
-          puts drop_overviews_sql
+          # puts drop_overviews_sql
           begin
             u.in_database.run(drop_overviews_sql)
           rescue => e

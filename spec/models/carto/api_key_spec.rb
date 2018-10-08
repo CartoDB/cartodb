@@ -165,7 +165,7 @@ describe Carto::ApiKey do
         CREATE VIEW "#{@table1.database_schema}".#{view_name} AS (
           SELECT * FROM #{@table1.name}
         )
-      };
+      }
 
       @user1.in_database.run(query)
       grants = [apis_grant(['sql']), database_grant(@carto_user1.database_schema, view_name)]

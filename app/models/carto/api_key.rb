@@ -320,7 +320,7 @@ module Carto
       return unless databases.present?
 
       databases[:tables].each do |table|
-        if (!check_table(table) && !check_view(table))
+        if !check_table(table) && !check_view(table)
           raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
         end
       end

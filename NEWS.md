@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+* Add `remove_overview_tables` rake
 
 4.22.0 (2018-10-04)
 -------------------

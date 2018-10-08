@@ -79,17 +79,17 @@ namespace :cartodb do
       task_errors = []
       ::User.all.each do |u|
         puts "#{u.username} (#{cu}/#{users_length})"
-        user_tables = u.real_tables.collect {|rt| rt[:relname]}
+        user_tables = u.real_tables.map { |rt| rt[:relname] }
         user_tables.each do |ut|
           next if ut.start_with?("_vovw_")
           drop_overviews_sql = "select CDB_DropOverviews('#{ut}'::regclass)"
           # puts drop_overviews_sql
           begin
             u.in_database.run(drop_overviews_sql)
-          rescue => e
+          rescue PG::Error => e
             puts "FAIL in #{drop_overviews_sql}"
             puts "REASON: #{e.message}"
-            task_errors << {:user => u.username, :drop => drop_overviews_sql, :error => e.message}
+            task_errors << { :user => u.username, :drop => drop_overviews_sql, :error => e.message }
           end
         end
         cu = cu + 1

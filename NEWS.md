@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Ensuring right `search_path` for non organization `publicuser`
 
 ### Features
 - None yet

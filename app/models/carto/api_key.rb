@@ -319,9 +319,11 @@ module Carto
       databases = grants.find { |v| v[:type] == 'database' }
       return unless databases.present?
 
-      databases[:tables].each do |table|
+      nonexistent = databases[:tables].reject do |table|
         check_table(table)
       end
+
+      raise Carto::RelationDoesNotExistError.new(["table does not exist"], nonexistent) if nonexistent.any?
     end
 
     def check_table(table)
@@ -338,9 +340,7 @@ module Carto
         raise_unprocessable_entity_error(e)
       end
 
-      if result && result.count.zero?
-        raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
-      end
+      result && !result.count.zero?
     end
 
     def invalidate_cache
@@ -418,8 +418,8 @@ module Carto
             # here we catch exceptions to show a proper error to the user request
             # this is because we allow OAuth requests to include a `datasets` scope with a user defined table
             # which may or may not exists
-            Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
-              user_db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+            Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
+              user_db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
               sequences_for_table(schema, table_name).each do |seq|
                 user_db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
               end

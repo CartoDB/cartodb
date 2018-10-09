@@ -74,7 +74,7 @@ namespace :cartodb do
 
     desc "Remove overview tables"
     task :remove_overview_tables => :environment do
-      users_length = ::User.all.length
+      users_length = ::User.count
       cu = 1
       task_errors = []
       ::User.all.each do |u|

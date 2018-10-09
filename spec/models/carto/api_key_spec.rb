@@ -175,8 +175,8 @@ describe Carto::ApiKey do
       )
     end
 
-    def validate_view_api_key(view_name, createQuery, dropQuery)
-      @user1.in_database.run(createQuery)
+    def validate_view_api_key(view_name, create_query, drop_query)
+      @user1.in_database.run(create_query)
       grants = [apis_grant(['sql']), database_grant(@table1.database_schema, view_name)]
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'grants_view', grants: grants)
 
@@ -192,7 +192,7 @@ describe Carto::ApiKey do
         end
       end
 
-      @user1.in_database.run(dropQuery)
+      @user1.in_database.run(drop_query)
       api_key.destroy
     end
 

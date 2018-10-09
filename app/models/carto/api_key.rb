@@ -320,7 +320,7 @@ module Carto
       return unless databases.present?
 
       databases[:tables].each do |table|
-        if !check_table(table) && !check_view(table)
+        if !check_table(table) && !check_view(table) && !check_materilized_view(table)
           raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
         end
       end
@@ -329,13 +329,13 @@ module Carto
     def check_table(table)
       begin
         result = db_run(%{
-                   SELECT *
-                   FROM
-                     pg_tables
-                   WHERE
-                     schemaname = #{db_connection.quote(table[:schema])} AND
-                     tablename = #{db_connection.quote(table[:name])}
-                 })
+          SELECT *
+          FROM
+            pg_tables
+          WHERE
+            schemaname = #{db_connection.quote(table[:schema])} AND
+            tablename = #{db_connection.quote(table[:name])}
+        })
       rescue StandardError => e
         raise_unprocessable_entity_error(e)
       end
@@ -346,13 +346,30 @@ module Carto
     def check_view(view)
       begin
         result = db_run(%{
-                   SELECT *
-                   FROM
-                     pg_views
-                   WHERE
-                     schemaname = #{db_connection.quote(view[:schema])} AND
-                     viewname = #{db_connection.quote(view[:name])}
-                 })
+          SELECT *
+          FROM
+            pg_views
+          WHERE
+            schemaname = #{db_connection.quote(view[:schema])} AND
+            viewname = #{db_connection.quote(view[:name])}
+        })
+      rescue StandardError => e
+        raise_unprocessable_entity_error(e)
+      end
+
+      result && !result.count.zero?
+    end
+
+    def check_materilized_view(matview)
+      begin
+        result = db_run(%{
+          SELECT *
+          FROM
+            pg_matviews
+          WHERE
+            schemaname = #{db_connection.quote(matview[:schema])} AND
+            matviewname = #{db_connection.quote(matview[:name])}
+        })
       rescue StandardError => e
         raise_unprocessable_entity_error(e)
       end

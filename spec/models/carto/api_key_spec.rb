@@ -161,14 +161,23 @@ describe Carto::ApiKey do
 
     it 'grants view' do
       view_name = 'cool_view'
-      query = %{
-        CREATE VIEW "#{@table1.database_schema}".#{view_name} AS (
-          SELECT * FROM #{@table1.name}
-        )
-      }
 
-      @user1.in_database.run(query)
-      grants = [apis_grant(['sql']), database_grant(@carto_user1.database_schema, view_name)]
+      validate_view_api_key(
+        view_name,
+        "CREATE VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP VIEW #{view_name}"
+      )
+
+      validate_view_api_key(
+        view_name,
+        "CREATE MATERIALIZED VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP MATERIALIZED VIEW #{view_name}"
+      )
+    end
+
+    def validate_view_api_key(view_name, createQuery, dropQuery)
+      @user1.in_database.run(createQuery)
+      grants = [apis_grant(['sql']), database_grant(@table1.database_schema, view_name)]
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'grants_view', grants: grants)
 
       with_connection_from_api_key(api_key) do |connection|
@@ -178,12 +187,12 @@ describe Carto::ApiKey do
           e.message.should include "permission denied for relation #{@table1.name}"
         end
 
-        connection.execute("select count(1) from \"#{@table1.database_schema}\".#{view_name}") do |result|
+        connection.execute("select count(1) from #{view_name}") do |result|
           result[0]['count'].should eq '0'
         end
       end
 
-      @user1.in_database.run("DROP VIEW \"#{@table1.database_schema}\".#{view_name}")
+      @user1.in_database.run(dropQuery)
       api_key.destroy
     end
 

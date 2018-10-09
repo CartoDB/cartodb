@@ -4,7 +4,7 @@ gem 'rails',                   '4.2.10'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.15.0'
-gem 'sequel',                  '3.44.0'
+gem 'sequel',                  '3.48.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'

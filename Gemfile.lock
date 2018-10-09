@@ -315,7 +315,7 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
-    sequel (3.48.0)
+    sequel (3.44.0)
     sequel-rails (0.9.15)
       actionpack (>= 3.2.0)
       activemodel
@@ -463,7 +463,7 @@ DEPENDENCIES
   ruby-prof (= 0.15.1)
   ruby-saml (= 1.4.1)
   selenium-webdriver (>= 2.5.0)
-  sequel (= 3.48.0)
+  sequel (= 3.44.0)
   sequel-rails (= 0.9.15)
   sequel_pg (= 1.6.3)
   simplecov (= 0.13.0)

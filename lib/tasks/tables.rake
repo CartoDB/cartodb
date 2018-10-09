@@ -77,7 +77,7 @@ namespace :cartodb do
       users_length = ::User.count
       cu = 1
       task_errors = []
-      ::User.all.each do |u|
+      ::User.paged_each.each do |u|
         puts "#{u.username} (#{cu}/#{users_length})"
         user_tables = u.real_tables.map { |rt| rt[:relname] }
         user_tables.each do |ut|

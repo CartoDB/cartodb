@@ -52,6 +52,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.created_via = created_via
     user_creation.viewer = user.viewer || false
     user_creation.org_admin = user.org_admin || false
+    user_creation.last_password_change_date = user.last_password_change_date
 
     user_creation
   end
@@ -234,6 +235,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
     @cartodb_user.viewer = viewer if viewer
     @cartodb_user.org_admin = org_admin if org_admin
+    @cartodb_user.last_password_change_date = last_password_change_date unless last_password_change_date.nil?
 
     if pertinent_invitation
       @cartodb_user.viewer = pertinent_invitation.viewer

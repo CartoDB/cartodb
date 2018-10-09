@@ -95,7 +95,7 @@ module Carto
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
-    after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_create :check_tables_exist, :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
@@ -311,6 +311,38 @@ module Carto
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
+    def raise_unprocessable_entity_error(error)
+      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')
+    end
+
+    def check_tables_exist
+      databases = grants.find { |v| v[:type] == 'database' }
+      return unless databases.present?
+
+      databases[:tables].each do |table|
+        check_table(table)
+      end
+    end
+
+    def check_table(table)
+      begin
+        result = db_run(%{
+                   SELECT *
+                   FROM
+                     pg_tables
+                   WHERE
+                     schemaname = #{db_connection.quote(table[:schema])} AND
+                     tablename = #{db_connection.quote(table[:name])}
+                 })
+      rescue StandardError => e
+        raise_unprocessable_entity_error(e)
+      end
+
+      if result && result.count.zero?
+        raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
+      end
+    end
+
     def invalidate_cache
       return unless user
       user.invalidate_varnish_cache
@@ -387,9 +419,9 @@ module Carto
             # this is because we allow OAuth requests to include a `datasets` scope with a user defined table
             # which may or may not exists
             Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
-              db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+              user_db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
               sequences_for_table(schema, table_name).each do |seq|
-                db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+                user_db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
               end
             end
           rescue Carto::UnprocesableEntityError => e
@@ -439,19 +471,31 @@ module Carto
           d.refobjsubid > 0 AND
           d.classid = 'pg_class'::regclass AND
           c.relkind = 'S'::"char" AND
-          d.refobjid = '#{schema}.#{table}'::regclass;
+          d.refobjid = (
+            QUOTE_IDENT(#{db_connection.quote(schema)}) ||
+            '.' ||
+            QUOTE_IDENT(#{db_connection.quote(table)})
+          )::regclass;
       }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 
-    def db_run(query)
-      db_connection.execute(query)
+    def db_run(query, connection = db_connection)
+      connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
-      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
+      raise_unprocessable_entity_error(e)
+    end
+
+    def user_db_run(query)
+      db_run(query, user_db_connection)
     end
 
     def db_connection
-      @user_db_connection ||= user.in_database(as: :superuser)
+      @db_connection ||= user.in_database(as: :superuser)
+    end
+
+    def user_db_connection
+      @user_db_connection ||= user.in_database
     end
 
     def redis_hash_as_array

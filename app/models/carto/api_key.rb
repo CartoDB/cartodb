@@ -327,7 +327,7 @@ module Carto
       end
 
       if nonexistent.any?
-        raise Carto::RelationDoesNotExistError.new(nonexistent.map { |t| "relation #{t} does not exist"}, nonexistent)
+        raise Carto::RelationDoesNotExistError.new(nonexistent.map { |t| "relation #{t} does not exist" }, nonexistent)
       end
     end
 

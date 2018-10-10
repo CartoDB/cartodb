@@ -319,10 +319,15 @@ module Carto
       databases = grants.find { |v| v[:type] == 'database' }
       return unless databases.present?
 
+      nonexistent = []
       databases[:tables].each do |table|
         if !check_table(table) && !check_view(table) && !check_materilized_view(table)
-          raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
+          nonexistent << "\"#{table[:schema]}.#{table[:name]}\""
         end
+      end
+
+      if nonexistent.any?
+        raise Carto::RelationDoesNotExistError.new(nonexistent.map { |t| "relation #{t} does not exist"}, nonexistent)
       end
     end
 

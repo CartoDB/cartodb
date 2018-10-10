@@ -9,7 +9,7 @@ Development
   - Add scopes for accessing datasets (#14292)
 
 ### Bug fixes / enhancements
-- None yet
+- Allowing views in API Keys (#14309)
 
 4.22.0 (2018-10-04)
 -------------------

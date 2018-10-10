@@ -159,6 +159,43 @@ describe Carto::ApiKey do
       @user1.in_database.run("ALTER TABLE \"wadus\"\"wadus\" RENAME TO #{old_name}")
     end
 
+    it 'grants view' do
+      view_name = 'cool_view'
+
+      validate_view_api_key(
+        view_name,
+        "CREATE VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP VIEW #{view_name}"
+      )
+
+      validate_view_api_key(
+        view_name,
+        "CREATE MATERIALIZED VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP MATERIALIZED VIEW #{view_name}"
+      )
+    end
+
+    def validate_view_api_key(view_name, create_query, drop_query)
+      @user1.in_database.run(create_query)
+      grants = [apis_grant(['sql']), database_grant(@table1.database_schema, view_name)]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'grants_view', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        begin
+          connection.execute("select count(1) from #{@table1.name}")
+        rescue Sequel::DatabaseError => e
+          e.message.should include "permission denied for relation #{@table1.name}"
+        end
+
+        connection.execute("select count(1) from #{view_name}") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+
+      @user1.in_database.run(drop_query)
+      api_key.destroy
+    end
+
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
 
     describe '#destroy' do

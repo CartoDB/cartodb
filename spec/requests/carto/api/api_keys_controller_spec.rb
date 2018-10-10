@@ -284,7 +284,7 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /relation \"public.wadus\" does not exist/
+          error_response[:errors].should match /table does not exist/
         end
       end
 

@@ -12,7 +12,8 @@
         "enum": [
           "apis",
           "database",
-          "dataservices"
+          "dataservices",
+          "user"
         ]
       },
       "apis": {
@@ -67,6 +68,15 @@
             "routing",
             "isolines",
             "observatory"
+          ]
+        }
+      },
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "profile"
           ]
         }
       }

@@ -2,23 +2,49 @@ Development
 -----------
 
 ### NOTICES
-- Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_ds_permissions`
-- This release upgrades the CartoDB PostgreSQL extension to `0.24.0`. Run the following to have it available:
+- Ensuring right `search_path` for non organization `publicuser`
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- Allowing views in API Keys (#14309)
+
+4.22.0 (2018-10-04)
+-------------------
+
+### Features
+* Support forcing password change upon first login in EUMAPI (#14295)
+
+### Bug fixes / enhancements
+* Correctly set the logger level, instead of log rotation (#14302)
+* Update legends for heatmap aggregation when the colors change from the style editor (#13763)
+* Update legends for color ranges when the color list order changes
+
+4.21.0 (2018-09-24)
+-------------------
+
+### NOTICES
+* Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_api_key_grants`
+* This release upgrades the CartoDB PostgreSQL extension to `0.24.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- Add dataservices permissions in Auth API (#14263)
-- OAuth provider (WIP):
-  - Add scopes for accessing dataservices
+* Add dataservices permissions in Auth API (#14263)
+* OAuth provider (WIP):
+  * Add scopes for accessing dataservices
+  * Add scopes for accessing user public profile
 
 ### Bug fixes / enhancements
-- Fix legacy functions in the data mover that doesn't process multiword type functions
-- Fix `image_tag` function to include the assets versioning (#14266)
-- Fix broken tests due to time stubbing (#14287)
-- Remove username from Postgres roles
+* Fix legacy functions in the data mover that doesn't process multiword type functions
+* Fix `image_tag` function to include the assets versioning (#14266)
+* Fix broken tests due to time stubbing (#14287)
+* Remove username from Postgres roles
+* Style password change form with organization colors (#14296)
+* Add `create_api_key_grants` rake (https://github.com/CartoDB/support/issues/1748)
 
 4.20.2 (2018-09-10)
 -------------------

@@ -68,6 +68,10 @@ module Carto
           account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
         end
 
+        if create_params[:force_password_change] == true
+          account_creator.with_force_password_change
+        end
+
         unless account_creator.valid_creation?(current_viewer)
           render_jsonp(account_creator.validation_errors.full_messages, 410)
           return
@@ -162,7 +166,7 @@ module Carto
       # TODO: Use native strong params when in Rails 4+
       def create_params
         @create_params ||=
-          permit(COMMON_MUTABLE_ATTRIBUTES + [:username])
+          permit(COMMON_MUTABLE_ATTRIBUTES + [:username, :force_password_change])
       end
 
       # TODO: Use native strong params when in Rails 4+

@@ -6,11 +6,12 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
-    if value.count { |v| v[:type] == 'database' } > 1
-      record.errors[attribute] << 'only one database section is allowed'
-    end
-    if value.count { |v| v[:type] == 'dataservices' } > 1
-      record.errors[attribute] << 'only one dataservices section is allowed'
+
+    max_one_sections = ['database', 'dataservices', 'user']
+    max_one_sections.each do |section|
+      if value.count { |v| v[:type] == section } > 1
+        record.errors[attribute] << "only one #{section} section is allowed"
+      end
     end
   end
 end
@@ -58,6 +59,12 @@ module Carto
       type: 'dataservices',
       services: ['geocoding', 'routing', 'isolines', 'observatory']
     }.freeze
+    GRANTS_ALL_USER_DATA = {
+      type: 'user',
+      data: ['profile']
+    }.freeze
+
+    MASTER_API_KEY_GRANTS = [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES, GRANTS_ALL_USER_DATA].freeze
 
     TOKEN_DEFAULT_PUBLIC = 'default_public'.freeze
 
@@ -88,7 +95,7 @@ module Carto
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
-    after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_create :check_tables_exist, :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
@@ -116,7 +123,7 @@ module Carto
         type: TYPE_MASTER,
         name: NAME_MASTER,
         token: user.api_key,
-        grants: [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES],
+        grants: MASTER_API_KEY_GRANTS,
         db_role: user.database_username,
         db_password: user.database_password
       )
@@ -200,6 +207,10 @@ module Carto
 
     def data_services
       @data_services ||= process_data_services
+    end
+
+    def user_data
+      @user_data ||= process_user_data_grants
     end
 
     def regenerate_token!
@@ -300,6 +311,72 @@ module Carto
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
+    def raise_unprocessable_entity_error(error)
+      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')
+    end
+
+    def check_tables_exist
+      databases = grants.find { |v| v[:type] == 'database' }
+      return unless databases.present?
+
+      databases[:tables].each do |table|
+        if !check_table(table) && !check_view(table) && !check_materilized_view(table)
+          raise Carto::UnprocesableEntityError.new("relation \"#{table[:schema]}.#{table[:name]}\" does not exist")
+        end
+      end
+    end
+
+    def check_table(table)
+      begin
+        result = db_run(%{
+          SELECT *
+          FROM
+            pg_tables
+          WHERE
+            schemaname = #{db_connection.quote(table[:schema])} AND
+            tablename = #{db_connection.quote(table[:name])}
+        })
+      rescue StandardError => e
+        raise_unprocessable_entity_error(e)
+      end
+
+      result && !result.count.zero?
+    end
+
+    def check_view(view)
+      begin
+        result = db_run(%{
+          SELECT *
+          FROM
+            pg_views
+          WHERE
+            schemaname = #{db_connection.quote(view[:schema])} AND
+            viewname = #{db_connection.quote(view[:name])}
+        })
+      rescue StandardError => e
+        raise_unprocessable_entity_error(e)
+      end
+
+      result && !result.count.zero?
+    end
+
+    def check_materilized_view(matview)
+      begin
+        result = db_run(%{
+          SELECT *
+          FROM
+            pg_matviews
+          WHERE
+            schemaname = #{db_connection.quote(matview[:schema])} AND
+            matviewname = #{db_connection.quote(matview[:name])}
+        })
+      rescue StandardError => e
+        raise_unprocessable_entity_error(e)
+      end
+
+      result && !result.count.zero?
+    end
+
     def invalidate_cache
       return unless user
       user.invalidate_varnish_cache
@@ -343,6 +420,13 @@ module Carto
       data_services_grants[:services]
     end
 
+    def process_user_data_grants
+      user_data_grants = grants.find { |v| v[:type] == 'user' }
+      return nil unless user_data_grants.present?
+
+      user_data_grants[:data]
+    end
+
     def check_owned_table_permissions
       # Only checks if no previous errors in JSON definition
       if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
@@ -362,10 +446,12 @@ module Carto
 
       table_permissions.each do |tp|
         unless tp.permissions.empty?
-          Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name|
-            db_run("GRANT #{tp.permissions.join(', ')} ON TABLE \"#{schema}\".\"#{table_name}\" TO \"#{db_role}\"")
+          Carto::TableAndFriends.apply(user_db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
+            user_db_run("GRANT #{tp.permissions.join(', ')}
+                         ON TABLE #{qualified_name}
+                         TO \"#{db_role}\"")
             sequences_for_table(schema, table_name).each do |seq|
-              db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+              user_db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
             end
           end
         end
@@ -408,19 +494,31 @@ module Carto
           d.refobjsubid > 0 AND
           d.classid = 'pg_class'::regclass AND
           c.relkind = 'S'::"char" AND
-          d.refobjid = '#{schema}.#{table}'::regclass;
+          d.refobjid = (
+            QUOTE_IDENT(#{db_connection.quote(schema)}) ||
+            '.' ||
+            QUOTE_IDENT(#{db_connection.quote(table)})
+          )::regclass;
       }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 
-    def db_run(query)
-      db_connection.execute(query)
+    def db_run(query, connection = db_connection)
+      connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
-      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
+      raise_unprocessable_entity_error(e)
+    end
+
+    def user_db_run(query)
+      db_run(query, user_db_connection)
     end
 
     def db_connection
-      @user_db_connection ||= user.in_database(as: :superuser)
+      @db_connection ||= user.in_database(as: :superuser)
+    end
+
+    def user_db_connection
+      @user_db_connection ||= user.in_database
     end
 
     def redis_hash_as_array
@@ -451,7 +549,9 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS, GRANTS_ALL_DATA_SERVICES]
+      unless grants == MASTER_API_KEY_GRANTS
+        errors.add(:grants, "must grant all apis")
+      end
       errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 

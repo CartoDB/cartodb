@@ -29,23 +29,41 @@ module Carto
       CATEGORY_USER = Category.new('User and personal data').freeze
       CATEGORY_MONEY = Category.new('Features that consume credits', 'money')
 
-      class DataservicesScope < Scope
-        def initialize(service, description)
-          super("dataservices:#{service}", CATEGORY_MONEY, description)
+      class DefaultScope < Scope
+        def initialize(type, service, category, description)
+          super("#{type}:#{service}", category, description)
+          @type = type
           @service = service
         end
 
         def add_to_api_key_grants(grants)
-          apis_section = grants.find { |i| i[:type] == 'apis' }
-          apis_section[:apis] << 'sql' unless apis_section[:apis].include?('sql')
-
-          ds_section = grants.find { |i| i[:type] == 'dataservices' }
-          unless ds_section
-            ds_section = { type: 'dataservices', services: [] }
-            grants << ds_section
+          grant_section = grants.find { |i| i[:type] == @type }
+          unless grant_section
+            grant_section = { type: @type, @grant_key => [] }
+            grants << grant_section
           end
 
-          ds_section[:services] << @service
+          grant_section[@grant_key] << @service
+        end
+      end
+
+      class DataservicesScope < DefaultScope
+        def initialize(service, description)
+          super('dataservices', service, CATEGORY_MONEY, description)
+          @grant_key = :services
+        end
+
+        def add_to_api_key_grants(grants)
+          super(grants)
+          apis_section = grants.find { |i| i[:type] == 'apis' }
+          apis_section[:apis] << 'sql' unless apis_section[:apis].include?('sql')
+        end
+      end
+
+      class UserScope < DefaultScope
+        def initialize(service, description)
+          super('user', service, CATEGORY_USER, description)
+          @grant_key = :data
         end
       end
 
@@ -57,7 +75,10 @@ module Carto
         DataservicesScope.new('geocoding', 'Geocoding').freeze,
         DataservicesScope.new('isolines', 'Isolines').freeze,
         DataservicesScope.new('routing', 'Routing').freeze,
-        DataservicesScope.new('observatory', 'Data Observatory').freeze
+        DataservicesScope.new('observatory', 'Data Observatory').freeze,
+
+        # User data
+        UserScope.new('profile', 'User profile (avatar, name, org. owner)').freeze
       ].freeze
 
       SCOPES_BY_NAME = SCOPES.map { |s| [s.name, s] }.to_h.freeze

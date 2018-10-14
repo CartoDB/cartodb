@@ -655,9 +655,12 @@ describe Carto::UserMetadataExportService do
             grants: [{
               type: "apis",
               apis: ["sql", "maps"]
-            },{
+            }, {
               type: 'dataservices',
               services: ['geocoding', 'routing', 'isolines', 'observatory']
+            }, {
+              type: 'user',
+              data: ['profile']
             }],
             user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
           },

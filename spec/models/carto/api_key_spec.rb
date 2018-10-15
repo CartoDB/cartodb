@@ -544,5 +544,23 @@ describe Carto::ApiKey do
       table.destroy
       other_user.destroy
     end
+
+    it 'drop role with grants of objects owned by other user' do
+      user2 = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
+      table_user2 = create_table(user_id: user2.id)
+      schema_and_table_user2 = "\"#{table_user2.database_schema}\".#{table_user2.name}"
+
+      table_user1 = create_table(user_id: @carto_user1.id)
+      grants = [database_grant(table_user1.database_schema, table_user1.name), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+
+      user2.in_database.run("GRANT SELECT ON #{schema_and_table_user2} TO \"#{api_key.db_role}\"")
+
+      expect { api_key.destroy! }.to_not raise_error
+
+      table_user1.destroy
+      table_user2.destroy
+      user2.destroy
+    end
   end
 end

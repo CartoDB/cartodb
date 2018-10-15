@@ -5,7 +5,7 @@ Development
 - Ensuring right `search_path` for non organization `publicuser`
 
 ### Features
-- None yet
+- Improve dropping db role of an API key (#14307)
 
 ### Bug fixes / enhancements
 - Allowing views in API Keys (#14309)

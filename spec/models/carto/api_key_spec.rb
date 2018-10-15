@@ -159,6 +159,43 @@ describe Carto::ApiKey do
       @user1.in_database.run("ALTER TABLE \"wadus\"\"wadus\" RENAME TO #{old_name}")
     end
 
+    it 'grants view' do
+      view_name = 'cool_view'
+
+      validate_view_api_key(
+        view_name,
+        "CREATE VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP VIEW #{view_name}"
+      )
+
+      validate_view_api_key(
+        view_name,
+        "CREATE MATERIALIZED VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP MATERIALIZED VIEW #{view_name}"
+      )
+    end
+
+    def validate_view_api_key(view_name, create_query, drop_query)
+      @user1.in_database.run(create_query)
+      grants = [apis_grant(['sql']), database_grant(@table1.database_schema, view_name)]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'grants_view', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        begin
+          connection.execute("select count(1) from #{@table1.name}")
+        rescue Sequel::DatabaseError => e
+          e.message.should include "permission denied for relation #{@table1.name}"
+        end
+
+        connection.execute("select count(1) from #{view_name}") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+
+      @user1.in_database.run(drop_query)
+      api_key.destroy
+    end
+
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
 
     describe '#destroy' do
@@ -506,6 +543,24 @@ describe Carto::ApiKey do
 
       table.destroy
       other_user.destroy
+    end
+
+    it 'drop role with grants of objects owned by other user' do
+      user2 = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
+      table_user2 = create_table(user_id: user2.id)
+      schema_and_table_user2 = "\"#{table_user2.database_schema}\".#{table_user2.name}"
+
+      table_user1 = create_table(user_id: @carto_user1.id)
+      grants = [database_grant(table_user1.database_schema, table_user1.name), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+
+      user2.in_database.run("GRANT SELECT ON #{schema_and_table_user2} TO \"#{api_key.db_role}\"")
+
+      expect { api_key.destroy! }.to_not raise_error
+
+      table_user1.destroy
+      table_user2.destroy
+      user2.destroy
     end
   end
 end

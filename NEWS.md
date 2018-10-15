@@ -2,13 +2,14 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Ensuring right `search_path` for non organization `publicuser`
 
 ### Features
-- None yet
+- Improve dropping db role of an API key (#14307)
 
 ### Bug fixes / enhancements
-* Add `remove_overview_tables` rake
+- Add `remove_overview_tables` rake
+- Allowing views in API Keys (#14309)
 
 4.22.0 (2018-10-04)
 -------------------

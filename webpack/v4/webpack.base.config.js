@@ -191,6 +191,7 @@ module.exports = {
       {
         test: /\.s?css$/,
         use: [
+          'vue-style-loader',
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',

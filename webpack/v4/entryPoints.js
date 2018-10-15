@@ -5,6 +5,13 @@ const rootDir = file => resolve(__dirname, '../../', file);
 const removeDuplicated = array => Array.from(new Set(array));
 
 module.exports = {
+  vue_dashboard: [
+    rootDir('lib/assets/javascripts/vue-dashboard/main.js'),
+    ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
+    rootDir('assets/stylesheets/editor-3/_scroll-view.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
+  ],
+
   common_new: removeDuplicated([
     rootDir('assets/stylesheets/common/utilities.scss'),
     rootDir('assets/stylesheets/common/icon-font-specials.scss'),

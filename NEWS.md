@@ -8,6 +8,7 @@ Development
 - Improve dropping db role of an API key (#14307)
 
 ### Bug fixes / enhancements
+- Add `remove_overview_tables` rake
 - Allowing views in API Keys (#14309)
 
 4.22.0 (2018-10-04)

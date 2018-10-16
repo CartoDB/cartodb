@@ -481,7 +481,7 @@ module Carto
     end
 
     def drop_db_role
-      revoke_privileges
+      db_run("DROP OWNED BY  \"#{db_role}\"")
       db_run("DROP ROLE \"#{db_role}\"")
     end
 
@@ -545,18 +545,6 @@ module Carto
 
     def redis_client
       $users_metadata
-    end
-
-    def revoke_privileges
-      affected_schemas.uniq.each do |schema|
-        db_run("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
-        db_run("REVOKE USAGE ON SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
-        db_run("REVOKE USAGE, SELECT ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM \"#{db_role}\"")
-      end
-
-      if user.organization_user?
-        db_run("REVOKE ALL ON FUNCTION \"#{user.database_schema}\"._CDB_UserQuotaInBytes() FROM \"#{db_role}\"")
-      end
     end
 
     def grant_aux_write_privileges_for_schema(s)

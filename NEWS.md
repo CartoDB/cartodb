@@ -7,6 +7,7 @@ Development
 ### Features
 - OAuth provider (WIP):
   - Add scopes for accessing datasets (#14292)
+- Improve dropping db role of an API key (#14307)
 
 ### Bug fixes / enhancements
 - Allowing views in API Keys (#14309)

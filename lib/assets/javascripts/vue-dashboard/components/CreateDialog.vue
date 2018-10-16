@@ -11,23 +11,40 @@ import Factories from '../factories';
 export default {
   name: 'CreateDialog',
   mounted() {
-    this.templateHTML = this.renderDialog();
+    this.dialog = this.renderDialog();
+  },
+  destroyed() {
+    this.dialog.destroy();
+  },
+  props: {
+    dialogType: String,
+    backgroundPollingView: Object
   },
   methods: {
     renderDialog() {
-      const modalModel = {
-        render: () => console.log('render!!!'),
-        destroy: () => console.log(arguments)
+      // VIEW DESTROY IS MISSING!!!!!
+      const configModel = this.$store.state.models.configModel;
+      const userModel = this.$store.state.models.userModel;
+      const backgroundPollingModel = this.$store.state.models.backgroundPollingModel;
+
+      const modalModel = Factories.ModalModel({
+        destroy: function () { this.$emit('close') }.bind(this)
+      });
+
+      const routerModel = {
+        isDatasets: () => this.$props.dialogType === 'datasets',
+        isMaps: () => this.$props.dialogType === 'maps'
       };
+      console.log('isMaps', routerModel.isMaps())
 
       DialogView.setViewProperties({
-        userModel: Factories.userModel(),
-        configModel: Factories.configModel(),
-        pollingModel: {
-          stopPollings: () => {}
+        userModel,
+        configModel,
+        pollingModel: backgroundPollingModel,
+        pollingView: this.$props.backgroundPollingView,
+        routerModel: {
+          model: routerModel
         },
-        pollingView: {},
-        routerModel: {},
       });
 
       DialogView.addProperties({
@@ -46,7 +63,6 @@ export default {
       );
 
       DialogViewInstance.render();
-      return DialogViewInstance.el.outerHTML;
     }
   }
 }

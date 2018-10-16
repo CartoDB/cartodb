@@ -14,18 +14,18 @@ export default {
     visualization: Object
   },
   mounted() {
-    this.templateHTML = this.renderDialog();
+    this.renderDialog();
   },
   methods: {
     renderDialog() {
-      const modalModel = {
+      const configModel = Factories.ConfigModel(this.$store.state.config);
+      const userModel = Factories.UserModel(this.$store.state.user);
+
+      const modalModel = Factories.ModalModel({
         destroy: function () { this.$emit('close') }.bind(this)
-      };
+      });
 
-      const configModel = Factories.configModel(this.$store.state.config);
-      const userModel = Factories.userModel(this.$store.state.user);
-
-      const visualizationModel = Factories.visualizationModel(this.$props.visualization, { configModel });
+      const visualizationModel = Factories.VisualizationModel(this.$props.visualization, { configModel });
       visualizationModel.on('change', (model, options) => {
         this.$store.commit('visualizationChanged', model);
       });
@@ -34,14 +34,12 @@ export default {
         visModel: visualizationModel,
         userModel,
         configModel,
-        // modals: this._modals,
-        modals: {},
+        modals: modalModel,
         modalModel,
         el: this.$refs.injectionHTMLElement
       });
 
       changePrivacyView.render();
-      return changePrivacyView.outerHTML;
     }
   }
 }

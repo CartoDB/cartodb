@@ -54,7 +54,6 @@ module Carto
     end
 
     def dataset_scopes
-      dataset_scopes = []
       query = %{
         SELECT
           s.nspname as schema,
@@ -76,12 +75,10 @@ module Carto
         CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
       end
 
-      results.each do |row|
+      results.map do |row|
         permission = DatasetsScope.permission_from_db_to_scope(row['permission'])
-        dataset_scopes << "datasets:#{permission}:#{row['t']}"
+        "datasets:#{permission}:#{row['t']}"
       end
-
-      dataset_scopes
     end
 
     def create_dataset_role

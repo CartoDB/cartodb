@@ -10,8 +10,6 @@ const entryPoints = require('./entryPoints');
 const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-console.log(vueLoaderConfig);
-
 const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = name => name.indexOf('node_modules') >= 0;
 const isJavascript = name => name.endsWith('.js');

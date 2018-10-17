@@ -46,8 +46,7 @@ module Carto
     end
 
     def no_dataset_scopes
-      _, no_dataset_scopes = split_dataset_scopes(scopes)
-      no_dataset_scopes
+      DatasetsScope.invalid_scopes(scopes)
     end
 
     def dataset_scopes
@@ -90,51 +89,23 @@ module Carto
     end
 
     def manage_scopes
-      requested_dataset_scopes, no_dataset_scopes = split_dataset_scopes(scopes)
-      dataset_scopes = grant_privileges_for_dataset_role(requested_dataset_scopes)
-
-      # if !(scopes - (dataset_scopes + no_dataset_scopes)).empty?
-      #   self.scopes = (dataset_scopes + no_dataset_scopes)
-      #   self.save
-      # end
-    end
-
-    def split_dataset_scopes(scopes)
-      dataset_scopes = []
-      no_dataset_scopes = []
-
-      scopes.each do |scope|
-        if DatasetsScope.is_a?(scope)
-          dataset_scopes << scope
-        else
-          no_dataset_scopes << scope
-        end
-      end
-
-      dataset_scopes, no_dataset_scopes
+      grant_privileges_for_dataset_role(DatasetsScope.valid_scopes(scopes))
     end
 
     def grant_privileges_for_dataset_role(requested_dataset_scopes)
-      # dataset_scopes = []
-
       requested_dataset_scopes.each do |scope|
         dataset_scope = DatasetsScope.new(scope)
+        query = %{
+          GRANT #{dataset_scope.permission.join(',')}
+          ON #{dataset_scope.table}
+          TO \"#{dataset_role_name}\" WITH GRANT OPTION
+        }
 
         begin
-          query = %{
-            GRANT #{dataset_scope.permission.join(',')}
-            ON #{dataset_scope.table}
-            TO \"#{dataset_role_name}\" WITH GRANT OPTION
-          }
-
           user.in_database.execute(query)
-
-          # dataset_scopes << scope
         rescue ActiveRecord::StatementInvalid => e
-          CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
+          raise OauthProvider::Errors::AccessDenied.new unless e.message =~ /already exist/
         end
-
-        # dataset_scopes
       end
     end
 

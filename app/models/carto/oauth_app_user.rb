@@ -96,7 +96,7 @@ module Carto
 
     def create_dataset_role
       begin
-        user.in_database.execute("CREATE ROLE \"#{dataset_role_name}\"")
+        user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
       rescue ActiveRecord::StatementInvalid => e
         CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
         raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')

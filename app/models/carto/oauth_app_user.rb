@@ -22,11 +22,11 @@ module Carto
     before_update :grant_dataset_role_privileges
 
     def authorized?(requested_scopes)
-      (requested_scopes - (all_scopes)).empty?
+      (requested_scopes - all_scopes).empty?
     end
 
     def upgrade!(requested_scopes)
-      update!(scopes: (all_scopes) | requested_scopes)
+      update!(scopes: all_scopes | requested_scopes)
     end
 
     def all_scopes
@@ -98,7 +98,7 @@ module Carto
 
         begin
           user.in_database.execute(query)
-        rescue ActiveRecord::StatementInvalid => e
+        rescue
           raise OauthProvider::Errors::AccessDenied.new
         end
       end

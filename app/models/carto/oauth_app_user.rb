@@ -22,11 +22,15 @@ module Carto
     before_update :manage_scopes
 
     def authorized?(requested_scopes)
-      (requested_scopes - (no_dataset_scopes + dataset_scopes)).empty?
+      (requested_scopes - (all_scopes)).empty?
     end
 
     def upgrade!(requested_scopes)
-      update!(scopes: (no_dataset_scopes + dataset_scopes) | requested_scopes)
+      update!(scopes: (all_scopes) | requested_scopes)
+    end
+
+    def all_scopes
+      no_dataset_scopes + dataset_scopes
     end
 
     private

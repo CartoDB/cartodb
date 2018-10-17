@@ -26,6 +26,13 @@ module.exports = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
+  new_dashboard: [
+    rootDir('lib/assets/javascripts/new-dashboard/src/main.js'),
+    ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
+    rootDir('assets/stylesheets/editor-3/_scroll-view.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
+  ],
+
   public_table_new: [
     rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
     rootDir('assets/stylesheets/table/table.scss'),

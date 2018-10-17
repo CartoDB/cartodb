@@ -50,7 +50,7 @@ module Carto
     end
 
     def no_dataset_scopes
-      DatasetsScope.invalid_scopes(scopes)
+      DatasetsScope.non_dataset_scopes(scopes)
     end
 
     def dataset_scopes

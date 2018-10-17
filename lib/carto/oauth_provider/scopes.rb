@@ -135,7 +135,7 @@ module Carto
           scopes.select { |scope| DatasetsScope.is_a?(scope) }
         end
 
-        def self.invalid_scopes(scopes)
+        def self.non_dataset_scopes(scopes)
           scopes.reject { |scope| DatasetsScope.is_a?(scope) }
         end
 

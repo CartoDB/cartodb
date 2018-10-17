@@ -18,7 +18,7 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    before_save :manage_scopes
+    after_create :manage_scopes
 
     def authorized?(requested_scopes)
       (requested_scopes - scopes).empty?
@@ -70,7 +70,11 @@ module Carto
     def manage_scopes
       requested_dataset_scopes, no_dataset_scopes = split_dataset_scopes(scopes)
       dataset_scopes = manage_dataset_scopes(requested_dataset_scopes)
-      self.scopes = (dataset_scopes + no_dataset_scopes)
+
+      if !(scopes - (dataset_scopes + no_dataset_scopes)).empty?
+        self.scopes = (dataset_scopes + no_dataset_scopes)
+        self.save
+      end
     end
 
     def split_dataset_scopes(scopes)
@@ -89,7 +93,6 @@ module Carto
     end
 
     def manage_dataset_scopes(requested_dataset_scopes)
-      # TODO if role exists?
       create_dataset_role
       grant_privileges_for_dataset_role(requested_dataset_scopes)
     end
@@ -99,6 +102,7 @@ module Carto
         user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
       rescue ActiveRecord::StatementInvalid => e
         CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
+        # TODO: what we should do...
         raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
       end
     end
@@ -124,7 +128,7 @@ module Carto
     end
 
     def dataset_role_name
-      "carto_oauth_app_#{id}"
+      "carto_oauth_app_#{self.id}"
     end
 
   end

@@ -157,16 +157,15 @@ module Carto
       end
 
       it 'creation and update' do
-        OauthAppUser::ScopesValidator.any_instance.stubs(:validate_each)
         dataset_scope = "datasets:rw:#{@table.name}"
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ['no_dataset_scope', dataset_scope])
-        expect(oau.scopes).to(eq(['no_dataset_scope', dataset_scope]))
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ['user:profile', dataset_scope])
+        expect(oau.scopes).to(eq(['user:profile', dataset_scope]))
 
         oau.upgrade!([])
-        expect(oau.scopes).to(eq(['no_dataset_scope', dataset_scope]))
+        expect(oau.scopes).to(eq(['user:profile', dataset_scope]))
 
         oau.upgrade!([dataset_scope])
-        expect(oau.scopes).to(eq(['no_dataset_scope', dataset_scope]))
+        expect(oau.scopes).to(eq(['user:profile', dataset_scope]))
       end
     end
   end

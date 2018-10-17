@@ -64,7 +64,7 @@ module Carto
         end
 
         after(:all) do
-          @app.update!(restricted: false)
+          @app.destroy
         end
 
         it 'does not accept non-organization users' do

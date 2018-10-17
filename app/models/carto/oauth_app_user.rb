@@ -18,7 +18,8 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    after_create :manage_scopes
+    after_create :create_dataset_role :manage_scopes
+    before_update :manage_scopes
 
     def authorized?(requested_scopes)
       (requested_scopes - (no_dataset_scopes + dataset_scopes)).empty?
@@ -72,9 +73,18 @@ module Carto
       # TODO continue....
     end
 
+    def create_dataset_role
+      begin
+        user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
+      rescue ActiveRecord::StatementInvalid => e
+        CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
+        # raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
+      end
+    end
+
     def manage_scopes
       requested_dataset_scopes, no_dataset_scopes = split_dataset_scopes(scopes)
-      dataset_scopes = manage_dataset_scopes(requested_dataset_scopes)
+      dataset_scopes = grant_privileges_for_dataset_role(requested_dataset_scopes)
 
       if !(scopes - (dataset_scopes + no_dataset_scopes)).empty?
         self.scopes = (dataset_scopes + no_dataset_scopes)
@@ -95,21 +105,6 @@ module Carto
       end
 
       return dataset_scopes, no_dataset_scopes
-    end
-
-    def manage_dataset_scopes(requested_dataset_scopes)
-      create_dataset_role
-      grant_privileges_for_dataset_role(requested_dataset_scopes)
-    end
-
-    def create_dataset_role
-      begin
-        user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
-      rescue ActiveRecord::StatementInvalid => e
-        CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
-        # TODO: what we should do...
-        raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
-      end
     end
 
     def grant_privileges_for_dataset_role(requested_dataset_scopes)

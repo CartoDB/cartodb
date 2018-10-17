@@ -91,6 +91,8 @@ module Carto
           rw: "%<table_name>s (read/write access)"
         }.freeze
 
+        attr_reader :table
+
         def initialize(scope)
           _, permission, @table = scope.split(':')
           super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, @table))
@@ -104,10 +106,6 @@ module Carto
 
         def permission
           PERMISSIONS[@permission]
-        end
-
-        def table
-          @table
         end
 
         def add_to_api_key_grants(grants, user)

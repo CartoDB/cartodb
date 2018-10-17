@@ -99,7 +99,7 @@ module Carto
         begin
           user.in_database.execute(query)
         rescue ActiveRecord::StatementInvalid => e
-          raise OauthProvider::Errors::AccessDenied.new unless e.message =~ /already exist/
+          raise OauthProvider::Errors::AccessDenied.new
         end
       end
     end

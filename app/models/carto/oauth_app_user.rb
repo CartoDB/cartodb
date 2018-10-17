@@ -21,11 +21,11 @@ module Carto
     after_create :manage_scopes
 
     def authorized?(requested_scopes)
-      (requested_scopes - scopes).empty?
+      (requested_scopes - (no_dataset_scopes + dataset_scopes)).empty?
     end
 
     def upgrade!(requested_scopes)
-      update!(scopes: (scopes + dataset_scopes) | requested_scopes)
+      update!(scopes: (no_dataset_scopes + dataset_scopes) | requested_scopes)
     end
 
     private
@@ -42,6 +42,11 @@ module Carto
       end
 
       errors.add(:user, 'does not have an available seat to use this application') unless org_authorization.open_seats?
+    end
+
+    def no_dataset_scopes
+      requested_dataset_scopes, no_dataset_scopes = split_dataset_scopes(scopes)
+      no_dataset_scopes
     end
 
     def dataset_scopes

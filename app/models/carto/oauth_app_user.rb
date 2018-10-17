@@ -46,7 +46,7 @@ module Carto
     end
 
     def no_dataset_scopes
-      requested_dataset_scopes, no_dataset_scopes = split_dataset_scopes(scopes)
+      _, no_dataset_scopes = split_dataset_scopes(scopes)
       no_dataset_scopes
     end
 
@@ -111,7 +111,7 @@ module Carto
         end
       end
 
-      return dataset_scopes, no_dataset_scopes
+      dataset_scopes, no_dataset_scopes
     end
 
     def grant_privileges_for_dataset_role(requested_dataset_scopes)
@@ -139,7 +139,7 @@ module Carto
     end
 
     def dataset_role_name
-      "carto_oauth_app_#{self.id}"
+      "carto_oauth_app_#{id}"
     end
 
   end

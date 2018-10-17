@@ -106,6 +106,10 @@ module Carto
           PERMISSIONS[@permission]
         end
 
+        def table
+          @table
+        end
+
         def add_to_api_key_grants(grants, user)
           ensure_includes_apis(grants, ['maps', 'sql'])
           database_section = grant_section(grants)
@@ -138,6 +142,14 @@ module Carto
 
           user_tables = user.db_service.tables_effective(user.database_schema)
           datasets_scopes.to_h.select { |table, _| user_tables.include?(table) }.values
+        end
+
+        def self.permission_from_db_to_scope(permission)
+          PERMISSIONS.each do |key, values|
+            if permission.split(',').sort == values.sort
+              return key
+            end
+          end
         end
       end
 

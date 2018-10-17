@@ -97,8 +97,18 @@ module Carto
     end
 
     describe '#authorized?' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
+      end
+
+      after(:all) do
+        @user.destroy
+        @app.destroy
+      end
+
       it 'is authorized only if all requested scopes are already granted' do
-        oau = OauthAppUser.new(scopes: ['allowed_1', 'allowed_2'])
+        oau = OauthAppUser.new(user: @user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
 
         expect(oau).to(be_authorized(['allowed_1']))
         expect(oau).to(be_authorized(['allowed_2']))
@@ -158,14 +168,16 @@ module Carto
 
       it 'creation and update' do
         dataset_scope = "datasets:rw:#{@table.name}"
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ['user:profile', dataset_scope])
-        expect(oau.scopes).to(eq(['user:profile', dataset_scope]))
+        scopes = ['user:profile', dataset_scope]
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
 
         oau.upgrade!([])
-        expect(oau.scopes).to(eq(['user:profile', dataset_scope]))
+        expect(oau.scopes).to(eq(scopes))
 
         oau.upgrade!([dataset_scope])
-        expect(oau.scopes).to(eq(['user:profile', dataset_scope]))
+        expect(oau.scopes).to(eq(scopes))
       end
     end
   end

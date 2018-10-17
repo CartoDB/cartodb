@@ -81,11 +81,9 @@ module Carto
     end
 
     def create_dataset_role
-      begin
-        user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
-      rescue ActiveRecord::StatementInvalid => e
-        raise OauthProvider::Errors::AccessDenied.new unless e.message =~ /already exist/
-      end
+      user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
+    rescue ActiveRecord::StatementInvalid => e
+      raise OauthProvider::Errors::AccessDenied.new unless e.message =~ /already exist/
     end
 
     def manage_scopes

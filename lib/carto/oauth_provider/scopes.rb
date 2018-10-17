@@ -147,11 +147,7 @@ module Carto
         end
 
         def self.permission_from_db_to_scope(permission)
-          PERMISSIONS.each do |key, values|
-            if permission.split(',').sort == values.sort
-              return key
-            end
-          end
+          PERMISSIONS.find { |_, values| permission.split(',').sort == values.sort }.first
         end
       end
 

@@ -18,8 +18,8 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    after_create :create_dataset_role, :manage_scopes
-    before_update :manage_scopes
+    after_create :create_dataset_role, :grant_dataset_role_privileges
+    before_update :grant_dataset_role_privileges
 
     def authorized?(requested_scopes)
       (requested_scopes - (all_scopes)).empty?
@@ -87,12 +87,8 @@ module Carto
       raise OauthProvider::Errors::AccessDenied.new unless e.message =~ /already exist/
     end
 
-    def manage_scopes
-      grant_privileges_for_dataset_role(DatasetsScope.valid_scopes(scopes))
-    end
-
-    def grant_privileges_for_dataset_role(requested_dataset_scopes)
-      requested_dataset_scopes.each do |scope|
+    def grant_dataset_role_privileges
+      DatasetsScope.valid_scopes(scopes).each do |scope|
         dataset_scope = DatasetsScope.new(scope)
         query = %{
           GRANT #{dataset_scope.permission.join(',')}

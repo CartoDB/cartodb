@@ -18,7 +18,7 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    after_create :create_dataset_role :manage_scopes
+    after_create :create_dataset_role, :manage_scopes
     before_update :manage_scopes
 
     def authorized?(requested_scopes)
@@ -77,8 +77,7 @@ module Carto
       begin
         user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
       rescue ActiveRecord::StatementInvalid => e
-        CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
-        # raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ e.message && $1 || 'Unexpected error')
+        raise OauthProvider::Errors::AccessDenied.new unless e.message =~ /already exist/
       end
     end
 

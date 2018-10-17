@@ -98,7 +98,7 @@ module Carto
 
         begin
           user.in_database.execute(query)
-        rescue
+        rescue ActiveRecord::StatementInvalid
           raise OauthProvider::Errors::AccessDenied.new
         end
       end

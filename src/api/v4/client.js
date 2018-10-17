@@ -13,6 +13,8 @@ function getValidationError (code) {
   return new CartoValidationError('client', code);
 }
 
+const DEFAULT_SERVER_URL = 'https://{username}.carto.com';
+
 /**
  * This is the entry point for a CARTO.js application.
  *
@@ -27,7 +29,7 @@ function getValidationError (code) {
  * @param {object} settings
  * @param {string} settings.apiKey - API key used to authenticate against CARTO
  * @param {string} settings.username - Name of the user
- * @param {string} [settings.serverUrl] - URL of the windshaft server. Only needed in custom installations. Pattern: `https:\\{username}.yourinstance.com` or `https://your.carto.instance/user/{username}`, depending on your environment.
+ * @param {string} [settings.serverUrl] - URL of the windshaft server. Only needed in custom installations. Pattern: `https:\\{username}.your.carto.instance` or `https://your.carto.instance/user/{username}`, depending on your environment.
  *
  * @example
  * var client = new carto.Client({
@@ -45,17 +47,17 @@ function getValidationError (code) {
  * @memberof carto
  * @api
  *
- * @fires error
  * @fires success
  */
 function Client (settings) {
+  settings.serverUrl = (settings.serverUrl || DEFAULT_SERVER_URL).replace(/{username}/, settings.username || '');
   _checkSettings(settings);
   this._layers = new Layers();
   this._dataviews = [];
   this._engine = new Engine({
     apiKey: settings.apiKey,
     username: settings.username,
-    serverUrl: settings.serverUrl || 'https://{user}.carto.com'.replace(/{user}/, settings.username),
+    serverUrl: settings.serverUrl,
     client: 'js-' + VERSION
   });
   this._bindEngine(this._engine);
@@ -507,7 +509,7 @@ function _checkUsername (username) {
 
 function _checkServerUrl (serverUrl, username) {
   var ipRegex = /https?:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
-  var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+  var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/;
   if (!serverUrl.match(urlregex) && !serverUrl.match(ipRegex)) {
     throw getValidationError('nonValidServerURL');
   }

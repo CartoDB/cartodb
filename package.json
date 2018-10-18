@@ -160,8 +160,8 @@
     "docs": "rm -rf docs/public; jsdoc --configure config/jsdoc/public-conf.json",
     "docs:internal": "rm -rf docs/internal; jsdoc --configure config/jsdoc/internal-conf.json",
     "bump": "npm version prerelease",
-    "bump:minor": "npm version minor",
     "bump:patch": "npm version patch",
+    "bump:minor": "npm version minor",
     "postversion": "git push origin HEAD --follow-tags",
     "release": "./scripts/release.sh"
   },

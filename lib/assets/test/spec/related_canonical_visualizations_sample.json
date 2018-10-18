@@ -1,0 +1,33 @@
+[{
+  "id": "376dcd9c-7e75-4bef-9fc2-8c5e1cb2e4f6",
+  "name": "gcma000b06a_eng",
+  "type": "table",
+  "tags": [],
+  "description": null,
+  "updated_at": "2017-09-26T18:05:05+02:00",
+  "title": null,
+  "kind": "geom",
+  "privacy": "PUBLIC",
+  "likes": 0,
+  "liked": false,
+  "permission": {
+    "id": "9a9ef611-3e9c-46b4-a635-98dfa7e773c8",
+    "owner": {
+      "id": "b4565b84-ae84-4b1c-8df2-83bef4d3ef81",
+      "username": "usertest",
+      "name": "",
+      "last_name": "",
+      "avatar_url": "/assets/unversioned/images/avatars/avatar_planet_green.png",
+      "base_url": "http://usertest.localhost.lan:3000",
+      "disqus_shortname": "usertestdisqus",
+      "viewer": false,
+      "org_admin": false,
+      "org_user": false,
+      "remove_logo": false
+    }
+  },
+  "stats": {
+    "2017-09-25": 1
+  },
+  "auth_tokens": []
+}]

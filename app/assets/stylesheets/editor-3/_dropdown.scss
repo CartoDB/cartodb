@@ -1,28 +1,27 @@
 // Styles for Dropdowns
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
-
 
 .Editor-dropdownContainer {
   position: relative;
   height: 250px;
 }
+
 .Editor-dropdown {
-  @include display-flex();
-  @include flex-direction(row);
+  display: flex;
   position: absolute;
+  z-index: 100; // Lets treat it the same depth as CDB-Box-modal
   top: 40px;
   right: 0;
-  z-index: 100; // Lets treat it the same depth as CDB-Box-modal
+  flex-direction: row;
 }
 
 .Editor-dropDownInfoText {
+  box-sizing: border-box;
   width: 160px;
   padding: 14px;
-  box-sizing: border-box;
 }
 
 .Editor-dropdownOperators {
@@ -30,17 +29,18 @@
   max-width: 244px;
 
   &.is-visible {
-    @include display-flex();
+    display: flex;
   }
 }
 
 .Editor-dropdownCalculations {
+  box-sizing: border-box;
   padding: $sMargin-element;
   border-right: 1px solid $cMainLine;
   border-radius: 4px 0 0 4px;
   background-color: $cSecondaryBackground;
-  box-sizing: border-box;
 }
+
 .Editor-dropdownCalculationsElement {
   margin-bottom: $sLineHeight-medium;
   color: $cMainBg;
@@ -50,12 +50,14 @@
     margin-bottom: 0;
   }
 }
+
 .Editor-dropdownOptions {
   width: $baseSize * 20;
   border-radius: 0 4px 4px 0;
   background-color: $cWhite;
   vertical-align: top;
 }
+
 .Editor-dropdownOptionsElement {
   @include text-overflow();
   padding: 12px 10px;
@@ -65,15 +67,18 @@
   &:last-child {
     border-bottom: 0;
   }
+
   &:hover {
     background-color: rgba(157, 224, 173, 0.2);
     color: $cMainBg;
     cursor: pointer;
   }
 }
+
 .Editor-dropdownOptionsElement.is-selected {
   color: $cMainBg;
 }
+
 .Editor-dropdownOptionsElement.is-disabled {
   color: $cHintText;
 
@@ -87,14 +92,14 @@
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.16);
   white-space: normal;
-  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.16);
 }
 
 .Editor-boxModal--darked {
   border: 1px solid rgba(30, 39, 44, 0.34);
   background: #263239;
-  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.36);
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(#000, 0.36);
 }
 
 .Editor-boxModalHeader {
@@ -103,8 +108,8 @@
 }
 
 .Editor-boxModalHeaderItem {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   padding: $baseSize + 4 $baseSize * 2;
   border-bottom: 1px solid $cMainLine;
 }
@@ -112,9 +117,11 @@
 .Editor-boxModalContent {
   padding: $baseSize * 2;
 }
+
 .Editor-boxModalContent .ps-scrollbar-x-rail {
   z-index: 101;
 }
+
 .Editor-boxModalContent .ps-scrollbar-x-rail .ps-scrollbar-x {
   pointer-events: all;
 }
@@ -122,6 +129,7 @@
 .Editor-boxModal .Editor-formInner {
   margin-top: 0;
 }
+
 .Editor-boxModal .UISlider {
   width: 58px;
 }

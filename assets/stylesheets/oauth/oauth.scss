@@ -1,0 +1,224 @@
+.oauth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  background-color: #BABEC0;
+}
+
+/* oauth-form */
+.oauth-form {
+  width: 380px;
+  padding: 40px;
+  border: 1px solid #979797;
+  border-radius: 4px;
+  background-color: #FFF;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    text-align: center;
+  }
+
+  &__avatars {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__avatar-image {
+    width: 48px;
+    height: 48px;
+    margin: 0 8px;
+    border-radius: 24px;
+  }
+
+  &__title {
+    margin-top: 24px;
+    margin-bottom: 0;
+    color: #2E3C43;
+    font-family: 'Montserrat';
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  &__subtitle {
+    width: 220px;
+    margin-top: 8px;
+    margin-right: auto;
+    margin-bottom: 16px;
+    margin-left: auto;
+    color: #2E3C43;
+    font-family: 'Open Sans';
+    font-size: 12px;
+    line-height: 16px;
+
+    &--error {
+      width: 300px;
+      text-align: left;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+  }
+
+  &__powered-by {
+    font-family: 'Open Sans';
+    font-size: 10px;
+
+    a {
+      color: #828A8F;
+      text-decoration: none;
+
+      &:hover {
+        transition: color 300ms ease-in;
+        color: #1785FB;
+      }
+    }
+  }
+
+  &__button {
+    display: inline-block;
+    height: 32px;
+    margin-left: 14px;
+    padding: 0 10px;
+    border: 2px solid #828A8F;
+    border-radius: 4px;
+    background-color: #FFF;
+    color: #828A8F;
+    font-family: 'Montserrat';
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    line-height: 16px;
+    text-align: center;
+    text-transform: uppercase;
+
+    &--primary {
+      border: 2px solid #1785FB;
+      background-color: #1785FB;
+      color: #FFF;
+    }
+
+    &--is-link {
+      padding-top: 6px;
+      padding-right: 6px;
+      padding-bottom: 6px;
+      padding-left: 8px;
+      text-decoration: none !important;
+    }
+  }
+}
+
+/* oauth-scopes-category */
+.oauth-scopes-category {
+  margin-top: 8px;
+  padding-top: 8px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  padding-left: 16px;
+  border-radius: 4px;
+  background-color: #F9F9F9;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    display: inline;
+    color: #2E3C43;
+    font-family: 'Montserrat';
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  &__list {
+    max-height: 120px;
+    margin-top: 8px;
+    padding-top: 8px;
+    overflow-y: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    list-style-type: none;
+    border-top: 1px solid #EEE;
+    font-family: 'Open Sans';
+    font-size: 12px;
+
+    &--hidden {
+      display: none;
+    }
+  }
+
+  &__scope {
+    &::before {
+      content: url($assetsDir + "/images/oauth_provider/enabled_check.svg");
+      margin-right: 3px;
+    }
+
+    &--disabled {
+      color: #828A8F;
+
+      &::before {
+        content: url($assetsDir + "/images/oauth_provider/disabled_check.svg");
+      }
+    }
+  }
+}
+
+/* oauth-error */
+.oauth-error {
+  color: #2E3C43;
+  font-size: 12px;
+  line-height: 16px;
+
+  &__title {
+    margin-bottom: 8px;
+    font-family: 'Open Sans';
+    font-weight: 600;
+  }
+
+  &__list {
+    max-height: 120px;
+    overflow-y: auto;
+    list-style-type: none;
+    font-family: 'Montserrat';
+    font-weight: 600;
+  }
+
+  &__item {
+    margin-top: 8px;
+    padding: 16px;
+    border-radius: 4px;
+    background-color: #F9F9F9;
+  }
+}
+
+/* chevrons */
+.chevron {
+  cursor: pointer;
+
+  &--up::before {
+    content: url($assetsDir + "/images/oauth_provider/chevron_up.svg");
+  }
+
+  &--down::before {
+    content: url($assetsDir + "/images/oauth_provider/chevron_down.svg");
+  }
+}

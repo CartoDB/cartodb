@@ -1,13 +1,26 @@
 require 'json'
 require 'carto/export/layer_exporter'
 require 'carto/export/data_import_exporter'
+require_dependency 'carto/export/connector_configuration_exporter'
+
+# Not migrated
+# likes -> difficult to do between clouds
+# snapshots -> difficult to do between clouds, not in use yet
+# tags -> regenerated from tables
+# visualization_export -> only purpose would be logging
 
 # Version History
 # 1.0.0: export user metadata
 # 1.0.1: export search tweets
+# 1.0.2: export user notifications
+# 1.0.3: export rate limits
+# 1.0.4: company and phone in users table
+# 1.0.5: synchronization_oauths and connector configurations
+# 1.0.6: client_applications & friends and sql_copy rate_limits
+
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.1'.freeze
+    CURRENT_VERSION = '1.0.6'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -26,8 +39,10 @@ module Carto
       :salesforce_datasource_enabled, :builder_enabled, :geocoder_provider, :isolines_provider, :routing_provider,
       :github_user_id, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
       :no_map_logo, :org_admin, :last_name, :user_render_timeout, :database_render_timeout, :frontend_version,
-      :asset_host
+      :asset_host, :state, :company, :phone, :industry, :job_role
     ].freeze
+
+    BLANK_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -38,6 +53,7 @@ module Carto
     include UserMetadataExportServiceConfiguration
     include LayerImporter
     include DataImportImporter
+    include ConnectorConfigurationImporter
 
     def build_user_from_json_export(exported_json_string)
       build_user_from_hash_export(parse_json(exported_json_string))
@@ -60,12 +76,29 @@ module Carto
     def save_imported_user(user)
       user.save!
       ::User[user.id].after_save
+
+      client_application = user.client_applications.first
+      if client_application
+        client_application.access_tokens.each do |t|
+          # AR does not know about this, so it needs to be fixed
+          t.update_column(:type, 'AccessToken')
+          AccessToken[t.id].after_save
+        end
+      end
     end
 
     def save_imported_search_tweet(search_tweet, user)
-      persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
-      search_tweet.data_import = persisted_import if persisted_import
-      search_tweet.table_id = search_tweet.data_import.table_id
+      if search_tweet.data_import
+        persisted_import = Carto::DataImport.where(id: search_tweet.data_import.id).first
+        search_tweet.data_import = persisted_import if persisted_import
+        search_tweet.table_id = search_tweet.data_import.table_id
+      else
+        # Some search tweets can be exported without data import if the FK point to a non-existent data import.
+        # However, this field is NOT NULL, so we cannot leave it empty.
+        # We could skip the import of the tweet, but instead, we keep it with an invalid ID (like in the source), so
+        # we can still correctly compute quota usage.
+        search_tweet.data_import_id = BLANK_UUID
+      end
       search_tweet.user = user
       search_tweet.save!
     end
@@ -77,7 +110,7 @@ module Carto
     end
 
     def build_user_from_hash(exported_user)
-      user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES))
+      user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES - [:id]))
 
       user.feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
                                                              .compact
@@ -85,6 +118,21 @@ module Carto
       user.assets = exported_user[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
 
       user.layers = build_layers_from_hash(exported_user[:layers])
+
+      user.rate_limit = build_rate_limit_from_hash(exported_user[:rate_limit])
+
+      api_keys = exported_user[:api_keys] || []
+      user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
+
+      if exported_user[:notifications]
+        user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
+      end
+
+      user.synchronization_oauths = build_synchronization_oauths_from_hash(exported_user[:synchronization_oauths])
+
+      user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
+
+      user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
@@ -119,12 +167,71 @@ module Carto
         updated_at: exported_search_tweet[:updated_at]
       )
     end
+
+    def build_rate_limit_from_hash(exported_hash)
+      return unless exported_hash
+
+      rate_limit = Carto::RateLimit.from_api_attributes(exported_hash[:limits])
+      rate_limit.id = exported_hash[:id]
+
+      rate_limit
+    end
+
+    def build_synchronization_oauths_from_hash(exported_array)
+      return [] unless exported_array.present?
+
+      exported_array.map { |so| build_synchronization_oauth_from_hash(so) }
+    end
+
+    def build_synchronization_oauth_from_hash(exported_hash)
+      SynchronizationOauth.new(
+        service: exported_hash[:service],
+        token: exported_hash[:token],
+        created_at: exported_hash[:created_at],
+        updated_at: exported_hash[:updated_at]
+      )
+    end
+
+    def build_oauth_token_fom_hash(exported_oauth_token)
+      Carto::OauthToken.new(
+        token: exported_oauth_token[:token],
+        secret: exported_oauth_token[:secret],
+        callback_url: exported_oauth_token[:callback_url],
+        verifier: exported_oauth_token[:verifier],
+        scope: exported_oauth_token[:scope],
+        authorized_at: exported_oauth_token[:authorized_at],
+        invalidated_at: exported_oauth_token[:invalidated_at],
+        valid_to: exported_oauth_token[:valid_to],
+        created_at: exported_oauth_token[:created_at],
+        updated_at: exported_oauth_token[:updated_at]
+      )
+    end
+
+    def build_client_applications_from_hash(client_app_hash)
+      return [] unless client_app_hash
+
+      client_application = Carto::ClientApplication.new(
+        name: client_app_hash[:name],
+        url: client_app_hash[:url],
+        support_url: client_app_hash[:support_url],
+        callback_url: client_app_hash[:callback_url],
+        key: client_app_hash[:key],
+        secret: client_app_hash[:secret],
+        created_at: client_app_hash[:created_at],
+        updated_at: client_app_hash[:updated_at],
+        oauth_tokens: client_app_hash[:oauth_tokens].map { |t| build_oauth_token_fom_hash(t) },
+        access_tokens: client_app_hash[:access_tokens].map { |t| build_oauth_token_fom_hash(t) }
+      )
+
+      [client_application]
+    end
   end
 
   module UserMetadataExportServiceExporter
     include UserMetadataExportServiceConfiguration
     include LayerExporter
     include DataImportExporter
+    include ConnectorConfigurationExporter
 
     def export_user_json_string(user)
       export_user_json_hash(user).to_json
@@ -150,10 +257,54 @@ module Carto
 
       user_hash[:search_tweets] = user.search_tweets.map { |st| export_search_tweet(st) }
 
-      # TODO
-      # Organization notifications
+      user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
+
+      user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
+
+      user_hash[:notifications] = user.static_notifications.notifications
+
+      user_hash[:synchronization_oauths] = user.synchronization_oauths.map { |so| export_synchronization_oauth(so) }
+
+      user_hash[:connector_configurations] = user.connector_configurations.map do |cc|
+        export_connector_configuration(cc)
+      end
+
+      # Use Sequel models to export. Single table inheritance causes AR to try and create Sequel models -> fail.
+      user_hash[:client_application] = export_client_application(::User[user.id].client_application)
 
       user_hash
+    end
+
+    def export_client_application(app)
+      return nil unless app
+      a_t_tokens = app.access_tokens.map(&:token)
+      {
+        name: app.name,
+        url: app.url,
+        support_url: app.support_url,
+        callback_url: app.callback_url,
+        key: app.key,
+        secret: app.secret,
+        created_at: app.created_at,
+        updated_at: app.updated_at,
+        oauth_tokens: app.oauth_tokens.reject { |t| a_t_tokens.include?(t.token) }.map { |ot| export_oauth_token(ot) },
+        access_tokens: app.access_tokens.map { |ot| export_oauth_token(ot) }
+      }
+    end
+
+    def export_oauth_token(oauth_token)
+      {
+        token: oauth_token.token,
+        secret: oauth_token.secret,
+        callback_url: oauth_token.callback_url,
+        verifier: oauth_token.verifier,
+        scope: oauth_token.scope,
+        authorized_at: oauth_token.authorized_at,
+        invalidated_at: oauth_token.invalidated_at,
+        valid_to: oauth_token.valid_to,
+        created_at: oauth_token.created_at,
+        updated_at: oauth_token.updated_at
+      }
     end
 
     def export_asset(asset)
@@ -172,6 +323,38 @@ module Carto
         state: search_tweet.state,
         created_at: search_tweet.created_at,
         updated_at: search_tweet.updated_at
+      }
+    end
+
+    def export_api_key(api_key)
+      {
+        created_at: api_key.created_at,
+        db_password: api_key.db_password,
+        db_role: api_key.db_role,
+        name: api_key.name,
+        token: api_key.token,
+        type: api_key.type,
+        updated_at: api_key.updated_at,
+        grants: api_key.grants,
+        user_id: api_key.user_id
+      }
+    end
+
+    def export_rate_limit(rate_limit)
+      return unless rate_limit
+
+      {
+        id: rate_limit.id,
+        limits: rate_limit.api_attributes
+      }
+    end
+
+    def export_synchronization_oauth(sync_oauth)
+      {
+        service: sync_oauth.service,
+        token: sync_oauth.token,
+        created_at: sync_oauth.created_at,
+        updated_at: sync_oauth.updated_at
       }
     end
   end
@@ -201,6 +384,7 @@ module Carto
 
     def import_from_directory(path)
       user = user_from_file(path)
+
       raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
       save_imported_user(user)
 
@@ -216,7 +400,9 @@ module Carto
       user = ::User[user.id]
       return unless user
 
-      Carto::User.find(user.id).destroy
+      carto_user = Carto::User.find(user.id)
+      carto_user.assets.each(&:delete)
+      carto_user.destroy
       user.before_destroy(skip_table_drop: true)
 
       Carto::RedisExportService.new.remove_redis_from_json_export(redis_user_file(path))
@@ -267,12 +453,22 @@ module Carto
     def export_user_visualizations_to_directory(user, type, path)
       root_dir = Pathname.new(path)
       user.visualizations.where(type: type).each do |visualization|
+        next if visualization.canonical? && should_skip_canonical_viz_export(visualization)
+        next if !visualization.remote? && visualization.map.nil?
+
         visualization_export = Carto::VisualizationsExportService2.new.export_visualization_json_string(
-          visualization.id, user
+          visualization.id, user, with_password: true
         )
         filename = "#{visualization.type}_#{visualization.id}#{Carto::VisualizationExporter::EXPORT_EXTENSION}"
         root_dir.join(filename).open('w') { |file| file.write(visualization_export) }
       end
+    end
+
+    def should_skip_canonical_viz_export(viz)
+      return true if viz.table.nil?
+
+      viz.user.visualizations.where(type: viz.type,
+                                    name: viz.name).all.sort_by(&:updated_at).last.id != viz.id
     end
 
     def with_non_viewer_user(user)

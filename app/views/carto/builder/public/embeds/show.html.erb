@@ -9,7 +9,7 @@
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'public_editor3', 'deep_insights', media: 'all' %>
+  <%= stylesheet_link_tag 'builder_embed', 'deep_insights_new', media: 'all' %>
   <style type="text/css">
     html, body {
       height: 100%;
@@ -27,12 +27,8 @@
 <%= content_for(:js) do %>
   <%= insert_trackjs('builder-embeds') %>
 
-  <% if vector_render?(@visualization, params) %>
-    <%= javascript_include_tag 'tangram.min.js' %>
-  <% end %>
-
-  <% if @vizjson[:map_provider] == 'googlemaps' %>
-    <%= render(partial: 'shared/visualizations/google_maps', locals: { google_maps_qs: @google_maps_qs }) %>
+  <% if @vizjson[:map_provider] == 'googlemaps' && @google_maps_qs.present? %>
+    <%= insert_google_maps(@google_maps_qs) %>
   <% end %>
 
   <script>
@@ -40,14 +36,14 @@
     var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
+    var baseURL = '<%= @viz_owner_base_url %>';
     var mapzenApiKey = '<%= mapzen_api_key %>';
+    var mapboxApiKey = '<%= mapbox_api_key %>';
   </script>
-  <%= javascript_include_tag 'common.js' %>
-  <%= javascript_include_tag 'builder_embed_vendor.js' %>
-  <%= javascript_include_tag 'builder_embed.js' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'builder_embed' %>
 
   <% if Cartodb.get_config(:graphite_public, 'host') %>
-    <%= javascript_include_tag "statsc.js" %>
+    <%= editor_javascript_include_tag "statsc.js" %>
   <% end %>
   <script>
     (function () {

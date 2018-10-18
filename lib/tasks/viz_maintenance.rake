@@ -1,5 +1,6 @@
 require_relative "../../app/model_factories/layer_factory"
 require_relative "../../app/model_factories/map_factory"
+require 'carto/mapcapped_visualization_updater'
 
 namespace :cartodb do
   namespace :vizs do
@@ -14,6 +15,21 @@ namespace :cartodb do
       collection.each do |viz|
         if inconsistent?(viz)
           delete_with_confirmation(viz)
+        end
+      end
+    end
+
+    desc "Purges broken canonical visualizations without related tables"
+    task :delete_inconsistent_canonical_viz_without_tables => :environment do |_|
+      Carto::Visualization.joins("left join user_tables ut on visualizations.map_id = ut.map_id").where("visualizations.type = 'table' and ut.id is null").find_each do |viz|
+        begin
+          puts "Checking for deletion --> User: #{viz.user.username} | Viz id: #{viz.id}"
+          if inconsistent_table?(viz)
+            puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
+            viz.destroy!
+          end
+        rescue => e
+          puts "Error deleting viz #{viz.id}: #{e}"
         end
       end
     end
@@ -166,10 +182,59 @@ namespace :cartodb do
       end
     end
 
+    desc "Create analyses for all v3 visualizations"
+    task :create_analyses_for_v3_visualizations, [:dry] => :environment do |_, args|
+      include Carto::MapcappedVisualizationUpdater
+      dry = args[:dry] == '--dry'
+
+      puts "Adding analyses to v3 visualizations. Dry mode #{dry ? 'on' : 'off'}"
+
+      puts "=== STEP 1/2: Visualizations ==="
+      v3_no_analyses = Carto::Visualization.joins('LEFT JOIN analyses ON visualizations.id = analyses.visualization_id')
+                                           .where(version: 3, type: 'derived', analyses: { id: nil })
+
+      v3_no_analyses.find_each do |visualization|
+        begin
+          puts "Adding analyses to visualization #{visualization.id}"
+          visualization.add_source_analyses unless dry
+        rescue => e
+          puts "ERROR adding analyses to visualization #{visualization.id}: #{e.inspect}"
+        end
+      end
+
+      puts "=== STEP 2/2: Mapcaps ==="
+      mapcap_no_analyses = Carto::Mapcap.where("json_array_length(export_json->'visualization'->'analyses') = 0")
+
+      mapcap_no_analyses.find_each do |mapcap|
+        puts "Adding analyses to mapcap #{mapcap.id}"
+        unless dry
+          begin
+            rv = mapcap.regenerate_visualization
+
+            rv.data_layers.each_with_index do |layer, index|
+              analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
+              rv.analyses << analysis
+              layer.options[:source] = analysis.natural_id
+              layer.options[:letter] = analysis.natural_id.first
+            end
+
+            mapcap.export_json = export_in_memory_visualization(rv, rv.user)
+            mapcap.save
+          rescue => e
+            puts "ERROR adding analyses to mapcap: #{mapcap.id}: #{e.inspect}"
+          end
+        end
+      end
+    end
+
     private
 
     def inconsistent?(viz)
       (viz.table? && viz.related_tables.empty?) || (viz.derived? && viz.map.nil?)
+    end
+
+    def inconsistent_table?(viz)
+      (viz.user_table.nil? && viz.related_tables.empty?)
     end
 
     def delete_with_confirmation(viz)

@@ -4,7 +4,6 @@
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
-
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -16,32 +15,38 @@
   border-top: 1px solid $cSecondaryLine;
   background: $cThirdBackground;
 }
+
 .Footer--light {
-  background: white;
+  background: WHITE;
 }
+
 .Footer.Footer--public {
   padding-bottom: 0;
-  box-shadow: none;
   overflow: hidden;
-  text-rendering: optimizeLegibility;
-  -webkit-text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
   border-top: 0;
+  box-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
 }
+
 .Footer-inner {
   margin-top: $sIcon-layout;
 }
+
 .Footer-inner.Footer-inner--public * {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 .Footer-inner .Footer-logo {
   position: absolute;
   top: $sMargin-element;
   left: 50%;
   margin-left: -$sIcon-layout / 2;
 }
+
 .Footer-inner--public .Footer-logo {
   position: static;
   top: auto;
@@ -52,22 +57,26 @@
 .Footer-columns {
   border-top: 1px solid #EEE;
 }
-.Footer-columns--footer {
-  padding-bottom: 60px;
 
+.Footer-columns--footer {
   @media (max-width: $sMedia-tablet) {
     padding-bottom: 40px;
   }
+  padding-bottom: 60px;
 }
+
 .Footer-columns--noBorder {
   border-top: 0;
 }
+
 .Footer-column {
   padding-bottom: 40px;
 }
+
 .Footer-column--mobile {
   border-top: 1px solid #EEE;
 }
+
 .Footer-columnTitle {
   margin-bottom: 12px;
   color: #2E3C43;
@@ -76,45 +85,52 @@
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+
 .Footer-link {
-  line-height: 28px;
   transition: color 0.2s ease;
   color: #3AA9E3;
+  line-height: 28px;
 
   &:hover {
     color: #2E3C43;
     text-decoration: none;
   }
 }
+
 .Footer-logo,
 .Footer-credits {
   display: inline-block;
   vertical-align: middle;
 }
+
 .Footer-credits {
-  text-align: left;
   color: #979EA1;
+  text-align: left;
 }
+
 .Footer-title {
+  display: block;
   color: #2E3C43;
   font-weight: 600;
-  display: block;
 }
-.Colophon {
-  padding-top: 13px;
-  text-align: right;
 
+.Colophon {
   @media (max-width: 750px) {
     padding-top: 0;
     text-align: left;
   }
+  padding-top: 13px;
+  text-align: right;
 }
+
 .Colophon-item {
   display: inline-block;
 }
+
 .Footer-item {
   display: block;
 }
+
 .Newsletter {
   position: relative;
 
@@ -132,42 +148,47 @@
     }
   }
 }
+
 .hs-newsletter {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   width: 100px;
+  transition: all 0.15s;
   border: 0;
-  font: 400 13px Lato, sans-serif;
+  border-radius: 0 4px 4px 0;
+  outline: none;
   background: #3AA9E3;
   color: #FFF;
-  border-radius: 0 4px 4px 0;
-  transition: all .15s;
-  cursor: pointer;
-  outline: none;
+  font: 400 13px Lato, sans-serif;
   text-transform: none;
+  cursor: pointer;
 
   &:hover {
     background: darken(#3AA9E3, 5%);
     color: #FFF;
   }
 }
+
 @media only screen and (max-width: $sMedia-mobile) {
   .Footer-inner .Footer-logo {
     position: absolute;
     left: 50%;
     margin-left: -$sIcon-layout / 2;
   }
+
   .Footer-inner--public .Footer-logo {
     position: static;
     top: auto;
     left: auto;
     margin: 0;
   }
+
   .Footer-logo.Logo.Logo--grey {
     top: 25px;
   }
+
   .Footer .Footer-inner {
     margin-top: 45px;
   }
@@ -175,43 +196,55 @@
 
 @media (min-width: $sMedia-tablet) {
   .Footer-list {
-    @include display-flex();
-    @include align-items(center);
+    display: flex;
+    align-items: center;
     width: 450px;
     padding: 0 $sMargin-element;
   }
+
   .Footer-inner {
-    @include display-flex();
-    @include justify-content(space-between, justify);
-    @include align-items(center);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin: 0 auto;
   }
+
   .Footer-inner .Footer-logo {
     position: static;
     top: auto;
     left: auto;
     margin: 0;
   }
+
   .Footer-list--primary {
-    @include justify-content(flex-start, start);
+    justify-content: flex-start;
   }
+
   .Footer-list--secondary {
-    @include justify-content(flex-end, end);
+    justify-content: flex-end;
   }
+
   .Footer-listItem {
     padding: 0 $sMargin-elementInline;
   }
-  .Footer-listItem:first-child { padding-left: 0 }
-  .Footer-listItem:last-child { padding-right: 0 }
+
+  .Footer-listItem:first-child {
+    padding-left: 0;
+  }
+
+  .Footer-listItem:last-child {
+    padding-right: 0;
+  }
 }
 
 @media (min-width: $sMedia-desktop) {
   .Footer-list {
     padding: 0;
   }
+
   .Footer-inner .Footer-logo {
-    position: relative;
     display: inline-block;
+    position: relative;
     top: auto;
     left: auto;
     margin-left: auto;

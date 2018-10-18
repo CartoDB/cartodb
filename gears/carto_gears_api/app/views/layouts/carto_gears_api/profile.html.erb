@@ -2,7 +2,7 @@
   <script type="text/javascript">
       var can_change_email = <%= @user.can_change_email? %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
+  <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>
 <%= content_for :dashboard_body do %>
     <div class="CDB-Text FormAccount-Section u-inner">

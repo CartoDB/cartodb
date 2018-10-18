@@ -49,6 +49,7 @@ describe Api::Json::SynchronizationsController do
           expect {
             post_json api_v1_synchronizations_create_url(params.merge(remote_visualization_id: remote_id)) do |r|
               r.status.should eq 200
+              Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
             end
           }.to change { Carto::Synchronization.count }.by 1
         ensure
@@ -64,6 +65,7 @@ describe Api::Json::SynchronizationsController do
       expect {
         post_json api_v1_synchronizations_create_url(params) do |r|
           r.status.should eq 200
+          Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
         end
       }.to change { Carto::Synchronization.count }.by 1
     end

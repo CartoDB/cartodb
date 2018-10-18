@@ -23,7 +23,7 @@ module Carto
         .group("date_trunc('day', search_tweets.created_at)")
         .select("date_trunc('day', search_tweets.created_at) as date, SUM(search_tweets.retrieved_items) as count")
         .all
-        .map { |t| { Date.parse(t.date) => t.count.to_i } }
+        .map { |t| { t.date.to_date => t.count.to_i } }
         .reduce({}, &:merge)
     end
   end

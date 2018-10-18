@@ -1,0 +1,49 @@
+// Navigation elements styles
+// ----------------------------------------------
+
+.CDB-Widget-nav {
+  width: 100%;
+  margin-top: $baseSize * 2;
+}
+
+.CDB-Widget-nav.is-hidden {
+  display: none;
+}
+
+.CDB-Widget-navDots {
+  height: auto;
+}
+
+.CDB-Widget-dot--navigation {
+  display: inline-block;
+  margin: 0 0 0 $baseSize / 2;
+  vertical-align: top;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.CDB-Widget-navDotsItem.is-selected {
+  &:hover {
+    cursor: default;
+  }
+}
+
+.CDB-Widget-navDotsItem.is-disabled {
+  @include opacity(0.5);
+}
+
+.CDB-Widget-navArrows {
+  width: 45px;
+  height: 9px;
+}
+
+.CDB-Widget-pagination {
+  display: flex;
+}
+
+.CDB-Widget-paginationButton {
+  width: 16px;
+  height: 16px;
+}

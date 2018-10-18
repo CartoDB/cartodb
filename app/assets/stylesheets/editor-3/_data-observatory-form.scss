@@ -5,14 +5,14 @@
 }
 
 .DataObservatory-description {
-  word-break: break-word;
   word-wrap: break-word;
+  word-break: break-word;
   hyphens: auto;
 }
 
 .DataObservatory-addMeasure .is-disabled {
-  cursor: not-allowed;
   opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .DataObservatory-license {

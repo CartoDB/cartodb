@@ -7,11 +7,18 @@ module Carto
 
       BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
-      def initialize(user, fetch_groups: false, current_viewer: nil, fetch_db_size: true)
+      def initialize(user,
+                     fetch_groups: false,
+                     current_viewer: nil,
+                     fetch_db_size: true,
+                     fetch_basemaps: false,
+                     fetch_profile: true)
         @user = user
         @fetch_groups = fetch_groups
         @current_viewer = current_viewer
         @fetch_db_size = fetch_db_size
+        @fetch_basemaps = fetch_basemaps
+        @fetch_profile = fetch_profile
       end
 
       def to_poro
@@ -32,6 +39,7 @@ module Carto
           disqus_shortname:           @user.disqus_shortname,
           available_for_hire:         @user.available_for_hire,
           base_url:                   @user.public_url,
+          google_maps_query_string:   @user.google_maps_query_string,
           quota_in_bytes:             @user.quota_in_bytes,
           table_count:                @user.table_count,
           viewer:                     @user.viewer?,
@@ -46,7 +54,16 @@ module Carto
           poro[:groups] = @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         end
 
+        poro[:basemaps] = @user.basemaps if fetch_basemaps
+
         poro[:db_size_in_bytes] = @user.db_size_in_bytes if fetch_db_size
+
+        if fetch_profile
+          poro[:industry] = @user.industry
+          poro[:company]  = @user.company
+          poro[:phone]    = @user.phone
+          poro[:job_role] = @user.job_role
+        end
 
         poro
       end
@@ -70,6 +87,7 @@ module Carto
           last_name:        @user.last_name,
           avatar_url:       @user.avatar_url,
           base_url:         @user.public_url,
+          google_maps_query_string: @user.google_maps_query_string,
           disqus_shortname: @user.disqus_shortname,
           viewer:           @user.viewer?,
           org_admin:        @user.organization_admin?,
@@ -97,12 +115,18 @@ module Carto
           email: @user.email,
           name: @user.name,
           last_name: @user.last_name,
+          created_at: @user.created_at,
           username: @user.username,
+          state: @user.state,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
+          industry: @user.industry,
+          company: @user.company,
+          phone: @user.phone,
+          job_role: @user.job_role,
           org_admin: @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           owned_visualization_count: @user.owned_visualization_count,
@@ -154,12 +178,13 @@ module Carto
             hard_limit:  @user.hard_obs_general_limit?
           },
           twitter: {
-            enabled:     @user.organization_user? ? @user.organization.twitter_datasource_enabled         : @user.twitter_datasource_enabled,
+            enabled:     @user.twitter_datasource_enabled,
             quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,
             block_price: @user.organization_user? ? @user.organization.twitter_datasource_block_price     : @user.twitter_datasource_block_price,
             block_size:  @user.organization_user? ? @user.organization.twitter_datasource_block_size      : @user.twitter_datasource_block_size,
             monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
-            hard_limit:  @user.hard_twitter_datasource_limit
+            hard_limit:  @user.hard_twitter_datasource_limit,
+            customized_config: CartoDB::Datasources::DatasourcesFactory.customized_config?(CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME, @user)
           },
           salesforce: {
             enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
@@ -208,6 +233,10 @@ module Carto
           location: @user.location
         }
 
+        if @user.google_maps_geocoder_enabled? && (!@user.organization.present? || @user.organization_owner?)
+          data[:google_maps_private_key] = @user.google_maps_private_key
+        end
+
         if @user.organization.present?
           data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro
           data[:organization][:available_quota_for_user] = @user.organization.unassigned_quota + @user.quota_in_bytes
@@ -241,7 +270,7 @@ module Carto
 
       private
 
-      attr_reader :current_viewer, :current_user, :fetch_groups, :fetch_db_size
+      attr_reader :current_viewer, :current_user, :fetch_groups, :fetch_db_size, :fetch_basemaps, :fetch_profile
 
       def failed_import_count
         Carto::DataImport.where(user_id: @user.id, state: 'failure').count

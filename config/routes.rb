@@ -14,7 +14,9 @@ CartoDB::Application.routes.draw do
   root to: 'admin/pages#index'
 
   get   '/signup'           => 'signup#signup',     as: :signup
-  post  '/signup'           => 'signup#create',  as: :signup_organization_user
+  post  '/signup'           => 'signup#create',     as: :signup_organization_user
+  get   '(/user/:user_domain)(/u/:user_domain)/signup' => 'signup#signup', as: :signup_subdomainless
+  post  '(/user/:user_domain)(/u/:user_domain)/signup' => 'signup#create',  as: :signup_subdomainless_organization_user
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication' => 'signup#create_http_authentication', as: :signup_http_authentication
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication_in_progress' => 'signup#create_http_authentication_in_progress', as: :signup_http_authentication_in_progress
 
@@ -28,6 +30,9 @@ CartoDB::Application.routes.draw do
 
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
+
+  # Password change
+  resources :password_change, only: [:edit, :update]
 
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
@@ -61,6 +66,8 @@ CartoDB::Application.routes.draw do
         end
       end
 
+      match '/builder/:id/*other', to: 'visualizations#show', via: :get
+
       resources :datasets, path: '/dataset', only: :show, constraints: { id: /[0-z\.\-]+/ }
     end
 
@@ -73,6 +80,11 @@ CartoDB::Application.routes.draw do
     get '/github' => 'oauth_login#github', as: :github
     get '/google/oauth' => 'oauth_login#google', as: :google_oauth
     get '/saml/metadata' => 'saml#metadata'
+
+    # Oauth2 provider
+    get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
+    post '/oauth2/authorize', to: 'oauth_provider#authorize'
+    post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -82,13 +94,13 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
     delete '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#destroy',          as: :organization_destroy
     get    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update, via: [:put, :patch]
     post '(/user/:user_domain)(/u/:user_domain)/organization/regenerate_api_keys'       => 'organizations#regenerate_all_api_keys', as: :regenerate_organization_users_api_key
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/groups(/*other)' => 'organizations#groups',          as: :organization_groups
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth',        as: :organization_auth
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update, via: [:put, :patch]
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#notifications',          as: :organization_notifications_admin
     post   '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#new_notification',          as: :new_organization_notification_admin
@@ -96,7 +108,7 @@ CartoDB::Application.routes.draw do
 
     # Organization users management
     get '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
-    put '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    match '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }, via: [:put, :patch]
     get '(/user/:user_domain)(/u/:user_domain)/organization/users'                 => 'organizations#show',            as: :organization_users
     post '(/user/:user_domain)(/u/:user_domain)/organization/users'           => 'organization_users#create',  as: :create_organization_user
     delete '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
@@ -105,11 +117,10 @@ CartoDB::Application.routes.draw do
 
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
-    put    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile_update', as: :profile_update_user
     get    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account',        as: :account_user
-    delete '(/user/:user_domain)(/u/:user_domain)/account' => 'users#delete',        as: :account_delete_user
-    put    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account_update', as: :account_update_user
-    delete '(/user/:user_domain)(/u/:user_domain)/account/:id' => 'users#delete', as: :delete_user
+
+    # Lockout
+    get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
 
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
@@ -528,6 +539,7 @@ CartoDB::Application.routes.draw do
     resources :organizations
     resources :synchronizations
     resources :feature_flags
+    resources :account_types, only: [:create, :update, :destroy]
   end
 
   scope module: 'carto' do
@@ -546,6 +558,7 @@ CartoDB::Application.routes.draw do
 
   scope module: 'superadmin', defaults: { format: :json } do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
+    get '/superadmin/database_validation' => 'platform#database_validation'
     get '/superadmin/stats/total_users' => 'platform#total_users'
     get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'
     get '/superadmin/stats/total_datasets' => 'platform#total_datasets'
@@ -560,11 +573,20 @@ CartoDB::Application.routes.draw do
   UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
+    scope 'v4/', module: 'public' do
+      # This scope is intended for public APIs that only authenticate via API Key and have CORS enabled
+      match '*path', via: [:OPTIONS], to: 'application#options'
+
+      get 'me', to: 'users#me_public', as: :api_v4_users_me
+    end
+
     scope 'v3/' do
       # Front/back split
       get 'me' => 'users#me', as: :api_v3_users_me
       put 'me' => 'users#update_me', as: :api_v3_users_update_me
       delete 'me' => 'users#delete_me', as: :api_v3_users_delete_me
+
+      put 'maps/:map_id/widgets' => 'widgets#update_many', as: :api_v3_maps_layers_update_many_widgets
 
       scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
@@ -575,6 +597,11 @@ CartoDB::Application.routes.draw do
       end
 
       resource :metrics, only: [:create]
+
+      resources :api_keys, only: [:create, :destroy, :index, :show], constraints: { id: /[^\/]+/ }
+      scope 'api_keys/:id/token' do
+        post 'regenerate' => 'api_keys#regenerate_token', as: :regenerate_api_key_token
+      end
 
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }

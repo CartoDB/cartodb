@@ -8,15 +8,17 @@ module CartoDB
     CARTODB_REV = nil
   end
 
-  DEFAULT_DB_SCHEMA = 'public'
-  PUBLIC_DB_USER  = 'publicuser'
-  PUBLIC_DB_USER_PASSWORD  = 'publicuser'
-  TILE_DB_USER    = 'tileuser'
-  SRID            = 4326
+  DEFAULT_DB_SCHEMA = 'public'.freeze
+  PUBLIC_DB_USER = 'publicuser'.freeze
+  PUBLIC_DB_USER_PASSWORD = 'publicuser'.freeze
+  TILE_DB_USER = 'tileuser'.freeze
+  PG_ADMIN_USER = 'postgres'.freeze
+  SYSTEM_DB_USERS = [PG_ADMIN_USER, TILE_DB_USER, PUBLIC_DB_USER].freeze
+  SRID = 4326
 
-  SURROGATE_NAMESPACE_VISUALIZATION = 'rv'
-  SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'
-  SURROGATE_NAMESPACE_VIZJSON = 'rj'
+  SURROGATE_NAMESPACE_VISUALIZATION = 'rv'.freeze
+  SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'.freeze
+  SURROGATE_NAMESPACE_VIZJSON = 'rj'.freeze
 
   RESERVED_COLUMN_NAMES = %w(FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
 
@@ -42,14 +44,11 @@ module CartoDB
   # @param request A request to extract subdomain and parameters from
   # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
   def self.base_url_from_request(request, user = nil)
-    if user.nil?
-      subdomain = extract_subdomain(request)
-      org_username = nil
-    else
-      subdomain = user.subdomain
-      org_username = organization_username(user)
-    end
-    CartoDB.base_url(subdomain, org_username)
+    user ? base_url_from_user(user) : CartoDB.base_url(extract_subdomain(request), nil)
+  end
+
+  def self.base_url_from_user(user)
+    CartoDB.base_url(user.subdomain, organization_username(user))
   end
 
   # Helper method to encapsulate Rails URL path generation compatible with our subdomainless mode
@@ -76,7 +75,12 @@ module CartoDB
 
   # Raw subdomain extraction from request
   def self.subdomain_from_request(request)
-    self.subdomainless_urls? ? '' : request.host.to_s.gsub(self.session_domain, '')
+    if subdomainless_urls?
+      ''
+    else
+      host = request.host.to_s
+      host.end_with?(session_domain) ? host.gsub(session_domain, '') : ''
+    end
   end
 
   # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.carto.com)
@@ -280,5 +284,26 @@ module CartoDB
     uri.to_s
   rescue
     nil
+  end
+
+  def self.unformatted_logger(log_file_path)
+    logger = ::Logger.new(log_file_path)
+    logger.formatter = proc do |_severity, _datetime, _progname, msg|
+      "#{logger_msg2str(msg)}\n"
+    end
+    logger
+  end
+
+  # Taken from /usr/lib/ruby/2.2.0/logger.rb (msg2str) to mimic standard Logger behaviour
+  def self.logger_msg2str(msg)
+    case msg
+    when ::String
+      msg
+    when ::Exception
+      "#{msg.message} (#{msg.class})\n" <<
+        (msg.backtrace || []).join("\n")
+    else
+      msg.inspect
+    end
   end
 end

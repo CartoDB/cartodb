@@ -27,6 +27,7 @@ module CartoDB
       class TokenExpiredOrInvalidError  < AuthError; end
       class InvalidServiceError         < DatasourceBaseError; end
       class DataDownloadError           < DatasourceBaseError; end
+      class UnsupportedOperationError   < DatasourceBaseError; end
       class NotFoundDownloadError       < DatasourceBaseError; end
       class MissingConfigurationError   < DatasourceBaseError; end
       class UninitializedError          < DatasourceBaseError; end
@@ -49,6 +50,12 @@ module CartoDB
       class DataDownloadTimeoutError < DatasourceBaseError
         def initialize(service = UNKNOWN_SERVICE, username = nil)
           super("Data download timed out. Check the source is not running slow and/or try again.", service, username)
+        end
+      end
+
+      class ExternalServiceTimeoutError < DatasourceBaseError
+        def initialize(service = UNKNOWN_SERVICE, username = nil)
+          super("External service timed out. Check the source is not running slow and/or try again.", service, username)
         end
       end
 

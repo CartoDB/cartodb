@@ -32,7 +32,7 @@ module Carto
       end
 
       def logger
-        @@logger ||= Logger.new(log_file_path('http_client.log'))
+        @@logger ||= CartoDB.unformatted_logger(log_file_path('http_client.log'))
       end
     end
 

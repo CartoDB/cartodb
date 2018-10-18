@@ -1,4 +1,7 @@
+require_dependency 'google_plus_api'
+require_dependency 'google_plus_config'
 require_relative '../../helpers/avatar_helper'
+require_dependency 'carto/controller_helper'
 
 module Carto
   module Api
@@ -9,20 +12,24 @@ module Carto
       include SqlApiHelper
       include CartoDB::ConfigUtils
       include FrontendConfigHelper
-      include AvatarHelper
       include AccountTypeHelper
+      include AvatarHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
-        :disqus_shortname, :available_for_hire
+        :disqus_shortname, :available_for_hire, :company, :industry, :phone, :job_role
       ].freeze
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
-      ssl_required :show, :me, :update_me, :delete_me, :get_authenticated_users
+      ssl_required
 
-      before_filter :optional_api_authorization, only: [:me]
-      skip_before_filter :api_authorization_required, only: [:me, :get_authenticated_users]
+      before_action :initialize_google_plus_config, only: [:me]
+      before_action :optional_api_authorization, only: [:me]
+      before_action :any_api_authorization_required, only: [:me_public]
+      before_action :recalculate_user_db_size, only: [:me]
+      skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
+      skip_before_action :check_user_state, only: [:me, :delete_me]
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
@@ -33,12 +40,14 @@ module Carto
 
         cant_be_deleted_reason = carto_viewer.try(:cant_be_deleted_reason)
         can_be_deleted = carto_viewer.present? ? cant_be_deleted_reason.nil? : nil
+        viewer_organization_notifications = carto_viewer ? organization_notifications(carto_viewer) : []
 
         render json: {
           user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
           default_fallback_basemap: carto_viewer.try(:default_basemap),
           config: frontend_config_hash(current_viewer),
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
+          organization_notifications: viewer_organization_notifications,
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
           can_change_email: carto_viewer.try(:can_change_email?),
@@ -51,7 +60,10 @@ module Carto
           cant_be_deleted_reason: cant_be_deleted_reason,
           services: carto_viewer.try(:get_oauth_services),
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
-          asset_host: carto_viewer.try(:asset_host)
+          asset_host: carto_viewer.try(:asset_host),
+          google_sign_in: carto_viewer.try(:google_sign_in),
+          google_plus_iframe_src: carto_viewer.present? ? google_plus_iframe_src : nil,
+          google_plus_client_id: carto_viewer.present? ? google_plus_client_id : nil
         }
       end
 
@@ -61,6 +73,11 @@ module Carto
         attributes = params[:user]
 
         if attributes.present?
+          unless password_change?(user, attributes) ||
+                 user.valid_password_confirmation(attributes[:password_confirmation])
+            raise Carto::PasswordConfirmationError.new
+          end
+
           update_password_if_needed(user, attributes)
 
           if user.can_change_email? && attributes[:email].present?
@@ -75,7 +92,7 @@ module Carto
 
           user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
 
-          raise Sequel::ValidationFailed.new('Validation failed') unless user.valid?
+          raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
           user.update_in_central
           user.save(raise_on_failure: true)
         end
@@ -86,6 +103,8 @@ module Carto
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
       rescue Sequel::ValidationFailed
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
+      rescue Carto::PasswordConfirmationError
+        render_jsonp({ message: "Error updating your account details", errors: user.errors }, 403)
       end
 
       def delete_me
@@ -97,8 +116,7 @@ module Carto
           render_jsonp({ message: "Error deleting user: #{PASSWORD_DOES_NOT_MATCH_MESSAGE}" }, 400) and return
         end
 
-        user.destroy
-        user.delete_in_central
+        user.destroy_account
 
         render_jsonp({ logout_url: logout_url }, 200)
       rescue CartoDB::CentralCommunicationFailure => e
@@ -131,6 +149,23 @@ module Carto
       end
 
       private
+
+      def google_plus_iframe_src
+        @google_plus_config.present? ? @google_plus_config.iframe_src : nil
+      end
+
+      def google_plus_client_id
+        @google_plus_config.present? ? @google_plus_config.client_id : nil
+      end
+
+      def organization_notifications(carto_viewer)
+        carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
+      end
+
+      def initialize_google_plus_config
+        signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
+        @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+      end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil
@@ -185,10 +220,7 @@ module Carto
       end
 
       def update_password_if_needed(user, attributes)
-        password_change = (attributes[:new_password].present? || attributes[:confirm_password].present?) &&
-                          user.can_change_password?
-
-        if password_change
+        if password_change?(user, attributes)
           user.change_password(
             attributes[:old_password],
             attributes[:new_password],
@@ -197,6 +229,14 @@ module Carto
 
           update_session_security_token(user)
         end
+      end
+
+      def password_change?(user, attributes)
+        (attributes[:new_password].present? || attributes[:confirm_password].present?) && user.can_change_password?
+      end
+
+      def recalculate_user_db_size
+        current_user && Carto::UserDbSizeCache.new.update_if_old(current_user)
       end
     end
   end

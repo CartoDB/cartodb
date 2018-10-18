@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <%= favicon_link_tag "favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
     <meta name="keywords" content="<%= @visualization.name.gsub(/ /,", ").gsub(/_/,", ") %>, datasets, maps, data visualization, spatial data, geospatial, CARTO">
@@ -23,17 +23,19 @@
     <% end %>
     <meta property="article:publisher" content="https://www.facebook.com/cartodb" />
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@cartodb">
+    <meta name="twitter:site" content="@CARTO">
     <% unless @twitter_username.nil? %>
-      <meta name="twitter:creator" "@#{@twitter_username}" ">
+      <meta name="twitter:creator" "@#{@twitter_username}">
     <% end %>
     <meta name="twitter:title" content="<%= yield :title %>">
     <meta name="twitter:description" content="<%= yield :description %>">
     <meta name="twitter:image" content="<%= yield :twitter_card %>">
 
     <%= yield :css %>
+    <%= insert_google_tag_manager('embeds') %>
   </head>
   <body class="<%= yield :body_class %>">
+    <%= insert_google_tag_manager_no_script('embeds') %>
     <%= yield :content %>
     <%= yield :js %>
   </body>

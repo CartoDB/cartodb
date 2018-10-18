@@ -8,6 +8,7 @@ module CartoDB
       STATEMENT_TIMEOUT = (1.hour * 1000).freeze
       DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze
+      OVERWRITE_ERROR = 2013
 
       attr_accessor :table
 
@@ -23,6 +24,7 @@ module CartoDB
           overviews_creator: overviews_creator,
           log: runner.log
         )
+        @error_code = nil
       end
 
       def run(&tracker)
@@ -78,12 +80,13 @@ module CartoDB
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
       rescue => exception
+        @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 
         # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
         result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
                                                             .compact.to_h
-        CartoDB::Logger.error(message: 'Error in sync cartodbfy',
+        CartoDB::Logger.error(message: 'Error in sync overwrite',
                               exception: exception,
                               user: user,
                               table: table_name,
@@ -188,16 +191,9 @@ module CartoDB
           # In that case:
           #  - If cartodb_id already exists, remove ogc_fid
           #  - If cartodb_id does not exist, treat this field as the auxiliary column
-          aux_cartodb_id_column = user_database[%Q{
-            SELECT a.attname, t.typname
-            FROM pg_attribute a, pg_type t
-            WHERE attrelid = '#{qualified_table_name}'::regclass
-            AND (a.attname = 'ogc_fid' OR a.attname = 'gid')
-            AND a.atttypid = t.oid
-            AND a.attstattarget < 0
-            LIMIT 1
-          }].first
-          aux_cartodb_id_column = aux_cartodb_id_column[:attname] unless aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = [:ogc_fid, :gid].find do |col|
+            valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col)
+          end
 
           # Remove primary key
           existing_pk = user_database[%Q{
@@ -283,8 +279,6 @@ module CartoDB
 
       def drop(table_name)
         database.execute(%Q(DROP TABLE "#{user.database_schema}"."#{table_name}"))
-      rescue
-        self
       end
 
       def exists?(table_name)
@@ -296,7 +290,7 @@ module CartoDB
       end
 
       def error_code
-        runner.results.map(&:error_code).compact.first
+        @error_code || runner.results.map(&:error_code).compact.first
       end
 
       def runner_log_trace
@@ -312,6 +306,25 @@ module CartoDB
       end
 
       private
+
+      def valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col_name)
+        return false unless column_names(user, table_name).include?(col_name)
+        user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
+          return db["SELECT 1 FROM #{qualified_table_name} WHERE #{col_name} IS NULL LIMIT 1"].first.nil?
+        end
+      end
+
+      def column_names(user, table_name)
+        user.in_database.schema(table_name, schema: user.database_schema).map { |row| row[0] }
+      rescue => e
+        CartoDB::Logger.error(
+          message: 'Error in column_names from sync adapter',
+          exception: e,
+          user: user,
+          table: table_name
+        )
+        []
+      end
 
       attr_reader :table_name, :runner, :database, :user
     end

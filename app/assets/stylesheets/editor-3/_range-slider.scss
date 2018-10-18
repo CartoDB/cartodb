@@ -1,4 +1,3 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
@@ -11,6 +10,7 @@
   position: relative;
 
   &::before {
+    content: '';
     position: absolute;
     top: 2px;
     left: 0;
@@ -19,7 +19,6 @@
     border-width: 4px 160px 4px 0;
     border-style: solid;
     border-color: transparent #EEE transparent transparent;
-    content: '';
     cursor: pointer;
   }
 }
@@ -36,8 +35,8 @@
 }
 
 .rangeslider--disabled {
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);
   opacity: 0.4;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);
 
   &::before {
     cursor: not-allowed;
@@ -64,19 +63,19 @@
 }
 
 .rangesliderHandle {
-  @include transition(transform 200ms);
   position: absolute;
+  z-index: 3;
   top: 0;
   left: 1px;
   width: 10px;
   height: 10px;
   margin-top: -5px;
+  transition: transform 200ms;
   border: 1px solid $cBlue;
   border-radius: 50%;
   outline: none;
   background: #FFF;
   cursor: pointer;
-  z-index: 3;
 
   &:hover {
     transform: scale(1.5);
@@ -94,14 +93,14 @@
 
 .rangeslider--horizontal .rangesliderHandle {
   top: 5px;
-  touch-action: pan-y;
   -ms-touch-action: pan-y;
+  touch-action: pan-y;
 }
 
 .rangeslider--vertical .rangesliderHandle {
   left: -10px;
-  touch-action: pan-x;
   -ms-touch-action: pan-x;
+  touch-action: pan-x;
 }
 
 .rangeslider-label {

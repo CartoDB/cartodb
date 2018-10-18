@@ -141,7 +141,7 @@ class Layer < Sequel::Model
   end
 
   def supports_labels_layer?
-    basemap? && options["labels"] && options["labels"]["url"]
+    basemap? && options["labels"] && options["labels"]["urlTemplate"]
   end
 
   def register_table_dependencies(db=SequelRails.connection)

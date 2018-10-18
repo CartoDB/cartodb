@@ -100,6 +100,7 @@ shared_examples_for 'Layer model' do
       layer = layer_class.create(kind: 'carto')
       after = layer.updated_at
       Delorean.jump(1.minute)
+      layer.options[:query] = 'SELECT * FROM arbitrary_change'
       layer.save
       after.should < layer.updated_at
       Delorean.back_to_the_present
@@ -211,7 +212,8 @@ shared_examples_for 'Layer model' do
       layer = layer_class.create(kind: 'carto')
       add_layer_to_entity(map, layer)
 
-      map.class.any_instance.expects(:notify_map_change)
+      # TODO: should be once
+      map.class.any_instance.expects(:notify_map_change).at_least_once
       layer.destroy
     end
 

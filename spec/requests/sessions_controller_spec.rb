@@ -313,6 +313,9 @@ describe SessionsController do
     end
 
     it "authenticates users with casing differences in email" do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
       Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email.upcase)
 
@@ -491,42 +494,43 @@ describe SessionsController do
         post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
         response.status.should == 302
       end
-    end
 
-    it 'redirects to dashboard if `return_to` url is not present' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
-      response.status.should == 302
-      response.headers['Location'].should include '/dashboard'
-    end
+      it 'redirects to dashboard if `return_to` url is not present' do
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        response.status.should == 302
+        response.headers['Location'].should include '/dashboard'
+      end
 
-    it 'redirects to the `return_to` url if present' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      get api_key_credentials_url(user_domain: @user.username)
-      cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
-      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
-      response.status.should == 302
-      response.headers['Location'].should include '/your_apps'
-    end
+      it 'redirects to the `return_to` url if present' do
+        get api_key_credentials_url(user_domain: @user.username)
+        cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        response.status.should == 302
+        response.headers['Location'].should include '/your_apps'
+      end
 
-    it 'redirects to current viewer dashboard if the `return_to` dashboard url belongs to other user' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
-      cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
-      get login_url(user_domain: 'wadus_user')
-      response.headers['Location'].should include @user.username
-      response.headers['Location'].should include "/dashboard"
-    end
+      it 'redirects to current viewer dashboard if the `return_to` dashboard url belongs to other user' do
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+        get login_url(user_domain: 'wadus_user')
+        response.headers['Location'].should include @user.username
+        response.headers['Location'].should include "/dashboard"
+      end
 
-    it 'redirects to the `return_to` only once url if present' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      get api_key_credentials_url(user_domain: @user.username)
+      it 'redirects to the `return_to` only once url if present' do
+        get api_key_credentials_url(user_domain: @user.username)
 
-      cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
-      post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
-      response.status.should == 302
-      response.headers['Location'].should include '/your_apps'
-      Marshal.dump(Base64.decode64(response.cookies["_cartodb_session"]))['return_to'].should be_nil
+        cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        response.status.should == 302
+        response.headers['Location'].should include '/your_apps'
+        Marshal.dump(Base64.decode64(response.cookies["_cartodb_session"]))['return_to'].should be_nil
+      end
+
+      it 'creates _cartodb_base_url cookie' do
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        response.cookies['_cartodb_base_url'].should eq CartoDB.base_url(@user.username)
+      end
     end
 
     describe 'events' do
@@ -617,6 +621,18 @@ describe SessionsController do
       before(:each) do
         stub_subdomainless
       end
+    end
+  end
+
+  describe '#destroy' do
+    it 'deletes the _cartodb_base_url cookie' do
+      @user = FactoryGirl.create(:carto_user)
+      login_as(@user, scope: @user.username)
+      host! "localhost.lan"
+
+      cookies['_cartodb_base_url'] = 'prra-prra'
+      get CartoDB.base_url(@user.username) + logout_path
+      cookies['_cartodb_base_url'].should be_empty
     end
   end
 

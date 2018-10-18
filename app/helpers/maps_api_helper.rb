@@ -1,10 +1,14 @@
 module MapsApiHelper
-  def maps_api_template(privacy="private")
+  def maps_api_template(privacy = 'private')
+    maps_api_url('{user}', privacy)
+  end
+
+  def maps_api_url(username, privacy = "private")
     maps_api = Cartodb.config[:tiler][privacy]
     if CartoDB.subdomainless_urls?
-      maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"].to_s + "/user/{user}"
+      maps_api["protocol"] + "://" + maps_api["domain"] + ":" + maps_api["port"].to_s + "/user/#{username}"
     else
-      maps_api["protocol"] + "://{user}." + maps_api["domain"] + ":" + maps_api["port"].to_s
+      maps_api["protocol"] + "://#{username}." + maps_api["domain"] + ":" + maps_api["port"].to_s
     end
   end
 end

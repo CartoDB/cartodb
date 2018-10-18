@@ -2,8 +2,10 @@ var _ = require('underscore');
 var timer = require('grunt-timer');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
+var execSync = require('child_process').execSync;
 var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
 var webpackTask = null;
+var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
 
 var REQUIRED_NODE_VERSION = '6.9.2';
 var REQUIRED_NPM_VERSION = '3.10.9';
@@ -14,7 +16,7 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
-  'cartodb.js',
+  'internal-carto.js',
   'cartocolor',
   'd3',
   'jquery',
@@ -23,6 +25,12 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'torque.js',
   'turbo-carto'
 ];
+
+// Synchronously check if editor assets have changed
+var diff = execSync('git diff --numstat $(git rev-list --tags --skip=1  --max-count=1) -- $(git symbolic-ref --short HEAD) config/editor_assets_version.json', {
+  cwd: __dirname
+});
+var EDITOR_ASSETS_CHANGED = diff.toString().length > 0;
 
 function requireWebpackTask () {
   if (webpackTask === null) {
@@ -107,8 +115,10 @@ module.exports = function (grunt) {
     process.exit(1);
   }
 
+  var PUBLIC_DIR = './public/';
   var ROOT_ASSETS_DIR = './public/assets/';
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';
+  var EDITOR_ASSETS_DIR = `./public/assets/editor/${EDITOR_ASSETS_VERSION}`;
 
   /**
    * this is being used by `grunt --environment=production release`
@@ -135,7 +145,10 @@ module.exports = function (grunt) {
     aws: aws,
     env: env,
 
+    public_dir: PUBLIC_DIR,
     assets_dir: ASSETS_DIR,
+    editor_assets_dir: EDITOR_ASSETS_DIR,
+    editor_assets_version: EDITOR_ASSETS_VERSION,
     root_assets_dir: ROOT_ASSETS_DIR,
 
     // Concat task
@@ -157,6 +170,9 @@ module.exports = function (grunt) {
     clean: require('./lib/build/tasks/clean').task(),
 
     jasmine: jasmineCfg,
+
+    // Create a tarball of the static pages for production release
+    compress: require('./lib/build/tasks/compress.js').task(),
 
     s3: require('./lib/build/tasks/s3.js').task(),
 
@@ -235,55 +251,36 @@ module.exports = function (grunt) {
 
   grunt.event.on('watch', function (action, filepath, subtask) {
     // Configure copy vendor to only run on changed file
-    var cfg = grunt.config.get('copy.vendor');
-    if (filepath.indexOf(cfg.cwd) !== -1) {
-      grunt.config('copy.vendor.src', filepath.replace(cfg.cwd, ''));
+    var vendorFile = 'copy.vendor';
+    var vendorFileCfg = grunt.config.get(vendorFile);
+
+    if (filepath.indexOf(vendorFileCfg.cwd) !== -1) {
+      grunt.config(vendorFile + '.src', filepath.replace(vendorFileCfg.cwd, ''));
     } else {
-      grunt.config('copy.vendor.src', []);
+      grunt.config(vendorFile + 'src', []);
     }
 
-    var builderFiles = [
-      'js_cartodb3',
-      'js_test_cartodb3'
-    ];
-    var otherFiles = [
-      'app',
-      'js_cartodb'
-    ];
+    // Configure copy app to only run on changed files
+    var files = 'copy.app.files';
+    var filesCfg = grunt.config.get(files);
 
-    var COPY_PATHS = [];
-    if (subtask === 'js_affected') {
-      COPY_PATHS = COPY_PATHS.concat(builderFiles);
-    } else {
-      COPY_PATHS = COPY_PATHS.concat(otherFiles).concat(builderFiles);
-    }
+    for (var i = 0, l = filesCfg.length; i < l; ++i) {
+      var file = files + '.' + i;
+      var fileCfg = grunt.config.get(file);
 
-    // Configure copy paths to only run on changed files
-    for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
-      var files = 'copy.' + COPY_PATHS[j] + '.files';
-      var filesCfg = grunt.config.get(files);
-
-      for (var i = 0, l = filesCfg.length; i < l; ++i) {
-        var file = files + '.' + i;
-        var fileCfg = grunt.config.get(file);
-
-        if (filepath.indexOf(fileCfg.cwd) !== -1) {
-          grunt.config(file + '.src', filepath.replace(fileCfg.cwd, ''));
-        } else {
-          grunt.config(file + '.src', []);
-        }
+      if (filepath.indexOf(fileCfg.cwd) !== -1) {
+        grunt.config(file + '.src', filepath.replace(fileCfg.cwd, ''));
+      } else {
+        grunt.config(file + '.src', []);
       }
     }
   });
 
-  // TODO: migrate mixins to postcss
   grunt.registerTask('css', [
     'copy:vendor',
     'copy:app',
     'copy:css_cartodb',
     'compass',
-    'copy:css_vendor_cartodb3',
-    'copy:css_cartodb3',
     'sass',
     'concat:css'
   ]);
@@ -303,7 +300,7 @@ module.exports = function (grunt) {
     grunt.task.run('browserify');
   });
 
-  grunt.registerTask('cdb', 'build Cartodb.js', function () {
+  grunt.registerTask('cdb', 'build cartodb.js', function () {
     var done = this.async();
 
     require('child_process').exec('make update_cdb', function (error, stdout, stderr) {
@@ -318,51 +315,45 @@ module.exports = function (grunt) {
 
   grunt.registerTask('js_editor', [
     'cdb',
-    'copy:js_cartodb',
     'setConfig:env.browserify_watch:true',
+    'npm-carto-node',
     'run_browserify',
     'concat:js',
     'jst'
   ]);
 
-  grunt.registerTask('js_builder', [
-    'copy:locale',
-    'copy:js_cartodb3',
-    'copy:js_test_cartodb3'
-  ]);
-
-  grunt.registerTask('js', [
-    'js_editor',
-    'js_builder'
-  ]);
-
   grunt.registerTask('beforeDefault', [
-    'clean',
     'config'
   ]);
 
-  grunt.registerTask('pre', [
+  grunt.registerTask('dev-editor', [
     'beforeDefault',
-    'js',
+    'js_editor',
     'css',
     'manifest'
   ]);
 
-  registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
+  registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
+  registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
+  registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
+  registerCmdTask('npm-build-dev', {cmd: 'npm', args: ['run', 'build:dev']});
 
   /**
    * `grunt dev`
    */
 
-  grunt.registerTask('dev', [
-    'pre',
-    'npm-start'
+  grunt.registerTask('editor', [
+    'build-static',
+    'npm-build-dev',
+    'dev-editor',
+    'watch:css'
   ]);
 
   grunt.registerTask('default', [
-    'pre',
-    'npm-dev'
+    'build-static',
+    'npm-build-dev',
+    'dev-editor'
   ]);
 
   grunt.registerTask('lint', [
@@ -378,14 +369,24 @@ module.exports = function (grunt) {
     'uglify'
   ]);
 
-  registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
+  // -- BUILD TASKS
 
-  grunt.registerTask('build', [
-    'pre',
+  grunt.registerTask('build', 'build editor, builder, dashboard and static pages', [
+    'build-editor',
+    'build-static',
+    'npm-build'
+  ]);
+
+  grunt.registerTask('build-editor', 'generate editor css and javasript files', [
+    'dev-editor',
     'copy:js',
     'exorcise',
-    'uglify',
-    'npm-build'
+    'uglify'
+  ]);
+
+  grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [
+    'npm-carto-node',
+    'npm-build-static'
   ]);
 
   /**
@@ -394,66 +395,101 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('release', [
     'check_release',
-    'build',
-    's3',
+    'build-static',
+    'npm-build',
+    'compress',
+    's3:js',
+    's3:css',
+    's3:images',
+    's3:fonts',
+    's3:flash',
+    's3:favicons',
+    's3:unversioned',
+    's3:static_pages',
     'invalidate'
   ]);
 
-  grunt.registerTask('affected', 'Generate only affected specs', function (option) {
+  grunt.registerTask('release_editor_assets', 'builds & uploads editor assets', [
+    'build-editor',
+    's3:frozen',
+    'invalidate'
+  ]);
+
+  grunt.registerTask('generate_builder_specs', 'Generate only builder specs', function (option) {
     requireWebpackTask().affected.call(this, option, grunt);
+  });
+
+  grunt.registerTask('generate_dashboard_specs', 'Generate only dashboard specs', function (option) {
+    requireWebpackTask().dashboard.call(this, option, grunt);
   });
 
   grunt.registerTask('bootstrap_webpack_builder_specs', 'Create the webpack compiler', function () {
     requireWebpackTask().bootstrap.call(this, 'builder_specs', grunt);
   });
 
+  grunt.registerTask('bootstrap_webpack_dashboard_specs', 'Create the webpack compiler', function () {
+    requireWebpackTask().bootstrap.call(this, 'dashboard_specs', grunt);
+  });
+
   grunt.registerTask('webpack:builder_specs', 'Webpack compilation task for builder specs', function () {
     requireWebpackTask().compile.call(this, 'builder_specs');
   });
 
+  grunt.registerTask('webpack:dashboard_specs', 'Webpack compilation task for dashboard specs', function () {
+    requireWebpackTask().compile.call(this, 'dashboard_specs');
+  });
+
+  var testTasks = [
+    'connect:test',
+    'beforeDefault',
+    'generate_builder_specs',
+    'bootstrap_webpack_builder_specs',
+    'webpack:builder_specs',
+    'jasmine:builder',
+    'generate_dashboard_specs',
+    'bootstrap_webpack_dashboard_specs',
+    'webpack:dashboard_specs',
+    'jasmine:dashboard',
+    'lint'
+  ];
+
+  // If the editor assets version has changed, add the editor tests
+  if (EDITOR_ASSETS_CHANGED) {
+    testTasks.splice(testTasks.indexOf('generate_builder_specs'), 0, 'js_editor', 'jasmine:cartodbui');
+  }
+
   /**
    * `grunt test`
    */
-  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
-    'connect:test',
-    'beforeDefault',
-    'js_editor',
-    'jasmine:cartodbui',
-    'js_builder',
-    'affected:all',
+  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', testTasks);
+
+  /**
+   * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.
+   */
+  grunt.registerTask('test:browser:builder', 'Build all Builder specs', [
+    'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
-    'jasmine:affected',
-    'lint'
+    'jasmine:builder:build',
+    'connect:specs_builder',
+    'watch:js_affected'
   ]);
 
   /**
-   * `grunt affected_specs` compile Builder specs using only affected ones by the current branch.
-   * `grunt affected_specs --specs=all` compile all Builder specs.
+   * `grunt dashboard_specs` compile dashboard specs
    */
-  grunt.registerTask('affected_specs', 'Build only specs affected by changes in current branch', [
-    'js_builder',
-    'affected',
-    'bootstrap_webpack_builder_specs',
-    'webpack:builder_specs',
-    'jasmine:affected:build',
-    'connect:specs',
-    'watch:js_affected'
+  grunt.registerTask('test:browser:dashboard', 'Build only dashboard specs', [
+    'generate_dashboard_specs',
+    'bootstrap_webpack_dashboard_specs',
+    'webpack:dashboard_specs',
+    'jasmine:dashboard:build',
+    'connect:specs_dashboard',
+    'watch:dashboard_specs'
   ]);
 
   grunt.registerTask('setConfig', 'Set a config property', function (name, val) {
     grunt.config.set(name, val);
   });
-
-  /**
-   * `grunt editor_specs`
-   */
-  grunt.registerTask('editor_specs', [
-    'js_editor',
-    'jasmine:cartodbui:build',
-    'connect:server',
-    'watch:js_affected_editor'
-  ]);
 
   /**
    * `grunt affected_editor_specs` compile all Editor specs and launch a webpage in the browser.

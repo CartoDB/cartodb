@@ -1,312 +1,366 @@
 
-  /*
+/*
    * Front pages of CartoDB
    * - Login, 404, 500, 403, 422, 500, html5, no_javascript,...
    */
 
+@import "compass/css3/images";
+@import "../old_common/mixins";
+@import "../old_common/fonts";
+@import "../old_common/buttons";
+@import "../old_common/vars";
+@import "../old_common/common-sprite";
+@import "../front/front-sprite";
 
-  @import "compass/css3/box-shadow";
-  @import "compass/css3/border-radius";
-  @import "compass/css3/inline-block";
-  @import "compass/css3/text-shadow";
-  @import "compass/css3/images";
-  @import "../old_common/mixins";
-  @import "../old_common/fonts";
-  @import "../old_common/buttons";
-  @import "../old_common/vars";
-  @import "../old_common/common-sprite";
-  @import "../front/front-sprite";
+// Styles for static pages like 404, 500, HTML5,...
 
+html {
+  width: 100%;
+  height: 100%;
+}
 
-  // Styles for static pages like 404, 500, HTML5,...
+body {
+  @include background(image-url("layout/grey-carto.jpg") repeat 0 0);
+  min-width: 600px;
 
-  html {
-    width:100%;
-    height:100%;
-  }
+  /* SECTIONS */
+  section {
+    position: relative;
+    width: 960px;
+    margin: 0 auto;
+    border-radius: 3px;
+    background: WHITE;
 
-  body {
-    min-width:600px;
-    @include background(image-url("layout/grey-carto.jpg") repeat 0 0);
-
-    /* SECTIONS */
-    section {
-      position:relative;
-      width:960px;
-      margin:0 auto;
-      @include border-radius(3px);
-      background:white;
-
-
-      /* skeleton of a section */
-      div.header {
-        padding:40px;
-        border-bottom:1px solid #E5E5E5;
-      }
-      div.footer {
-        padding:40px;
-        border-top:1px solid #E5E5E5;
-      }
-      div.content {
-        position:relative;
-        display:block;
-        padding:40px;
-
-        /* content options */
-        &.overflow {overflow:hidden}
-        &.no_padding {width:960px; padding:0;}
-        &.less_padding {overflow:hidden; padding-top:25px; padding-bottom:25px}
-      }
-
-
-      /* sessions flat section*/
-      &.sessions {
-        position:relative;
-        width:392px;
-        margin:100px auto 50px;
-      }
-
-      /* add shadow to the section */
-      &.shadow {
-        @include box-shadow(rgba(0,0,0,0.10) 0 0 3px 3px);
-        border:1px solid #E7E7E7\9; // IE
-        &.top {@include box-shadow(rgba(0,0,0,0.06) 0 -1px 3px 3px);}
-        &.bottom {@include box-shadow(rgba(0,0,0,0.06) 0 1px 3px 3px);}
-      }
-
-      /* border radius only in the top */
-      &.top {
-        @include border-bottom-radius(0px);
-        border-bottom:none\9; // IE
-      }
-
-      /* border radius only in the bottom */
-      &.bottom {
-        @include border-top-radius(0px);
-        border-top:none\9; // IE
-      }
-
-      /* grey top line */
-      &.border {border-top:1px solid rgba(0,0,0,0.15)}
-
-      div.med {width:62%;}
+    /* skeleton of a section */
+    div.header {
+      padding: 40px;
+      border-bottom: 1px solid #E5E5E5;
     }
 
+    div.footer {
+      padding: 40px;
+      border-top: 1px solid #E5E5E5;
+    }
 
+    div.content {
+      display: block;
+      position: relative;
+      padding: 40px;
 
-    /* SESSIONS FORM */
-    section.sessions {
+      /* content options */
+      &.overflow {
+        overflow: hidden;
+      }
 
-      div.browsers {
-        margin:30px 0 0 100px;
-        letter-spacing:-4px;
-        font-size:0;
+      &.no_padding {
+        width: 960px;
+        padding: 0;
+      }
 
-        a {
-          @include inline-block();
-          letter-spacing:0;
-          vertical-align:middle;
-          margin:0 35px 0 0;
-          padding:0;
+      &.less_padding {
+        padding-top: 25px;
+        padding-bottom: 25px;
+        overflow: hidden;
+      }
+    }
 
-          img {margin:0!important}
+    /* sessions flat section */
+    &.sessions {
+      position: relative;
+      width: 392px;
+      margin: 100px auto 50px;
+    }
+
+    /* add shadow to the section */
+    &.shadow {
+      border: 1px solid #E7E7E7;
+      box-shadow: rgba(#000, 0.1) 0 0 3px 3px;
+
+      &.top {
+        box-shadow: rgba(#000, 0.06) 0 -1px 3px 3px;
+      }
+
+      &.bottom {
+        box-shadow: rgba(#000, 0.06) 0 1px 3px 3px;
+      }
+    }
+
+    /* border radius only in the top */
+    &.top {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    /* border radius only in the bottom */
+    &.bottom {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    /* grey top line */
+    &.border {
+      border-top: 1px solid  rgba(#000, 0.15);
+    }
+
+    div.med {
+      width: 62%;
+    }
+  }
+
+  /* SESSIONS FORM */
+  section.sessions {
+    div.browsers {
+      margin: 30px 0 0 100px;
+      font-size: 0;
+      letter-spacing: -4px;
+
+      a {
+        display: inline-block;
+        margin: 0 35px 0 0;
+        padding: 0;
+        letter-spacing: 0;
+        vertical-align: top;
+        vertical-align: middle;
+
+        img {
+          margin: 0 !important;
+        }
+      }
+    }
+
+    form {
+      div.field {
+        display: inline-block;
+        position: relative;
+        width: 100%;
+
+        &.short {
+          width: 312px;
+          margin-right: 25px;
+          margin-left: 25px;
+          padding: 15px 0 0 40px;
+        }
+
+        &.border {
+          border-top: 1px solid #E5E5E5;
         }
       }
 
+      p {
+        display: inline-block;
+        vertical-align: top;
+      }
 
-      form {
-        div.field {
-          position:relative;
-          display:inline-block;
-          width:100%;
+      label {
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 16px;
+        color: #CCC;
+        font: normal 15px $text-fonts;
+        font-style: italic;
+        user-select: none;
 
-          &.short {
-            width:312px;
-            margin-left:25px;
-            margin-right:25px;
-            padding:15px 0 0 40px;
-          }
+        &:hover {
+          cursor: text;
+        }
+      }
 
-          &.border {
-            border-top:1px solid #E5E5E5;
-          }
+      input[type="text"],
+      input[type="password"],
+      input[type="email"] {
+        z-index: 10;
+        width: 280px;
+        height: auto;
+        margin: 0;
+        padding: 11px 15px;
+        border: 1px solid #CCC;
+        border-radius: 3px;
+        background: none;
+        color: #333;
+        font: normal 15px $text-fonts;
+        line-height: normal;
+
+        &:focus {
+          border-color: #999;
+          outline: none;
+          box-shadow: rgba(#000, 0.1) 0 0 2px 2px;
         }
 
-        p {@include inline-block();}
+        &.error {
+          width: 255px;
+          padding-right: 40px;
+          border-color: #F08A84;
+          color: #E95850;
 
-        label {
-          position:absolute;
-          top:0;
-          left:16px;
-          font:normal 15px $text-fonts;
-          color:#CCCCCC;
-          z-index:0;
-          font-style:italic;
-          @include user-select(none);
-          &:hover {cursor:text}
+          &:focus {
+            border-color: #D17671;
+          }
         }
+      }
+
+      /* Errors */
+      div.field_with_errors {
+        display: inline-block;
+        width: auto;
+        vertical-align: top;
 
         input[type="text"],
         input[type="password"],
         input[type="email"] {
-          width:280px;
-          height:auto;
-          padding:11px 15px;
-          margin:0;
-          @include border-radius(3px);
-          background:none;
-          border:1px solid #CCCCCC;
-          font:normal 15px $text-fonts;
-          color:#333333;
-          z-index:10;
-          line-height:normal;
+          width: 255px;
+          padding-right: 40px;
+          border-color: #F08A84;
+          color: #E95850;
 
           &:focus {
-            outline:none;
-            border-color:#999999;
-            @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
+            border-color: #D17671;
           }
-
-          &.error {
-            width:255px;
-            padding-right:40px;
-            border-color:#F08A84;
-            color:#E95850;
-
-            &:focus {
-              border-color:#D17671;
-            }
-          }
-        }
-
-        /* Errors */
-        div.field_with_errors {
-          width:auto;
-          @include inline-block();
-          vertical-align:top;
-
-          input[type="text"],
-          input[type="password"],
-          input[type="email"] {
-            width:255px;
-            padding-right:40px;
-            border-color:#F08A84;
-            color:#E95850;
-
-            &:focus {
-              border-color:#D17671;
-            }
-          }
-        }
-
-        div.field_error {
-          position:absolute;
-          right:7px;
-          top:7px;
-          width:26px;
-          height:27px;
-          @include text-indent();
-          @include common-sprite(field_error);
-          z-index:5;
-          &:hover {cursor:pointer}
         }
       }
 
-      // Longer than large :)
-      &.longer {
-        width:562px;
+      div.field_error {
+        @include text-indent();
+        @include common-sprite(field_error);
+        position: absolute;
+        z-index: 5;
+        top: 7px;
+        right: 7px;
+        width: 26px;
+        height: 27px;
 
-        img.alone {margin:50px 0 0 125px}
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
 
-    /* FOOTER */
-    footer {
-      width:100%;
-      min-width:960px;
-      height:18px;
-      padding:38px 0 40px;
-      border-top: 1px solid #E5E5E5;
-      background:white;
+    // Longer than large :)
+    &.longer {
+      width: 562px;
 
-      div.wrap {overflow:visible;}
-      span.cartodb {
-        position:absolute;
-        top:-112px;
-        left:-10px;
-        width:84px;
-        height:105px;
-        z-index:10;
-      }
-
-      div.left {height:19px; p {vertical-align:middle}}
-
-      &.short {
-        min-width:124px;
-        width:124px;
-        height:42px;
-        margin:0 auto 30px;
-        padding:0;
-        background:none;
-        border:none;
-        a.cartodb {display:block; width:124px; height:42px; @include text-indent(); @include front-sprite(cartodb_opacity);}
-      }
-    }
-
-
-    /* NEW VERSION */
-    &.new_version {
-      position:relative;
-      width:100%;
-      height:100%;
-      margin:0;
-      padding:0;
-      background-color: #377CB9; // IE
-      filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#519FD9', endColorstr='#1E5496');// For IE7-8-9
-      @include background(linear-gradient(#519FD9,#1E5496));
-      
-      div.bkg {
-        position:absolute;
-        top:0;
-        left:0;
-        right:0;
-        bottom:0;
-        width:100%;
-        height:100%;
-        @include background(image-url("layout/relief.png") repeat 0 0);
-      }
-
-      header {
-        position:relative;
-        border:none;
-        box-shadow:none;
-        background:none;
-        width:480px;
-        height:42px;
-        margin: 0 auto;
-        padding:40px 0;
-
-        &:before {
-          display:none;
-          background:none;
-        }
-
-        h1 {
-          margin:0;
-          a {display:block; width:124px; height:42px; @include text-indent(); @include front-sprite(cartodb_dark);}
-        } 
-      }
-
-      section {
-        margin-top:0;
-        width:505px;
-        background: image-url('layout/cartodb20.png') no-repeat right 0 white; // IE
-
-        .content {
-          padding-right:190px;
-          h2 {font-size:34px; line-height:36px;}
-          p {line-height:19px;}
-        }
+      img.alone {
+        margin: 50px 0 0 125px;
       }
     }
   }
+
+  /* FOOTER */
+  footer {
+    width: 100%;
+    min-width: 960px;
+    height: 18px;
+    padding: 38px 0 40px;
+    border-top: 1px solid #E5E5E5;
+    background: WHITE;
+
+    div.wrap {
+      overflow: visible;
+    }
+
+    span.cartodb {
+      position: absolute;
+      z-index: 10;
+      top: -112px;
+      left: -10px;
+      width: 84px;
+      height: 105px;
+    }
+
+    div.left {
+      height: 19px;
+
+      p {
+        vertical-align: middle;
+      }
+    }
+
+    &.short {
+      width: 124px;
+      min-width: 124px;
+      height: 42px;
+      margin: 0 auto 30px;
+      padding: 0;
+      border: none;
+      background: none;
+
+      a.cartodb {
+        @include text-indent();
+        @include front-sprite(cartodb_opacity);
+        display: block;
+        width: 124px;
+        height: 42px;
+      }
+    }
+  }
+
+  /* NEW VERSION */
+  &.new_version {
+    @include background(linear-gradient(#519FD9, #1E5496));
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #377CB9;
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#519FD9', endColorstr='#1E5496');
+
+    div.bkg {
+      @include background(image-url("layout/relief.png") repeat 0 0);
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    header {
+      position: relative;
+      width: 480px;
+      height: 42px;
+      margin: 0 auto;
+      padding: 40px 0;
+      border: none;
+      background: none;
+      box-shadow: none;
+
+      &::before {
+        display: none;
+        background: none;
+      }
+
+      h1 {
+        margin: 0;
+
+        a {
+          @include text-indent();
+          @include front-sprite(cartodb_dark);
+          display: block;
+          width: 124px;
+          height: 42px;
+        }
+      }
+    }
+
+    section {
+      width: 505px;
+      margin-top: 0;
+      background: image-url('layout/cartodb20.png') no-repeat right 0 white;
+
+      .content {
+        padding-right: 190px;
+
+        h2 {
+          font-size: 34px;
+          line-height: 36px;
+        }
+
+        p {
+          line-height: 19px;
+        }
+      }
+    }// For IE7-8-9
+  }
+}

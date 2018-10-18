@@ -98,7 +98,7 @@ module CartoDB
       end
 
       def synchronizations_logger
-        @@synchronizations_logger ||= ::Logger.new(log_file_path("synchronizations.log"))
+        @@synchronizations_logger ||= CartoDB.unformatted_logger(log_file_path("synchronizations.log"))
       end
 
       def interval=(seconds=3600)
@@ -181,6 +181,8 @@ module CartoDB
         if user.nil?
           raise "Couldn't instantiate synchronization user. Data: #{to_s}"
         end
+
+        raise "Can't run a synchronization for inactive user: #{user.username}" unless user.reload.active?
 
         if !authorize?(user)
           raise CartoDB::Datasources::AuthError.new('User is not authorized to sync tables')
@@ -486,7 +488,7 @@ module CartoDB
       end
 
       def pg_options
-        Rails.configuration.database_configuration[Rails.env].symbolize_keys
+        SequelRails.configuration.environment_for(Rails.env)
           .merge(
             username:     user.database_username,
             password: user.database_password,
@@ -500,11 +502,15 @@ module CartoDB
         if options['binary'].nil? || options['csv_guessing'].nil?
           {}
         else
-          {
+          ogr_options = {
             ogr2ogr_binary:         options['binary'],
             ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
-            quoted_fields_guessing: @quoted_fields_guessing
+            quoted_fields_guessing: @quoted_fields_guessing,
           }
+          if options['memory_limit'].present?
+            ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit'])
+          end
+          return ogr_options
         end
       end
 

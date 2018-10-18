@@ -1,0 +1,117 @@
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Form-InputFill.is-disabled {
+  border-color: $cSecondaryLine;
+  background: $cThirdBackground;
+  cursor: default;
+}
+
+.Form-InputFill {
+  width: 100%;
+}
+
+.Editor-FormDialog .CustomList {
+  display: block;
+  position: relative;
+  top: auto;
+  right: auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.Editor-FormDialog.Editor-boxModal {
+  position: absolute;
+  z-index: 100;
+  top: 72px;
+  right: 0;
+  width: 248px;
+}
+
+.Editor-fillContainer {
+  width: 100%;
+  height: 100%;
+  padding: 0 $baseSize;
+  text-align: left;
+}
+
+.Editor-fillContainer.Editor-fillContainer--ByValue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .Editor-fillContainer--Column {
+    width: auto;
+    margin-right: 10px;
+    line-height: 30px;
+  }
+
+  .Editor-fillContainer--ColorBarContainer {
+    position: relative;
+    width: 100%;
+    max-width: 40px;
+
+    // Grey Left Bar separator
+    &::after {
+      content: "";
+      position: absolute;
+      top: $baseSize * - 0.5;
+      left: $baseSize * - 1;
+      width: 1px;
+      height: $baseSize * 2;
+      border-left: 0.5px solid #CCC;
+    }
+  }
+}
+
+.Editor-fillImage {
+  display: flex;
+  height: 16px;
+  margin: 8px;
+}
+
+.Editor-fillImageAsset {
+  width: auto;
+  height: 16px;
+}
+
+.Editor-categoryImagesTag {
+  padding: 2px;
+  border: 1px solid #E4E4E4;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
+  color: #CCC;
+}
+
+.CDB-OptionInput-item--categories .InputColor {
+  padding: 0;
+}
+
+.CDB-ColorBar.is-link {
+  cursor: pointer;
+}
+
+.CDB-OptionInput-container {
+  height: 100%;
+
+  .CDB-OptionInput-item:last-child {
+    width: auto;
+  }
+
+  .CDB-OptionInput-item:first-child {
+    width: 100%;
+  }
+}
+
+.CDB-OptionInput-container--noSlider {
+  width: 100%;
+}
+
+.InputColor-modalHeader {
+  display: flex;
+  justify-content: space-between;
+}

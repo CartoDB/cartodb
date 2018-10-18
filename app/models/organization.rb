@@ -22,6 +22,7 @@ class Organization < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
+  include SequelFormCompatibility
   include Carto::OrganizationSoftLimits
 
   Organization.raise_on_save_failure = true
@@ -60,6 +61,10 @@ class Organization < Sequel::Model
   DEFAULT_OBS_GENERAL_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
+  def default_password_expiration_in_d
+    Cartodb.get_config(:passwords, 'expiration_in_d')
+  end
+
   def validate
     super
     validates_presence [:name, :quota_in_bytes, :seats]
@@ -70,6 +75,7 @@ class Organization < Sequel::Model
     validates_integer :here_isolines_quota, allow_nil: false, message: 'here_isolines_quota cannot be nil'
     validates_integer :obs_snapshot_quota, allow_nil: false, message: 'obs_snapshot_quota cannot be nil'
     validates_integer :obs_general_quota, allow_nil: false, message: 'obs_general_quota cannot be nil'
+    validate_password_expiration_in_d
 
     if default_quota_in_bytes
       errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
@@ -81,6 +87,11 @@ class Organization < Sequel::Model
 
     errors.add(:seats, 'cannot be less than the number of builders') if seats && remaining_seats < 0
     errors.add(:viewer_seats, 'cannot be less than the number of viewers') if viewer_seats && remaining_viewer_seats < 0
+  end
+
+  def validate_password_expiration_in_d
+    valid = password_expiration_in_d.blank? || password_expiration_in_d > 0 && password_expiration_in_d < 366
+    errors.add(:password_expiration_in_d, 'must be greater than 0 and lower than 366') unless valid
   end
 
   def validate_for_signup(errors, user)
@@ -148,6 +159,11 @@ class Organization < Sequel::Model
     save_metadata
   end
 
+  def after_destroy
+    super
+    destroy_metadata
+  end
+
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
   def destroy_cascade(delete_in_central: false)
@@ -170,7 +186,7 @@ class Organization < Sequel::Model
   def destroy_non_owner_users
     non_owner_users.each do |user|
       user.ensure_nonviewer
-      user.shared_entities.map(&:entity).each(&:delete)
+      user.shared_entities.map(&:entity).uniq.each(&:delete)
       user.destroy_cascade
     end
   end
@@ -331,7 +347,8 @@ class Organization < Sequel::Model
       website:                   website,
       admin_email:               admin_email,
       avatar_url:                avatar_url,
-      user_count:                users.count
+      user_count:                users.count,
+      password_expiration_in_d:  password_expiration_in_d
     }
   end
 
@@ -355,7 +372,7 @@ class Organization < Sequel::Model
     users.map { |u| u.tags(exclude_shared, type) }.flatten
   end
 
-  def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
+  def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at', version = nil)
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
         type:     type,
@@ -364,7 +381,8 @@ class Organization < Sequel::Model
         per_page: items_per_page,
         tags:     tags,
         order:    order,
-        o:        {updated_at: :desc}
+        o:        { updated_at: :desc },
+        version:  version
     )
   end
 
@@ -450,6 +468,10 @@ class Organization < Sequel::Model
       'geocoder_provider', geocoder_provider,
       'isolines_provider', isolines_provider,
       'routing_provider', routing_provider
+  end
+
+  def destroy_metadata
+    $users_metadata.DEL key
   end
 
   def require_organization_owner_presence!

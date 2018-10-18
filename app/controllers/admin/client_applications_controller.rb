@@ -21,6 +21,8 @@ class Admin::ClientApplicationsController < Admin::AdminController
   end
 
   def api_key
+    @has_new_dashboard = current_user.engine_enabled?
+
     respond_to do |format|
       format.html { render 'api_key' }
     end

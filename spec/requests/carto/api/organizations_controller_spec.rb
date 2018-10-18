@@ -111,7 +111,7 @@ describe Carto::Api::OrganizationsController do
       url = api_v1_organization_groups_users_url(id: @organization.id, group_id: group.id, api_key: @org_user_owner.api_key)
       get_json url, @headers do |response|
         response.status.should == 200
-        ids = response.body[:users].map { |u| u['id'] }.uniq.sort
+        ids = response.body[:users].map { |u| u[:id] }.uniq.sort
         ids.count.should == group.users.count
         ids.should == group.users.map(&:id).uniq.sort
       end
@@ -123,7 +123,7 @@ describe Carto::Api::OrganizationsController do
       url = api_v1_organization_groups_users_url(id: @organization.id, group_id: group.id, api_key: @org_user_owner.api_key, q: user.email)
       get_json url, @headers do |response|
         response.status.should == 200
-        ids = response.body[:users].map { |u| u['id'] }
+        ids = response.body[:users].map { |u| u[:id] }
         ids.count.should == 1
         ids[0].should == user.id
       end
@@ -135,6 +135,25 @@ describe Carto::Api::OrganizationsController do
         response.body[:users].each do |u|
           u.keys.should_not include 'db_size_in_bytes'
         end
+      end
+    end
+
+    it 'validates order param' do
+      get_json api_v1_organization_users_url(
+        order: :username,
+        id: @organization.id,
+        api_key: @org_user_1.api_key
+      ), @headers do |response|
+        response.status.should == 200
+      end
+
+      get_json api_v1_organization_users_url(
+        order: :invalidate,
+        id: @organization.id,
+        api_key: @org_user_1.api_key
+      ), @headers do |response|
+        response.status.should == 400
+        response.body.fetch(:errors).should_not be_nil
       end
     end
   end

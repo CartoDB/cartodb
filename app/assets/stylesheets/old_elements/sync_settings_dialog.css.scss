@@ -1,45 +1,45 @@
 
-  /**
+/**
    *  Sync settings dialog styles
    */
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/images";
-  @import "../old_common/mixins";
-  @import "../old_common/common-sprite";
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "../old_common/mixins";
+@import "../old_common/common-sprite";
 
-  .sync_settings {
+.sync_settings {
+  .sync_url {
+    padding: 22px 40px;
+    border-bottom: 1px solid #DFDFDF;
+    background: #F2F2F2;
 
-    .sync_url {
-      padding:22px 40px;
-      background:#F2F2F2;
-      border-bottom:1px solid #DFDFDF;
-
-      span {
-        display:block;
-        width:490px;
-        padding-left:20px;
-        font-size:13px;
-        line-height:14px;
-        color:#999999;
-        @include background(sprite($common-sprites, wifi_icon, $offset-x:-3px, $offset-y:-16px) no-repeat);
-        @include text-overflow();
-      }
+    span {
+      @include background(sprite($common-sprites, wifi_icon, $offset-x: -3px, $offset-y: -16px) no-repeat);
+      @include text-overflow();
+      display: block;
+      width: 490px;
+      padding-left: 20px;
+      color: #999;
+      font-size: 13px;
+      line-height: 14px;
     }
-
-    .combo-wrapper {
-      margin:10px 0 0;
-
-      & > p, & > div.interval-combo {
-        @include inline-block();
-        vertical-align: middle;
-      }
-
-      p {
-        margin-right:7px;
-        line-height:21px;
-        font-size:13px;
-      }
-    }
-    
   }
+
+  .combo-wrapper {
+    margin: 10px 0 0;
+
+    & > p,
+    & > div.interval-combo {
+      display: inline-block;
+      vertical-align: top;
+      vertical-align: middle;
+    }
+
+    p {
+      margin-right: 7px;
+      font-size: 13px;
+      line-height: 21px;
+    }
+  }
+}

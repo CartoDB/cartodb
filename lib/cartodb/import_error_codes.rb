@@ -124,6 +124,11 @@ module CartoDB
       what_about: "You set 'skip' collision strategy and all tables already exist, so nothing was imported.",
       source: ERROR_SOURCE_USER
     },
+    1023 => {
+      title: 'ArcGIS server misconfiguration',
+      what_about: 'We could not import your data from the ArcGIS server. Please contact your ArcGIS server administrator and ensure that the server has the "execute queries capability" enabled.',
+      source: ERROR_SOURCE_USER
+    },
     1100 => {
       title: 'Download file not found',
       what_about: "Provided URL doesn't return a file (error 404). Please check that URL is still valid and that you can download the file and try again.",
@@ -219,6 +224,16 @@ module CartoDB
       what_about: "The import failed because you are trying to overwrite a table but the data you are providing is not compatible with the data that table already has. You may me changing some types or removing a column. Please check and try again",
       source: ERROR_SOURCE_USER
     },
+    2013 => {
+      title: 'Cannot overwrite table',
+      what_about: "The synchronization failed because the destination table could not be overwritten. Please make sure that there are no database objects (e.g: views) that depend on it.",
+      source: ERROR_SOURCE_USER
+    },
+    2014 => {
+      title: 'Invalid geometries',
+      what_about: "Your file appears to contain invalid geometries. Try opening the file with another GIS tool and checking the geometry validity. If everything appears to be okay, <a href='mailto:support@carto.com?subject=Invalid Geometries'>contact us</a>.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",
@@ -306,6 +321,11 @@ module CartoDB
       title: 'Too many named map templates',
       what_about: "You reached the limit on the number of named map templates.",
       source: ERROR_SOURCE_USER
+    },
+    6671 => {
+      title: 'Stuck import job',
+      what_about: "The import job was stuck and we marked it as failed. Please try importing again.",
+      source: ERROR_SOURCE_CARTODB
     },
     99999 => {
       title: 'Unknown',

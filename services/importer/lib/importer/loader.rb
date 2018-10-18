@@ -108,6 +108,9 @@ module CartoDB
           # At this point the_geom column is renamed
           GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
         end
+      rescue => e
+        raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
+        raise StatementTimeoutError.new(e.to_s, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
       end
 
       def normalize
@@ -147,6 +150,9 @@ module CartoDB
         end
         unless options[:quoted_fields_guessing].nil?
           ogr_options.merge!(quoted_fields_guessing: options[:quoted_fields_guessing])
+        end
+        unless options[:ogr2ogr_memory_limit].nil?
+          ogr_options.merge!(ogr2ogr_memory_limit: options[:ogr2ogr_memory_limit])
         end
 
         if source_file.extension == '.shp'
@@ -251,7 +257,7 @@ module CartoDB
         ogr2ogr.run(append_mode)
 
         #In case there are not an specific error we try to fix it
-        if ogr2ogr.generic_error? && ogr2ogr.exit_code == 0
+        if ogr2ogr.generic_error? && ogr2ogr.exit_code.zero? || ogr2ogr.missing_srs?
           try_fallback(append_mode)
         end
 
@@ -287,6 +293,12 @@ module CartoDB
           @job.fallback_executed = "encoding"
           ogr2ogr.overwrite = true
           ogr2ogr.encoding = "ISO-8859-1"
+          ogr2ogr.run(append_mode)
+        elsif ogr2ogr.missing_srs?
+          job.log "Fallback: Source dataset has no coordinate system, forcing -s_srs 4326"
+          @job.fallback_executed = "srs 4326"
+          ogr2ogr.overwrite = true
+          ogr2ogr.shape_coordinate_system = '4326'
           ogr2ogr.run(append_mode)
         end
         ogr2ogr.set_default_properties
@@ -326,12 +338,16 @@ module CartoDB
           raise EncodingError.new "Ogr2ogr encoding error"
         end
 
+        if ogr2ogr.geometry_validity_error?
+          raise InvalidGeometriesError.new
+        end
+
         # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
         if ogr2ogr.generic_error? || ogr2ogr.exit_code != 0
           job.logger.append "Ogr2ogr FAILED!"
           job.logger.append "ogr2ogr.exit_code = " + ogr2ogr.exit_code.to_s
-          job.logger.append "ogr2ogr.command = " + ogr2ogr.command, truncate=false
-          job.logger.append "ogr2ogr.command_output = " + ogr2ogr.command_output, truncate=false
+          job.logger.append "ogr2ogr.command = #{ogr2ogr.command}", false
+          job.logger.append "ogr2ogr.command_output = #{ogr2ogr.command_output}", false
           raise LoadError.new 'Ogr2ogr ERROR'
         end
       end
@@ -355,6 +371,10 @@ module CartoDB
 
       def is_shp?
         !(@source_file.fullpath =~ /\.shp$/i).nil?
+      end
+
+      def statement_timeout?(error)
+        error =~ /canceling statement due to statement timeout/i
       end
     end
   end

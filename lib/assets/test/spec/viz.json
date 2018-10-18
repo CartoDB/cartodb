@@ -1,0 +1,164 @@
+{
+  "id": "123",
+  "version": "0.1.0",
+  "title": "Map Name",
+  "likes": 1,
+  "description": "Map Description",
+  "scrollwheel": true,
+  "legends": true,
+  "url": null,
+  "map_provider": "leaflet",
+  "bounds": [
+    [41.8063, -136.443],
+    [61.3669, -52.2024]
+  ],
+  "center": "[52.22220172143765,-94.32258618606235]",
+  "zoom": 2,
+  "updated_at": "2017-09-29T14:18:35+02:00",
+  "layers": [{
+    "options": {
+      "default": true,
+      "url": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+      "subdomains": "abcd",
+      "minZoom": "0",
+      "maxZoom": "18",
+      "name": "Positron",
+      "className": "positron_rainbow_labels",
+      "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/attributions\">CARTO</a>",
+      "labels": {
+        "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+      },
+      "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+    },
+    "infowindow": null,
+    "tooltip": null,
+    "id": "daff8195-177f-4ba7-93d0-1c4b4d9e1959",
+    "order": 0,
+    "type": "tiled"
+  }, {
+    "type": "layergroup",
+    "options": {
+      "user_name": "username",
+      "maps_api_template": "http://{user}.localhost.lan:8181",
+      "sql_api_template": "http://{user}.localhost.lan:8080",
+      "tiler_protocol": "http",
+      "tiler_domain": "localhost.lan",
+      "tiler_port": "8181",
+      "sql_api_protocol": "http",
+      "sql_api_domain": "localhost.lan",
+      "sql_api_endpoint": "/api/v2/sql",
+      "sql_api_port": 8080,
+      "filter": "mapnik",
+      "layer_definition": {
+        "stat_tag": "123",
+        "version": "1.0.1",
+        "layers": [{
+          "id": "f908a195-b01d-4b4b-a63c-ba3a3812a5a3",
+          "type": "CartoDB",
+          "infowindow": {
+            "fields": [],
+            "template_name": "table/views/infowindow_light",
+            "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+            "alternative_names": {},
+            "width": 226,
+            "maxHeight": 180
+          },
+          "tooltip": {
+            "fields": [],
+            "template_name": "tooltip_light",
+            "template": "<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
+            "alternative_names": {},
+            "maxHeight": 180
+          },
+          "legend": {
+            "type": "none",
+            "show_title": false,
+            "title": "",
+            "template": "",
+            "visible": true,
+            "migrated": true
+          },
+          "order": 1,
+          "visible": true,
+          "options": {
+            "layer_name": "gcma000b06a_eng",
+            "cartocss": "/** simple visualization */\n\n#gcma000b06a_eng{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0.7;\n  line-color: #FFF;\n  line-width: 0.5;\n  line-opacity: 1;\n}",
+            "cartocss_version": "2.1.1",
+            "interactivity": "cartodb_id",
+            "sql": "select * from gcma000b06a_eng",
+            "table_name": "\"\"."
+          }
+        }]
+      },
+      "attribution": ""
+    }
+  }, {
+    "options": {
+      "default": true,
+      "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+      "subdomains": "abcd",
+      "minZoom": "0",
+      "maxZoom": "18",
+      "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/attributions\">CARTO</a>",
+      "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+      "type": "Tiled",
+      "name": "Positron Labels"
+    },
+    "infowindow": null,
+    "tooltip": null,
+    "id": "0d6a8b5e-0db8-40b3-9650-eeb77eb35be6",
+    "order": 2,
+    "type": "tiled"
+  }],
+  "overlays": [{
+    "type": "share",
+    "order": 2,
+    "options": {
+      "display": true,
+      "x": 20,
+      "y": 20
+    },
+    "template": ""
+  }, {
+    "type": "search",
+    "order": 3,
+    "options": {
+      "display": true,
+      "x": 60,
+      "y": 20
+    },
+    "template": ""
+  }, {
+    "type": "zoom",
+    "order": 6,
+    "options": {
+      "display": true,
+      "x": 20,
+      "y": 20
+    },
+    "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+  }, {
+    "type": "loader",
+    "order": 8,
+    "options": {
+      "display": true,
+      "x": 20,
+      "y": 150
+    },
+    "template": "<div class=\"loader\" original-title=\"\"></div>"
+  }, {
+    "type": "logo",
+    "order": 9,
+    "options": {
+      "display": true,
+      "x": 10,
+      "y": 40
+    },
+    "template": ""
+  }],
+  "prev": null,
+  "next": null,
+  "transition_options": {
+    "time": 0
+  }
+}

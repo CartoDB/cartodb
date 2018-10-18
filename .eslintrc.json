@@ -8,11 +8,13 @@
   "globals": {
     "_t": true,
     "__ENV__": true,
-    "grunt": true
+    "grunt": true,
+    "CartoNode": true
   },
   "rules": {
     "camelcase": "off",
     "no-mixed-operators": "off",
-    "no-useless-escape": "off"
+    "no-useless-escape": "off",
+    "prefer-promise-reject-errors": "off"
   }
 }

@@ -5,10 +5,12 @@
 // A set of .TabLink where only the edge tabs have a border-radius
 .TabsPanel > .TabLink {
   border-radius: 0;
+
   &:first-child {
     border-top-left-radius: $sCard-borderRadius;
     border-bottom-left-radius: $sCard-borderRadius;
   }
+
   &:last-child {
     border-top-right-radius: $sCard-borderRadius;
     border-bottom-right-radius: $sCard-borderRadius;
@@ -17,6 +19,7 @@
 
 .TabLink {
   display: block;
+  box-sizing: content-box;
   width: 138px;
   height: 38px;
   padding: 0;
@@ -25,7 +28,6 @@
   color: $cTypography-secondary;
   font-size: 14px;
   line-height: 38px;
-  box-sizing: content-box;
 
   &:hover {
     border-color: rgba(#BBD7F2, 1);
@@ -34,9 +36,11 @@
     text-decoration: none;
   }
 }
+
 .TabLink:hover {
   border-color: rgba(#BBD7F2, 1);
 }
+
 .is-selected > .TabLink,
 .is-selected > .TabLink:hover,
 .TabLink.selected,
@@ -46,12 +50,14 @@
   color: $cTypography-paragraphs;
   cursor: default;
 }
+
 .TabLink.TabLink--positive.selected,
 .TabLink.TabLink--positive.selected:hover {
   border-color: rgba(#BBD7F2, 1);
 }
+
 .TabLink.disabled {
-  @include opacity(0.5);
+  opacity: 0.5;
 
   &:hover {
     border-color: $cStructure-mainLine;
@@ -61,10 +67,12 @@
     cursor: default;
   }
 }
+
 .TabLink.TabLink--textCenterUpcase {
   color: $cTypography-paragraphs;
   text-align: center;
   text-transform: uppercase;
+
   &.selected,
   &.selected:hover {
     border-color: $cCard-selectedBorder;
@@ -72,16 +80,17 @@
     color: $cTypography-paragraphs;
   }
 }
+
 .TabLink.arcgis {
   width: 160px;
 }
+
 .TabLink.box {
+  display: block;
   width: auto;
   height: auto;
   margin: 0;
-  display: block;
 }
-
 
 // Tab icons
 .TabIcon {
@@ -99,12 +108,14 @@
     height: $height;
     background-position: $x 0;
   }
+
   .is-selected > .TabLink .TabIcon.is-#{$name},
   .is-selected > .TabLink:hover .TabIcon.is-#{$name},
   .TabLink.selected .TabIcon.is-#{$name},
   .TabLink:hover .TabIcon.is-#{$name} {
     background-position: $x $y;
   }
+
   .TabLink.disabled .TabIcon.is-#{$name},
   .TabLink.disabled:hover .TabIcon.is-#{$name} {
     background-position: $x 0;

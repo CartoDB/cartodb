@@ -15,6 +15,19 @@ module Carto
           @mapviews = hash[:mapviews]
           @action = hash[:action]
           @analysis = hash[:analysis]
+
+          # add anything else as it arrives
+          # add new properties in required_properties in events.rb for validation
+          @others = hash.symbolize_keys.except(:visualization_id,
+                                               :user_id,
+                                               :widget_id,
+                                               :connection,
+                                               :origin,
+                                               :page,
+                                               :quota_overage,
+                                               :mapviews,
+                                               :action,
+                                               :analysis)
         end
 
         def to_hash
@@ -27,6 +40,7 @@ module Carto
           properties.merge!(trending_map_properties) if @mapviews
           properties.merge!(analysis_properties) if @analysis
           properties.merge!(widget_properties) if @widget
+          properties.merge!(@others) if @others
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage

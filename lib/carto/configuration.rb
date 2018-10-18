@@ -12,6 +12,14 @@ module Carto
       @@frontend_version ||= JSON::parse(File.read(Rails.root.join("package.json")))["version"]
     end
 
+    def read_editor_assets_version
+      File.read(Rails.root.join("config/editor_assets_version.json"))
+    end
+
+    def editor_assets_version
+      @@editor_assets_version ||= JSON::parse(read_editor_assets_version)["version"]
+    end
+
     def env_app_config
       app_config[ENV['RAILS_ENV'] || 'development']
     end
@@ -63,6 +71,10 @@ module Carto
 
     def mapzen_api_key
       Cartodb.get_config(:geocoder, 'mapzen', 'search_bar_api_key')
+    end
+
+    def mapbox_api_key
+      Cartodb.get_config(:geocoder, 'mapbox', 'search_bar_api_key')
     end
 
     # Make some methods available. Remember that this sets methods as private.

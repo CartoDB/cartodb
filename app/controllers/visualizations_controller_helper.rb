@@ -97,33 +97,19 @@ module VisualizationsControllerHelper
     viz_locator.matches_visualization?(visualization) ? visualization : nil
   end
 
-  def generate_vizjson3(visualization, vector: false)
+  def generate_vizjson3(visualization)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_vizjson(https_request: is_https?, vector: vector)
+                                 .to_vizjson(https_request: is_https?)
   end
 
-  def generate_named_map_vizjson3(visualization, vector: false)
+  def generate_named_map_vizjson3(visualization)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_named_map_vizjson(https_request: is_https?, vector: vector)
+                                 .to_named_map_vizjson(https_request: is_https?)
   end
 
-  def generate_anonymous_map_vizjson3(visualization, vector: false)
+  def generate_anonymous_map_vizjson3(visualization)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_anonymous_map_vizjson(https_request: is_https?, vector: vector)
-  end
-
-  def vizjson3_options(visualization, params)
-    options = {}
-
-    if params[:vector].present?
-      # This forces vector. Useful for testing purposes
-      options[:vector] = params[:vector] == 'true'
-    elsif !visualization.user.has_feature_flag?('vector_vs_raster')
-      # This enables autodetection at cartodb.js
-      options[:vector] = nil
-    end
-
-    options
+                                 .to_anonymous_map_vizjson(https_request: is_https?)
   end
   private
 

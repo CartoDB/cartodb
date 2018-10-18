@@ -1,0 +1,110 @@
+
+/**
+  *  Progress element styles
+  *
+  *  It needs:
+  *  - Height of the progress "bar".
+  *  - Border radius of the element.
+  *  - If it needs a white gradient over it.
+  *  - If bars needs a min width.
+  *
+  */
+
+@import "./mixins";
+@import "./colors";
+
+@mixin progress-bar($h, $r, $grad, $min) {
+  div.progress-bar {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: $h;
+    overflow: hidden;
+    border-radius: $r;
+    background: #F5F5F5;
+
+    &.overflow-visible { overflow: visible; }
+
+    .bar-3,
+    .bar-2,
+    .bar-1,
+    .bar-0 {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+
+      border-radius: $r;
+
+      @if $min {
+        min-width: $min;
+      }
+    }
+
+    // Blue dark
+    .bar-3 {
+      z-index: 3;
+      border-right: 1px solid #FFF;
+      background: #7DD4FF;
+    }
+
+    // Blue light
+    .bar-2 {
+      z-index: 2;
+      background: #0090D7;
+    }
+
+    // Grey light
+    .bar-1 {
+      z-index: 1;
+      background: #E5E5E5;
+
+      &::after {
+        display: none;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: auto;
+        border-right: 1px solid white;
+      }
+    }
+
+    // image pattern
+    .bar-0 {
+      background: url($assetsDir + "/images/layout/unassigned_bkg.png") repeat-x left 0;
+
+      z-index: 0;
+      &::after { display: none; }
+    }
+
+    // Danger and caution background
+    .danger { background: $cHighlight-negative; }
+    .caution { background: $cHighlight-caution; }
+  }
+}
+
+// Animated bar
+@mixin progress-animated-bar($h, $r, $grad, $min) {
+  @include progress-bar($h, $r, $grad, $min);
+
+  $animatedSize: $h*2;
+
+  div.progress-bar span.bar-2 {
+    animation: move 1s linear infinite;
+    background-color: #5DA1D6;
+    background-image: -webkit-linear-gradient(-45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(-45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+    background-image: -ms-linear-gradient(-45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(-45deg rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
+    background-size: $animatedSize $animatedSize;
+  }
+
+  @keyframes move {
+    0% { background-position: 0 0; }
+    100% { background-position: $animatedSize $animatedSize; }
+  }
+}

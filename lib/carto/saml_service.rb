@@ -125,7 +125,7 @@ module Carto
     end
 
     def carto_saml_configuration
-      @organization.try(:auth_saml_configuration)
+      @organization.try(:auth_saml_configuration).try(:deep_symbolize_keys)
     end
   end
 end

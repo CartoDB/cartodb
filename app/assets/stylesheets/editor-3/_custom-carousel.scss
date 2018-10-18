@@ -14,82 +14,93 @@
 ```
 */
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
 .Carousel {
   position: relative;
 }
+
 .Carousel-list {
-  @include display-flex();
-  @include justify-content(flex-start);
+  display: flex;
   position: relative;
+  justify-content: flex-start;
   padding-bottom: 19px;
 }
+
 .Carousel-item {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   width: $baseSize * 11;
   min-width: $baseSize * 11;
   height: $baseSize * 7;
   margin-right: 8px;
+  overflow: hidden;
   border: 1px solid $cSecondaryLine;
   border-radius: 4px;
   background: $cThirdBackground;
-  box-sizing: border-box;
-  overflow: hidden;
 
   &:last-child {
     margin-right: 0;
   }
+
   &:hover {
-    border: 1px solid $cMainLine;
+    border: 2px solid $cBlueHover;
     cursor: pointer;
   }
+
+  &.is-selected {
+    border: 2px solid $cBlackHover;
+  }
 }
+
 .Carousel-item--small {
   width: $baseSize * 5;
   min-width: $baseSize * 5;
   height: $baseSize * 5;
 }
-.Carousel-item.is-selected {
-  border: 2px solid $cBlue;
-}
+
 .Carousel-shadow {
-  @include transition(opacity, 400ms);
-  @include opacity(0);
   display: block;
   position: absolute;
+  z-index: 80;
   top: 0;
+  box-sizing: border-box;
   width: 30px;
   height: $baseSize * 7;
+  transition: opacity, 400ms;
+  opacity: 0;
   pointer-events: none;
-  z-index: 100;
+
+  &.is-visible {
+    opacity: 1;
+  }
 }
-.Carousel-shadow.is-visible {
-  @include opacity(1);
-}
+
 .Carousel-shadow--left {
-  @include background-horizontal(#FFF, rgba(255, 255, 255, 0));
-  // Overriding default background color
-  background-color: rgba(255, 255, 255, 0) !important;
   left: 0;
+  background-color: rgba(#FFF, 0) !important;
+  background-image: linear-gradient(to right, #FFF, rgba(#FFF, 0));
 }
+
 .Carousel-shadow--right {
-  @include background-horizontal(rgba(255, 255, 255, 0), #FFF);
   right: 0;
+  background-image: linear-gradient(to right, rgba(#FFF, 0), #FFF);
 }
+
 .Carousel-list.ps-container > .ps-scrollbar-x-rail {
   display: block;
   width: 100%;
 }
+
 .ps-scrollbar-x-rail:hover {
   cursor: move;
   cursor: -webkit-grab;
   cursor: -moz-grab;
 }
+
 .ps-scrollbar-x-rail:active {
   cursor: move;
   cursor: -webkit-grabbing;

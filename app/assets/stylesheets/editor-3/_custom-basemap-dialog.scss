@@ -3,16 +3,16 @@
 
 @import 'cdb-variables/colors';
 
-
 // XYZ panel view
 .XYZPanel-inputIcon--loader {
   right: 75px;
 }
+
 .XYZPanel-inputCheckbox {
   position: absolute;
+  z-index: 2;
   top: 12px;
   right: 14px;
-  z-index: 2;
 
   &:hover {
     cursor: pointer;
@@ -21,10 +21,10 @@
 
 // WMS panel view
 .WMSSSelectLayer-Filter {
+  z-index: 0;
   width: 900px;
   margin: auto;
   margin-top: -20px;
-  z-index: 0;
 }
 
 .XYZPanel-error {
@@ -32,10 +32,12 @@
   right: -180px;
   left: calc(100% + 20px);
   box-sizing: border-box;
+
   a {
     color: $cWhite;
     text-decoration: underline;
   }
+
   &.is-visible {
     display: inline-block;
   }

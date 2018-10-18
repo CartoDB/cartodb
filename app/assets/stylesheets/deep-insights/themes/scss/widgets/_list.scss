@@ -1,0 +1,240 @@
+// Default styles for widgets
+// --------------------------------------------------
+
+.CDB-Widget-listWrapper {
+  position: relative;
+}
+
+.CDB-Widget-listEdge {
+  display: block;
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  left: 0;
+  height: 1px;
+}
+
+.CDB-Widget-listEdgeShadow {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 35px;
+  pointer-events: none;
+}
+
+.CDB-Widget-listEdgeBorder {
+  position: absolute;
+  z-index: 1;
+  right: $sMargin-section;
+  left: $sMargin-section;
+  height: 1px;
+}
+
+.CDB-Widget-listEdge--top {
+  top: 0;
+
+  .Widget-listEdgeShadow {
+    top: 0;
+  }
+}
+
+.CDB-Widget-listEdge--bottom {
+  bottom: 0;
+
+  .Widget-listEdgeShadow {
+    @include css3-prefix(transform, rotate(180deg));
+    bottom: 0;
+  }
+}
+
+.CDB-Widget-list.is-hidden {
+  display: none;
+}
+
+.CDB-Widget-list--noresults {
+  @include display-flex();
+  @include align-items(center);
+  height: 120px;
+  padding: 0 $baseSize * 3;
+}
+
+.CDB-Widget-list--fake {
+  flex-direction: column;
+}
+
+.CDB-Widget-listItem {
+  display: block;
+  width: $mobileLayout - 6px;
+}
+
+.CDB-Widget-listItemInner {
+  margin: 0 $sMargin-section;
+  padding: 4px 0;
+
+  &:hover {
+    .CDB-Widget-progressState::before {
+      background: rgba(#000, 0.16);
+    }
+  }
+}
+
+.CDB-Widget-listItemInner--withBorders {
+  padding: ($sMargin-element / 2) + 1 0;
+}
+
+.CDB-Widget-listItemInner--fullSpace {
+  @include display-flex();
+}
+
+.CDB-Widget-listItemInner--fullSpace > * {
+  width: 100%;
+}
+
+.CDB-Widget-listItem--fake {
+  display: block;
+  position: relative;
+  margin-top: $baseSize;
+  border-bottom: 1px solid transparent;
+
+  &::before,
+  &::after {
+    content: '';
+    display: inline-block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  &::before {
+    width: 100%;
+    height: $baseSize;
+  }
+
+  &::after {
+    width: 100%;
+    height: $baseSize / 4;
+  }
+}
+
+.CDB-Widget-listSubItem {
+  display: inline-block;
+}
+
+.CDB-Widget-listDot {
+  margin-top: 3px;
+  margin-right: 5px;
+}
+
+.CDB-Widget-listButton {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 4px $sMargin-section;
+  font-family: 'Open Sans';
+  font-weight: $sFontWeight-normal;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.CDB-Widget-listButton--withBorder {
+  padding: 7px $sMargin-section;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    right: 24px;
+    left: 24px;
+    height: 1px;
+  }
+
+  &::before {
+    top: -1px;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+}
+
+.CDB-Widget-listButton--withBorder:hover {
+  &::before,
+  &::after {
+    right: 0;
+    left: 0;
+  }
+}
+// List within another list :D
+.CDB-Widget-inlineList {
+  width: 100%;
+  padding: 0;
+}
+
+.CDB-Widget-inlineListItem {
+  display: inline-block;
+  width: 32%;
+  margin: 5px 0 0;
+  vertical-align: top;
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Widget-listItem {
+    width: 33.33%;
+  }
+
+  .CDB-Widget-list {
+    display: flex;
+    box-sizing: border-box;
+    flex: 1;
+    flex-wrap: wrap;
+    width: 249px;
+    min-width: 249px;
+    max-width: 249px;
+    padding-right: 4px;
+    padding-left: 4px;
+  }
+
+  .CDB-Widget-listWrapper {
+    overflow-x: hidden;
+  }
+
+  .CDB-Widget-inlineListItem {
+    width: 47%;
+  }
+
+  .CDB-Widget-listButton {
+    padding: 2px 8px;
+  }
+
+  .CDB-Widget-listItemInner {
+    margin: 0;
+    padding: 2px 8px;
+  }
+
+  .CDB-Widget-list--fake {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .CDB-Widget-content--noSidesMargin .CDB-Widget-listItem--fake {
+    margin-right: 12px;
+    margin-left: 12px;
+  }
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Widget-list--fake,
+  .CDB-Widget-listItem--fake {
+    display: none;
+  }
+}
+
+@media (min-width: 1301px) {
+  .CDB-Widget-listItem {
+    width: 346px;
+  }
+}

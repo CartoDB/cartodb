@@ -11,10 +11,14 @@
     var dashboardNotifications = <%= safe_js_object @dashboard_notifications.to_json %>;
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
 <% end %>
+
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'api_keys.css', :media => 'all' %>
+  <% if @has_new_dashboard %>
+    <%= stylesheet_link_tag 'api_keys_new', :media => 'all' %>
+  <% else %>
+    <%= editor_stylesheet_link_tag 'api_keys', :media => 'all' %>
+  <% end %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>
@@ -27,13 +31,13 @@
     <%= render :partial => 'admin/shared/api_keys_subheader' %>
 
     <% if current_user.engine_enabled? %>
-
-      <%= render :partial => 'api_keys_form' %>
-
+      <% if @has_new_dashboard %>
+        <div class="js-api-keys-new"></div>
+      <% else %>
+        <%= render :partial => 'api_keys_form' %>
+      <% end %>
     <% else %>
-
       <%= render :partial => 'api_keys_cta' %>
-
     <% end %>
 
   </div>
@@ -41,3 +45,9 @@
 </div>
 
 <%= render 'admin/shared/footer' %>
+
+<% if @has_new_dashboard %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'api_keys_new' %>
+<% else %>
+  <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
+<% end %>

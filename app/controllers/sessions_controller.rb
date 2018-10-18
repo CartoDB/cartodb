@@ -14,9 +14,11 @@ class SessionsController < ApplicationController
   include LoginHelper
   include Carto::EmailCleaner
 
+  SESSION_EXPIRED = 'session_expired'.freeze
+
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_in_carto
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -26,6 +28,8 @@ class SessionsController < ApplicationController
   # If SAML data isn't passed at all, then authentication is manually failed.
   # In case of fallback on SAML authorization failed, it will be manually checked.
   skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
+  # We want the password expiration related methods to be executed regardless of CSRF token authenticity
+  skip_before_filter :verify_authenticity_token, only: [:password_expired], if: :json_formatted_request?
   skip_before_filter :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
@@ -40,8 +44,13 @@ class SessionsController < ApplicationController
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
       redirect_to(saml_service.authentication_request)
     elsif central_enabled? && !@organization.try(:auth_enabled?)
-      redirect_to(Cartodb::Central.new.login_url)
+      url = Cartodb::Central.new.login_url
+      url += "?error=#{params[:error]}" if params[:error].present?
+      redirect_to(url)
     else
+      if params[:error] == SESSION_EXPIRED
+        @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'
+      end
       render
     end
   end
@@ -57,7 +66,7 @@ class SessionsController < ApplicationController
     candidate_user = Carto::User.where(username: username).first
 
     if central_enabled? && @organization && candidate_user && !candidate_user.belongs_to_organization?(@organization)
-      @login_error = 'The user is not part of the organization'
+      @flash_login_error = 'The user is not part of the organization'
       @user_login_url = Cartodb::Central.new.login_url
       return render(action: 'new')
     end
@@ -133,6 +142,26 @@ class SessionsController < ApplicationController
     warden.env['warden.options']
   end
 
+  def password_change
+    username = warden.env['warden.options'][:username] if warden.env['warden.options']
+    redirect_to edit_password_change_url(username) if username
+  end
+
+  def password_expired
+    warden.custom_failure!
+    cdb_logout
+
+    respond_to do |format|
+      format.html do
+        url = central_enabled? && !@organization.try(:auth_enabled?) ? Cartodb::Central.new.login_url : login_url
+        redirect_to(url + "?error=#{SESSION_EXPIRED}")
+      end
+      format.json do
+        render(json: { error: 'session_expired' }, status: 403)
+      end
+    end
+  end
+
   def create_user(username, organization_id, email, created_via)
     @organization = ::Organization.where(id: organization_id).first
 
@@ -167,7 +196,6 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_oauth_config
-    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
     @oauth_configs = [google_plus_config, github_config].compact
   end
 

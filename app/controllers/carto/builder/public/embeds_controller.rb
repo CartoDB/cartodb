@@ -26,9 +26,15 @@ module Carto
         layout false
 
         def show
+          @viz_owner_base_url = @visualization.user.public_url
+
           @layers_data = visualization_for_presentation.layers.map do |l|
             Carto::Api::LayerPresenter.new(l).to_embed_poro
           end
+
+          response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+          response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+          response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
 
           render 'show', layout: 'application_public_visualization_layout'
         end
@@ -66,7 +72,7 @@ module Carto
 
         def load_vizjson
           vis = visualization_for_presentation
-          @vizjson = generate_named_map_vizjson3(vis, vizjson3_options(vis, params))
+          @vizjson = generate_named_map_vizjson3(vis)
         end
 
         def load_state

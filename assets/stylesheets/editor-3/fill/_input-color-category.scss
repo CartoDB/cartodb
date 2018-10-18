@@ -1,0 +1,15 @@
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.InputColorCategory-content.is-hidden {
+  display: none;
+}
+
+.InputColorCategory-loader {
+  display: flex;
+  justify-content: center;
+  padding: $baseSize * 2;
+}
+
+.InputColorCategory-loader.is-hidden {
+  display: none;
+}

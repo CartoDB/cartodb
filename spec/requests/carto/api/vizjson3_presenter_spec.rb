@@ -84,14 +84,6 @@ describe Carto::Api::VizJSON3Presenter do
       v3n_vizjson[:version].should eq '3.0.0'
     end
 
-    it 'to_vizjson does not cache vector' do
-      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization)
-      vizjson_a = v3_presenter.to_vizjson(vector: true)
-      vizjson_b = v3_presenter.to_vizjson(vector: false)
-      vizjson_a[:vector].should eq true
-      vizjson_b[:vector].should eq false
-    end
-
     it 'to_named_map_vizjson uses the redis vizjson cache' do
       fake_vizjson = { fake: 'sure!', layers: [] }
 
@@ -102,14 +94,6 @@ describe Carto::Api::VizJSON3Presenter do
       v2 = presenter.to_named_map_vizjson
       v1.should eq fake_vizjson
       v1.should eq v2
-    end
-
-    it 'to_named_map_vizjson does not cache vector' do
-      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization)
-      vizjson_a = v3_presenter.to_named_map_vizjson(vector: true)
-      vizjson_b = v3_presenter.to_named_map_vizjson(vector: false)
-      vizjson_a[:vector].should eq true
-      vizjson_b[:vector].should eq false
     end
   end
 

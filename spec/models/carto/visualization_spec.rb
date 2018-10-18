@@ -36,6 +36,88 @@ describe Carto::Visualization do
     end
   end
 
+  describe '#valid?' do
+    it 'validates visualization member with proper type' do
+      map = ::Map.create(user_id: @user.id)
+
+      CartoDB::Visualization::Member::VALID_TYPES.each do |type|
+        parent = nil
+        if type == CartoDB::Visualization::Member::TYPE_SLIDE
+          parent = CartoDB::Visualization::Member.new(
+            user_id: @user.id,
+            name:    unique_name('viz'),
+            map_id:  map.id,
+            type:    CartoDB::Visualization::Member::TYPE_DERIVED,
+            privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+          ).store
+        end
+
+        viz = CartoDB::Visualization::Member.new(
+          user_id: @user.id,
+          name:    unique_name('viz'),
+          map_id:  map.id,
+          type:    type,
+          parent_id: parent.try(:id),
+          privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        )
+
+        viz.valid?.should be_true
+      end
+    end
+
+    it 'validates carto visualization with proper type' do
+      map = ::Map.create(user_id: @user.id)
+
+      Carto::Visualization::VALID_TYPES.each do |type|
+        viz = Carto::Visualization.new(
+          user_id: @user.id,
+          name:    unique_name('viz'),
+          map_id:  map.id,
+          type:    type,
+          privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        )
+
+        viz.valid?.should be_true
+      end
+    end
+
+    it 'throws error if not valid type' do
+      map = ::Map.create(user_id: @user.id)
+
+      viz = CartoDB::Visualization::Member.new(
+        user_id: @user.id,
+        name:    unique_name('viz'),
+        map_id:  map.id,
+        type:    'whatever',
+        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      )
+
+      viz.valid?.should be_false
+
+      expect {
+        viz.store
+      }.to raise_error(CartoDB::InvalidMember, /Visualization type is not valid/)
+    end
+
+    it 'throws error if not valid type using carto model' do
+      map = ::Map.create(user_id: @user.id)
+
+      viz = Carto::Visualization.new(
+        user_id: @user.id,
+        name:    unique_name('viz'),
+        map_id:  map.id,
+        type:    'whatever',
+        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      )
+
+      viz.valid?.should be_false
+
+      expect {
+        viz.save!
+      }.to raise_error(ActiveRecord::RecordInvalid, /Type is not included in the list/)
+    end
+  end
+
   describe '#estimated_row_count and #actual_row_count' do
 
     it 'should query Table estimated an actual row count methods' do
@@ -314,13 +396,34 @@ describe Carto::Visualization do
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: map)
       FactoryGirl.create(:widget, layer: visualization.data_layers.first)
       FactoryGirl.create(:analysis, visualization: visualization, user: @carto_user)
-      FactoryGirl.create(:carto_overlay, visualization: visualization)
+      FactoryGirl.create(:carto_search_overlay, visualization: visualization)
       FactoryGirl.create(:carto_synchronization, visualization: visualization)
       visualization.create_mapcap!
       visualization.state.save
 
       Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
       expect_visualization_to_be_destroyed(visualization) { visualization.destroy }
+    end
+  end
+
+  describe '#update' do
+    before(:all) do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+      @visualization.create_mapcap!
+      @visualization.reload
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
+
+    it 'sanitizes name on rename' do
+      original = @table_visualization.name
+      @table_visualization.name = @table_visualization.name.upcase
+      @table_visualization.save!
+
+      @table_visualization.reload
+      expect(@table_visualization.name).to eq(original)
     end
   end
 

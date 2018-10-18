@@ -1,4 +1,5 @@
 require 'active_record'
+require 'active_record/connection_adapters/postgresql/oid/json'
 require_relative './carto_json_serializer'
 require_dependency 'carto/table_utils'
 require_dependency 'carto/query_rewriter'
@@ -59,6 +60,10 @@ module Carto
     include LayerTableDependencies
     include Carto::QueryRewriter
 
+    attribute :options, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+    attribute :infowindow, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+    attribute :tooltip, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
     serialize :tooltip, CartoJsonSerializer
@@ -72,11 +77,8 @@ module Carto
     has_many :layers_user_tables, dependent: :destroy
     has_many :user_tables, through: :layers_user_tables, class_name: Carto::UserTable
 
-    has_many :widgets, class_name: Carto::Widget, order: '"order"'
-    has_many :legends,
-             class_name: Carto::Legend,
-             dependent: :destroy,
-             order: :created_at
+    has_many :widgets, -> { order(:order) }, class_name: Carto::Widget
+    has_many :legends, -> { order(:created_at) }, class_name: Carto::Legend, dependent: :destroy
 
     has_many :layer_node_styles
 
@@ -198,7 +200,7 @@ module Carto
     end
 
     def supports_labels_layer?
-      basemap? && options["labels"] && options["labels"]["url"]
+      basemap? && options["labels"] && options["labels"]["urlTemplate"]
     end
 
     def map

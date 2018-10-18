@@ -1,0 +1,48 @@
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.Privacy-dropdown {
+  position: relative;
+}
+
+.Privacy-dropdownTrigger {
+  padding-right: $halfBaseSize;
+  padding-left: $halfBaseSize;
+}
+
+.Privacy-dropdownButton {
+  width: 100%;
+
+  &.is-selected {
+    background: rgba($cHighlight, 0.16);
+  }
+}
+
+.Privacy-dialog {
+  position: absolute;
+  z-index: 11;
+  top: $baseSize * 4;
+  right: 0;
+  left: 0;
+  width: 248px;
+}
+
+.Privacy-cta {
+  padding: $baseSize + 4;
+  border-bottom-right-radius: $baseSize / 2;
+  border-bottom-left-radius: $baseSize / 2;
+  background: $cSecondaryBackground;
+}
+
+.Privacy-passwordField {
+  padding: $baseSize $baseSize + 4;
+}
+
+.Editor-PrivacyDialog {
+  position: absolute;
+  z-index: 11;
+  top: $baseSize * 4;
+  right: 0;
+  left: 0;
+  width: 248px;
+}

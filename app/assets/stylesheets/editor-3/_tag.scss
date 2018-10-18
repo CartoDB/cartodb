@@ -1,72 +1,141 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
 .Tag {
   display: inline-block;
+  box-sizing: border-box;
   height: 16px;
   padding: 0 4px;
   border-radius: $halfBaseSize / 2;
   background-color: $cThirdBackground;
   color: $cAltText;
-  box-sizing: border-box;
   line-height: 14px;
+
+  &.is-disabled {
+    opacity: 0.3;
+  }
+
+  &.is-pointed {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  &--big {
+    height: 24px;
+    padding: 0 8px;
+    line-height: 22px;
+  }
+
+  &--outline {
+    background-color: transparent;
+  }
+
+  &--Builder {
+    color: $cMainText;
+  }
 }
 
 .Tag-fill {
   height: auto;
   padding: 5px 12px;
+  transition: background 0.1s ease-in;
   border-radius: $halfBaseSize;
   background-color: $cThirdBackground;
   color: $cWhite;
-}
-.Tag-fill--yellow {
-  background: #FFB927;
-}
-.Tag-fill--orange {
-  background: $cAlert;
-}
-.Tag-fill--orange-dark {
-  background: $cPassword;
-}
-.Tag-fill--red {
-  background: $cError;
-}
-.Tag-fill--blue {
-  background: $cBlue;
-}
-.Tag-fill--green {
-  background: $cPublic;
+
+  &--yellow {
+    background: #FFB927;
+
+    &.is-disabled {
+      &:hover {
+        background: #FFB927;
+      }
+    }
+
+    &:hover {
+      background: darken(#FFB927, 8%);
+    }
+  }
+
+  &--orange {
+    background: $cAlert;
+
+    &.is-disabled {
+      &:hover {
+        background: $cAlert;
+      }
+    }
+
+    &:hover {
+      background: darken($cAlert, 8%);
+    }
+  }
+
+  &--orange-dark {
+    background: $cPassword;
+
+    &.is-disabled {
+      &:hover {
+        background: $cPassword;
+      }
+    }
+
+    &:hover {
+      background: darken($cPassword, 8%);
+    }
+  }
+
+  &--red {
+    background: $cError;
+
+    &.is-disabled {
+      &:hover {
+        background: $cError;
+      }
+    }
+
+    &:hover {
+      background: darken($cError, 8%);
+    }
+  }
+
+  &--blue {
+    background: $cBlue;
+
+    &.is-disabled {
+      &:hover {
+        background: $cBlue;
+      }
+    }
+
+    &:hover {
+      background: darken($cBlue, 8%);
+    }
+  }
+
+  &--green {
+    background: $cPublic;
+
+    &.is-disabled {
+      &:hover {
+        background: $cPublic;
+      }
+    }
+
+    &:hover {
+      background: darken($cPublic, 8%);
+    }
+  }
 }
 
-.Tag--big {
-  height: 24px;
-  padding: 0 8px;
-  line-height: 22px;
-}
+.Tag-outline {
+  &--dark {
+    border: 1px solid $cSecondaryDark;
+    color: $cSecondaryDark;
+  }
 
-.Tag--outline {
-  background-color: transparent;
-}
-
-.Tag-outline--dark {
-  border: 1px solid $cSecondaryDark;
-  color: $cSecondaryDark;
-}
-.Tag-outline--grey {
-  border: 1px solid $cAltText;
-  color: $cAltText;
-}
-
-.Tag--Builder {
-  color: $cMainText;
-}
-
-.Tag.is-disabled {
-  opacity: 0.3;
-}
-
-.Tag.is-pointed {
-  user-select: none;
-  cursor: pointer;
+  &--grey {
+    border: 1px solid $cAltText;
+    color: $cAltText;
+  }
 }

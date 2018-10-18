@@ -78,6 +78,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) &&
                           @user.valid_creation?(current_user)
 
+    valid_password_confirmation
     unless model_validation_ok
       raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
     end
@@ -111,12 +112,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
     flash.now[:error] = e.user_message
     @user = default_user
     render 'new'
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'new', status: e.status
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
     render 'new'
   end
 
   def update
+    valid_password_confirmation
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
     session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
 
@@ -179,12 +184,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render 'edit'
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'edit', status: e.status
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
     render 'edit', status: 422
   end
 
   def destroy
+    valid_password_confirmation
     raise "Can't delete user. Has shared entities" if @user.has_shared_entities?
 
     @user.destroy
@@ -200,6 +209,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
       flash[:success] = "#{e.user_message}. User was deleted from the organization server."
       redirect_to organization_path(user_domain: params[:user_domain])
     end
+  rescue Carto::PasswordConfirmationError => e
+    flash[:error] = e.message
+    redirect_to organization_path(user_domain: params[:user_domain])
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error deleting organizational user', target_user: @user.username)
     flash[:error] = "User was not deleted. #{e.message}"
@@ -207,9 +219,13 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def regenerate_api_key
-    @user.regenerate_api_key
+    valid_password_confirmation
+    @user.regenerate_all_api_keys
     flash[:success] = "User API key regenerated successfully"
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+  rescue Carto::PasswordConfirmationError => e
+    flash[:error] = e.message
+    render action: 'edit', status: e.status
   rescue => e
     CartoDB.notify_exception(e, { user_id: @user.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API key. Please, try again and contact us if the problem persists"

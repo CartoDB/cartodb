@@ -4,203 +4,296 @@
 
 // Styles for the new default forms
 // --------------------------------------------------
-
 $sLabel-width: 140px;
-.Form--minHeight { min-height: 400px }
+
+.Form--minHeight {
+  min-height: 400px;
+}
+
 .Form-title {
   display: block;
-  margin: $sMargin-section 0;
   width: 100%;
+  margin: $sMargin-section 0;
 }
+
 .Form-titleHeader {
   display: block;
-  padding-bottom: 12px;
   margin-bottom: $sMargin-section;
+  padding-bottom: 12px;
   border-bottom: 1px solid $cStructure-mainLine;
-  font-size: $sFontSize-normal;
   color: $cTypography-headers;
+  font-size: $sFontSize-normal;
   font-weight: $sFontWeight-bold;
 }
+
 .Form-titleText {
   width: 460px;
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-paragraphs;
-  line-height: $sLineHeight-large;
+  font-size: $sFontSize-large;
   font-style: normal;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-large;
 }
-.Form-titleText--negative { color: $cHighlight-negative }
+
+.Form-titleText--negative {
+  color: $cHighlight-negative;
+}
+
 .Form-list {
   padding: 0 0 20px 160px;
-  color: $cTypography-paragraphs;
   list-style-type: disc;
+  color: $cTypography-paragraphs;
 }
+
 .Form-listItem {
+  color: $cTypography-paragraphs;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
-  color: $cTypography-paragraphs;
 }
+
 .Form-modal {
-  @include justify-content(center);
-  @include align-items(center);
+  align-items: center;
+  justify-content: center;
   width: 100%;
 }
+
 .Form-row {
-  @include display-flex();
-  @include justify-content(flex-start, start);
+  display: flex;
+  justify-content: flex-start;
   padding: 10px 0;
 }
+
 .Form-title + .Form-row {
   padding-top: 0;
 }
+
 .Form-row.Form-row--centered {
-  @include justify-content(center);
+  justify-content: center;
 }
+
 .Form-row.Form-row--step {
   position: relative;
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  align-items: center;
+  justify-content: space-between;
   padding-top: 0;
   padding-bottom: $sMargin-group;
-  &:before {
+
+  &::before {
     content: '';
-    border-radius: 50px;
-    padding: 5px 10px;
     margin-right: $sMargin-elementInline;
+    padding: 5px 10px;
     border: 1px solid $cStructure-mainLine;
+    border-radius: 50px;
+    color: $cTypography-paragraphs;
     font-size: $sFontSize-smallUpperCase;
     font-weight: $sFontWeight-small;
-    color: $cTypography-paragraphs;
     line-height: $sLineHeight-small;
   }
-  &:first-child:before { content: '1' }
-  &:nth-child(2):before { content: '2' }
-  &:nth-child(3):before { content: '3' }
-  &:nth-child(4):before { content: '4' }
-  &:nth-child(5):before { content: '5' }
-}
-.Form-row.Form-row--step:first-child { padding-top: 0 }
-.Form-row.Form-row--step.is-done {
-  &:before {
-    color: $cHighlight-stepDone;
-    border-color: $cHighlight-stepDone;
+
+  &:first-child::before {
+    content: '1';
+  }
+
+  &:nth-child(2)::before {
+    content: '2';
+  }
+
+  &:nth-child(3)::before {
+    content: '3';
+  }
+
+  &:nth-child(4)::before {
+    content: '4';
+  }
+
+  &:nth-child(5)::before {
+    content: '5';
   }
 }
+
+.Form-row.Form-row--step:first-child {
+  padding-top: 0;
+}
+
+.Form-row.Form-row--step.is-done {
+  &::before {
+    border-color: $cHighlight-stepDone;
+    color: $cHighlight-stepDone;
+  }
+}
+
 .Form-row.has-label {
   // compensate for label width, to make the rowData appear as centered
   margin-left: -$sLabel-width;
 }
-.Form-row.Form-row--spaced { padding: $sMargin-element 0 }
+
+.Form-row.Form-row--spaced {
+  padding: $sMargin-element 0;
+}
+
 .Form-rowLabel {
   width: 140px;
   margin-right: $sMargin-element;
   text-align: right;
 }
+
 .Form-rowLabel.Form-rowLabel--leftAligned {
   width: $sLabel-width;
   margin-right: $sMargin-element;
   text-align: left;
 }
+
 .Form-label {
-  line-height: 40px;
+  color: $cTypography-paragraphs;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-normal;
-  color: $cTypography-paragraphs;
+  line-height: 40px;
   text-transform: capitalize;
 }
+
 .Form-label.has-error {
   color: $cHighlight-negative;
 }
+
 .Form-label.Form-label--verticalAlignTop {
   line-height: inherit;
 }
-.Form-label--multipleLines { line-height: 20px }
-.Form-label.Form-label--large { font-size: $sFontSize-large }
+
+.Form-label--multipleLines {
+  line-height: 20px;
+}
+
+.Form-label.Form-label--large {
+  font-size: $sFontSize-large;
+}
+
 .Form-label.Form-label--step {
-  @include flex-grow(1);
+  flex-grow: 1;
   line-height: normal;
 }
-.Form-rowPreview { width: 735px }
 
+.Form-rowPreview {
+  width: 735px;
+}
 
 .Form-rowData {
+  display: flex;
   position: relative;
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  align-items: center;
+  justify-content: space-between;
   width: 380px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
   margin-right: $sMargin-element;
 }
 
-.Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
-.Form-rowData--withLabel { margin-bottom: 30px }
-.Form-rowData--noMargin { margin: 0 }
+.Form-rowData.Form-rowData--alignLeft {
+  justify-content: flex-start;
+}
+
+.Form-rowData--withLabel {
+  margin-bottom: 30px;
+}
+
+.Form-rowData--noMargin {
+  margin: 0;
+}
+
+.Form-rowData--noMinHeight {
+  min-height: 0;
+}
 
 // RowData sizes
-.Form-rowData--full { width: 100% }
-.Form-rowData--longer { width: 460px }
-.Form-rowData--long { width: 380px }
-.Form-rowData--med { width: 300px }
-.Form-rowData--short { width: 170px }
+.Form-rowData--full {
+  width: 100%;
+}
+
+.Form-rowData--longer {
+  width: 460px;
+}
+
+.Form-rowData--long {
+  width: 380px;
+}
+
+.Form-rowData--med {
+  width: 300px;
+}
+
+.Form-rowData--short {
+  width: 170px;
+}
+
 .Form-rowData--shorter {
   width: 130px;
 }
+
 .Form-rowData--step {
   width: 260px;
   margin-right: 0;
 }
+
 .Form-rowDataExtra {
   position: absolute;
   right: -52px;
 }
-.Form-rowData ~ .Form-rowDataExtra { top: 10px } // to compensate for its top-padding
-.Form-rowData--step ~ .Form-rowDataExtra { top: 0 }
+
+.Form-rowData ~ .Form-rowDataExtra {
+  top: 10px;
+} // to compensate for its top-padding
+.Form-rowData--step ~ .Form-rowDataExtra {
+  top: 0;
+}
 
 .Form-input {
   position: relative;
+  z-index: 2;
   height: 38px;
   padding: 0 12px;
-  outline: none;
   border: 1px solid #CCC;
   border-radius: 4px;
+  outline: none;
   color: #666;
-  z-index: 2;
 
-  &:focus { border-color: #999 }
+  &:focus {
+    border-color: #999;
+  }
 }
 
 .Form-inputField {
   position: relative;
+  z-index: 2;
   height: 38px;
   padding: 0 12px;
   border: 1px solid #CCC;
   border-radius: 4px;
   outline: none;
   color: #666;
-  z-index: 2;
 }
+
 .Form-inputField--withLabel {
-  padding: 0 12px  0;
+  padding: 0 12px;
   background: #FFF;
+
   &:hover {
     border-color: #999;
   }
 }
 
 .Form-inputField--withLabel.has-error {
+  border-color: rgba(#DD3B37, 0.6);
   color: $cHighlight-negative;
-  border-color: rgba(#DD3B37,0.6);
 }
+
 .Form-inputField--withLabel.has-error .Form-inputLabel {
   color: rgba($cHighlight-negative, 0.6);
 }
+
 .Form-inputField--withLabel.has-error .Form-input {
   color: $cHighlight-negative;
 }
 
 .Form-inputField--withLabel.has-error.is-focused {
-  border-color: rgba(#DD3B37,0.6);
+  border-color: rgba(#DD3B37, 0.6);
 }
 
 .Form-inputField .Form-input {
@@ -209,23 +302,56 @@ $sLabel-width: 140px;
   border-radius: 0;
   background: none;
 }
+
 .Form-inputField .Form-inputLabel {
   color: #CCC;
 }
 
-.Form-input.Form-input--error { border-color: rgba(#DD3B37,0.6) }
-.Form-input.Form-input--error:focus,
-.Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
+.Form-input.Form-input--error {
+  border-color: rgba(#DD3B37, 0.6);
+}
 
-.Form-input::-webkit-input-placeholder { font-style: italic; color: #AAA }
-.Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
-.Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
-.Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
+.Form-input.Form-input--error:focus,
+.Form-input.Form-input--error:hover {
+  border-color: rgba(#DD3B37, 1);
+}
+
+.Form-input::-webkit-input-placeholder {
+  color: #AAA;
+  font-style: italic;
+}
+
+.Form-input:-moz-placeholder {
+  color: #AAA;
+  font-style: italic;
+}
+
+.Form-input::-moz-placeholder {
+  color: #AAA;
+  font-style: italic;
+}
+
+.Form-input:-ms-input-placeholder {
+  color: #AAA;
+  font-style: italic;
+}
 // Sizes
-.Form-input--longer { width: 434px }
-.Form-input--long { width: 354px }
-.Form-input--med { width: 274px }
-.Form-input--short { width: 114px }
+.Form-input--longer {
+  width: 434px;
+}
+
+.Form-input--long {
+  width: 354px;
+}
+
+.Form-input--med {
+  width: 274px;
+}
+
+.Form-input--short {
+  width: 114px;
+}
+
 .Form-input--shorter {
   width: 30px;
 }
@@ -233,69 +359,94 @@ $sLabel-width: 140px;
 .Form-input.has-icon {
   padding: 0 42px 0 12px;
 
-  &.Form-input--longer { width: 414px }
-  &.Form-input--long { width: 324px }
-  &.Form-input--med {}
-  &.Form-input--short { width: 92px }
+  &.Form-input--longer {
+    width: 414px;
+  }
+
+  &.Form-input--long {
+    width: 324px;
+  }
+
+  &.Form-input--short {
+    width: 92px;
+  }
 
   &.Form-input--longerMorePadding {
     width: 356px;
     padding-right: 100px;
   }
 }
+
 .Form-input.has-submit {
   padding: 0 70px 0 12px;
 
-  &.Form-input--longer { width: 387px }
-  &.Form-input--long { width: 333px }
-  &.Form-input--med { width: 227px }
-  &.Form-input--short {}
+  &.Form-input--longer {
+    width: 387px;
+  }
+
+  &.Form-input--long {
+    width: 333px;
+  }
+
+  &.Form-input--med {
+    width: 227px;
+  }
 }
+
 .Form-inputSubmit {
   position: absolute;
+  z-index: 2;
   top: 50%;
   right: 12px;
   height: 28px;
-  padding: 0;
   margin-top: -14px;
+  padding: 0;
   background: none;
-  z-index: 2;
 }
+
 .Form-inputIcon {
   position: absolute;
-  right: 14px;
-  top: 12px;
   z-index: 3;
-  font-size: $sFontSize-larger;
+  top: 12px;
+  right: 14px;
   color: $cTypography-help;
+  font-size: $sFontSize-larger;
 }
-.Form-inputIcon--clock { top: 11px }
+
+.Form-inputIcon--clock {
+  top: 11px;
+}
+
 .Form-inputError {
   position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 38px;
-  padding: 0 12px;
-  margin-top: -20px;
   z-index: 1;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 38px;
+  margin-top: -20px;
+  padding: 0 12px;
+  transition: margin 200ms ease-in-out;
   border: 1px solid #CCC;
-  line-height: 38px;
+  border-radius: 4px;
   background: #FFF4F4;
   color: $cHighlight-negative;
   font-size: $sFontSize-normal;
-  border-radius: 4px;
-  @include transition(margin, 200ms, ease-in-out);
+  line-height: 38px;
 }
+
 .Form-inputError.is-visible {
   margin-top: 15px;
 }
+
 .Form-input.is-disabled {
   background: $cStructure-grayBkg;
 }
+
 .Form-input.is-invalid {
   border-color: $cHighlight-negative;
 }
+
 .Form-inputField.is-focused {
   border-color: $cTypography-secondary;
 }
@@ -304,213 +455,275 @@ $sLabel-width: 140px;
 .Form-input--noBorder {
   border: none;
 }
+
 .Form-input--noBkg,
 .Form-input--noBkg.is-disabled {
   background: transparent;
 }
 
 .Form-textarea {
-  padding: 9px 12px;
   min-height: 110px;
   max-height: 110px;
+  padding: 9px 12px;
 }
-.Form-textarea.is-disabled { color: $cTypography-help }
+
+.Form-textarea.is-disabled {
+  color: $cTypography-help;
+}
+
 .Form-copyIcon {
   top: 10px;
   right: 12px;
   font-size: $sFontSize-largest;
 }
-.Form-copyIcon.hover { color: $cTypography-paragraphs }
+
+.Form-copyIcon.hover {
+  color: $cTypography-paragraphs;
+}
+
 .Form-text--preview {
-  font-size: $sFontSize-normal;
   color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
   line-height: $sLineHeight-large;
 }
-.Form-avatar {
 
-}
 .Form-avatarPreview {
   position: relative;
   width: 100px;
   height: 100px;
-  background: $cStructure-grayBkg;
+  overflow: hidden;
   border: 1px solid $cTypography-help;
   border-radius: 4px;
-  overflow: hidden;
+  background: $cStructure-grayBkg;
 }
+
 .Form-avatarPreviewImage {
   position: relative;
   max-width: 100px;
   border-radius: 4px;
   background: $cStructure-grayBkg;
 }
+
 .Form-avatarPreviewLoader {
   position: absolute;
+  z-index: 2;
   top: 0;
   left: 0;
   width: 100px;
   height: 100px;
-  background: rgba(black, 0.4);
   border-radius: 4px;
-  z-index: 2;
+  background: rgba(black, 0.4);
 }
+
 .Spinner.Form-avatarPreviewSpinner {
   position: absolute;
+  z-index: 1;
   top: 50%;
   left: 50%;
   margin: -20px 0 0 -20px;
-  z-index: 1;
 }
+
 .Form-avatar .input-group {
   position: absolute;
   top: 10px;
   left: 120px;
 }
+
 .Form-avatar .form-control {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
   width: 250px;
   border: none;
   color: $cTypography-secondary;
-  display: none;
 }
+
 .Form-avatar .btn {
   position: absolute;
   top: 0;
   left: 0;
   width: 85px;
   color: $cTypography-link;
+
   &:hover {
-    cursor: pointer;
-    text-decoration: underline;
     color: $cTypography-linkHover;
+    text-decoration: underline;
+    cursor: pointer;
   }
 }
+
 .Form-avatar .btn[disabled] {
   color: $cTypography-help;
+
   &:hover {
-    cursor: default;
-    text-decoration: none;
     color: $cTypography-help;
+    text-decoration: none;
+    cursor: default;
   }
 }
+
 .Form-link {
   color: $cTypography-link;
   text-decoration: underline;
+
   &:hover {
     color: $cTypography-linkHover;
     cursor: pointer;
   }
 }
+
 .Form-link.is-disabled {
   color: $cTypography-help;
   text-decoration: none;
+
   &:hover {
     color: $cTypography-help;
     cursor: default;
   }
 }
+
 .Form-upload {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 213px;
   height: 50px;
   padding: 0 10px 0 74px;
-  @include background(image-url('layout/export-files.png') no-repeat 10px 10px #F3F3F3);
   border: 1px dashed $cStructure-mainLine;
   border-radius: 2px;
+
+  @include background(image-url('layout/export-files.png') no-repeat 10px 10px #F3F3F3);
 }
+
 .Form-upload.is-dropping {
   border-color: rgba(black, 0.4);
-  .Form-fileButton { display: none; }
-  .Form-fileLabel { color: rgba(black, 0.4); }
+
+  .Form-fileButton {
+    display: none;
+  }
+
+  .Form-fileLabel {
+    color: rgba(black, 0.4);
+  }
 }
+
 .Form-file {
-  &:hover .Button--main { background: #007fbd }
-  &:hover .Button--negative { background-color: rgba(#B93F37, 1) }
+  &:hover .Button--main {
+    background: #007FBD;
+  }
+
+  &:hover .Button--negative {
+    background-color: rgba(#B93F37, 1);
+  }
 }
+
 .Form-file input[type="file"] {
   position: absolute;
+  z-index: 3;
   top: 0;
   right: 0;
   margin: 0;
-  border: solid transparent;
-  border-width: 1px 0 24px 0;
-  opacity: 0;
-  filter: alpha(opacity=0);
   -moz-transform: translate(26px, 0) scale(1);
-  direction: ltr;
+  border: solid transparent;
+  border-width: 1px 0 24px;
+  opacity: 0;
   cursor: pointer;
-  z-index: 3;
+  filter: alpha(opacity=0);
+  direction: ltr;
 }
+
 .Form-fileLabel {
   width: 130px;
-  line-height: 17px;
   color: $cTypography-secondary;
   font-size: $sFontSize-smallUpperCase;
+  line-height: 17px;
 }
+
 .Form-fileLabel--error {
   display: none;
   color: $cHighlight-negative;
 }
+
 .Form-fileButton {
   height: 26px;
   padding: 0 14px;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-normal;
 }
-.Form .dz-preview { display: none }
-.Form-fileDropzone {
-  position: absolute;
+
+.Form .dz-preview {
   display: none;
+}
+
+.Form-fileDropzone {
+  display: none;
+  position: absolute;
+  z-index: 1;
   top: 0;
-  left: 0;
-  bottom: 0;
   right: 0;
+  bottom: 0;
+  left: 0;
   border: 2px dashed $cStructure-mainLine;
-  background: $cStructure-grayBkg;
   border-radius: 4px;
-  line-height: 38px;
-  text-align: center;
+  background: $cStructure-grayBkg;
   color: $cTypography-secondary;
   font-size: $sFontSize-large;
-  z-index: 1;
+  line-height: 38px;
+  text-align: center;
 }
+
 .Form-rowInfo {
-  @include display-flex();
-  line-height: 40px;
+  display: flex;
   max-width: 380px;
+  line-height: 40px;
 }
+
 .Form-rowInfoText {
-  font-size: $sFontSize-normal;
   color: $cTypography-help;
+  font-size: $sFontSize-normal;
 }
-.Form-rowInfoText--centered { text-align: center }
-.Form-rowInfoText--smaller { font-size: $sFontSize-smallUpperCase }
-.Form-rowInfoText--block { width: 100% }
+
+.Form-rowInfoText--centered {
+  text-align: center;
+}
+
+.Form-rowInfoText--smaller {
+  font-size: $sFontSize-smallUpperCase;
+}
+
+.Form-rowInfoText--block {
+  width: 100%;
+}
+
 .Form-rowInfoText--multipleLines {
   line-height: 20px;
 }
-.Form-rowInfoText--error { color: #DD3B37 }
+
+.Form-rowInfoText--error {
+  color: #DD3B37;
+}
+
 .Form-rowInfoText--error .Form-link {
   color: #DD3B37;
   text-decoration: underline;
 }
+
 .Form-footer {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: $sMargin-section 0;
   padding: $sMargin-formRow 0;
   border-top: 1px solid $cStructure-mainLine;
 }
+
 .Form-footerText {
+  color: $cTypography-secondary;
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
-  color: $cTypography-secondary;
 }
+
 .Form-footerIcon {
   width: 20px;
   height: 20px;
@@ -518,62 +731,87 @@ $sLabel-width: 140px;
   border: 1px solid #F2C000;
   border-radius: 20px;
   background: #F6D35C;
-  line-height: $sLineHeight-normal!important;
+  color: WHITE;
   font-size: $sFontSize-normal;
-  color: white;
+  line-height: $sLineHeight-normal !important;
   text-align: center;
 }
+
 .Form-tags {
   position: relative;
+  z-index: 2;
   width: 100%;
   min-height: 38px;
   padding: 0;
-  outline: none;
   border: 1px solid #CCC;
   border-radius: 4px;
-  background: white;
-  z-index: 2;
+  outline: none;
+  background: WHITE;
   font-size: 12px;
   line-height: 16px;
 }
-.Form-tagsList.tagit { padding: 0 5px 5px 5px }
+
+.Form-tagsList.tagit {
+  padding: 0 5px 5px;
+}
+
 .Form-tagsList.tagit .tagit-choice {
-  padding: 0 30px 0 11px;
   margin: 5px 5px 0 0;
-  line-height: 28px;
+  padding: 0 30px 0 11px;
+  border-radius: 2px;
   background: #EFF8FF;
   color: #746E76;
-  border-radius: 2px;
+  line-height: 28px;
 }
+
 .Form-tagsList.tagit .tagit-choice .tagit-close {
-  line-height: normal;
   right: 10px;
+  line-height: normal;
 }
+
 .Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
   display: inline-block;
   color: #C5CCD1;
-  &:hover { color: #AAA }
+
+  &:hover {
+    color: #AAA;
+  }
 }
-.Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
+
+.Form-tagsList.tagit li.tagit-new {
+  padding: 7px 4px 2px 7px;
+}
+
 .Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
-  font-weight: $sFontWeight-normal;
+  color: #AAA;
   font-style: italic;
-  color: #AAA
+  font-weight: $sFontWeight-normal;
 }
+
 .Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
-  font-weight: $sFontWeight-normal;
+  color: #AAA;
   font-style: italic;
-  color: #AAA
+  font-weight: $sFontWeight-normal;
 }
+
 .Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
-  font-weight: $sFontWeight-normal;
+  color: #AAA;
   font-style: italic;
-  color: #AAA
+  font-weight: $sFontWeight-normal;
 }
-.Form-tags.is-focus { border-color: #1181FB }
+
+.Form-tags.is-focus {
+  border-color: #1181FB;
+}
+
 .Form-tags.is-disabled {
   background: $cStructure-grayBkg;
 
-  .tagit-choice { padding: 0 11px }
-  .tagit-choice .tagit-close { display: none }
+  .tagit-choice {
+    padding: 0 11px;
+  }
+
+  .tagit-choice .tagit-close {
+    display: none;
+  }
 }

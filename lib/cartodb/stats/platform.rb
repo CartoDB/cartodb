@@ -9,7 +9,7 @@ module CartoDB
 
       # Total users that aren't FREE
       def pay_users
-        Carto::AccountType.new.pay_users
+        ::User.where("upper(account_type) != 'FREE'").count
       end
 
       # Total datasets

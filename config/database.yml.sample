@@ -1,5 +1,5 @@
 production:
-  adapter: postgres
+  adapter: postgresql
   encoding: unicode
   host: localhost
   port: 5432
@@ -8,9 +8,10 @@ production:
   username: postgres
   password:
   conn_validator_timeout: 900
+  prepared_statements: false
 
 staging:
-  adapter: postgres
+  adapter: postgresql
   encoding: unicode
   host: localhost
   port: 5432
@@ -19,9 +20,10 @@ staging:
   username: postgres
   password:
   conn_validator_timeout: 900
+  prepared_statements: false
 
 development:
-  adapter: postgres
+  adapter: postgresql
   encoding: unicode
   host: localhost
   port: 5432
@@ -31,9 +33,10 @@ development:
   password:
   conn_validator_timeout: 900
   pool: 50
+  prepared_statements: false
 
 test:
-  adapter: postgres
+  adapter: postgresql
   encoding: unicode
   database: carto_db_test
   host: localhost
@@ -42,4 +45,5 @@ test:
   username: postgres
   password:
   conn_validator_timeout: -1
+  prepared_statements: false
 

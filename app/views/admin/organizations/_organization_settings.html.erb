@@ -9,6 +9,18 @@
 <%= content_for(:js) do %>
     <script type="text/javascript">
         var username = "<%= current_user.username %>";
+        var organization_data = {
+            base_url: "<%= CartoDB.url(self, 'create_organization_user', {}, current_user) %>", // HACK!!!
+            id: "<%= current_user.organization.id %>",
+            quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
+            seats: <%= current_user.organization.seats %>,
+            viewer_seats: <%= current_user.organization.viewer_seats %>,
+            assigned_seats: <%= current_user.organization.assigned_seats %>,
+            assigned_viewer_seats: <%= current_user.organization.assigned_viewer_seats %>,
+            owner: { id: "<%= current_user.organization.owner.id %>" },
+            admins: <%= current_user.organization.users.select(&:org_admin).map { |u| { id: u.id } }.to_json.html_safe %>,
+            signup_enabled: <%= current_user.organization.auth_username_password_enabled || current_user.organization.auth_google_enabled %>
+        };
         var config = <%= safe_js_object frontend_config %>;
         var authenticity_token = "<%= form_authenticity_token %>";
         var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
@@ -18,7 +30,7 @@
         var mobile_enabled = "<%= current_user.mobile_sdk_enabled? %>";
         var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
     </script>
-    <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
+    <%= javascript_include_tag 'common', 'common_vendor', 'organization' %>
 <% end %>
 <%= content_for(:css) do %>
     <%= stylesheet_link_tag 'organization.css', :media => 'all' %>

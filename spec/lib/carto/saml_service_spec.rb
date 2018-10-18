@@ -6,11 +6,11 @@ describe Carto::SamlService do
     Carto::SamlService.new(@organization)
   end
 
-  before(:all) do
+  before(:each) do
     @organization = FactoryGirl.create(:saml_organization)
   end
 
-  after(:all) do
+  after(:each) do
     @organization.delete
   end
 
@@ -25,6 +25,14 @@ describe Carto::SamlService do
 
     it 'is enabled if there is configuration' do
       service.enabled?.should be_true
+    end
+
+    it 'email_attribute doesnt return the default value if its defined' do
+      saml_config = @organization.auth_saml_configuration
+      saml_config['email_attribute'] = 'defined_username'
+      service.send(:email_attribute).should eq 'defined_username'
+      saml_config['email_attribute'] = nil
+      service.send(:email_attribute).should eq 'name_id'
     end
   end
 
@@ -57,7 +65,7 @@ describe Carto::SamlService do
       it 'returns the user with matching email' do
         user = create_test_saml_user
         response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => user.email)
+        response_mock.stubs(:attributes).returns(saml_config['email_attribute'] => user.email)
 
         service.get_user_email(saml_response_param_mock).should eq user.email
 

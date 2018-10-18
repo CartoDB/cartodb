@@ -1,0 +1,26 @@
+// Styles for search component
+// --------------------------------------------------
+
+.CDB-Widget-search {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  height: $baseSize * 3;
+}
+
+.CDB-Widget-searchLens {
+  @include flex-grow(1);
+  min-width: $baseSize * 2;
+  margin-right: $baseSize / 2;
+}
+
+.CDB-Widget-searchTextInput {
+  @include flex(2 1 auto);
+  width: 100%;
+}
+
+.CDB-Widget-searchApply {
+  @include flex-grow(1);
+  min-width: 34px;
+  margin-left: $baseSize;
+}

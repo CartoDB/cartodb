@@ -14,11 +14,11 @@ module ModelFactories
     end
 
     def self.get_default_base_layer(user)
-      basemap = user.default_basemap
+      basemap = user.default_basemap.except('default')
       options = if basemap['className'] === 'googlemaps'
                   { kind: 'gmapsbase', options: basemap }
                 else
-                  { kind: 'tiled', options: basemap.merge('urlTemplate' => basemap['url']) }
+                  { kind: 'tiled', options: basemap }
                 end
 
       ::Layer.new(options)
@@ -43,16 +43,12 @@ module ModelFactories
 
     # Info: does not perform validity checks
     def self.get_default_labels_layer(base_layer)
-      labels_layer_url = base_layer.options['labels']['url']
-
       ::Layer.new(
         kind: 'tiled',
-        options: base_layer.options.except('name', 'className', 'labels').merge(
-          'urlTemplate' => labels_layer_url,
-          'url' => labels_layer_url,
+        options: base_layer.options.except('className', 'labels').merge(
           'type' => 'Tiled',
           'name' => "#{base_layer.options['name']} Labels"
-        )
+        ).merge(base_layer.options['labels'])
       )
     end
 

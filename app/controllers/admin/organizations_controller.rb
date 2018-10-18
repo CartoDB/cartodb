@@ -55,15 +55,16 @@ class Admin::OrganizationsController < Admin::AdminController
     end
   end
 
-  def notifications
+  def notifications(status = 200)
     @notification ||= Carto::Notification.new(recipients: Carto::Notification::RECIPIENT_ALL)
     @notifications = @carto_organization.notifications.limit(12).map { |n| Carto::Api::NotificationPresenter.new(n) }
     respond_to do |format|
-      format.html { render 'notifications' }
+      format.html { render 'notifications', status: status }
     end
   end
 
   def new_notification
+    valid_password_confirmation
     carto_organization = Carto::Organization.find(@organization.id)
     attributes = {
       body: params[:carto_notification]['body'],
@@ -78,6 +79,9 @@ class Admin::OrganizationsController < Admin::AdminController
       flash.now[:error] = @notification.errors.full_messages.join(', ')
       notifications
     end
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    notifications(e.status)
   end
 
   def destroy_notification
@@ -88,6 +92,7 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def settings_update
+    valid_password_confirmation
     attributes = params[:organization]
 
     if attributes.include?(:avatar_url) && valid_avatar_file?(attributes[:avatar_url])
@@ -116,17 +121,22 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: 'settings'
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'settings', status: e.status
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "There's been a validation error, check your values"
     render action: 'settings'
   end
 
   def regenerate_all_api_keys
-    @organization.users.each { |user|
-      user.regenerate_api_key
-    }
+    valid_password_confirmation
+    @organization.users.each(&:regenerate_all_api_keys)
 
     redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Users API keys regenerated successfully" }
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'settings', status: e.status
   rescue => e
     CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"
@@ -140,12 +150,14 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def auth_update
+    valid_password_confirmation
     attributes = params[:organization]
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
     @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
     @organization.auth_google_enabled = attributes[:auth_google_enabled]
     @organization.auth_github_enabled = attributes[:auth_github_enabled]
     @organization.strong_passwords_enabled = attributes[:strong_passwords_enabled]
+    @organization.password_expiration_in_d = attributes[:password_expiration_in_d]
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
@@ -154,6 +166,9 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
     render action: 'auth'
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'auth', status: e.status
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "There's been a validation error, check your values"
     render action: 'auth'

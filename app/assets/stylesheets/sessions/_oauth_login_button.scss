@@ -1,8 +1,21 @@
 @import 'compass/css3/border-radius';
 
+@font-face {
+  font-family: 'Roboto Medium';
+  font-style: normal;
+  font-weight: 500;
+  src: font-files("Roboto-Medium.woff");
+}
+
+.Sessions-oauthHeader {
+  padding-top: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .Sessions-oauthContainer {
-  @include display-flex();
-  @include justify-content(space-between);
+  display: flex;
+  justify-content: space-between;
 
   .Sessions-oauthButton {
     margin-left: 8px;
@@ -14,45 +27,40 @@
 }
 
 .Sessions-oauthButton {
-  @include flex(1);
+  flex: 1;
   width: 100%;
   min-width: 156px;
   max-width: 320px;
-  height: 49px;
+  height: 40px;
+  padding-left: 52px;
+  transition: all 0.15s;
+
+  @include border-radius(4px);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #FFF;
+  box-shadow: 0 0.5px rgba(0, 0, 0, 0.2);
+  color: #757575;
+  font-family: 'Roboto Medium', sans-serif;
+  line-height: 40px;
+  vertical-align: text-bottom;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 0 3px 3px rgba(66, 133, 244, 0.3);
+    text-decoration: none;
+  }
 }
 
 .Sessions-githubButton {
-  @include border-radius(4px);
-  transition: all 0.15s;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: #162945;
-  background-image: image-url('layout/sessions/github_logo_white.svg');
+  background-image: image-url('layout/sessions/GitHub-Mark-32px.png');
   background-repeat: no-repeat;
-  background-position: center;
-  color: #FFF;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #FFF;
-    background-image: image-url('layout/sessions/github_logo_black.svg');
-    color: #162945;
-  }
+  background-position: 15px 11px;
+  background-size: 18px 18px;
 }
 
 .Sessions-googleButton {
-  @include border-radius(4px);
-  transition: all 0.15s;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: #162945;
-  background-image: image-url('layout/sessions/google_plus_logo_white.svg');
+  background-image: image-url('layout/sessions/g-normal.png');
   background-repeat: no-repeat;
-  background-position: center;
-  color: #FFF;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #FFF;
-    background-image: image-url('layout/sessions/google_plus_logo_black.svg');
-    color: #162945;
-  }
+  background-position: 15px 11px;
+  background-size: 18px 18px;
 }

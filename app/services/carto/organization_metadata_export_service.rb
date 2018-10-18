@@ -1,11 +1,18 @@
 require 'json'
 require_dependency 'carto/export/layer_exporter'
+require_dependency 'carto/export/connector_configuration_exporter'
+
+# Not migrated
+# invitations -> temporary by nature
+# ldap_configurations -> not enabled in SaaS
 
 # Version History
 # 1.0.0: export organization metadata
+# 1.0.1: export password expiration
+# 1.0.2: export connector configurations
 module Carto
   module OrganizationMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.0'.freeze
+    CURRENT_VERSION = '1.0.2'.freeze
     EXPORTED_ORGANIZATION_ATTRIBUTES = [
       :id, :seats, :quota_in_bytes, :created_at, :updated_at, :name, :avatar_url, :owner_id, :website, :description,
       :display_name, :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota, :auth_token,
@@ -16,7 +23,7 @@ module Carto
       :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota, :obs_general_block_price,
       :salesforce_datasource_enabled, :viewer_seats, :geocoder_provider, :isolines_provider, :routing_provider,
       :auth_github_enabled, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :builder_enabled,
-      :auth_saml_configuration, :no_map_logo
+      :auth_saml_configuration, :no_map_logo, :password_expiration_in_d
     ].freeze
 
     def compatible_version?(version)
@@ -27,9 +34,10 @@ module Carto
   module OrganizationMetadataExportServiceImporter
     include OrganizationMetadataExportServiceConfiguration
     include LayerImporter
+    include ConnectorConfigurationImporter
 
     def build_organization_from_json_export(exported_json_string)
-      build_organization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_organization_from_hash_export(JSON.parse(exported_json_string, symbolize_names: true))
     end
 
     def build_organization_from_hash_export(exported_hash)
@@ -46,13 +54,17 @@ module Carto
     end
 
     def build_organization_from_hash(exported_organization)
-      organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES))
+      organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES - [:id]))
 
       organization.assets = exported_organization[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
       organization.groups = exported_organization[:groups].map { |group| build_group_from_hash(group.symbolize_keys) }
       organization.notifications = exported_organization[:notifications].map do |notification|
         build_notification_from_hash(notification.symbolize_keys)
       end
+
+      organization.connector_configurations = build_connector_configurations_from_hash(
+        exported_organization[:connector_configurations]
+      )
 
       # Must be the last one to avoid attribute assignments to try to run SQL
       organization.id = exported_organization[:id]
@@ -104,6 +116,7 @@ module Carto
   module OrganizationMetadataExportServiceExporter
     include OrganizationMetadataExportServiceConfiguration
     include LayerExporter
+    include ConnectorConfigurationExporter
 
     def export_organization_json_string(organization)
       export_organization_json_hash(organization).to_json
@@ -124,6 +137,9 @@ module Carto
       organization_hash[:assets] = organization.assets.map { |a| export_asset(a) }
       organization_hash[:groups] = organization.groups.map { |g| export_group(g) }
       organization_hash[:notifications] = organization.notifications.map { |n| export_notification(n) }
+      organization_hash[:connector_configurations] = organization.connector_configurations.map do |cc|
+        export_connector_configuration(cc)
+      end
 
       organization_hash
     end
@@ -198,9 +214,9 @@ module Carto
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
 
       # Groups and notifications must be saved after users
-      groups = organization.groups.dup
+      groups = organization.groups.map(&:clone)
       organization.groups.clear
-      notifications = organization.notifications.dup
+      notifications = organization.notifications.map(&:clone)
       organization.notifications.clear
 
       save_imported_organization(organization)
@@ -233,6 +249,7 @@ module Carto
       organization = Carto::Organization.find(organization.id)
       organization.groups.delete
       organization.notifications.delete
+      organization.assets.map(&:delete)
       organization.users.delete
       organization.delete
     end

@@ -1,141 +1,150 @@
 
-  /**
+/**
    *  Table header sync block
    *
    *  - Only sync header table/vis styles.
    */
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/border-radius";
-  @import "compass/css3/images";
-  @import "compass/css3/transition";
-  @import "compass/css3/transform";
-  @import "../../old_common/mixins";
-  @import "../../old_common/vars";
+@import "compass/css3/inline-block";
+@import "compass/css3/border-radius";
+@import "compass/css3/images";
+@import "compass/css3/transition";
+@import "compass/css3/transform";
+@import "../../old_common/mixins";
+@import "../../old_common/vars";
 
+div.sync_info {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: auto;
+  padding: 0 0 8px 43px;
 
-  div.sync_info {
-    position:absolute;
-    display:block;
-    bottom:0;
-    left:0;
-    right:0;
-    padding:0 0 8px 43px;
-    height:auto;
-    z-index:1;
+  &.failure {
+    border-top: 1px solid rgba(black, 0.2);
+    background: image-url('layout/sync_error_bkg.png') repeat-x 0 0;
+  }
+
+  ul {
+
+    display: flex;
+    position: relative;
+    top: 0;
+    align-items: center;
+    justify-content: flex-start;
+    height: 20px;
+    margin-top: 0;
+
+    li {
+      position: relative;
+      margin: 0;
+      padding: 0 7px 0 0;
+
+      &.separator {
+        padding: 0 7px 0 10px;
+
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 2px;
+          height: 2px;
+
+          border-radius: 3px;
+          background: #365C82;
+        }
+      }
+    }
+  }
+
+  div.circle {
+
+    display: inline-block;
+    position: relative;
+    width: 10px;
+    height: 10px;
+    margin-top: 5px;
+    vertical-align: top;
+
+    span.point {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid rgba(black, 0.5);
+      border-radius: 10px;
+      text-shadow: none;
+
+      @include background(linear-gradient(#C9FF26,#41B200));
+    }
+
+    span.pulse {
+      position: absolute;
+      z-index: 0;
+      top: -2px;
+      left: -2px;
+      width: 8px;
+      height: 8px;
+      animation: pulsate 1.5s ease-out infinite;
+      border: 3px solid #BBB;
+      border-radius: 20px;
+      opacity: 0;
+    }
+
+    &.syncing {
+      span.point {
+        @include background(linear-gradient(#FFFF73,#D9D900));
+        border-color: rgba(black, 0.75);
+      }
+    }
 
     &.failure {
-      background: image-url('layout/sync_error_bkg.png') repeat-x 0 0;
-      border-top:1px solid rgba(black, .2);
-    }
-
-    ul {
-      position:relative;
-      top:0;
-      @include display-flex();
-      @include align-items(center, center);
-      @include justify-content(flex-start, start);
-      height:20px;
-      margin-top:0;
-
-      li {
-        position:relative;
-        margin:0;
-        padding:0 7px 0 0;
-
-        &.separator {
-          padding:0 7px 0 10px;
-
-          &:before {
-            content:'';
-            position:absolute;
-            display:block;
-            top:50%;
-            left:0;
-            width:2px;
-            height:2px;
-            background:#365C82;
-            @include border-radius(3px);
-          }
-        }
-      }
-    }
-
-    div.circle {
-      position:relative;
-      @include inline-block();
-      vertical-align:top;
-      width:10px;
-      height:10px;
-      margin-top: 5px;
-
       span.point {
-        position:absolute;
-        top:0;
-        left:0;
-        width:8px;
-        height:8px;
-        margin:0;
-        padding:0;
-        border:1px solid rgba(black,.5);
-        @include border-radius(10px);
-        @include background(linear-gradient(#C9FF26,#41B200));
-        text-shadow:none;
-        z-index:1;
-      }
-
-      span.pulse {
-        position: absolute;
-        left:-2px;
-        top:-2px;
-        height: 8px;
-        width: 8px;
-        @include animation(pulsate 1.5s ease-out infinite);
-        border: 3px solid #BBB;
-        @include border-radius(20px);
-        opacity: 0.0;
-        z-index:0;
-      }
-
-      &.syncing {
-        span.point {
-          @include background(linear-gradient(#FFFF73,#D9D900));
-          border-color:rgba(black, .75);
-        }
-      }
-
-      &.failure {
-        span.point {
-          @include background(linear-gradient(#FFFF4D,#D18400));
-          border-color:rgba(black, .75);
-        }
+        @include background(linear-gradient(#FFFF4D,#D18400));
+        border-color: rgba(black, 0.75);
       }
     }
-
-    p {
-      font-size:13px;
-      font-family:$text-fonts;
-      font-weight:300;
-      color:white;
-      letter-spacing:0;
-    }
-
-    .light {color:rgba(white, .35)}
-
-    a {
-      font-size:13px;
-      color:white;
-      text-decoration:underline;
-    }
-
   }
 
-
-
-
-  // Animation function
-  @include keyframes(pulsate) {
-    0% {@include transform(scale(0.1, 0.1)); opacity: 0.0;}
-    50% {opacity: 1.0;}
-    100% {@include transform(scale(1.4, 1.4)); opacity: 0.0;}
+  p {
+    color: white;
+    font-family: $text-fonts;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0;
   }
+
+  .light { color: rgba(white, 0.35); }
+
+  a {
+    color: white;
+    font-size: 13px;
+    text-decoration: underline;
+  }
+}
+
+// Animation function
+@keyframes pulsate {
+  0% {
+    transform: scale(0.1, 0.1);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.4, 1.4);
+    opacity: 0;
+  }
+}

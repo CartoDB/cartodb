@@ -27,14 +27,6 @@ module CartoDB
           propagate_to([@table.table_visualization])
           notify_privacy_affected_entities(metadata_table) if privacy_changed
         end
-      else
-        CartoDB::Logger.warning(
-          message: 'Trying to change privacy of table with no map associated',
-          table_id: @table.id,
-          table_name: @table.name,
-          user: Carto::User.find(@table.user_id),
-          data_import_id: @table.data_import_id
-        )
       end
     rescue NoMethodError => exception
       CartoDB::Logger.debug(
@@ -94,30 +86,24 @@ module CartoDB
 
     def set_public
       self.privacy = Carto::UserTable::PRIVACY_PUBLIC
-      set_database_permissions(grant_query)
-      overviews_service = Carto::OverviewsService.new(owner.in_database)
-      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
-        set_database_permissions(grant_query(overview_table))
+      Carto::TableAndFriends.apply(owner.in_database, owner.database_schema, table.name) do |schema, table_name|
+        set_database_permissions(grant_query(schema, table_name))
       end
       self
     end
 
     def set_private
       self.privacy = Carto::UserTable::PRIVACY_PRIVATE
-      set_database_permissions(revoke_query)
-      overviews_service = Carto::OverviewsService.new(owner.in_database)
-      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
-        set_database_permissions(revoke_query(overview_table))
+      Carto::TableAndFriends.apply(owner.in_database, owner.database_schema, table.name) do |schema, table_name|
+        set_database_permissions(revoke_query(schema, table_name))
       end
       self
     end
 
     def set_public_with_link_only
       self.privacy = Carto::UserTable::PRIVACY_LINK
-      set_database_permissions(grant_query)
-      overviews_service = Carto::OverviewsService.new(owner.in_database)
-      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
-        set_database_permissions(grant_query(overview_table))
+      Carto::TableAndFriends.apply(owner.in_database, owner.database_schema, table.name) do |schema, table_name|
+        set_database_permissions(grant_query(schema, table_name))
       end
       self
     end
@@ -130,17 +116,16 @@ module CartoDB
       owner.in_database(as: :superuser).run(query)
     end
 
-    def revoke_query(table_name = @table.name)
+    def revoke_query(schema, table_name)
       %{
-        REVOKE SELECT ON #{fully_qualified_table_name(table_name)}
+        REVOKE SELECT ON #{fully_qualified_table_name(schema, table_name)}
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
     end
 
-    def grant_query(table_name = nil)
-      table_name ||= table.name
+    def grant_query(schema, table_name)
       %{
-        GRANT SELECT ON #{fully_qualified_table_name(table_name)}
+        GRANT SELECT ON #{fully_qualified_table_name(schema, table_name)}
         TO #{CartoDB::PUBLIC_DB_USER};
       }
     end
@@ -180,8 +165,8 @@ module CartoDB
       update_cdb_tablemetadata
     end
 
-    def fully_qualified_table_name(table_name)
-      %{"#{owner.database_schema}"."#{table_name}"}
+    def fully_qualified_table_name(schema, table_name)
+      %{"#{schema}"."#{table_name}"}
     end
   end
 end

@@ -1,20 +1,21 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
 .PublicUserProfile {
-  @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(flex-start);
-  @include flex-wrap(wrap);
+  display: flex;
   position: relative;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
   width: $sLayout-width;
   margin: 15px auto 60px;
 }
+
 .PublicUserProfile-profile {
-  @include flex(0 0 320px);
+  flex: 0 0 320px;
   margin: 12px 0 0;
 }
+
 .PublicUserProfile-name {
   margin: 0 0 35px;
   color: $cTypography-linkSecondaryHover;
@@ -22,9 +23,11 @@
   font-weight: $sFontWeight-normal;
   line-height: normal;
 }
+
 .PublicUserProfile-bio {
   width: 290px;
 }
+
 .PublicUserProfile-description {
   margin: 0 0 30px;
   color: $cTypography-linkSecondaryHover;
@@ -36,54 +39,62 @@
 .PublicUserProfile-details {
   margin: 0 0 15px;
 }
+
 .PublicUserProfile-detail {
   margin: 0 0 12px;
   color: $cTypography-linkSecondary;
   font-size: $sFontSize-normal;
   line-height: normal;
 }
+
 .PublicUserProfile-detail .CDB-IconFont {
   color: #CBCED0;
   font-size: 17px;
   vertical-align: top;
 }
+
 .PublicUserProfile-detail .CDB-IconFont-pin {
   padding: 0 3px;
 }
 
-@media only screen and (min-width: 900px)  {
+@media only screen and (min-width: 900px) {
   .PublicUserProfile-details {
     margin: 15px 0 0;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard,
   .Profile-content.Feed-content .FeedItem .DatasetCard {
-    @include flex(0 0 540px);
+    flex: 0 0 540px;
     margin-right: 0;
   }
 
   .Profile-content.Feed-content {
     margin: 0 0 30px;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard-preview.is-big {
     display: block !Important;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard-preview.is-small {
     display: none !Important;
   }
 }
 
-@media only screen and (min-width: 545px) and (max-width: 899px)  {
+@media only screen and (min-width: 545px) and (max-width: 899px) {
   .PublicUserProfile {
     display: block;
   }
+
   .PublicUserProfile-description {
     width: 250px;
   }
+
   .PublicUserProfile-profile {
-    @include display-flex();
-    @include justify-content(space-between);
-    @include align-items(flex-start);
-    @include flex-wrap(wrap);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
     width: 495px;
     margin: 0 auto;
   }
@@ -91,28 +102,31 @@
   .PublicUserProfile-details {
     margin: 20px 0 0;
   }
+
   .Profile-content.Feed-content .FeedItem {
-    @include justify-content(upaue-around, stretch);
-    @include align-items(stretch, stretch);
+    align-items: stretch;
+    justify-content: space-around;
   }
 
   .Profile-content.Feed-content .FeedItem .MapCard,
   .Profile-content.Feed-content .FeedItem .DatasetCard {
-    @include flex(0 0 540px);
+    flex: 0 0 540px;
     margin-right: 0;
   }
 
   .Profile-content.Feed-content {
-    @include display-flex();
-    @include justify-content(center);
-    @include align-items(center);
-    @include flex-wrap(wrap);
-    @include flex-direction(row);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     margin: 0 0 30px;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard-preview.is-big {
     display: block !Important;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard-preview.is-small {
     display: none !Important;
   }
@@ -128,39 +142,46 @@
   }
 
   .PublicUserProfile-profile {
-    @include display-flex();
-    @include justify-content(space-between);
-    @include align-items(flex-start);
-    @include flex-wrap(wrap);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
     width: 288px;
     margin: auto;
   }
+
   .Profile-content.Feed-content .FeedItem {
-    @include justify-content(space-around, stretch);
-    @include align-items(stretch, stretch);
+    align-items: stretch;
+    justify-content: space-around;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard,
   .Profile-content.Feed-content .FeedItem .DatasetCard {
-    @include flex(0 0 288px);
+    flex: 0 0 288px;
     margin-right: 0;
   }
+
   .Profile-content.Feed-content {
-    @include display-flex();
-    @include justify-content(center);
-    @include align-items(flex-start);
-    @include flex-wrap(wrap);
-    @include flex-direction(row);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
     margin: 0 0 30px;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard-preview.is-big {
     display: none !Important;
   }
+
   .Profile-content.Feed-content .FeedItem .MapCard-preview.is-small {
     display: block !Important;
   }
+
   .Profile-content.Feed-content .FeedItem .FeedItem-avatar {
     display: none;
   }
+
   .PublicUserProfile .IntermediateInfo .DefaultParagraph.DefaultParagraph--short {
     width: 100%;
   }

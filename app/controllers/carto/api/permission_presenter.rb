@@ -21,7 +21,9 @@ module Carto
 
         owner = @presenter_cache.get_poro(@permission.owner) do
           Carto::Api::UserPresenter.new(@permission.owner,
-                                        fetch_groups: fetch_user_groups, current_viewer: current_viewer)
+                                        fetch_groups: fetch_user_groups,
+                                        current_viewer: current_viewer,
+                                        fetch_profile: false)
         end
 
         {

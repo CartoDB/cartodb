@@ -211,7 +211,8 @@ describe Table do
             CartoDB: {
               "waduson" => {
                 "default" => true,
-                "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png",
                 "subdomains" => "abcd",
                 "minZoom" => "0",
                 "maxZoom" => "18",
@@ -240,7 +241,7 @@ describe Table do
           map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
 
           map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-          map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          map.layers[0].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png"
           map.layers[0].options["subdomains"].should == "abcd"
           map.layers[0].options["minZoom"].should == "0"
           map.layers[0].options["maxZoom"].should == "18"
@@ -259,7 +260,8 @@ describe Table do
             CartoDB: {
               "waduson" => {
                 "default" => true,
-                "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png",
                 "subdomains" => "abcd",
                 "minZoom" => "0",
                 "maxZoom" => "18",
@@ -267,7 +269,8 @@ describe Table do
                 "className" => "waduson",
                 "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
                 "labels" => {
-                  "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+                  "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+                  "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png"
                 }
               }
             }
@@ -282,7 +285,7 @@ describe Table do
           table.map.layers.map(&:kind).should == ['tiled', 'carto', 'tiled']
 
           table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-          table.map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          table.map.layers[0].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png"
           table.map.layers[0].options["subdomains"].should == "abcd"
           table.map.layers[0].options["minZoom"].should == "0"
           table.map.layers[0].options["maxZoom"].should == "18"
@@ -292,7 +295,7 @@ describe Table do
           table.map.layers[0].order.should == 0
 
           table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
-          table.map.layers[2].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+          table.map.layers[2].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png"
           table.map.layers[2].options["subdomains"].should == "abcd"
           table.map.layers[2].options["minZoom"].should == "0"
           table.map.layers[2].options["maxZoom"].should == "18"
@@ -1739,24 +1742,6 @@ describe Table do
         table.name.should == 'exttable'
         table.rows_counted.should == 2
       end
-
-      it "create and migrate a table containing a valid the_geom" do
-        delete_user_data @user
-        @user.db_service.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
-        @user.db_service.run_pg_query("SELECT public.AddGeometryColumn ('#{@user.database_schema}','exttable','the_geom',4326,'POINT',2);")
-        @user.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
-                           INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
-
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :migrate_table => 'exttable')
-        data_import.run_import!
-
-        table = Table.new(user_table: UserTable[data_import.table_id])
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-        table.name.should == 'exttable'
-        table.rows_counted.should == 2
-        check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:the_geom, "geometry", "geometry", "point"]])
-      end
     end
 
     context "imports" do
@@ -1952,7 +1937,7 @@ describe Table do
         check_query_geometry("SELECT 'wadus' AS the_geom;", [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'geometry'],
-            [:the_geom_str, 'unknown']
+            [:the_geom_str, 'text']
         ])
 
         # geometrycollection (concrete type) Unsupported
@@ -2153,6 +2138,24 @@ describe Table do
       end
     end
 
+    describe 'self.table_and_schema' do
+      it 'returns nil schema if schema is "public"' do
+        Table.table_and_schema("public.sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+      end
+
+      it 'returns the schema if it is different from "public"' do
+        Table.table_and_schema("manolito.sm_org_line_cartotest").should == ["sm_org_line_cartotest", "manolito"]
+      end
+
+      it 'returns the table name when there is no schema' do
+        Table.table_and_schema("sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+      end
+
+      it 'returns schema without quotes' do
+        Table.table_and_schema("\"user-hyphen\".table").should == ["table", "user-hyphen"]
+      end
+    end
+
     describe 'self.get_valid_column_name' do
       it 'returns the same candidate name if it is ok' do
         Table.expects(:get_column_names).once.returns(%w{a b c})
@@ -2185,22 +2188,6 @@ describe Table do
         pk_row1 = table.insert_row!(:name => 'name1')
         table.actual_row_count.should == 1
         [0, 1].should include(table.estimated_row_count)
-      end
-    end
-
-    describe '#public_values' do
-      it 'should work with a canonical visualizations that has two related tables' do
-        # Note: with Builder, this should not happen (canonical visualizations cannot be modified), for compatibility
-        # with older, migrated, canonical visualizations
-        main_table = create_table(user_id: @user.id)
-        aux_table = create_table(user_id: @user.id)
-
-        canonical_layer = main_table.layers.first
-        canonical_layer.options["query"] = "SELECT * FROM #{main_table.name} JOIN #{aux_table.name} ON true"
-        canonical_layer.save
-
-        main_table.public_values[:table_visualization][:related_tables].count.should eq 1
-        main_table.public_values[:table_visualization][:related_tables][0][:name].should eq aux_table.name
       end
     end
   end

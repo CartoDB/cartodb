@@ -11,8 +11,7 @@ require_relative 'search/twitter'
 module CartoDB
   module Datasources
       class DatasourcesFactory
-
-        NAME = 'DatasourcesFactory'
+        NAME = 'DatasourcesFactory'.freeze
 
         # in seconds
         HTTP_CONNECT_TIMEOUT = 60
@@ -29,7 +28,6 @@ module CartoDB
         # @return mixed
         # @throws MissingConfigurationError
         def self.get_datasource(datasource_name, user, additional_config = {})
-
           if additional_config[:http_timeout].nil?
             additional_config[:http_timeout] = DEFAULT_HTTP_REQUEST_TIMEOUT
           end
@@ -79,38 +77,10 @@ module CartoDB
         # @return string
         # @throws MissingConfigurationError
         def self.config_for(datasource_name, user)
-          config_source = @forced_config ? @forced_config : Cartodb.config
+          config, datasource_supports_custom_config = get_config(datasource_name)
 
-          includes_customized_config = false
-
-          case datasource_name
-          when Url::Dropbox::DATASOURCE_NAME, Url::Box::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME,
-               Url::MailChimp::DATASOURCE_NAME
-            config = (config_source[:oauth] rescue nil)
-            config ||= (config_source[:oauth.to_s] rescue nil)
-          when Search::Twitter::DATASOURCE_NAME
-            config = (config_source[:datasource_search] rescue nil)
-            config ||= (config_source[:datasource_search.to_s] rescue nil)
-            includes_customized_config = true
-          else
-            config = nil
-          end
-
-          if config.nil? || config.empty?
-            raise MissingConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME)
-          end
-
-          if includes_customized_config
-            custom_config_orgs = config[datasource_name].fetch(:customized_orgs_list.to_s, [])
-            custom_config_users = config[datasource_name][:customized_user_list.to_s]
-
-            if !user.organization.nil? && custom_config_orgs.include?(user.organization.name)
-              key = user.organization.name
-            elsif custom_config_users.include?(user.username)
-              key = user.username
-            else
-              key = nil
-            end
+          if datasource_supports_custom_config
+            key = customized_config_key(config, datasource_name, user)
 
             if key.nil?
               config[datasource_name][:standard.to_s]
@@ -124,12 +94,54 @@ module CartoDB
           end
         end
 
+        def self.customized_config?(datasource_name, user)
+          config, datasource_supports_custom_config = get_config(datasource_name)
+          datasource_supports_custom_config && customized_config_key(config, datasource_name, user).present?
+        end
+
         # Allows to set a custom config (useful for testing)
         # @param custom_config string
         def self.set_config(custom_config)
           @forced_config = custom_config
         end
 
+        def self.get_config(datasource_name)
+          config_source = @forced_config ? @forced_config : Cartodb.config
+
+          datasource_supports_custom_config = false
+
+          case datasource_name
+          when Url::Dropbox::DATASOURCE_NAME, Url::Box::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME,
+              Url::MailChimp::DATASOURCE_NAME
+            config = (config_source[:oauth] rescue nil)
+            config ||= (config_source[:oauth.to_s] rescue nil)
+          when Search::Twitter::DATASOURCE_NAME
+            config = (config_source[:datasource_search] rescue nil)
+            config ||= (config_source[:datasource_search.to_s] rescue nil)
+            datasource_supports_custom_config = true
+          else
+            config = nil
+          end
+
+          if config.nil? || config.empty?
+            raise MissingConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME)
+          end
+
+          [config, datasource_supports_custom_config]
+        end
+        private_class_method :get_config
+
+        def self.customized_config_key(config, datasource_name, user)
+          custom_config_orgs = config[datasource_name].fetch(:customized_orgs_list.to_s, [])
+          custom_config_users = config[datasource_name][:customized_user_list.to_s]
+
+          if user.organization_user? && custom_config_orgs.include?(user.organization.name)
+            user.organization.name
+          elsif custom_config_users.include?(user.username)
+            user.username
+          end
+        end
+        private_class_method :customized_config_key
       end
   end
 end

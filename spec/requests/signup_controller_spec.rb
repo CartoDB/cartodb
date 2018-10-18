@@ -10,9 +10,30 @@ describe SignupController do
   end
 
   describe 'signup page' do
+    include_context 'organization with users helper'
 
     after(:each) do
       @fake_organization.delete if @fake_organization
+    end
+
+    it 'returns 200 when subdomainless and route is signup_subdomainless' do
+      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      Organization.stubs(:where).returns([@fake_organization])
+      host! "localhost.lan"
+      get signup_subdomainless_url(user_domain: 'organization')
+      response.status.should == 200
+    end
+
+    it 'returns 404 when subdomainless and route is signup' do
+      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      Organization.stubs(:where).returns([@fake_organization])
+      host! "localhost.lan"
+      get signup_url
+      response.status.should == 404
     end
 
     it 'returns 404 outside organization subdomains' do
@@ -62,10 +83,67 @@ describe SignupController do
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
-      response.body.should match(/Please, contact the administrator of #{@fake_organization.name}/)
+      response.body.should include("organization not enough seats")
+      response.body.should include("contact the administrator of #{@fake_organization.name}</a>")
       response.body.should match(Regexp.new @fake_organization.owner.email)
     end
 
+    it 'does not return an error if organization has no unassigned_quota left but the invited user is a viewer' do
+      email = 'viewer_user@whatever.com'
+      @organization.quota_in_bytes = @organization.assigned_quota
+      @organization.save
+      user = Carto::User.find(@org_user_owner.id)
+      invitation = Carto::Invitation.create_new(user, [email], 'W!', true)
+      invitation.save
+      token = invitation.token(email)
+
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+
+      host! "#{@organization.name}.localhost.lan"
+      get signup_organization_user_url(user_domain: @organization.name,
+                                       user: { username: 'viewer-user',
+                                               email: email,
+                                               password: '2{Patrañas}' },
+                                               invitation_token: token)
+
+      response.status.should == 200
+      response.body.should_not include("quota_in_bytes not enough disk quota")
+    end
+
+    it 'returns an error if organization has no unassigned_quota and invited user is not a viewer' do
+      email = 'viewer_user@whatever.com'
+      @organization.quota_in_bytes = @organization.assigned_quota
+      @organization.whitelisted_email_domains = ['whatever.com']
+      @organization.save
+      user = Carto::User.find(@org_user_owner.id)
+      invitation = Carto::Invitation.create_new(user, [email], 'W!', false)
+      invitation.save
+      token = invitation.token(email)
+
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+
+      host! "#{@organization.name}.localhost.lan"
+      get signup_organization_user_url(user_domain: @organization.name,
+                                       user: { username: 'viewer-user',
+                                               email: email,
+                                               password: '2{Patrañas}' },
+                                               invitation_token: token)
+
+      response.status.should == 200
+      response.body.should include("quota_in_bytes not enough disk quota")
+    end
+
+    it 'signs user up as viewer even if all non-viewer seats are taken' do
+      @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
+      @fake_organization.seats = @fake_organization.builder_users.count(&:builder?)
+      @fake_organization.viewer_seats = 10
+      @fake_organization.save
+      owner = Carto::User.find(@fake_organization.owner.id)
+      invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!', true)
+      host! "#{@fake_organization.name}.localhost.lan"
+      get signup_url(invitation_token: invitation.token('wadus@wad.us'), email: 'wadus@wad.us')
+      response.status.should == 200
+    end
   end
 
   describe 'user creation' do
@@ -98,6 +176,20 @@ describe SignupController do
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
       response.status.should == 422
       Carto::UserCreation.where(username: username).any?.should be_false
+    end
+
+    it 'triggers validation error and not a NewUser job if username is too long' do
+      ::Resque.expects(:enqueue).never
+
+      name = 'sixtythreecharacterslongiswaytoomanycharactersmatewhydoyoueventry'
+      email = "testemail@#{@organization.whitelisted_email_domains[0]}"
+      password = '12345678'
+      user = { username: name, email: email, password: password }
+      org_name = @organization.name
+      host! "#{@organization.name}.localhost.lan"
+      post signup_organization_user_url(user_domain: org_name, user: user)
+      response.status.should == 422
+      Carto::UserCreation.where(username: name).any?.should be_false
     end
 
     it 'triggers validation error is password is too short' do

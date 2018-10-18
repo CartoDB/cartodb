@@ -141,7 +141,7 @@ describe Search::Twitter do
       }.to raise_error ParameterError
 
 
-      current_time = Time.now
+      current_time = Time.now.utc
       output = twitter_datasource.send :build_date_from_fields, {
         dates: {
           toDate:   current_time.strftime("%Y-%m-%d"),

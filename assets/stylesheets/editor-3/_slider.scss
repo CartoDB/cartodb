@@ -1,0 +1,82 @@
+// New slider styles
+//
+//  <div class="UISlider">
+//    <!-- Apply jquery ui slider -->
+//  </div>
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.UISlider {
+  position: relative;
+  width: 110px;
+  height: 2px;
+}
+
+.UISlider.ui-slider {
+  border-radius: 0;
+  background: $cMainLine;
+}
+
+.UISlider.ui-slider::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.UISlider .ui-slider-range-min {
+  height: 2px;
+  border-radius: 0;
+  background: $cBlue;
+}
+
+.UISlider .ui-slider-handle {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  margin-left: -5px;
+  transition: transform 200ms;
+  border: 1px solid $cMainLine;
+  border-radius: 50%;
+  outline: none;
+  background: #FFF;
+  box-shadow: none;
+
+  &.ui-state-focus {
+    box-shadow: none;
+  }
+}
+
+.UISlider.ui-slider-disabled .ui-slider-handle {
+  cursor: not-allowed;
+}
+
+.UISlider.ui-slider-disabled::before {
+  cursor: not-allowed;
+}
+
+.UISlider:not(.ui-slider-disabled) {
+  .ui-slider-handle {
+    border: 1px solid $cBlue;
+    cursor: pointer;
+  }
+
+  .ui-slider-handle:hover,
+  .ui-state-active {
+    transform: scale(1.5);
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,30 @@
+// Default styles for error state
+// --------------------------------------------------
+
+.CDB-Widget--alert,
+.CDB-Widget--error {
+  padding: $sMargin-section - 4;
+}
+
+.CDB-Widget--error {
+  border-top: 2px solid $cError;
+
+  h2 {
+    color: $cError;
+  }
+}
+
+.CDB-Widget--alert {
+  border-top: 2px solid $cLink;
+
+  h2 {
+    color: $cLink;
+  }
+}
+
+.CDB-Widget-errorButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

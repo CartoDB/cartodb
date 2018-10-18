@@ -15,7 +15,11 @@ end
 
 CartoDB::Application.load_tasks
 
-Rake.application.instance_variable_get('@tasks').delete('default')
+rake_tasks = Rake.application.instance_variable_get('@tasks')
+rake_tasks.delete('default')
+
+# Remove ActiveRecord tasks and replace with Sequel versions
+rake_tasks.select { |k, _| k.starts_with?('sequel') }.each { |k, v| rake_tasks[k.sub('sequel:', 'db:')] = v }
 
 if Rails.env.test?
   namespace :spec do

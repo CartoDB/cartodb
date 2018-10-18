@@ -3,9 +3,8 @@
 require File.expand_path('../boot', __FILE__)
 
 require "action_controller/railtie"
-#require "sequel-rails/railtie"
 require "action_mailer/railtie"
-require "active_record"
+require "active_record/railtie"
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
@@ -68,7 +67,7 @@ module CartoDB
       config.js
       app.js
       cdb.js
-      cdb_static.js
+      carto_node.js
       embed.js
       dashboard_templates.js
       dashboard_deps.js
@@ -78,12 +77,20 @@ module CartoDB
       dashboard_static.js
       data_library_deps.js
       data_library.js
+      public_map_templates.js
       public_map_deps.js
       public_map.js
+      public_map_templates_static.js
+      public_map_deps_static.js
+      public_map_static.js
+      show_templates_static.js
+      show_deps_static.js
+      show_static.js
+      embed_map_static.js
       editor.js
-
       account_templates.js
       account_deps.js
+      account_static.js
       account.js
       profile.js
       profile_templates.js
@@ -91,7 +98,6 @@ module CartoDB
       keys_deps.js
       keys.js
       models.js
-      models_static.js
       organization_templates.js
       organization_deps.js
       organization.js
@@ -99,7 +105,6 @@ module CartoDB
       public_dashboard_deps.js
       public_dashboard.js
       public_like.js
-      tangram.min.js
       old_common.js
       old_common_without_core.js
       templates.js
@@ -119,24 +124,32 @@ module CartoDB
 
       user_feed_deps.js
       user_feed.js
+      user_feed_new.css
+      api_keys_new.js
+      public_dashboard.js
+      public_table_new.js
+      sessions.js
+      confirmation.js
+      organization.js
+      lockout.js
 
       tipsy.js
       modernizr.js
       statsc.js
 
       builder.js
-      builder_vendor.js
       builder_embed.js
-      builder_embed_vendor.js
       dataset.js
-      dataset_vendor.js
       common.js
+      common_vendor.js
 
       deep_insights.css
+      deep_insights_new.css
       cdb.css
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css
       common.css
+      common_new.css
       old_common.css
       dashboard.css
       cartodb.css
@@ -145,7 +158,7 @@ module CartoDB
 
       common_editor3.css
       editor3.css
-      public_editor3.css
+      builder_embed.css
 
       table.css
       leaflet.css
@@ -155,14 +168,19 @@ module CartoDB
       organization.css
       password_protected.css
       public_dashboard.css
+      public_dashboard_new.css
       public_map.css
+      public_map_new.css
+      embed_map.css
       data_library.css
       public_table.css
+      public_table_new.css
       sessions.css
-      user_feed.css
       explore.css
       mobile_apps.css
       api_keys.css
+      api_keys_new.css
+      oauth.css
 
       plugins/tipsy.css
 
@@ -181,16 +199,24 @@ module CartoDB
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    config.action_controller.relative_url_root = "/assets/#{frontend_version}"
+    config.action_controller.relative_url_root = "/assets"
 
     custom_app_views_paths.reverse.each do |custom_views_path|
       config.paths['app/views'].unshift(custom_views_path)
     end
+
+    # Sequel stores dates in the databse in the local timezone, AR should do the same
+    config.active_record.default_timezone = :local
+
+    config.active_record.raise_in_transactional_callbacks = true
+
+    # Put sequel db tasks into its own namespace
+    config.sequel.load_database_tasks = :sequel
   end
 end
 
 require 'csv'
-require 'state_machine'
+require 'state_machines-activerecord'
 require 'cartodb/controller_flows/public/content'
 require 'cartodb/controller_flows/public/datasets'
 require 'cartodb/controller_flows/public/maps'

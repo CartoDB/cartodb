@@ -3,13 +3,13 @@
 <% end %>
 
 <% content_for :js do %>
-  <%= javascript_include_tag 'cdb.js', 'sessions.js' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 <% end %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
-      <div class="Sessions-notloggedin is-active"ss>
+      <div class="Sessions-notloggedin is-active">
         <div class="u-inner">
           <div class="Sessions-left">
             <div class="Sessions-logoContainer">
@@ -30,6 +30,11 @@
               <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
 
                 <% if @organization.nil? || @organization.auth_username_password_enabled %>
+                  <% if @flash_login_error %>
+                    <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-description" style="background: #f24440; border-radius: 4px; padding: 5px; color: #fff;">
+                      <%= raw @flash_login_error %>
+                    </p>
+                  <% end %>
 
                   <div class="Sessions-field">
                     <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
@@ -56,7 +61,7 @@
                   <div class="Sessions-field">
                     <p>
                       <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
-                        <span class="js-Loading-text">Login</span>
+                        <span class="js-Loading-text">Log in</span>
                         <span class="js-Loading-anim" style="display: none;">
                           <span class="Loading-item">
                             <span class="Loading-itemInner Loading-itemInner--01"></span>
@@ -77,6 +82,9 @@
                 <% end %>
               <% end %>
               <% if @oauth_configs.any? %>
+                <div class="Sessions-field Sessions-oauthHeader">
+                  <p>OR LOG IN WITH:</p>
+                </div>
                 <div class="Sessions-field Sessions-oauthContainer">
                   <% @oauth_configs.each do |config| %>
                     <%= render partial: config.button_template, locals: { config: config } %>
@@ -104,11 +112,11 @@
     </div>
   </div>
 
-  <% unless cartodb_com_hosted? %>
+  <% if organization_signup_url.present? && !cartodb_com_hosted? %>
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', "https://carto.com/signup" %></p>
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', organization_signup_url %></p>
         </div>
       </div>
     </footer>

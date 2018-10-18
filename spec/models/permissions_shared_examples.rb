@@ -386,7 +386,7 @@ shared_examples_for 'permission models' do
 
     it 'checks organizations vs users permissions precedence' do
       organization = create_organization_with_owner
-      org_user = create_user(organization: organization)
+      org_user = create_user(organization: organization, account_type: 'ORGANIZATION USER')
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user)
       permission = permission_from_visualization_id(table_visualization.id)
@@ -681,6 +681,70 @@ shared_examples_for 'permission models' do
       visualization.has_permission?(@user2, Permission::ACCESS_READWRITE).should be_true
 
       destroy_full_visualization(map, table, table_visualization, visualization)
+    end
+  end
+
+  describe 'permission cleanup on deletions' do
+    describe 'sharing' do
+      include_context 'organization with users helper'
+      include Carto::Factories::Visualizations
+
+      before(:all) do
+        @group = FactoryGirl.create(:random_group, organization_id: @organization.id)
+      end
+
+      after(:all) do
+        @group.destroy
+      end
+
+      it 'deletes ACL entries from permissions on user deletion' do
+        map, table, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
+
+        permission = table.permission
+        permission.acl = [
+          {
+            type: Permission::TYPE_USER,
+            entity: { id: @carto_org_user_2.id },
+            access: Permission::ACCESS_READONLY
+          }
+        ]
+        permission.save
+        permission.acl.map { |a| a[:id] }.should include(@carto_org_user_2.id)
+        permission.entities_with_read_permission.should include(@carto_org_user_2)
+
+        @org_user_2.destroy
+
+        permission.reload
+        permission.acl.map { |a| a[:id] }.should_not include(@carto_org_user_2.id)
+        permission.entities_with_read_permission.should_not include(@carto_org_user_2)
+
+        destroy_full_visualization(map, table, table_visualization, visualization)
+      end
+
+      it 'deletes ACL entries from permissions on deletion' do
+        map, table, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
+
+        Carto::Group.any_instance.expects(:grant_db_permission).once
+        permission = table.permission
+        permission.acl = [
+          {
+            type: Permission::TYPE_GROUP,
+            entity: { id: @group.id },
+            access: Permission::ACCESS_READONLY
+          }
+        ]
+        permission.save
+        permission.acl.map { |a| a[:id] }.should include(@group.id)
+        permission.entities_with_read_permission.should include(@group)
+
+        @group.destroy
+
+        permission.reload
+        permission.acl.map { |a| a[:id] }.should_not include(@group.id)
+        permission.entities_with_read_permission.should_not include(@group)
+
+        destroy_full_visualization(map, table, table_visualization, visualization)
+      end
     end
   end
 end

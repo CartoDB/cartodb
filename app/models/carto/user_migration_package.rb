@@ -4,7 +4,7 @@ module Carto
 
     def self.for_export(id, log)
       base_dir = Cartodb.get_config(:user_migrator, 'user_exports_folder')
-      instance = new(base_dir, id, log)
+      instance = new(base_dir, id, log, Cartodb.get_config(:user_migrator))
 
       FileUtils.mkdir_p(instance.data_dir)
       FileUtils.mkdir_p(instance.meta_dir)
@@ -14,18 +14,30 @@ module Carto
 
     def self.for_import(id, log)
       base_dir = Cartodb.get_config(:user_migrator, 'user_imports_folder')
-      instance = new(base_dir, id, log)
+      instance = new(base_dir, id, log, Cartodb.get_config(:user_migrator))
 
       FileUtils.mkdir_p(instance.work_dir)
 
       instance
     end
 
+    def self.for_backup(id, log)
+      base_dir = Cartodb.get_config(:user_backup, 'user_exports_folder')
+      config = Cartodb.get_config(:user_backup)
+      instance = new(base_dir, id, log, config.merge(upload_path: 'backups'))
+
+      FileUtils.mkdir_p(instance.data_dir)
+      FileUtils.mkdir_p(instance.meta_dir)
+
+      instance
+    end
+
     attr_reader :data_dir, :meta_dir, :work_dir
 
-    def initialize(base_dir, id, log)
+    def initialize(base_dir, id, log, config)
       @id = id
       @log = log
+      @config = config
 
       @base_dir = base_dir
       @work_dir = "#{base_dir}/#{id}"
@@ -62,12 +74,13 @@ module Carto
     def upload_package(filepath)
       log.append('=== Uploading user data package ===')
       file = CartoDB::FileUploadFile.new(filepath)
-      s3_config = Cartodb.config[:user_migrator]['s3'] || {}
+      s3_config = @config['s3'] || {}
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,
         s3_config: s3_config,
         allow_spaces: true,
-        force_s3_upload: true
+        force_s3_upload: true,
+        random_token: @config[:upload_path]
       )
 
       export_path = if results[:file_path].present?
@@ -111,7 +124,7 @@ module Carto
     end
 
     def file_upload_helper
-      CartoDB::FileUpload.new(Cartodb.get_config(:user_migrator, "uploads_path"))
+      CartoDB::FileUpload.new(@config[:uploads_path])
     end
   end
 end

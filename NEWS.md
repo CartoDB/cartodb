@@ -1,8 +1,229 @@
 Development
 -----------
 
+### NOTICES
+- None yet
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- Scrollbar resized after notifications (#12953)
+
+4.22.1 (2018-10-18)
+-------------------
+
+### NOTICES
+* Ensuring right `search_path` for non organization `publicuser`
+
+### Features
+* Improve dropping db role of an API key (#14307)
+
+### Bug fixes / enhancements
+* Add `remove_overview_tables` rake
+* Allowing views in API Keys (#14309)
+* Redirect locked users to /lockout page (#14310)
+
+4.22.0 (2018-10-04)
+-------------------
+
+### Features
+* Support forcing password change upon first login in EUMAPI (#14295)
+
+### Bug fixes / enhancements
+* Correctly set the logger level, instead of log rotation (#14302)
+* Update legends for heatmap aggregation when the colors change from the style editor (#13763)
+* Update legends for color ranges when the color list order changes
+
+4.21.0 (2018-09-24)
+-------------------
+
+### NOTICES
+* Dataservices-API has changed and now it needs permissions to execute DS queries for each API key. You can update the existing users running this rake: `bundle exec rake carto:api_key:create_api_key_grants`
+* This release upgrades the CartoDB PostgreSQL extension to `0.24.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+### Features
+* Add dataservices permissions in Auth API (#14263)
+* OAuth provider (WIP):
+  * Add scopes for accessing dataservices
+  * Add scopes for accessing user public profile
+
+### Bug fixes / enhancements
+* Fix legacy functions in the data mover that doesn't process multiword type functions
+* Fix `image_tag` function to include the assets versioning (#14266)
+* Fix broken tests due to time stubbing (#14287)
+* Remove username from Postgres roles
+* Style password change form with organization colors (#14296)
+* Add `create_api_key_grants` rake (https://github.com/CartoDB/support/issues/1748)
+
+4.20.2 (2018-09-10)
+-------------------
+
+### Features
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  * Add new design for OAuth consent screen (#14237)
+  * Limit the number of simultaneous refersh tokens (#14243)
+  * Silent flow (#14244)
+
+### Bug fixes / enhancements
+* Api keys endpoint maintains the following order: master, default and regular (https://github.com/CartoDB/cartodb/pull/14257)
+* Fix tooltips not hiding in size & color controls in mobile (https://github.com/CartoDB/cartodb/issues/14098)
+* Add another error to OOM detection in imports (#14259)
+* Don't reset connections on source database when updating database_host (https://github.com/CartoDB/cartodb-platform/issues/4783)
+
+4.20.1 (2018-08-24)
+-------------------
+
+### Features
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  * Redirect back to OAuth flow after login (#14236)
+  * Implicit flow (#14167)
+  * Allow restricting application to only a set of organizations (#14180)
+
+### Bug fixes / enhancements
+* Update content of twitter:site meta tag (https://github.com/CartoDB/cartodb/issues/14264)
+* Fix lots of requests triggered in datasets view (https://github.com/CartoDB/cartodb/issues/14190)
+* Hide like button if the user is not logged in (https://github.com/CartoDB/cartodb/issues/13098)
+* Fix OAuth login for the organizations (#14238)
+* Better OAuth error management (#14214)
+
+4.20.0 (2018-08-13)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.23.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+* New database configuration is required. Please add `prepared_statements: false` to `database.yml`
+(check `database.yml.sample` for an example)
+
+* This release introduces a new API Key system. In order to migrate existing users, run the following command:
+`bundle exec rake carto:api_key:create_default`
+
+### Features
+* Update CARTO logo in maps (https://github.com/CartoDB/design/issues/1324)
+* Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
+* New rake to fix inconsistent permissions (`bundle exec rake cartodb:permissions:fix_permission_acl`)
+* OAuth provider: You can authenticate an external app against CARTO using OAuth, and get an API Key for the authorized user (WIP)
+  * Data model (#14163)
+  * Consent screen backend (#14164)
+  * New endpoint for user information, `/api/v4/me` (#14229)
+  * Access_token expiration and refresh_tokens (#14230)
+* Support FileGeodatabase format uploads (https://github.com/CartoDB/cartodb/issues/10730)
+
+### Bug fixes / enhancement
+* Use a SVG icon instead of a simple `+` sign in the `Add {layer|analysis|widget}` buttons. (https://github.com/CartoDB/cartodb/issues/#14234)
+* Remove options from empty layers' contextual menu (#13451)
+* Add link to `datasets/shared/locked` (https://github.com/CartoDB/cartodb/issues/14188)
+* Don't show "- Rows" instead of 0 if the dataset has been updated recently (https://github.com/CartoDB/cartodb/pull/14228)
+* Use input instead of select for `job_profile` (https://github.com/CartoDB/cartodb/pull/14227)
+* Don't show "- Rows" instead of 0 if the dataset has been updated recently ()
+* Fix panning and interactivity in Safari (https://github.com/CartoDB/cartodb/issues/14115)
+* Add a warning when the user is about to delete multiple analyses at once (https://github.com/CartoDB/cartodb/pull/14222)
+* Fix problems when searching datasets for API Keys management (https://github.com/CartoDB/support/issues/1678)
+* Fix histogram tooltips not being updated after column change (https://github.com/CartoDB/cartodb/issues/14155)
+* Update googlemaps api version to v3.32 (https://github.com/CartoDB/cartodb/issues/13902)
+* Fix wrong position for color dialog and sticky popups when styling analysis (https://github.com/CartoDB/support/issues/1649 and https://github.com/CartoDB/support/issues/1673)
+* Fix incorrect metric event styling a layer (https://github.com/CartoDB/cartodb/issues/14183)
+* Fix legend for style by boolean field (https://github.com/CartoDB/support/issues/1647)
+* Fix disconnect from external data sources (gdrive, box and dropbox) for organization users (https://github.com/CartoDB/support/issues/1671)
+* Fix broken data tab when analyses or custom SQL are present (https://github.com/CartoDB/cartodb/issues/14169)
+* Don't render geometry columns that are not the_geom (https://github.com/CartoDB/support/issues/1404)
+* Use setView instead of flyTo to improve zoom transitions (https://github.com/CartoDB/carto.js/pull/2178)
+* Fix torque layers when filter analysis is added (https://github.com/CartoDB/support/issues/1038)
+* Copyright symbol not appearing on exported image (https://github.com/CartoDB/cartodb/issues/13411)
+* Keep selected popup tab after fetch (https://github.com/CartoDB/support/issues/1396)
+* Fix HTML templates for Hover popups (https://github.com/CartoDB/cartodb/issues/11284)
+* Twitter import only if enabled and with user/org configuration (https://github.com/CartoDB/support/issues/1612).
+* Fix category name overflow when styling by value (https://github.com/CartoDB/support/issues/1644)
+* Improve input image when color changes (https://github.com/CartoDB/cartodb/issues/11326)
+* Fix pagination buttons style (https://github.com/CartoDB/cartodb/issues/13456)
+* Fix edit month in table cell (https://github.com/CartoDB/support/issues/1352)
+* Fix wrong style after creating a feature (https://github.com/CartoDB/cartodb/issues/13680)
+* Map instantiation is now debounced thanks to Carto.js 4.0.12 (https://github.com/CartoDB/cartodb/pull/14142)
+* Fix bug computing next page in datasets (https://github.com/CartoDB/cartodb/issues/14138)
+* Move to the last page after adding a row (https://github.com/CartoDB/cartodb/issues/10720)
+* Fix pagination after deleting a row (https://github.com/CartoDB/cartodb/issues/9868)
+* Fix Widget view click (https://github.com/CartoDB/cartodb/issues/13409)
+* Improve style for Analysis modal blocks (https://github.com/CartoDB/cartodb/issues/13361)
+* Use ellipsis for widgets title (https://github.com/CartoDB/cartodb/issues/13332)
+* Fix dark menu links (https://github.com/CartoDB/cartodb/issues/11257)
+* Fix legend editor margin (https://github.com/CartoDB/cartodb/issues/13338)
+* Fix slider width for point/stroke size (https://github.com/CartoDB/support/issues/1641)
+* Fix gradient legends margin (https://github.com/CartoDB/support/issues/1640)
+* Fix drag new layer from Torque source (https://github.com/CartoDB/support/issues/1625)
+* Fix custom carousel item select event (https://github.com/CartoDB/cartodb/issues/14070)
+* Fix gaps in tiles (https://github.com/CartoDB/support/issues/1362)
+* Fix style issues (https://github.com/CartoDB/cartodb/pull/14123)
+* Fix SVG spinner animations (https://github.com/CartoDB/cartodb/issues/14105)
+* Fix Dataset header dropdown (https://github.com/CartoDB/support/issues/1614)
+* Remove unneeded space in collapsed legends view (https://github.com/CartoDB/cartodb/issues/14091)
+* Validate Visualization type (#13841)
+* Do not assume that if min and max are equal we come from a fixed value (https://github.com/CartoDB/carto.js/issues/2146)
+* Add mode to raise max-height when widgets are not present (https://github.com/CartoDB/carto.js/issues/2146)
+* Add schema to column_names (#14121)
+* Deprecate Twitter connector in `add dataset` modal (https://github.com/CartoDB/cartodb/issues/14081)
+* Set new message on privacy warning modal when new privacy is LINK (https://github.com/CartoDB/cartodb/issues/14030)
+* Improve size & color UI when styling layers (https://github.com/CartoDB/product/issues/54)
+* Show Organization notifications in static pages (https://github.com/CartoDB/cartodb/issues/14089)
+* Log user destruction errors to Rollbar (#13745)
+* Fix wrong margins in the layer selector when the top layer has a bubble legend (https://github.com/CartoDB/support/issues/1566)
+* Fix error when styling points by value in animated aggregation style (https://github.com/CartoDB/cartodb/issues/14085)
+* Show errors coming from QueryRowsCollection in Dataset/Builder (https://github.com/CartoDB/cartodb/issues/14066)
+* Export JPG image as JPEG format instead of PNG (https://github.com/CartoDB/cartodb/issues/14042)
+* Redirect to login or fix URL if trying to access another user private pages (https://github.com/CartoDB/cartodb/pull/14013)
+* Add Google Tag Manager to Static Pages (https://github.com/CartoDB/cartodb/issues/14029)
+* Sync ArcGIS datasets with null values in ogc_fid or gid (CartoDB/support/issues/1460)
+* List organization admin users in your Organisation settings (https://github.com/CartoDB/support/issues/1583)
+* Send `Visited Private Page` event from Dashboard (#14041), update user model (#14084) and db size cache (#14102)
+* Fix Mapviews don't appear on bar chart rollover (https://github.com/CartoDB/support/issues/1573)
+* Fix Broken CTA in the 'Connect Dataset' modal (https://github.com/CartoDB/cartodb/issues/14036)
+* Fix `Create map` from data library https://github.com/CartoDB/cartodb/issues/14020#event-1655755501
+* Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+* Fix migration of users with invalid search_tweets.data_import_id (#13904)
+* Import / export synchronization oauths and connector configurations (#14003)
+* Retain backwards compatibility with exports without client applications(#14083)
+* Redirect organization users in static pages (https://github.com/CartoDB/cartodb/pull/14009)
+* Update extension to 0.22.1 to fix problems granting permissions to tables with sequences (cartodb-postgresql#330)
+* Update extension to 0.22.2 to fix hyphenates usernames (cartodb-postgresql#331)
+* Update extension to 0.23.0 to add a new helper function `_CDB_Table_Exists(table_name_with_optional_schema TEXT)` (cartodb-postgresql#332)
+* Added format option to load datasets into the data library (#14216)
+* Log Resque errors (#14116)
+* Avoid creating double indices on sync (#14157)
+* Do not crash when checking nil password (#14099)
+* Do not crash when saving WMS layers with long metadata (Suppoer#1643)
+* Remove Auth API FF, enable it by default (#13857)
+* Fix table sharing from users with hyphens in their name (quoting) (support#1635)
+* Datasets search now is working as intendended with special characters like "_"
+* User mover does not export user metadata if org metadata is not exported
+* Fail fast instead of locking dashboard / user data size calculation on table deletion (#12829)
+* Update odbc_fdw extension to `0.3.0`
+* Triggering ghost tables and common data when visiting the dashboard (#14010)
+* Now you can limit the amount of memory used by ogr2ogr adding the `memory_limit` option in bytes to the ogr2ogr section of the `app_config.yml`
+
+### Internals
+* Re-enable sourcemaps in production, they were broken since the move to webpack v4 (https://github.com/CartoDB/cartodb/pull/14150)
+* Add `internal-carto.js` to transpilation process in Webpack (https://github.com/CartoDB/cartodb/pull/14117)
+* Create a new JS bundle for Lockout page (https://github.com/CartoDB/cartodb/issues/14019)
+* Update to Webpack 4, move CSS processing from Grunt to Webpack (https://github.com/CartoDB/cartodb/pull/14033)
+
+
+4.12.x (2018-05-24)
+---
+
 ### NOTICE
-This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
+OnPremises 2.2.0 was closed in tag 4.11.113, pointing to this commit: [a236036](https://github.com/CartoDB/cartodb/commit/a2360360bdd42706e5fb57e3729811c41e292c5e)
+
+
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.22.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -11,8 +232,65 @@ sudo make install
 This release changes the way Google ouath login works. If you are using it, you need to add the client_secret
 to the oauth.google_plus section of the configuration file.
 
+### NOTICE
+This releases updates the database connections, and `database.yml` needs to be updated to reflect it. The adapter
+should be replaced from `postgres` to `postgresql`. See `database.yml.sample` for an example.
+
+This upgrade changes the configuration format of basemaps. You must replace all `url` keys for `urlTemplate`. It is
+recommended that you replace the `basemaps` section completely, since this release also adds supports for high
+resolution maps, which have added `urlTemplate2x` keys to the configuration.
+
+You can then run `bundle exec rake carto:db:sync_basemaps_from_app_config` to synchronize existing layers.
+### NOTICE
+
+This upgrade changes AWS gem version. Now you must specify `region` within your AWS configurations. Check `app_config.yml.sample`.
+
 ### Features
+* Export GPKG files (CartoDB/support#1220)
+* Show migrated public pages (/me, /maps, /datasets) for all builder users (#14039)
+* Allow users to edit all their information in Profile (#13793)
+* Ask for password confirmation when updating organization or user settings (#13795)
+* Public dataset migration (#13803)
+* Organization page migration (#13742)
+* Public pages migration (#13742)
+* Profile page migration (#13726)
+* Add more profile data fields ([Central#2184](https://github.com/CartoDB/cartodb-central#2184))
+* Add password expiration for orgs ([Central#2225](https://github.com/CartoDB/cartodb-central#2225))
+* Signup and confirmation pages migration (#13641)
+* Improve API keys view for the new Auth API (#13477)
+* Add search to widgets in mobile views (#13658)
+* Update multiple widgets at once (#13596)
+* Adjust widget styles in embed maps mobile view (#13487)
+* Add customizable color ramps for qualitative attributes ([#9002](https://github.com/CartoDB/cartodb/issues/9002))
+* checks username length on organization signup ([#13561](https://github.com/CartoDB/cartodb/pull/13561))
+* Add cookie privacy setting to embed via queryString parameter ([#13510](https://github.com/CartoDB/cartodb/pull/13510))
+* User feed migration
+* Add legends to mobile view in embed maps (#13417)
+* Unplug pluggable frontends (#13446)
+* Replace Mapzen geocoding with Mapbox (#13450)
+* Disable following analysis steps (#13311)
+* Enable deleting geometry anchors in edit mode (#11341)
+* Fix marker bugs (#1207)
+* Improve copies for analyses, move MORE INFO link (#13384)
+* Add routing to widgets
+* When editing a widget, disable the other ones (#13374)
+* Back button support (#13115)
+* Embed static view (#12779)
+* Add tooltip on Builder actions (#13102)
+* Add Grunt tasks to generate static files (#13130)
+* Do not request image files in Dropbox/Google sync (CartoDB/support#1192, CartoDB/support#1436)
+* Improve geocoding onboarding (#13046)
+* Editor static view (#13043)
+* Add trial notification in static views (#13079)
+* Account static view (#12749)
+* Force UTF-8 encoding in the Compass task
+* Trigger error when interactivity request fails (#13093)
+* Add interactivity error infobox (#13027)
+* Add limits for torque (#13085)
+* Add limits for vector tiles (#13026)
+* Stop adding legends automatically when styling a layer (#13052)
 * Improved cartography values for line & point size (CartoDB/support#1092 CartoDB/support#1089)
+* Added support for TomTom as services provider (CartoDB/dataservices-api/issues/492)
 * Remove forget confirmation from onboarding tour (#13039)
 * Add onboarding FS events (#13004)
 * Map: rearrange layer options in layers list (#13006)
@@ -52,6 +330,7 @@ ion for time-series (#12670)
 * Provide a way to display broken layers pointing to non existent nodes (#12541)
 * Provide CartoCSS attribute within layer info in vizjson v3 (CartoDB/support#858)
 * Support for nested properties in CartoCSS (#12411)
+* Tooling to add and remove arbitrary datasets to Data Library (#13666, #13667)
 * New loading button styles (#12132)
 * [WIP] Export/import organization/user metadata to allow user migration (#12271, #12304, #12323, #12588, #12380, #12510)
 * Start using ::outline symbolizer for polygon stroke (#12412)
@@ -61,6 +340,7 @@ ion for time-series (#12670)
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392)
 * Start using ::outline symbolizer for polygon stroke (#12412)
+* Explicit error on password protected visualization requests (#13123)
 * New force param in EUMAPI organization users destroy operation to force deletion even with unregistered tables (#11654).
 * Removed the usage of the `organizations_admin` feature flag (#12131)
 * Time-series widgets aggregated by time (#12324)
@@ -68,11 +348,18 @@ ion for time-series (#12670)
 * Add source to widgets (#12369).
 * Show ranges in time series widget selection (#12291)
 * Bump Webpack version (#12392).
+* Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_d`
+* Session expiration (Central #2224). Configure in `app_config.yml` -> `passwords` -> `expiration_in_s`
+* Password expiration ([Central#2226](https://github.com/CartoDB/cartodb-central#2226))
 * New user render timeouts and propagation of timeout values to Redis (#12425)
+* Included aggregation tables configuration change to the user migrator (#13883)
+* New Tooling to gather Dataservices' provider metrics (#13710)
 * Default basemap is used for all Builder maps regardless of dataset basemap (#12700)
 * The selection window on a histogram widget can be dragged (#12180)
+* Now the max_layers property only counts data layers to avoid problems with basemaps (#13898)
 * Visualization endpoint now returns related canonical visualizations under demand (#12910)
 * Move playback on animated time series by clicking on it (#12180)
+* Fix bug in the way we calculate stats for the mapviews (#13911)
 * Move play/pause button to besides the time series (#12387)
 * Updates Dataservices API client default version to `0.18.0` (#12466)
 * Time-series: add timezone selector to timeseries histogram (#12464)
@@ -82,11 +369,245 @@ ion for time-series (#12670)
 * Updates Dataservices API client default version to `0.20.0` (#12633)
 * Remove data-observatory-multiple-measures feature flag (#304)
 * Improve legends error (cartodb.js#1758)
-* Updates Dataservices API client default version to `0.21.0` (#12942)
-* Now is possible to use wildcard character (*) in the whitelist emails for organization signups (#12991)
+* Updates Dataservices API client default version to `0.22.0`
+* Improve user migrator
+* Support high-resolution basemaps (#12845)
+* Now is possible to use wildcard character (\*) in the whitelist emails for organization signups (#12991)
+* Integrated the internal release of carto.js (https://github.com/CartoDB/cartodb.js/issues/1855)
+* User accounts in locked state returns 404 for resources like maps or visualizations and redirection for private endpoints (#13030)
+* Force use a different password when password change ([Central#2223](https://github.com/CartoDB/cartodb-central#2223))
+* Limits V2
+  * Add rate limits for sql_copy ([CartoDB-platform#4394](https://github.com/CartoDB/cartodb-platform/issues/4394))
+  * Add rate limits persistence (#13626)
+  * Include rate limits in user migration (#13712)
+  * Remove rate limits on user deletion (#13657)
+  * Sync price plans and rate limits (#13660)
+  * Add rate limit index to account_types (#13664)
+  * Add account_type FK in users table (#13571)
+  * Create account_types and default rate limits (#13572)
+* Auth API
+  * Keys creation (#13170)
+  * Create master API key on user creation (#13172)
+  * Create default public API key on user creation (#13471)
+  * Keys destruction (#13171)
+  * Organization concerns (#13511)
+  * Token regeneration (#13321)
+  * Keys listing (#13327)
+  * Disable keys for locked users (#13560)
+  * Header authentication (#13329)
+  * Keep API Key permissions up to date when tables change (#13333)
+  * Delete API keys on user deletion (#13470)
+  * Inherit from public user for API key permissions (#13464, #13550)
+  * Sync master key with user model (#13540)
+  * Regenerate all user/orgs api keys (#13586)
+  * Do not allow empty api list in Auth API [#13291](https://github.com/CartoDB/cartodb/issues/13291)
+  * Conventions (#13491)
+  * API Keys are exported and imported (#13346)
+  * 500 error when mixing auth mechanisms (#13723)
+* Added new endpoint for database management tool for validation and some changes in the `get_databases_info` one (#13257)
+* Added lockout page to show when a user is locked up due to expiration of the trial (#13100)
+* Add decade aggregation to time series widget [Support #1071](https://github.com/CartoDB/support/issues/1071)
+* Updates Dataservices API client default version to `0.23.0`
+* Added Mapbox services providers (#cartodb-platform/3835)
+* Add support for queryparams and special permissions in Auth API (#13597)
+* Add rakes for generating default API Keys (#13595)
+* Use carto.js v4.0.0-beta.13
+* Change Mapbox modal (#1265)
+* Hide legend title and header if not enabled (https://github.com/CartoDB/support/issues/1349)
 
 ### Bug fixes / enhancements
+* Fix create map / add layer button being disabled (#14061)
+* Fix layers list item border color (https://github.com/CartoDB/cartodb/pull/14002)
+* Remove padding to delete button in analyses (https://github.com/CartoDB/cartodb/pull/14001)
+* Fix wrong requests because of bad png tile urls generation (https://github.com/CartoDB/cartodb/pull/14000)
+* Fix copy on Twitter connector deprecation
+* Properly destroys and sets cartodb_base_url cookie (https://github.com/CartoDB/cartodb/pull/14064)
+* Fix apply button loading state for queries that alter the data (https://github.com/CartoDB/cartodb/pull/13979)
+* Fix synchronization IDs in migrations (CartoDB/support/issues/1603)
+* Avoid parsing errors twice when saving CartoCSS (https://github.com/CartoDB/cartodb/pull/13986)
+* Show "Select points in polygons" analysis only for polygons (https://github.com/CartoDB/cartodb/pull/13982)
+* Allow only numeric values in latitude/longitude select in georeference analysis (https://github.com/CartoDB/cartodb/pull/13974)
+* Fix dataset name overflow in widgets (https://github.com/CartoDB/cartodb/pull/13972)
+* Fix the public table view for non-migrated-users  (#13969)
+* Fix widgets not updating (https://github.com/CartoDB/cartodb/pull/13971)
+* Fix legend paddings/margins (https://github.com/CartoDB/cartodb/pull/13966)
+* Fix the name of the bundle for public_Table on production (#13965)
+* Fix how to decide which public_table version to show (#13694)
+* GTM DataLayer Tweaks (https://github.com/CartoDB/cartodb/pull/13961)
+* Setup Google Tag Manager (https://github.com/CartoDB/cartodb/pull/13946)
+* Differentiate public schema from "public" user's schema (https://github.com/CartoDB/cartodb/pull/13987)
+* Fix an error on always activated notifications at account and profile pages (#13691)
+* Fix legend margin (https://github.com/CartoDB/support/issues/1510)
+* Fix overviews permissions when sharing tables or using auth API keys (https://github.com/CartoDB/support/issues/1415)
+* Update torque to fix google maps bug (https://github.com/CartoDB/support/issues/1498)
+* Upgrade @carto/zera to avoid bugs related with fractional zoom levels (https://github.com/CartoDB/cartodb-platform/issues/4314)
+* Fix short-names analyses translations (#13828)
+* Escape prefixes and suffixes in formula widgets (#13895)
+* Redirect to widgets list after deleting a widget (#13485)
+* Keep widgets list order (#13773)
+* Change analyses short names (#13828)
+* Fix popups with just images on IE and Edge (#13808)
+* Enrich downloaded layer event (#13391)
+* Includes a rake tasks to export/import named maps for users (#13927)
+* Handle redirection when adding widgets (https://github.com/CartoDB/support/issues/1464)
+* Add overlap option in animated heatmap style form (https://github.com/CartoDB/support/issues/1331)
+* Fix bottom extra space in legends (#13765)
+* Fix Heatmap legend does not update after style changes (https://github.com/CartoDB/cartodb/issues/13763)
+* Includes a rake tast to destroy duplicated overlays that should be unique.
+* Disable Twitter Connector and show Warning for users without their own credentials (https://github.com/CartoDB/product/issues/49)
+* Fix Category Widgets height on smaller screens (https://github.com/CartoDB/cartodb/issues/13829)
+* Consistent margins in Auth API UI
+* Skip importing legacy functions (https://github.com/CartoDB/cartodb/issues/13677)
+* Embed improvements (https://github.com/CartoDB/cartodb/issues/13765)
+* FullStory tweaks (https://github.com/CartoDB/cartodb/pull/13753)
+* Allows imports of synchronizations without a log
+* Fix embed maps on firefox, which caused displaced popups as well (https://github.com/CartoDB/support/issues/1419)
+* Fix a case where the layer selector was displaying incorrectly (https://github.com/CartoDB/support/issues/1430)
+* Add auth_github_enabled ([Central#2154](https://github.com/CartoDB/cartodb-central/issues/2154))
+* Update charlock_holmes to 0.7.6 (ICU compatibility)
+* Skip canonical viz with missing tables from metadata export
+* Fix dialog footer in some modals (CartoDB/onpremises/issues/507)
+* Fix alignment for formula widget edit form (CartoDB/onpremises/issues/511)
+* Fix copies order in html legends editor (CartoDB/onpremises/issues/504)
+* Fix export view template showing glitch in IE and Firefox(CartoDB/onpremises/issues/484)
+* Show layer selector in the legends tab on small breakpoint (https://github.com/CartoDB/support/issues/1412)
+* Allows import of an exported dataset with external data imports without a syncronization (#13766)
+* Fix users with unexisting physical tables on export ([#13721](https://github.com/CartoDB/cartodb/issues/13721))
+* Fix saving hdpi url templates when not needed (#13746)
+* Fix analysis modal alignment and password form (CartoDB/onpremises/issues/520)
+* Do not add new notifications if notification content already exists (#13407)
+* Fix wrong dataset header width in chrome (https://github.com/CartoDB/support/issues/1398)
+* Fix widgets size in Builder (#13682)
+* Fix SQL function analysis error with dragged source (https://github.com/CartoDB/cartodb/pull/13732)
+* Fix histogram widgets collapsing (#13705)
+* Use Promises in query models to handle async states (#13478)
+* Fix "Add new analysis" button in IE (CartoDB/onpremises/issues/485)
+* Fix button when addign new widgets (CartoDB/onpremises/issues/513)
+* Fix private map view styles in IE (CartoDB/onpremises/issues/499)
+* Fix privacy modal styles in IE (CartoDB/onpremises/issues/505)
+* Fix auto align in tooltips in IE (CartoDB/onpremises/issues/519)
+* Fix arrows styles for IE in dataset view (CartoDB/onpremises/issues/521)
+* Add loading state to API Keys form button
+* Fix widgets disabled state (#13707)
+* Fix embed maps footer when there is no toolbar (#13704)
+* Add helper text to mapbox basemap view (#13699)
+* Fix legends not refreshing when moving layers (#13696)
+* Fix broken api keys for organization users
+* Fix multiple bugs in widgets (#13686)
+* Fix category widget search on Android (https://github.com/CartoDB/support/issues/1074)
+* Improve pagination in category widgets (https://github.com/CartoDB/support/issues/1161)
+* Fix onboardings in layer content views (#13674)
+* Safe access to vis map for old visualizations without maps (#13665)
+* Don't fetch rows when fetching columns for analyses (#13654)
+* Fix pagination style for category widgets (https://github.com/CartoDB/support/issues/1161)
+* Add isSourceType false by default to select-view (#13655)
+* Parameter text for Filter by Column Value Analysis Method (https://github.com/CartoDB/design/issues/1125)
+* Fix `Fix them` redirection bug (https://github.com/CartoDB/cartodb/issues/9974)
+* Fix bad SQL behavior: infinite loop and blank panels (https://github.com/CartoDB/cartodb/issues/13603)
+* Several style fixes in IE11 (https://github.com/CartoDB/cartodb/issues/13635)
+* Fix table head style in IE11 (https://github.com/CartoDB/cartodb/issues/13606)
+* Allows a viewer user to sign up to an org with no unassigned quota ([#1341](https://github.com/CartoDB/support/issues/1341))
+* Freeze required Google Maps script to v3.30 (https://github.com/CartoDB/cartodb/pull/13562)
+* Add `shield-placement-keyword` CartoCSS property (#13612)
+* Fix icons in custom html legends (#13600)
+* Rename 'cartodb3' to 'builder'
+* Make legends collapsable (#13531)
+* Add marker size to layer cartocss props to reinstantiate torque map (#13590)
+* Fix select geometries dropdown in JOIN analysis ([Support#1281](https://github.com/CartoDB/support/issues/1281))
+* Fix IE11 Drag&Drop ([Support#876](https://github.com/CartoDB/support/issues/876))
+* Add new attributes to events ([Central#1997](https://github.com/CartoDB/cartodb-central#1997))
+* Removed references to analytics JS files in static pages (#13543)
+* Add titles (and description) to embeds in mobile viewports (#13517)
+* Support several versions of pg_dump and pg_restore binaries (CartoDB/cartodb-central#2073)
+* User feed renders google maps properly when user has it enabled
+* New Synchronization records can enter error state preventing future synchronizations (#13435)
+* Prevent destroying modals with `keepOpenOnRouteChange` property enabled on Builder when route changes. ([Support#1293](https://github.com/CartoDB/support/issues/1293))
+* Import gpkg without coordinate system. ([Support#1303](https://github.com/CartoDB/support/issues/1303))
+* Improved bundling aliases
+* User migrator deletes import log after importing failure (#13542)
+* Remove Tangram's vector rendering support in Builder embeds ([#13461](https://github.com/CartoDB/cartodb/issues/13461))
+* Remove Tangram references (#13461)
+* Restore translation keys to static pages (#13492)
+* Show signup errors when org-user signup fails [Support#1312](https://github.com/CartoDB/support/issues/1312)
+* Fix wrong user quotas [Support#1304](https://github.com/CartoDB/support/issues/1304)
+* Fix Embed map disappears when reducing size of screen [Support#1299](https://github.com/CartoDB/support/issues/1299)
+* Avoid sending multiple notifications for stuck imports (#11833)
+* Support statement timeout in ArcGIS connector [Support#1287](https://github.com/CartoDB/support/issues/1287)
+* Support invalid ArcGIS layer [Support#1291](https://github.com/CartoDB/support/issues/1291)
+* Update Leaflet to version 1.3.1
+* Remove tangram by updating cartodb.js version
+* Remove `To column` option from `Connect with lines` analysis [#12955](https://github.com/CartoDB/cartodb/issues/12955)
+* Don't disable delete analysis button if layer already has some [Support#1283](https://github.com/CartoDB/support/issues/1283)
+* Submit form with Enter key in the Add layer modal > Connect dataset tab (#13441)
+* Add routing to analyses nodes (#13364)
+* Fix organization signup page not working on subdomainless #13012
+* Deletes redis metadata after org destruction (#13687)
+* Fix publish modal in settings view (#13418)
+* Improve onboarding for when user adds an empty layer (#11876)
+* Don't show the publish modal when the user clicks on the privacy button (#13366)
+* Add auth tokens to dependent visualizations (#13394)
+* Logged in organization user gets redirected to dashboard [#11832](https://github.com/CartoDB/cartodb/issues/11832)
+* Redirect to login from static pages if there is no user (#13277)
+* Add support for collision_strategy=overwrite when creating a dataset from a query (#13139)
+* Fix popup content in time series widget (#1269)
+* Update pop up when applying HTML changes (#1263)
+* Rollback make new widgets appear on top (#13244)
+* Show quota alert in georeference city analysis (#13354)
+* Show layer name in delete layer modal (#13363)
+* Show tooltips only if the target element is visible (#12098)
+* Consolidate DeepInsight components in Builder (#13271)
+* Unify tooltip style (#13194)
+* Correctly log ogr2ogr generic errors (#13401)
+* Remove card's hover state when hovering the dataset/node inside (#13316)
+* Data Observatory analysis is not working (CartoDB/support#1239)
+* Use zoomToData only if the layer is created from a dataset (#13309)
+* Rename Georeference to Geocode (#13315)
+* Use new header design in export as image view (#13306)
+* Don't show tooltip if analysis is selected or is new (#13299)
+* Fix logo alignment in small viewports (#13302)
+* Nothing else should be interactive when a dropdown is open (#13283)
+* Fix hover in widgets (#13293)
+* Fix autostyling with category widget (using a numeric field) [Support #611](https://github.com/CartoDB/support/issues/611)
+* Fix grammar errors in analysis description (#13258)
+* Fix hubspot dependency for static views (#13261)
+* Fix icons not showing (#13276)
+* Redesign add buttons (#13215)
+* Onboarding: center bounding box automatically when new datasets are added (#13245)
+* Stop building static pages on dev (#13188)
+* Documentation, changed some UI text from the onboarding animation (collaboration project with Design to change terminology)
+* Fix like buttons (#13231)
+* Wayfinding: fix dialog footer (#13223)
+* Wayfinding: widget view (#13202)
+* Wayfinding: layer list (#13208)
+* Wayfinding: edit feature (#13203)
+* Wayfinding: modals breadcrumbs (#13205)
+* Improve wayfinding in layer view (#13185)
+* Fix bug in add layer showing my datasets disabled (CartoDB/support#1184)
+* Grunt: Run carto-node before browserify (#13187)
+* Enable data tab if layer needs geocoding
+* Fix bug in redirection after analysis is completed (CartoDB/support#1183)
+* Hide Salesforce Connector Form (CartoDB/tech-ops#324)
+* Disable "Your datasets" tab and add tooltip if user doesn't have any datasets (#13104)
+* Fix Mapcard preview in Public Map (#13166)
+* Add hover state to nav tabs (#13158)
+* Change how redirection works after a successful import (CartoDB/support#1128)
+* Fix organization templates generation (#13150)
+* Fix dataset export modal (CartoDB/support#1168)
+* Add hover to UI Elements (#13074)
+* By value color input filters columns of type date (#7873)
+* Fixes image export in editor (#13089)
+* Fix incorrect "back to dashboard" link in dataset view (#13111)
+* Improve the discoverability of the table view switch (#13050)
+* Change Basemap layer style (#13091)
+* Rename point/polygon count to feature count (#13066)
+* Fix broken table (similar to ghost table) when renaming a visualization, only changing capitalization (#13421)
+* Upgrade cartodb extension to 0.20.0 (#13065)
+* Fix for torque category legends (CartoDB/support#1120)
+* Upgrade cartodb extension to 0.20.0 (#13065)
+* Remove back arrow and add a tooltip to editor logo (#13067)
++ Track user events (#13051)
 * Fix dashboard redirections (#12775)
+* Fix Dropbox reconnection on token expiration (#13410)
 * Fix upload dataset drag and drop (CartoDB/support#1072)
 * Fix legends request order with slow internet connection (#12733)
 * Documentation, fixed spelling and grammar in en.json
@@ -94,8 +615,11 @@ ion for time-series (#12670)
 * Don't show basemap's labels layer in layer list (#13000)
 * Fallback to `username` when `name` is empty in share map view
 * Fix bounding box not updating with gmaps basemaps
+* Fix support for organization assets on org import (CartoDB/cartodb-central#1981)
+* Supporting text-placement for labels (CartoDB/support#13015)
 * Google oauth now works without JS (#12977)
 * Add "less or equal than" and "greater or equal than" to filter by value analysis
+* Update styles for oauth buttons (#13412, #13439)
 * Improve SQL limit platforms notification (#12597)
 * Fix infinite loop for failed sql api requests.
 * Show map options when selecting a map in search view
@@ -104,9 +628,16 @@ ion for time-series (#12670)
 * Auto-select best geometry for DO (#12623)
 * Notification for error tiles (#cartodb.js/1717)
 * Make sure widget's source id is a string, reject it otherwise (#12878)
+* Clean permissions ACL on group deletion (CartoDB/support/issues/1057)
+* Safe check for destination DB on user import (CartoDB/cartodb-central/issues/1945)
 * Improve legends for torque (CartoDB/support#979)
 * CSV export allowed without geometries (#12888)
+* Do not check shared entities in force deletion (#13352)
+* User destroy order should be Central, local (#CartoDB/cartodb-central/issues/1929)
+* Delete all external sources within one transaction (#13129).
+* NoMethodError: undefined method `has_feature_flag?` for nil:NilClass at visualizations controller (#13145).
 * Fix handling of imports with long file names and existing tables with almost the same name (#12732)
+* Update widgets although source layer is not visible (support/#1135)
 * Update cartodb.js version
 * Don't allow csv export for polygon or line (#9855)
 * Fix a problem with Unifont Medium font (#support/1002, #support/989)
@@ -136,7 +667,9 @@ ion for time-series (#12670)
 * Refactor geometry buttons styles to ease breakpoints logic (#11542)
 * Fix some issues related to feature edition view (#12716)
 * Fix analysis onboarding lunch template (#12743)
+* Ignore special LIKE characters in grantable searches (#13378)
 * Allow any text in Maps, Layers and Widgets names (#12322)
+* Fix overwrite strategy for users with hyphen in their username (#13365)
 * Change edition mode when user edits widget (#12636)
 * Disable editing the "Others" icon in UI (#12683)
 * Improved date format in histograms (#12719)
@@ -147,6 +680,7 @@ ion for time-series (#12670)
 * Fix adding/removing widgets when having Time Series (#12123, #12402, #12655)
 * Enhancements on superadmin imports & exports endpoints (#12254)
 * Don't offer new DO UI unless user has DO credits (#12648)
+* Fix problem with visualization search when a visualization is shared with a user from multiple entities (Support #1451)
 * Change position and size of legend icons (#12619)
 * Fix Time series width on mobile viewport (#12609)
 * Fix random timeout in specs (#12625)
@@ -158,6 +692,7 @@ ion for time-series (#12670)
 * Fix broken join from second column on IE11 (#support/875)
 * Fix ghost node problem (#11397)
 * Break down deep-insights-integrations class (#11581)
+* Optimize shared entities check (#13353)
 * Fix CORS for local images in legends (#12647)
 * Fix torque categories layer rendering (#cartodb.js/1698)
 * Don't provide quantification option when layer is animated (#10947)
@@ -211,11 +746,13 @@ ion for time-series (#12670)
 * Make scrollwheel zoom on by default (#12214)
 * Fix SAML login error with uppercased emails (#12367)
 * You can configure your API key for the search bar, powered by Mapzen, with `geocoder.mapzen.search_bar_api_key` (#12296).
+* You can configure your Access token for the search bar, powered by Mapbox, with `geocoder.mapbox.search_bar_api_key` (#13425).
 * Fix viewer handling by visualizations controller (#12379).
 * Add last name field to users (#12174)
 * Fix error where a sync of a big dataset without geometry would be deleted from dashboard (#12162)
 * `create_dev_user` rake no longer tries to auto-create the database, `cartodb:db:setup` should be run first (#12187).
 * Fix EUMAPI response as per documentation (#12233)
+* Export/import visualization password and locked (Support #1544)
 * Fix dimension check and support for SVG without extension and XML header (#12374).
 * Builder embed doesn't need user DB connection anymore (#12473).
 * Visualization models no longer raise an error checking `password_valid?` (#12270).
@@ -223,6 +760,7 @@ ion for time-series (#12670)
 * User organization or user key for google maps (#12232)
 * Configurable pg_dump/restore bin path (#12297)
 * Redesigned LEARN MORE buttons behaviour (#12135)
+* Fixed password protected embed maps (#13448)
 * "vector" key in vizjson is skipped in embeds if user has "vector_vs_raster" feature flag enabled.
 * Allow whitespace as layer name at vizJSONv3 (#12526)
 * Inline editor saves on blur, discard changes on 'ESC' (#11567)
@@ -264,6 +802,7 @@ ion for time-series (#12670)
 * Hide privacy button if user account type is FREE or PERSONAL (#12423)
 * Fix "apply" button sizes in advanced mode (#12652)
 * Axis labels changes in Time-Series (#12658)
+* Fix backend tests (#13623)
 * Removed unused settings in organizations (#4992)
 * Increment maximum buckets in Time-Series for leap years (#12778)
 * Prevent invalid geometries in BoundingBoxUtils.to_polygon, to_point (#12873)
@@ -272,12 +811,82 @@ ion for time-series (#12670)
 * Fix TrackJS missing token in static pages (#12914)
 * Fix missing upgrade link in static dashboard (#12929)
 * Fix histogram zoom (#12945)
+* Proper error message when ArcGIS server does not support query capability (#11544)
+* Added TMS to layer_options (#13459)
+* Fix ambiguous column call in the search tweets query (#13073)
+* Fix email validator failing with empty emails (#13078)
+* Be sure to delete the analysis cache tables while we're dropping a organization user (#13136)
+* Fix for legends when there is only one element in the ramp (cartodb.js#1938)
+* Fix SAML configuration bug that doesn't let access some properties properly (#13161)
+* Improved error messages for ArcGIS MapServer imports [Support #1288](https://github.com/CartoDB/support/issues/1288)
+* Treat all time series dataview timestamps as UTC (#13070)
+* Fix datasets downloaded as "cartodb-query" [Support #1179](https://github.com/CartoDB/support/issues/1179)
+* Enable CSV exports for polygon and line datasets (#13212)
+* Change "Edit" to "Add" in panel header when adding a new geometry (#13049)
+* Fetch histogram and time series totals with a new `no_filters` parameter. (#13059)
+* Enable CSV exports for polygon and line datasets (#13212)
+* Enable CSV exports for polygon and line datasets (#13196)
+* Do not check Referrer for enabling CORS, whole domain must be enabled (#13783)
+* Fix wrong padding in widgets list (#13200)
+* Add fetch polyfill (#13230)
+* Ensure v3 visualizations always have analyses (#13662)
+* Fix asset upload with special character in local storage (#13602)
+* Remove tooltip when clicking on an analysis and when adding a new geometry (#13235)
+* Make all the widgets cards clickable in the Add widgets modal (#13134)
+* Always use `urlTemplate` basemap attribute (deprecate `url`) (#13748)
+* Make new widgets appear on top (#13244)
+* Better error messages for some import errors
+* Add indices to `layers` relations for performance (#13669)
+* Fix imports with local storage and special characters (#13604)
+* Update S3 gem to fix upload timeout problems (#13767, #13791)
+* Stop trying to find visualizations without user/org id (#12538)
+* Allow selecting only one bucket in animated time series [Support #1119](https://github.com/CartoDB/support/issues/1119)
+* Fix missing values in sql view [Support #1210](https://github.com/CartoDB/cartodb/pull/13289)
+* Correct redirection when visiting root url without subdomain (#13768)
+* Fix table popups [#13304](https://github.com/CartoDB/cartodb/issues/13304)
+* Fix category auto-style [#611](https://github.com/CartoDB/support/issues/611)
+* Allow user exporter to be used as a db backup (#2058)
+* Fix missing delete button [1223](https://github.com/CartoDB/support/issues/1233)
+* Correctly log metrics events for query import type (#13652)
+* Remove `sync_on_data_change` (https://github.com/CartoDB/cartodb.js/issues/1862)
+* Fix duplicated modules resolution (https://github.com/CartoDB/cartodb/pull/13535)
+* Use redis secondary for heavy `KEYS *` opeartion on user export (#13814)
+* Fix broken import when `ogc_fid` or `gid` have nulls (https://github.com/CartoDB/support/issues/1338)
+* Allow inviting viewers for org even if regular seats are full (https://github.com/CartoDB/support/issues/1373)
+* Add rake to remove duplicate legends in layer
+* Fix private visualization imports when user has no private tables permission (https://github.com/CartoDB/cartodb/issues/14052)
+* Export and import `user`'s `client_application` and `oauth_tokens` (https://github.com/CartoDB/cartodb/pull/14060)
+* Do not allow empty password in LDAP logins
+* Disable syncs for locked users (https://github.com/CartoDB/cartodb/issues/13832)
+* Invalidate varnish cache on api key changes
+* Fix bugs in legends (https://github.com/CartoDB/support/issues/1339, )
 
 ### Internals
+* Fix test error output for builder (#14158)
+* Editor assets are frozen now (#14090)
+* Added specs for the migrated dashboard (#14037)
+* Profile and Account pages are now static and served via NGINX in production/staging enviroment (#13958)
+* CARTO.js internal version is now called internal-carto.js (#13960)
+* Compress and pack static pages assets for production release (#13940)
+* Point docs to developer center (#13937)
+* Point to new CARTO.js v4 repo (#13860)
+* Account migration (#13501)
+* Data Library dashboard migration (#13608)
+* Improve spec bundles / process
+* Replace SCSS-Lint with Stylelint (#13165)
 * Use engine instead of visModel internally (#12992)
 * Remove analysisCollection and refactor analyses-integration (#12947)
 * Fix layer's sources in tests (analysis source required) (#12866)
 * Adapt widget integration and specs to dataviews refactor (#12850)
+* Optimize bundle size related to camshaft-reference (#13124)
+* Integrate latest changes of carto.js (https://github.com/CartoDB/cartodb.js/issues/1936)
+* Replace wax by carto-zera (https://github.com/CartoDB/cartodb.js/issues/1954)
+* Avoid unnecesary grid.json requests (https://github.com/CartoDB/cartodb.js/pull/1979)
+* Fix interactivity bug (https://github.com/CartoDB/support/issues/1222)
+* Merge Deep-insights project in Cartodb (#13284)
+* Add caching headers for emebeds
+* Affected specs tasks now take into account multiple specs folders [PR #13295](https://github.com/CartoDB/cartodb/pull/13295)
+* Updated to Rails 4.2.10 (#11735)
 
 ### NOTICE
 This release upgrades the CartoDB PostgreSQL extension to `0.19.2`. Run the following to have it available:
@@ -444,6 +1053,8 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Rollback failed user/organization imports
 * Export map layers statistics
 * Add hubspot_form_ids to frontend config
+* Metadata only user migrations
+* Add rake to fix analyses cache tables geometries
 * Enable user migrations across clouds (#12795)
 
 ### Bug fixes
@@ -454,6 +1065,7 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed UI when editing merge analysis (#10850)
 * Fixed uninitialized constant in Carto::Visualization when a viewer shares a visualization (#12129).
 * Revamp grunt default task to compile assets (#12325)
+* Remove dashboard_migration ff from backend (#14103)
 * Made checkboxes actionable clicking on its label (#11535)
 * Google customers don't need quota checks for hires geocoding (support/#674)
 * Fixed a problem with autostyle when styles has aggregation (#8648)
@@ -603,6 +1215,16 @@ More information at [Dropbox migration guide](https://www.dropbox.com/developers
 * Fixed incorrect analysis node being selected after deleting (#11899)
 * Maps using GMaps as their basemap are now opening in editor (#12712)
 * Time-series range filter is kept after refreshing (#12576)
+* Avoid exporting orphan raster overviews in user migrator
+* Set `soft_geocoding_limit` to default to false.
+* Do not export local visualizations lacking a map
+* Do not export duplicated canonical visualizations
+* Add notifications to user migrator (#13844)
+* Better postgres functions deprecation matching
+* Export and import non-cartodb-managed named maps.
+* Keep import even if it fails importing visualizations (#13903)
+* Save Import when visualization import fails (#13984)
+* Add rake to remove org metadata .
 * Docs, fixed incorrect grammar in en.json file (customer reported).
 
 ### NOTICE
@@ -869,7 +1491,8 @@ be exectuded daily
   3. Trigger existing orgs configuration: `RAILS_ENV=development bundle exec rake cartodb:db:configure_extension_org_metadata_api_endpoint`.
   4. Trigger existing org owner role assignment: `RAILS_ENV=development bundle exec rake cartodb:db:assign_org_owner_role`.
   5. Increase your database pool size to 50 (10 x # threads, see next line) at config/database.yml. Sample development configuration: config/database.yml.sample
-  6. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
+  6. Make sure that `config.threadsafe! unless $rails_rake_task` is uncommented at `development.rb`.
+  7. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
 * New visualization backups feature. Upon viz deletion a special vizjson will be stored in a new DB table. Backups live for Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP days and can be recovered with `cartodb:vizs:import_user_visualization` rake by visualization id. Needs new feature flag `visualizations_backup`. Check https://github.com/CartoDB/cartodb/issues/5710 for additional details
 * Fully removed Layer parent_id from backend and frontend as wasn't used.
 * Added new (optional) config parameters `unp_temporal_folder` & `uploads_path` under `importer` section to allow custom UNP and file upload paths.

@@ -43,6 +43,8 @@ describe 'legacy behaviour tests' do
     describe 'GET /api/v1/geocodings/:id' do
 
       it 'returns a geocoding' do
+        @user.geocoder_provider = 'heremaps'
+        @user.save.reload
         redis_mock = MockRedis.new
         user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, _orgname = nil, _redis = redis_mock)
         CartoDB::GeocoderUsageMetrics.stubs(:new).returns(user_geocoder_metrics)

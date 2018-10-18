@@ -17,7 +17,9 @@ module CartoDB
         email: email,
         name: name,
         last_name: last_name,
+        created_at: created_at,
         username: username,
+        state: state,
         account_type: account_type,
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
@@ -71,7 +73,8 @@ module CartoDB
           block_price: organization_user? ? organization.twitter_datasource_block_price : twitter_datasource_block_price,
           block_size:  organization_user? ? organization.twitter_datasource_block_size : twitter_datasource_block_size,
           monthly_use: organization_user? ? organization.get_twitter_imports_count : get_twitter_imports_count,
-          hard_limit:  hard_twitter_datasource_limit
+          hard_limit:  hard_twitter_datasource_limit,
+          customized_config: CartoDB::Datasources::DatasourcesFactory.customized_config?(CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME, self)
         },
         mailchimp: {
           enabled: Carto::AccountType.new.mailchimp?(self)
@@ -123,8 +126,16 @@ module CartoDB
         twitter_username: twitter_username,
         disqus_shortname: disqus_shortname,
         available_for_hire: available_for_hire,
-        location: location
+        location: location,
+        industry: industry,
+        company: company,
+        phone: phone,
+        job_role: job_role
       }
+
+      if google_maps_geocoder_enabled? && (!organization.present? || organization_owner?)
+        data[:google_maps_private_key] = google_maps_private_key
+      end
 
       if organization.present?
         data[:organization] = organization.to_poro

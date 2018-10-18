@@ -23,36 +23,38 @@ $cLingon:     rgba(#AC638B, 1);
 //   </div>
 //
 .IllustrationIcon {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 50px;
   height: 50px;
-  color: white;
   border-radius: 30px; // Enough to make it round
+  color: white;
   font-size: 20px;
 }
-.IllustrationIcon--neutral { background-color: $cNeutral }
-.IllustrationIcon--positive { background-color: $cPositive }
-.IllustrationIcon--notice { background-color: $cNotice }
-.IllustrationIcon--sunrise { background-color: $cSunrise }
-.IllustrationIcon--alert { background-color: $cAlert }
-.IllustrationIcon--negative { background-color: $cNegative }
-.IllustrationIcon--cyan { background-color: $cCyan }
-.IllustrationIcon--royal { background-color: $cRoyal }
-.IllustrationIcon--royalDark { background-color: $cRoyalDark }
-.IllustrationIcon--magenta { background-color: $cMagenta }
-.IllustrationIcon--lingon { background-color: $cLingon }
+.IllustrationIcon--neutral { background-color: $cNeutral; }
+.IllustrationIcon--positive { background-color: $cPositive; }
+.IllustrationIcon--notice { background-color: $cNotice; }
+.IllustrationIcon--sunrise { background-color: $cSunrise; }
+.IllustrationIcon--alert { background-color: $cAlert; }
+.IllustrationIcon--negative { background-color: $cNegative; }
+.IllustrationIcon--cyan { background-color: $cCyan; }
+.IllustrationIcon--royal { background-color: $cRoyal; }
+.IllustrationIcon--royalDark { background-color: $cRoyalDark; }
+.IllustrationIcon--magenta { background-color: $cMagenta; }
+.IllustrationIcon--lingon { background-color: $cLingon; }
+
 .IllustrationIcon--geometryLine {
   @include map-sprite(geometry_line);
 }
+
 .IllustrationIcon--geometryPoint {
   @include map-sprite(geometry_point);
 }
+
 .IllustrationIcon--geometryPolygon {
   @include map-sprite(geometry_polygon);
 }
-
 
 .IllustrationIcon-text {
   font-size: $sFontSize-smallUpperCase;

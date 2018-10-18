@@ -10,9 +10,9 @@
     <%= @name %>
     <span class="UserInfo-nameBreadcrumb"> /
       <% if @content_type == 'maps' %>
-        <%= link_to 'Maps', @maps_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+        <%= link_to 'Maps', '#', class: "DropdownLink js-breadcrumb-dropdown-target" %>
       <% else %>
-        <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+        <%= link_to 'Datasets', '#', class: "DropdownLink js-breadcrumb-dropdown-target" %>
       <% end %>
       <% content_for(:js) do %>
         <div class="js-breadcrumb-dropdown-content Dropdown BreadcrumbsDropdown BreadcrumbsDropdown--compact" style="display: none;">

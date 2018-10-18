@@ -1,31 +1,30 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 @import 'cdb-variables/colors';
 
 .Onboarding {
   position: fixed;
+  z-index: 10000;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 10000;
   pointer-events: none;
 }
 
 .AnalysisCompletionDetails {
-  @include display-flex();
+  display: flex;
   height: 100%;
 }
 
 .Onboarding-fake {
-  @include flex(0 0 415px);
+  flex: 0 0 415px;
   height: 100%;
 
   .is-editing & {
-    @include flex(0 0 560px);
+    flex: 0 0 560px;
   }
 }
 
@@ -34,12 +33,12 @@
 }
 
 .Onboarding-contentWrapper {
-  @include flex(1);
-  @include opacity(0.88);
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
   height: 100%;
+  opacity: 0.88;
   background: #2E3C43;
   pointer-events: all;
 }
@@ -127,40 +126,44 @@
 }
 
 .Onboarding.is-closing { /* "forwards" to keep the last keyframe's styles after animation ended */
-  @include animation(fade-and-scale-out 80ms ease-in forwards);
+  animation: fade-and-scale-out 80ms ease-in forwards;
 }
 
 .Onboarding.is-opening {
-  @include animation(fade-and-scale-in 100ms ease-out);
+  animation: fade-and-scale-in 100ms ease-out;
 }
 
-@include keyframes(fade-and-scale-out) {
+@keyframes fade-and-scale-out {
   0% {
-    @include opacity(1);
-    @include transform(scale(1));
+    transform: scale(1);
+    opacity: 1;
   }
+
   80% {
-    @include opacity(0.05);
-    @include transform(scale(1.4));
+    transform: scale(1.4);
+    opacity: 0.05;
   }
+
   100% {
-    @include opacity(0);
-    @include transform(scale(2));
+    transform: scale(2);
+    opacity: 0;
   }
 }
 
-@include keyframes(fade-and-scale-in) {
+@keyframes fade-and-scale-in {
   0% {
-    @include opacity(0);
-    @include transform(scale(2));
+    transform: scale(2);
+    opacity: 0;
   }
+
   10% {
-    @include opacity(0.9);
-    @include transform(scale(1.1));
+    transform: scale(1.1);
+    opacity: 0.9;
   }
+
   100% {
-    @include opacity(1);
-    @include transform(scale(1));
+    transform: scale(1);
+    opacity: 1;
   }
 }
 

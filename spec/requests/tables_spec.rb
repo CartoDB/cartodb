@@ -2,7 +2,7 @@
 require_relative '../acceptance_helper'
 
 feature "Tables", :js => true do
-  before do 
+  before do
     @user  = FactoryGirl.create(:user_with_private_tables)
     @table = FactoryGirl.create(:table, :user_id => @user.id,
                                         :name => 'Twitter followers',

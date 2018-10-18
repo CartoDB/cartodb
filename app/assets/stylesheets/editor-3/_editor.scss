@@ -1,22 +1,31 @@
 // Styles for Editor window
 // --------------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 @import 'vars';
 
-@mixin block-shadow() {
-  @include css3-prefix(box-shadow, inset 10px 0 10px -10px rgba(0, 0, 0, 0.3));
-};
-
 .Editor {
-  @include display-flex();
+  display: flex;
   position: relative;
   width: 100vw;
   min-width: 1024px;
   height: 100vh;
   -webkit-font-smoothing: antialiased;
+
+  .CDB-Dashboard-canvas {
+    padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
+    background: #F2F6F9; // Canvas is out of widget themes
+  }
+
+  .CDB-Dashboard-belowMap {
+    margin-top: 8px;
+  }
+
+  .CDB-Widget-canvasInner {
+    position: relative;
+    margin-left: 0;
+  }
 }
 
 .Editor--topBar {
@@ -24,43 +33,50 @@
 }
 
 .Editor-wrapper {
-  @include display-flex();
+  display: flex;
   position: relative;
   height: 100%;
   min-height: 450px;
 }
+
 .Editor-panel {
-  @include transition(width, 300ms, ease-in-out);
-  @include display-flex();
-  @include flex-direction(column);
-  @include flex(1);
+  display: flex;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  box-sizing: border-box;
+  flex: 1;
+  flex-direction: column;
   width: 100%;
   min-height: 0;
   padding: 19px 24px 0;
-  box-sizing: border-box;
+  transition: width 300ms ease-in-out;
 }
+
 .Editor-panel.is-dark {
   background: $cMainBg;
 }
+
 .Editor-content {
-  @include display-flex();
-  @include flex(1 1 auto);
-  @include flex-direction(column);
+  display: flex;
   position: relative;
+  flex: 1 1 auto;
+  flex-direction: column;
   min-height: 0;
 }
+
 .Editor-content.is-disabled {
   opacity: 0.24;
+  pointer-events: none;
 }
+
 .Editor-panelWrapper {
   position: relative;
   width: 344px;
 }
+
 .Editor-panelWrapper.is-larger {
   width: 488px;
 }
@@ -68,71 +84,80 @@
 .Editor-panel .ps-scrollbar-y-rail {
   z-index: 3;
 }
+
 .Editor-panel .ps-scrollbar-x-rail {
   z-index: 3;
 }
+
 .Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
   pointer-events: all;
 }
+
 .Editor .CDB-Zoom-info {
   display: block;
 }
 
-/* deep insights */
-.CDB-Dashboard-canvas {
-  @include block-shadow();
-  @include flex(1);
-}
-.CDB-Dashboard-canvas.is-dark {
-  background: #293A41;
-}
-
-
-
 /* Responsive views */
-@media (max-width: $sViewport-xxl) {
+@media (max-width: $sMedia-xxl) {
   .Editor {
     .CDB-Widget-canvas,
     .CDB-Widget {
-      width: 280px;
+      width: $mobileLayout;
     }
+
     .CDB-Widget.CDB-Widget--timeSeries {
       min-height: auto;
       padding: 18px 0 16px;
     }
+
     .CDB-Widget--timeSeries {
       width: 100%;
     }
+
     .CDB-Widget-canvas {
-      min-width: 280px;
-      max-width: 280px;
+      min-width: $mobileLayout;
+      max-width: $mobileLayout;
+    }
+
+    .CDB-Widget-listItem {
+      width: $mobileLayout - 6px;
     }
   }
 }
 
-@media (max-width: $sViewport-xl) {
+@media (max-width: $sMedia-xl) {
   .Editor {
     .CDB-Widget.CDB-Widget--timeSeries {
       min-height: auto;
       padding: 18px 0 16px;
     }
+
     .CDB-Widget-options,
     .CDB-Widget-actions {
-      @include display-flex();
+      display: flex;
     }
 
     .CDB-Widget-body {
       .CDB-Dropdown {
         min-width: 150px;
       }
+
       .CDB-Dropdown-link {
         padding: 8px 12px;
         font-size: 11px;
+      }
+
+      .CDB-Dropdown-item:first-child {
+        > .CDB-Dropdown-link {
+          opacity: 0.24;
+          pointer-events: none;
+        }
       }
     }
 
     .CDB-Widget-body.is-collapsed {
       height: 100%;
+
       .CDB-Widget-content,
       .CDB-Widget-info {
         display: block;
@@ -140,9 +165,10 @@
     }
 
     .CDB-Dashboard-canvas {
-      @include flex-direction(column);
+      flex-direction: column;
       max-width: calc(100% - 392px);
     }
+
     .CDB-Widget-canvas {
       width: 100%;
       min-width: 100%;
@@ -150,52 +176,77 @@
       min-height: 180px;
       margin: 8px 0 0;
     }
+
     .CDB-Widget {
-      @include flex(1);
+      flex: 1;
       width: auto;
       min-height: 180px;
       margin-bottom: 0;
-      padding: $baseSize * 2 0;
+      padding: 0;
       border-right: 2px solid $cSecondaryBackground;
     }
+
     .CDB-Widget-canvasInner {
-      @include display-flex();
-      position: relative;
+      display: flex;
+      flex-direction: row;
     }
+
     .CDB-Widget-header,
     .CDB-Widget-footer,
     .CDB-Widget-content {
       margin-right: 16px;
       margin-left: 16px;
     }
-    .CDB-Widget-list {
-      @include display-flex();
-    }
+
     .CDB-Widget-listButton {
       padding: 4px 0;
     }
-    .CDB-Widget-listGroup {
-      @include display-flex();
-      @include flex-wrap(wrap);
-      margin: 0 -8px;
-    }
+
     /* one or two items */
     .CDB-Widget-listItem:nth-child(1):nth-last-child(1),
     .CDB-Widget-listItem:nth-child(1):nth-last-child(2),
     .CDB-Widget-listItem:nth-child(2):nth-last-child(1) {
       width: 100%;
     }
+
     .CDB-Widget-listItem {
+      box-sizing: border-box;
       width: 33%;
       padding: 0 8px;
-      box-sizing: border-box;
     }
+
     .CDB-Widget-listWrapper .CDB-Widget-contentSpaced--sideMargins {
       margin-right: 0;
       margin-left: 0;
     }
+
     .CDB-Widget-listItemInner {
       margin: 0;
+    }
+
+    .CDB-Widget-list {
+      display: flex;
+      box-sizing: border-box;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .CDB-Widget-listWrapper {
+      overflow-x: hidden;
+    }
+
+    .CDB-Widget-inlineListItem {
+      width: 47%;
+    }
+
+    .CDB-Widget-list--fake {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .CDB-Widget-content--noSidesMargin .CDB-Widget-listItem--fake {
+      margin-right: 12px;
+      margin-left: 12px;
     }
   }
 }

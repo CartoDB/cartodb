@@ -6,76 +6,97 @@
 
 @import "../old_common/mixins";
 
-  
 footer {
-  display:block;
-  @include box-sizing(border-box);
-  color: #999999;
+  display: block;
+  box-sizing: border-box;
+  color: #999;
 
-  p { width: auto; }
+  p {
+    width: auto;
+  }
 
-  .inner { width: 1020px; }
-  &, a { font-size: 13px; }
-  p.right a { color: #2483B2; }
+  .inner {
+    width: 1020px;
+  }
+
+  &,
+  a {
+    font-size: 13px;
+  }
+
+  p.right a {
+    color: #2483B2;
+  }
 }
-
 
 /** Hello media queries **/
 
 @media only screen and (max-width: 350px) {
   footer {
     padding: 44px 15px;
-    .inner { width: 100%; }
+
+    .inner {
+      width: 100%;
+    }
   }
 }
 
 @media only screen and (min-width: 351px) and (max-width: 710px) {
   footer {
     padding: 44px 15px;
-    .inner { width: 100%; }
+
+    .inner {
+      width: 100%;
+    }
   }
 }
 
 @media only screen and (min-width: 981px) and (max-width: 1035px) {
   footer {
     padding: 44px 15px;
-    .inner { width: 100%; }
+
+    .inner {
+      width: 100%;
+    }
   }
 }
 
 @media only screen and (min-width: 711px) and (max-width: 980px) {
   footer {
     padding: 44px 15px;
-    .inner { width: 100%; }
+
+    .inner {
+      width: 100%;
+    }
   }
 }
 
 /* iPad landscape */
-@media only screen
-and (min-device-width : 768px)
-and (max-device-width : 1024px)
-and (orientation : landscape) {
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
   footer {
     padding: 44px 35px;
-    .inner { width: 100%; }
+
+    .inner {
+      width: 100%;
+    }
   }
 }
 
 /* iPhone portrait */
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : portrait) {
-
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) {
   footer nav a.signup,
-  footer nav span { display:none; }
-  footer { padding: 24px 15px 34px 15px }
+  footer nav span {
+    display: none;
+  }
+
+  footer {
+    padding: 24px 15px 34px;
+  }
 }
 
 /* iPhone landscape */
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px)
-and (orientation : landscape) {
-  footer { padding: 24px 15px 34px 15px }
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: landscape) {
+  footer {
+    padding: 24px 15px 34px;
+  }
 }

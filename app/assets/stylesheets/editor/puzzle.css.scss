@@ -4,74 +4,87 @@
 
 // A Puzzle is a set of pieces that are connected one way or another
 .Puzzle {
-  @include display-flex();
-  @include justify-content(flex-start, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 
   & > .Puzzle-piece:not(:first-child):not(:last-child) {
-    border-radius: 0;
-    border-left: 0;
-    border-right: 0;
-    margin-left: -1px;
     margin-right: -1px;
+    margin-left: -1px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
   }
 }
+
 .Puzzle-piece {
   position: relative;
   box-sizing: border-box;
   min-width: 100px;
   min-height: 34px;
-  padding: 8px 10px; // sufficient padding on sides to not be overlapped by :after blocks
+  padding: 8px 10px; // sufficient padding on sides to not be overlapped by ::after blocks
   border: 1px solid $cStructure-mainLine;
   border-radius: 3px;
   font-size: 14px;
   line-height: 1;
 
   &.is-placeholder,
-  &.is-placeholder.connect-left:before,
-  &.is-placeholder.connect-right:after {
+  &.is-placeholder.connect-left::before,
+  &.is-placeholder.connect-right::after {
     border-style: dashed;
   }
 
-  &.connect-left:before,
-  &.connect-left:after,
-  &.connect-right:before,
-  &.connect-right:after {
+  &.connect-left::before,
+  &.connect-left::after,
+  &.connect-right::before,
+  &.connect-right::after {
     content: '';
+    display: block;
     position: absolute;
     top: 10px;
-    display: block;
     width: 10px;
     height: 10px;
     border: 1px solid $cStructure-mainLine;
     background-color: $cStructure-grayBkg;
   }
 
-  &.connect-left:before,
-  &.connect-right:before {
-    border-radius: 50px;
+  &.connect-left::before,
+  &.connect-right::before {
     z-index: 2;
+    border-radius: 50px;
   }
 
-  &.connect-left:after,
-  &.connect-right:after {
+  &.connect-left::after,
+  &.connect-right::after {
+    z-index: 3;
     height: 12px;
     border: 0;
-    z-index: 3;
   }
 
-  &.connect-left:before { left: -7px }
-  &.connect-left:after { left: 0 }
+  &.connect-left::before {
+    left: -7px;
+  }
 
-  &.connect-right:before { right: -7px }
-  &.connect-right:after { right: 0 }
+  &.connect-left::after {
+    left: 0;
+  }
+
+  &.connect-right::before {
+    right: -7px;
+  }
+
+  &.connect-right::after {
+    right: 0;
+  }
 }
+
 .Puzzle-piece--inset {
   min-width: 50px;
-  background-color: rgba(#ddd, 0.2);
+  background-color: rgba(#DDD, 0.2);
 }
+
 .Puzzle-pieceIcon {
   max-height: 13px; // for content not to expand it's size
   margin-top: -2px; // vertically center, since not square
-  color: #ccc;
+  color: #CCC;
 }

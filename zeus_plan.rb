@@ -27,7 +27,11 @@ class CustomPlan < Zeus::Rails
       RSpec.configure do |config|
         config.before(:all) do
           Carto::Visualization.where(map_id: nil).each do |v|
-            v.external_source.try(:delete)
+            es = v.external_source
+            if es
+              es.external_data_imports.each(&:delete)
+              es.delete
+            end
             v.delete
           end
         end

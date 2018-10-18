@@ -2,6 +2,8 @@ require_relative '../spec_helper'
 require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
+require_relative '../factories/visualization_creation_helpers'
+require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 require 'helpers/storage_helper'
 require 'factories/organizations_contexts'
@@ -43,6 +45,10 @@ describe Organization do
     rescue
       # Silence error, can't do much more
     end
+  end
+
+  before(:each) do
+    create_account_type_fg('ORGANIZATION USER')
   end
 
   describe '#destroy_cascade' do
@@ -354,6 +360,37 @@ describe Organization do
       expect {
         organization.reload
       }.to raise_error Sequel::Error
+    end
+    it 'Tests removing a normal member with analysis tables' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
+
+      org_name = unique_name('org')
+      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      owner = create_test_user('orgowner')
+      user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      user_org.promote_user_to_admin
+      organization.reload
+      owner.reload
+
+      member1 = create_test_user('member1', organization)
+      create_random_table(member1, 'analysis_user_table')
+      create_random_table(member1, 'users_table')
+      member1.in_database.run(%{CREATE TABLE #{member1.database_schema}.analysis_4bd65e58e4_246c4acb2c67e4f3330d76c4be7c6deb8e07f344 (id serial)})
+      member1.reload
+
+      organization.reload
+      organization.users.count.should eq 2
+
+      results = member1.in_database(as: :public_user).fetch(%{
+        SELECT has_function_privilege('#{member1.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
+      }).first
+      results.nil?.should eq false
+      results[:has_function_privilege].should eq true
+
+      member1.destroy
+      organization.reload
+      organization.users.count.should eq 1
     end
   end
 
@@ -670,6 +707,74 @@ describe Organization do
       Organization.overquota.map(&:id).should include(@organization.id)
       Organization.overquota.size.should == Organization.count
     end
+  end
+
+  it 'should validate password_expiration_in_d' do
+    organization = FactoryGirl.create(:organization)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    # minimum 1 day
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 1)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 1
+
+    expect {
+      organization = FactoryGirl.create(:organization, password_expiration_in_d: 0)
+    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+
+    # maximum 1 year
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 365)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 365
+
+    expect {
+      organization = FactoryGirl.create(:organization, password_expiration_in_d: 366)
+    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+
+    # nil or blank means unlimited
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: nil)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: '')
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    # defaults to global config if no value
+    organization = FactoryGirl.build(:organization, password_expiration_in_d: 1)
+    organization.valid?.should be_true
+    organization.save
+
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 1
+
+    organization.password_expiration_in_d = nil
+    organization.valid?.should be_true
+    organization.save
+    organization = Carto::Organization.find(organization.id)
+    organization.password_expiration_in_d.should_not be
+
+    # override default config if a value is set
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 10)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
+
+    # keep values configured
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
+  end
+
+  it 'should handle redis keys properly' do
+    @organization = create_organization_with_users(name: 'overquota-org')
+
+    $users_metadata.hkeys(@organization.key).should_not be_empty
+
+    @organization.destroy
+
+    $users_metadata.hkeys(@organization.key).should be_empty
   end
 
   def random_attributes(attributes = {})

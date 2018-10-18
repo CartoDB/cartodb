@@ -3,14 +3,21 @@
   <head>
     <meta charset='utf-8' />
     <title><%= yield :page_title -%>CARTO</title>
-    <%= favicon_link_tag "/favicons/favicon.ico" -%>
-    <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
+    <%= favicon_link_tag "favicons/favicon.ico" %>
+    <% if current_user.builder_enabled? %>
+      <%= stylesheet_link_tag 'common_new.css', :media => 'all' %>
+    <% else %>
+      <%= editor_stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
+    <% end %>
     <%= yield :css -%>
     <%= csrf_meta_tag -%>
+    <%= insert_google_tag_manager('primary') %>
   </head>
   <body>
+    <%= insert_google_tag_manager_no_script('primary') %>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
-      <%= render 'admin/shared/private_header' %>
+      <% breadcrumb = local_assigns.fetch(:breadcrumb, true) %>
+      <%= render 'admin/shared/private_header', :breadcrumb => breadcrumb %>
 
       <% if current_user.notification.present? %>
         <div class="CDB-Text FlashMessage">
@@ -19,6 +26,8 @@
           </div>
         </div>
       <% end %>
+
+      <%= render 'admin/shared/trial_notification' %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>
     <% end %>

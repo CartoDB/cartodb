@@ -27,9 +27,6 @@ module CartoDB
             FORMAT_EXCEL =>       %W( .xls .xlsx ),
             FORMAT_GPX =>         %W( .gpx ),
             FORMAT_KML =>         %W( .kml ),
-            FORMAT_PNG =>         %W( .png ),
-            FORMAT_JPG =>         %W( .jpg .jpeg ),
-            FORMAT_SVG =>         %W( .svg ),
             FORMAT_COMPRESSED =>  %W( .zip )
         }
 
@@ -209,9 +206,12 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
-        # Any call would do, we just want to see if communicates or refuses the token
-          raise "Current account not found" unless @client.get_current_account
+          # Any call would do, we just want to see if communicates or refuses the token
+          @client.get_current_account
           true
+        rescue DropboxApi::Errors::HttpError => ex
+          CartoDB::Logger.debug(message: 'Invalid Dropbox token', exception: ex, user: @user)
+          false
         end
 
         # Revokes current set token

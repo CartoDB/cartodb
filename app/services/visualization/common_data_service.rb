@@ -47,6 +47,16 @@ module CartoDB
       def load_common_data_for_user(user, visualizations_api_url)
         update_user_date_flag(user)
 
+        datasets = begin
+                     get_datasets(visualizations_api_url)
+                   rescue StandardError => e
+                     CartoDB::Logger.error(message: "Loading common data failed", exception: e, user: user)
+                     nil
+                   end
+        # As deletion would delete all user syncs, if the endpoint fails or return nothing, just do nothing.
+        # The user date flag is updated to avoid DDoS-ing.
+        return nil unless datasets.present?
+
         added = 0
         updated = 0
         not_modified = 0
@@ -54,11 +64,19 @@ module CartoDB
         failed = 0
 
         carto_user = Carto::User.find(user.id)
-        remotes_by_name = Carto::Visualization.remotes.where(user_id: user.id).map { |v| [v.name, v] }.to_h
+
+        common_data_config = Cartodb.config[:common_data]
+        common_data_username = common_data_config['username']
+        common_data_remotes_by_name = Carto::Visualization.remotes
+                                                          .where(user_id: user.id)
+                                                          .joins(:external_source)
+                                                          .readonly(false) # joins causes readonly
+                                                          .where(external_sources: { username: common_data_username })
+                                                          .map { |v| [v.name, v] }.to_h
         ActiveRecord::Base.transaction do
-          get_datasets(visualizations_api_url).each do |dataset|
+          datasets.each do |dataset|
             begin
-              visualization = remotes_by_name.delete(dataset['name'])
+              visualization = common_data_remotes_by_name.delete(dataset['name'])
               if visualization
                 visualization.attributes = dataset_visualization_attributes(dataset)
                 if visualization.changed?
@@ -96,10 +114,9 @@ module CartoDB
                   import_url: dataset['url'],
                   rows_counted: dataset['rows'],
                   size: dataset['size'],
+                  geometry_types: dataset['geometry_types'],
                   username: 'common-data'
                 )
-                # ActiveRecord array issue
-                external_source.update_attribute(:geometry_types, dataset['geometry_types'])
               end
             rescue => e
               CartoDB.notify_exception(e, {
@@ -114,7 +131,7 @@ module CartoDB
           end
         end
 
-        remotes_by_name.each do |_, remote|
+        common_data_remotes_by_name.each_value do |remote|
           deleted += 1 if delete_remote_visualization(remote)
         end
 
@@ -159,8 +176,9 @@ module CartoDB
         rescue => e
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
           if match.present? && match >= 0
-            # TODO: "mark as deleted" or similar to disable old, imported visualizations
-            puts "Couldn't delete #{visualization.id} visualization because it's been imported"
+            # After #13667 this should no longer happen: deleting remote visualizations is propagated, and external
+            # sources, external data imports and syncs are deleted
+            CartoDB::Logger.error(message: "Couldn't delete, already imported", visualization_id: visualization.id)
             false
           else
             CartoDB.notify_error(

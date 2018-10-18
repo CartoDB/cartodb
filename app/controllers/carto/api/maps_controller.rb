@@ -51,7 +51,7 @@ module Carto
                                      :view_bounds_sw,
                                      :zoom,
                                      :legends,
-                                     :scrollwheel)
+                                     :scrollwheel).permit!
 
         STRING_PARAMS.each do |param|
           update_params[param] = update_params[param].to_s

@@ -27,6 +27,16 @@ class Carto::User < ActiveRecord::Base
   OBS_GENERAL_BLOCK_SIZE = 1000
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
+  STATE_ACTIVE = 'active'.freeze
+  STATE_LOCKED = 'locked'.freeze
+
+  # Make sure the following date is after Jan 29, 2015,
+  # which is the date where a message to accept the Terms and
+  # conditions and the Privacy policy was included in the Signup page.
+  # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
+  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -34,7 +44,8 @@ class Carto::User < ActiveRecord::Base
                    "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
-                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host".freeze
+                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
+                   "users.no_map_logo, users.industry, users.company, users.phone, users.job_role".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -43,6 +54,7 @@ class Carto::User < ActiveRecord::Base
   has_many :layers, through: :layers_user, after_add: Proc.new { |user, layer| layer.set_default_order(user) }
 
   belongs_to :organization, inverse_of: :users
+  belongs_to :rate_limit
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
   has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
 
@@ -56,6 +68,7 @@ class Carto::User < ActiveRecord::Base
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
   has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
+  has_many :connector_configurations, inverse_of: :user, dependent: :destroy
 
   has_many :client_applications, class_name: Carto::ClientApplication
   has_many :oauth_tokens, class_name: Carto::OauthToken
@@ -64,6 +77,11 @@ class Carto::User < ActiveRecord::Base
   has_many :groups, :through => :users_group
 
   has_many :received_notifications, inverse_of: :user
+
+  has_many :api_keys, inverse_of: :user
+
+  has_many :oauth_apps, inverse_of: :user, dependent: :destroy
+  has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
 
   delegate [
       :database_username, :database_password, :in_database,
@@ -82,6 +100,11 @@ class Carto::User < ActiveRecord::Base
 
   before_create :set_database_host
   before_create :generate_api_key
+
+  after_destroy { rate_limit.destroy_completely(self) if rate_limit }
+  after_destroy :invalidate_varnish_cache
+
+  include ::VarnishCacheHandler
 
   # Auto creates notifications on first access
   def static_notifications_with_creation
@@ -141,7 +164,15 @@ class Carto::User < ActiveRecord::Base
   #   +-------------------------+--------+---------+------+
   #
   def valid_privacy?(privacy)
-    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+    private_tables_enabled || privacy == Carto::UserTable::PRIVACY_PUBLIC
+  end
+
+  def default_dataset_privacy
+    Carto::UserTable::PRIVACY_VALUES_TO_TEXTS[default_table_privacy]
+  end
+
+  def default_table_privacy
+    private_tables_enabled ? Carto::UserTable::PRIVACY_PRIVATE : Carto::UserTable::PRIVACY_PUBLIC
   end
 
   # @return String public user url, which is also the base url for a given user
@@ -184,6 +215,10 @@ class Carto::User < ActiveRecord::Base
     self.database_schema.include?('-') ? "\"#{self.database_schema}\"" : self.database_schema
   end
 
+  def database_public_username
+    database_schema == CartoDB::DEFAULT_DB_SCHEMA ? CartoDB::PUBLIC_DB_USER : "cartodb_publicuser_#{id}"
+  end
+
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
@@ -191,11 +226,12 @@ class Carto::User < ActiveRecord::Base
   end
 
   def twitter_datasource_enabled
-    if has_organization?
-      organization.twitter_datasource_enabled || read_attribute(:twitter_datasource_enabled)
-    else
-      read_attribute(:twitter_datasource_enabled)
-    end
+    (read_attribute(:twitter_datasource_enabled) || organization.try(&:twitter_datasource_enabled)) && twitter_configured?
+  end
+
+  def twitter_configured?
+    # DatasourcesFactory.config_for takes configuration from organization if user is an organization user
+    CartoDB::Datasources::DatasourcesFactory.customized_config?(Search::Twitter::DATASOURCE_NAME, self)
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name
@@ -428,6 +464,18 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def remaining_days_deletion
+    return nil unless state == STATE_LOCKED
+    begin
+      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
+      return nil unless deletion_date
+      (deletion_date.to_date - Date.today).to_i
+    rescue => e
+      CartoDB::Logger.warning(exception: e, message: 'Something went wrong calculating the number of remaining days for account deletion')
+      return nil
+    end
+  end
+
   def viewable_by?(viewer)
     id == viewer.id || organization.try(:admin?, viewer)
   end
@@ -442,6 +490,20 @@ class Carto::User < ActiveRecord::Base
       !created_with_http_authentication? &&
       !organization.try(:auth_saml_enabled?)
   end
+
+  def validate_old_password(old_password)
+    (old_password.present? && self.class.password_digest(old_password, salt) == crypted_password) ||
+      (oauth_signin? && last_password_change_date.nil?)
+  end
+
+  def valid_password_confirmation(password)
+    valid = validate_old_password(password)
+    errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
+    valid
+  end
+
+  alias_method :should_display_old_password?, :needs_password_confirmation?
+  alias_method :password_set?, :needs_password_confirmation?
 
   def oauth_signin?
     google_sign_in || github_user_id.present?
@@ -478,7 +540,7 @@ class Carto::User < ActiveRecord::Base
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
     auth_token = Carto::User.select(:auth_token).find(id).auth_token
 
-    auth_token || generate_auth_token
+    auth_token || generate_and_save_auth_token
   end
 
   def notifications_for_category(category)
@@ -515,6 +577,16 @@ class Carto::User < ActiveRecord::Base
 
   def view_dashboard
     update_column(:dashboard_viewed_at, Time.now)
+  end
+
+  # Special url that goes to Central if active (for old dashboard only)
+  def account_url(request_protocol)
+    request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username if CartoDB.account_host
+  end
+
+  # Special url that goes to Central if active
+  def plan_url(request_protocol)
+    account_url(request_protocol) + '/plan'
   end
 
   def relevant_frontend_version
@@ -576,10 +648,6 @@ class Carto::User < ActiveRecord::Base
     array
   end
 
-  def should_display_old_password?
-    needs_password_confirmation?
-  end
-
   def account_url(request_protocol)
     if CartoDB.account_host
       request_protocol + CartoDB.account_host + CartoDB.account_path + '/' + username
@@ -589,6 +657,35 @@ class Carto::User < ActiveRecord::Base
   # Special url that goes to Central if active
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
+  end
+
+  def update_payment_url(request_protocol)
+    account_url(request_protocol) + '/update_payment'
+  end
+
+  def active?
+    state == STATE_ACTIVE
+  end
+
+  def locked?
+    state == STATE_LOCKED
+  end
+
+  def fullstory_enabled?
+    FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
+  end
+
+  def password_expired?
+    return false unless password_expiration_in_d && password_set?
+    password_date + password_expiration_in_d.days.to_i < Time.now
+  end
+
+  def password_expiration_in_d
+    organization_user? ? organization.password_expiration_in_d : Cartodb.get_config(:passwords, 'expiration_in_d')
+  end
+
+  def password_date
+    last_password_change_date || created_at
   end
 
   private

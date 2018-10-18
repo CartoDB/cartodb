@@ -2,10 +2,17 @@
 /config
 /db
 /doc
-/lib/assets/javascripts
-/lib/assets/node_modules
-/lib/assets/test
-/lib/build
+/lib/assets/javascripts/cartodb
+/lib/assets/javascripts/cdb
+/lib/assets/javascripts/utils
+/lib/assets/javascripts/vendor/jquery-ui.js
+/lib/assets/test/lib
+/lib/assets/test/spec/cartodb
+/lib/assets/test/spec/node_modules
+/lib/assets/test/spec/SpecHelper.js
+/lib/assets/test/spec/SpecHelper3.js
+/lib/build/*
+!/lib/build/tasks
 /lib/carto
 /lib/cartodb
 /lib/importer
@@ -18,3 +25,4 @@
 /services
 /spec
 /vendor
+/coverage

@@ -1,0 +1,81 @@
+@import 'cdb-variables/colors';
+
+.VerticalRadioList-item {
+  display: flex;
+  position: relative;
+  margin-bottom: 1rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -18px;
+    left: 7px;
+    width: 1px;
+    height: 18px;
+    background: #DDD;
+  }
+
+  &:first-child {
+    margin-top: 16px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -16px;
+      left: 7px;
+      width: 1px;
+      height: 18px;
+      background: #DDD;
+    }
+  }
+
+  &:last-child::after {
+    content: none;
+  }
+}
+
+.VerticalRadioList-radio {
+  display: flex;
+}
+
+.VerticalRadioList-spacer {
+  flex: 1;
+}
+
+.VerticalRadioList-itemInner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  > * {
+    line-height: 1;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    .CDB-Radio + .CDB-Radio-face {
+      border: 1px solid $cBlueHover;
+
+      &::before {
+        background: $cHoverLine;
+      }
+    }
+
+    .CDB-Radio:checked + .CDB-Radio-face {
+      border: 1px solid $cBlue;
+
+      &::before {
+        background: $cWhite;
+      }
+    }
+  }
+
+  &.has-error {
+    .CDB-Text {
+      // !important because we're using the style attribute in the
+      // element for the layer color, we need to override it somehow
+      color: $cError !important;
+    }
+  }
+}

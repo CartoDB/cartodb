@@ -1,5 +1,5 @@
 
-  /*
+/*
    * Custom objects
    * - Horizontal slider
    * - Form color
@@ -10,262 +10,289 @@
    * - Rounded white button
    */
 
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "compass/css3/transform";
+@import "../old_common/mixins";
+@import "../old_common/vars";
+@import "../old_elements/elements-sprite";
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/images";
-  @import "compass/css3/opacity";
-  @import "compass/css3/transform";
-  @import "../old_common/mixins";
-  @import "../old_common/vars";
-  @import "../old_elements/elements-sprite";
+// HORIZONTAL SLIDER (SPINNER)
 
-  // HORIZONTAL SLIDER (SPINNER)
-
-  /*
+/*
     <div class="dropdown spinner_slider">
       <div class="slider horizontal"></div>
     </div>
   */
 
-  .dropdown.spinner_slider {
-    border:1px solid #999999;
-    padding-top:10px;
-    padding-bottom:10px;
-    height:81px;
+.dropdown.spinner_slider {
+  height: 81px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: 1px solid #999;
 
-    // Stop adding tick arrow
-    // Overriding default dropdown before&after values
-    &:after,
-    &.border:after,
-    &:before { display: none!important }
-
-    &.vertical_top {
-      &:before {left:7px;}
-      &:after {left:7px;}
-    }
-
-    .ui-slider-vertical {
-      position:absolute;
-      top:10px;
-      left:11px;
-      width:4px;
-      height:81px;
-      @include border-radius(10px);
-      background:#E5E5E5;
-
-      .ui-slider-handle {
-        position: absolute;
-        outline:none;
-        width:8px;
-        height:8px;
-        left: 2px;
-        margin-left: -5px;
-        margin-bottom: -5px;
-        background:#397DBA;
-        border:1px solid #255078;
-        z-index: 2;
-        border-radius: 10px;
-
-        &.ui-state-active,
-        &.ui-state-focus,
-        &.ui-state-hover {@include box-shadow(rgba(0,0,0,0.15) 0 0 3px 3px)}
-      }
-    }
-
-    .ui-slider-vertical .ui-slider-handle {}
-    .ui-slider-vertical .ui-slider-range {left: 0; width: 100%;}
-    .ui-slider-vertical .ui-slider-range-min {bottom: 0;}
-    .ui-slider-vertical .ui-slider-range-max {top: 0;}
+  // Stop adding tick arrow
+  // Overriding default dropdown before&after values
+  &::after,
+  &.border::after,
+  &::before {
+    display: none !important;
   }
 
+  &.vertical_top {
+    &::before {
+      left: 7px;
+    }
 
+    &::after {
+      left: 7px;
+    }
+  }
 
-  // FORM COLOR
+  .ui-slider-vertical {
+    position: absolute;
+    top: 10px;
+    left: 11px;
+    width: 4px;
+    height: 81px;
+    border-radius: 10px;
+    background: #E5E5E5;
 
-  /*
+    .ui-slider-handle {
+      position: absolute;
+      z-index: 2;
+      left: 2px;
+      width: 8px;
+      height: 8px;
+      margin-bottom: -5px;
+      margin-left: -5px;
+      border: 1px solid #255078;
+      border-radius: 10px;
+      outline: none;
+      background: #397DBA;
+
+      &.ui-state-active,
+      &.ui-state-focus,
+      &.ui-state-hover {
+        box-shadow: rgba(#000, 0.15) 0 0 3px 3px;
+      }
+    }
+  }
+
+  .ui-slider-vertical .ui-slider-range {
+    left: 0;
+    width: 100%;
+  }
+
+  .ui-slider-vertical .ui-slider-range-min {
+    bottom: 0;
+  }
+
+  .ui-slider-vertical .ui-slider-range-max {
+    top: 0;
+  }
+}
+
+// FORM COLOR
+
+/*
     <div class="form_color">
       <span class="color" style="background-color: rgb(0, 255, 0); "></span>
       <a href="#choose_color" class="picker">+</a>
     </div>
   */
 
-  .form_color {
-    position:relative;
-    @include inline-block();
-    width:44px;
-    height:21px;
+.form_color {
+  display: inline-block;
+  position: relative;
+  width: 44px;
+  height: 21px;
+  vertical-align: top;
+  $rad: 3px;
 
-    $rad: 3px;
+  a {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 21px;
+    height: 21px;
 
-    a {
-      position:absolute;
-      top:0;
-      bottom:0;
-      height:21px;
-      width:21px;
+    .handle {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 8px;
+      height: 8px;
 
-      .handle {
-        position:absolute;
-        top:6px; left:6px;
-        height:8px;
-        width:8px;
-
-        b { position:absolute }
-      }
-    }
-
-
-    // Image picker
-    a.image-picker {
-      left:0;
-      height:19px;
-      width:22px;
-      border:1px solid #B2B2B2;
-      border-right:0;
-      @include border-left-radius($rad);
-
-      span.handle {
-        top:5px;
-        left:4px;
-        width:14px;
-        height:8px;
-        @include elements-sprite(image_fill);
-      }
-
-      &:hover span.handle {
-        @include elements-sprite(image_fill, $offset-x:-24px);
-      }
-    }
-
-    // Color picker
-    a.color-picker {
-      right:0;
-      @include border-right-radius($rad);
-      @include elements-sprite(image_color, $offset-x:2px, $offset-y:4px);
-
-      span.handle {
-        top:7px;
-        right:6px;
-        left:auto;
-        @include border-radius(2px);
-        background:rgba(black,0.3);
-
-        b {
-          top:3px;
-          left:2px;
-          width:0;
-          height:0;
-          border-left:2px solid transparent;
-          border-right:2px solid transparent;
-          border-top:3px solid white;
-        }
-      }
-
-      &:before {
-        content:' ';
-        position:absolute;
-        left:0;
-        top:0;
-        right:0;
-        bottom:0;
-        background:none;
-        @include border-right-radius($rad);
-        border:1px solid rgba(0,0,0,0.3);
-      }
-
-      // Color expanded
-      &.expanded {
-        width:44px;
-        @include border-radius($rad);
-        &:before { @include border-radius($rad) }
-      }
-
-      &:hover {
-        &:before { border-color: rgba(0,0,0,0.4) }
-        span.handle { background:rgba(black,0.4) }
+      b {
+        position: absolute;
       }
     }
   }
 
-  .form_align {
+  // Image picker
+  a.image-picker {
+    left: 0;
+    width: 22px;
+    height: 19px;
+    border: 1px solid #B2B2B2;
+    border-right: 0;
+    border-top-left-radius: $rad;
+    border-bottom-left-radius: $rad;
 
-    clear:both;
-    overflow:hidden;
-
-    a.align {
-
-      border-top:1px solid #9E9E9E;
-      border-bottom:1px solid #9E9E9E;
-
-      &:nth-child(2) {
-        border-right:1px solid #9E9E9E;
-      }
-
-      &:first-child {
-        border-left:1px solid #9E9E9E;
-        border-right:1px solid #9E9E9E;
-        @include border-radius(3px 0 0 3px);
-      }
-
-      &:last-child {
-        border-right:1px solid #9E9E9E;
-        @include border-radius(0 3px 3px 0);
-      }
-
-      &.align-left:after {
-        @include opacity(.8);
-        @include background(image-url("layout/align_left.png") no-repeat 0 0);
-      }
-
-      &.align-center:after {
-        @include opacity(.8);
-        @include background(image-url("layout/align_center.png") no-repeat 0 0);
-      }
-
-      &.align-right:after {
-        @include opacity(.8);
-        @include background(image-url("layout/align_right.png") no-repeat 0 0);
-      }
-
-      &:after {
-        content: '';
-        position:absolute;
-        left: 8px; top: 6px;
-        display:block;
-        width: 13px;
-        height: 7px;
-      }
-
-      &:hover {
-        @include background(linear-gradient(#F3F3F3, #FFF));
-      }
-
-      &.selected {
-        @include background(linear-gradient(#F3F3F3, #FFF));
-        @include box-shadow(inset 0px 2px 2px #ccc);
-
-        &:after {
-          @include opacity(1);
-        }
-      }
-
-      position:relative;
-      display:block;
-      float:left;
-      min-width:28px;
-      width:auto;
-      height:20px;
-      margin:0;
-      @include border-radius(0);
-      @include background(linear-gradient(#FFF,#F2F2F2));
+    span.handle {
+      @include elements-sprite(image_fill);
+      top: 5px;
+      left: 4px;
+      width: 14px;
+      height: 8px;
     }
 
+    &:hover span.handle {
+      @include elements-sprite(image_fill, $offset-x: -24px);
+    }
   }
 
+  // Color picker
+  a.color-picker {
+    right: 0;
+    border-top-right-radius: $rad;
+    border-bottom-right-radius: $rad;
 
-  // FORM SPINNER
+    @include elements-sprite(image_color, $offset-x: 2px, $offset-y: 4px);
 
-  /*
+    span.handle {
+      top: 7px;
+      right: 6px;
+      left: auto;
+      border-radius: 2px;
+      background: rgba(black, 0.3);
+
+      b {
+        top: 3px;
+        left: 2px;
+        width: 0;
+        height: 0;
+        border-top: 3px solid white;
+        border-right: 2px solid transparent;
+        border-left: 2px solid transparent;
+      }
+    }
+
+    &::before {
+      content: ' ';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      border: 1px solid  rgba(#000, 0.3);
+      border-top-right-radius: $rad;
+      border-bottom-right-radius: $rad;
+      background: none;
+    }
+
+    // Color expanded
+    &.expanded {
+      width: 44px;
+      border-radius: $rad;
+
+      &::before {
+        border-radius: $rad;
+      }
+    }
+
+    &:hover {
+      &::before {
+        border-color: rgba(#000, 0.4);
+      }
+
+      span.handle {
+        background: rgba(black, 0.4);
+      }
+    }
+  }
+}
+
+.form_align {
+  clear: both;
+  overflow: hidden;
+
+  a.align {
+    display: block;
+    position: relative;
+    width: auto;
+    min-width: 28px;
+    height: 20px;
+    margin: 0;
+    float: left;
+    border-top: 1px solid #9E9E9E;
+    border-bottom: 1px solid #9E9E9E;
+    border-radius: 0;
+
+    @include background(linear-gradient(#FFF, #F2F2F2));
+
+    &:nth-child(2) {
+      border-right: 1px solid #9E9E9E;
+    }
+
+    &:first-child {
+      border-right: 1px solid #9E9E9E;
+      border-left: 1px solid #9E9E9E;
+      border-radius: 3px 0 0 3px;
+    }
+
+    &:last-child {
+      border-right: 1px solid #9E9E9E;
+      border-radius: 0 3px 3px 0;
+    }
+
+    &.align-left::after {
+      opacity: 0.8;
+
+      @include background(image-url("layout/align_left.png") no-repeat 0 0);
+    }
+
+    &.align-center::after {
+      opacity: 0.8;
+
+      @include background(image-url("layout/align_center.png") no-repeat 0 0);
+    }
+
+    &.align-right::after {
+      opacity: 0.8;
+
+      @include background(image-url("layout/align_right.png") no-repeat 0 0);
+    }
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      width: 13px;
+      height: 7px;
+    }
+
+    &:hover {
+      @include background(linear-gradient(#F3F3F3, #FFF));
+    }
+
+    &.selected {
+      @include background(linear-gradient(#F3F3F3, #FFF));
+      box-shadow: inset 002px 2px #CCC;
+
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// FORM SPINNER
+
+/*
     <div class="form_spinner">
       <input class="value" type="text" value="0.6" />
       <a href="#plus" class="plus"></a>
@@ -273,433 +300,504 @@
     </div>
   */
 
-  .form_spinner {
-    position:relative;
-    @include inline-block();
-    min-width:20px;
-    width:auto!important;
-    padding:2px 19px 2px 4px;
-    height:15px;
-    margin:0;
-    border:1px solid #9E9E9E;
-    @include border-radius(3px);
-    @include background(linear-gradient(#FFF,#F2F2F2));
+.form_spinner {
+  display: inline-block;
+  position: relative;
+  width: auto !important;
+  min-width: 20px;
+  height: 15px;
+  margin: 0;
+  padding: 2px 19px 2px 4px;
+  border: 1px solid #9E9E9E;
 
-    &.with-label {
-      margin: 0;
-      padding: 0;
-      height: auto;
-      border: none;
-      @include border-radius(0);
-      background: none;
+  border-radius: 3px;
+  vertical-align: top;
 
-      .label {
-        margin: 0 4px 0 0;
-        font-size: 11px;
-        color: #797979;
-        cursor: default;
-      }
+  @include background(linear-gradient(#FFF, #F2F2F2));
 
-      &:hover {
-        border: none;
-      }
+  &.with-label {
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
 
-      &:hover .input {
-        border: 1px solid #7E7E7E!important;
-      }
-
-      .input {
-        position:relative;
-        @include inline-block();
-        min-width:20px;
-        width:auto!important;
-        padding:2px 19px 2px 4px;
-        height:15px;
-        margin:0;
-        border:1px solid #9E9E9E;
-        @include border-radius(3px);
-        @include background(linear-gradient(#FFF,#F2F2F2));
-      }
-
-  }
-
+    .label {
+      margin: 0 4px 0 0;
+      color: #797979;
+      font-size: 11px;
+      cursor: default;
+    }
 
     &:hover {
-      cursor:pointer;
+      border: none;
     }
 
-    &:hover, .input:hover {
-      border: 1px solid #7E7E7E;
+    &:hover .input {
+      border: 1px solid #7E7E7E !important;
     }
 
-    &:hover input.value {
-      color: #333;
-    }
+    .input {
+      display: inline-block;
+      position: relative;
+      width: auto !important;
+      min-width: 20px;
+      height: 15px;
+      margin: 0;
+      padding: 2px 19px 2px 4px;
+      border: 1px solid #9E9E9E;
 
-    input.value {
-      float:none;
-      margin:0;
-      padding:0;
-      width:25px;
-      text-align:left;
-      line-height:15px;
-      font-size:13px;
-      font-family: $text-fonts;
-      color:#666666;
-      background: none;
-      border:none;
-      &:focus {
-        outline:none;
-        color:#333333;
-      }
-    }
+      border-radius: 3px;
+      vertical-align: top;
 
-    a {
-      position:absolute;
-      right:0;
-      width:14px;
-      height:9px;
-      border-left:1px solid #A8A8A8;
-      background:white;
-      @include text-indent();
-
-      &:before {
-        content:' ';
-        position:absolute;
-        left:5px;
-        width:0;
-        height:0;
-        border-left:2px solid transparent;
-        border-right:2px solid transparent;
-      }
-
-      &.plus {
-        top:0;
-        border-bottom:1px solid #A8A8A8;
-        @include border-top-right-radius(3px);
-        &:before {top:3px; border-bottom:3px solid #666666;}
-      }
-      &.minus {
-        bottom:0;
-        @include border-bottom-right-radius(3px);
-        &:before {bottom:3px; border-top:3px solid #666666;}
-      }
-
-      &:hover {
-        &.plus {
-          &:before {border-bottom:3px solid #000;}
-        }
-        &.minus {
-          bottom:0;
-          &:before {border-top:3px solid #000;}
-        }
-      }
-    }
-
-    // Opacity type
-    &.opacity {
-      @include background(image-url("layout/alpha_bkg.png") repeat 0 0);
-    }
-
-    // Disabled state
-    &.disabled {
-      background:#f4f4f4!important;
-      a {
-        background:#f4f4f4!important;
-        @include opacity(0.5);
-        &:hover {cursor:default;}
-      }
-      &:hover {cursor:default;}
+      @include background(linear-gradient(#FFF, #F2F2F2));
     }
   }
 
+  &:hover {
+    cursor: pointer;
+  }
 
+  &:hover,
+  .input:hover {
+    border: 1px solid #7E7E7E;
+  }
 
-  // RADIOBUTTON
+  &:hover input.value {
+    color: #333;
+  }
 
-  /*
+  input.value {
+    width: 25px;
+    margin: 0;
+    padding: 0;
+    float: none;
+    border: none;
+    background: none;
+    color: #666;
+    font-family: $text-fonts;
+    font-size: 13px;
+    line-height: 15px;
+    text-align: left;
+
+    &:focus {
+      outline: none;
+      color: #333;
+    }
+  }
+
+  a {
+    @include text-indent();
+    position: absolute;
+    right: 0;
+    width: 14px;
+    height: 9px;
+    border-left: 1px solid #A8A8A8;
+    background: WHITE;
+
+    &::before {
+      content: ' ';
+      position: absolute;
+      left: 5px;
+      width: 0;
+      height: 0;
+      border-right: 2px solid transparent;
+      border-left: 2px solid transparent;
+    }
+
+    &.plus {
+      top: 0;
+      border-bottom: 1px solid #A8A8A8;
+      border-top-right-radius: 3px;
+
+      &::before {
+        top: 3px;
+        border-bottom: 3px solid #666;
+      }
+    }
+
+    &.minus {
+      bottom: 0;
+      border-bottom-right-radius: 3px;
+
+      &::before {
+        bottom: 3px;
+        border-top: 3px solid #666;
+      }
+    }
+
+    &:hover {
+      &.plus {
+        &::before {
+          border-bottom: 3px solid #000;
+        }
+      }
+
+      &.minus {
+        bottom: 0;
+
+        &::before {
+          border-top: 3px solid #000;
+        }
+      }
+    }
+  }
+
+  // Opacity type
+  &.opacity {
+    @include background(image-url("layout/alpha_bkg.png") repeat 0 0);
+  }
+
+  // Disabled state
+  &.disabled {
+    background: #F4F4F4 !important;
+
+    a {
+      opacity: 0.5;
+
+      background: #F4F4F4 !important;
+
+      &:hover {
+        cursor: default;
+      }
+    }
+
+    &:hover {
+      cursor: default;
+    }
+  }
+}
+
+// RADIOBUTTON
+
+/*
     <a href="#somewhere" class="radiobutton {selected}">
       <span class="radio"></span>
       Start importing some data
     </a>
   */
 
-  .radiobutton {
-    @include inline-block();
-    vertical-align:middle;
-    font-weight:bold;
-    color:#397DB9;
-    outline:none;
+.radiobutton {
+  display: inline-block;
+  outline: none;
+  color: #397DB9;
+  font-weight: bold;
+  vertical-align: top;
+  vertical-align: middle;
 
+  &.hidden_radio span.radio {
+    display: none;
+  }
 
-    &.hidden_radio span.radio { display:none; }
-    &.hidden_radio {
-      font-weight: normal;
-      cursor: default;
-      &:hover { text-decoration:none; }
+  &.hidden_radio {
+    font-weight: normal;
+    cursor: default;
+
+    &:hover {
+      text-decoration: none;
     }
+  }
 
+  span.radio {
+    display: inline-block;
+    position: relative;
+    margin: 0 7px 2px 0;
+    border: 1px solid #397DBA;
+    border-radius: 10px;
+    background: WHITE;
+    vertical-align: top;
+    vertical-align: middle;
+
+    @include size(10px);
+
+    &::before {
+      @include size(6px);
+      content: ' ';
+      display: none;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      border-radius: 25px;
+      background: #333;
+    }
+  }
+
+  &:hover,
+  &:focus {
     span.radio {
-      position:relative;
-      @include inline-block();
-      vertical-align: middle;
-      @include size(10px);
-      margin:0 7px 2px 0;
+      border-color: #333;
 
-      @include border-radius(10px);
-      border:1px solid #397DBA;
-      background:white;
-
-      &:before {
-        display:none;
-        content:' ';
-        position:absolute;
-        top:2px;
-        left:2px;
-        @include size(6px);
-        background:#333333;
-        @include border-radius(25px);
-      }
-    }
-
-    &:hover, &:focus {
-      span.radio{
-        border-color:#333333;
-        &:before {
-          display:block;
-        }
-      }
-    }
-
-    &.selected {
-      border-color:#333333;
-      color:#333333;
-
-      span.radio{
-        border-color:#333333;
-        &:before { display:block; }
-      }
-
-      &:hover, &:focus {
-        cursor:default;
-        text-decoration:none;
-      }
-    }
-
-    &.disabled {
-      text-decoration:none;
-      color:#397DBA;
-
-      span.radio{
-        border-color:#397DBA;
-        &:before {display:none;}
-      }
-      &:hover, &:focus {cursor:default;}
-
-      &.selected {
-        span.radio:before {display:block;}
+      &::before {
+        display: block;
       }
     }
   }
 
+  &.selected {
+    border-color: #333;
+    color: #333;
 
+    span.radio {
+      border-color: #333;
 
-  // CHECKBOX
+      &::before {
+        display: block;
+      }
+    }
 
-  /*
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      cursor: default;
+    }
+  }
+
+  &.disabled {
+    color: #397DBA;
+    text-decoration: none;
+
+    span.radio {
+      border-color: #397DBA;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      cursor: default;
+    }
+
+    &.selected {
+      span.radio::before {
+        display: block;
+      }
+    }
+  }
+}
+
+// CHECKBOX
+
+/*
     <a href="#title?" class="checkbox {enabled}">
       <span class="check"></span>
       title?
     </a>
   */
 
-  .checkbox {
-    @include inline-block();
-    vertical-align:middle;
-    text-decoration:none;
+.checkbox {
+  display: inline-block;
+  text-decoration: none;
+  vertical-align: top;
+  vertical-align: middle;
 
+  span.check {
+    display: inline-block;
+    position: relative;
+    width: 10px;
+    height: 10px;
+    margin: 0 0 1px;
+    border: 1px solid #999;
+
+    border-radius: 3px;
+    background: WHITE;
+    vertical-align: top;
+    vertical-align: middle;
+
+    &::before {
+      @include elements-sprite(checkbox);
+      content: ' ';
+      display: none;
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: 9px;
+      height: 8px;
+    }
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &.enabled {
     span.check {
-      position:relative;
-      @include inline-block();
-      vertical-align: middle;
-      width:10px;
-      height:10px;
-      margin: 0 0 1px 0;
-      @include border-radius(3px);
-      border:1px solid #999999;
-      background:white;
-
-      &:before {
-        display:none;
-        content:' ';
-        position:absolute;
-        top:1px;
-        left:1px;
-        width:9px;
-        height:8px;
-        @include elements-sprite(checkbox);
-      }
-    }
-
-    &:hover {
-      text-decoration:none;
-    }
-
-    &.enabled {
-      span.check{
-        &:before {
-          display:block;
-        }
-      }
-    }
-
-    &.disabled {
-
-      &.light:hover { color: #999; }
-
-      span.check{
-        &:before {
-          display:none;
-        }
+      &::before {
+        display: block;
       }
     }
   }
 
+  &.disabled {
+    &.light:hover {
+      color: #999;
+    }
 
+    span.check {
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
 
-  // SWITCH (ON/OFF)
+// SWITCH (ON/OFF)
 
-  /*
+/*
     <a href="#switch" class="switch {enabled}">
       <span class="handle"></span>
     </a>
   */
 
-  .switch, .form_switch {
-    position:relative;
-    @include inline-block();
-    @include text-indent();
-    vertical-align:middle;
-    width:29px;
-    height:15px;
-    @include border-radius(12px);
-    @include transform-style("linear");
-    @include transition-property("background");
-    @include transition-duration(180ms);
-    text-decoration:none;
-    border:1px solid #44759E;
+.switch,
+.form_switch {
+  display: inline-block;
+  position: relative;
+  width: 29px;
+  height: 15px;
+  transform: linear;
+  transition: background 180ms;
+  border: 1px solid #44759E;
+  border-radius: 12px;
+  text-decoration: none;
+  vertical-align: top;
+  vertical-align: middle;
 
-    &:before {
-      position:absolute;
-      content:' ';
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      @include border-radius(12px);
-      @include background(linear-gradient(rgba(black,0.18),rgba(black,0)));
-      z-index:0;
-    }
+  @include text-indent();
+
+  &::before {
+    content: ' ';
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+
+    @include background(linear-gradient(rgba(black, 0.18), rgba(black, 0)));
+  }
+
+  span.handle {
+    position: absolute;
+    z-index: 2;
+    top: 1px;
+    left: 15px;
+    width: 11px;
+    height: 11px;
+    transform: linear;
+    transition: left 180ms;
+    border: 1px solid #44759E;
+    border-radius: 12px;
+    background: #F2F2F2;
+  }
+
+  &.enabled {
+    border-color: #44759E;
+    background: #56AFEF;
 
     span.handle {
-      position:absolute;
-      top:1px;
-      left:15px;
-      width:11px;
-      height:11px;
-      @include border-radius(12px);
-      border:1px solid #44759E;
-      background:#F2F2F2;
-      z-index:2;
-      @include transform-style("linear");
-      @include transition-property("left");
-      @include transition-duration(180ms);
-    }
-
-    &.enabled {
-      border-color:#44759E;
-      background:#56AFEF;
-      span.handle {
-        left:15px;
-        border-color:#44759E;
-      }
-    }
-
-    &.disabled {
-      @include opacity(1);
-      border-color:#CCCCCC;
-      background:#D8D8D8;
-      span.handle {
-        left:2px;
-        border-color:#999999;
-      }
-    }
-
-    &:hover {cursor:pointer!important;}
-
-    // Working
-    &.working {
-      @include opacity(0.5);
-      &:hover {cursor:default!important;}
-    }
-
-    // Small type
-    &.small {
-      width:23px;
-      height:12px;
-
-      span.handle {
-        position:absolute;
-        top:0px;
-        left:11px;
-        width:10px;
-        height:10px;
-        @include border-radius(10px);
-      }
-
-      &.disabled span.handle { left:1px; }
-      &.enabled span.handle { left:11px; }
+      left: 15px;
+      border-color: #44759E;
     }
   }
 
+  &.disabled {
+    border-color: #CCC;
+    opacity: 1;
+    background: #D8D8D8;
 
-  // ROUNDED BUTTON (WHITE, ORANGE, GREEN, ...)
+    span.handle {
+      left: 2px;
+      border-color: #999;
+    }
+  }
 
-  /*
+  &:hover {
+    cursor: pointer !important;
+  }
+
+  // Working
+  &.working {
+    opacity: 0.5;
+
+    &:hover {
+      cursor: default !important;
+    }
+  }
+
+  // Small type
+  &.small {
+    width: 23px;
+    height: 12px;
+
+    span.handle {
+      position: absolute;
+      top: 0;
+      left: 11px;
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+    }
+
+    &.disabled span.handle {
+      left: 1px;
+    }
+
+    &.enabled span.handle {
+      left: 11px;
+    }
+  }
+}
+
+// ROUNDED BUTTON (WHITE, ORANGE, GREEN, ...)
+
+/*
     <a href="#xxxx" class="rounded white {enabled}"></a>
   */
 
-  .rounded {
-    padding:3px 12px;
-    background:white;
-    @include border-radius(25px);
-    font-weight:bold;
-    font-size:11px;
-    line-height:12px;
-    color:#3474AF;
-    text-transform: uppercase;
-    @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
+.rounded {
+  padding: 3px 12px;
+  border-radius: 25px;
+  background: WHITE;
 
-    &:hover {text-decoration:none;}
+  box-shadow: rgba(black, 0.09) 0 0 2px 2px;
+  color: #3474AF;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 12px;
+  text-transform: uppercase;
 
-    &.white {
-      &:hover {
-        text-decoration:none;
-        @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
-      }
-    }
+  &:hover {
+    text-decoration: none;
+  }
 
-    &.orange {
-      background:#FF9326;
-      color:white;
-      text-shadow:none;
-      &:hover {@include box-shadow(rgba(black,0.19) 0 0 2px 2px);}
-    }
-
-    &.green {
-      background:#97C341;
-      color:white;
-      text-shadow:none;
-      &:hover {@include box-shadow(rgba(black,0.19) 0 0 2px 2px);}
+  &.white {
+    &:hover {
+      box-shadow: rgba(black, 0.19) 0 0 2px 2px;
+      text-decoration: none;
     }
   }
+
+  &.orange {
+    background: #FF9326;
+    color: WHITE;
+    text-shadow: none;
+
+    &:hover {
+      box-shadow: rgba(black, 0.19) 0 0 2px 2px;
+    }
+  }
+
+  &.green {
+    background: #97C341;
+    color: WHITE;
+    text-shadow: none;
+
+    &:hover {
+      box-shadow: rgba(black, 0.19) 0 0 2px 2px;
+    }
+  }
+}

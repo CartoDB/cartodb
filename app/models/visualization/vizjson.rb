@@ -50,7 +50,7 @@ module CartoDB
       end
 
       # Return a PORO (Hash object) for easy JSONification
-      # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
+      # @see https://github.com/CartoDB/carto.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
         poro_data = {
           id:             visualization.id,

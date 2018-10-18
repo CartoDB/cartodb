@@ -17,21 +17,21 @@ module DataServicesMetricsHelper
   end
 
   def get_user_here_isolines_data(user, from, to)
-    get_here_isolines_data(user, from, to)
+    get_isolines_data(user, from, to)
   end
 
   def get_organization_here_isolines_data(organization, from, to)
     organization.require_organization_owner_presence!
-    get_here_isolines_data(organization.owner, from, to)
+    get_isolines_data(organization.owner, from, to)
   end
 
   def get_user_mapzen_routing_data(user, from, to)
-    get_mapzen_routing_data(user, from, to)
+    get_routing_data(user, from, to)
   end
 
   def get_organization_mapzen_routing_data(organization, from, to)
     organization.require_organization_owner_presence!
-    get_mapzen_routing_data(organization.owner, from, to)
+    get_routing_data(organization.owner, from, to)
   end
 
   def get_user_obs_snapshot_data(user, from, to)
@@ -59,7 +59,7 @@ module DataServicesMetricsHelper
     usage_metrics = CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
     # FIXME removed once we have fixed to charge google geocoder users for overquota
     return 0 if user.google_maps_geocoder_enabled?
-    geocoder_key = user.google_maps_geocoder_enabled? ? :geocoder_google : :geocoder_here
+    geocoder_key = CartoDB::GeocoderUsageMetrics::GEOCODER_KEYS.fetch(user.geocoder_provider, :geocoder_mapbox)
     cache_hits = 0
     success = usage_metrics.get_sum_by_date_range(geocoder_key, :success_responses, from, to)
     empty = usage_metrics.get_sum_by_date_range(geocoder_key, :empty_responses, from, to)
@@ -67,12 +67,21 @@ module DataServicesMetricsHelper
     success + empty + hit
   end
 
-  def get_here_isolines_data(user, from, to)
+  def get_isolines_data(user, from, to)
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::IsolinesUsageMetrics.new(user.username, orgname)
-    here_isolines_key = :here_isolines
-    success = usage_metrics.get_sum_by_date_range(here_isolines_key, :isolines_generated, from, to)
-    empty = usage_metrics.get_sum_by_date_range(here_isolines_key, :empty_responses, from, to)
+    isolines_key = CartoDB::IsolinesUsageMetrics::ISOLINES_KEYS.fetch(user.isolines_provider, :tomtom_isolines)
+    success = usage_metrics.get_sum_by_date_range(isolines_key, :isolines_generated, from, to)
+    empty = usage_metrics.get_sum_by_date_range(isolines_key, :empty_responses, from, to)
+    success + empty
+  end
+
+  def get_routing_data(user, from, to)
+    orgname = user.organization.nil? ? nil : user.organization.name
+    usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
+    routing_key = CartoDB::RoutingUsageMetrics::ROUTING_KEYS.fetch(user.routing_provider, :routing_tomtom)
+    success = usage_metrics.get_sum_by_date_range(routing_key, :success_responses, from, to)
+    empty = usage_metrics.get_sum_by_date_range(routing_key, :empty_responses, from, to)
     success + empty
   end
 
@@ -91,15 +100,6 @@ module DataServicesMetricsHelper
     obs_general_key = :obs_general
     success = usage_metrics.get_sum_by_date_range(obs_general_key, :success_responses, from, to)
     empty = usage_metrics.get_sum_by_date_range(obs_general_key, :empty_responses, from, to)
-    success + empty
-  end
-
-  def get_mapzen_routing_data(user, from, to)
-    orgname = user.organization.nil? ? nil : user.organization.name
-    usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
-    mapzen_routing_key = :routing_mapzen
-    success = usage_metrics.get_sum_by_date_range(mapzen_routing_key, :success_responses, from, to)
-    empty = usage_metrics.get_sum_by_date_range(mapzen_routing_key, :empty_responses, from, to)
     success + empty
   end
 end

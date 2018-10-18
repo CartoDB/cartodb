@@ -22,6 +22,10 @@ RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include NamedMapsHelper
 
+  config.after(:each) do
+    Delorean.back_to_the_present
+  end
+
   unless ENV['PARALLEL']
     config.before(:suite) do
       CartoDB::RedisTest.up

@@ -1,0 +1,162 @@
+// Styles for Header Editor
+// --------------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.Editor-HeaderInfoEditor {
+  display: flex;
+}
+
+.Editor-HeaderInfoEditor--layer {
+  margin-bottom: 31px;
+}
+
+.Editor-HeaderInfo {
+  display: flex;
+  margin-top: 4px;
+  margin-bottom: 32px;
+
+  &.is-block {
+    display: block;
+  }
+
+  &.is-disabled {
+    opacity: 0.24;
+    pointer-events: none;
+  }
+}
+
+.Editor-HeaderInfo--noMargin {
+  margin-bottom: 0;
+}
+
+.Editor-HeaderInfo-listItem {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.Editor-HeaderInfo-inner {
+  flex: 1;
+  max-width: calc(100% - 32px);
+}
+
+.Editor-HeaderInfo-inner--wide {
+  max-width: 100%;
+}
+
+.Editor-HeaderInfo-back {
+  margin-top: 7px;
+}
+
+.Editor-HeaderInfo-title {
+  display: flex;
+  align-items: center;
+}
+
+.Editor-HeaderInfo-titleText {
+  display: block;
+  flex: 1 0 auto;
+  width: 0;
+  margin-right: 20px;
+
+  &.is-larger {
+    width: auto;
+    min-width: 40px;
+  }
+}
+
+.Editor-HeaderInfo-details {
+  display: flex;
+  flex: 999;
+  align-items: center;
+}
+
+.Editor-HeaderInfo-actions {
+  display: flex;
+  align-items: center;
+}
+
+.Editor-HeaderInfo-actionsItem {
+  margin-left: 4px;
+}
+
+.Editor-HeaderInfo-actionsItem:first-child {
+  margin-left: 0;
+}
+
+.Editor-HeaderInfo-subtitle {
+  display: flex;
+}
+
+.Editor-HeaderInfo-link {
+  font-weight: $sFontWeight-semibold;
+}
+
+.Editor-HeaderPad {
+  box-sizing: border-box;
+  width: $baseSize * 3;
+  min-width: $baseSize * 3;
+  height: $baseSize * 3;
+}
+
+.Editor-HeaderNumeration {
+  box-sizing: border-box;
+  width: $baseSize * 3;
+  min-width: $baseSize * 3;
+  height: $baseSize * 3;
+  border: 1px solid $cMainLine;
+  border-radius: 4px;
+  background-color: $cWhite;
+  color: $cAltText;
+  font-size: $sFontSize-small;
+  line-height: 23px;
+  text-align: center;
+}
+
+.Editor-headerLayerName {
+  flex: 1;
+}
+
+.Editor-HeaderInfo.is-dark {
+  .Editor-HeaderInfo-titleText {
+    color: $cWhite;
+  }
+
+  .CDB-IconFont-arrowPrev {
+    color: $cWhite;
+  }
+}
+
+.Editor-HeaderInfo-publishDate {
+  flex: 1;
+}
+
+.Editor-HeaderInfo-zoom {
+  fill: $cBlue;
+}
+
+.Editor-HeaderInfo-zoom.is-white {
+  fill: $cWhite;
+}
+
+.Editor-HeaderInfo-source {
+  margin-left: 27px;
+}
+
+.Editor-HeaderInfo-emptyLayer {
+  width: 12px;
+  height: 16px;
+  text-align: center;
+
+  svg {
+    display: block;
+    height: 100%;
+    margin: auto;
+  }
+}

@@ -1,0 +1,67 @@
+// Progress bar item styles
+// --------------------------------------------------
+
+.CDB-Widget-progressBar {
+  position: relative;
+  width: 100%;
+  height: $baseSize / 2;
+  margin: $baseSize / 2 0;
+  border-radius: $baseSize / 2;
+}
+
+.CDB-Widget-progressState {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  min-width: 1%;
+  max-width: 100%;
+  height: $baseSize / 2;
+  border-radius: $baseSize / 2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 250ms ease-in-out;
+    background: transparent;
+  }
+}
+
+.is-disabled .CDB-Widget-progressState {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  max-width: 100%;
+  height: $baseSize / 2;
+  border-radius: $baseSize / 2;
+}
+
+.CDB-Widget-progressState--positive {
+  left: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.CDB-Widget-progressState--negative {
+  right: 0;
+  left: auto;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+@include keyframes(state-progress) {
+  0% {
+    width: 0;
+  }
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Widget-progressBar {
+    margin: 2px 0 4px;
+  }
+}

@@ -14,7 +14,7 @@ module Carto
       def initialize(bucket_name)
         @bucket_name = bucket_name
 
-        AWS::config(self.class.conf)
+        Aws.config = self.class.conf.symbolize_keys
       end
 
       def upload(namespace, file)
@@ -22,20 +22,20 @@ module Carto
         mime_type = MIME::Types.type_for(filename).first.to_s
         identifier = File.join(namespace, filename)
 
-        s3_object = bucket.objects[identifier]
-        s3_object.write(file: file, content_type: mime_type, acl: :public_read)
+        s3_object = bucket.object(identifier)
+        s3_object.upload_file(file.path, acl: 'public-read', content_type: mime_type)
 
         [identifier, s3_object.public_url(secure: true).to_s]
       end
 
       def remove(path)
-        bucket.objects[path].delete
+        bucket.object(path).delete
       end
 
       private
 
       def bucket
-        @bucket ||= AWS::S3.new.buckets[@bucket_name]
+        @bucket ||= Aws::S3::Resource.new.bucket(@bucket_name)
       end
     end
   end

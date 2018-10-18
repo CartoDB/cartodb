@@ -1,0 +1,34 @@
+// Entry point
+// ----------------------------------------------
+
+// Variables and functions
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+@import 'cdb-utilities/mixins';
+@import 'variables/sizes';
+
+// Deep-insights styles
+@import 'map/canvas';
+@import 'map/dashboard-info';
+@import 'map/embed';
+// Widgets styles
+@import 'widgets/themes/light';
+@import 'widgets/buttons';
+@import 'widgets/canvas';
+@import 'widgets/chart';
+@import 'widgets/control-button';
+@import 'widgets/default';
+@import 'widgets/dropdown';
+@import 'widgets/error';
+@import 'widgets/filter';
+@import 'widgets/form-elements';
+@import 'widgets/info';
+@import 'widgets/layout';
+@import 'widgets/list';
+@import 'widgets/navigation';
+@import 'widgets/progress-bar';
+@import 'widgets/search';
+@import 'widgets/tags';
+@import 'widgets/time-series';
+@import 'widgets/time-slider';
+@import 'widgets/tooltip';

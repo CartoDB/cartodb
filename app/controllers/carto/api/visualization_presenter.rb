@@ -10,7 +10,8 @@ module Carto
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
-                     show_table_size_and_row_count: true, password: nil)
+                     show_table_size_and_row_count: true, show_auth_tokens: true, show_user_basemaps: false,
+                     password: nil)
         @visualization = visualization
         @current_viewer = current_viewer
         @context = context
@@ -26,6 +27,8 @@ module Carto
         @show_synchronization = show_synchronization
         @show_uses_builder_features = show_uses_builder_features
         @show_table_size_and_row_count = show_table_size_and_row_count
+        @show_auth_tokens = show_auth_tokens
+        @show_user_basemaps = show_user_basemaps
         @password = password
 
         @presenter_cache = Carto::Api::PresenterCache.new
@@ -52,9 +55,13 @@ module Carto
         poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
-        if return_private_poro || @visualization.is_accessible_with_password?(@current_viewer, @password)
+
+        if show_auth_tokens
+          poro[:auth_tokens] = auth_tokens
+        elsif return_private_poro || @visualization.is_accessible_with_password?(@current_viewer, @password)
           poro[:auth_tokens] = auth_tokens
         end
+
         poro[:table] = user_table_presentation if show_table
 
         poro
@@ -121,6 +128,17 @@ module Carto
         }
       end
 
+      # For dependent visualizations
+      def to_summarized_poro
+        {
+          id:          @visualization.id,
+          name:        @visualization.name,
+          updated_at:  @visualization.updated_at,
+          permission:  permission.slice(:id, :owner),
+          auth_tokens: auth_tokens
+        }
+      end
+
       # Ideally this should go at a lower level, as relates to url generation, but at least centralize logic here
       # INFO: For now, no support for non-org users, as intended use is for sharing urls
       def privacy_aware_map_url(additional_params = {}, action = 'public_visualizations_show_map')
@@ -153,7 +171,8 @@ module Carto
       attr_reader :related, :load_related_canonical_visualizations, :show_user,
                   :show_stats, :show_likes, :show_liked, :show_table,
                   :show_permission, :show_synchronization, :show_uses_builder_features,
-                  :show_table_size_and_row_count
+                  :show_table_size_and_row_count, :show_auth_tokens,
+                  :show_user_basemaps
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
@@ -223,7 +242,10 @@ module Carto
 
       def user
         Carto::Api::UserPresenter.new(@visualization.user,
-                                      current_viewer: @current_viewer, fetch_db_size: false).to_poro
+                                      current_viewer: @current_viewer,
+                                      fetch_db_size: false,
+                                      fetch_basemaps: show_user_basemaps,
+                                      fetch_profile: false).to_poro
       end
     end
   end

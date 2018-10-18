@@ -1,18 +1,17 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-
-/* WIP*/
+/* WIP */
 .Dialog.is-white {
   background: $cWhite;
 }
 
 .Filters-typeItem {
-  @include display-flex(); /* todo when create new layout */
+  display: flex; /* todo when create new layout */
 }
+
 .DatasetsList-itemMeta {
-  @include align-items(baseline); /* todo when create new layout */
+  align-items: baseline; /* todo when create new layout */
 }
 
 .Modal-body {
@@ -33,9 +32,9 @@
 }
 
 .Modal-actions {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 80%;
   max-width: 640px;
   margin: $baseSize * 4 auto 0;
@@ -56,69 +55,100 @@
 }
 
 .ModalBlockList-item-header {
-  @include display-flex();
-  @include justify-content(space-between);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .ModalBlockList-item-headerTitle {
-  @include flex(1);
+  flex: 1;
 }
+
 .ModalBlockList-item-headerSubTitle {
   width: 100px; /* fix naming depending the rest of designs */
 }
 
 .ModalBlockList {
-  @include display-flex();
-  @include flex-wrap(wrap);
+  display: flex;
   box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .ModalBlockList-item {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  flex-direction: column;
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
+  overflow: hidden;
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
-  box-sizing: border-box;
   cursor: pointer;
-  overflow: hidden;
+
+  &:hover {
+    transition: border 200ms ease-in;
+
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 10000;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cBlueHover;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+  }
+
+  .is-disabled {
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: auto;
+
+    .ModalBlockList-item-headerTitle {
+      opacity: 0.5;
+    }
+  }
+
+  &.is-selected {
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 10000;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cMainText;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+  }
+
+  &--full {
+    align-items: inherit;
+    width: 100%;
+    min-width: 100%;
+    margin: 16px 0 0;
+  }
 }
+
 .DatasetsList .ModalBlockList-item {
-  @include flex-direction(row);
+  flex-direction: row;
   padding: 12px;
 }
 
-
 .ModalBlockList-itemInput {
   margin-right: $baseSize * 2;
-}
-
-.ModalBlockList-item:hover {
-  @include transition(border, 200ms, ease-in);
-  border: 1px solid $cHoverLine;
-}
-
-.ModalBlockList-item--full {
-  @include align-items(inherit);
-  width: 100%;
-  min-width: 100%;
-  margin: 16px 0 0;
-}
-
-.ModalBlockList-item.is-selected {
-  border: 1px solid rgba($cBlue, 0.48);
-}
-.ModalBlockList-item.is-disabled {
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: auto;
-}
-.ModalBlockList-item.is-disabled .ModalBlockList-item-headerTitle {
-  @include opacity(0.5);
 }
 
 .ModalBlockList-item-media {
@@ -129,25 +159,24 @@
   background: rgba($cBlue, 0.08);
 }
 
-
 .Form-row {
-  @include align-items(center);
+  align-items: center;
 }
 
 /* Add Layer Modal */
 .ModalDataset-itemInfo {
-  @include display-flex();
-  @include align-items(center);
-  @include flex(1);
-  @include justify-content(space-between);
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   max-width: 850px;
 }
 
 .ModalDataset-itemInfoTitle {
+  box-sizing: border-box;
   max-width: 50%;
   padding-right: 24px;
-  box-sizing: border-box;
 }
 
 .Carousel-Navigation.is-disabled {
@@ -155,17 +184,17 @@
 }
 
 .Upgrade-info {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(space-between);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 20px;
   border-top: 1px solid rgba($cBlue, 0.32);
   background: rgba($cBlue, 0.08);
 }
 
 .Upgrade-infoActions {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 }
 
 .AddLayer-tabs {
@@ -191,22 +220,26 @@
 }
 
 .Publish-modal {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
 }
 
 .Publish-modalHeader {
-  @include flex(0 0 auto);
+  flex: 0 0 auto;
   padding: $baseSize * 3 0;
 }
 
+.Dialog-contentWrapper--withBreadcrumbs .Publish-modalHeader {
+  padding-top: 0;
+}
+
 .Publish-modalBody {
-  @include display-flex();
-  @include flex(1);
-  @include flex-direction(column);
+  display: flex;
   position: relative;
+  flex: 1;
+  flex-direction: column;
   padding-bottom: 100px;
   overflow: hidden;
 }
@@ -225,19 +258,19 @@
 .Publish-modalMenu,
 .Publish-modalShadow {
   position: relative;
+  z-index: 1;
   // In orden to change border by shadow, uncomment this
   // min-height: 5px; // to be able to show the shadow if no content inside.
-  // box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 3px 5px rgba(#000, 0.1);
   border-bottom: 1px solid $cMainLine;
-  z-index: 1;
 }
 
 .Publish-modalShare {
-  @include display-flex();
-  @include flex-direction(column);
-  @include flex-grow(1);
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
 }
 
 .Publish-optionsList {

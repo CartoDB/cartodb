@@ -2,7 +2,6 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
-require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
 
 # TODO: Remove once Carto::Visualization is complete enough
@@ -21,9 +20,6 @@ describe Carto::Api::VisualizationsController do
   include Carto::Factories::Visualizations
   include VisualizationDestructionHelper
   include FeatureFlagHelper
-
-  it_behaves_like 'visualization controllers' do
-  end
 
   describe 'vizjson2 generator' do
     it_behaves_like 'vizjson generator' do
@@ -316,6 +312,21 @@ describe Carto::Api::VisualizationsController do
       @user_1.destroy
     end
 
+    def compare_with_dates(a, b)
+      # Compares two hashes, ignoring differences in timezones
+      a.keys.sort.should eq b.keys.sort
+      a.each do |k, v|
+        v2 = b[k]
+        if k.ends_with?('_at')
+          # DateTime.parse(v).should eq DateTime.parse(v2) unless v.blank? && v2.blank?
+        elsif v.is_a?(Hash)
+          compare_with_dates(v, v2)
+        else
+          v.should eq v2
+        end
+      end
+    end
+
     it 'returns success, empty response for empty user' do
       response_body.should == { 'visualizations' => [], 'total_entries' => 0, 'total_user_entries' => 0, 'total_likes' => 0, 'total_shared' => 0}
     end
@@ -343,13 +354,11 @@ describe Carto::Api::VisualizationsController do
       # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
       response['visualizations'][0].delete('url')
       response['visualizations'][0]['synchronization'] = {}
-      response.should == {
-        'visualizations' => [expected_visualization],
-        'total_entries' => 1,
-        'total_user_entries' => 1,
-        'total_likes' => 0,
-        'total_shared' => 0
-      }
+      compare_with_dates(response['visualizations'][0], expected_visualization)
+      response['total_entries'].should eq 1
+      response['total_user_entries'].should eq 1
+      response['total_likes'].should eq 0
+      response['total_shared'].should eq 0
     end
 
     it 'returns liked count' do
@@ -367,6 +376,10 @@ describe Carto::Api::VisualizationsController do
 
       body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_DERIVED)
       body['total_entries'].should == 2
+      body['total_user_entries'].should == 4
+
+      body = response_body(q: '_atata', type: CartoDB::Visualization::Member::TYPE_DERIVED)
+      body['total_entries'].should == 0
       body['total_user_entries'].should == 4
     end
 
@@ -395,6 +408,7 @@ describe Carto::Api::VisualizationsController do
         show_permission: false,
         show_synchronization: false,
         show_uses_builder_features: false,
+        show_auth_tokens: false,
         load_totals: false
       }.freeze
 
@@ -436,7 +450,6 @@ describe Carto::Api::VisualizationsController do
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
       @carto_user2 = Carto::User.find(@user_2.id)
       @api_key = @user_1.api_key
-      @feature_flag = FactoryGirl.create(:feature_flag, name: 'vector_vs_raster', restricted: true)
     end
 
     before(:each) do
@@ -1371,6 +1384,38 @@ describe Carto::Api::VisualizationsController do
         response['likes'].should eq nil
       end
 
+      it 'returns a specific error for password-protected visualizations and required, public information' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+        @visualization.password = 'wadus'
+        @visualization.save!
+        @visualization.user.update_attribute(:google_maps_key, 'waaaaadus')
+
+        expected_visualization_info = {
+          privacy: @visualization.privacy,
+          user: {
+            google_maps_query_string: @visualization.user.google_maps_query_string
+          }
+        }
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+          response.status.should eq 403
+          response.body[:errors].should eq "Visualization not viewable"
+          response.body[:errors_cause].should eq "privacy_password"
+          response.body[:visualization].should eq expected_visualization_info
+        end
+      end
+
+      it 'doesn\'t return a specific error for private visualizations' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @visualization.save!
+
+        get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+          response.status.should eq 403
+          response.body[:errors].should eq "Visualization not viewable"
+          response.body[:errors_cause].should be_nil
+        end
+      end
+
       it 'returns a visualization with optional information if requested' do
         url = api_v1_visualizations_show_url(
           id: @visualization.id,
@@ -1399,7 +1444,7 @@ describe Carto::Api::VisualizationsController do
           related_canonical = response.body[:related_canonical_visualizations]
           related_canonical.should_not be_nil
           related_canonical.count.should eq 1
-          related_canonical[0]['id'].should eq @table_visualization.id
+          related_canonical[0][:id].should eq @table_visualization.id
         end
       end
 
@@ -1465,6 +1510,7 @@ describe Carto::Api::VisualizationsController do
                    show_liked: true,
                    show_likes: true,
                    show_permission: true,
+                   show_auth_tokens: true,
                    show_stats: true do |response|
             # We currently log 404 on errors. Maybe something that we should change in the future...
             response.status.should == 404
@@ -1479,6 +1525,7 @@ describe Carto::Api::VisualizationsController do
 
           get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
             response.status.should eq 403
+            expect(response.body[:errors]).to eq('Visualization not viewable')
           end
         end
 
@@ -1493,6 +1540,19 @@ describe Carto::Api::VisualizationsController do
 
             get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
               response.status.should eq 403
+              expect(response.body[:errors]).to eq('Visualization not viewable')
+            end
+          end
+
+          it 'returns 403 for unpublished and password protected visualizations' do
+            @visualization.published?.should eq false
+            @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+            @visualization.password = 'wadus'
+            @visualization.save!
+
+            get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
+              response.status.should eq 403
+              expect(response.body[:errors]).to eq('Visualization not viewable')
             end
           end
 
@@ -1510,13 +1570,13 @@ describe Carto::Api::VisualizationsController do
                 response.body[:tags].should_not be_nil
                 response.body[:title].should_not be_nil
                 response.body[:description].should_not be_nil
-                response.body[:auth_tokens].should eq []
 
                 # Optional information requiring parameters
+                response.body[:user].should eq nil
                 response.body[:liked].should eq nil
                 response.body[:likes].should eq 0
                 response.body[:stats].should be_empty
-
+                response.body[:auth_tokens].should be_empty
                 response.body[:permission].should eq nil
               end
             end
@@ -1527,14 +1587,21 @@ describe Carto::Api::VisualizationsController do
                 show_liked: true,
                 show_likes: true,
                 show_permission: true,
-                show_stats: true
+                show_auth_tokens: true,
+                show_stats: true,
+                fetch_user: true,
+                show_user_basemaps: true
               )
 
               get_json url do |response|
                 response.status.should eq 200
+                response.body[:user].should_not be_nil
                 response.body[:liked].should eq false
                 response.body[:likes].should eq 0
                 response.body[:stats].should_not be_empty
+
+                response_user = response.body[:user]
+                response_user[:basemaps].should be_nil # Even if requested, because it's not public
 
                 permission = response.body[:permission]
                 permission.should_not eq nil
@@ -1551,6 +1618,23 @@ describe Carto::Api::VisualizationsController do
               end
             end
 
+            it 'not only returns public information for authenticated requests' do
+              url = api_v1_visualizations_show_url(
+                id: @visualization.id,
+                fetch_user: true,
+                show_user_basemaps: true,
+                api_key: @visualization.user.api_key
+              )
+
+              get_json url do |response|
+                response.status.should eq 200
+                response.body[:user].should_not be_nil
+
+                response_user = response.body[:user]
+                response_user[:basemaps].should_not be_empty
+              end
+            end
+
             it 'returns auth_tokens for password protected visualizations if correct password is provided' do
               password = 'wadus'
               @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
@@ -1559,13 +1643,22 @@ describe Carto::Api::VisualizationsController do
 
               get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 403
+                expect(response.body[:errors]).to eq('Visualization not viewable')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password * 2) do |response|
                 response.status.should eq 403
+                expect(response.body[:errors]).to eq('Visualization not viewable')
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id, password: password) do |response|
+                response.status.should eq 200
+                response.body[:auth_tokens].should_not be_nil
+              end
+            end
+
+            it 'returns auth_tokens for password protected visualizations if requested by the owner' do
+              get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
                 response.status.should eq 200
                 response.body[:auth_tokens].should_not be_nil
               end
@@ -1578,11 +1671,15 @@ describe Carto::Api::VisualizationsController do
               end
 
               get_json api_v1_visualizations_show_url(id: @visualization.id), fetch_user: true do |response|
+                @visualization.user.update_attribute(:google_maps_key, 'waaaaadus')
+
                 response.status.should eq 200
                 user = response.body[:user]
                 user.should_not be_nil
                 user[:avatar_url].should_not be_nil
                 user[:quota_in_bytes].should be_nil
+                user[:google_maps_query_string].should_not be_nil
+                user[:google_maps_query_string].should eq @visualization.user.google_maps_query_string
               end
             end
 
@@ -1598,7 +1695,7 @@ describe Carto::Api::VisualizationsController do
                 related_canonical = response.body[:related_canonical_visualizations]
                 related_canonical.should_not be_nil
                 related_canonical.count.should eq 1
-                related_canonical[0]['id'].should eq @table_visualization.id
+                related_canonical[0][:id].should eq @table_visualization.id
               end
             end
 
@@ -1660,33 +1757,32 @@ describe Carto::Api::VisualizationsController do
 
       include_context 'visualization creation helpers'
 
-      def get_vizjson3_url(user, visualization, vector: nil)
+      def get_vizjson3_url(user, visualization)
         args = { user_domain: user.username, id: visualization.id, api_key: user.api_key }
-        args[:vector] = vector unless vector.nil?
         api_v3_visualizations_vizjson_url(args)
       end
 
       def first_layer_definition_from_response(response)
-        index = response.body[:layers].index { |l| l['options'] && l['options']['layer_definition'] }
-        response.body[:layers][index]['options']['layer_definition']
+        index = response.body[:layers].index { |l| l[:options] && l[:options][:layer_definition] }
+        response.body[:layers][index][:options][:layer_definition]
       end
 
       def first_layer_named_map_from_response(response)
-        index = response.body[:layers].index { |l| l['options'] && l['options']['named_map'] }
-        response.body[:layers][index]['options']['named_map']
+        index = response.body[:layers].index { |l| l[:options] && l[:options][:named_map] }
+        response.body[:layers][index][:options][:named_map]
       end
 
       def first_data_layer_from_response(response)
-        index = response.body[:layers].index { |l| l['type'] == 'CartoDB' }
+        index = response.body[:layers].index { |l| l[:type] == 'CartoDB' }
         response.body[:layers][index]
       end
 
       let(:infowindow) do
-        JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow)
+        FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow
       end
 
       let(:tooltip) do
-        JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_tooltip).tooltip)
+        FactoryGirl.build_stubbed(:carto_layer_with_tooltip).tooltip
       end
 
       before(:each) do
@@ -1721,15 +1817,15 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
-              response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+              response_infowindow = layer_definition[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq infowindow[:template_name]
+              response_infowindow[:template].should include(v2_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v3_infowindow_light_template_fragment)
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
+              response_tooltip = layer_definition[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v2_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v3_tooltip_light_template_fragment)
 
             end
 
@@ -1737,16 +1833,16 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              infowindow['template_name'].should eq "table/views/infowindow_light"
-              response_infowindow['template_name'].should eq "infowindow_light"
-              response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+              response_infowindow = layer[:infowindow]
+              infowindow[:template_name].should eq "table/views/infowindow_light"
+              response_infowindow[:template_name].should eq "infowindow_light"
+              response_infowindow[:template].should include(v3_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v3_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v2_tooltip_light_template_fragment)
             end
           end
         end
@@ -1768,31 +1864,31 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
-              response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+              response_infowindow = layer_named_map[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq infowindow[:template_name]
+              response_infowindow[:template].should include(v2_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v3_infowindow_light_template_fragment)
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
+              response_tooltip = layer_named_map[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v2_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v3_tooltip_light_template_fragment)
             end
 
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              infowindow['template_name'].should eq "table/views/infowindow_light"
-              response_infowindow['template_name'].should eq 'infowindow_light'
-              response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
-              response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+              response_infowindow = layer[:infowindow]
+              infowindow[:template_name].should eq "table/views/infowindow_light"
+              response_infowindow[:template_name].should eq 'infowindow_light'
+              response_infowindow[:template].should include(v3_infowindow_light_template_fragment)
+              response_infowindow[:template].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq tooltip['template_name']
-              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
-              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq tooltip[:template_name]
+              response_tooltip[:template].should include(v3_tooltip_light_template_fragment)
+              response_tooltip[:template].should_not include(v2_tooltip_light_template_fragment)
             end
           end
         end
@@ -1820,26 +1916,26 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer_definition[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer_definition[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
 
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer[:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
           end
         end
@@ -1861,26 +1957,26 @@ describe Carto::Api::VisualizationsController do
               response.status.should eq 200
 
               layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer_named_map[:layers][0][:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer_named_map[:layers][0][:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
 
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
               layer = first_data_layer_from_response(response)
-              response_infowindow = layer['infowindow']
-              response_infowindow['template_name'].should eq ''
-              response_infowindow['template'].should eq custom_infowindow[:template]
+              response_infowindow = layer[:infowindow]
+              response_infowindow[:template_name].should eq ''
+              response_infowindow[:template].should eq custom_infowindow[:template]
 
-              response_tooltip = layer['tooltip']
-              response_tooltip['template_name'].should eq ''
-              response_tooltip['template'].should eq custom_tooltip[:template]
+              response_tooltip = layer[:tooltip]
+              response_tooltip[:template_name].should eq ''
+              response_tooltip[:template].should eq custom_tooltip[:template]
             end
           end
         end
@@ -1906,8 +2002,8 @@ describe Carto::Api::VisualizationsController do
           vizjson3 = response.body
           vizjson3[:widgets].length.should == 1
 
-          vizjson3[:widgets].map { |w| w['type'] }.should include(widget.type)
-          vizjson3[:widgets].map { |w| w['layer_id'] }.should include(layer.id)
+          vizjson3[:widgets].map { |w| w[:type] }.should include(widget.type)
+          vizjson3[:widgets].map { |w| w[:layer_id] }.should include(layer.id)
 
           widget2.destroy
           widget.destroy
@@ -1927,47 +2023,6 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'includes vector flag (default true)' do
-        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
-          response.status.should == 200
-          vizjson3 = response.body
-          vizjson3[:vector].should be_nil
-        end
-      end
-
-      it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is not present' do
-        set_feature_flag @visualization.user, 'vector_vs_raster', true
-        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
-          response.status.should == 200
-          vizjson3 = response.body
-          vizjson3.has_key?(:vector).should be_true
-        end
-      end
-
-      it 'includes vector flag if vector_vs_raster feature flag is enabled and vector param is present' do
-        set_feature_flag @visualization.user, 'vector_vs_raster', true
-
-        get_json get_vizjson3_url(@user_1, @visualization, vector: true), @headers do |response|
-          response.status.should == 200
-          vizjson3 = response.body
-          vizjson3[:vector].should eq true
-        end
-
-        get_json get_vizjson3_url(@user_1, @visualization, vector: false), @headers do |response|
-          response.status.should == 200
-          vizjson3 = response.body
-          vizjson3[:vector].should eq false
-        end
-      end
-
-      it 'includes vector flag (true if requested)' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key, vector: true), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
-          vizjson3[:vector].should == true
-        end
-      end
-
       it 'returns datasource.template_name for visualizations with retrieve_named_map? true' do
         Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(true)
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
@@ -1982,7 +2037,7 @@ describe Carto::Api::VisualizationsController do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:datasource].has_key?('template_name').should be_false
+          vizjson3[:datasource].key?(:template_name).should be_false
         end
       end
     end
@@ -2533,6 +2588,26 @@ describe Carto::Api::VisualizationsController do
 
           visualization.destroy
         end
+
+        it 'migrates visualizations to v3' do
+          _, _, _, visualization = create_full_visualization(@user)
+          visualization.update_attributes!(version: 2)
+          visualization.analyses.each(&:destroy)
+
+          payload = {
+            id: visualization.id,
+            version: 3
+          }
+          put_json api_v1_visualizations_update_url(id: visualization.id), payload do |response|
+            response.status.should be_success
+            expect(response.body[:version]).to eq 3
+          end
+
+          visualization.reload
+          expect(visualization.analyses.any?).to be_true
+
+          visualization.destroy
+        end
       end
     end
 
@@ -2704,6 +2779,35 @@ describe Carto::Api::VisualizationsController do
       [vis_1_id, vis_2_id].include?(collection[1]['id']).should eq true
     end
 
+    it 'validates order param' do
+      get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
+      last_response.status.should == 200
+
+      get api_v1_visualizations_index_url(
+        api_key: @user.api_key,
+        types: 'derived',
+        order: '',
+        page: '',
+        per_page: ''
+      ), {}, @headers
+      last_response.status.should == 200
+
+      ['derived', 'slide'].each do |type|
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :mapviews), {}, @headers
+        last_response.status.should == 200
+      end
+
+      ['remote', 'table'].each do |type|
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :size), {}, @headers
+        last_response.status.should == 200
+      end
+
+      ['derived', 'remote', 'slide', 'table'].each do |type|
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :whatever), {}, @headers
+        last_response.status.should == 400
+        JSON.parse(last_response.body).fetch('error').should_not be_nil
+      end
+    end
   end
 
   describe 'index' do
@@ -2739,16 +2843,16 @@ describe Carto::Api::VisualizationsController do
                                                type: Carto::Visualization::TYPE_DERIVED,
                                                shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
         response.status.should eq 200
-        response.body[:visualizations][0]['id'].should_not be_empty
-        response.body[:visualizations][0]['auth_tokens'].should_not be_empty
+        response.body[:visualizations][0][:id].should_not be_empty
+        response.body[:visualizations][0][:auth_tokens].should_not be_empty
       end
 
       get_json api_v1_visualizations_index_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key,
                                                type: Carto::Visualization::TYPE_DERIVED,
                                                shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
         response.status.should eq 200
-        response.body[:visualizations][0]['id'].should_not be_empty
-        response.body[:visualizations][0]['auth_tokens'].should be_empty
+        response.body[:visualizations][0][:id].should_not be_empty
+        response.body[:visualizations][0][:auth_tokens].should be_empty
       end
 
       destroy_full_visualization(@map, @table, @table_visualization, @visualization)

@@ -3,6 +3,7 @@ module Carto
 
     def self.validate_domain(email, whitelisted_domains)
       user_domain = email.split('@')[1]
+      return false unless user_domain
       user_domain_split = user_domain.split('.').reverse
       if whitelisted_domains.include?(user_domain)
         return true

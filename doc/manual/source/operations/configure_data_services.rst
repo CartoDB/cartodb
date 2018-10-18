@@ -25,11 +25,11 @@ Examples:
 
 Set geocoder provider for user ``user-name`` to Mapzen::
 
-    rake cartodb:services:ser_user_provider['user-name',geocoder,mapzen]
+    rake cartodb:services:set_user_provider['user-name',geocoder,mapzen]
 
 Set geocoder provider for organization ``org-name`` to Mapzen::
 
-    rake cartodb:services:ser_organization_provider['org-name',geocoder,mapzen]
+    rake cartodb:services:set_organization_provider['org-name',geocoder,mapzen]
 
 Quotas
 ------
@@ -96,26 +96,30 @@ User database configuration (from Builder)
 ------------------------------------------
 
 Add the following entry to the `geocoder` entry of the `cartodb/config/app_config.yml` file:
-```
-api:
-    host: 'localhost'
-    port: '5432'
-    user: 'dataservices_user'
-    dbname: 'dataservices_db'
-```
+
+.. code-block:: yaml
+
+  api:
+      host: 'localhost'
+      port: '5432'
+      user: 'dataservices_user'
+      dbname: 'dataservices_db'`
+
 
 In the `cartodb/config/app_config.yml` file, enable the desired dataservices:
-```
-enabled:
-    geocoder_internal: false
-    hires_geocoder: false
-    isolines: false
-    routing: false
-    data_observatory: true
-```
+
+.. code-block:: yaml
+
+   enabled:
+       geocoder_internal: false
+       hires_geocoder: false
+       isolines: false
+       routing: false
+       data_observatory: true
+
 
 Execute the rake tasks to update all the users and organizations:
-```
-bundle exec rake cartodb:db:configure_geocoder_extension_for_organizations['', true]
-bundle exec rake cartodb:db:configure_geocoder_extension_for_non_org_users['', true]
-```
+
+``bundle exec rake cartodb:db:configure_geocoder_extension_for_organizations['', true]``
+
+``bundle exec rake cartodb:db:configure_geocoder_extension_for_non_org_users['', true]``

@@ -52,17 +52,17 @@ describe Carto::Superadmin::UsersController do
       it 'returns usage metrics' do
         get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
           success = response.body[@service][:success_responses]
-          success.find { |h| h['date'] == @date.to_s }['value'].should eq 10
-          success.find { |h| h['date'] == (@date - 2).to_s }['value'].should eq 100
+          success.find { |h| h[:date] == @date.to_s }[:value].should eq 10
+          success.find { |h| h[:date] == (@date - 2).to_s }[:value].should eq 100
 
           empty = response.body[@service][:empty_responses]
-          empty.find { |h| h['date'] == (@date - 2).to_s }['value'].should eq 20
+          empty.find { |h| h[:date] == (@date - 2).to_s }[:value].should eq 20
 
           error = response.body[@service][:failed_responses]
-          error.find { |h| h['date'] == (@date - 1).to_s }['value'].should eq 30
+          error.find { |h| h[:date] == (@date - 1).to_s }[:value].should eq 30
 
           total = response.body[@service][:total_requests]
-          total.find { |h| h['date'] == @date.to_s }['value'].should eq 40
+          total.find { |h| h[:date] == @date.to_s }[:value].should eq 40
         end
       end
 
@@ -121,6 +121,24 @@ describe Carto::Superadmin::UsersController do
       it_behaves_like 'dataservices usage metrics'
     end
 
+    describe 'geocoder_mapbox' do
+      before(:all) do
+        @class = CartoDB::GeocoderUsageMetrics
+        @service = :geocoder_mapbox
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'geocoder_tomtom' do
+      before(:all) do
+        @class = CartoDB::GeocoderUsageMetrics
+        @service = :geocoder_tomtom
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
     describe 'here_isolines' do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics
@@ -134,6 +152,24 @@ describe Carto::Superadmin::UsersController do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics
         @service = :mapzen_isolines
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'mapbox_isolines' do
+      before(:all) do
+        @class = CartoDB::IsolinesUsageMetrics
+        @service = :mapbox_isolines
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'tomtom_isolines' do
+      before(:all) do
+        @class = CartoDB::IsolinesUsageMetrics
+        @service = :tomtom_isolines
       end
 
       it_behaves_like 'dataservices usage metrics'
@@ -166,6 +202,24 @@ describe Carto::Superadmin::UsersController do
       it_behaves_like 'dataservices usage metrics'
     end
 
+    describe 'routing_mapbox' do
+      before(:all) do
+        @class = CartoDB::RoutingUsageMetrics
+        @service = :routing_mapbox
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
+    describe 'routing_tomtom' do
+      before(:all) do
+        @class = CartoDB::RoutingUsageMetrics
+        @service = :routing_tomtom
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
     it 'returns mapviews' do
       key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
       $users_metadata.ZADD(key, 1, "20160915")
@@ -173,7 +227,7 @@ describe Carto::Superadmin::UsersController do
       $users_metadata.ZADD(key, 1, "20160915")
       get_json(usage_superadmin_user_url(@user.id), { from: "2016-09-14" }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
-        mapviews.find { |h| h['date'] == "2016-09-15" }['value'].should eq 2
+        mapviews.find { |h| h[:date] == "2016-09-15" }[:value].should eq 2
       end
     end
 
@@ -189,8 +243,8 @@ describe Carto::Superadmin::UsersController do
       get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]
         formatted_date = st.created_at.to_date.to_s
-        tweets.find { |h| h['date'] == formatted_date }['value'].should eq st.retrieved_items
-        tweets.find { |h| h['date'] == (Date.today - 5).to_s }['value'].should eq 0
+        tweets.find { |h| h[:date] == formatted_date }[:value].should eq st.retrieved_items
+        tweets.find { |h| h[:date] == (Date.today - 5).to_s }[:value].should eq 0
       end
       st.destroy
     end
@@ -205,7 +259,7 @@ describe Carto::Superadmin::UsersController do
     end
 
     it 'returns only requested services' do
-      get_json(usage_superadmin_user_url(@user.id), { services: ['mapviews'] }, superadmin_headers) do |response|
+      get_json(usage_superadmin_user_url(@user.id), { services: [:mapviews] }, superadmin_headers) do |response|
         response.body.keys.should eq [:mapviews]
       end
     end

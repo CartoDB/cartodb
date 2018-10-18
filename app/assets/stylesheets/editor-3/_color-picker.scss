@@ -1,11 +1,10 @@
 /* Temporary styles for new color picker */
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
 .ColorPicker-inputs {
-  @include display-flex();
+  display: flex;
   margin: 0 -2px;
   text-align: center;
 }
@@ -16,8 +15,8 @@
 }
 
 .ColorPicker-inputLabel {
-  font-size: 9px;
   color: #CBCED3;
+  font-size: 9px;
   line-height: 12px;
 }
 
@@ -61,16 +60,17 @@
   background-image: url('../images/layout/colorpicker/saturation.png');
   background-size: cover;
 }
+
 .ColorPicker .colorpicker-saturation::before {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: $halfBaseSize;
   pointer-events: none;
-  content: '';
 }
 
 .colorpicker.colorpicker-horizontal .colorpicker-saturation {
@@ -86,15 +86,15 @@
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-hue::before {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: 2px;
   pointer-events: none;
-  content: '';
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha {
@@ -110,15 +110,15 @@
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha::before {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: 2px;
   pointer-events: none;
-  content: '';
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .ColorPicker-colorWrapper {
@@ -127,12 +127,12 @@
   bottom: $baseSize;
   width: $baseSize * 3;
   height: $baseSize * 3;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+  border: 1px solid rgba(#000, 0.24);
   border-radius: 2px;
   background-image: url('../images/layout/colorpicker/alpha.png');
   background-position: 100%;
   pointer-events: none;
-  overflow: hidden;
 
   .ColorPicker--cm & {
     border: 0;
@@ -168,12 +168,12 @@
 
 .colorpicker-saturation i b {
   display: block;
+  box-sizing: border-box;
   width: 10px;
   height: 10px;
   border: 2px solid $cWhite;
   border-radius: 50%;
-  box-sizing: border-box;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 1px 0 rgba(#000, 0.5);
 }
 
 .colorpicker-saturation i {
@@ -199,15 +199,15 @@
 }
 
 .OpacityEditor-slider .ui-slider-range::before {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(#000, 0.24);
   border-radius: $baseSize - 2;
   pointer-events: none;
-  content: '';
 }
 
 .OpacityEditor-slider .ui-slider-handle {

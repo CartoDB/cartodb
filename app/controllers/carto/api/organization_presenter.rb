@@ -54,7 +54,8 @@ module Carto
           website:                    @organization.website,
           admin_email:                @organization.admin_email,
           avatar_url:                 @organization.avatar_url,
-          user_count:                 @organization.users.count
+          user_count:                 @organization.users.count,
+          password_expiration_in_d:   @organization.password_expiration_in_d
         }
       end
 

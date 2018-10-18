@@ -12,7 +12,7 @@ module CartoDB
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
-      
+
       # The following columns are not validated because we are comparing schemas of a cartodbfied table and one that
       # is about to be imported.
       COLUMNS_NOT_TO_VALIDATE = [:cartodb_id, :the_geom_webmercator].freeze
@@ -85,7 +85,12 @@ module CartoDB
         overwrite = overwrite_strategy? && taken_names.include?(name)
 
         if overwrite
-          overwrite_register(result,name)
+          raise ::CartoDB::Importer2::IncompatibleSchemas.new unless compatible_schemas_for_overwrite?(name)
+          move_to_schema(result, result.table_name, ORIGIN_SCHEMA, @destination_schema)
+          overwrite_register(result, name) do
+            drop("\"#{@destination_schema}\".\"#{name}\"")
+            rename(result, result.table_name, name, @destination_schema)
+          end
         else
           new_register(name, result)
         end
@@ -265,6 +270,28 @@ module CartoDB
         @data_import ||= DataImport[@data_import_id]
       end
 
+      def overwrite_register(result, name)
+        index_statements = @table_setup.generate_index_statements(@destination_schema, name)
+
+        database.transaction do
+          log("Replacing #{name} with #{result.table_name}")
+          begin
+            # the logic inside the transaction may vary, so we let the caller to implement it
+            yield(database, @destination_schema)
+          rescue => e
+            log("Unable to replace #{name} with #{result.table_name}. Rollingback transaction and dropping #{result.table_name}: #{e}")
+            drop("\"#{@destination_schema}\".\"#{result.table_name}\"")
+            raise e
+          end
+        end
+
+        @table_setup.cartodbfy(name)
+        @table_setup.fix_oid(name)
+        @table_setup.run_index_statements(index_statements, @database)
+        @table_setup.recreate_overviews(name)
+        @table_setup.update_cdb_tablemetadata(name)
+      end
+
       private
 
       def new_register(name, result)
@@ -278,31 +305,6 @@ module CartoDB
             raise e
           end
         end
-      end
-
-      def overwrite_register(result, name)
-        raise ::CartoDB::Importer2::IncompatibleSchemas.new unless compatible_schemas_for_overwrite?(name)
-        index_statements = @table_setup.generate_index_statements(@destination_schema, name)
-
-        move_to_schema(result, result.table_name, ORIGIN_SCHEMA, @destination_schema)
-        @table_setup.cartodbfy(result.table_name)
-
-        database.transaction do
-          log("Replacing #{name} with #{result.table_name}")
-          begin
-            drop("#{@destination_schema}.#{name}")
-            rename(result, result.table_name, name, @destination_schema)
-          rescue => e
-            log("Unable to replace #{name} with #{result.table_name}. Rollingback transaction and dropping #{result.table_name}: #{e}")
-            drop("#{@destination_schema}.#{result.table_name}")
-            raise e
-          end
-        end
-
-        @table_setup.fix_oid(name)
-        @table_setup.run_index_statements(index_statements, @database)
-        @table_setup.recreate_overviews(name)
-        @table_setup.update_cdb_tablemetadata(name)
       end
 
       def compatible_schemas_for_overwrite?(name)

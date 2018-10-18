@@ -40,6 +40,15 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
         ::Resque.enqueue(::Resque::ImporterJobs, job_id: data_import.id)
 
+        # Need to mark the synchronization job as queued state.
+        # If this is missed there is an error state that can be
+        # achieved where the synchronization job can never be
+        # manually kicked off ever again.  This state will occur if the
+        # resque job fails to mark the synchronization state to success or
+        # failure (ie: resque never runs, or bug in ImporterJobs code)
+        member.state = Synchronization::Member::STATE_QUEUED
+        member.store
+
         response = {
           data_import: {
             endpoint:       '/api/v1/imports',
@@ -151,7 +160,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       name:                   params[:table_name],
       user_id:                current_user.id,
       state:                  Synchronization::Member::STATE_CREATED,
-      # Keep in sync with https://carto.com/docs/carto-engine/import-api/sync-tables/#params-1
+      # Keep in sync with https://carto.com/developers/import-api/guides/sync-tables/#params-1
       type_guessing:          !["false", false].include?(params[:type_guessing]),
       quoted_fields_guessing: !["false", false].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing])

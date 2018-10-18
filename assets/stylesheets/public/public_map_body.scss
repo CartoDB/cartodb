@@ -1,0 +1,133 @@
+
+/**
+ *  Styles for body within public view (comments and data used for this vis or tables)
+ *
+ */
+
+.cartodb-body {
+  padding: 30px 0;
+}
+
+.cartodb-body .comments .content p {
+  color: #444;
+  font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 17px;
+  line-height: normal;
+}
+
+// Map info
+
+.cartodb-body .inner .map-info {
+  position: relative;
+  top: 8px;
+}
+
+.cartodb-body .inner .map-info h2 {
+  margin: 0 0 21px;
+  padding: 0;
+  color: #444;
+  font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+  line-height: normal;
+}
+
+.cartodb-body .inner .map-info ul {
+  margin: 0;
+  padding: 14px 0 0;
+  border-top: 2px solid #EBEEF0;
+  list-style: none;
+}
+
+.cartodb-body .inner .map-info ul li {
+  margin: 0 0 17px;
+  padding: 0 0 17px;
+  clear: both;
+  overflow: hidden;
+  border-bottom: 1px solid #E4E4E4;
+  font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 15px;
+}
+
+.cartodb-body .inner .map-info ul li.private {
+  color: #CCC;
+}
+
+.cartodb-body .inner .map-info ul li a {
+  width: 200px;
+  float: left;
+  overflow: hidden;
+  color: #397DB8;
+  font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 120%;
+  text-decoration: none;
+  text-overflow: ellipsis;
+
+  /* Ellipsis */
+  white-space: nowrap;
+}
+
+.cartodb-body .inner .map-info ul li .disabled {
+  opacity: 0.5;
+  color: #333;
+
+  &:hover {
+    color: #333;
+    text-decoration: none;
+  }
+}
+
+.cartodb-body .inner .map-info ul li a:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+.cartodb-body .inner .map-info ul li span {
+  position: relative;
+  top: 4px;
+  float: right;
+  color: #CCC;
+  font-family: 'ProximaNova', "Helvetica", Arial, sans-serif;
+  font-size: 11px;
+  line-height: 120%;
+}
+
+.cartodb-body .inner .map-info ul li span.help {
+  top: 3px;
+  font-family: 'ProximaNova', "Helvetica", Arial, sans-serif;
+}
+
+.cartodb-body a {
+  color: #397DB8;
+  text-decoration: underline;
+  cursor: auto;
+}
+
+// Hello media queries
+
+@media only screen and (max-width: 710px) {
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
+}
+
+/* iPhone portrait */
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: portrait) {
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
+}
+
+/* iPhone landscape */
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (orientation: landscape) {
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
+}

@@ -27,7 +27,7 @@ class SignupController < ApplicationController
 
   def create
     account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
-                      with_organization(@organization).
+                      with_organization(@organization, viewer: invitation.try(:viewer)).
                       with_invitation_token(params[:invitation_token])
 
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
@@ -54,6 +54,7 @@ class SignupController < ApplicationController
       CartoDB.notify_debug('User not valid at signup', { errors: errors } )
       if errors['organization'] && !errors[:organization].empty?
         @signup_source = 'Organization'
+        @signup_errors = errors
         render 'shared/signup_issue'
       else
         if google_signup? && existing_user(@user)
@@ -135,7 +136,6 @@ class SignupController < ApplicationController
   end
 
   def initialize_oauth_config
-    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
     @oauth_configs = [google_plus_config, github_config].compact
   end
 
@@ -156,22 +156,34 @@ class SignupController < ApplicationController
   end
 
   def load_organization
-    subdomain = CartoDB.subdomainless_urls? ? request.host.to_s.gsub(".#{CartoDB.session_domain}", '') : CartoDB.subdomain_from_request(request)
-    @organization = ::Organization.where(name: subdomain).first if subdomain
+    if CartoDB.subdomainless_urls?
+      subdomain = request.host.to_s.gsub(".#{CartoDB.session_domain}", '')
+      if subdomain == CartoDB.session_domain
+        subdomain = params[:user_domain]
+      end
+    else
+      subdomain = CartoDB.subdomain_from_request(request)
+    end
+
+    if subdomain && subdomain != CartoDB.session_domain
+      @organization = ::Organization.where(name: subdomain).first
+    end
   end
 
   def check_organization_quotas
     if @organization
       check_signup_errors = Sequel::Model::Errors.new
-      @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization))
+      user = ::User.new_with_organization(@organization, viewer: @invitation.try(:viewer))
+      @organization.validate_for_signup(check_signup_errors, user)
       @signup_source = 'Organization'
+      @signup_errors = check_signup_errors
       render 'shared/signup_issue' and return false if check_signup_errors.length > 0
     end
   end
 
   def load_mandatory_organization
     load_organization
-    render_404 and return false unless @organization && (@organization.signup_page_enabled || valid_email_invitation_token?)
+    return render_404 unless @organization && (@organization.signup_page_enabled || invitation)
     check_organization_quotas
   end
 
@@ -179,13 +191,12 @@ class SignupController < ApplicationController
     render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
   end
 
-  def valid_email_invitation_token?
+  def invitation
+    return @invitation if @invitation
     email = (params[:user] && params[:user][:email]) || params[:email]
     token = params[:invitation_token]
-    if email && token
-      invitation = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
-      invitation.any? { |i| i.token(email) == token }
-    end
+    return unless email && token
+    invitations = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
+    @invitation = invitations.find { |i| i.token(email) == token }
   end
-
 end

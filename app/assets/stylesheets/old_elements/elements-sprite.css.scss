@@ -8,8 +8,8 @@
 // You can override them before you import this file.
 $elements-sprite-base-class: ".elements-sprite" !default;
 $elements-sprite-dimensions: false !default;
-
-$elements-sprites: sprite-map("sprites/elements/*.png",
+$elements-sprites: sprite-map(
+  "sprites/elements/*.png",
   $position:                                  0%,
   $spacing:                                   0,
   $repeat:                                    no-repeat,
@@ -29,23 +29,24 @@ $elements-sprites: sprite-map("sprites/elements/*.png",
 // Use this to set the dimensions of an element
 // based on the size of the original image.
 @mixin elements-sprite-dimensions($name) {
-  @include sprite-dimensions($elements-sprites, $name)
+  @include sprite-dimensions($elements-sprites, $name);
 }
 
 // Move the background position to display the sprite.
 @mixin elements-sprite-position($name, $offset-x: 0, $offset-y: 0) {
-  @include sprite-position($elements-sprites, $name, $offset-x, $offset-y)
+  @include sprite-position($elements-sprites, $name, $offset-x, $offset-y);
 }
 
 // Extends the sprite base class and set the background position for the desired sprite.
 // It will also apply the image dimensions if $dimensions is true.
 @mixin elements-sprite($name, $dimensions: $elements-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$elements-sprite-base-class};
-  @include sprite($elements-sprites, $name, $dimensions, $offset-x, $offset-y)
+
+  @include sprite($elements-sprites, $name, $dimensions, $offset-x, $offset-y);
 }
 
 @mixin elements-sprites($sprite-names, $dimensions: $elements-sprite-dimensions, $prefix: sprite-map-name($elements-sprites)) {
-  @include sprites($elements-sprites, $sprite-names, $elements-sprite-base-class, $dimensions, $prefix)
+  @include sprites($elements-sprites, $sprite-names, $elements-sprite-base-class, $dimensions, $prefix);
 }
 
 // Generates a class for each sprited image.

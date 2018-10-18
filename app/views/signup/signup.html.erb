@@ -1,7 +1,7 @@
 <% content_for :title do %><%= @organization.name %> sign up<% end %>
 
 <% content_for :js do %>
-  <%= javascript_include_tag 'cdb.js' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message', locals: { error_message: @organization.auth_username_password_enabled ? nil : model_errors(@user) } %>
@@ -105,6 +105,9 @@
             <% end %>
 
             <% unless @oauth_fields.present? %>
+              <div class="Sessions-field Sessions-oauthHeader">
+                <p>OR SIGN UP WITH:</p>
+              </div>
               <div class="Sessions-field Sessions-oauthContainer">
                 <% @oauth_configs.each do |config| %>
                   <%= render partial: config.button_template, locals: { config: config } %>

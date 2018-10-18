@@ -6,8 +6,16 @@ describe Carto::OrganizationMetadataExportService do
   include Carto::Factories::Visualizations
   include TableSharing
 
+  before(:all) do
+    @connector_provider = FactoryGirl.create(:connector_provider)
+  end
+
+  after(:all) do
+    @connector_provider.destroy
+  end
+
   def create_organization_with_dependencies
-    @sequel_organization = FactoryGirl.create(:organization_with_users)
+    @sequel_organization = FactoryGirl.create(:organization_with_users, password_expiration_in_d: 365)
     @organization = Carto::Organization.find(@sequel_organization.id)
     @owner = @organization.owner
     @non_owner = @organization.users.reject(&:organization_owner?).first
@@ -15,7 +23,7 @@ describe Carto::OrganizationMetadataExportService do
     @map, @table, @table_visualization, @visualization = create_full_visualization(@non_owner)
     share_visualization_with_user(@table_visualization, @owner)
 
-    @asset = FactoryGirl.create(:carto_asset, organization: @organization)
+    @asset = FactoryGirl.create(:organization_asset, organization: @organization)
 
     @group = FactoryGirl.create(:carto_group, organization: @organization)
     @group.add_user(@non_owner.username)
@@ -24,6 +32,8 @@ describe Carto::OrganizationMetadataExportService do
     notification.received_notifications.find_by_user_id(@owner.id).update_attribute(:read_at, DateTime.now)
 
     CartoDB::GeocoderUsageMetrics.new(@owner.username, @organization.name).incr(:geocoder_here, :success_responses)
+
+    FactoryGirl.create(:connector_configuration, connector_provider: @connector_provider, organization: @organization)
 
     @organization.reload
   end
@@ -79,6 +89,20 @@ describe Carto::OrganizationMetadataExportService do
 
       expect_export_matches_organization(full_export[:organization], organization)
     end
+
+    it 'imports 1.0.1 (without connector configurations)' do
+      organization = service.build_organization_from_hash_export(full_export_one_zero_one)
+
+      expect_export_matches_organization(full_export_one_zero_one[:organization], organization)
+      expect(organization.connector_configurations).to be_empty
+    end
+
+    it 'imports 1.0.0 (without password expiration)' do
+      organization = service.build_organization_from_hash_export(full_export_one_zero_zero)
+
+      expect_export_matches_organization(full_export_one_zero_zero[:organization], organization)
+      expect(organization.password_expiration_in_d).to be_nil
+    end
   end
 
   describe '#full export + import (organization, users and visualizations)' do
@@ -90,6 +114,8 @@ describe Carto::OrganizationMetadataExportService do
         source_users = @organization.users.map(&:attributes)
         source_groups = @organization.groups.map(&:attributes)
         source_group_users = @group.users.map(&:id)
+        source_assets = @organization.assets.map(&:attributes)
+        expect(source_assets).not_to be_empty
         source_notifications = @organization.notifications.map(&:attributes)
         source_received_notifications = @organization.notifications.map { |n|
           [n.id, n.received_notifications.map(&:attributes)]
@@ -98,8 +124,17 @@ describe Carto::OrganizationMetadataExportService do
         # Destroy, keeping the database
         clean_redis
         Table.any_instance.stubs(:remove_table_from_user_database)
+        @organization.notifications.each(&:destroy)
+        @organization.assets.each { |a| a.update_attribute(:storage_info, nil) } # Avoids remote deletion attempt
+        @organization.assets.each(&:delete)
+        @organization.assets.clear
         @organization.users.flat_map(&:visualizations).each(&:destroy)
-        @organization.users.each(&:destroy)
+        @organization.users.each do |u|
+          sequel_user = ::User[u.id]
+          sequel_user.client_application.access_tokens.each(&:destroy)
+          sequel_user.client_application.destroy
+          u.destroy
+        end
         @organization.groups.each(&:destroy)
         @organization.groups.clear
         @organization.destroy
@@ -120,6 +155,11 @@ describe Carto::OrganizationMetadataExportService do
           compare_excluding_fields(g1.attributes, g2, EXCLUDED_ORG_META_DATE_FIELDS + EXCLUDED_ORG_META_ID_FIELDS)
         end
         expect(imported_organization.groups.first.users.map(&:id)).to eq source_group_users
+
+        expect(imported_organization.assets.length).to eq source_assets.length
+        imported_organization.assets.zip(source_assets).each do |ia, sa|
+          compare_excluding_fields(ia.attributes, sa, EXCLUDED_ASSETS_FIELDS)
+        end
 
         expect(imported_organization.notifications.length).to eq source_notifications.length
         imported_organization.notifications.zip(source_notifications).each do |i_n, s_n|
@@ -148,6 +188,7 @@ describe Carto::OrganizationMetadataExportService do
   EXCLUDED_ORG_META_DATE_FIELDS = ['created_at', 'updated_at', 'period_end_date'].freeze
   EXCLUDED_ORG_META_ID_FIELDS = ['id', 'organization_id'].freeze
   EXCLUDED_NOTIFICATIONS_FIELDS = ['id'].freeze
+  EXCLUDED_ASSETS_FIELDS = ['id'].freeze
 
   # DateTime comparisons fail if they're not stringified
   def stringify_fields(hash, fields)
@@ -182,6 +223,15 @@ describe Carto::OrganizationMetadataExportService do
     expect(export[:notifications].count).to eq organization.notifications.size
     export[:notifications].zip(organization.notifications).each do |exported_notification, notification|
       expect_export_matches_notification(exported_notification, notification)
+    end
+
+    if export[:connector_configurations]
+      expect(export[:connector_configurations].count).to eq organization.connector_configurations.size
+      export[:connector_configurations].zip(organization.connector_configurations).each do |exported_cc, cc|
+        expect_export_matches_connector_configuration(exported_cc, cc)
+      end
+    else
+      expect(organization.connector_configurations).to be_empty
     end
   end
 
@@ -222,6 +272,14 @@ describe Carto::OrganizationMetadataExportService do
     expect(exported_received_notification[:read_at]).to eq received_notification.read_at
   end
 
+  def expect_export_matches_connector_configuration(exported_cc, cc)
+    expect(exported_cc[:enabled]).to eq cc.enabled
+    expect(exported_cc[:max_rows]).to eq cc.max_rows
+    expect(exported_cc[:created_at]).to eq cc.created_at
+    expect(exported_cc[:updated_at]).to eq cc.updated_at
+    expect(exported_cc[:provider_name]).to eq cc.connector_provider.name
+  end
+
   def expect_redis_restored(org)
     expect(CartoDB::GeocoderUsageMetrics.new(org.owner.username, org.name).get(:geocoder_here, :success_responses)).to eq(1)
     expect(CartoDB::GeocoderUsageMetrics.new(org.owner.username).get(:geocoder_here, :success_responses)).to eq(1)
@@ -229,7 +287,7 @@ describe Carto::OrganizationMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.0",
+      version: "1.0.2",
       organization: {
         id: "189d642c-c7da-40aa-bffd-517aa0eb7999",
         seats: 100,
@@ -281,6 +339,7 @@ describe Carto::OrganizationMetadataExportService do
         builder_enabled: true,
         auth_saml_configuration: {},
         no_map_logo: false,
+        password_expiration_in_d: 365,
         assets: [{
           public_url: "http://localhost.lan:3000/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0",
           kind: "organization_asset",
@@ -313,8 +372,29 @@ describe Carto::OrganizationMetadataExportService do
               }
             ]
           }
+        ],
+        connector_configurations: [
+          {
+            created_at: DateTime.now,
+            updated_at: DateTime.now,
+            enabled: true,
+            max_rows: 100000,
+            provider_name: @connector_provider.name
+          }
         ]
       }
     }
+  end
+
+  let(:full_export_one_zero_one) do
+    organizations_hash = full_export[:organization].except!(:connector_configurations)
+    full_export[:organization] = organizations_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_zero) do
+    organizations_hash = full_export_one_zero_one[:organization].except!(:password_expiration_in_d)
+    full_export[:organization] = organizations_hash
+    full_export
   end
 end

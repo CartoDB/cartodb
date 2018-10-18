@@ -7,21 +7,25 @@ $opacityTransition: 250ms;
 .OrganizationNotifications {
   margin: $sMargin-section 0 100px;
 }
+
 .OrganizationNotifications-button {
   height: 34px;
 }
+
 .OrganizationNotifications-textarea {
   height: 80px;
 }
+
 .Md-container {
   position: absolute;
+  z-index: 10;
   right: 1px;
   bottom: 1px;
   padding: 8px;
   border-radius: 4px;
   background: rgba(#FFF, 0.6);
-  z-index: 10;
 }
+
 .field_with_errors {
   .OrganizationNotifications-textarea {
     border: 1px solid rgba($cHighlight-negative, 0.48);
@@ -33,10 +37,12 @@ $opacityTransition: 250ms;
     bottom: 3px;
   }
 }
+
 .Md-icon,
 .Md-text {
   float: left;
 }
+
 .Md-icon {
   width: 24px;
   height: 16px;
@@ -44,25 +50,28 @@ $opacityTransition: 250ms;
   background: #DDD;
   text-align: center;
 }
+
 .Md-buttonInner {
   position: relative;
   top: -2px;
 }
+
 .NotificationsList {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
   position: relative;
+  flex-direction: column;
   width: 100%;
   margin: 0 auto;
 }
+
 .NotificationsList-item {
-  @include display-flex();
+  display: flex;
   position: relative;
+  box-sizing: border-box;
   margin-bottom: -1px;
   padding: 20px 0;
   border: 1px solid transparent;
   border-bottom: 1px solid $cStructure-softLine;
-  box-sizing: border-box;
 
   &:first-child {
     padding-top: 0;
@@ -76,77 +85,86 @@ $opacityTransition: 250ms;
 }
 
 .NotificationsList-itemCategory {
-  @include notification-type-icon();
-  @include opacity(1);
-  @include css3-prefix('transition', opacity $opacityTransition ease-in-out);
   display: inline-block;
   position: relative;
+  z-index: 1;
   min-width: 40px;
   height: 40px;
   margin-top: 3px;
   margin-right: 16px;
+  transition: opacity $opacityTransition ease-in-out;
   border: none;
-  z-index: 1;
+  opacity: 1;
+
+  @include notification-type-icon();
 }
+
 .NotificationsList-itemCategory--warning {
   @include notification-type-icon();
 }
+
 .NotificationsList-itemInfo {
-  @include display-flex();
-  @include flex-direction(row);
-  @include opacity(1);
-  @include flex(1);
-  @include transition(opacity, $opacityTransition);
-  @include justify-content(space-between, justify);
+  display: flex;
   position: relative;
   z-index: 1;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  transition: opacity $opacityTransition;
+  opacity: 1;
 }
+
 .NotificationsList-itemPrimaryInfo {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   width: 400px;
   margin-right: $sMargin-element;
 }
+
 .NotificationsList-itemSecondaryInfo {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   margin-top: 0;
 }
+
 .NotificationsList-itemMeta {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(flex-start, end);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   margin-bottom: 2 * $sMargin-min;
 }
+
 .NotificationsList-itemTitle {
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  align-items: center;
   margin-bottom: 0;
-
-  overflow-wrap: break-word;
   word-wrap: break-word;
-
-  -ms-word-break: break-all;
   word-break: break-word;
+  overflow-wrap: break-word;
 
   ul,
   ol {
     padding-left: 20px;
     list-style-type: disc;
   }
+
   ol {
     list-style-type: decimal;
   }
+
   ul {
     list-style-type: disc;
   }
+
   em {
     font-style: italic;
   }
+
   strong {
     font-weight: 600;
   }
+
   code {
     margin: 0;
     padding: 3px;
@@ -156,6 +174,7 @@ $opacityTransition: 250ms;
     line-height: 25px;
   }
 }
+
 .NotificationsList-itemDescription {
   height: 16px;
   margin-top: 4px;
@@ -164,9 +183,11 @@ $opacityTransition: 250ms;
     border: 0;
   }
 }
+
 .NotificationsList-itemLink {
   font-size: 12px;
 }
+
 .Md-counter.Md-counter--negative,
 .NotificationsList-itemLink--remove {
   color: $cHighlight-negative;

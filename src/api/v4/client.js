@@ -29,7 +29,7 @@ const DEFAULT_SERVER_URL = 'https://{username}.carto.com';
  * @param {object} settings
  * @param {string} settings.apiKey - API key used to authenticate against CARTO
  * @param {string} settings.username - Name of the user
- * @param {string} [settings.serverUrl='https://{username}.carto.com'] - URL of the windshaft server. Only needed in custom installations. Pattern: `https://{username}.your.carto.instance` or `https://your.carto.instance/user/{username}` (for enterprise environments).
+ * @param {string} [settings.serverUrl='https://{username}.carto.com'] - URL of the windshaft server. Only needed in custom installations. Pattern: `http(s)://{username}.your.carto.instance` or `http(s)://your.carto.instance/user/{username}` (only for On-Premises environments).
  *
  * @example
  * var client = new carto.Client({
@@ -40,7 +40,7 @@ const DEFAULT_SERVER_URL = 'https://{username}.carto.com';
  * var client = new carto.Client({
  *   apiKey: 'YOUR_API_KEY_HERE',
  *   username: 'YOUR_USERNAME_HERE',
- *   serverUrl: 'https://{username}.your.carto.instance'
+ *   serverUrl: 'http://{username}.your.carto.instance'
  * });
  *
  * @constructor
@@ -508,9 +508,8 @@ function _checkUsername (username) {
 }
 
 function _checkServerUrl (serverUrl, username) {
-  var ipRegex = /https?:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/;
-  var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/;
-  if (!serverUrl.match(urlregex) && !serverUrl.match(ipRegex)) {
+  var urlregex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+  if (!serverUrl.match(urlregex)) {
     throw getValidationError('nonValidServerURL');
   }
   if (serverUrl.indexOf(username) < 0) {

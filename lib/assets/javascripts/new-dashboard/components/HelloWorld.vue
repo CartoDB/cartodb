@@ -10,9 +10,9 @@ export default {
   data () {
     return {
       msg: "Welcome to CARTO\'s new dashboard"
-    }
+    };
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

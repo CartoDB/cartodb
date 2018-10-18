@@ -63,16 +63,6 @@ describe('api/v4/client', function () {
       }).toThrow();
     });
 
-    it('should reject an invalid ip adress followed by /user/{username}', function () {
-      expect(function () {
-        client = new carto.Client({
-          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-          username: 'cartojs-test',
-          serverUrl: 'https://192.168.1/user/cartojs-test'
-        });
-      }).toThrow();
-    });
-
     it('should reject an invalid ip adress with no /user/{username}', function () {
       expect(function () {
         client = new carto.Client({

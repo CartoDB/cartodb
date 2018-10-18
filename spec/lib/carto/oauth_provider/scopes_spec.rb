@@ -9,9 +9,11 @@ describe Carto::OauthProvider::Scopes do
     include Carto::OauthProvider::Scopes
     before :all do
       @user = Carto::User.find(create_user.id)
+      @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
     end
 
     after :all do
+      @user_table.destroy
       @user.destroy
     end
 
@@ -34,22 +36,65 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'validates existing datasets scopes' do
-      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{user_table.name}"], @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@user_table.name}"], @user)
+    end
+
+    it 'validates existing datasets with schema scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@user.database_schema}.#{@user_table.name}"], @user)
       expect(scopes).to be_empty
-      user_table.destroy
+    end
+
+    it 'returns datasets non existent datasets schema scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:wtf.#{@user_table.name}"], @user)
+      expect(scopes).to eq(["datasets:r:wtf.#{@user_table.name}"])
     end
 
     it 'returns datasets scopes with non existent permissions' do
-      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:f:#{user_table.name}"], @user)
-      expect(scopes).to eq(["datasets:f:#{user_table.name}"])
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:f:#{@user_table.name}"], @user)
+      expect(scopes).to eq(["datasets:f:#{@user_table.name}"])
     end
 
     it 'returns invalid datasets scopes' do
-      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["wadusdatasets:r:#{user_table.name}"], @user)
-      expect(scopes).to eq(["wadusdatasets:r:#{user_table.name}"])
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["wadusdatasets:r:#{@user_table.name}"], @user)
+      expect(scopes).to eq(["wadusdatasets:r:#{@user_table.name}"])
+    end
+
+    describe 'shared datasets' do
+      before :each do
+        @shared_table = create_table(user_id: @carto_org_user_1.id)
+        @not_shared_table = create_table(user_id: @carto_org_user_1.id)
+
+        # TODO: change the share way
+        # share_table(@shared_table, @carto_org_user_1, @carto_org_user_2)
+        # db_role = ""
+        # @carto_org_user_2.in_database do |db|
+        #   db_role = db.fetch("select session_user").first[:session_user]
+        # end
+        # @carto_org_user_1.in_database(as: :superuser) do |db|
+        #   db.fetch("GRANT SELECT ON \"#{@shared_table.name}\" TO \"#{db_role}\"")
+        # end
+
+        @shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
+        @non_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@not_shared_table.name}"
+      end
+
+      it 'validates shared dataset' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([@shared_dataset_scope], @carto_org_user_2)
+        expect(scopes).to be_empty
+      end
+
+      it 'returns non shared dataset' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([@non_shared_dataset_scope], @carto_org_user_2)
+        expect(scopes).to eq([@non_shared_dataset_scope])
+      end
+
+      it 'returns only non shared dataset' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          [ @shared_dataset_scope, @non_shared_dataset_scope ],
+          @carto_org_user_2
+        )
+        expect(scopes).to eq([@non_shared_dataset_scope])
+      end
     end
   end
 

@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Allowing views in API Keys (#14309)
+- Redirect locked users to /lockout page (#14310)
 
 4.22.0 (2018-10-04)
 -------------------

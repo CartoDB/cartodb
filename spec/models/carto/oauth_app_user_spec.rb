@@ -151,7 +151,7 @@ module Carto
       end
     end
 
-    describe 'dataset role' do
+    describe 'datasets scope' do
       before(:all) do
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)

@@ -77,7 +77,8 @@ module Carto
 
       results.map do |row|
         permission = DatasetsScope.permission_from_db_to_scope(row['permission'])
-        "datasets:#{permission}:#{row['t']}"
+        schema = row['schema'] != user.database_schema ? "#{row['schema']}." : ''
+        "datasets:#{permission}:#{schema}#{row['t']}"
       end
     end
 
@@ -92,7 +93,7 @@ module Carto
         dataset_scope = DatasetsScope.new(scope)
         query = %{
           GRANT #{dataset_scope.permission.join(',')}
-          ON #{dataset_scope.table}
+          ON \"#{dataset_scope.schema || user.database_schema}\".\"#{dataset_scope.table}\"
           TO \"#{dataset_role_name}\" WITH GRANT OPTION
         }
 

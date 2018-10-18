@@ -92,9 +92,11 @@ module Carto
         }.freeze
 
         attr_reader :table
+        attr_reader :schema
 
         def initialize(scope)
-          _, permission, @table = scope.split(':')
+          _, permission, schema_and_table = scope.split(':')
+          extractSchemaAndTable(schema_and_table)
           super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, @table))
           @grant_key = :tables
           @permission = permission.to_sym
@@ -115,7 +117,7 @@ module Carto
           table_section = {
             name: @table,
             permissions: permission,
-            schema: user.database_schema
+            schema: @schema || user.database_schema
           }
 
           database_section[@grant_key] << table_section
@@ -148,6 +150,16 @@ module Carto
 
         def self.permission_from_db_to_scope(permission)
           PERMISSIONS.find { |_, values| permission.split(',').sort == values.sort }.first
+        end
+
+        private
+
+        def extractSchemaAndTable(schema_and_table)
+          @schema, @table = schema_and_table.split('.')
+          if @table.nil?
+            @table = @schema
+            @schema = nil
+          end
         end
       end
 

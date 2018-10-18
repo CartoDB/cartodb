@@ -47,6 +47,7 @@ const DEFAULT_SERVER_URL = 'https://{username}.carto.com';
  * @memberof carto
  * @api
  *
+ * @fires error
  * @fires success
  */
 function Client (settings) {

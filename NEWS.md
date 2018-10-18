@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Scrollbar resized after notifications (#12953)
 
 4.22.1 (2018-10-18)
 -------------------

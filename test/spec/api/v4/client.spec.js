@@ -33,6 +33,16 @@ describe('api/v4/client', function () {
       expect(client._engine._windshaftSettings.urlTemplate).toEqual('https://cartojs-test.carto.com');
     });
 
+    it('should autogenerate the carto url when a template is given', function () {
+      client = new carto.Client({
+        apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
+        username: 'cartojs-test',
+        serverUrl: 'https://{username}.mycarto.com'
+      });
+
+      expect(client._engine._windshaftSettings.urlTemplate).toEqual('https://cartojs-test.mycarto.com');
+    });
+
     it('should accept a ipv4/user/{username} as a valid serverURL', function () {
       expect(function () {
         client = new carto.Client({
@@ -49,16 +59,6 @@ describe('api/v4/client', function () {
           apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
           username: 'cartojs-test',
           serverUrl: 'https://10.10.0.1'
-        });
-      }).toThrow();
-    });
-
-    it('should reject an invalid ip adress followed by /user/{username}', function () {
-      expect(function () {
-        client = new carto.Client({
-          apiKey: '84fdbd587e4a942510270a48e843b4c1baa11e18',
-          username: 'cartojs-test',
-          serverUrl: 'https://192.168.1/user/cartojs-test'
         });
       }).toThrow();
     });

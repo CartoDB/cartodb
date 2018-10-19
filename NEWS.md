@@ -9,6 +9,10 @@ Development
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)
+- Fix Feedback modal on Enter (https://github.com/CartoDB/support/issues/1804)
+- Apply code style for "Layer hidden" notification in advanced mode (#13355)
+- Fix input widths (#13453)
+- Update tags style (#13756)
 
 4.22.1 (2018-10-18)
 -------------------

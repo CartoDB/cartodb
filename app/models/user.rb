@@ -764,6 +764,9 @@ class User < Sequel::Model
   end
 
   def get_database(options, configuration)
+    db_config = Rails.configuration.database_configuration[Rails.env]
+    configuration[:connect_timeout] = db_config['connect_timeout']
+
     ::Sequel.connect(configuration.merge(after_connect: (proc do |conn|
       unless options[:as] == :cluster_admin
         conn.execute(%{ SET search_path TO #{db_service.build_search_path} })

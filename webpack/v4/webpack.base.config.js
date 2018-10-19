@@ -21,7 +21,7 @@ module.exports = {
     path: rootDir('public/assets')
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json'],
+    extensions: ['.js', '.vue', '.json', '.scss'],
     symlinks: false,
     modules: require('../common/modules.js'),
     alias: require('../common/alias.js')
@@ -247,8 +247,16 @@ module.exports = {
       // New Dashboard Vue Configuration
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: vueLoaderConfig
+        use: [
+
+          {
+            loader: 'vue-loader',
+            options: vueLoaderConfig
+          },
+          {
+            loader: 'vue-svg-inline-loader'
+          }
+        ]
       }
     ]
   },

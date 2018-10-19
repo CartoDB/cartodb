@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets-fix.7",
+  "version": "1.0.0-assets.9",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -180,7 +180,7 @@
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
     "bump": "npm --no-git-tag-version version prerelease --preid=assets",
-    "postversion": "git add package.json && git commit -m 'Bump assets version' && git push origin master",
+    "postversion": "git add package.json npm-shrinkwrap.json && git commit -m 'Bump assets version' && git push origin master",
     "update-internal-deps": "rm -rf node_modules && npm install --production --no-optional --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",

@@ -85,7 +85,7 @@ module Carto
     def create_dataset_role
       user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
     rescue ActiveRecord::StatementInvalid => e
-      raise OauthProvider::Errors::AccessDenied.new unless e.message =~ /already exist/
+      raise OauthProvider::Errors::ServerError.new unless e.message =~ /already exist/
     end
 
     def grant_dataset_role_privileges
@@ -100,7 +100,7 @@ module Carto
         begin
           user.in_database.execute(query)
         rescue ActiveRecord::StatementInvalid
-          raise OauthProvider::Errors::AccessDenied.new
+          raise OauthProvider::Errors::InvalidScope.new
         end
       end
     end

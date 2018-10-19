@@ -69,14 +69,13 @@ describe Carto::OauthProvider::Scopes do
         @not_shared_table = create_table(user_id: @carto_org_user_1.id)
 
         # TODO: change the share way
-        # share_table(@shared_table, @carto_org_user_1, @carto_org_user_2)
-        # db_role = ""
-        # @carto_org_user_2.in_database do |db|
-        #   db_role = db.fetch("select session_user").first[:session_user]
-        # end
-        # @carto_org_user_1.in_database(as: :superuser) do |db|
-        #   db.fetch("GRANT SELECT ON \"#{@shared_table.name}\" TO \"#{db_role}\"")
-        # end
+        db_role = ""
+        @org_user_2.in_database do |db|
+          db_role = db.fetch("select session_user").first[:session_user]
+        end
+        @org_user_1.in_database(as: :superuser) do |db|
+          db.execute("GRANT SELECT ON #{@carto_org_user_1.database_schema}.#{@shared_table.name} TO \"#{db_role}\"")
+        end
 
         @shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
         @non_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@not_shared_table.name}"

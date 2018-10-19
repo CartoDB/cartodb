@@ -13,6 +13,7 @@ Development
 - Apply code style for "Layer hidden" notification in advanced mode (#13355)
 - Fix input widths (#13453)
 - Update tags style (#13756)
+- Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
 
 4.22.1 (2018-10-18)
 -------------------

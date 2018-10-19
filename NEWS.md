@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)
+- Add timeout for AR and Sequel connections (#13266)
 
 4.22.1 (2018-10-18)
 -------------------

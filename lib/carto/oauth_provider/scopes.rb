@@ -145,7 +145,9 @@ module Carto
           dataset_scopes.each do |scope|
             schema, table = schema_table(scope)
             schema = user.database_schema if schema.nil?
-            tables_by_schema[schema.to_sym] = user.db_service.tables_effective(schema) if tables_by_schema[schema.to_sym].nil?
+            if tables_by_schema[schema.to_sym].nil?
+              tables_by_schema[schema.to_sym] = user.db_service.tables_effective(schema)
+            end
             invalid_scopes << scope if tables_by_schema[schema.to_sym].include?(table)
           end
 
@@ -162,7 +164,7 @@ module Carto
             table = schema
             schema = nil
           end
-          return schema, table
+          [schema, table]
         end
       end
 

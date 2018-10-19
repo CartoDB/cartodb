@@ -37,10 +37,14 @@ describe Carto::OauthProvider::Scopes do
 
     it 'validates existing datasets scopes' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@user_table.name}"], @user)
+      expect(scopes).to be_empty
     end
 
     it 'validates existing datasets with schema scopes' do
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@user.database_schema}.#{@user_table.name}"], @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+        ["datasets:r:#{@user.database_schema}.#{@user_table.name}"],
+        @user
+      )
       expect(scopes).to be_empty
     end
 
@@ -90,7 +94,7 @@ describe Carto::OauthProvider::Scopes do
 
       it 'returns only non shared dataset' do
         scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
-          [ @shared_dataset_scope, @non_shared_dataset_scope ],
+          [@shared_dataset_scope, @non_shared_dataset_scope],
           @carto_org_user_2
         )
         expect(scopes).to eq([@non_shared_dataset_scope])

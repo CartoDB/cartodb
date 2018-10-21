@@ -33,16 +33,42 @@
       <form action="#" method="get" class="navbar-search">
           <input type="text" name="query" class="title is-small is-regular" placeholder="Search">
       </form>
-      <div class="navbar-avatar" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }"></div>
+      <div class="navbar-user">
+        <div class="navbar-avatar" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
+        <UserDropdown ref="userDropdown" :userModel="userModel" :configModel="configModel"/>
+      </div>
   </div>
 </nav>
 </template>
 
 <script>
+import UserDropdown from './UserDropdown';
+
 export default {
   name: 'NavigationBar',
+  components: {
+    UserDropdown
+  },
   props: {
     user: Object
+  },
+  data: function() {
+    return {
+      isDropdownOpen: false
+    }
+  },
+  computed: {
+    userModel() {
+      return this.$store.state.user.userModel;
+    },
+    configModel() {
+      return this.$store.state.config.configModel;
+    }
+  },
+  methods: {
+    toggleDropdown: function() {
+      this.$refs.userDropdown.toggle();
+    }
   }
 };
 </script>
@@ -68,17 +94,23 @@ export default {
 }
 
 .navbar-elementItem {
-    padding: 20px 0px 16px 0px;
-    margin-right: 34px;
-    border-bottom: 4px solid transparent;
-    display: flex;
-    align-items: center;
-    &.is-active {
-        border-color: $white;
-        .navbar-iconFill {
-            fill: #fff;
-        }
+  padding: 20px 0px 16px 0px;
+  margin-right: 34px;
+  border-bottom: 4px solid transparent;
+  display: flex;
+  align-items: center;
+
+  &.is-active {
+    border-color: $white;
+
+    .navbar-iconFill {
+      fill: #FFF;
     }
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
 }
 
 .navbar-icon{
@@ -102,7 +134,7 @@ export default {
         border-radius: 18px;
         border: 0px;
         padding: 0 4px 0 38px;
-        background-image: url("/img/icons/navbar/loupe.svg");
+        background-image: url("../../assets/icons/navbar/loupe.svg");
         background-repeat: no-repeat;
         background-position: 16px center;
         transition: width .3s cubic-bezier(.4,.01,.165,.99);
@@ -114,6 +146,14 @@ export default {
             outline: none;
         }
     }
+}
+
+.navbar-user {
+  position: relative;
+
+  .Dropdown {
+    display: block;
+  }
 }
 
 .navbar-avatar {

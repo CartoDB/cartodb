@@ -60,6 +60,7 @@
     "whatwg-fetch": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz"
   },
   "devDependencies": {
+    "@vue/test-utils": "^1.0.0-beta.25",
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
     "babel-core": "6.25.0",

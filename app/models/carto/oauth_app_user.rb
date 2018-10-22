@@ -98,7 +98,10 @@ module Carto
         query = %{
           GRANT #{dataset_scope.permission.join(',')}
           ON \"#{dataset_scope.schema || user.database_schema}\".\"#{dataset_scope.table}\"
-          TO \"#{dataset_role_name}\" WITH GRANT OPTION
+          TO \"#{dataset_role_name}\" WITH GRANT OPTION;
+
+          GRANT USAGE ON SCHEMA \"#{dataset_scope.schema || user.database_schema}\"
+          TO \"#{dataset_role_name}\";
         }
 
         begin

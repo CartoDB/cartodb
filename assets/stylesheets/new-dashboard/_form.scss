@@ -1,0 +1,91 @@
+.checkbox {
+    position: relative;
+  
+    .checkbox-decoration {
+      pointer-events: none;
+      width: 24px;
+      height: 24px;
+      overflow: hidden;
+      border: 1px solid rgba($textColor, 0.16);
+      border-radius: 3px;
+      position: relative;
+      display: block;
+    }
+  
+    .checkbox-check {
+      stroke-width: 2;
+      stroke: #fff;
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+    }
+  
+    .checkbox-decorationMedia {
+      display: flex;
+      position: relative;
+      transform: translateY(3px);
+    }
+  
+    .checkbox-input {
+      -webkit-appearance: none;
+      appearance: none;
+      background: none;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      border-radius: 3px;
+  
+      &:hover + .checkbox-decoration {
+        border: 1px solid $primaryColor;
+      }
+  
+      &:checked {
+        + .checkbox-decoration {
+          border: 1px solid $primaryColor;
+          &:before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            opacity: 1;
+            background: $primaryColor;
+            animation: radioIn 300ms;
+            animation-fill-mode: forwards;
+            position: absolute;
+            top: calc(50% - 12px);
+            left: calc(50% - 12px);
+            border-radius: 3px;
+          }
+          .checkbox-check {
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 300ms forwards;
+          }
+        }
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+  
+  @keyframes stroke {
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  @keyframes radioIn {
+    0% {
+      opacity: 0;
+      transform: scale3d(0.3, 0.3, 0.3);
+    }
+  
+    to {
+      opacity: 1;
+      transform: scale3d(1, 1, 1);
+    }
+  }

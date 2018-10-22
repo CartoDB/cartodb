@@ -10,6 +10,11 @@ Development
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)
 - Add timeout for AR and Sequel connections (#13266)
+- Fix Feedback modal on Enter (https://github.com/CartoDB/support/issues/1804)
+- Apply code style for "Layer hidden" notification in advanced mode (#13355)
+- Fix input widths (#13453)
+- Update tags style (#13756)
+- Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
 
 4.22.1 (2018-10-18)
 -------------------

@@ -89,7 +89,7 @@ module Carto
             database: db_name,
             port:     base_config['port'],
             encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding'],
-            connect_timeout: options[:connect_timeout]
+            connect_timeout: base_config['connect_timeout']
           }
 
           case options[:as]

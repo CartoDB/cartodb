@@ -172,8 +172,6 @@ module Carto
       options[:username] = @user.database_username
       options[:password] = @user.database_password
       options[:user_schema] = @user.database_schema
-      db_config = Rails.configuration.database_configuration[Rails.env]
-      options[:connect_timeout] = db_config['connect_timeout']
       Carto::Db::Connection.connect(@user.database_host, @user.database_name, options) do |_, connection|
         if block_given?
           yield(connection)

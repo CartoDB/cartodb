@@ -22,8 +22,7 @@ describe Carto::UserService do
       default_opts = {
         username: carto_user.database_username,
         password: carto_user.database_password,
-        user_schema: carto_user.database_schema,
-        connect_timeout: -1
+        user_schema: carto_user.database_schema
       }
       expected_params = [carto_user.database_host, carto_user.database_name, default_opts]
 

@@ -23,8 +23,8 @@ export default {
 
 <style>
 #app {
-  font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: 'Montserrat', 'Open Sans', Arial, sans-serif;
+  -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 

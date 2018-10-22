@@ -75,30 +75,30 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
+@import 'stylesheets/new-dashboard/variables';
 
 .navbar {
-    width: 100%;
-    padding: 0px 64px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: $primaryColor;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 64px;
+  background-color: $primaryColor;
 }
 
 .navbar-elementsContainer {
-    display: flex;
-    align-items: center;
-    margin: 0px;
-    padding: 0;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar-elementItem {
-  padding: 20px 0px 16px 0px;
-  margin-right: 34px;
-  border-bottom: 4px solid transparent;
   display: flex;
   align-items: center;
+  margin-right: 34px;
+  padding: 20px 0 16px;
+  border-bottom: 4px solid transparent;
 
   &.is-active {
     border-color: $white;
@@ -106,67 +106,67 @@ export default {
     .navbar-iconFill {
       fill: #FFF;
     }
-  }
 
-  &:last-child {
-    margin-right: 0;
+    .navbar-iconNegativeFill {
+      fill: transparent;
+    }
   }
 }
 
-.navbar-icon{
-    margin-right: 8px;
+.navbar-icon {
+  margin-right: 8px;
 }
 
-.navbar-imagotype{
-    position: absolute;
-    height: 24px;
-    width: 24px;
-    margin-left: 50%;
-    transform: translateX(-50%);
+.navbar-imagotype {
+  position: absolute;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  transform: translateX(-50%);
 }
 
 .navbar-search {
-    margin: 0;
-    input {
-        width: 134px;
-        height: 36px;
-        background-color: #fff;
-        border-radius: 18px;
-        border: 0px;
-        padding: 0 4px 0 38px;
-        background-image: url("../../assets/icons/navbar/loupe.svg");
-        background-repeat: no-repeat;
-        background-position: 16px center;
-        transition: width .3s cubic-bezier(.4,.01,.165,.99);
-        &::placeholder {
-            color: $textColor-light;
-        }
-        &:focus {
-            width: 280px;
-            outline: none;
-        }
+  margin: 0;
+
+  input {
+    width: 134px;
+    height: 36px;
+    padding: 0 4px 0 38px;
+    transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
+    border: 0;
+    border-radius: 18px;
+    background-color: #FFF;
+    background-image: url("../../assets/icons/navbar/loupe.svg");
+    background-repeat: no-repeat;
+    background-position: 16px center;
+
+    &::placeholder {
+      color: $textColor-light;
     }
+
+    &:focus {
+      width: 280px;
+      outline: none;
+    }
+  }
 }
 
 .navbar-user {
   position: relative;
-
-  .Dropdown {
-    display: block;
-  }
 }
 
 .navbar-avatar {
-    height: 36px;
-    width: 36px;
-    background-size: cover;
-    overflow: hidden;
-    background-color: $textColor-light;
-    border-radius: 50%;
-    display: flex;
-    margin-left: 30px;
-    &:hover{
-        cursor: pointer;
-    }
+  display: flex;
+  width: 36px;
+  height: 36px;
+  margin-left: 30px;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: $textColor-light;
+  background-size: cover;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>

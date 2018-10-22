@@ -36,14 +36,16 @@ export default {
     },
 
     show: function () {
-      this.$dropdownView = this.renderView();
+      if (!this.$dropdownView) {
+        this.$dropdownView = this.renderView();
+      }
+
       this.$dropdownView.show();
       this.isDropdownOpen = true;
     },
 
     hide: function () {
       this.$dropdownView.hide();
-      this.$dropdownView.clean();
       this.isDropdownOpen = false;
     },
 

@@ -155,15 +155,21 @@ module Carto
       before(:all) do
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
+      end
+
+      before(:each) do
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
         @table1 = create_table(user_id: @carto_user.id)
         @table2 = create_table(user_id: @carto_user.id)
       end
 
-      after(:all) do
+      after(:each) do
         @table1.destroy
         @table2.destroy
         @app.destroy
+      end
+
+      after(:all) do
         @user.destroy
         @carto_user.destroy
       end
@@ -181,6 +187,24 @@ module Carto
 
         oau.upgrade!([dataset_scope1])
         expect(oau.scopes).to(eq(scopes))
+      end
+
+      it 'works using renamed table' do
+        scope = "datasets:rw:#{@table1.name}"
+        scope_new = "datasets:rw:#{@table1.name}_new"
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [scope])
+        expect(oau.scopes).to(eq([scope]))
+
+        oau.upgrade!([])
+        expect(oau.scopes).to(eq([scope]))
+
+        @user.in_database(as: :superuser) do |db|
+          db.execute("ALTER TABLE #{@table1.database_schema}.#{@table1.name} RENAME TO #{@table1.name}_new;")
+        end
+
+        oau.upgrade!([])
+        expect(oau.scopes).to(eq([scope_new]))
       end
     end
   end

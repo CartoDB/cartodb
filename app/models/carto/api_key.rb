@@ -114,7 +114,7 @@ module Carto
 
     attr_accessor :skip_role_setup
     attr_writer :skip_cdb_conf_info
-    attr_writer :oauth_app_user_role
+    attr_accessor :oauth_app_user_role
 
     private_class_method :new, :create, :create!
 
@@ -151,7 +151,7 @@ module Carto
       )
     end
 
-    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:, oauth_app_user_role:)
+    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:, oauth_app_user_role: nil)
       create!(
         user: user,
         type: TYPE_OAUTH,
@@ -450,6 +450,8 @@ module Carto
 
     def setup_db_role
       create_role
+
+      return db_run("GRANT \"#{oauth_app_user_role}\" TO \"#{db_role}\"") unless oauth_app_user_role.nil?
 
       non_existent_tables = []
       errors = []

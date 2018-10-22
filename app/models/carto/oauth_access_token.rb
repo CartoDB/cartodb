@@ -40,7 +40,8 @@ module Carto
 
       self.api_key = oauth_app_user.user.api_keys.create_oauth_key!(
         name: "oauth_authorization #{SecureRandom.uuid}",
-        grants: grants
+        grants: grants,
+        oauth_app_user_role: oauth_app_user.dataset_role_name
       )
     end
 

@@ -114,6 +114,7 @@ module Carto
 
     attr_accessor :skip_role_setup
     attr_writer :skip_cdb_conf_info
+    attr_writer :oauth_app_user_role
 
     private_class_method :new, :create, :create!
 
@@ -150,12 +151,13 @@ module Carto
       )
     end
 
-    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:, oauth_app_user_role:)
       create!(
         user: user,
         type: TYPE_OAUTH,
         name: name,
-        grants: grants
+        grants: grants,
+        oauth_app_user_role: oauth_app_user_role
       )
     end
 

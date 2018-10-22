@@ -33,6 +33,10 @@ module Carto
       no_dataset_scopes + dataset_scopes
     end
 
+    def dataset_role_name
+      "carto_oauth_app_#{id}"
+    end
+
     private
 
     def validate_user_authorizable
@@ -103,10 +107,6 @@ module Carto
           raise OauthProvider::Errors::InvalidScope.new
         end
       end
-    end
-
-    def dataset_role_name
-      "carto_oauth_app_#{id}"
     end
 
   end

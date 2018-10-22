@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NavigationBar.vue should render correct contents 1`] = `
+<nav class="navbar">
+  <ul class="navbar-elementsContainer">
+    <router-link-stub to="[object Object]" tag="a" exactactiveclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/home.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Home</span></router-link-stub>
+    <router-link-stub to="[object Object]" tag="a" exactactiveclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/solutions.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Solutions</span></router-link-stub>
+    <router-link-stub to="[object Object]" tag="a" exactactiveclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/applications.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Maps</span></router-link-stub>
+    <router-link-stub to="[object Object]" tag="a" exactactiveclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/data.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Data</span></router-link-stub>
+  </ul>
+  <div class="navbar-imagotype"><img src="../../assets/icons/navbar/imagotype.svg"></div>
+  <div class="navbar-elementsContainer">
+    <form action="#" method="get" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular"></form>
+    <div class="navbar-user">
+      <div class="navbar-avatar" style="background-image: url(hola);"></div>
+      <userdropdown-stub usermodel="[object Object]" configmodel="[object Object]"></userdropdown-stub>
+    </div>
+  </div>
+</nav>
+`;

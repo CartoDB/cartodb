@@ -144,6 +144,7 @@
     "tpl-loader": "CartoDB/tpl-loader#webpack4",
     "uglify-js": "2.7.x",
     "uglifyjs-webpack-plugin": "https://registry.npmjs.org/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.2.5.tgz",
+    "underscore-template-strict-loader": "^0.3.0",
     "vue-jest": "^3.0.0",
     "vue-loader": "^15.4.2",
     "vue-style-loader": "^4.1.2",

@@ -345,6 +345,39 @@ module CartoDB
         end
       end
 
+      def tables_privileges(role = @user.database_username)
+        query = %{
+          SELECT
+            s.nspname as schema,
+            c.relname as t,
+            string_agg(lower(acl.privilege_type), ',') as permission
+          FROM
+            pg_class c
+            JOIN pg_namespace s ON c.relnamespace = s.oid
+            JOIN LATERAL aclexplode(c.relacl) acl ON TRUE
+            JOIN pg_roles r ON acl.grantee = r.oid
+          WHERE
+            r.rolname = '#{role}'
+          GROUP BY schema, t;
+        }
+
+        @user.in_database do |user_database|
+          user_database.synchronize do |conn|
+            user_database[query]
+          end
+        end
+      end
+
+      def tables_privileges_hashed(role = @user.database_username)
+        results = tables_privileges(role)
+        privileges_hashed = {}
+        results.each do |row|
+          privileges_hashed[row[:schema]] = {} if privileges_hashed[row[:schema]].nil?
+          privileges_hashed[row[:schema]][row[:t]] = row[:permission].split(',')
+        end
+        privileges_hashed
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end

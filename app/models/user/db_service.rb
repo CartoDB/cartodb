@@ -1365,6 +1365,7 @@ module CartoDB
             BEGIN;
             CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
             $$
+                import re
                 critical = #{varnish_critical}
                 timeout = #{varnish_timeout}
                 retry = #{varnish_retry}
@@ -1377,7 +1378,8 @@ module CartoDB
 
                   try:
                     client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    raw_cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    cache_key = re.sub(r'([\.\^\$\*\+\-\?\(\)\[\]\{\}\|])', lambda x: "\{}".format(x.group(1)), raw_cache_key)
                     client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
                     response = client.getresponse()
                     assert response.status == 204

@@ -1,7 +1,5 @@
 class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
   include Carto::ControllerHelper
-  include Carto::UUIDHelper
-  include Carto::Api::AuthApiAuthentication
 
   ssl_required :create, :destroy, :validate_code, :show, :index
 

@@ -12,8 +12,15 @@ describe Carto::Api::MultifactorAuthsController do
     @user.destroy
   end
 
+  before :each do
+    @user.user_multifactor_auths.each(&:destroy)
+    @multifactor_auth = FactoryGirl.create(:totp, user: @user)
+    @user.reload
+  end
+
   after :each do
     @user.user_multifactor_auths.each(&:destroy)
+    @multifactor_auth.destroy
   end
 
   def auth_headers
@@ -70,14 +77,6 @@ describe Carto::Api::MultifactorAuthsController do
   end
 
   describe '#validate_code' do
-    before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, user: @user)
-    end
-
-    after :each do
-      @multifactor_auth.destroy
-    end
-
     it 'validates a totp multifactor auth code' do
       params = auth_params.merge(code: @multifactor_auth.totp.now)
       post_json validate_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
@@ -135,6 +134,7 @@ describe Carto::Api::MultifactorAuthsController do
     it 'updates last_login' do
       @multifactor_auth.verify!(@multifactor_auth.totp.now)
       last_login = @multifactor_auth.last_login
+      Delorean.jump(2.hours)
       params = auth_params.merge(code: @multifactor_auth.totp.now)
       post_json validate_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
         response.status.should eq 200
@@ -150,18 +150,11 @@ describe Carto::Api::MultifactorAuthsController do
         @multifactor_auth.disabled?.should be_false
         @multifactor_auth.last_login.should_not eq last_login
       end
+      Delorean.back_to_the_present
     end
   end
 
   describe '#show' do
-    before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, user: @user)
-    end
-
-    after :each do
-      @multifactor_auth.destroy
-    end
-
     it 'shows multifactor auth instance' do
       get_json multifactor_auth_url(id: @multifactor_auth.id), auth_params, auth_headers do |response|
         response.status.should eq 200
@@ -175,15 +168,7 @@ describe Carto::Api::MultifactorAuthsController do
   end
 
   describe '#index' do
-    before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, user: @user)
-    end
-
-    after :each do
-      @multifactor_auth.destroy
-    end
-
-    it 'list multifactor auth instances' do
+    it 'list instances' do
       get_json multifactor_auths_url, auth_params, auth_headers do |response|
         response.status.should eq 200
         list = response.body
@@ -198,14 +183,6 @@ describe Carto::Api::MultifactorAuthsController do
   end
 
   describe '#destroy' do
-    before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, user: @user)
-    end
-
-    after :each do
-      @multifactor_auth.destroy
-    end
-
     it 'destroys a multifactor auth instance' do
       delete_json multifactor_auth_url(id: @multifactor_auth.id), auth_params, auth_headers do |response|
         response.status.should eq 200

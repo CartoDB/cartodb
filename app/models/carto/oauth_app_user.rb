@@ -72,7 +72,8 @@ module Carto
       begin
         results = user.in_database(as: :superuser).execute(query)
       rescue ActiveRecord::StatementInvalid => e
-        CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
+        CartoDB::Logger.error(message: 'Error getting scopes', exception: e)
+        raise OauthProvider::Errors::ServerError.new
       end
 
       results.map do |row|
@@ -85,7 +86,10 @@ module Carto
     def create_dataset_role
       user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
     rescue ActiveRecord::StatementInvalid => e
-      raise OauthProvider::Errors::ServerError.new unless e.message =~ /already exist/
+      unless e.message =~ /already exist/
+        CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
+        raise OauthProvider::Errors::ServerError.new
+      end
     end
 
     def grant_dataset_role_privileges
@@ -100,6 +104,7 @@ module Carto
         begin
           user.in_database.execute(query)
         rescue ActiveRecord::StatementInvalid
+          CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
           raise OauthProvider::Errors::InvalidScope.new
         end
       end

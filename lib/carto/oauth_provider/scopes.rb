@@ -114,9 +114,9 @@ module Carto
           database_section = grant_section(grants)
 
           table_section = {
-            name: @table,
+            name: table,
             permissions: permission,
-            schema: @schema || user.database_schema
+            schema: schema || user.database_schema
           }
 
           database_section[@grant_key] << table_section
@@ -140,17 +140,17 @@ module Carto
           return [] unless dataset_scopes.any?
 
           tables_by_schema = {}
-          invalid_scopes = []
+          valid_scopes = []
           dataset_scopes.each do |scope|
             table, schema = table_schema_permission(scope)
             schema = user.database_schema if schema.nil?
-            if tables_by_schema[schema.to_sym].nil?
-              tables_by_schema[schema.to_sym] = user.db_service.tables_effective(schema)
+            if tables_by_schema[schema].nil?
+              tables_by_schema[schema] = user.db_service.tables_effective(schema)
             end
-            invalid_scopes << scope if tables_by_schema[schema.to_sym].include?(table)
+            valid_scopes << scope if tables_by_schema[schema].include?(table)
           end
 
-          invalid_scopes
+          valid_scopes
         end
 
         def self.permission_from_db_to_scope(permission)

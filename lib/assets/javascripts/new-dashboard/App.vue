@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <NavigationBar :user="user"/>
+    <NavigationBar :user="user" :configModel="configModel" :userModel="userModel"/>
     <router-view/>
   </div>
 </template>
@@ -14,8 +14,14 @@ export default {
     NavigationBar
   },
   computed: {
-    user() {
+    user () {
       return this.$store.state.user;
+    },
+    userModel () {
+      return this.$store.state.user.userModel;
+    },
+    configModel () {
+      return this.$store.state.config.configModel;
     }
   }
 };

@@ -50,23 +50,17 @@ export default {
     UserDropdown
   },
   props: {
-    user: Object
+    user: Object,
+    userModel: Object,
+    configModel: Object
   },
-  data: function() {
+  data () {
     return {
       isDropdownOpen: false
-    }
-  },
-  computed: {
-    userModel() {
-      return this.$store.state.user.userModel;
-    },
-    configModel() {
-      return this.$store.state.config.configModel;
-    }
+    };
   },
   methods: {
-    toggleDropdown: function() {
+    toggleDropdown () {
       this.$refs.userDropdown.toggle();
     }
   }

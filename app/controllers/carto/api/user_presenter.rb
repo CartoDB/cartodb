@@ -117,6 +117,7 @@ module Carto
           last_name: @user.last_name,
           created_at: @user.created_at,
           username: @user.username,
+          state: @user.state,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,

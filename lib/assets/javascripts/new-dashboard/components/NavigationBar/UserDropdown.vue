@@ -4,7 +4,6 @@
 
 <script>
 import SettingsDropdown from 'dashboard/components/dashboard-header/settings-dropdown-view';
-import $ from 'jquery';
 
 export default {
   name: 'UserDropdown',
@@ -18,14 +17,14 @@ export default {
     };
   },
   methods: {
-    renderView() {
+    renderView () {
       const settingsDropdown = new SettingsDropdown({
         model: this.$props.userModel,
         configModel: this.$props.configModel,
-        className: 'Dropdown vertical_bottom horizontal_right tick_right',
+        className: 'Dropdown vertical_bottom horizontal_right tick_right'
       });
 
-      settingsDropdown.on('onDropdownHidden', () => this.isDropdownOpen = false);
+      settingsDropdown.on('onDropdownHidden', () => { this.isDropdownOpen = false; });
 
       settingsDropdown.render();
 
@@ -35,7 +34,7 @@ export default {
       return settingsDropdown;
     },
 
-    show: function () {
+    show () {
       if (!this.$dropdownView) {
         this.$dropdownView = this.renderView();
       }
@@ -44,12 +43,12 @@ export default {
       this.isDropdownOpen = true;
     },
 
-    hide: function () {
+    hide () {
       this.$dropdownView.hide();
       this.isDropdownOpen = false;
     },
 
-    toggle: function () {
+    toggle () {
       if (this.isDropdownOpen) {
         this.hide();
       } else if (!this.isDropdownOpen) {

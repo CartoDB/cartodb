@@ -12,8 +12,8 @@ exports[`NavigationBar.vue should render correct contents 1`] = `
   <div class="navbar-elementsContainer">
     <form action="#" method="get" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular"></form>
     <div class="navbar-user">
-      <div class="navbar-avatar" style="background-image: url(hola);"></div>
-      <userdropdown-stub usermodel="[object Object]" configmodel="[object Object]"></userdropdown-stub>
+      <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
+      <userdropdown-stub></userdropdown-stub>
     </div>
   </div>
 </nav>

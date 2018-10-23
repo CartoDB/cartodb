@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.7",
+  "version": "1.0.0-assets.9",
   "dependencies": {
     "@babel/polyfill": {
       "version": "7.0.0",
@@ -405,11 +405,6 @@
       "from": "binary-extensions@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.11.0.tgz"
     },
-    "bluebird": {
-      "version": "3.5.1",
-      "from": "bluebird@>=3.5.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz"
-    },
     "bn.js": {
       "version": "4.11.8",
       "from": "bn.js@>=4.1.1 <5.0.0",
@@ -491,6 +486,11 @@
       "from": "browserify@13.0.0",
       "resolved": "https://registry.npmjs.org/browserify/-/browserify-13.0.0.tgz",
       "dependencies": {
+        "glob": {
+          "version": "5.0.15",
+          "from": "glob@>=5.0.15 <6.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz"
+        },
         "readable-stream": {
           "version": "2.3.6",
           "from": "readable-stream@>=2.0.2 <3.0.0",
@@ -587,6 +587,11 @@
       "from": "cacache@>=10.0.4 <11.0.0",
       "resolved": "https://registry.npmjs.org/cacache/-/cacache-10.0.4.tgz",
       "dependencies": {
+        "bluebird": {
+          "version": "3.5.2",
+          "from": "bluebird@>=3.5.1 <4.0.0",
+          "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.2.tgz"
+        },
         "glob": {
           "version": "7.1.2",
           "from": "glob@>=7.1.2 <8.0.0",
@@ -860,7 +865,14 @@
     "cross-spawn": {
       "version": "6.0.5",
       "from": "cross-spawn@>=6.0.5 <7.0.0",
-      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.5.tgz"
+      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.5.tgz",
+      "dependencies": {
+        "semver": {
+          "version": "5.6.0",
+          "from": "semver@>=5.5.0 <6.0.0",
+          "resolved": "https://registry.npmjs.org/semver/-/semver-5.6.0.tgz"
+        }
+      }
     },
     "crypto-browserify": {
       "version": "3.12.0",
@@ -1874,11 +1886,6 @@
       "from": "get-value@>=2.0.6 <3.0.0",
       "resolved": "https://registry.npmjs.org/get-value/-/get-value-2.0.6.tgz"
     },
-    "glob": {
-      "version": "5.0.15",
-      "from": "glob@>=5.0.15 <6.0.0",
-      "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz"
-    },
     "glob-parent": {
       "version": "3.1.0",
       "from": "glob-parent@>=3.1.0 <4.0.0",
@@ -1971,7 +1978,26 @@
     "html-minifier": {
       "version": "3.5.19",
       "from": "html-minifier@>=3.2.3 <4.0.0",
-      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.19.tgz"
+      "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-3.5.19.tgz",
+      "dependencies": {
+        "source-map": {
+          "version": "0.6.1",
+          "from": "source-map@>=0.6.1 <0.7.0",
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
+        },
+        "uglify-js": {
+          "version": "3.4.9",
+          "from": "uglify-js@>=3.4.0 <3.5.0",
+          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.9.tgz",
+          "dependencies": {
+            "commander": {
+              "version": "2.17.1",
+              "from": "commander@>=2.17.1 <2.18.0",
+              "resolved": "https://registry.npmjs.org/commander/-/commander-2.17.1.tgz"
+            }
+          }
+        }
+      }
     },
     "html-webpack-plugin": {
       "version": "3.2.0",
@@ -2486,11 +2512,6 @@
       "from": "minimatch@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz"
     },
-    "minimist": {
-      "version": "0.0.10",
-      "from": "minimist@>=0.0.1 <0.1.0",
-      "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
-    },
     "mississippi": {
       "version": "2.0.0",
       "from": "mississippi@>=2.0.0 <3.0.0",
@@ -2776,7 +2797,14 @@
     "optimist": {
       "version": "0.6.1",
       "from": "optimist@>=0.6.0 <0.7.0",
-      "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz"
+      "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
+      "dependencies": {
+        "minimist": {
+          "version": "0.0.10",
+          "from": "minimist@>=0.0.1 <0.1.0",
+          "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
+        }
+      }
     },
     "os-browserify": {
       "version": "0.1.2",
@@ -3269,11 +3297,6 @@
       "from": "select@>=1.1.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/select/-/select-1.1.2.tgz"
     },
-    "semver": {
-      "version": "5.5.0",
-      "from": "semver@>=5.5.0 <6.0.0",
-      "resolved": "https://registry.npmjs.org/semver/-/semver-5.5.0.tgz"
-    },
     "serialize-javascript": {
       "version": "1.5.0",
       "from": "serialize-javascript@>=1.4.0 <2.0.0",
@@ -3727,22 +3750,10 @@
       "from": "typedarray@>=0.0.5 <0.1.0",
       "resolved": "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
     },
-    "uglify-js": {
-      "version": "3.4.6",
-      "from": "uglify-js@>=3.4.0 <3.5.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.4.6.tgz",
-      "dependencies": {
-        "source-map": {
-          "version": "0.6.1",
-          "from": "source-map@>=0.6.1 <0.7.0",
-          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
-        }
-      }
-    },
     "uglifyjs-webpack-plugin": {
-      "version": "1.2.7",
-      "from": "uglifyjs-webpack-plugin@>=1.2.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.2.7.tgz",
+      "version": "1.2.5",
+      "from": "https://registry.npmjs.org/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.2.5.tgz",
+      "resolved": "https://registry.npmjs.org/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.2.5.tgz",
       "dependencies": {
         "commander": {
           "version": "2.13.0",
@@ -3925,6 +3936,11 @@
       "version": "2.5.17",
       "from": "vue@latest",
       "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.17.tgz"
+    },
+    "vue-i18n": {
+      "version": "8.2.1",
+      "from": "vue-i18n@latest",
+      "resolved": "https://registry.npmjs.org/vue-i18n/-/vue-i18n-8.2.1.tgz"
     },
     "vue-router": {
       "version": "3.0.1",

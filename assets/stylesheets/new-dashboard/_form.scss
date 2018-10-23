@@ -2,7 +2,7 @@
   position: relative;
 
   .checkbox-decoration {
-    display: block;
+    display: flex;
     position: relative;
     width: 24px;
     height: 24px;
@@ -23,6 +23,9 @@
   .checkbox-decorationMedia {
     display: flex;
     position: relative;
+    width: 18px;
+    margin-right: auto;
+    margin-left: auto;
     transform: translateY(3px);
   }
 

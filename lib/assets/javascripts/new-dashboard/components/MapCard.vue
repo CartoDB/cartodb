@@ -1,6 +1,6 @@
 <template>
-    <a :href="vizUrl" class="grid-cell map-card" v-bind:class="mapSizeClass">
-        <div class="card" v-bind:class="{selected: selected, 'card--noHover': !activeHover}">
+    <div class="grid-cell" v-bind:class="mapSizeClass">
+        <a :href="vizUrl" class="card map-card" v-bind:class="{selected: selected, 'card--noHover': !activeHover}">
             <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
                 <input class="checkbox-input" @click="toggleSelection" type="checkBox">
                 <span class="checkbox-decoration">
@@ -22,7 +22,7 @@
             </div>
             <div class="card-text">
                 <h2 class="card-title">{{map.name}}&nbsp;
-                  <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+                  <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
                     <svg width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
                       <path class="favorite-icon" d="M15.44 5.46a.75.75 0 0 0-.69-.46h-4.04L8.67.92C8.42.4 7.58.4 7.33.92L5.29 5H1.25a.75.75 0 0 0-.53 1.28l3.44 3.44-1.38 4.83a.75.75 0 0 0 1.14.82L8 12.65l4.08 2.72a.75.75 0 0 0 1.14-.82l-1.38-4.83 3.44-3.44a.75.75 0 0 0 .16-.82z" stroke="#6F757B" fill="none" fill-rule="evenodd"/>
                     </svg>
@@ -52,8 +52,8 @@
                     </li>
                 </ul>
             </div>
-        </div>
-    </a>
+        </a>
+    </div>
 </template>
 
 <script>
@@ -119,6 +119,7 @@ export default {
 @import 'stylesheets/new-dashboard/variables';
 
 .map-card {
+  display: block;
   text-decoration: none;
 }
 

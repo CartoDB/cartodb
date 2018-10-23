@@ -98,17 +98,19 @@ module Carto
 
     describe '#authorized?' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
       end
 
       after(:all) do
-        @user.destroy
         @app.destroy
+        @user.destroy
+        @carto_user.destroy
       end
 
       it 'is authorized only if all requested scopes are already granted' do
-        oau = OauthAppUser.new(user: @user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
+        oau = OauthAppUser.new(user: @carto_user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
 
         expect(oau).to(be_authorized(['allowed_1']))
         expect(oau).to(be_authorized(['allowed_2']))
@@ -121,18 +123,20 @@ module Carto
 
     describe '#upgrade!' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
       end
 
       after(:all) do
-        @user.destroy
         @app.destroy
+        @user.destroy
+        @carto_user.destroy
       end
 
       it 'grants all new scopes without duplicates' do
         OauthAppUser::ScopesValidator.any_instance.stubs(:validate_each)
-        oau = OauthAppUser.create!(user: @user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
 
         oau.upgrade!([])
         expect(oau.scopes).to(eq(['allowed_1', 'allowed_2']))

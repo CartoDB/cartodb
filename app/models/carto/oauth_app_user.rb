@@ -55,23 +55,8 @@ module Carto
     end
 
     def dataset_scopes
-      query = %{
-        SELECT
-          s.nspname as schema,
-          c.relname as t,
-          string_agg(lower(acl.privilege_type), ',') as permission
-        FROM
-          pg_class c
-          JOIN pg_namespace s ON c.relnamespace = s.oid
-          JOIN LATERAL aclexplode(c.relacl) acl ON TRUE
-          JOIN pg_roles r ON acl.grantee = r.oid
-        WHERE
-          r.rolname = '#{dataset_role_name}'
-        GROUP BY schema, t;
-      }
-
       begin
-        results = user.in_database(as: :superuser).execute(query)
+        results = user.db_service.tables_privileges(dataset_role_name)
       rescue ActiveRecord::StatementInvalid => e
         CartoDB::Logger.error(message: 'Error getting scopes', exception: e)
         raise OauthProvider::Errors::ServerError.new

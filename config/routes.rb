@@ -638,7 +638,7 @@ CartoDB::Application.routes.draw do
       end
 
       # Multi-factor authentication
-      resources :multifactor_auths, only: [:create, :destroy], constraints: { id: /[^\/]+/ }
+      resources :multifactor_auths, only: [:create, :destroy, :show, :index], constraints: { id: /[^\/]+/ }
       scope 'multifactor_auths/:id' do
         post 'validate_code' => 'multifactor_auths#validate_code', as: :validate_multifactor_auth
       end

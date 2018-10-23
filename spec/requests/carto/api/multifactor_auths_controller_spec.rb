@@ -153,6 +153,50 @@ describe Carto::Api::MultifactorAuthsController do
     end
   end
 
+  describe '#show' do
+    before :each do
+      @multifactor_auth = FactoryGirl.create(:totp, user: @user)
+    end
+
+    after :each do
+      @multifactor_auth.destroy
+    end
+
+    it 'shows multifactor auth instance' do
+      get_json multifactor_auth_url(id: @multifactor_auth.id), auth_params, auth_headers do |response|
+        response.status.should eq 200
+        response = response.body
+        response[:id].should be
+        response[:type].should eq 'totp'
+        response[:qrcode].should_not be
+        response[:user].should eq(@user.username)
+      end
+    end
+  end
+
+  describe '#index' do
+    before :each do
+      @multifactor_auth = FactoryGirl.create(:totp, user: @user)
+    end
+
+    after :each do
+      @multifactor_auth.destroy
+    end
+
+    it 'list multifactor auth instances' do
+      get_json multifactor_auths_url, auth_params, auth_headers do |response|
+        response.status.should eq 200
+        list = response.body
+        list.length.should eq 1
+        response = list.first
+        response['id'].should be
+        response['type'].should eq 'totp'
+        response['qrcode'].should_not be
+        response['user'].should eq(@user.username)
+      end
+    end
+  end
+
   describe '#destroy' do
     before :each do
       @multifactor_auth = FactoryGirl.create(:totp, user: @user)

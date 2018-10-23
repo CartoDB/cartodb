@@ -65,19 +65,14 @@ describe Carto::OauthProvider::Scopes do
 
     describe 'shared datasets' do
       before :each do
-        shared_table = create_table(user_id: @carto_org_user_1.id)
+        @shared_table = create_table(user_id: @carto_org_user_1.id)
         not_shared_table = create_table(user_id: @carto_org_user_1.id)
 
-        # TODO: change the share way
-        db_role = ""
-        @org_user_2.in_database do |db|
-          db_role = db.fetch("select session_user").first[:session_user]
-        end
-        @org_user_1.in_database(as: :superuser) do |db|
-          db.execute("GRANT SELECT ON #{@carto_org_user_1.database_schema}.#{shared_table.name} TO \"#{db_role}\"")
-        end
+        perm = @shared_table.table_visualization.permission
+        perm.acl = [{ type: 'user', entity: { id: @org_user_2.id }, access: 'r' }]
+        perm.save!
 
-        @shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{shared_table.name}"
+        @shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
         @non_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{not_shared_table.name}"
       end
 

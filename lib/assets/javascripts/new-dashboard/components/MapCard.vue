@@ -1,8 +1,8 @@
 <template>
     <div class="grid-cell grid-cell--col4">
         <div class="card" v-bind:class="{selected: selected}">
-            <span class="checkbox card-select" style="margin-right: 20px;">
-                <input class="checkbox-input" v-on:click="selected = !selected" type="checkBox" name="contact" value="02">
+            <span class="checkbox card-select">
+                <input class="checkbox-input" @click="selected = !selected" type="checkBox" name="contact" value="02">
                 <span class="checkbox-decoration">
                     <svg viewBox="0 0 12 12" class="checkbox-decorationMedia">
                         <g fill="none">
@@ -54,14 +54,19 @@ export default {
   name: 'CardMap',
   components: {
   },
-  data: function (){
+  data: function () {
     return {
-      selected: Boolean = false
+      selected: false
+    };
+  },
+  methods: {
+    toggleSelection () {
+      this.selected = !this.selected;
     }
   },
   props: {
-      map: Object
-  },
+    map: Object
+  }
 };
 </script>
 
@@ -71,10 +76,11 @@ export default {
 
 .card {
   position: relative;
-  transition: background 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  background-color: $white;
   height: 100%;
-  &:after {
+  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: $white;
+
+  &::after {
     content: '';
     position: absolute;
     top: 0;
@@ -84,19 +90,24 @@ export default {
     border: 1px solid rgba($textColor, 0.16);
     pointer-events: none;
   }
+
   &:hover {
     // background: rgba($primaryColor, 0.02);
     cursor: pointer;
+
     .card-title {
       color: $primaryColor;
     }
+
     .card-select,
     .card-actions {
       opacity: 1;
     }
   }
+
   &.selected {
     background-color: #F2F9FF;
+
     .card-actions,
     .card-select {
       opacity: 1;
@@ -111,93 +122,107 @@ export default {
     margin-bottom: 16px;
     font-size: 24px;
   }
+
   .card-description {
-    margin-bottom: 32px;
     height: 72px;
+    margin-bottom: 32px;
     -webkit-line-clamp: 3;
   }
+
   .card-media {
     flex: 0 0 58.3331%;
     min-width: 58.3331%;
   }
+
   .card-text {
     padding: 24px 36px 24px 20px;
   }
 }
 
 .card-subtitle {
-  font: 600 10px/1.6 'Montserrat';
   margin-bottom: 4px;
+  font: 600 10px/1.6 'Montserrat';
 }
 
 .card-text {
   padding: 24px 16px;
   color: $textColor;
 }
+
 .card-media {
-  height: 140px;
   display: flex;
+  height: 140px;
   overflow: hidden;
+
   img {
     width: 100%;
     object-fit: cover;
   }
 }
+
 .card-title {
-  font: 700 18px/1.4 'Montserrat';
   margin-bottom: 12px;
-  transition: background 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  font: 700 18px/1.4 'Montserrat';
 }
+
 .card-description {
-  font: 400 16px/1.6 'Open Sans';
+  display: -webkit-box;
+  display: block;
+  height: 48px;
   margin-bottom: 8px;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  font: 400 16px/1.6 'Open Sans';
   text-overflow: ellipsis;
-  height: 48px;
-  display: block;
-  display: -webkit-box;
 }
+
 .card-metadataItem {
+  display: flex;
   margin-bottom: 4px;
   font: 400 16px/1.6 'Open Sans';
-  display: flex;
+
   a {
     color: $textColor;
     text-decoration: none;
   }
+
   a:hover {
     color: $textColor;
     text-decoration: underline;
   }
+
   .icon {
-    margin-right: 8px;
     margin-top: 4px;
+    margin-right: 8px;
   }
 }
-  .card-metadataItem:last-child {
-    margin-bottom: 0;
-  }
+
+.card-metadataItem:last-child {
+  margin-bottom: 0;
+}
 
 .card-select {
   position: absolute;
   top: 8px;
   left: 8px;
-  opacity: 0;
-  transition: opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  background: $white;
+  transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 4px;
+  opacity: 0;
+  background: $white;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
+
   &:focus {
     outline: none;
   }
+
   &:checked {
-    background: $primaryColor;
     opacity: 1;
+    background: $primaryColor;
   }
 }
 
@@ -205,38 +230,41 @@ export default {
   position: absolute;
   top: 8px;
   right: 8px;
+  transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
-  transition: opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
+
 .card-actionsSelect {
-  width: 24px;
-  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: $white;
+  width: 24px;
+  height: 24px;
   border-radius: 4px;
+  background: $white;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
 }
 
 .card-actionsContainer {
   position: absolute;
+  z-index: 2;
   top: 32px;
   right: 0;
+  border: 1px solid rgba($textColor, 0.08);
+  border-radius: 2px;
   background: $white;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-  border-radius: 2px;
-  border: 1px solid rgba($textColor, 0.08);
-  z-index: 2;
 }
+
 .card-actionsListItem {
-  border-bottom: 1px solid rgba($textColor, 0.08);
   width: 264px;
+  border-bottom: 1px solid rgba($textColor, 0.08);
   font: 400 16px/1.6 'Open Sans';
 
   &:last-child {
     border-bottom: 0;
   }
+
   a {
     display: block;
     padding: 12px 24px;
@@ -245,13 +273,14 @@ export default {
 }
 
 .card-development {
-  background-color: $softblue;
-  padding: 36px 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  .card-developmentTitle{
-      margin-bottom: 8px;
+  padding: 36px 16px;
+  background-color: $softblue;
+
+  .card-developmentTitle {
+    margin-bottom: 8px;
   }
 }
 

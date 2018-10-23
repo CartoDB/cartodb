@@ -1,5 +1,5 @@
 <template>
-    <div class="grid-cell" v-bind:class="mapSizeClass">
+    <a :href="vizUrl" class="grid-cell map-card" v-bind:class="mapSizeClass">
         <div class="card" v-bind:class="{selected: selected}">
             <span class="checkbox card-select">
                 <input class="checkbox-input" @click="toggleSelection" type="checkBox">
@@ -53,15 +53,20 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </a>
 </template>
 
 <script>
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
+import * as Visualization from 'new-dashboard/core/visualization';
 
 export default {
   name: 'CardMap',
   components: {
+  },
+  props: {
+    map: Object,
+    size: String
   },
   data: function () {
     return {
@@ -74,7 +79,7 @@ export default {
       return `icon--${this.$props.map.privacy}`.toLowerCase();
     },
     lastUpdated: function () {
-      return `Updated ${distanceInWordsStrict(this.$props.map.updatedAt, new Date())} ago`;
+      return `Updated ${distanceInWordsStrict(this.$props.map.updated_at, new Date())} ago`;
     },
     mapThumbnailUrl: function () {
       return this.$props.map.thumbnailUrl;
@@ -85,6 +90,9 @@ export default {
       } else {
         return 'grid-cell--col4';
       }
+    },
+    vizUrl: function () {
+      return Visualization.getURL(this.$props.map);
     }
   },
   methods: {
@@ -95,10 +103,6 @@ export default {
       this.favorite = !this.favorite;
       // this.$props.map.favorite = !this.$props.map.favorite;
     }
-  },
-  props: {
-    map: Object,
-    size: String
   }
 };
 </script>
@@ -106,6 +110,10 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
+
+.map-card {
+  text-decoration: none;
+}
 
 .card {
   position: relative;

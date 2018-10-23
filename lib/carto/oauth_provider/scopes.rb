@@ -139,17 +139,17 @@ module Carto
 
           return [] unless dataset_scopes.any?
 
-          tables_by_schema = {}
+          allowed = user.db_service.tables_privileges_hashed
+
           valid_scopes = []
           dataset_scopes.each do |scope|
-            table, schema = table_schema_permission(scope)
+            table, schema, permissions = table_schema_permission(scope)
             schema = user.database_schema if schema.nil?
-            if tables_by_schema[schema].nil?
-              tables_by_schema[schema] = user.db_service.tables_effective(schema)
-            end
-            valid_scopes << scope if tables_by_schema[schema].include?(table)
-          end
 
+            if !allowed[schema].nil? && !allowed[schema][table].nil? && (PERMISSIONS[permissions.to_sym] - allowed[schema][table]).empty?
+              valid_scopes << scope
+            end
+          end
           valid_scopes
         end
 

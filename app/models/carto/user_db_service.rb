@@ -63,5 +63,15 @@ module Carto
 
       execute_in_user_database(query)
     end
+
+    def tables_privileges_hashed(role = @user.database_username)
+      results = tables_privileges(role)
+      privileges_hashed = {}
+      results.each do |row|
+        privileges_hashed[row['schema']] = {} if privileges_hashed[row['schema']].nil?
+        privileges_hashed[row['schema']][row['t']] = row['permission'].split(',')
+      end
+      privileges_hashed
+    end
   end
 end

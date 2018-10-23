@@ -2,14 +2,33 @@ Development
 -----------
 
 ### NOTICES
-- Ensuring right `search_path` for non organization `publicuser`
+- None yet
 
 ### Features
-- Improve dropping db role of an API key (#14307)
+- None yet
 
 ### Bug fixes / enhancements
-- Add `remove_overview_tables` rake
-- Allowing views in API Keys (#14309)
+- Scrollbar resized after notifications (#12953)
+- Add timeout for AR and Sequel connections (#13266)
+- Fix Feedback modal on Enter (https://github.com/CartoDB/support/issues/1804)
+- Apply code style for "Layer hidden" notification in advanced mode (#13355)
+- Fix input widths (#13453)
+- Update tags style (#13756)
+- Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
+
+4.22.1 (2018-10-18)
+-------------------
+
+### NOTICES
+* Ensuring right `search_path` for non organization `publicuser`
+
+### Features
+* Improve dropping db role of an API key (#14307)
+
+### Bug fixes / enhancements
+* Add `remove_overview_tables` rake
+* Allowing views in API Keys (#14309)
+* Redirect locked users to /lockout page (#14310)
 
 4.22.0 (2018-10-04)
 -------------------

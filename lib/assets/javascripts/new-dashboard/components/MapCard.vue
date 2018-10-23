@@ -1,7 +1,7 @@
 <template>
     <a :href="vizUrl" class="grid-cell map-card" v-bind:class="mapSizeClass">
-        <div class="card" v-bind:class="{selected: selected}">
-            <span class="checkbox card-select">
+        <div class="card" v-bind:class="{selected: selected, 'card--noHover': !activeHover}">
+            <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
                 <input class="checkbox-input" @click="toggleSelection" type="checkBox">
                 <span class="checkbox-decoration">
                     <svg viewBox="0 0 12 12" class="checkbox-decorationMedia">
@@ -11,7 +11,7 @@
                     </svg>
                 </span>
             </span>
-            <div class="card-actions">
+            <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
                 <span class="card-actionsSelect">
                   <img src="../assets/icons/common/options.svg">
                 </span>
@@ -22,7 +22,7 @@
             </div>
             <div class="card-text">
                 <h2 class="card-title">{{map.name}}&nbsp;
-                  <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click="toggleFavorite">
+                  <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
                     <svg width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
                       <path class="favorite-icon" d="M15.44 5.46a.75.75 0 0 0-.69-.46h-4.04L8.67.92C8.42.4 7.58.4 7.33.92L5.29 5H1.25a.75.75 0 0 0-.53 1.28l3.44 3.44-1.38 4.83a.75.75 0 0 0 1.14.82L8 12.65l4.08 2.72a.75.75 0 0 0 1.14-.82l-1.38-4.83 3.44-3.44a.75.75 0 0 0 .16-.82z" stroke="#6F757B" fill="none" fill-rule="evenodd"/>
                     </svg>
@@ -43,7 +43,7 @@
                         <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
                         <ul class="card-tagList">
                           <li v-for="(tag, index) in map.tagList" :key="tag">
-                            <a href="#">{{tag}}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
+                            <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{tag}}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
                           </li>
                           <li v-if="map.tagList.length <= 0">
                             <span>{{$t(`mapCard.noTags`)}}</span>
@@ -71,7 +71,8 @@ export default {
   data: function () {
     return {
       selected: false,
-      favorite: this.$props.map.favorite
+      favorite: this.$props.map.favorite,
+      activeHover: true
     };
   },
   computed: {
@@ -102,6 +103,12 @@ export default {
     toggleFavorite () {
       this.favorite = !this.favorite;
       // this.$props.map.favorite = !this.$props.map.favorite;
+    },
+    mouseOverElement () {
+      this.activeHover = false;
+    },
+    mouseOutOfElement () {
+      this.activeHover = true;
     }
   }
 };
@@ -136,8 +143,10 @@ export default {
     // background: rgba($primaryColor, 0.02);
     cursor: pointer;
 
-    .card-title {
-      color: $primaryColor;
+    &:not(.card--noHover) {
+      .card-title {
+        color: $primaryColor;
+      }
     }
 
     .card-select,

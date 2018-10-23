@@ -22,11 +22,12 @@
             </div>
             <div class="card-text">
                 <h2 class="card-title">{{map.name}}</h2>
-                <p class="card-description">{{map.description}}</p>
+                <p class="card-description" v-if="map.description">{{map.description}}</p>
+                <p class="card-description" v-else>No description</p>
                 <ul class="card-metadata">
                     <li class="card-metadataItem">
-                        <span class="icon"><img src="../assets/icons/maps/privacy/link.svg"></span>
-                        <p>Shared with link</p>
+                        <span class="icon icon--privacy" v-bind:class="privacyIcon"></span>
+                        <p>{{$t(`mapCard.shared.${map.privacy}`)}}</p>
                     </li>
                     <li class="card-metadataItem">
                         <span class="icon"><img src="../assets/icons/maps/calendar.svg"></span>
@@ -62,6 +63,9 @@ export default {
     };
   },
   computed: {
+    privacyIcon: function () {
+      return `icon--${this.$props.map.privacy}`.toLowerCase();
+    },
     lastUpdated: function () {
       return `Updated ${distanceInWordsStrict(this.$props.map.updatedAt, new Date())} ago`;
     },
@@ -205,8 +209,31 @@ export default {
   }
 
   .icon {
+    width: 18px;
+    height: 18px;
     margin-top: 4px;
     margin-right: 8px;
+
+    &.icon--privacy {
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    &.icon--private {
+      background-image: url("../assets/icons/maps/privacy/lock.svg");
+    }
+
+    &.icon--public {
+      background-image: url("../assets/icons/maps/privacy/public.svg");
+    }
+
+    &.icon--link {
+      background-image: url("../assets/icons/maps/privacy/link.svg");
+    }
+
+    &.icon--password {
+      background-image: url("../assets/icons/maps/privacy/password.svg");
+    }
   }
 }
 

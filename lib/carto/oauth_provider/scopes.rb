@@ -95,8 +95,7 @@ module Carto
         attr_reader :schema
 
         def initialize(scope)
-          permission = scope.split(':')[1]
-          @table, @schema = self.class.table_and_schema(scope)
+          @table, @schema, permission = self.class.table_schema_permission(scope)
           super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, @table))
           @grant_key = :tables
           @permission = permission.to_sym
@@ -143,7 +142,7 @@ module Carto
           tables_by_schema = {}
           invalid_scopes = []
           dataset_scopes.each do |scope|
-            table, schema = table_and_schema(scope)
+            table, schema = table_schema_permission(scope)
             schema = user.database_schema if schema.nil?
             if tables_by_schema[schema.to_sym].nil?
               tables_by_schema[schema.to_sym] = user.db_service.tables_effective(schema)
@@ -158,8 +157,10 @@ module Carto
           PERMISSIONS.find { |_, values| permission.split(',').sort == values.sort }.first
         end
 
-        def self.table_and_schema(scope)
-          Table.table_and_schema(scope.split(':')[-1])
+        def self.table_schema_permission(scope)
+          _, permission, table_and_schema = scope.split(':')
+          table, schema = Table.table_and_schema(table_and_schema)
+          [table, schema, permission]
         end
       end
 

@@ -7,10 +7,10 @@ migration(
     create_table :user_multifactor_auths do
       Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
       foreign_key :user_id, :users, type: :uuid, null: false, index: true, on_delete: :cascade
-      String      :mfa_type, null: false
+      String      :type, null: false
       String      :shared_secret, null: false
       Boolean     :enabled, null: false, default: false
-      String      :login_code, null: true
+      String      :code, null: true
       DateTime    :last_login, null: true
       DateTime    :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
       DateTime    :updated_at, null: false, default: Sequel::CURRENT_TIMESTAMP
